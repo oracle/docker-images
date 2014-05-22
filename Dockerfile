@@ -15,7 +15,7 @@ RUN mkdir /usr/src/mysql \
 WORKDIR /usr/src/mysql
 
 RUN cmake .
-RUN make
+RUN make -j"$(nproc)"
 RUN make test
 RUN make install
 ENV PATH $PATH:/usr/local/mysql/bin
