@@ -24,7 +24,6 @@ RUN groupadd mysql && useradd -r -g mysql mysql
 
 WORKDIR /usr/local/mysql
 VOLUME /var/lib/mysql
-RUN rm -rf data && ln -s /var/lib/mysql data
 
 ADD docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
