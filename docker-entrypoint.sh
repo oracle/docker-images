@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ -z "$(ls -A data)" -a "$*" = 'mysqld_safe' ]; then
+if [ -z "$(ls -A data)" -a "$1" = 'mysqld_safe' ]; then
 	if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
 		echo >&2 'error: database is uninitialized and MYSQL_ROOT_PASSWORD not set'
 		echo >&2 '  Did you forget to add -e MYSQL_ROOT_PASSWORD=... ?'
