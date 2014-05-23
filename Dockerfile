@@ -30,4 +30,4 @@ ADD docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3306
-CMD ["mysqld_safe"]
+CMD ["mysqld", "--datadir=/var/lib/mysql", "--user=mysql"]
