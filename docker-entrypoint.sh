@@ -20,8 +20,10 @@ WHERE user = "root"
 LIMIT 1;
 
 DELETE FROM user
-WHERE user = "root"
-	AND host != "%";
+WHERE user != "root"
+	OR host != "%";
+
+DROP DATABASE IF EXISTS test;
 
 FLUSH PRIVILEGES;
 EOF
