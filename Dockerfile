@@ -18,7 +18,7 @@ RUN cmake .
 RUN make -j"$(nproc)"
 RUN make test
 RUN make install
-ENV PATH $PATH:/usr/local/mysql/bin
+ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
 
 RUN groupadd mysql && useradd -r -g mysql mysql
 
@@ -30,4 +30,4 @@ ADD docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3306
-CMD ["mysqld_safe", "--skip-syslog"]
+CMD ["mysqld_safe"]
