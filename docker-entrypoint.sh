@@ -9,7 +9,6 @@ if [ -z "$(ls -A /var/lib/mysql)" -a "${1%_safe}" = 'mysqld' ]; then
 	fi
 	
 	mysql_install_db --datadir=/var/lib/mysql
-	chown -R mysql:mysql /var/lib/mysql
 	
 	# These statements _must_ be on individual lines, and _must_ end with
 	# semicolons (no line breaks or comments are permitted).
@@ -21,7 +20,9 @@ if [ -z "$(ls -A /var/lib/mysql)" -a "${1%_safe}" = 'mysqld' ]; then
 		FLUSH PRIVILEGES ;
 	EOSQL
 	
+	chown -R mysql:mysql /var/lib/mysql
 	exec "$@" --init-file=/tmp/mysql-first-time.sql
 fi
 
+chown -R mysql:mysql /var/lib/mysql
 exec "$@"
