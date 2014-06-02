@@ -1,5 +1,8 @@
 FROM debian:jessie
 
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+RUN groupadd mysql && useradd -r -g mysql mysql
+
 RUN apt-get update && apt-get install -y \
 		bison \
 		build-essential \
@@ -19,8 +22,6 @@ RUN make -j"$(nproc)"
 RUN make test
 RUN make install
 ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
-
-RUN groupadd mysql && useradd -r -g mysql mysql
 
 WORKDIR /usr/local/mysql
 VOLUME /var/lib/mysql
