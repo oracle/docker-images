@@ -12,15 +12,19 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir /usr/src/mysql \
 	&& curl -SL https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.17.tar.gz \
-		| tar -xzC /usr/src/mysql --strip-components=1
-#ADD . /usr/src/mysql
-
-WORKDIR /usr/src/mysql
-
-RUN cmake .
-RUN make -j"$(nproc)"
-RUN make test
-RUN make install
+		| tar -xzC /usr/src/mysql --strip-components=1 \
+	&& cd /usr/src/mysql \
+	&& cmake . -DCMAKE_BUILD_TYPE=Release \
+		-DWITH_EMBEDDED_SERVER=OFF \
+	&& make -j"$(nproc)" \
+	&& make test \
+	&& make install \
+	&& cd .. \
+	&& rm -rf mysql \
+	&& rm -rf /usr/local/mysql/mysql-test \
+	&& rm -rf /usr/local/mysql/sql-bench \
+	&& find /usr/local/mysql -type f -name "*.a" -delete \
+	&& ((find /usr/local/mysql -type f -print | xargs strip --strip-all) || true)
 ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
 
 WORKDIR /usr/local/mysql
