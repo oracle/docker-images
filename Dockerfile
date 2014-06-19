@@ -24,7 +24,7 @@ RUN mkdir /usr/src/mysql \
 	&& rm -rf /usr/local/mysql/mysql-test \
 	&& rm -rf /usr/local/mysql/sql-bench \
 	&& find /usr/local/mysql -type f -name "*.a" -delete \
-	&& ((find /usr/local/mysql -type f -print | xargs strip --strip-all) || true)
+	&& { find /usr/local/mysql -type f -executable -exec strip --strip-all '{}' + || true; }
 ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
 
 WORKDIR /usr/local/mysql
