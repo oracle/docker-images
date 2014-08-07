@@ -8,20 +8,33 @@ if [ -z "$(ls -A /var/lib/mysql)" -a "${1%_safe}" = 'mysqld' ]; then
 		exit 1
 	fi
 	
-	mysql_install_db --datadir=/var/lib/mysql
+	mysql_install_db --user=mysql --datadir=/var/lib/mysql
 	
 	# These statements _must_ be on individual lines, and _must_ end with
 	# semicolons (no line breaks or comments are permitted).
-	# TODO proper SQL escaping on dat root password D:
-	cat > /tmp/mysql-first-time.sql <<-EOSQL
+	# TODO proper SQL escaping on ALL the things D:
+	TEMP_FILE='/tmp/mysql-first-time.sql'
+	cat > "$TEMP_FILE" <<-EOSQL
 		UPDATE mysql.user SET host = "%", password = PASSWORD("${MYSQL_ROOT_PASSWORD}") WHERE user = "root" LIMIT 1 ;
 		DELETE FROM mysql.user WHERE user != "root" OR host != "%" ;
 		DROP DATABASE IF EXISTS test ;
-		FLUSH PRIVILEGES ;
 	EOSQL
 	
-	chown -R mysql:mysql /var/lib/mysql
-	exec "$@" --init-file=/tmp/mysql-first-time.sql
+	if [ "$MYSQL_DATABASE" ]; then
+		echo "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE ;" >> "$TEMP_FILE"
+	fi
+	
+	if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
+		echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" >> "$TEMP_FILE"
+		
+		if [ "$MYSQL_DATABASE" ]; then
+			echo "GRANT ALL ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' ;" >> "$TEMP_FILE"
+		fi
+	fi
+	
+	echo 'FLUSH PRIVILEGES ;' >> "$TEMP_FILE"
+	
+	set -- "$@" --init-file="$TEMP_FILE"
 fi
 
 chown -R mysql:mysql /var/lib/mysql
