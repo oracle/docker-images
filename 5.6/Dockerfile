@@ -10,8 +10,11 @@ RUN apt-get update && apt-get install -y \
 		curl \
 		libncurses5-dev
 
+ENV MYSQL_MAJOR 5.6
+ENV MYSQL_VERSION 5.6.20
+
 RUN mkdir /usr/src/mysql \
-	&& curl -SL https://dev.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.20.tar.gz \
+	&& curl -SL "https://dev.mysql.com/get/Downloads/MySQL-$MYSQL_MAJOR/mysql-$MYSQL_VERSION.tar.gz" \
 		| tar -xzC /usr/src/mysql --strip-components=1 \
 	&& cd /usr/src/mysql \
 	&& cmake . -DCMAKE_BUILD_TYPE=Release \
