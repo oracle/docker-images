@@ -15,8 +15,9 @@ if [ -z "$(ls -A /var/lib/mysql)" -a "${1%_safe}" = 'mysqld' ]; then
 	# TODO proper SQL escaping on ALL the things D:
 	TEMP_FILE='/tmp/mysql-first-time.sql'
 	cat > "$TEMP_FILE" <<-EOSQL
-		UPDATE mysql.user SET host = "%", password = PASSWORD("${MYSQL_ROOT_PASSWORD}") WHERE user = "root" LIMIT 1 ;
-		DELETE FROM mysql.user WHERE user != "root" OR host != "%" ;
+		DELETE FROM mysql.user ;
+		CREATE USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
+		GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
 		DROP DATABASE IF EXISTS test ;
 	EOSQL
 	
