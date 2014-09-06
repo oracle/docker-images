@@ -2,7 +2,7 @@
 set -e
 
 if [ ! -d '/var/lib/mysql/mysql' -a "${1%_safe}" = 'mysqld' ]; then
-	if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
+	if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ]; then
 		echo >&2 'error: database is uninitialized and MYSQL_ROOT_PASSWORD not set'
 		echo >&2 '  Did you forget to add -e MYSQL_ROOT_PASSWORD=... ?'
 		exit 1
