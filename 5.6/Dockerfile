@@ -39,7 +39,7 @@ ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
 WORKDIR /usr/local/mysql
 VOLUME /var/lib/mysql
 
-ADD docker-entrypoint.sh /entrypoint.sh
+COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3306
