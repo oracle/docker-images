@@ -11,8 +11,8 @@ versions=( "${versions[@]%/}" )
 
 for version in "${versions[@]}"; do
 	fullVersion="$(curl -sSL "https://dev.mysql.com/downloads/mysql/$version.html?os=2" \
-		| grep '">(mysql-'"$version"'.*-linux-glibc2\.5-x86_64\.tar\.gz)<' \
-		| sed -r 's!.*\(mysql-([^<)]+)-linux-glibc2\.5-x86_64\.tar\.gz\).*!\1!' \
+		| grep '">(mysql-'"$version"'.*-linux.*-x86_64\.tar\.gz)<' \
+		| sed -r 's!.*\(mysql-([^<)]+)-linux.*-x86_64\.tar\.gz\).*!\1!' \
 		| sort -V | tail -1)"
 	
 	(
