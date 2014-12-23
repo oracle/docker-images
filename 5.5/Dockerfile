@@ -36,11 +36,23 @@ RUN apt-get update && apt-get install -y curl --no-install-recommends && rm -rf 
 	&& apt-get purge -y --auto-remove binutils
 ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
 
-WORKDIR /usr/local/mysql
+# replicate some of the way the APT package configuration works
+# this is only for 5.5 since it doesn't have an APT repo, and will go away when 5.5 does
+RUN mkdir -p /etc/mysql/conf.d \
+	&& { \
+		echo '[mysqld]'; \
+		echo '!includedir /etc/mysql/conf.d/'; \
+	} > /etc/mysql/my.cnf \
+	&& { \
+		echo '[mysqld]'; \
+		echo 'user = mysql'; \
+		echo 'datadir = /var/lib/mysql'; \
+	} > /etc/mysql/conf.d/docker.cnf
+
 VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3306
-CMD ["mysqld", "--datadir=/var/lib/mysql", "--user=mysql"]
+CMD ["mysqld"]
