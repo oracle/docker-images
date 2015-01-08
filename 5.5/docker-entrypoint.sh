@@ -32,14 +32,14 @@ if [ ! -d "$DATADIR/mysql" -a "${1%_safe}" = 'mysqld' ]; then
 	EOSQL
 	
 	if [ "$MYSQL_DATABASE" ]; then
-		echo "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE ;" >> "$tempSqlFile"
+		echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" >> "$tempSqlFile"
 	fi
 	
 	if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
 		echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" >> "$tempSqlFile"
 		
 		if [ "$MYSQL_DATABASE" ]; then
-			echo "GRANT ALL ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' ;" >> "$tempSqlFile"
+			echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" >> "$tempSqlFile"
 		fi
 	fi
 	
