@@ -1,3 +1,5 @@
-# Oracle Docker Images
+# Oracle Docker
 
-This repository stores Docker images for Oracle Open Source products.
+This repository stores Docker configurations for Oracle products.
+
+For support and certification, please verify the proper documentation.
