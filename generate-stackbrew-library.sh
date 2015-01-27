@@ -10,7 +10,7 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=( */ )
 versions=( "${versions[@]%/}" )
-url='git://github.com/docker-library/docker-mysql'
+url='git://github.com/docker-library/mysql'
 
 echo '# maintainer: InfoSiftr <github@infosiftr.com> (@infosiftr)'
 
