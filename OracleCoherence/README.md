@@ -4,14 +4,10 @@ This is a Dockerfile for [Oracle Coherence 12c](http://www.oracle.com/technetwor
 
 This image uses the Standalone Distribution of Coherence 12c.
 
-**IMPORTANT**: Oracle **does not support Docker** in any environment, including but not limited to Development, Integration, and Production environments.
+**IMPORTANT**: Oracle **does not support Coherence on Docker**, including but not limited to Development, Integration, and Production environments.
 
-## Install Oracle Linux 7 Base Docker Image
-The Dockerfile contained in this project will build image based on the Oracle Linux 7.0 Base Docker Image. In order to easily install that, run the following script:
-
-	$ install-ol7-docker-image.sh
-
-For more information and documentation, read the [Docker Images from Oracle Linux](http://public-yum.oracle.com/docker-images) page.
+## Oracle Linux Base Image
+For more information and documentation, read the [Docker Images from Oracle Linux](https://registry.hub.docker.com/_/oraclelinux/) page.
 
 ### Standalone Distribution
 Fore more information on the Coherence 12c Standalone Distribution, visit [Coherence 12.1.3 Documentation](http://docs.oracle.com/middleware/1213/coherence/index.html).
@@ -22,11 +18,11 @@ Follow this procedure:
 
 1. Checkout the GitHub weblogic-docker repository
 
-	$ git checkout git@github.com:brunoborges/coherence-docker.git
+	$ git checkout git@github.com:oracle/docker-images.git
 
-2. Go to the **coherence-docker** folder
+2. Go to the **OracleCoherence** folder
 
-	$ cd coherence-docker 
+	$ cd OracleCoherence 
 
 3. [Download](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and drop the Oracle JDK 8u25 RPM 64bit file **jdk-8u25-linux-x64.rpm** in this folder
 
@@ -38,7 +34,7 @@ Follow this procedure:
 
 5. Execute the build script as **root**
 
-        $ sudo sh build.sh
+        $ sudo sh buildDockerImage.sh
 
 ## Booting up Oracle Coherence 12c on Docker
 
@@ -50,15 +46,12 @@ Start a CacheServer:
 Start Coherence Console:
 	$ sudo sh dockCoherenceConsole.sh [fullpath dir w/ tangosol-coherence-override.xml and cache configs]
 
-## Dockerfile Source
-All source is on the [coherence-docker GitHub repository](https://github.com/brunoborges/coherence-docker).
-
 ## Issues
-If you find any issues, please report through the [GitHub Issues page](https://github.com/brunoborges/coherence-docker/issues).
+If you find any issues with this Docker project, please report through the [GitHub Issues page](https://github.com/oracle/docker-images/issues).
 
 ## License
 To download and run Coherence 12c Distribution regardless of inside or outside a Docker container, and regardless of which distribution, you must agree and accept the [OTN Standard License Terms](http://www.oracle.com/technetwork/licenses/standard-license-152015.html).
 
 To download and run Oracle JDK regardless of inside or outside a Docker container, you must agree and accept the [Oracle Binary Code License Agreement for Java SE](http://www.oracle.com/technetwork/java/javase/terms/license/index.html).
 
-All scripts and files hosted in this project on GitHub [coherence-docker](https://github.com/brunoborges/coherence-docker/) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses, except for the files listed above with their specific licenses.
+All scripts and files hosted in this project on GitHub [docker-images/OracleCoherence](https://github.com/oracle/docker-images/OracleCoherence) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses, except for the files listed above with their specific licenses.
