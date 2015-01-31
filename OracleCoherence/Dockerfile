@@ -6,9 +6,8 @@
 # 
 # REQUIRED BASE IMAGE TO BUILD THIS IMAGE
 # ---------------------------------------
-# Make sure you have oraclelinux:7.0 Docker image installed.
 # Visit for more info: 
-#  - http://public-yum.oracle.com/docker-images/
+#  - https://registry.hub.docker.com/_/oraclelinux/
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
