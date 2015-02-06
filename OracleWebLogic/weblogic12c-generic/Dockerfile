@@ -60,7 +60,8 @@ RUN mkdir /u01 && \
 
 # Add files required to build this image
 COPY $WLS_PKG /u01/
-COPY setup/* /u01/
+COPY install.file /u01/
+COPY oraInst.loc /u01/
 
 # Change the open file limits in /etc/security/limits.conf
 RUN sed -i '/.*EOF/d' /etc/security/limits.conf && \
