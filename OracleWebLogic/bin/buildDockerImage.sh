@@ -9,8 +9,8 @@ while getopts "hdf" optname
       "h")
         echo "Usage: buildDockerImage.sh [-d]"
         echo ""
-        echo "    -d: creates image based on 'weblogic12c-developer' distribution. "
-        echo "        'weblogic12c-generic' otherwhise."
+        echo "    -d: creates image based on 'weblogic12c-developer' distribution, or 'weblogic12c-generic' if not present, by default."
+        echo "    -f: flattens image, by removing intermediary layers"
         echo ""
         exit 0
         ;;
