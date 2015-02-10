@@ -10,13 +10,13 @@
 # For that, look into the folder 'container-domain' for an example on how
 # to create a domain on a new inherited image.
 #
-# You can go into 'container-domain' after building the generic raw image
+# You can go into 'sample-with-domain' after building the generic raw image
 # and build that image, for example:
 # 
-#   $ cd container-domain
+#   $ cd sample-with-domain
 #   $ sudo docker build -t mywls .
 #
-# Then you can use dockWebLogic.sh and dockNodeManager with parameter [i]
+# Then you can use dockWebLogic.sh and dockNodeManager with parameter [-i]
 # and provide your custom image name. If you customized entirely your
 # domain, the dock*.sh scripts may not work due to specific paths.
 #
@@ -44,7 +44,7 @@
 # Example running:
 #   $ sudo dockWebLogic.sh -d
 #
-# For usage, provide argument '-h' for any of three scripts (dock*, and build)
+# For usage, provide argument '-h' for any of three scripts (dock*, and build)#
 #
 # Pull base image
 # ---------------
