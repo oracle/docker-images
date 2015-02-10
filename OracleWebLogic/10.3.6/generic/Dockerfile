@@ -4,26 +4,24 @@
 # --------------------------
 # This is the Dockerfile for WebLogic 10.3.6 (Full) Generic Distribution
 #
-# REQUIRED BASE IMAGE TO BUILD THIS IMAGE
-# ---------------------------------------
-# Make sure you have oraclelinux:6.5 Docker image installed.
-# Visit for more info:
-# - http://public-yum.oracle.com/docker-images/
-#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) wls1036_linux32.bin
-# Download the Generic installer from  http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls1036_linux32.bin
-
+# Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-main-097127.html
+# Extract file wls1036_generic.jar from inside wls1036_linux32.bin. You can use unzip.
 #
-# (2) jdk-6u45-linux-i586-rpm.bin
-# Download from http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase6-419409.html
+# (2) jdk-7u75-linux-x64.rpm
+# Download from http://www.oracle.com/technetwork/java/javase/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-# $ sudo docker build -t oracleweblogic:10.3.6
+#     $ sudo docker build -t oracleweblogic:10.3.6
+#
+# USE BIN SCRIPTS
+# ---------------
+# You can also use the script 'buildDockerImage.sh'
 #
 # Pull base image
 # ---------------
