@@ -9,8 +9,8 @@
 # (1) wls1036_dev.zip
 # Download from http://www.oracle.com/technetwork/middleware/weblogic/downloads/index.html
 #
-# (2) jdk-6u45-linux-amd64.rpm
-# Download from http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase6-419409.html#jdk-6u45-oth-JPR
+# (2) jdk-7u75-linux-x64.rpm
+# Download from http://www.oracle.com/technetwork/java/javase/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------

@@ -4,11 +4,21 @@
 # --------------------------
 # This is the Dockerfile for WebLogic 12.1.3 (Full) Generic Distribution
 # 
-# REQUIRED BASE IMAGE TO BUILD THIS IMAGE
-# ---------------------------------------
-# Make sure you have oraclelinux:7.0 Docker image installed.
-# Visit for more info: 
-#  - http://public-yum.oracle.com/docker-images/
+# IMPORTANT
+# ---------
+# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
+# For that, look into the folder 'container-domain' for an example on how
+# to create a domain on a new inherited image.
+#
+# You can go into 'container-domain' after building the generic raw image
+# and build that image, for example:
+# 
+#   $ cd container-domain
+#   $ sudo docker build -t mywls .
+#
+# Then you can use dockWebLogic.sh and dockNodeManager with parameter [i]
+# and provide your custom image name. If you customized entirely your
+# domain, the dock*.sh scripts may not work due to specific paths.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -24,7 +34,6 @@
 # Run: 
 #      $ sudo docker build -t oracle/weblogic:12.1.3 . 
 #
-
 # Pull base image
 # ---------------
 FROM oraclelinux:7
