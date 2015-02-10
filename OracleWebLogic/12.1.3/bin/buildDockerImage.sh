@@ -3,30 +3,31 @@
 SCRIPTS_DIR="$( cd "$( dirname "$0" )" && pwd )"
 . $SCRIPTS_DIR/setDockerEnv.sh $*
 
-while getopts "hdf" optname
-  do
-    case "$optname" in
-      "h")
-        echo "Usage: buildDockerImage.sh [-d]"
-        echo ""
-        echo "    -d: creates image based on 'weblogic12c-developer' distribution, or 'weblogic12c-generic' if not present, by default."
-        echo "    -f: flattens image, by removing intermediary layers"
-        echo ""
-        exit 0
-        ;;
-      "d")
-	setup_developer
-	;;
-      "f")
-        FLATTEN_IMAGE=true
-        ;;
-      *)
-      # Should not occur
-        echo "Unknown error while processing options inside buildDockerImage.sh"
-        ;;
-    esac
-  done
-
+while getopts "hdf" optname; do
+  case "$optname" in
+    "h")
+      echo "Usage: buildDockerImage.sh [-d] [-f]"
+      echo "Builds a Docker Image for WebLogic $VERSION."
+      echo ""
+      echo "Arguments:"
+      echo "    -d: creates image based on 'developer' distribution, or 'generic' if not present, by default."
+      echo "    -f: flattens image, by removing intermediary layers"
+      echo ""
+      echo "LICENSE CDDL 1.0 + GPL 2.0"
+      exit 0
+      ;;
+    "d")
+      setup_developer
+    ;;
+    "f")
+      FLATTEN_IMAGE=true
+      ;;
+    *)
+    # Should not occur
+      echo "Unknown error while processing options inside buildDockerImage.sh"
+      ;;
+  esac
+done
 
 DOCKER_SCRIPTS_HOME=$SCRIPTS_DIR/../
 
@@ -58,7 +59,7 @@ fi
 if [ ! -e $WLS_PKG ]
 then
   echo "====================="
-  echo "Download the WebLogic 12c installer and"
+  echo "Download the WebLogic installer and"
   echo "drop the file $WLS_PKG in this folder before"
   echo "building this WLS Docker image!"
   exit 
@@ -91,16 +92,15 @@ flatten_image() {
 
 if [ $? -eq 0 ]
 then
+  echo ""
   flatten_image
   if [ $? -eq 0 ]
   then
-    echo ""
-    echo "WebLogic Docker Container is ready to be used. To start, run 'dockWebLogic.sh'"
+    echo "WebLogic Docker Image for $VERSION '$DISTRIBUTION' is ready to be used.'"
+    echo "To start, run 'dockWebLogic.sh -i $IMAGE_NAME' to dock the AdminServer."
   else
-    echo ""
     echo "There was an error trying to flatten the image. Please try without the '-f' flag"
   fi
 else
-  echo ""
-  echo "WebLogic Docker Container was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "WebLogic Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi

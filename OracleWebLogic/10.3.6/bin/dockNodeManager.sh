@@ -5,7 +5,9 @@
 #
 # Since: October, 2014
 # Author: bruno.borges@oracle.com
-# Description: script to create a WLS container based on IMAGE_NAME and start NodeManager within it. After NodeManager is started, a script 'add-machine.py' is called that will automatically add the NodeManager as Machine into the domain associated to ADMIN_CONTAINER_NAME
+# Description: script to create a WLS container based on IMAGE_NAME and start NodeManager within it. 
+# After NodeManager is started, a script 'add-machine.py' is called that will automatically add the 
+# NodeManager as Machine into the domain associated to ADMIN_CONTAINER_NAME
 #
 
 SCRIPTS_DIR="$( cd "$( dirname "$0" )" && pwd )"
@@ -23,13 +25,14 @@ while getopts "i:dhn:" optname
         setup_developer
         ;;
       "h")
-	echo "Usage: dockNodeManager.sh [-i image] [-n wls_admin_container_name] [-d]"
-	echo ""
+        echo "Usage: dockNodeManager.sh [-i image] [-n wls_admin_container_name] [-d]"
+        echo ""
         echo "   -i image: name of your custom WebLogic Docker image. Default: $IMAGE_NAME."
-	echo "   -n name : name of the container with a WebLogic AdminServer orchestrating a domain."
-	echo "             Defaults to 'wlsadmin'"
-	echo "   -d      : use the developer image to run the container"	
-	echo ""
+        echo "   -n name : name of the container with a WebLogic AdminServer orchestrating a domain."
+        echo "             Defaults to 'wlsadmin'"
+        echo "   -d      : use the developer image to run the container"	
+        echo ""
+        echo "LICENSE CDDL 1.0 + GPL 2.0"
         exit 0
         ;;
       "n")
@@ -51,7 +54,7 @@ if [ "$IMAGE_OF_ADMIN" != "$IMAGE_NAME" ]; then
   exit $?
 fi
 
-echo -n "Inspecting running state of AdminServer '$ADMIN_CONTAINER_NAME'..."
+echo "Inspecting running state of AdminServer '$ADMIN_CONTAINER_NAME'..."
 ADMIN_CONTAINER_RUNNING=$(docker inspect --format="{{ .State.Running }}" $ADMIN_CONTAINER_NAME 2> /dev/null)
 
 if [ $? -eq 1 ]; then
