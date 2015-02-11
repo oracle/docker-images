@@ -9,16 +9,16 @@ while getopts "hdf" optname; do
       echo "Usage: buildDockerImage.sh [-d] [-f]"
       echo "Builds a Docker Image for WebLogic $VERSION."
       echo ""
-      echo "Arguments:"
-      echo "    -d: creates image based on 'developer' distribution, or 'generic' if not present, by default."
-      echo "    -f: flattens image, by removing intermediary layers"
+      echo "Parameters:"
+      echo "    -d: creates image based on 'developer' distribution, or 'generic' if ommitted."
+      echo "    -f: flattens image, by removing intermediary layers."
       echo ""
       echo "LICENSE CDDL 1.0 + GPL 2.0"
       exit 0
       ;;
     "d")
       setup_developer
-    ;;
+      ;;
     "f")
       FLATTEN_IMAGE=true
       ;;
@@ -45,8 +45,6 @@ then
   echo "building this image!"
   exit
 fi
-
-
 check_md5 $JAVA_PKG $JAVA_PKG_MD5
 if [ "$?" -ne 0 ]
 then
@@ -54,7 +52,6 @@ then
   exit
 fi
 
-#
 # Validate WLS Package
 if [ ! -e $WLS_PKG ]
 then
@@ -64,7 +61,6 @@ then
   echo "building this WLS Docker image!"
   exit 
 fi
-
 check_md5 $WLS_PKG $WLS_PKG_MD5
 if [ "$?" -ne 0 ]
 then
@@ -74,8 +70,8 @@ fi
 
 echo "====================="
 
-# BUILD THE IMAGE
-docker build --force-rm=true --no-cache=true --rm=true -t $IMAGE_NAME .
+# BUILD THE IMAGE (replace all environment variables)
+docker build --force-rm=true --no-cache=true --rm=true -t $IMAGE_NAME . 
 
 flatten_image() {
   if [ ! $FLATTEN_IMAGE ]
@@ -96,8 +92,7 @@ then
   flatten_image
   if [ $? -eq 0 ]
   then
-    echo "WebLogic Docker Image for $VERSION '$DISTRIBUTION' is ready to be used.'"
-    echo "To start, run 'dockWebLogic.sh -i $IMAGE_NAME' to dock the AdminServer."
+    echo "WebLogic Docker Image for '$DISTRIBUTION' $VERSION is ready to be extended.'"
   else
     echo "There was an error trying to flatten the image. Please try without the '-f' flag"
   fi
