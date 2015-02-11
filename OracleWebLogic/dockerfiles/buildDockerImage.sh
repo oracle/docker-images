@@ -75,7 +75,7 @@ echo "====================="
 echo "Building image '$IMAGE_NAME' based on '$DISTRIBUTION' distribution..."
 
 # BUILD THE IMAGE (replace all environment variables)
-ln -s Dockerfile.$DISTRIBUTION Dockerfile
+rm Dockerfile && ln -s Dockerfile.$DISTRIBUTION Dockerfile
 docker build --force-rm=true --no-cache=true --rm=true -t $IMAGE_NAME . 
 rm Dockerfile
 
