@@ -93,8 +93,9 @@ RUN mkdir /u01/oracle/.inventory
 RUN java -jar $WLS_PKG -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
     rm $WLS_PKG /u01/oraInst.loc /u01/install.file
 
-WORKDIR /u01/oracle/weblogic
-USER oracle
+WORKDIR /u01/oracle/
+
+ENV PATH="$PATH:/u01/oracle/weblogic/oracle_common/common/bin"
 
 # Define default command to start bash. 
 CMD ["bash"]
