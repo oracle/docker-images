@@ -39,11 +39,11 @@ FROM oraclelinux:7
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
-ENV JAVA_RPM="jdk-8u25-linux-x64.rpm"
-ENV WLS_PKG="wls1213_dev.zip"
-ENV JAVA_HOME="/usr/java/default"
-ENV MW_HOME="/u01/oracle/wls12130"
-ENV CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
+ENV JAVA_RPM jdk-8u25-linux-x64.rpm
+ENV WLS_PKG wls1213_dev.zip
+ENV JAVA_HOME /usr/java/default
+ENV MW_HOME /u01/oracle/wls12130
+ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 
 # Setup filesystem and oracle user
 # ------------------------------------------------------------
@@ -75,7 +75,7 @@ RUN sh configure.sh -silent && \
 
 WORKDIR /u01/oracle
 
-ENV PATH="$PATH:/u01/oracle/weblogic/oracle_common/common/bin"
+ENV PATH $PATH:/u01/oracle/weblogic/oracle_common/common/bin
 
 # Define default command to start bash. 
 CMD ["bash"]

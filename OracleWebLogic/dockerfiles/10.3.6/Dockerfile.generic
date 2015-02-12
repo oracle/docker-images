@@ -35,15 +35,15 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # --------------------------------------------------------------
-ENV JAVA_RPM="jdk-7u75-linux-x64.rpm"
-ENV WLS_PKG="wls1036_generic.jar"
-ENV JAVA_HOME="/usr/java/default"
-ENV CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
-ENV BEA_HOME="/u01/oracle/weblogic"
-ENV MW_HOME="/u01/oracle/weblogic"
-ENV SILENT_XML="silent.xml"
-ENV USER_MEM_ARGS="-Xms256m -Xmx512m -XX:MaxPermSize=256m"
-ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/u01/oracle/weblogic/wlserver/server/native/linux/x86_64"
+ENV JAVA_RPM jdk-7u75-linux-x64.rpm
+ENV WLS_PKG wls1036_generic.jar
+ENV JAVA_HOME /usr/java/default
+ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
+ENV BEA_HOME /u01/oracle/weblogic
+ENV MW_HOME /u01/oracle/weblogic
+ENV SILENT_XML silent.xml
+ENV USER_MEM_ARGS -Xms256m -Xmx512m -XX:MaxPermSize=256m
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/u01/oracle/weblogic/wlserver/server/native/linux/x86_64
 
 # Setup required packages (unzip), filesystem, and oracle user
 # ------------------------------------------------------------
@@ -76,7 +76,7 @@ RUN ln -s /u01/oracle/weblogic/wlserver_10.3 /u01/oracle/weblogic/wlserver
 
 WORKDIR /u01/oracle
 
-ENV PATH="$PATH:/u01/oracle/weblogic/oracle_common/common/bin"
+ENV PATH $PATH:/u01/oracle/weblogic/oracle_common/common/bin
 
 # Define default command to start bash
 # -------------------------------------
