@@ -16,6 +16,7 @@ listenaddress = os.environ.get('NM_HOST', socket.gethostbyname(socket.gethostnam
 listenport = os.environ.get('NM_PORT', '5556')
 
 connect(username, password, adminurl)
+nmEnroll('/u01/oracle/weblogic/user_projects/domains/base_domain','/u01/oracle/weblogic/wlserver/common/nodemanager')
 edit()
 startEdit()
 cd('/')
