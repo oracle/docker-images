@@ -56,5 +56,7 @@ EXPOSE $NM_PORT $ADMIN_PORT $ADMIN_PORT_SSL
 # Final setup
 WORKDIR /u01/oracle
 
+ENV PATH $PATH:/u01/oracle/weblogic/wlserver/common/bin:/u01/oracle/weblogic/user_projects/domains/base_domain/bin
+
 # Define default command to start bash. 
-CMD ["/u01/oracle/weblogic/user_projects/domains/base_domain/bin/startWebLogic.sh"]
+CMD ["startWebLogic.sh"]
