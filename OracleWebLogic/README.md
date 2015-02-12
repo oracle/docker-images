@@ -1,6 +1,6 @@
-WebLogic 12c on Docker
+WebLogic on Docker
 ===============
-Docker configurations to facilitate installation, configuration, and environment setup for developers.
+Docker configurations to facilitate installation, configuration, and environment setup for developers. This project includes [dockerfiles](dockerfiles/) and [samples](samples/) for both WebLogic 11g 10.3.6 with JDK 7, as well WebLogic 12c 12.1.3 with JDK 8.
 
 ## Based on Official Oracle Linux Docker images
 For more information please read the [Docker Images from Oracle Linux](https://registry.hub.docker.com/_/oraclelinux/) page.
