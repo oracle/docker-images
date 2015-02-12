@@ -4,21 +4,29 @@
 # Author: bruno.borges@oracle.com
 # Description: script to build a Docker image for WebLogic
 
+usage() {
+cat << EOF
+Usage: buildDockerImage.sh -v version [-d]
+Builds a Docker Image for WebLogic.
+  
+Parameters:
+   -v: version to build. Required.
+       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+   -d: creates image based on 'developer' distribution, or 'generic' if ommitted.
+
+LICENSE CDDL 1.0 + GPL 2.0
+EOF
+exit 0
+}
+
+if [ "$#" -eq 0 ]; then
+    usage
+fi
+
 while getopts "hdfv:" optname; do
   case "$optname" in
     "h")
-      echo "Usage: buildDockerImage.sh -v version [-d]"
-      echo "Builds a Docker Image for WebLogic."
-      echo ""
-      echo "Parameters:"
-      echo "    -v: version to build. Required."
-      echo -n "        Choose one of:  "
-      for i in $(ls -d */); do echo -n "${i%%/}  "; done
-      echo ""
-      echo "    -d: creates image based on 'developer' distribution, or 'generic' if ommitted."
-      echo ""
-      echo "LICENSE CDDL 1.0 + GPL 2.0"
-      exit 0
+      usage
       ;;
     "v")
       VERSION="$OPTARG"
