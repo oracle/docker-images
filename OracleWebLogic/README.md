@@ -23,10 +23,10 @@ First decide which version and distribution you want to use, then download the r
 **IMPORTANT:** the resulting images will NOT have a domain pre-configured. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
 ## Samples for WebLogic Domain Creation
-To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic image, we provide a few samples for both 11g and 12c versions for the Developer distribution. For the **12c** version, check the folder [samples/12c-domain](https://github.com/oracle/docker/tree/master/OracleWebLogic/samples/12c-domain). For an example on **11g**, you can use the sample inside [samples/11g-domain](https://github.com/oracle/docker/tree/master/OracleWebLogic/samples/11g-domain) folder.
+To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic image, we provide a few samples for both 11g and 12c versions for the Developer distribution. For the **12c** version, check the folder [samples/12c-domain](samples/12c-domain). For an example on **11g**, you can use the sample inside [samples/11g-domain](samples/11g-domain) folder.
 
 ### Sample Domain for WebLogic 12c
-This [Dockerfile](https://github.com/oracle/docker/blob/master/OracleWebLogic/samples/12c-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.1.3-dev** (from the Developer distribution). It will configure a **base_domain** with the following settings:
+This [Dockerfile](samples/12c-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.1.3-dev** (from the Developer distribution). It will configure a **base_domain** with the following settings:
 
  * JPA 2.1 enabled
  * JAX-RS 2.0 shared library deployed
@@ -36,11 +36,13 @@ This [Dockerfile](https://github.com/oracle/docker/blob/master/OracleWebLogic/sa
  * Oracle Linux Password: **welcome1**
  * WebLogic Domain Name: **base_domain**
 
+Make sure you build 12c with **-d**.
+
 ### Sample Domain for WebLogic 11g
-This second [Dockerfile](https://github.com/brunoborges/docker/blob/master/OracleWebLogic/samples/11g-domain/Dockerfile) shows how to extend **oracle/weblogic:10.3.6** and create a domain. 
+This second [Dockerfile](samples/11g-domain/Dockerfile) shows how to extend **oracle/weblogic:10.3.6-dev** and create a domain. Make sure you build 11g with **-d**.
 
 ### Write your own WebLogic domain with WLST
-The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](http://docs.oracle.com/cd/E57014_01/cross/wlsttasks.htm). The WLST script used to create domains in both Dockerfiles is [create-wls-domain.py](https://github.com/oracle/docker/blob/master/OracleWebLogic/samples/12c-domain/container-scripts/create-wls-domain.py) (for 12c). This script by default adds JMS resources and a few other settings. You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override the existing domain, or create a new one with WLST.
+The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](http://docs.oracle.com/cd/E57014_01/cross/wlsttasks.htm). The WLST script used to create domains in both Dockerfiles is [create-wls-domain.py](samples/12c-domain/container-scripts/create-wls-domain.py) (for 12c). This script by default adds JMS resources and a few other settings. You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override the existing domain, or create a new one with WLST.
 
 ## Building a sample Docker Image of WebLogic Domain
 To try a sample of a WebLogic image with a domain configured, follow the steps below:
@@ -58,7 +60,7 @@ To try a sample of a WebLogic image with a domain configured, follow the steps b
 
         sudo docker images
 
-If you want to try 11g go to folder **samples/11g-domain**. The Dockerfile is pointing to **oracle/weblogic:10.3.6-dev**.
+If you want to try an 11g domain go to folder **samples/11g-domain**. The Dockerfile is ready to be built, pointing to **oracle/weblogic:10.3.6-dev**.
   
 ### Running WebLogic AdminServer
 To start the WebLogic AdminServer, you can simply call **docker run -d samplewls:12.1.3** command. The samples Dockerfiles define **startWebLogic.sh** as the default CMD.
@@ -89,7 +91,7 @@ If you have an AdminServer and a NodeManager running on containers of the same h
 Wait 10 seconds, and then go into the AdminServer Web Console and check in the Machines page if the NodeManager was registered. You then can fire as many containers as you want to add more Machines to that domain. Later, you can create Clusters.
 
 ### Clustering WebLogic on Docker Containers Across Multiple Hosts
-You can either do this manually, or using the **createMachine** helper script presented above, combined with the **add-machine.py** and **addMachine.sh** scripts inside the [samples/12c-domain/container-scripts](https://github.com/oracle/docker/tree/master/OracleWebLogic/samples/12c-domain/container-scripts) folder. The most important thing for this to work, is that both containers from different hosts, have their ports (AdminServer and NodeManager) reachable somehow. You can either make sure a virtual network for containers across multiple hosts is in place, or that ports are binded to hosts, and hosts' IP addresses are used for registering and communication between AdminServer and NodeManager. 
+You can either do this manually, or using the **createMachine** helper script presented above, combined with the **add-machine.py** and **addMachine.sh** scripts inside the [samples/12c-domain/container-scripts](samples/12c-domain/container-scripts) folder. The most important thing for this to work, is that both containers from different hosts, have their ports (AdminServer and NodeManager) reachable somehow. You can either make sure a virtual network for containers across multiple hosts is in place, or that ports are binded to hosts, and hosts' IP addresses are used for registering and communication between AdminServer and NodeManager. 
 
 To better understand this, let's first see how to setup this topology manually with Docker commands.
 
@@ -150,4 +152,4 @@ To download and run WebLogic 12c Distribution regardless of inside or outside a 
 
 To download and run Oracle JDK regardless of inside or outside a DOcker container, you must agree and accept the [Oracle Binary Code License Agreement for Java SE](http://www.oracle.com/technetwork/java/javase/terms/license/index.html).
 
-All scripts and files hosted in this project and GitHub [docker/OracleWebLogic](https://github.com/oracle/docker/tree/master/OracleWebLogic/) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
+All scripts and files hosted in this project and GitHub [docker/OracleWebLogic](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
