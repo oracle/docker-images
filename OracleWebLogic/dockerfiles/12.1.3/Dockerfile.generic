@@ -2,23 +2,19 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for WebLogic 12.1.3 (Full) Generic Distribution
+# This is the Dockerfile for WebLogic 12c (Full) Generic Distribution
 # 
 # IMPORTANT
 # ---------
 # The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
-# For that, look into the folder 'container-domain' for an example on how
+# For that, look into the folder 'samples' for an example on how
 # to create a domain on a new inherited image.
 #
-# You can go into 'sample-with-domain' after building the generic raw image
+# You can go into 'samples/12.1.3-generic-domain' after building the generic raw image
 # and build that image, for example:
 # 
-#   $ cd sample-with-domain
+#   $ cd samples/12c-generic-domain
 #   $ sudo docker build -t mywls .
-#
-# Then you can use dockWebLogic.sh and dockNodeManager with parameter [-i]
-# and provide your custom image name. If you customized entirely your
-# domain, the dock*.sh scripts may not work due to specific paths.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -43,34 +39,27 @@ FROM oraclelinux:7
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
-ENV JAVA_RPM jdk-8u25-linux-x64.rpm
-ENV WLS_PKG  fmw_12.1.3.0.0_wls.jar
-
-# WLS Admin Password (you may change)
-# This password is used for:
-#  (a) 'oracle' Linux user in this image
-# -----------------------------------
-ENV ADMIN_PASSWORD welcome1
-
-# Install and configure Oracle JDK 8u25
-# -------------------------------------
-COPY $JAVA_RPM /root/
-RUN rpm -i /root/$JAVA_RPM && \ 
-    rm /root/$JAVA_RPM
-ENV JAVA_HOME /usr/java/default
-ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
+ENV JAVA_RPM="jdk-8u25-linux-x64.rpm"
+ENV WLS_PKG="fmw_12.1.3.0.0_wls.jar"
+ENV JAVA_HOME="/usr/java/default"
+ENV CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
 
 # Setup required packages (unzip), filesystem, and oracle user
 # ------------------------------------------------------------
-RUN mkdir /u01 && \ 
-    chmod a+xr /u01 && \ 
-    useradd -b /u01 -m -s /bin/bash oracle && \ 
-    echo oracle:$ADMIN_PASSWORD | chpasswd
+RUN mkdir /u01 && \
+    chmod a+xr /u01 && \
+    useradd -b /u01 -m -s /bin/bash oracle 
 
-# Add files required to build this image
+# Copy packages
 COPY $WLS_PKG /u01/
+COPY $JAVA_RPM /u01/
 COPY install.file /u01/
 COPY oraInst.loc /u01/
+
+# Install and configure Oracle JDK 8u25
+# -------------------------------------
+RUN rpm -i /u01/$JAVA_RPM && \ 
+    rm /u01/$JAVA_RPM
 
 # Change the open file limits in /etc/security/limits.conf
 RUN sed -i '/.*EOF/d' /etc/security/limits.conf && \
@@ -90,7 +79,7 @@ USER oracle
 
 # Installation of WebLogic 
 RUN mkdir /u01/oracle/.inventory
-RUN java -jar $WLS_PKG -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
+RUN java -jar $WLS_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
     rm $WLS_PKG /u01/oraInst.loc /u01/install.file
 
 WORKDIR /u01/oracle/
