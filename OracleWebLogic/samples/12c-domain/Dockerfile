@@ -2,9 +2,15 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This Dockerfile extends the oracle/weblogic:12.1.3 (from the weblogic12c-generic Dockerfile) by creating a sample domain.
-# The 'base-domain' created here has java EE 7 APIs enabled by default (JAX-RS 2.0 shared lib deployed, JPA 2.1, WebSockets and JSON-P 1.0).
-# Util scripts are also copied into the image enabling users to use the dockWeblogic and dockNodeManager scripts.
+# This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
+#
+# The 'base-domain' created here has Java EE 7 APIs enabled by default:
+#  - JAX-RS 2.0 shared lib deployed
+#  - JPA 2.1, 
+#  - WebSockets and JSON-P
+#
+# Util scripts are copied into the image enabling users to plug NodeManager 
+# magically into the AdminServer running on another container as a Machine.
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
