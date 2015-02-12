@@ -6,7 +6,7 @@
 # ==============================================
 # Open default domain template
 # ======================
-readTemplate("/u01/oracle/weblogic/wlserver_10.3/common/templates/domains/wls.jar")
+readTemplate("/u01/oracle/weblogic/wlserver/common/templates/domains/wls.jar")
 
 # Configure the Administration Server and SSL port.
 # =========================================================

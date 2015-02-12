@@ -69,6 +69,7 @@ USER oracle
 # Installation of Weblogic
 RUN java -jar $WLS_PKG -mode=silent -silent_xml=$SILENT_XML && \
     rm $WLS_PKG $SILENT_XML 
+RUN ln -s /u01/oracle/weblogic/wlserver_10.3 /u01/oracle/weblogic/wlserver
 
 WORKDIR /u01/oracle
 
