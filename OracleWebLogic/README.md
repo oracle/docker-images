@@ -80,6 +80,8 @@ To start the WebLogic NodeManager, you can simply call **docker run -d samplewls
 
 Now you can go to the AdminServer Web Console and add a new Machine pointing to the NodeManager container's IP address (172.17.0.28) at port 5556.
 
+**IMPORTANT**: this only works with WebLogic 12c because of the new per-domain NodeManager, which doesn't require users to call ``nmEnroll``. For WebLogic 11g you can't simply startNodeManager.sh in the container and later add it through the console. You must use the magic script ``createMachine.sh`` provided inside **samples/11g-domain/container-scripts**. See it's usage below.
+
 ## Clustering WebLogic on Docker Containers
 WebLogic has a [Machine](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/machines/ConfigureMachines.html) concept, which is an operational system with an agent, the Node Manager. This resource allows WebLogic AdminServer to create and assign [Managed Servers](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/domainconfig/CreateManagedServers.html) of an underlying domain in order to expand an environment of servers for different applications and resources, and also to define a [Cluster](). By using **Machines** from containers, you can easily create a [Dynamic Cluster]() by simply firing new NodeManagers containers. With some WLST magic, your cluster can scale in and out.
 
