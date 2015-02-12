@@ -47,44 +47,34 @@ To try a sample of a WebLogic image with a domain configured, follow the steps b
 
   1. Make sure you have **oracle/weblogic:12.1.3-dev** image built. If not go into **dockerfiles** and call 
 
-        ```
         sudo sh buildDockerImage.sh -v 12.1.3 -d
-        ```
 
   2. Go to folder **samples/12c-domain**
   3. Run the following command: 
 
-        ```
         sudo docker build -t samplewls:12.1.3 .
-        ```
 
   4. Make sure you now have this image in place with 
 
-        ``` 
         sudo docker images
-        ```
 
 If you want to try 11g go to folder **samples/11g-domain**. The Dockerfile is pointing to **oracle/weblogic:10.3.6-dev**.
   
 ### Running WebLogic AdminServer
 To start the WebLogic AdminServer, you can simply call **docker run -d samplewls:12.1.3** command. The samples Dockerfiles define **startWebLogic.sh** as the default CMD.
 
-    ```
     $ sudo docker run -d --name=wlsadmin samplewls:12.1.3
     $ sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' wlsadmin
     172.17.0.27
-    ```
 
 Now you can access the AdminServer Web Console at [http://172.17.0.27:7001/console](http://172.17.0.27:7001/console).
 
 ### Running WebLogic NodeManager
 To start the WebLogic NodeManager, you can simply call **docker run -d samplewls:12.1.3 startNodeManager.sh** command. The samples Dockerfiles set PATH variable with domain's bin folder.
 
-    ```
     $ sudo docker run -d --name=wlsnm0 samplewls:12.1.3 startNodeManager.sh
     $ sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' wlsnm0
     172.17.0.28
-    ```
 
 Now you can go to the AdminServer Web Console and add a new Machine pointing to the NodeManager container's IP address (172.17.0.28) at port 5556.
 
@@ -94,9 +84,7 @@ WebLogic has a [Machine](https://docs.oracle.com/middleware/1213/wls/WLACH/taskh
 ### Clustering WebLogic on Docker Containers on Single Host
 If you have an AdminServer and a NodeManager running on containers of the same host, you can easily create a cluster by managing the Machines and Clusters from the Admin Web Console. But the samples in this project provide a smart script called **createMachine.sh** that starts the NodeManager, and later calls a WLST script to add a new machine to the domain running on **wlsadmin** container. This saves you a lot of time. To do that, first make sure you have an AdminServer containerized with name **wlsadmin**. Then you can fire the following command:
 
-    ```
        $ sudo docker run -d --link wlsadmin:wlsadmin samplewls:12.1.3 createMachine.sh
-    ```
 
 Wait 10 seconds, and then go into the AdminServer Web Console and check in the Machines page if the NodeManager was registered. You then can fire as many containers as you want to add more Machines to that domain. Later, you can create Clusters.
 
@@ -110,14 +98,11 @@ In this example we will be using the sample for 12c-domain based on oracle/weblo
 
  1. On **host0** start the AdminServer: 
 
-        ```
         $ sudo docker run -d -p 7001:7001 samplewls:12.1.3 startWebLogic.sh
-        ```
+
  2. On **host1** start the NodeManager:
 
-        ```
         $ sudo docker run -d -p 5556:5556 samplewls:12.1.3 startNodeManager.sh
-        ```
 
  3. Now access the AdminServer Console at http://host0:7001/console
  4. Go to **Environment > Machines** and add a new machine. Point to **host1:5556**
@@ -130,18 +115,15 @@ This script accepts some variables to allow connecting a NodeManager to a remote
 
  1. On **host0** start the AdminServer: 
 
-        ```
         $ sudo docker run -d -p 7001:7001 samplewls:12.1.3 startWebLogic.sh
-        ```
 
  2. On **host1** start the NodeManager with **createMachine.sh** and ``ADMIN_URL`` variable
 
-        ```
         $ sudo docker run -d -p 5556:5556 \
                -e ADMIN_URL="t3://host0:7001" \
                -e NM_HOST="host1" \
                samplewls:12.1.3 createMachine.sh
-        ```
+
  3. Now access the AdminServer Console at http://host0:7001/console
  4. Go to **Environment > Machines** and you should now have a Machine registered
 
