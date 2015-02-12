@@ -42,7 +42,7 @@ ENV CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
 ENV BEA_HOME="/u01/oracle/weblogic"
 ENV MW_HOME="/u01/oracle/weblogic"
 ENV SILENT_XML="silent.xml"
-ENV MEM_ARGS="-Xms256m -Xmx512m -XX:MaxPermSize=256m"
+ENV USER_MEM_ARGS="-Xms256m -Xmx512m -XX:MaxPermSize=256m"
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/u01/oracle/weblogic/wlserver/server/native/linux/x86_64"
 
 # Setup required packages (unzip), filesystem, and oracle user

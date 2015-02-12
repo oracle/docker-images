@@ -40,7 +40,7 @@ ENV WLS_PKG="wls1036_dev.zip"
 ENV JAVA_HOME="/usr/java/default"
 ENV CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
 ENV MW_HOME="/u01/oracle/weblogic"
-ENV MEM_ARGS="-Xms256m -Xmx512m -XX:MaxPermSize=256m"
+ENV USER_MEM_ARGS="-Xms256m -Xmx512m -XX:MaxPermSize=256m"
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/u01/oracle/weblogic/wlserver/server/native/linux/x86_64"
 
 # Setup filesystem and oracle user
