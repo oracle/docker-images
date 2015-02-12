@@ -62,18 +62,22 @@ else
   DISTRIBUTION="generic"
   IMAGE_NAME="$DEFAULT_IMAGE_NAME"
 fi
-
+  
 # Go into version folder
 cd $VERSION
-
+  
 # Validate packages
-echo "Checking if required packages are present and valid..."
-md5sum -c Checksum.$DISTRIBUTION
-if [ "$?" -ne 0 ]
-then
-  echo "MD5 for required packages to build this image did not match!"
-  exit $?
-fi
+checksumPackages() {
+  echo "Checking if required packages are present and valid..."
+  md5sum -c Checksum.$DISTRIBUTION
+  if [ "$?" -ne 0 ]
+  then
+    echo "MD5 for required packages to build this image did not match!"
+    exit $?
+  fi
+}
+
+checksumPackages
 
 echo "====================="
 
