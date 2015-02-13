@@ -89,7 +89,7 @@ echo "Building image '$IMAGE_NAME' based on '$DISTRIBUTION' distribution..."
 # BUILD THE IMAGE (replace all environment variables)
 rm -f Dockerfile && ln -s Dockerfile.$DISTRIBUTION Dockerfile
 docker build --force-rm=true --no-cache=true --rm=true -t $IMAGE_NAME . 
-rm Dockerfile
+rm -f Dockerfile
 
 if [ $? -ne 0 ]; then
   echo "There was an error building the image."
