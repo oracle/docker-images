@@ -2,8 +2,12 @@
 #
 # Default domain 'base_domain' to be created inside the Docker image for WLS
 #
+# Since : October, 2014
 # Author: bruno.borges@oracle.com
 # ==============================================
+admin_port = int(os.environ.get("ADMIN_PORT", "7001"))
+admin_pass = os.environ.get("ADMIN_PASSWORD", "welcome1")
+
 # Open default domain template
 # ======================
 readTemplate("/u01/oracle/weblogic/wlserver/common/templates/domains/wls.jar")
@@ -11,12 +15,14 @@ readTemplate("/u01/oracle/weblogic/wlserver/common/templates/domains/wls.jar")
 # Configure the Administration Server and SSL port.
 # =========================================================
 cd('Servers/AdminServer')
-set('ListenAddress','')
-set('ListenPort', 7001)
+set('ListenAddress','0.0.0.0')
+set('ListenPort', admin_port)
+
 create('AdminServer','SSL')
 cd('SSL/AdminServer')
 set('Enabled', 'True')
-set('ListenPort', 7002)
+set('ListenPort', admin_port + 1)
+
 cd('/Servers/AdminServer/SSL/AdminServer')
 cmo.setHostnameVerificationIgnored(true)
 cmo.setHostnameVerifier(None)
@@ -27,7 +33,7 @@ cmo.setClientCertificateEnforced(false)
 # =====================================
 cd('/')
 cd('Security/base_domain/User/weblogic')
-cmo.setPassword(os.environ["ADMIN_PASSWORD"])
+cmo.setPassword(admin_pass)
 
 # Create a JMS Server
 # ===================
@@ -45,6 +51,7 @@ cd('JMSSystemResource/myJmsSystemResource/JmsResource/NO_NAME_0')
 myq=create('myQueue','Queue')
 myq.setJNDIName('jms/myqueue')
 myq.setSubDeploymentName('myQueueSubDeployment')
+
 cd('/')
 cd('JMSSystemResource/myJmsSystemResource')
 create('myQueueSubDeployment', 'SubDeployment')
@@ -52,6 +59,7 @@ create('myQueueSubDeployment', 'SubDeployment')
 # Create and configure a JDBC Data Source, and sets the JDBC user
 # ===============================================================
 # IF YOU WANT TO HAVE A DEFAULT DATA SOURCE CREATED, UNCOMMENT THIS SECTION BEFORE BUILD
+
 # cd('/')
 # create('myDataSource', 'JDBCSystemResource')
 # cd('JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
@@ -66,10 +74,12 @@ create('myQueueSubDeployment', 'SubDeployment')
 # create('user', 'Property')
 # cd('Property/user')
 # cmo.setValue('PBPUBLIC')
+
 # cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
 # create('myJdbcDataSourceParams','JDBCDataSourceParams')
 # cd('JDBCDataSourceParams/NO_NAME_0')
 # set('JNDIName', java.lang.String("myDataSource_jndi"))
+
 # cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
 # create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
 # cd('JDBCConnectionPoolParams/NO_NAME_0')
@@ -86,10 +96,8 @@ assign('JMSSystemResource.SubDeployment', 'myJmsSystemResource.myQueueSubDeploym
 # ==============================================
 setOption('OverwriteDomain', 'true')
 setOption('ServerStartMode','prod')
+
 cd('/')
-#cd('NMProperties')
-#set('ListenAddress','')
-#set('NativeVersionEnabled', 'false')
 writeDomain('/u01/oracle/weblogic/user_projects/domains/base_domain')
 closeTemplate()
 

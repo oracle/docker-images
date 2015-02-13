@@ -1,10 +1,12 @@
-#
 # WebLogic on Docker Default Domain
 #
 # Default domain 'base_domain' to be created inside the Docker image for WLS
 # 
-# author: bruno.borges@oracle.com
+# Since : October, 2014
+# Author: bruno.borges@oracle.com
 # ==============================================
+admin_port = int(os.environ.get("ADMIN_PORT", "7001"))
+admin_pass = os.environ.get("ADMIN_PASSWORD", "welcome1")
 
 # Open default domain template
 # ======================
@@ -14,12 +16,12 @@ readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
 # =========================================================
 cd('Servers/AdminServer')
 set('ListenAddress','0.0.0.0')
-set('ListenPort', int(os.environ["ADMIN_PORT"]))
+set('ListenPort', admin_port)
 
 create('AdminServer','SSL')
 cd('SSL/AdminServer')
 set('Enabled', 'True')
-set('ListenPort', (int(os.environ["ADMIN_PORT"])+1))
+set('ListenPort', admin_port + 1)
 
 cd('/Servers/AdminServer/SSL/AdminServer')
 cmo.setHostnameVerificationIgnored(true)
@@ -31,8 +33,7 @@ cmo.setClientCertificateEnforced(false)
 # =====================================
 cd('/')
 cd('Security/base_domain/User/weblogic')
-cmo.setPassword(os.environ["ADMIN_PASSWORD"])
-# Please set password here before using this script, e.g. cmo.setPassword('value')
+cmo.setPassword(admin_pass)
 
 # Create a JMS Server
 # ===================
@@ -102,12 +103,14 @@ set('ListenAddress','0.0.0.0')
 set('ListenPort',5556)
 set('NativeVersionEnabled', 'false')
 
-writeDomain('/u01/oracle/weblogic/user_projects/domains/base_domain')
+domain_path = '/u01/oracle/weblogic/user_projects/domains/base_domain'
+
+writeDomain(domain_path)
 closeTemplate()
 
 # Enable JAX-RS 2.0 by default on this domain
 # ===========================================
-readDomain('/u01/oracle/weblogic/user_projects/domains/base_domain')
+readDomain(domain_path)
 addTemplate('/u01/oracle/jaxrs2-template.jar')
 updateDomain()
 closeDomain()
