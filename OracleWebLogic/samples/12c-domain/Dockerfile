@@ -33,9 +33,9 @@ ENV ADMIN_PASSWORD welcome1
 
 # WLS Ports
 # ----------------------------------------------------------
-ENV ADMIN_PORT 7001
-ENV ADMIN_PORT_SSL 7002
+ENV ADMIN_PORT 8001
 ENV NM_PORT 5556
+ENV MS_PORT 7001 
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
@@ -58,7 +58,7 @@ RUN /u01/oracle/weblogic/wlserver/common/bin/wlst.sh -skipWLSModuleScanning /u01
     rm /u01/oracle/create-wls-domain.py /u01/oracle/jaxrs2-template.jar 
 
 # Expose Node Manager default port, and also default http/https ports for admin console
-EXPOSE $NM_PORT $ADMIN_PORT $ADMIN_PORT_SSL
+EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT
 
 # Final setup
 WORKDIR /u01/oracle

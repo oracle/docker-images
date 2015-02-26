@@ -35,11 +35,12 @@ This [Dockerfile](samples/12c-domain/Dockerfile) will create an image by extendi
  * Oracle Linux Username: **oracle**
  * Oracle Linux Password: **welcome1**
  * WebLogic Domain Name: **base_domain**
+ * Admin Server on port: **8001**
 
-Make sure you build 12c with **-d**.
+Make sure you build the WebLogic 12c Image with **-d** to get the Developer Image, referenced by the sample Dockerfile.
 
 ### Sample Domain for WebLogic 11g
-This second [Dockerfile](samples/11g-domain/Dockerfile) shows how to extend **oracle/weblogic:10.3.6-dev** and create a domain. Make sure you build 11g with **-d**.
+This second [Dockerfile](samples/11g-domain/Dockerfile) shows how to extend **oracle/weblogic:10.3.6-dev** and create a domain. Make sure you build the WebLogic 11g Image with **-d** to get the Developer Image, referenced by the sample Dockerfile.
 
 ### Write your own WebLogic domain with WLST
 The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](http://docs.oracle.com/cd/E57014_01/cross/wlsttasks.htm). The WLST script used to create domains in both Dockerfiles is [create-wls-domain.py](samples/12c-domain/container-scripts/create-wls-domain.py) (for 12c). This script by default adds JMS resources and a few other settings. You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override the existing domain, or create a new one with WLST.
@@ -69,9 +70,9 @@ To start the WebLogic AdminServer, you can simply call **docker run -d samplewls
     $ sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' wlsadmin
     172.17.0.27
 
-Now you can access the AdminServer Web Console at [http://172.17.0.27:7001/console](http://172.17.0.27:7001/console).
+Now you can access the AdminServer Web Console at [http://172.17.0.27:7001/console](http://172.17.0.27:7001/console). You can also access it locally if you bind port **8001** to your host, with **-p 8001:8001**.
 
-### Running WebLogic NodeManager
+### Running WebLogic NodeManager (12c only)
 To start the WebLogic NodeManager, you can simply call **docker run -d samplewls:12.1.3 startNodeManager.sh** command. The samples Dockerfiles set PATH variable with domain's bin folder.
 
     $ sudo docker run -d --name=wlsnm0 samplewls:12.1.3 startNodeManager.sh
@@ -80,7 +81,7 @@ To start the WebLogic NodeManager, you can simply call **docker run -d samplewls
 
 Now you can go to the AdminServer Web Console and add a new Machine pointing to the NodeManager container's IP address (172.17.0.28) at port 5556.
 
-**IMPORTANT**: this only works with WebLogic 12c because of the new per-domain NodeManager, which doesn't require users to call ``nmEnroll``. For WebLogic 11g you can't simply startNodeManager.sh in the container and later add it through the console. You must use the magic script ``createMachine.sh`` provided inside **samples/11g-domain/container-scripts**. See it's usage below.
+**IMPORTANT**: this only works with WebLogic 12c because of the new per-domain NodeManager, which doesn't require users to call ``nmEnroll``. For WebLogic 11g you can't simply startNodeManager.sh in the container and later add it through the console. You must use the magic script ``createMachine.sh`` provided inside **samples/11g-domain/container-scripts**. See below for more information.
 
 ## Clustering WebLogic on Docker Containers
 WebLogic has a [Machine](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/machines/ConfigureMachines.html) concept, which is an operational system with an agent, the Node Manager. This resource allows WebLogic AdminServer to create and assign [Managed Servers](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/domainconfig/CreateManagedServers.html) of an underlying domain in order to expand an environment of servers for different applications and resources, and also to define a [Cluster](). By using **Machines** from containers, you can easily create a [Dynamic Cluster]() by simply firing new NodeManagers containers. With some WLST magic, your cluster can scale in and out.
@@ -92,24 +93,26 @@ If you have an AdminServer and a NodeManager running on containers of the same h
 
 Wait 10 seconds, and then go into the AdminServer Web Console and check in the Machines page if the NodeManager was registered. You then can fire as many containers as you want to add more Machines to that domain. Later, you can create Clusters.
 
+You can also use the **createServer.sh** script that works similar to **createMachine.sh**. It starts a NodeManager associated to the newly created container and then it will also create a **ManagedServer** associated to it. To start the ManagedServer, you must go to Admin Console.
+
 ### Clustering WebLogic on Docker Containers Across Multiple Hosts
-You can either do this manually, or using the **createMachine** helper script presented above, combined with the **add-machine.py** and **addMachine.sh** scripts inside the [samples/12c-domain/container-scripts](samples/12c-domain/container-scripts) folder. The most important thing for this to work, is that both containers from different hosts, have their ports (AdminServer and NodeManager) reachable somehow. You can either make sure a virtual network for containers across multiple hosts is in place, or that ports are binded to hosts, and hosts' IP addresses are used for registering and communication between AdminServer and NodeManager. 
+You can either do this manually, or using the **createMachine** helper script presented above, combined with the **add-machine.py**, **add-server.sh**, and **createServer.sh** scripts inside the [samples/12c-domain/container-scripts](samples/12c-domain/container-scripts) folder. The most important thing for this to work, is that both containers from different hosts, have their ports (AdminServer and NodeManager) reachable somehow. You can either make sure a virtual network for containers across multiple hosts is in place, or that ports are binded to hosts, and hosts' IP addresses are used for registering and communication between AdminServer and NodeManager. 
 
 To better understand this, let's first see how to setup this topology manually with Docker commands.
 
 #### Manually
-In this example we will be using the sample for 12c-domain based on oracle/weblogic:12.1.3-dev image. Make sure you have the **samplewls:12.1.3** image in place, as documented above, and available on Docker local registry of both hosts (**host0** and **host1**). Start the AdminServer on one host and make sure port 7001 is binded to the host so the NodeManager is able to communicate with this AdminServer from another host. Then you must also start the NodeManager on second host also having its port binded to the host machine. This is the overall understanding. Let's see how this works:
+In this example we will be using the sample for 12c-domain based on oracle/weblogic:12.1.3-dev image. Make sure you have the **samplewls:12.1.3** image in place, as documented above, and available on Docker local registry of both hosts (**$HOST0** and **HOST1**). Start the AdminServer on one host and make sure port 7001 is binded to the host so the NodeManager is able to communicate with this AdminServer from another host. Then you must also start the NodeManager on second host also having its port binded to the host machine. This is the overall understanding. Let's see how this works:
 
- 1. On **host0** start the AdminServer: 
+ 1. On **$HOST0** start the AdminServer: 
 
-        $ sudo docker run -d -p 7001:7001 samplewls:12.1.3 startWebLogic.sh
+        $ sudo docker run -d --net=host samplewls:12.1.3 startWebLogic.sh
 
- 2. On **host1** start the NodeManager:
+ 2. On **$HOST1** start the NodeManager (we bind port 7001 for the still-to-be-created ManagedServer):
 
-        $ sudo docker run -d -p 5556:5556 samplewls:12.1.3 startNodeManager.sh
+        $ sudo docker run -d --net=host samplewls:12.1.3 startNodeManager.sh
 
- 3. Now access the AdminServer Console at http://host0:7001/console
- 4. Go to **Environment > Machines** and add a new machine. Point to **host1:5556**
+ 3. Now access the AdminServer Console at http://$HOST0:7001/console
+ 4. Go to **Environment > Machines** and add a new machine. Point to **$HOST1:5556**
  5. Save changes, and test if NM is reachable by clicking on tab Monitoring
 
 If you want to have more than one AdminServer and/or NodeManager containers per host, you can use other ports instead the default ones but when adding the new Machine, make sure to point to the external binded port.
@@ -117,18 +120,18 @@ If you want to have more than one AdminServer and/or NodeManager containers per 
 #### Magically, Using **createMachine.sh**
 This script accepts some variables to allow connecting a NodeManager to a remote AdminServer as long both are reachable bidirectionally. When properly executed with the correct parameters, will connect to the AdminServer and assign the NodeManager running on that container to the domain. This way, the container can be started and automagically added as a Machine into the AdminServer domain. Follow the steps below:
 
- 1. On **host0** start the AdminServer: 
+ 1. On **$HOST0** start the AdminServer: 
 
         $ sudo docker run -d -p 7001:7001 samplewls:12.1.3 startWebLogic.sh
 
- 2. On **host1** start the NodeManager with **createMachine.sh** and ``ADMIN_URL`` variable
+ 2. On **$HOST1** start the NodeManager with **createMachine.sh** and defining hostname **wlsadmin** to the actual reachable address of AdminServer:
 
         $ sudo docker run -d -p 5556:5556 \
-               -e ADMIN_URL="t3://host0:7001" \
-               -e NM_HOST="host1" \
+               --add-host wlsadmin:$HOST0 \
+               -e NM_HOST="$HOST1" \
                samplewls:12.1.3 createMachine.sh
 
- 3. Now access the AdminServer Console at http://host0:7001/console
+ 3. Now access the AdminServer Console at http://$HOST0:7001/console
  4. Go to **Environment > Machines** and you should now have a Machine registered
 
 The **createMachine.sh** script will call the **add-machine.py** WLST script. This script has a list of variables that must be properly configured, though most have default values (for when running on Single Host mode):
