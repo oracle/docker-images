@@ -1,0 +1,10 @@
+# Download full distribution of WebLogic 12.1.3 from www.oracle.com
+# ====
+#  - http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
+# 
+8378fe936b476a6f4ca5efa465a435e3  fmw_12.1.3.0.0_wls.jar
+# Download this package from Oracle
+# ====
+#  - http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+#
+6a8897b5d92e5850ef3458aa89a5e9d7  jdk-8u25-linux-x64.rpm
