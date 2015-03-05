@@ -5,7 +5,7 @@ get_option () {
     local section=$1
     local option=$2
     local default=$3
-    ret=$(/usr/bin/my_print_defaults $section | grep '^--'${option}'=' | cut -d= -f2-)
+    ret=$(/usr/local/mysql/bin/my_print_defaults $section | grep '^--'${option}'=' | cut -d= -f2-)
     [ -z $ret ] && ret=$default
     echo $ret
 }
@@ -17,8 +17,9 @@ fi
 if [ "$1" = 'mysqld' ]; then
 	# Get config
         DATADIR="$("$@" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }')"
-        SOCKET=$(get_option  mysqld socket "$datadir/mysql.sock")
-        PIDFILE=$(get_option mysqld pid-file "/var/run/mysqld/mysqld.pid")
+        SOCKET=$(get_option  mysqld socket "/tmp/mysql.sock")
+        HOSTNAME=$(hostname)
+        PIDFILE=$(get_option mysqld pid-file "$DATADIR/$HOSTNAME.pid")
 	
 	if [ ! -d "$DATADIR/mysql" ]; then
 		if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ]; then
@@ -30,10 +31,10 @@ if [ "$1" = 'mysqld' ]; then
 			mkdir -p $DATADIR
 		fi
 		echo 'Running mysql_install_db'
-		mysql_install_db --user=mysql --datadir=$DATADIR --rpm
+		mysql_install_db --user=mysql --datadir=$DATADIR --rpm --basedir=/usr/local/mysql
 		echo 'Finished mysql_install_db'
 
-		mysqld --user=mysql --datadir=$DATADIR --skip-networking &
+		mysqld --user=mysql --datadir=$DATADIR --skip-networking --basedir=/usr/local/mysql &
                 for i in $(seq 30 -1 0); do
 		    [ -S $SOCKET ] && break
 		    echo 'MySQL init process in progress...'
