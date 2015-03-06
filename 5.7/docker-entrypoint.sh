@@ -88,6 +88,8 @@ if [ "$1" = 'mysqld' ]; then
                 fi
 		echo 'MySQL init process done. Ready for start up.'
 	fi
+
+	chown -R mysql:mysql "$DATADIR"
 fi
 
 exec "$@"
