@@ -27,15 +27,13 @@ FROM oracle/weblogic:12.1.3-dev
 # ----------
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
-# WLS Admin Password (change it!)
+# WLS Configuration
 # -------------------------------
 ENV ADMIN_PASSWORD welcome1
-
-# WLS Ports
-# ----------------------------------------------------------
 ENV ADMIN_PORT 8001
 ENV NM_PORT 5556
-ENV MS_PORT 7001 
+ENV MS_PORT 7001
+ENV USER_MEM_ARGS -Xms256m -Xmx512m -XX:MaxPermSize=2048m
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/

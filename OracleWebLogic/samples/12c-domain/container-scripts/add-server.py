@@ -36,6 +36,7 @@ msinternal = socket.gethostbyname(socket.gethostname())
 msname = os.environ.get('MS_NAME', 'ManagedServer-' + socket.gethostname() + '-' + randomName())
 mshost = os.environ.get('MS_HOST', socket.gethostbyname(socket.gethostname()))
 msport = os.environ.get('MS_PORT', '7001')
+memargs = os.environ.get('USER_MEM_ARGS', '-Xms256m -Xmx512m -XX:MaxPermSize=512m')
 
 # Connect to the AdminServer
 # ==========================
@@ -84,7 +85,7 @@ cmo.setEnabled(false)
 # Custom Startup Parameters because NodeManager writes wrong AdminURL in startup.properties
 # -----------------------------------------------------------------------------------------
 cd('/Servers/' + msname + '/ServerStart/' + msname)
-arguments = '-Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + adminhost + ':' + adminport
+arguments = '-Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + adminhost + ':' + adminport + ' ' + memargs
 cmo.setArguments(arguments)
 editActivate()
 

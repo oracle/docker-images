@@ -21,8 +21,8 @@
 # (1) wls1213_dev.zip
 #     Download the Developer ZIP installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
-# (2) jdk-8u25-linux-x64.rpm
-#     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+# (2) jdk-7u75-linux-x64.rpm
+#     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -39,13 +39,14 @@ FROM oraclelinux:7
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
-ENV JAVA_RPM jdk-8u25-linux-x64.rpm
+# -------------------------------------------------------------
+ENV JAVA_RPM jdk-7u75-linux-x64.rpm
 ENV WLS_PKG wls1213_dev.zip
 ENV JAVA_HOME /usr/java/default
 ENV MW_HOME /u01/oracle/wls12130
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 
-# Setup filesystem and oracle user
+# SETUP FILESYSTEM AND ORACLE USER
 # ------------------------------------------------------------
 RUN mkdir /u01 && chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle
