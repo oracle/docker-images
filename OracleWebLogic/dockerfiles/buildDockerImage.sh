@@ -33,18 +33,18 @@ checksumPackages() {
 if [ "$#" -eq 0 ]; then usage; fi
 
 # Parameters
-DEVELOPER=false
-GENERIC=false
+DEVELOPER=0
+GENERIC=0
 while getopts "hdg" optname; do
   case "$optname" in
     "h")
       usage
       ;;
     "d")
-      DEVELOPER=true
+      DEVELOPER=1
       ;;
     "g")
-      GENERIC=true
+      GENERIC=1
       ;;
     *)
     # Should not occur
@@ -58,12 +58,10 @@ VERSION="12.1.3"
 DEFAULT_IMAGE_NAME="oracle/weblogic:$VERSION"
 DEFAULT_DEV_IMAGE_NAME="$DEFAULT_IMAGE_NAME-dev"
 
-echo $GENERIC $DEVELOPER
-
 # Developer or Generic?
-if [[ "$DEVELOPER" == "$GENERIC" ]]; then
+if [ "$DEVELOPER" -eq "$GENERIC" ]; then
   usage
-elif [[ $DEVELOPER -eq true ]]; then
+elif [ $DEVELOPER -eq 1 ]; then
   DISTRIBUTION="developer"
   IMAGE_NAME="$DEFAULT_DEV_IMAGE_NAME"
 else
