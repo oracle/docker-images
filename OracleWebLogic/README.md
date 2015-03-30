@@ -154,9 +154,11 @@ Another possible topology is to run a single Admin Server container communicatin
               --add-host=hostname:<host ip address where container is running> \ 
               --name wlsadmin samplewls:12.1.3
 
- * The AdminServer in the Docker container has to have the listen address configured to be <host ip address where container is running >
- * The AdminServer in the remote host has to have the listen address configured to be <host ip address of remote host>
- * The client must use the hosts ip addresses to get the initial context for JNDI lookup.
+For this configuration to work the following configurations are necessary:
+
+ * The listen address of the AdminServer in the Docker container has to be configured.
+ * The listen address of the AdminServer in the remote host  has to be configured.
+ * The client must use the hosts IP addresses to get the initial context for JNDI lookup.
 
 ## License
 To download and run WebLogic 12c Distribution regardless of inside or outside a Docker container, and regardless of Generic or Developer distribution, you must agree and accept the [OTN Free Developer License Terms](http://www.oracle.com/technetwork/licenses/wls-dev-license-1703567.html).
