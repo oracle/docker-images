@@ -43,17 +43,6 @@ ENV USER_MEM_ARGS -Xms1024m -Xmx2058m -XX:MaxPermSize=1024m
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
 
-# (TODO)
-# Creating RCU Schemas
-# ____________________
-
-# RUN su - oracle -c "/u01/oracle/soa/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString ${DB_HOST}:${DB_PORT}:${DB_SERVICE} -dbUser SYS -dbRole SYSDBA -schemaPrefix DEVSOA -component SOAINFRA -component OPSS -component IAU -component MDS -component WLS -component UCSUMS -component IAU_APPEND -component IAU_VIEWER -f < /u01/oracle/password_file.txt"
-
-# Root commands
-# USER oracle
-# RUN echo ". /u01/oracle/work/domains/soa_domain/bin/setDomainEnv.sh" >> /home/oracle/.bashrc && \
-#  echo "export PATH=$PATH:/u01/oracle/soa/wlserver/common/bin:/u01/oracle/work/domains/soa_domain/bin" >> /home/oracle/.bashrc
-
 # Configuration of SOA Domain
 USER oracle
 WORKDIR /u01/oracle/soa

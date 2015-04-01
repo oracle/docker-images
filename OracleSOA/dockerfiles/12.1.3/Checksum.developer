@@ -1,7 +1,7 @@
-# WebLogic 12c ZIP Distribution for Developers
+# SOA Suite 12c Quick Start for Developers
 # ===
 # 1. Go to http://www.oracle.com/technetwork/middleware/soasuite/downloads/index.html
-# 2. Download the Oracle SOA Suite 12c (12.1.3) Quickstart Distribution and Installers for Developers
+# 2. Download the Oracle SOA Suite 12c (12.1.3) Quickstart for Developers
 # 3. Drop the downloaded file fmw_12.1.3.0.0_soaqs_Disk1_1of1.zip in the same folder as this file
 # 
 1991a319e258a96f5291d05fd49d7e2d  fmw_12.1.3.0.0_soaqs_Disk1_1of1.zip
