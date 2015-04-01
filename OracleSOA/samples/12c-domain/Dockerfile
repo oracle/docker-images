@@ -2,6 +2,7 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
+# (TODO)
 # This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
 #
 # The 'base-domain' created here has Java EE 7 APIs enabled by default:
@@ -16,52 +17,55 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t myweblogic .
+#      $ sudo docker build -t mysoa .
 #
 
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.1.3-dev
+FROM oracle/soa:12.1.3-dev
 
 # Maintainer
 # ----------
-MAINTAINER Bruno Borges <bruno.borges@oracle.com>
+MAINTAINER Jorge Quilcate <quilcate.jorge@gmail.com>
 
 # WLS Configuration
 # -------------------------------
+ENV JAVA_HOME /usr/java/default
 ENV ADMIN_PASSWORD welcome1
-ENV ADMIN_PORT 8001
-ENV NM_PORT 5556
-ENV MS_PORT 7001
-ENV USER_MEM_ARGS -Xms256m -Xmx512m -XX:MaxPermSize=2048m
+ENV ADMIN_PORT 7001
+ENV OSB_DEBUG_PORT 7453
+ENV SOA_DEBUG_PORT 5004
+ENV USER_MEM_ARGS -Xms1024m -Xmx2058m -XX:MaxPermSize=1024m
+# ENV DB_HOST dbhost
+# ENV DB_PORT 49161
+# ENV DB_SERVICE XE
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
 
-# Root commands
-USER root
-RUN echo ". /u01/oracle/weblogic/user_projects/domains/base_domain/bin/setDomainEnv.sh" >> /root/.bashrc && \
-    echo "export PATH=$PATH:/u01/oracle/weblogic/wlserver/common/bin:/u01/oracle/weblogic/user_projects/domains/base_domain/bin" >> /root/.bashrc
+# (TODO)
+# Creating RCU Schemas
+# ____________________
 
-# Configuration of WLS Domain
+# RUN su - oracle -c "/u01/oracle/soa/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString ${DB_HOST}:${DB_PORT}:${DB_SERVICE} -dbUser SYS -dbRole SYSDBA -schemaPrefix DEVSOA -component SOAINFRA -component OPSS -component IAU -component MDS -component WLS -component UCSUMS -component IAU_APPEND -component IAU_VIEWER -f < /u01/oracle/password_file.txt"
+
+# Root commands
+# USER oracle
+# RUN echo ". /u01/oracle/work/domains/soa_domain/bin/setDomainEnv.sh" >> /home/oracle/.bashrc && \
+#  echo "export PATH=$PATH:/u01/oracle/soa/wlserver/common/bin:/u01/oracle/work/domains/soa_domain/bin" >> /home/oracle/.bashrc
+
+# Configuration of SOA Domain
 USER oracle
-WORKDIR /u01/oracle/weblogic
-RUN /u01/oracle/weblogic/wlserver/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/create-wls-domain.py && \
-    mkdir -p /u01/oracle/weblogic/user_projects/domains/base_domain/servers/AdminServer/security && \
-    mv /u01/oracle/commEnv.sh /u01/oracle/weblogic/wlserver/common/bin/commEnv.sh && \
-    echo "username=weblogic" > /u01/oracle/weblogic/user_projects/domains/base_domain/servers/AdminServer/security/boot.properties && \ 
-    echo "password=$ADMIN_PASSWORD" >> /u01/oracle/weblogic/user_projects/domains/base_domain/servers/AdminServer/security/boot.properties && \
-    echo ". /u01/oracle/weblogic/user_projects/domains/base_domain/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \ 
-    echo "export PATH=$PATH:/u01/oracle/weblogic/wlserver/common/bin:/u01/oracle/weblogic/user_projects/domains/base_domain/bin" >> /u01/oracle/.bashrc && \
-    rm /u01/oracle/create-wls-domain.py /u01/oracle/jaxrs2-template.jar 
+WORKDIR /u01/oracle/soa
+RUN /u01/oracle/soa/wlserver/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/create-soa-domain.py 
 
 # Expose Node Manager default port, and also default http/https ports for admin console
-EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT
+EXPOSE $ADMIN_PORT $OSB_DEBUG_PORT $SOA_DEBUG_PORT
 
 # Final setup
 WORKDIR /u01/oracle
 
-ENV PATH $PATH:/u01/oracle/weblogic/wlserver/common/bin:/u01/oracle/weblogic/user_projects/domains/base_domain/bin:/u01/oracle
+ENV PATH $PATH:/u01/oracle/soa/wlserver/common/bin:/u01/oracle/work/domains/soa_domain/bin:/u01/oracle
 
 # Define default command to start bash. 
-CMD ["startWebLogic.sh"]
+CMD ["sh", "/u01/oracle/work/domains/soa_domain/startWebLogic.sh"]

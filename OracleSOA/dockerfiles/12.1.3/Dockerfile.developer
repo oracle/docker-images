@@ -6,7 +6,7 @@
 # 
 # IMPORTANT
 # ---------
-# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
+# The resulting image of this Dockerfile DOES NOT contain a SOA Suite Domain.
 # For that, look into the folder 'samples' for an example on how
 # to create a domain on a new inherited image.
 #
@@ -15,7 +15,7 @@
 # and build that image, for example:
 # 
 #   $ cd samples/12c-generic-domain
-#   $ sudo docker build -t mywls .
+#   $ sudo docker build -t mysoa .
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -46,7 +46,7 @@ ENV SOA_ZIP fmw_12.1.3.0.0_soaqs_Disk1_1of1.zip
 ENV SOA_PKG fmw_12.1.3.0.0_soa_quickstart.jar
 ENV SOA_PKG2 fmw_12.1.3.0.0_soa_quickstart2.jar
 ENV JAVA_HOME /usr/java/default
-ENV MW_HOME /u01/oracle/soa12130
+ENV MW_HOME /u01/oracle/soa
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 
 # SETUP FILESYSTEM AND ORACLE USER
@@ -71,7 +71,12 @@ RUN sed -i '/.*EOF/d' /etc/security/limits.conf && \
     echo "* hard nofile 16384" >> /etc/security/limits.conf && \ 
     echo "# EOF"  >> /etc/security/limits.conf
 
-# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
+# Change the kernel parameters that need changing.
+RUN echo "net.core.rmem_max=4192608" > /u01/oracle/.sysctl.conf && \
+    echo "net.core.wmem_max=4192608" >> /u01/oracle/.sysctl.conf && \ 
+    sysctl -e -p /u01/oracle/.sysctl.conf
+
+# Adjust file permissions, go to /u01 as user 'oracle' to proceed with SOA Suite installation
 RUN chown oracle:oracle -R /u01
 
 # Unzip SOA Suite installer
