@@ -5,7 +5,7 @@
 # Since : October, 2014
 # Author: bruno.borges@oracle.com
 # ==============================================
-admin_port = int(os.environ.get("ADMIN_PORT", "7001"))
+admin_port = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass = os.environ.get("ADMIN_PASSWORD", "welcome1")
 
 # Open default domain template
@@ -15,19 +15,8 @@ readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
 # Configure the Administration Server and SSL port.
 # =========================================================
 cd('Servers/AdminServer')
-set('ListenAddress','0.0.0.0')
+set('ListenAddress','')
 set('ListenPort', admin_port)
-
-create('AdminServer','SSL')
-cd('SSL/AdminServer')
-set('Enabled', 'True')
-set('ListenPort', admin_port + 1)
-
-cd('/Servers/AdminServer/SSL/AdminServer')
-cmo.setHostnameVerificationIgnored(true)
-cmo.setHostnameVerifier(None)
-cmo.setTwoWaySSLEnabled(false)
-cmo.setClientCertificateEnforced(false)
 
 # Define the user password for weblogic
 # =====================================
@@ -99,9 +88,11 @@ setOption('ServerStartMode','prod')
 
 cd('/')
 cd('NMProperties')
-set('ListenAddress','0.0.0.0')
+set('ListenAddress','')
 set('ListenPort',5556)
 set('NativeVersionEnabled', 'false')
+set('StartScriptEnabled', 'false')
+set('SecureListener', 'false')
 
 domain_path = '/u01/oracle/weblogic/user_projects/domains/base_domain'
 

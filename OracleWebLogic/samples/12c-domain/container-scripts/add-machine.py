@@ -5,24 +5,47 @@
 # Author: bruno.borges@oracle.com
 #
 # =============================
-import socket
 import os
+import socket
 
-username = os.environ.get('ADMIN_USERNAME', 'weblogic')
-password = os.environ.get("ADMIN_PASSWORD")
-adminurl = os.environ.get("ADMIN_URL", 't3://wlsadmin:7001')
-machinename = os.environ.get('CONTAINER_NAME', "nodemanager_" + socket.gethostname())
-listenaddress = os.environ.get('NM_HOST', socket.gethostbyname(socket.gethostname()))
-listenport = os.environ.get('NM_PORT', '5556')
+# Functions
+def editMode():
+  edit()
+  startEdit()
 
-connect(username, password, adminurl)
-edit()
-startEdit()
+def editActivate():
+  save()
+  activate(block="true")
+
+# Variables
+# =========
+
+# AdminServer details
+username  = os.environ.get('ADMIN_USERNAME', 'weblogic')
+password  = os.environ.get('ADMIN_PASSWORD')
+adminhost = os.environ.get('ADMIN_HOST', 'wlsadmin')
+adminport = os.environ.get('ADMIN_PORT', '8001')
+
+# NodeManager details
+nmname = os.environ.get('NM_NAME', 'Machine-' + socket.gethostname())
+nmhost = os.environ.get('NM_HOST', socket.gethostbyname(socket.gethostname()))
+nmport = os.environ.get('NM_PORT', '5556')
+
+# Connect to the AdminServer
+# ==========================
+connect(username, password, 't3://' + adminhost + ':' + adminport)
+
+# Create a Machine
+# ================
+editMode()
 cd('/')
-cmo.createMachine(machinename)
-cd('/Machines/' + machinename +'/NodeManager/' + machinename)
-cmo.setListenPort(int(listenport))
-cmo.setListenAddress(listenaddress)
-save()
-activate()
+cmo.createMachine(nmname)
+cd('/Machines/' + nmname +'/NodeManager/' + nmname)
+cmo.setListenPort(int(nmport))
+cmo.setListenAddress(nmhost)
+cmo.setNMType('Plain')
+editActivate()
+
+# Exit
+# ====
 exit()
