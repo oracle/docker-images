@@ -18,8 +18,8 @@
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) wls1213_dev.zip
-#     Download the Developer ZIP installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
+# (1) wls1213_devzip_update1.zip 
+#     Download the Developer ZIP Update1 installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
 # (2) jdk-7u75-linux-x64.rpm
 #     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
@@ -41,7 +41,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV JAVA_RPM jdk-7u75-linux-x64.rpm
-ENV WLS_PKG wls1213_dev.zip
+ENV WLS_PKG wls1213_devzip_update1.zip
 ENV JAVA_HOME /usr/java/default
 ENV MW_HOME /u01/oracle/wls12130
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
