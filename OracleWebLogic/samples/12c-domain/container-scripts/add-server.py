@@ -89,6 +89,10 @@ arguments = '-Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://
 cmo.setArguments(arguments)
 editActivate()
 
+# Start ManagedServer
+# -------------------
+start(msname, 'Server', block='false')
+
 # Exit
 # =========
 exit()
