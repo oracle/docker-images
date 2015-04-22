@@ -129,7 +129,7 @@ To access ManagedServers and the AdminServer running on container in a remote ho
 
  * Start AdminServer Container on your remote host
 
-        $ sudo docker run -d --name wlstadmin -p 8001:8001 samplewls:12.1.3 startWebLogic.sh
+        $ sudo docker run -d --name wlsadmin -p 8001:8001 samplewls:12.1.3 startWebLogic.sh
 
  * Start an unexposed ManagedServer Container with **createMachine.sh** or **startNodeManager.sh**
 
@@ -139,9 +139,9 @@ To access ManagedServers and the AdminServer running on container in a remote ho
 
  * Start an exposed ManagedServer Container with **createServer.sh**
 
-        $ sudo docker run -d --link wlsadmin:wlsadmin  --name ="MS1" -p 7002:7002 -e MS_PORT="7002" -e MS_HOST=<host address> samplewls:12.1.3 createServer.sh
+        $ sudo docker run -d --link wlsadmin:wlsadmin  --name="MS1" -p 7002:7002 -e MS_PORT="7002" -e MS_HOST=<host address> samplewls:12.1.3 createServer.sh
 
-        $ sudo docker run -d --link wlsadmin:wlsadmin  --name ="MS2" -p 7003:7003 -e MS_PORT="7003" -e MS_HOST=<host address> samplewls:12.1.3 createServer.sh
+        $ sudo docker run -d --link wlsadmin:wlsadmin  --name="MS2" -p 7003:7003 -e MS_PORT="7003" -e MS_HOST=<host address> samplewls:12.1.3 createServer.sh
 
    In this case with createServer.sh, the ManagedServer will be automatically created and assigned, so you must during command line define which port will be used to run the ManagedServer, and the exposed port (with Docker's -p). For simplification, always use the same port on external/internal definition. It is also important to define MS_HOST because that is the value that WebLogic will tell users where data is coming from, such as HTTP responses.
 
