@@ -24,7 +24,7 @@ First decide which distribution you want to use, then download the required pack
 **IMPORTANT:** the resulting images will NOT have a domain pre-configured. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
 ## Samples for WebLogic Domain Creation
-To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic iinstall image, we provide samples under the folder [samples/](samples/).
+To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic install image, we provide samples under the folder [samples/](samples/).
 
 ### Sample Domain for WebLogic 12c
 This [Dockerfile](samples/12c-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.1.3-dev** (from the Developer distribution). It will configure a **base_domain** with the following settings:
