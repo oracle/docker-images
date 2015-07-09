@@ -61,6 +61,8 @@ If you want to run the container on a remote server for later access it, or if y
     $ sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' soahost
     xxx.xx.x.xx
 
+Alternatively, if you are running on boot2docker, the ip address is obtained by executing `boot2docker ip`.
+ 
 Now you can access the AdminServer Web Console at [http://xxx.xx.x.xx:7001/console](http://xxx.xx.x.xx:7001/console).
 
 For more information on how to bind ports, check the Docker Network documentation.
