@@ -54,7 +54,7 @@ RUN mkdir /u01 && chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle
 
 # Copy packages
-COPY $SOA_ZIP /u01/
+ADD $SOA_ZIP /u01/
 COPY $JAVA_RPM /u01/
 COPY install.file /u01/
 COPY oraInst.loc /u01/
@@ -75,18 +75,17 @@ RUN echo "net.core.rmem_max=4192608" > /u01/oracle/.sysctl.conf && \
     echo "net.core.wmem_max=4192608" >> /u01/oracle/.sysctl.conf && \ 
     sysctl -e -p /u01/oracle/.sysctl.conf
 
-# Adjust file permissions, go to /u01 as user 'oracle' to proceed with SOA Suite installation
-RUN chown oracle:oracle -R /u01
-
 # Unzip SOA Suite installer
 WORKDIR /u01
-RUN jar xf $SOA_ZIP
 
+# Adjust file permissions, go to /u01 as user 'oracle' to proceed with SOA Suite installation
 # Installation of SOA Suite 
-RUN mkdir /u01/oracle/.inventory
-RUN chown oracle:oracle -R /u01/oracle/.inventory
-RUN su oracle -c "java -jar $SOA_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME" && \
-    rm $SOA_PKG $SOA_PKG2 $SOA_ZIP /u01/oraInst.loc /u01/install.file
+# Remove packages
+RUN mkdir /u01/oracle/.inventory && \
+chown oracle:oracle -R /u01 && \
+jar xf $SOA_ZIP && \
+su oracle -c "java -jar $SOA_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME" && \
+rm $SOA_PKG $SOA_PKG2 /u01/$SOA_ZIP /u01/oraInst.loc /u01/install.file
 
 WORKDIR /u01/oracle/
 
