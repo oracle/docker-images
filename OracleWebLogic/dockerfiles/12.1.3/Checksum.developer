@@ -4,9 +4,9 @@
 # 2. Download the Free Oracle WebLogic Server 12c (12.1.3) Zip Distribution and Installers for Developers
 # 3. Drop the downloaded file wls1213_dev.zip in the same folder as this file
 # 
-0023cef84df1e072bff7999e6f1daded  wls1213_dev_update2.zip
+fb7076f4e332afd0b0496c216bb15c99  wls1213_dev_update3.zip
 # Download this package from Oracle
 # ====
-#  - http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html 
+#  - http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 #
-8486da4cdc4123f5c4f080d279f07712  jdk-7u79-linux-x64.rpm
+e539d132c3d98480217554b8f0da2480  jdk-8u51-linux-x64.rpm
