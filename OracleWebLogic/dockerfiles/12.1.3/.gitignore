@@ -1,3 +1,3 @@
-fmw_12.1.3.0.0_wls.jar
-wls1213_dev_update2.zip
-jdk-7u79-linux-x64.rpm
+fmw*wls.jar
+wls*.zip
+jdk*.rpm

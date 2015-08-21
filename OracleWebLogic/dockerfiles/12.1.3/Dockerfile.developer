@@ -21,7 +21,7 @@
 # (1) wls1213_dev_update3.zip 
 #     Download the Developer ZIP Update 3 installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
-# (2) jdk-8u51-linux-x64.rpm
+# (2) jdk-8u60-linux-x64.rpm 
 #     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -40,11 +40,12 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_RPM jdk-8u51-linux-x64.rpm
+ENV JAVA_RPM jdk-8u60-linux-x64.rpm
 ENV WLS_PKG wls1213_dev_update3.zip
 ENV JAVA_HOME /usr/java/default
 ENV MW_HOME /u01/oracle/wls12130
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
+ENV JAVA_OPTIONS -Djava.security.egd=file:/dev/./urandom
 
 # SETUP FILESYSTEM AND ORACLE USER
 # ------------------------------------------------------------
