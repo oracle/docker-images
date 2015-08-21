@@ -12,6 +12,10 @@ admin_pass = os.environ.get("ADMIN_PASSWORD", "welcome1")
 # ======================
 readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
 
+# Disable Admin Console
+# --------------------
+# cmo.setConsoleEnabled(false)
+
 # Configure the Administration Server and SSL port.
 # =========================================================
 cd('Servers/AdminServer')
