@@ -1,3 +1,5 @@
+UPDATE: Move to [jeqo/oracle-soa-docker](https://github.com/jeqo/oracle-soa-docker)
+
 SOA on Docker
 ===============
 Docker configurations to facilitate installation, configuration, and environment setup for developers. This project includes [dockerfiles](dockerfiles/) and [samples](samples/) for SOA Suite 12.1.3 Quickstart with Oracle JDK  7.
