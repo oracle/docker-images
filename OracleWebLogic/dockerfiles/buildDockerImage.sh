@@ -10,6 +10,8 @@ Usage: buildDockerImage.sh [-d | -g]
 Builds a Docker Image for WebLogic.
   
 Parameters:
+   -v: version to build. Required.
+       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
 
@@ -35,7 +37,8 @@ if [ "$#" -eq 0 ]; then usage; fi
 # Parameters
 DEVELOPER=0
 GENERIC=0
-while getopts "hdg" optname; do
+VERSION="12.1.3"
+while getopts "hdgv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -46,6 +49,9 @@ while getopts "hdg" optname; do
     "g")
       GENERIC=1
       ;;
+    "v")
+      VERSION="$OPTARG"
+      ;;
     *)
     # Should not occur
       echo "Unknown error while processing options inside buildDockerImage.sh"
@@ -53,8 +59,7 @@ while getopts "hdg" optname; do
   esac
 done
 
-# WebLogic Image Names and Version
-VERSION="12.1.3"
+# WebLogic Image Name
 DEFAULT_IMAGE_NAME="oracle/weblogic:$VERSION"
 DEFAULT_DEV_IMAGE_NAME="$DEFAULT_IMAGE_NAME-dev"
 
