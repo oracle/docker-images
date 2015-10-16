@@ -58,7 +58,7 @@ To try a sample of a WebLogic image with a domain configured, follow the steps b
 
         sudo docker images
 
-Note: To create a WebLogic 12cR2 Domain image snd run containers follow the same steps as for WebLogic 12.1.3
+Note: To create a WebLogic 12cR2 Domain image and run containers follow the same steps as for WebLogic 12.1.3
   
 ### Running WebLogic AdminServer
 To start the WebLogic AdminServer, you can simply call **docker run -d samplewls:12.1.3** command. The samples Dockerfiles define **startWebLogic.sh** as the default CMD.
@@ -144,15 +144,15 @@ The **createMachine.sh** script will call the **add-machine.py** WLST script. Th
 The Supplemental Quick Installer is a lightweight installer that contains all the necessary artifacts to develop and test applications on Oracle WebLogic Server 12.2.1. You can extend the WebLogic developer install image oracle/weblogic:12.1.3-dev to create a WLS 12.2.1 domain image with the MedRec application deployed.
  1. Make sure you have **oracle/weblogic:12.2.1-dev** image built. If not go into **dockerfiles** and call 
 
-        sudo sh buildDockerImage.sh -v 12.2.1 -d
+        $sudo sh buildDockerImage.sh -v 12.2.1 -d
 
   2. Go to folder **samples/1221-domain**
   3. Run the following command: 
 
-        sudo docker build -t samplewls:12.2.1 .
+        $sudo docker build -t samplewls:12.2.1 .
 
  3. Now run a container from this new sample domain image
-        sudo docker run samplewls:12.2.1 bash
+        $sudo docker run samplewls:12.2.1 bash
  3. Now access the AdminServer Console at http://$HOST0:7011/medrec
 
 ## Choose your WebLogic Distribution
