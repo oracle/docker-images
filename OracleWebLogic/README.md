@@ -1,33 +1,32 @@
 WebLogic on Docker
 ===============
-Docker configurations to facilitate installation, configuration, and environment setup for developers. This project includes [dockerfiles](dockerfiles/) and [samples](samples/) for WebLogic 12.1.3  with Oracle JDK  7.
+Docker configurations to facilitate installation, configuration, and environment setup for developers. This project includes [dockerfiles](dockerfiles/) and [samples](samples/) for both WebLogic 12.1.3 and 12.2.1 with JDK 7 and 8.
 
-## Based on Official Oracle Linux Docker images 7.
+## Based on Official Oracle Linux Docker images
 For more information please read the [Docker Images from Oracle Linux](https://registry.hub.docker.com/_/oraclelinux/) page.
 
 ## How to build and run
-This project offers Dockerfiles for WebLogic 12c (12.1.3), it also provides one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+This project offers Dockerfiles for both WebLogic 12c (12.1.3)and WebLogic 12cR2 (12.2.1), and for each version it also provides one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 ### Building WebLogic Images
-First decide which distribution you want to use, then download the required packages WebLogic Server installers, JDK and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
+First decide which version and distribution you want to use, then download the required packages and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
 
     $ sudo sh buildDockerImage.sh -h
-    Usage: buildDockerImage.sh [ -d | -g ]
+    Usage: buildDockerImage.sh -v version [-d]
     Builds a Docker Image for WebLogic.
     
-    Parameters
-      -d: creates image based on 'developer' distribution
-      -g: creates image based on 'generic' distribuition 
-
-    * use either -d or -g, obligatory.
+    Parameters:
+      -v: version to build. Required.
+          Choose one of:  12.1.3, 12.2.1  
+      -d: creates image based on 'developer' distribution, or 'generic' if ommitted	
 
 **IMPORTANT:** the resulting images will NOT have a domain pre-configured. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
 ## Samples for WebLogic Domain Creation
-To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic install image, we provide samples under the folder [samples/](samples/).
+To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic image, we provide a few samples for both 11g and 12c versions for the Developer distribution. For the **12.1.3** version, check the folder [samples/1213c-domain](samples/1213-domain). For an example on **12.2.1**, you can use the sample inside [samples/1221-domain](samples/1221-domain) folder
 
 ### Sample Domain for WebLogic 12c
-This [Dockerfile](samples/12c-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.1.3-dev** (from the Developer distribution). It will configure a **base_domain** with the following settings:
+This [Dockerfile](samples/1213-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.1.3-dev** (from the Developer distribution). It will configure a **base_domain** with the following settings:
 
  * JPA 2.1 enabled
  * JAX-RS 2.0 shared library deployed
@@ -37,22 +36,20 @@ This [Dockerfile](samples/12c-domain/Dockerfile) will create an image by extendi
  * Oracle Linux Password: **welcome1**
  * WebLogic Domain Name: **base_domain**
  * Admin Server on port: **8001**
- * Managed Servers on port: **7001**
- * JVM Memory Settings: **-Xms256m -Xmx512m -XX:MaxPermSize=2048m**
 
-Make sure you build the WebLogic 12c Image with **-d** to get the Developer Image, which is referenced by this sample Dockerfile.
+Make sure you build the WebLogic 12.x.x Image with **-d** to get the Developer Image, referenced by the sample Dockerfile.
 
-### Write your own WebLogic Domain with WLST
-The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](http://docs.oracle.com/cd/E57014_01/cross/wlsttasks.htm). The WLST script used to create domains in both Dockerfiles is [create-wls-domain.py](samples/12c-domain/container-scripts/create-wls-domain.py) (for 12c). This script by default adds JMS resources and a few other settings. You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override the existing domain, or create a new one with WLST.
+### Write your own WebLogic domain with WLST
+The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](http://docs.oracle.com/cd/E57014_01/cross/wlsttasks.htm). The WLST script used to create domains in both Dockerfiles is [create-wls-domain.py](samples/1213-domain/container-scripts/create-wls-domain.py) (for 12.1.3). This script by default adds JMS resources and a few other settings. You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override the existing domain, or create a new one with WLST.
 
 ## Building a sample Docker Image of WebLogic Domain
 To try a sample of a WebLogic image with a domain configured, follow the steps below:
 
   1. Make sure you have **oracle/weblogic:12.1.3-dev** image built. If not go into **dockerfiles** and call 
 
-        sudo sh buildDockerImage.sh -d
+        sudo sh buildDockerImage.sh -v 12.1.3 -d
 
-  2. Go to folder **samples/12c-domain**
+  2. Go to folder **samples/1213-domain**
   3. Run the following command: 
 
         sudo docker build -t samplewls:12.1.3 .
@@ -61,104 +58,112 @@ To try a sample of a WebLogic image with a domain configured, follow the steps b
 
         sudo docker images
 
-### Running WebLogic Admin Server Container 
-To start the WebLogic AdminServer, you can simply call **docker run -d samplewls:12.1.3** command. The sample Dockerfile mentioned above defines **startWebLogic.sh** as the default CMD. This is the command to start the WebLogic Admin Server.
+Note: To create a WebLogic 12cR2 Domain image snd run containers follow the same steps as for WebLogic 12.1.3
+  
+### Running WebLogic AdminServer
+To start the WebLogic AdminServer, you can simply call **docker run -d samplewls:12.1.3** command. The samples Dockerfiles define **startWebLogic.sh** as the default CMD.
 
-If you want to run the container on a remote server for later access it, or if you want to run locally but bind ports to your computer, you must expose ports and addresses for the Admin Server, as you regularly do with Docker for any network process.
-
-    $ sudo docker run -d -p 8001:8001 --name=wlsadmin samplewls:12.1.3 startWebLogic.sh
+    $ sudo docker run -d --name=wlsadmin samplewls:12.1.3
     $ sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' wlsadmin
-    xxx.xx.x.xx
+    172.17.0.27
 
-Now you can access the AdminServer Web Console at [http://xxx.xx.x.xx:8001/console](http://xxx.xx.x.xx:8001/console).
+Now you can access the AdminServer Web Console at [http://172.17.0.27:7001/console](http://172.17.0.27:7001/console). You can also access it locally if you bind port **8001** to your host, with **-p 8001:8001**.
 
-For more information on how to bind ports, check the Docker Network documentation.
+### Running WebLogic NodeManager 
+To start the WebLogic NodeManager, you can simply call **docker run -d samplewls:12.1.3 startNodeManager.sh** command. The samples Dockerfiles set PATH variable with domain's bin folder.
 
-### Sample **12c-domain**: Running WebLogic Managed Server Container
-The **12c-domain** comes with [useful Bash and WLST scripts](samples/12c-domain/container-scripts) that provide three possible modes to run WebLogic Managed Servers on a Docker container. Make sure you have an AdminServer container running before starting a ManagedServer container (see above).
+    $ sudo docker run -d --name=wlsnm0 samplewls:12.1.3 startNodeManager.sh
+    $ sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' wlsnm0
+    172.17.0.28
 
-The sample scripts will by default, attempt to find the AdminServer running at **t3://wlsadmin:8001**. You can change this. But most importantly, the AdminServer container has to be linked with Docker's **--link** parameter.
+Now you can go to the AdminServer Web Console and add a new Machine pointing to the NodeManager container's IP address (172.17.0.28) at port 5556.
 
-Below, check the three suggestions for running ManagedServer Container within the sample **12c-domain**:
+**IMPORTANT**: this only works with WebLogic 12c because of the new per-domain NodeManager, which doesn't require users to call ``nmEnroll``. For WebLogic 11g you can't simply startNodeManager.sh in the container and later add it through the console. You must use the magic script ``createMachine.sh`` provided inside **samples/11g-domain/container-scripts**. See below for more information.
 
- * Start NodeManager (Manually):
+## Clustering WebLogic on Docker Containers
+WebLogic has a [Machine](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/machines/ConfigureMachines.html) concept, which is an operational system with an agent, the Node Manager. This resource allows WebLogic AdminServer to create and assign [Managed Servers](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/domainconfig/CreateManagedServers.html) of an underlying domain in order to expand an environment of servers for different applications and resources, and also to define a [Cluster](). By using **Machines** from containers, you can easily create a [Dynamic Cluster]() by simply firing new NodeManagers containers. With some WLST magic, your cluster can scale in and out.
 
-         $ sudo docker run -d --link wlsadmin:wlsadmin <image-name> startNodeManager.sh
+### Clustering WebLogic on Docker Containers on Single Host
+If you have an AdminServer and a NodeManager running on containers of the same host, you can easily create a cluster by managing the Machines and Clusters from the Admin Web Console. But the samples in this project provide a smart script called **createMachine.sh** that starts the NodeManager, and later calls a WLST script to add a new machine to the domain running on **wlsadmin** container. This saves you a lot of time. To do that, first make sure you have an AdminServer containerized with name **wlsadmin**. Then you can fire the following command:
 
- * Start NodeManager and Create a Machine Automatically:
+       $ sudo docker run -d --link wlsadmin:wlsadmin samplewls:12.1.3 createMachine.sh
 
-         $ sudo docker run -d --link wlsadmin:wlsadmin <image-name>  createMachine.sh
+Wait 10 seconds, and then go into the AdminServer Web Console and check in the Machines page if the NodeManager was registered. You then can fire as many containers as you want to add more Machines to that domain. Later, you can create Clusters.
 
- * Start NodeManager, Create a Machine, and Create a ManagedServer Automatically 
+You can also use the **createServer.sh** script that works similar to **createMachine.sh**. It starts a NodeManager associated to the newly created container and then it will also create a **ManagedServer** associated to it. To start the ManagedServer, you must go to Admin Console.
 
-        $ sudo docker run -d --link wlsadmin:wlsadmin <image-name>  createServer.sh
+### Clustering WebLogic on Docker Containers Across Multiple Hosts
+You can either do this manually, or using the **createMachine** helper script presented above, combined with the **add-machine.py**, **add-server.sh**, and **createServer.sh** scripts inside the [samples/12c-domain/container-scripts](samples/1213-domain/container-scripts) folder. The most important thing for this to work, is that both containers from different hosts, have their ports (AdminServer and NodeManager) reachable somehow. You can either make sure a virtual network for containers across multiple hosts is in place, or that ports are binded to hosts, and hosts' IP addresses are used for registering and communication between AdminServer and NodeManager. 
 
- * Parameters you can use:
+To better understand this, let's first see how to setup this topology manually with Docker commands.
 
-        $ sudo docker run -d --link wlsadmin:wlsadmin \
-             -p <NM Port>:5556 -p <MS Port>:<MS Port> \
-             --name=<Container name> \
-             -e MS_HOST=<Host address where Managed server container runs> \
-             -e MS_PORT=<Managed server port, use same unique port internally and externally> \
-             -e NM_HOST=<Host address where NM container runs> \
-             -e NM_PORT=<NM Port (should match the externally exposed port with -p)> \
-             <image name based on 12c-domain sample> \
-             <createMachine.sh, startNodeManager.sh, createServer.sh>
+#### Manually
+In this example we will be using the sample for 12c-domain based on oracle/weblogic:12.1.3-dev image. Make sure you have the **samplewls:12.1.3** image in place, as documented above, and available on Docker local registry of both hosts (**$HOST0** and **HOST1**). Start the AdminServer on one host and make sure port 7001 is binded to the host so the NodeManager is able to communicate with this AdminServer from another host. Then you must also start the NodeManager on second host also having its port binded to the host machine. This is the overall understanding. Let's see how this works:
 
-**IMPORTANT:** these scripts are part of the sample [12c-domain](samples/12c-domain) and can be used as a starting point. They give an idea on how to use WLST, customize the container environment, and start processes such as the AdminServer and the NodeManager.
+ 1. On **$HOST0** start the AdminServer: 
 
-If you have an AdminServer and a Managed Server running on containers on the same host, you can easily create a cluster by managing the Machines and Clusters from the Admin Web Console.  Use the scripts
+        $ sudo docker run -d --net=host samplewls:12.1.3 startWebLogic.sh
 
- * **startNodeManager.sh** - will start a NodeManager in the container.
- * **[createMachine.sh](samples/12c-domain/container-scripts/createMachine.sh)** - will start Node Manager and add a machine to the domain.
- * **[createServer.sh](samples/12c-domain/container-scripts/createServer.sh)** - will start Node Manager, add a machine to the domain running at **wlsadmin** (or at ADMMIN_URL), and finally create and configure a Managed Server.
+ 2. On **$HOST1** start the NodeManager (we bind port 7001 for the still-to-be-created ManagedServer):
 
-These scripts have a list of variables that must be properly configured, though most have default values (when running on Single Host mode):
+        $ sudo docker run -d --net=host samplewls:12.1.3 startNodeManager.sh
+
+ 3. Now access the AdminServer Console at http://$HOST0:7001/console
+ 4. Go to **Environment > Machines** and add a new machine. Point to **$HOST1:5556**
+ 5. Save changes, and test if NM is reachable by clicking on tab Monitoring
+
+If you want to have more than one AdminServer and/or NodeManager containers per host, you can use other ports instead the default ones but when adding the new Machine, make sure to point to the external binded port.
+
+#### Magically, Using **createMachine.sh**
+This script accepts some variables to allow connecting a NodeManager to a remote AdminServer as long both are reachable bidirectionally. When properly executed with the correct parameters, will connect to the AdminServer and assign the NodeManager running on that container to the domain. This way, the container can be started and automagically added as a Machine into the AdminServer domain. Follow the steps below:
+
+ 1. On **$HOST0** start the AdminServer: 
+
+        $ sudo docker run -d -p 7001:7001 samplewls:12.1.3 startWebLogic.sh
+
+ 2. On **$HOST1** start the NodeManager with **createMachine.sh** and defining hostname **wlsadmin** to the actual reachable address of AdminServer:
+
+        $ sudo docker run -d -p 5556:5556 \
+               --add-host wlsadmin:$HOST0 \
+               -e NM_HOST="$HOST1" \
+               samplewls:12.1.3 createMachine.sh
+
+ 3. Now access the AdminServer Console at http://$HOST0:7001/console
+ 4. Go to **Environment > Machines** and you should now have a Machine registered
+
+The **createMachine.sh** script will call the **add-machine.py** WLST script. This script has a list of variables that must be properly configured, though most have default values (for when running on Single Host mode):
+
  * **ADMIN_USERNAME** = username of the AdminServer 'weblogic' user. Default: weblogic
  * **ADMIN_PASSWORD** = password of ADMIN_USERNAME. Defaults to value passed during Dockerfile build. ('welcome1' in samples)
- * **ADMIN_HOST**     = Host address of the AdminServer. Default: wlsadmin
- * **ADMIN_PORT**     = Port of the AdminServer. Default: 8001, pre-defined in [Dockerfile](samples/12c-domain/Dockerfile).
- * **CONTAINER_NAME** = name of the Machine to be created. Default: nodemanager_ + <ContainerID>
+ * **ADMIN_URL**      = t3 URL of the AdminServer. Default: t3://wlsadmin:7001
+ * **CONTAINER_NAME** = name of the Machine to be created. Default: nodemanager_ + hash of the container
  * **NM_HOST**        = IP address where NodeManager can be reached. Default: IP address of the container
  * **NM_PORT**        = Port of NodeManager. Default: 5556
- * **MS_HOST**        = IP address where Managed Server can be reached. Default: IP address of the container
- * **MS_PORT**        = Port of Managed Server. Default: 7001
+ 
+#### Create a WebLogic Server 12cR2 MedRec sample domain**
+The Supplemental Quick Installer is a lightweight installer that contains all the necessary artifacts to develop and test applications on Oracle WebLogic Server 12.2.1. You can extend the WebLogic developer install image oracle/weblogic:12.1.3-dev to create a WLS 12.2.1 domain image with the MedRec application deployed.
+ 1. Make sure you have **oracle/weblogic:12.2.1-dev** image built. If not go into **dockerfiles** and call 
 
-#### Running Containers On A Remote Host
-To access ManagedServers and the AdminServer running on container in a remote host, you must use the Docker Network features to either use the **host** container network mode or bind specific ports. For example:
+        sudo sh buildDockerImage.sh -v 12.2.1 -d
 
- * Start AdminServer Container on your remote host
+  2. Go to folder **samples/1221-domain**
+  3. Run the following command: 
 
-        $ sudo docker run -d --name wlsadmin -p 8001:8001 samplewls:12.1.3 startWebLogic.sh
+        sudo docker build -t samplewls:12.2.1 .
 
- * Start an unexposed ManagedServer Container with **createMachine.sh** or **startNodeManager.sh**
+ 3. Now run a container from this new sample domain image
+        sudo docker run samplewls:12.2.1 bash
+ 3. Now access the AdminServer Console at http://$HOST0:7011/medrec
 
-        $ sudo docker run -d --link wlsadmin:wlsadmin --name="wlsnm0" -e NM_PORT="5558" -e NM_HOST=<host machine address> samplewls:12.1.3 createMachine.sh
+## Choose your WebLogic Distribution
+This project hosts two configurations for building Docker images with WebLogic 12c.
 
-   In this case (either with startNodeManager.sh or createMachine.sh, this domain will have a Machine running in a container with no exposed ports and thus, any Managed Server created in this domain and assigned to this Machine cannot be accessed externally. This can be useful for JMS processing, EJBs, or anything that will be running in this cluster without external direct user access.
-
- * Start an exposed ManagedServer Container with **createServer.sh**
-
-        $ sudo docker run -d --link wlsadmin:wlsadmin  --name="MS1" -p 7002:7002 -e MS_PORT="7002" -e MS_HOST=<host address> samplewls:12.1.3 createServer.sh
-
-        $ sudo docker run -d --link wlsadmin:wlsadmin  --name="MS2" -p 7003:7003 -e MS_PORT="7003" -e MS_HOST=<host address> samplewls:12.1.3 createServer.sh
-
-   In this case with createServer.sh, the ManagedServer will be automatically created and assigned, so you must during command line define which port will be used to run the ManagedServer, and the exposed port (with Docker's -p). For simplification, always use the same port on external/internal definition. It is also important to define MS_HOST because that is the value that WebLogic will tell users where data is coming from, such as HTTP responses.
-
-**Note:** remember to change the port when you create a new Managed Server. createServer.sh will not start the Managed Server automatically it requires you to go to the AdminServer console and start the server.
-
-## Docker Container Communicating With Servers on a Remote Host
-Another possible topology is to run a single Admin Server container communicating with WebLogic Server running on a remote host. Use --add-host so that container assumes the ip address of host where it is running instead of the local container IP address.
-
-        $ sudo docker run -d -p 8001:8001 --net=host \ 
-              --add-host=hostname:<host ip address where container is running> \ 
-              --name wlsadmin samplewls:12.1.3
-
-For this configuration to work the following configurations are necessary:
-
- * The listen address of the AdminServer in the Docker container has to be configured.
- * The listen address of the AdminServer in the remote host  has to be configured.
- * The client must use the hosts IP addresses to get the initial context for JNDI lookup.
+ * Developer Distribution
+   For more information on the WebLogic 12c ZIP Developer Distribution, visit [WLS Zip Distribution for Oracle WebLogic Server 12.1.3.0](http://download.oracle.com/otn/nt/middleware/12c/wls/1213/README.txt).
+  For more information on the WebLogic 12cR2 Quick Developer Distribution, visit [WLS Quick Install Distribution for Oracle WebLogic Server 12.2.1.0](http://download.oracle.com/otn/nt/middleware/12c/wls/1221/README.txt).
+ * Generic Full Distribution
+   For more information on the WebLogic 12c Generic Full Distribution, visit [WebLogic 12.1.3 Documentation](http://docs.oracle.com/middleware/1213/wls/index.html).
+    For more information on the WebLogic 12cR2 Generic Full Distribution, visit [WebLogic 12.2.1 Documentation](http://docs.oracle.com/middleware/1221/wls/index.html).
 
 ## License
 To download and run WebLogic 12c Distribution regardless of inside or outside a Docker container, and regardless of Generic or Developer distribution, you must agree and accept the [OTN Free Developer License Terms](http://www.oracle.com/technetwork/licenses/wls-dev-license-1703567.html).
