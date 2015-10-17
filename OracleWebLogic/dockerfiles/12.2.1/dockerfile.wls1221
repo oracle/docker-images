@@ -1,0 +1,126 @@
+# LICENSE CDDL 1.0 + GPL 2.0
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile for WebLogic 12.2.1 Generic Distribution
+# 
+# IMPORTANT
+# ---------
+# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
+# For that, look into the folder 'samples' for an example on how
+# to create a domain on a new inherited image.
+#
+# You can go into 'samples/12.1.3-generic-domain' after building the generic raw image
+# and build that image, for example:
+# 
+#   $ cd samples/12c-generic-domain
+#   $ sudo docker build -t wls1221 .
+#
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) WLS 12.2.1.0, wls_generic.jar
+#     
+# (2) jdk-8u45-linux-x64.rpm
+#     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put all downloaded files in the same directory as this Dockerfile
+# Run: 
+#      $ sudo docker build -t oracle/weblogic:12.2.1 . 
+#
+# Pull base image
+# ---------------
+
+FROM oraclelinux:7
+
+# Maintainer
+# ----------
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+ENV JAVA_RPM jdk-8u45-linux-x64.rpm
+ENV WLS_PKG wls_generic.jar
+ENV JAVA_HOME /usr/java/default
+ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
+ENV USER_MEM_ARGS -Xms512m -Xmx512m
+
+#ENV AUTO_HOME /u01/DTE
+#ENV AUTO_WORK /u01/auto_work
+#ENV PERL5LIB /u01/perl5.10.1/lib
+#ENV JDK15HOME /docker_support/jdk8
+
+#COPY support/*  /u01/scripts/
+#COPY support/startme /sbin/
+
+# Create dkuser and dkgrp 
+#RUN groupadd dkgrp -g 42424 && \
+#    groupadd dba -g 8500 && \
+#    useradd dkuser -G dba,dkgrp -u 94110 -g dkgrp && \
+#    mkdir /u01/auto_work && \
+#    chown -R dkuser:dkgrp /u01 && \
+#    chmod a+xr /u01/scripts/* && \
+#    chmod a+xr /sbin/startme && \
+#    chmod a+xr /u01/work 
+
+RUN mkdir /u01 && \
+    chmod a+xr /u01 && \
+    useradd -b /u01 -m -s /bin/bash oracle 
+
+# Copy packages
+COPY $WLS_PKG /u01/
+COPY $JAVA_RPM /u01/
+COPY install.file /u01/
+COPY oraInst.loc /u01/
+
+# Install and configure Oracle JDK 8u45
+# -------------------------------------
+RUN rpm -i /u01/$JAVA_RPM && \ 
+    rm /u01/$JAVA_RPM
+
+# Change the open file limits in /etc/security/limits.conf
+RUN sed -i '/.*EOF/d' /etc/security/limits.conf && \
+    echo "* soft nofile 16384" >> /etc/security/limits.conf && \ 
+    echo "* hard nofile 16384" >> /etc/security/limits.conf && \ 
+    echo "# EOF"  >> /etc/security/limits.conf
+
+# Change the kernel parameters that need changing.
+RUN echo "net.core.rmem_max=4192608" > /u01/oracle/.sysctl.conf && \
+    echo "net.core.wmem_max=4192608" >> /u01/oracle/.sysctl.conf && \ 
+    sysctl -e -p /u01/oracle/.sysctl.conf
+
+# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
+RUN chown oracle:oracle -R /u01
+WORKDIR /u01
+USER oracle
+
+# Installation of WebLogic 
+RUN mkdir /u01/oracle/.inventory
+RUN java -jar $WLS_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
+    rm $WLS_PKG /u01/oraInst.loc /u01/install.file
+
+WORKDIR /u01/oracle/
+
+ENV PATH $PATH:/u01/oracle/mw1221/oracle_common/common/bin
+
+#USER root
+#
+#RUN mkdir -p /u01/auto_work/ua_schemas && \
+#    mkdir /u01/auto_work/domain_reconfig && \
+#    mkdir /u01/auto_work/config_upgrade 
+#
+#COPY ua_schemas /u01/auto_work/ua_schemas/
+#COPY domain_reconfig /u01/auto_work/domain_reconfig/
+#COPY config_upgrade /u01/auto_work/config_upgrade/
+#
+#RUN chown -R dkuser:dkgrp /u01 && \
+#    chmod -R a+xr /u01/auto_work
+#
+#WORKDIR /u01/auto_work
+#
+#COPY DTE /u01/
+#COPY perl5.10.1 /u01/
+
+
+# Define default command to start bash. 
+CMD ["bash"]
