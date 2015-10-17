@@ -1,1 +1,5 @@
-fmw_12.2.1.0.0_wls.jar
+# Download full distribution of WebLogic 12.2.1 from www.oracle.com
+# ====
+#  - http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls_generic.html
+# 
+229275f6431c1aa6f68c9a1a60d92aa0  fmw_12.2.1.0.0_wls.jar
