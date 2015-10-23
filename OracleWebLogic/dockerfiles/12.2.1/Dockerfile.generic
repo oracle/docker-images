@@ -40,8 +40,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # Environmen#t variables required for this build (do NOT change)
 ENV JAVA_RPM jdk-8u60-linux-x64.rpm
-#ENV WLS_PKG fmw_12.2.1.0.0_wls.jar
-ENV WLS_PKG wls_generic.jar
+ENV WLS_PKG fmw_12.2.1.0.0_wls.jar
 ENV JAVA_HOME /usr/java/default
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 
