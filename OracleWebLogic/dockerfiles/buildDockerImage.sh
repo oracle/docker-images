@@ -77,7 +77,7 @@ fi
 # Go into version folder
 cd $VERSION
 
-checksumPackages
+#checksumPackages
 
 echo "====================="
 
