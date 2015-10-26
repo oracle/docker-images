@@ -97,14 +97,6 @@ set('SecureListener', 'false')
 domain_path = '/u01/oracle/weblogic/user_projects/domains/base_domain'
 
 writeDomain(domain_path)
-closeTemplate()
-
-# Enable JAX-RS 2.0 by default on this domain
-# ===========================================
-readDomain(domain_path)
-addTemplate('/u01/oracle/jaxrs2-template.jar')
-updateDomain()
-closeDomain()
 
 # Exit WLST
 # =========
