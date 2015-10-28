@@ -1,0 +1,7 @@
+# Oracle Communications Converged Application Server 7.0 Software
+# ===
+# 1. Go to https://edelivery.oracle.com/osdc/faces/Home.jspx
+# 2. Download the Oracle Communications Converged Application Server 7.0 Software
+# 3. Drop the unziped file occas_generic.jar in the same folder as this file
+# 
+ab636c7c5bca85ba010c85c034d4ff28  occas_generic.jar
