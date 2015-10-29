@@ -11,7 +11,7 @@ To run a single host cluster, you can use these two commands:
 
 2. Create a containerized Machine with a Managed Server
 
-        # docker run –-link wlsadmin:wlsadmin –d mywlsimage createServer.sh
+        # docker run --link wlsadmin:wlsadmin -d mywlsimage createServer.sh
 
 3. Call commnad on (2) multiple times for more servers
 
