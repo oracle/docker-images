@@ -44,8 +44,8 @@ ENV WLS_PKG fmw_12.2.1.0.0_wls_quick.jar
 ENV JAVA_HOME /usr/java/default
 ENV ORACLE_HOME /u01/oracle/weblogic
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
-ENV USER_MEM_ARGS -Xms256m -Xmx512m -XX:MaxPermSize=2048m
-ENV JAVA_OPTIONS -XX:+PrintCommandLineFlags
+ENV USER_MEM_ARGS -Xms256m -Xmx512m
+ENV JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
 
 # Setup filesystem and oracle user
 # ------------------------------------------------------------
