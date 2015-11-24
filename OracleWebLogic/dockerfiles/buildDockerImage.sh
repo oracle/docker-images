@@ -28,6 +28,7 @@ checksumPackages() {
   md5sum -c Checksum.$DISTRIBUTION
   if [ "$?" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
+    echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"
     exit $?
   fi
 }
@@ -77,7 +78,7 @@ fi
 # Go into version folder
 cd $VERSION
 
-#checksumPackages
+checksumPackages
 
 echo "====================="
 
