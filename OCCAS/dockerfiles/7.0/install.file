@@ -6,10 +6,10 @@ Response File Version=1.0.0.0.0
 [GENERIC]
 
 #The oracle home location. This can be an existing Oracle Home or a new Oracle Home
-ORACLE_HOME=/u01/oracle/weblogic
+ORACLE_HOME=/u01/oracle/occas
 
-#Set this variable value to the Installation Type selected. e.g. WebLogic Server, Coherence, Complete with Examples.
-INSTALL_TYPE=Complete with Examples
+#Set this variable value to the Installation Type selected. e.g. Converged Application Server.
+INSTALL_TYPE=Converged Application Server
 
 #Provide the My Oracle Support Username. If you wish to ignore Oracle Configuration Manager configuration provide empty string for user name.
 MYORACLESUPPORT_USERNAME=

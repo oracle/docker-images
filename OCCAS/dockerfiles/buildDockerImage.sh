@@ -1,21 +1,18 @@
 #!/bin/bash
 # 
-# Since: October, 2014
+# Since: November, 2015
 # Author: bruno.borges@oracle.com
-# Description: script to build a Docker image for WebLogic
+# Author: ayuste@optaresolutions.com
+# Description: script to build a Docker image for OCCAS
 
 usage() {
 cat << EOF
 Usage: buildDockerImage.sh [-d | -g]
-Builds a Docker Image for WebLogic.
+Builds a Docker Image for OCCAS.
   
 Parameters:
    -v: version to build. Required.
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
-   -d: creates image based on 'developer' distribution
-   -g: creates image based on 'generic' distribution
-
-* use either -d or -g, obligatory.
 
 LICENSE CDDL 1.0 + GPL 2.0
 EOF
@@ -25,7 +22,7 @@ exit 0
 # Validate packages
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
-  md5sum -c Checksum.$DISTRIBUTION
+  md5sum -c Checksum
   if [ "$?" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     exit $?
@@ -35,19 +32,11 @@ checksumPackages() {
 if [ "$#" -eq 0 ]; then usage; fi
 
 # Parameters
-DEVELOPER=0
-GENERIC=0
-VERSION="12.1.3"
+VERSION="7.0"
 while getopts "hdgv:" optname; do
   case "$optname" in
     "h")
       usage
-      ;;
-    "d")
-      DEVELOPER=1
-      ;;
-    "g")
-      GENERIC=1
       ;;
     "v")
       VERSION="$OPTARG"
@@ -59,20 +48,8 @@ while getopts "hdgv:" optname; do
   esac
 done
 
-# WebLogic Image Name
-DEFAULT_IMAGE_NAME="oracle/weblogic:$VERSION"
-DEFAULT_DEV_IMAGE_NAME="$DEFAULT_IMAGE_NAME-dev"
-
-# Developer or Generic?
-if [ "$DEVELOPER" -eq "$GENERIC" ]; then
-  usage
-elif [ $DEVELOPER -eq 1 ]; then
-  DISTRIBUTION="developer"
-  IMAGE_NAME="$DEFAULT_DEV_IMAGE_NAME"
-else
-  DISTRIBUTION="generic"
-  IMAGE_NAME="$DEFAULT_IMAGE_NAME"
-fi
+# OCCAS Image Name
+IMAGE_NAME="oracle/occas:$VERSION"
 
 # Go into version folder
 cd $VERSION
@@ -84,12 +61,10 @@ echo "====================="
 # ################## #
 # BUILDING THE IMAGE #
 # ################## #
-echo "Building image '$IMAGE_NAME' based on '$DISTRIBUTION' distribution..."
+echo "Building image '$IMAGE_NAME'..."
 
 # BUILD THE IMAGE (replace all environment variables)
-rm -f Dockerfile && ln -s Dockerfile.$DISTRIBUTION Dockerfile
-docker build --force-rm=true --no-cache=true --rm=true -t $IMAGE_NAME . 
-rm -f Dockerfile
+docker build --force-rm=true --no-cache=true --rm=true -t $IMAGE_NAME .
 
 if [ $? -ne 0 ]; then
   echo "There was an error building the image."
@@ -99,8 +74,8 @@ fi
 echo ""
 
 if [ $? -eq 0 ]; then
-  echo "WebLogic Docker Image for '$DISTRIBUTION' $VERSION is ready to be extended: $IMAGE_NAME"
+  echo "OCCAS Docker Image for  $VERSION is ready to be extended: $IMAGE_NAME"
 else
-  echo "WebLogic Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "OCCAS Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
 

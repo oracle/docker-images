@@ -1,16 +1,19 @@
-# WebLogic on Docker Default Domain
+# OCCAS on Docker Default Domain
 #
 # Default domain 'base_domain' to be created inside the Docker image for WLS
 # 
-# Since : October, 2014
+# Since : November, 2015
 # Author: bruno.borges@oracle.com
+# Author: ayuste@optaresolutions.com
 # ==============================================
 admin_port = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass = os.environ.get("ADMIN_PASSWORD", "welcome1")
 
 # Open default domain template
 # ======================
-readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
+readTemplate("/u01/oracle/occas/wlserver/common/templates/wls/wls.jar")
+addTemplate("/u01/oracle/occas/wlserver/common/templates/wls/sipserverdomain.jar")
+addTemplate("/u01/oracle/occas/wlserver/common/templates/wls/oracle.communications.occas.basic.template.jar")
 
 # Disable Admin Console
 # --------------------
@@ -98,7 +101,7 @@ set('NativeVersionEnabled', 'false')
 set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
 
-domain_path = '/u01/oracle/weblogic/user_projects/domains/base_domain'
+domain_path = '/u01/oracle/occas/user_projects/domains/base_domain'
 
 writeDomain(domain_path)
 closeTemplate()

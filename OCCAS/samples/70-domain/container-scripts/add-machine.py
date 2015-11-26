@@ -1,8 +1,9 @@
 #
 # Script to add NodeManager automatically to the domain's AdminServer running on 'wlsadmin'.
 #
-# Since: October, 2014
+# Since: November, 2015
 # Author: bruno.borges@oracle.com
+# Author: ayuste@optaresolutions.com
 #
 # =============================
 import os

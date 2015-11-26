@@ -3,6 +3,7 @@ CONFIG_JVM_ARGS="${CONFIG_JVM_ARGS} -Dweblogic.security.SSL.ignoreHostnameVerifi
 WLST="wlst.sh -skipWLSModuleScanning"
 
 # Start Node Manager
+. /u01/oracle/occas/oracle_common/common/bin/setNMProps.sh
 nohup startNodeManager.sh > log.nm &
 sleep 5
 

@@ -1,47 +1,47 @@
 # LICENSE CDDL 1.0 + GPL 2.0
 #
-# ORACLE DOCKERFILES PROJECT
+# OPTARE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for WebLogic 12c (Full) Generic Distribution
+# This is the Dockerfile for OCCAS 7.0
 # 
 # IMPORTANT
 # ---------
-# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
+# The resulting image of this Dockerfile DOES NOT contain a OCCAS Domain.
 # For that, look into the folder 'samples' for an example on how
 # to create a domain on a new inherited image.
 #
-# You can go into 'samples/12.1.3-generic-domain' after building the generic raw image
+# You can go into 'samples/70-domain' after building the generic raw image
 # and build that image, for example:
 # 
-#   $ cd samples/12c-generic-domain
-#   $ sudo docker build -t mywls .
+#   $ cd samples/70-domain
+#   $ sudo docker build -t myoccas .
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.1.3.0.0_wls.jar
-#     Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
+# (1) occas_generic.jar
+#     Download the Generic installer from https://edelivery.oracle.com/osdc/faces/Home.jspx
 #
-# (2) jdk-8u60-linux-x64.rpm
-#     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+# (2) jdk-8u31-linux-x64.rpm
+#     Download from http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t oracle/weblogic:12.1.3 . 
+#      $ sudo docker build -t oracle/occas:7.0 .
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7
+FROM oraclelinux:6.6
 
 # Maintainer
 # ----------
-MAINTAINER Bruno Borges <bruno.borges@oracle.com>
+MAINTAINER Anton R. Yuste <ayuste@optaresolutions.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_RPM jdk-8u60-linux-x64.rpm
-ENV WLS_PKG fmw_12.1.3.0.0_wls.jar
+ENV JAVA_RPM jdk-8u31-linux-x64.rpm
+ENV OCCAS_PKG occas_generic.jar
 ENV JAVA_HOME /usr/java/default
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 ENV JAVA_OPTIONS -Djava.security.egd=file:/dev/./urandom
@@ -53,12 +53,12 @@ RUN mkdir /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle 
 
 # Copy packages
-COPY $WLS_PKG /u01/
+COPY $OCCAS_PKG /u01/
 COPY $JAVA_RPM /u01/
 COPY install.file /u01/
 COPY oraInst.loc /u01/
 
-# Install and configure Oracle JDK 8u25
+# Install and configure Oracle JDK 8u31
 # -------------------------------------
 RUN rpm -i /u01/$JAVA_RPM && \ 
     rm /u01/$JAVA_RPM
@@ -74,19 +74,19 @@ RUN echo "net.core.rmem_max=4192608" > /u01/oracle/.sysctl.conf && \
     echo "net.core.wmem_max=4192608" >> /u01/oracle/.sysctl.conf && \ 
     sysctl -e -p /u01/oracle/.sysctl.conf
 
-# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
+# Adjust file permissions, go to /u01 as user 'oracle' to proceed with OCCAS installation
 RUN chown oracle:oracle -R /u01
 WORKDIR /u01
 USER oracle
 
-# Installation of WebLogic 
+# Installation of OCCAS
 RUN mkdir /u01/oracle/.inventory
-RUN java -jar $WLS_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
-    rm $WLS_PKG /u01/oraInst.loc /u01/install.file
+RUN java -jar $OCCAS_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
+    rm $OCCAS_PKG /u01/oraInst.loc /u01/install.file
 
 WORKDIR /u01/oracle/
 
-ENV PATH $PATH:/u01/oracle/weblogic/oracle_common/common/bin
+ENV PATH $PATH:/u01/oracle/occas/oracle_common/common/bin
 
 # Define default command to start bash. 
 CMD ["bash"]
