@@ -28,6 +28,7 @@ checksumPackages() {
   md5sum -c Checksum.$DISTRIBUTION
   if [ "$?" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
+    echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"
     exit $?
   fi
 }
@@ -77,7 +78,7 @@ fi
 # Go into version folder
 cd $VERSION
 
-#checksumPackages
+checksumPackages
 
 echo "====================="
 
@@ -88,13 +89,11 @@ echo "Building image '$IMAGE_NAME' based on '$DISTRIBUTION' distribution..."
 
 # BUILD THE IMAGE (replace all environment variables)
 rm -f Dockerfile && ln -s Dockerfile.$DISTRIBUTION Dockerfile
-docker build --force-rm=true --no-cache=true --rm=true -t $IMAGE_NAME . 
-rm -f Dockerfile
-
-if [ $? -ne 0 ]; then
+docker build --force-rm=true --no-cache=true -t $IMAGE_NAME . || {
   echo "There was an error building the image."
-  exit $?
-fi
+  exit 1
+}
+rm -f Dockerfile
 
 echo ""
 
