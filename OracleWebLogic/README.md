@@ -67,7 +67,7 @@ To start the WebLogic AdminServer, you can simply call **docker run -d samplewls
     $ sudo docker inspect --format '{{ .NetworkSettings.IPAddress }}' wlsadmin
     172.17.0.27
 
-Now you can access the AdminServer Web Console at [http://172.17.0.27:7001/console](http://172.17.0.27:7001/console). You can also access it locally if you bind port **8001** to your host, with **-p 8001:8001**.
+Now you can access the AdminServer Web Console at [http://172.17.0.27:8001/console](http://172.17.0.27:8001/console). You can also access it locally if you bind port **8001** to your host, with **-p 8001:8001**.
 
 ### Running WebLogic NodeManager 
 To start the WebLogic NodeManager, you can simply call **docker run -d samplewls:12.1.3 startNodeManager.sh** command. The samples Dockerfiles set PATH variable with domain's bin folder.
@@ -98,7 +98,7 @@ You can either do this manually, or using the **createMachine** helper script pr
 To better understand this, let's first see how to setup this topology manually with Docker commands.
 
 #### Manually
-In this example we will be using the sample for 12c-domain based on oracle/weblogic:12.1.3-dev image. Make sure you have the **samplewls:12.1.3** image in place, as documented above, and available on Docker local registry of both hosts (**$HOST0** and **HOST1**). Start the AdminServer on one host and make sure port 7001 is binded to the host so the NodeManager is able to communicate with this AdminServer from another host. Then you must also start the NodeManager on second host also having its port binded to the host machine. This is the overall understanding. Let's see how this works:
+In this example we will be using the sample for 12c-domain based on oracle/weblogic:12.1.3-dev image. Make sure you have the **samplewls:12.1.3** image in place, as documented above, and available on Docker local registry of both hosts (**$HOST0** and **HOST1**). Start the AdminServer on one host and make sure port 8001 is binded to the host so the NodeManager is able to communicate with this AdminServer from another host. Then you must also start the NodeManager on second host also having its port binded to the host machine. This is the overall understanding. Let's see how this works:
 
  1. On **$HOST0** start the AdminServer: 
 
@@ -108,7 +108,7 @@ In this example we will be using the sample for 12c-domain based on oracle/weblo
 
         $ sudo docker run -d --net=host samplewls:12.1.3 startNodeManager.sh
 
- 3. Now access the AdminServer Console at http://$HOST0:7001/console
+ 3. Now access the AdminServer Console at http://$HOST0:8001/console
  4. Go to **Environment > Machines** and add a new machine. Point to **$HOST1:5556**
  5. Save changes, and test if NM is reachable by clicking on tab Monitoring
 
@@ -119,7 +119,7 @@ This script accepts some variables to allow connecting a NodeManager to a remote
 
  1. On **$HOST0** start the AdminServer: 
 
-        $ sudo docker run -d -p 7001:7001 samplewls:12.1.3 startWebLogic.sh
+        $ sudo docker run -d -p 8001:8001 samplewls:12.1.3 startWebLogic.sh
 
  2. On **$HOST1** start the NodeManager with **createMachine.sh** and defining hostname **wlsadmin** to the actual reachable address of AdminServer:
 
@@ -128,14 +128,14 @@ This script accepts some variables to allow connecting a NodeManager to a remote
                -e NM_HOST="$HOST1" \
                samplewls:12.1.3 createMachine.sh
 
- 3. Now access the AdminServer Console at http://$HOST0:7001/console
+ 3. Now access the AdminServer Console at http://$HOST0:8001/console
  4. Go to **Environment > Machines** and you should now have a Machine registered
 
 The **createMachine.sh** script will call the **add-machine.py** WLST script. This script has a list of variables that must be properly configured, though most have default values (for when running on Single Host mode):
 
  * **ADMIN_USERNAME** = username of the AdminServer 'weblogic' user. Default: weblogic
  * **ADMIN_PASSWORD** = password of ADMIN_USERNAME. Defaults to value passed during Dockerfile build. ('welcome1' in samples)
- * **ADMIN_URL**      = t3 URL of the AdminServer. Default: t3://wlsadmin:7001
+ * **ADMIN_URL**      = t3 URL of the AdminServer. Default: t3://wlsadmin:8001
  * **CONTAINER_NAME** = name of the Machine to be created. Default: nodemanager_ + hash of the container
  * **NM_HOST**        = IP address where NodeManager can be reached. Default: IP address of the container
  * **NM_PORT**        = Port of NodeManager. Default: 5556
