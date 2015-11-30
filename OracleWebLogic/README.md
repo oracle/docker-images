@@ -36,6 +36,8 @@ This [Dockerfile](samples/1213-domain/Dockerfile) will create an image by extend
  * Oracle Linux Password: **welcome1**
  * WebLogic Domain Name: **base_domain**
  * Admin Server on port: **8001**
+ * NodeManager on port: **5556**
+ * Managed Server on port: **7001**
 
 Make sure you build the WebLogic 12.x.x Image with **-d** to get the Developer Image, referenced by the sample Dockerfile.
 
