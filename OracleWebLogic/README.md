@@ -8,8 +8,10 @@ For more information please read the [Docker Images from Oracle Linux](https://r
 ## How to build and run
 This project offers Dockerfiles for both WebLogic 12c (12.1.3)and WebLogic 12cR2 (12.2.1), and for each version it also provides one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
-### Building WebLogic Images
-First decide which version and distribution you want to use, then download the required packages and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
+### Building WebLogic Docker Images
+**IMPORTANT:** you have to download the binaries of WebLogic and Oracle JDK and put them in place (see **.download** files inside dockerfiles/<version>).
+
+Before you build, choose which version and distribution you want to build an image of, then download the required packages (see .download files) and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
 
     $ sudo sh buildDockerImage.sh -h
     Usage: buildDockerImage.sh -v version [-d]
