@@ -6,8 +6,9 @@
 
 usage() {
 cat << EOF
-Usage: buildDockerImage.sh [-d | -g]
-Builds a Docker Image for WebLogic.
+
+Usage: buildDockerImage.sh -v [version] [-d | -g]
+Builds a Docker Image for Oracle WebLogic.
   
 Parameters:
    -v: version to build. Required.
@@ -18,6 +19,7 @@ Parameters:
 * use either -d or -g, obligatory.
 
 LICENSE CDDL 1.0 + GPL 2.0
+
 EOF
 exit 0
 }
