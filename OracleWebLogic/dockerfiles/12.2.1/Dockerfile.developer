@@ -10,11 +10,11 @@
 # For that, look into the folder 'samples' for an example on how
 # to create a domain on a new inherited image.
 #
-# You can go into 'samples/12.2.1-generic-domain' after building the generic raw image
-# and build that image, for example:
+# You can go into 'samples/1221-domain' after building the developer install image
+# and build the domain image, for example:
 # 
-#   $ cd samples/12c-generic-domain
-#   $ sudo docker build -t mywls .
+#   $ cd samples/1221-domain
+#   $ sudo docker build -t mywls:1221 .
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -39,28 +39,32 @@ FROM oraclelinux:7.0
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
 ENV JAVA_RPM jdk-8u60-linux-x64.rpm
 ENV WLS_PKG fmw_12.2.1.0.0_wls_quick.jar 
 ENV JAVA_HOME /usr/java/default
 ENV ORACLE_HOME /u01/oracle/weblogic
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 ENV USER_MEM_ARGS -Xms256m -Xmx512m
-ENV JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
+ENV _JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
+ENV JAVA_OPTIONS $_JAVA_OPTIONS
 
 # Setup filesystem and oracle user
 # ------------------------------------------------------------
 RUN mkdir /u01 && chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle
-RUN ls -l /u01
 
 # Copy packages
 COPY $WLS_PKG /u01/
 COPY $JAVA_RPM /u01/
+#COPY java.security /u01/
 
 # Install and configure Oracle JDK 8u25
 # -------------------------------------
 RUN rpm -i /u01/$JAVA_RPM && \ 
-    rm /u01/$JAVA_RPM
+    rm /u01/$JAVA_RPM 
+# && \
+#    mv -f /u01/java.security $JAVA_HOME/./jre/lib/security/java.security
 
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 RUN chown oracle:oracle -R /u01

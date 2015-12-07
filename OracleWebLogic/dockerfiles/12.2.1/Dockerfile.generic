@@ -38,12 +38,14 @@ FROM oraclelinux:7.0
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
-# Environmen#t variables required for this build (do NOT change)
+# Environment variables required for this build
+# ---------------------------------------------
 ENV JAVA_RPM jdk-8u60-linux-x64.rpm
 ENV WLS_PKG fmw_12.2.1.0.0_wls.jar
 ENV JAVA_HOME /usr/java/default
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
-ENV JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
+ENV _JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
+ENV JAVA_OPTIONS $_JAVA_OPTIONS
 
 # Setup required packages (unzip), filesystem, and oracle user
 # ------------------------------------------------------------
