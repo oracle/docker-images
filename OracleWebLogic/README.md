@@ -25,7 +25,7 @@ Before you build, choose which version and distribution you want to build an ima
 **IMPORTANT:** the resulting images will NOT have a domain pre-configured. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
 ## Samples for WebLogic Domain Creation
-To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic image, we provide a few samples for both 11g and 12c versions for the Developer distribution. For the **12.1.3** version, check the folder [samples/1213c-domain](samples/1213-domain). For an example on **12.2.1**, you can use the sample inside [samples/1221-domain](samples/1221-domain) folder
+To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic image, we provide a few samples for 12c versions for the Developer distribution. For the **12.1.3** version, check the folder [samples/1213c-domain](samples/1213-domain). For an example on **12.2.1**, you can use the sample inside [samples/1221-domain](samples/1221-domain) folder
 
 ### Sample Domain for WebLogic 12c
 This [Dockerfile](samples/1213-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.1.3-dev** (from the Developer distribution). It will configure a **base_domain** with the following settings:
@@ -81,8 +81,6 @@ To start the WebLogic NodeManager, you can simply call **docker run -d samplewls
     172.17.0.28
 
 Now you can go to the AdminServer Web Console and add a new Machine pointing to the NodeManager container's IP address (172.17.0.28) at port 5556.
-
-**IMPORTANT**: this only works with WebLogic 12c because of the new per-domain NodeManager, which doesn't require users to call ``nmEnroll``. For WebLogic 11g you can't simply startNodeManager.sh in the container and later add it through the console. You must use the magic script ``createMachine.sh`` provided inside **samples/11g-domain/container-scripts**. See below for more information.
 
 ## Clustering WebLogic on Docker Containers
 WebLogic has a [Machine](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/machines/ConfigureMachines.html) concept, which is an operational system with an agent, the Node Manager. This resource allows WebLogic AdminServer to create and assign [Managed Servers](https://docs.oracle.com/middleware/1213/wls/WLACH/taskhelp/domainconfig/CreateManagedServers.html) of an underlying domain in order to expand an environment of servers for different applications and resources, and also to define a [Cluster](). By using **Machines** from containers, you can easily create a [Dynamic Cluster]() by simply firing new NodeManagers containers. With some WLST magic, your cluster can scale in and out.
