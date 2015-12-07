@@ -57,14 +57,11 @@ RUN mkdir /u01 && chmod a+xr /u01 && \
 # Copy packages
 COPY $WLS_PKG /u01/
 COPY $JAVA_RPM /u01/
-#COPY java.security /u01/
 
 # Install and configure Oracle JDK 8u25
 # -------------------------------------
 RUN rpm -i /u01/$JAVA_RPM && \ 
     rm /u01/$JAVA_RPM 
-# && \
-#    mv -f /u01/java.security $JAVA_HOME/./jre/lib/security/java.security
 
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 RUN chown oracle:oracle -R /u01
