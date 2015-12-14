@@ -6,15 +6,22 @@ ENV VERSION "3.4.7"
 ENV PACKAGE "kv-ce"
 ENV EXTENSION "zip"
 ENV BASE_URL "http://download.oracle.com/otn-pub/otn_software/nosql-database/"
+ENV KVHOME /kv-3.4.7
+ENV KVROOT /var/kvroot
+ENV _JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
 
 RUN yum -y install unzip && \
-    curl -OL "${BASE_URL}/${PACKAGE}-${VERSION}.${EXTENSION}" && \
+    mkdir "${KVROOT}" && \
+    curl -OLs "${BASE_URL}/${PACKAGE}-${VERSION}.${EXTENSION}" && \
     unzip "${PACKAGE}-${VERSION}.${EXTENSION}" && \
     rm "${PACKAGE}-${VERSION}.${EXTENSION}" && \
     yum -y remove unzip && yum -y clean all && rm -rf /var/cache/yum/*
 
+COPY create-master /usr/local/bin/
+COPY create-slave /usr/local/bin/
+
 WORKDIR "/kv-${VERSION}"
 
-EXPOSE 5000 5001
+EXPOSE 5000 5001 5010-5020
 
 CMD ["java", "-jar", "lib/kvstore.jar", "kvlite"]

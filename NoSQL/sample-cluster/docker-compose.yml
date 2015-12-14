@@ -1,0 +1,19 @@
+master:
+  container_name: master
+  build: master/
+  expose:
+   - "5000"
+   - "5001"
+  links:
+   - slave-0
+   - slave-1
+
+slave-0:
+  container_name: slave-0
+  build: slave/
+  hostname: slave-0
+
+slave-1:
+  container_name: slave-1
+  build: slave/
+  hostname: slave-1
