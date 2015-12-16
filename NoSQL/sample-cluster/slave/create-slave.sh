@@ -1,5 +1,5 @@
 #!/bin/sh
-java -jar $KVHOME/lib/kvstore.jar makebootconfig \
+nohup java -jar $KVHOME/lib/kvstore.jar makebootconfig \
   -root $KVROOT \
   -port 5000 \
   -host $(hostname -f) \
@@ -10,7 +10,7 @@ java -jar $KVHOME/lib/kvstore.jar makebootconfig \
 #  -num_cpus 0 \
 #  -memory_mb 0
 
-java -jar $KVHOME/lib/kvstore.jar start -root $KVROOT &
+nohup java -jar $KVHOME/lib/kvstore.jar start -root $KVROOT &
 
 sleep 2
 
@@ -20,7 +20,7 @@ cat << EOF > /tmp/nosql.script
 EOF
 
 cat /tmp/nosql.script | while read LINE ;do
-  java -jar $KVHOME/lib/kvstore.jar runadmin -host ${NOSQL_ADMIN_HOST:-master} -port 5000 $LINE;
+  nohup java -jar $KVHOME/lib/kvstore.jar runadmin -host ${NOSQL_ADMIN_HOST:-master} -port 5000 $LINE;
 done
 
 touch /var/kvroot/snaboot_0.log

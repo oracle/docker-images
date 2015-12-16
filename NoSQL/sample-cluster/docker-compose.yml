@@ -1,11 +1,4 @@
-slave0:
-  container_name: "slave0"
-  hostname: "slave0"
-  build: "slave/"
-  net: "nosql"
-slave1:
-  container_name: "slave1"
-  hostname: "slave1"
+slave:
   build: "slave/"
   net: "nosql"
 master:
