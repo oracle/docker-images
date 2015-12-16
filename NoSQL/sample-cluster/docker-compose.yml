@@ -14,4 +14,4 @@ master:
   build: "master/"
   net: "nosql"
   ports:
-   - 5001
+   - 5001:5001
