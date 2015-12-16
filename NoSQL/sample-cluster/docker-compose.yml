@@ -1,19 +1,17 @@
+slave0:
+  container_name: "slave0"
+  hostname: "slave0"
+  build: "slave/"
+  net: "nosql"
+slave1:
+  container_name: "slave1"
+  hostname: "slave1"
+  build: "slave/"
+  net: "nosql"
 master:
-  container_name: master
-  build: master/
-  expose:
-   - "5000"
-   - "5001"
-  links:
-   - slave-0
-   - slave-1
-
-slave-0:
-  container_name: slave-0
-  build: slave/
-  hostname: slave-0
-
-slave-1:
-  container_name: slave-1
-  build: slave/
-  hostname: slave-1
+  container_name: "master"
+  hostname: "master"
+  build: "master/"
+  net: "nosql"
+  ports:
+   - 5001
