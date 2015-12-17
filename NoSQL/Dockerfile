@@ -10,12 +10,12 @@ ENV KVHOME /kv-3.4.7
 ENV KVROOT /var/kvroot
 ENV _JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
  
- RUN yum -y install unzip && \
-     mkdir "${KVROOT}" && \
-     curl -OLs "${BASE_URL}/${PACKAGE}-${VERSION}.${EXTENSION}" && \
-     unzip "${PACKAGE}-${VERSION}.${EXTENSION}" && \
-     rm "${PACKAGE}-${VERSION}.${EXTENSION}" && \
-     yum -y remove unzip && yum -y clean all && rm -rf /var/cache/yum/*
+RUN yum -y install unzip && \
+    mkdir "${KVROOT}" && \
+    curl -OLs "${BASE_URL}/${PACKAGE}-${VERSION}.${EXTENSION}" && \
+    unzip "${PACKAGE}-${VERSION}.${EXTENSION}" && \
+    rm "${PACKAGE}-${VERSION}.${EXTENSION}" && \
+    yum -y remove unzip && yum -y clean all && rm -rf /var/cache/yum/*
  
 WORKDIR "/kv-${VERSION}"
  
