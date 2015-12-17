@@ -6,7 +6,7 @@ ENV VERSION "3.5.2"
 ENV PACKAGE "kv-ce"
 ENV EXTENSION "zip"
 ENV BASE_URL "http://download.oracle.com/otn-pub/otn_software/nosql-database/"
-ENV KVHOME /kv-3.4.7
+ENV KVHOME /kv-3.5.2
 ENV KVROOT /var/kvroot
 ENV _JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
  
