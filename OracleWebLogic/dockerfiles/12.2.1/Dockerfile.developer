@@ -32,11 +32,12 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7.0
+FROM oraclelinux:7
 
 # Maintainer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
+# Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
