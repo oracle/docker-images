@@ -21,17 +21,17 @@ docker run -d -p 5000:5000 --restart=always --name registry -h registry registry
 echo "Starting Consul Machine ..."
 docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap
 
-# Booting up the NoSQL Admin Node
-echo "Creating machine nosql-admin ..."
+# Booting up the NoSQL Admin Machine 
+echo "Creating machine $prefix-admin ..."
 docker-machine create -d virtualbox \
   --virtualbox-cpu-count=2 \
   --engine-insecure-registry $registry \
   --engine-opt="cluster-store=consul://$consul" \
   --engine-opt="cluster-advertise=eth1:2376" \
-  nosql-admin
+  $prefix-admin
 
 echo "Creating the Docker Network Overlay '$network' ..."
-eval "$(docker-machine env nosql-admin)"
+eval "$(docker-machine env $prefix-admin)"
 docker network create --driver overlay $network
 
 # Build and publish custom NoSQL image with deploy scripts
