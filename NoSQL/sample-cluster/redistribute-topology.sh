@@ -1,7 +1,6 @@
 #!/bin/sh
 random=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 6 | head -n 1)
 topology=docker-$random
-javakv="java -jar $KVHOME/lib/kvstore.jar"
 
 cat << EOF > /tmp/nosql.script
   topology clone -current -name $topology
@@ -10,6 +9,8 @@ cat << EOF > /tmp/nosql.script
   plan deploy-topology -name $topology -wait
 EOF
 
+eval $(docker-machine env nosql-admin)
+adminid=$(docker ps -q -f name=admin)
 cat /tmp/nosql.script | while read LINE ;do
-  java -jar $KVHOME/lib/kvstore.jar runadmin -host admin -port 5000 $LINE;
+  docker exec $adminid bash -c "java -jar lib/kvstore.jar runadmin -host admin -port 5000 $LINE";
 done
