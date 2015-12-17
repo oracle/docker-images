@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# author: Bruno Borges <bruno.borges@oracle.com>
+#
 uuid=$(uuidgen)
 name=storage-node-$uuid
 machine=$1
