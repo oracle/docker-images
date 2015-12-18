@@ -18,5 +18,8 @@ docker-machine create -d virtualbox \
 
 sh create-storage-node.sh $name
 
+echo ""
 echo "Machine $name created with one NoSQL SN. Deploy more Storage Nodes with:"
+echo ""
 echo "  $ ./create-storage-node.sh $name"
+echo ""

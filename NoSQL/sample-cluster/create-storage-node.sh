@@ -22,3 +22,7 @@ docker run -d \
   --hostname=$name \
   --net=$network \
   $registry/nosql ./sample-cluster/deploy-storage-node.sh
+
+echo ""
+echo "Remember to call redistribute-topology.sh afterwards."
+echo ""
