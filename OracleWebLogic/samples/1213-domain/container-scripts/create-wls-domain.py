@@ -98,6 +98,12 @@ set('NativeVersionEnabled', 'false')
 set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
 
+# Set the Node Manager user name and password
+cd('/')
+cd('SecurityConfiguration/base_domain')
+set('NodeManagerUsername', 'weblogic')
+set('NodeManagerPasswordEncrypted', admin_pass)
+
 domain_path = '/u01/oracle/weblogic/user_projects/domains/base_domain'
 
 writeDomain(domain_path)
