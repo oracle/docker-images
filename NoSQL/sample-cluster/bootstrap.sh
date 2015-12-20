@@ -19,7 +19,7 @@ echo "Starting a Registry Server ..."
 docker run -d -p 5000:5000 --restart=always --name registry -h registry registry:2
 
 echo "Starting Consul Machine ..."
-docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap
+docker run -d -p 8500:8500 --restart=always --name consul -h consul progrium/consul -server -bootstrap
 
 # Booting up the NoSQL Admin Machine 
 echo "Creating machine $prefix-admin ..."
