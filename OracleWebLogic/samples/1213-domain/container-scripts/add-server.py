@@ -85,7 +85,7 @@ cmo.setEnabled(false)
 # Custom Startup Parameters because NodeManager writes wrong AdminURL in startup.properties
 # -----------------------------------------------------------------------------------------
 cd('/Servers/' + msname + '/ServerStart/' + msname)
-arguments = '-Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + adminhost + ':' + adminport + ' ' + memargs
+arguments = '-Djava.security.egd=file:/dev/./urandom -Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + adminhost + ':' + adminport + ' ' + memargs
 cmo.setArguments(arguments)
 editActivate()
 
