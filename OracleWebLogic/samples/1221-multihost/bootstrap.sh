@@ -15,7 +15,7 @@ eval "$(docker-machine env $orchestrator)"
 # update variables
 . ./setenv.sh
 
-echo "Starting a Registry Server ..."
+echo "Starting Registry Server ..."
 docker run -d -p 5000:5000 --restart=always --name registry -h registry registry:2
 
 echo "Starting Consul Machine ..."
@@ -46,4 +46,5 @@ docker run -d \
   --hostname=wlsadmin \
   -p 8001:8001 \
   --net=$network \
+  --ulimit nofile=16384:16384 \
   $registry/weblogic

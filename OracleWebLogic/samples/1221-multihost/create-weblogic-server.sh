@@ -21,5 +21,6 @@ docker run -d \
   --name=$name \
   --hostname=$name \
   --net=$network \
+  --ulimit nofile=16384:16384 \
   $registry/weblogic sh createServer.sh
 
