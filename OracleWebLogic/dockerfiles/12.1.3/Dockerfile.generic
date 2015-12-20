@@ -64,11 +64,6 @@ COPY oraInst.loc /u01/
 RUN rpm -i /u01/$JAVA_RPM && \ 
     rm /u01/$JAVA_RPM
 
-# Change the kernel parameters that need changing.
-RUN echo "net.core.rmem_max=4192608" > /u01/oracle/.sysctl.conf && \
-    echo "net.core.wmem_max=4192608" >> /u01/oracle/.sysctl.conf && \ 
-    sysctl -e -p /u01/oracle/.sysctl.conf
-
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 RUN chown oracle:oracle -R /u01
 WORKDIR /u01
