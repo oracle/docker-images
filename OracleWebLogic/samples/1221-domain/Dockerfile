@@ -4,15 +4,14 @@
 # --------------------------
 # This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
 #
-#
 # Util scripts are copied into the image enabling users to plug NodeManager 
-# magically into the AdminServer running on another container as a Machine.
+# automatically into the AdminServer running on another container.
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t myweblogic .
+#      $ sudo docker build -t 1221-domain .
 #
 
 # Pull base image
@@ -48,7 +47,6 @@ USER oracle
 WORKDIR /u01/oracle/weblogic
 RUN /u01/oracle/weblogic/wlserver/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/create-wls-domain.py && \
     mkdir -p /u01/oracle/weblogic/user_projects/domains/base_domain/servers/AdminServer/security && \
-    mv /u01/oracle/commEnv.sh /u01/oracle/weblogic/wlserver/common/bin/commEnv.sh && \
     echo "username=weblogic" > /u01/oracle/weblogic/user_projects/domains/base_domain/servers/AdminServer/security/boot.properties && \ 
     echo "password=$ADMIN_PASSWORD" >> /u01/oracle/weblogic/user_projects/domains/base_domain/servers/AdminServer/security/boot.properties && \
     echo ". /u01/oracle/weblogic/user_projects/domains/base_domain/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \ 
