@@ -4,7 +4,6 @@
 # --------------------------
 # This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
 #
-#
 # Util scripts are copied into the image enabling users to plug NodeManager 
 # magically into the AdminServer running on another container as a Machine.
 #
@@ -33,11 +32,12 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 ENV WLS_PKG fmw_12.2.1.0.0_wls_supplemental_quick.jar 
 ENV JAVA_HOME /usr/java/default
 ENV ORACLE_HOME /u01/oracle/weblogic
+ENV MW_HOME $ORACLE_HOME
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 ENV USER_MEM_ARGS -Xms256m -Xmx512m -XX:MaxPermSize=2048m
 ENV _JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
 
-# Copy supplemental package
+# Copy supplemental package and scripts
 # --------------------------------
 COPY $WLS_PKG /u01/
 
@@ -48,17 +48,15 @@ WORKDIR /u01
 RUN java -jar $WLS_PKG ORACLE_HOME=$ORACLE_HOME && \
     rm /u01/$WLS_PKG
 
-# Add files required to build this image
-COPY container-scripts/* /u01/oracle/
+COPY weblogic.properties /u01/oracle/weblogic/wlserver/samples/server/medrec/
+COPY startSample.sh /u01/oracle/weblogic/wlserver/samples/server/medrec/
 
-# Set environment to create a Medrec domain and start a single server with a deployed medrec application
-RUN echo "cp /u01/oracle/weblogic.properties /u01/oracle/weblogic/wlserver/samples/server/medrec/weblogic.properties" >> /u01/oracle/.bashrc && \
-    echo "cp /u01/oracle/startSamples.sh /u01/oracle/weblogic/wlserver/samples/server/medrec/startSamples.sh" >> /u01/oracle/.bashrc && \
-    echo ". /u01/oracle/weblogic/wlserver/samples/server/medrec/startSamples.sh" >> /u01/oracle/.bashrc
+ENV EXAMPLES_HOME /u01/oracle/weblogic/wlserver/samples/server
+ENV CLASSPATH $JAVA_HOME/lib/tools.jar:$ORACLE_HOME/wlserver/modules/features/wlst.wls.classpath.jar
+ENV PATH $ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin
 
-WORKDIR /u01/oracle/weblogic/wlserver/samples/server/medrec
+WORKDIR $ORACLE_HOME/wlserver/samples/server/medrec
 
-ENV PATH $PATH:/u01/oracle/weblogic/wlserver/common/bin:/u01/oracle/weblogic/user_projects/domains/medrec/bin:/u01/oracle
+ENTRYPOINT ["./startSample.sh"]
 
-# Define default command to start bash. 
-CMD ["bash"]
+CMD ["single.server.sample"]
