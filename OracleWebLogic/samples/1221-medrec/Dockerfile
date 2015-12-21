@@ -2,10 +2,8 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
-#
-# Util scripts are copied into the image enabling users to plug NodeManager 
-# magically into the AdminServer running on another container as a Machine.
+# This Dockerfile extends the Oracle WebLogic image by installing the Supplemental package of WebLogic which 
+# includes extra samples of Java EE, Coherence applications, and Multitenant domains. 
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
