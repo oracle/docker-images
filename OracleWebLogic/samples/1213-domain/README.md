@@ -1,18 +1,19 @@
 Example of Image with WLS Domain
 ================================
+This Dockerfile extends the Oracle WebLogic image by creating a sample empty domain.
 
-You can build this image with a simple '$ docker build -t mywlsimage .' command.
+Util scripts are copied into the image enabling users to plug NodeManager automatically into the AdminServer running on another container.
 
-To run a single host cluster, you can use these two commands:
+# How to build and run
+First make sure you have built **oracle/weblogic:12.1.3-dev**. Now to build this sample, run:
 
-1. Create the AdminServer
+        $ docker build -t 1213-domain .
 
-        # docker run --name wlsadmin -d mywlsimage startWebLogic.sh
+To start the Admin Server, run:
 
-2. Create a containerized Machine with a Managed Server
+        $ docker run -d --name wlsadmin --hostname wlsadmin -p 8001:8001 1213-domain
 
-        # docker run --link wlsadmin:wlsadmin -d mywlsimage createServer.sh
+To start a Managed Server to self-register with the Admin Server above, run:
 
-3. Call commnad on (2) multiple times for more servers
+        $ docker run -d --link wlsadmin:wlsadmin -p 7001:7001 1213-domain createServer.sh
 
-4. Access the WebLogic Admin Console on the AdminServer container (port 8001) and create a cluster

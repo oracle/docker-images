@@ -16,7 +16,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t myweblogic .
+#      $ sudo docker build -t 1213-domain .
 #
 
 # Pull base image

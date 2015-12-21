@@ -1,5 +1,4 @@
-# 
-# Modified commEnv.sh to enable JPA 2.0 support by default on this WLS installation
+# Modified commEnv.sh to enable JPA 2.1 support by default on this WLS installation
 # =========================
 
 if [ -z "${MW_HOME}" -a -z "${WL_HOME}" ]; then
