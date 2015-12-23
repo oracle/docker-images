@@ -70,7 +70,8 @@ RUN chown oracle:oracle -R /u01
 USER oracle
 WORKDIR /u01
 RUN java -jar $WLS_PKG ORACLE_HOME=$ORACLE_HOME && \
-    rm /u01/$WLS_PKG
+    rm /u01/$WLS_PKG && \
+    yum -y clean all && rm -rf /var/cache/yum/*
 
 WORKDIR /u01/oracle
 

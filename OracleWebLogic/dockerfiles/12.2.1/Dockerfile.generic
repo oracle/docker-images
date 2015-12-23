@@ -36,8 +36,7 @@ FROM oraclelinux:7
 
 # Maintainer
 # ----------
-MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
-# Bruno Borges <bruno.borges@oracle.com>
+MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build
 # ---------------------------------------------
@@ -73,7 +72,8 @@ USER oracle
 # Installation of WebLogic 
 RUN mkdir /u01/oracle/.inventory
 RUN java -jar $WLS_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
-    rm $WLS_PKG /u01/oraInst.loc /u01/install.file
+    rm $WLS_PKG /u01/oraInst.loc /u01/install.file && \
+    yum -y clean all && rm -rf /var/cache/yum/*
 
 WORKDIR /u01/oracle/
 
