@@ -21,7 +21,7 @@
 # (1) fmw_12.2.1.0.0_wls_quick.jar
 #     Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
-# (2) jdk-8u60-linux-x64.rpm
+# (2) jdk-8u65-linux-x64.rpm
 #     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -36,12 +36,11 @@ FROM oraclelinux:7
 
 # Maintainer
 # ----------
-MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
-# Bruno Borges <bruno.borges@oracle.com>
+MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_RPM jdk-8u60-linux-x64.rpm
+ENV JAVA_RPM jdk-8u65-linux-x64.rpm
 ENV WLS_PKG fmw_12.2.1.0.0_wls_quick.jar 
 ENV JAVA_HOME /usr/java/default
 ENV ORACLE_HOME /u01/oracle/weblogic

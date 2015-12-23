@@ -1,3 +1,4 @@
-fmw_12.2.1.0.0_wls.jar
-fmw_12.2.1.0.0_wls_quick.jar
-jdk-8u60-linux-x64.rpm
+fmw*wls.jar
+fmw*wls_quick.jar
+wls*.zip
+jdk*.rpm

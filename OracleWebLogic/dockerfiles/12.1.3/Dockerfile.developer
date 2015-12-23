@@ -40,7 +40,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_RPM jdk-8u60-linux-x64.rpm
+ENV JAVA_RPM jdk-8u65-linux-x64.rpm
 ENV WLS_PKG wls1213_dev_update3.zip
 ENV JAVA_HOME /usr/java/default
 ENV MW_HOME /u01/oracle/wls12130
