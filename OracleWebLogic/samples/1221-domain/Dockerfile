@@ -26,11 +26,12 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # -------------------------------
 ENV ADMIN_PASSWORD welcome1
 
-# WLS Ports
+# WLS Configuration
 # ----------------------------------------------------------
 ENV ADMIN_PORT 8001
 ENV NM_PORT 5556
 ENV MS_PORT 7001 
+ENV CLUSTER_NAME "Cluster-Docker"
 
 # Add files required to build this image
 USER oracle

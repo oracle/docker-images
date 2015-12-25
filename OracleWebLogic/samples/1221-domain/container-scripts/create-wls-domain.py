@@ -1,12 +1,15 @@
 # WebLogic on Docker Default Domain
 #
-# Default domain 'base_domain' to be created inside the Docker image for WLS
+# Default domain 'base_domain' (or anything defined under DOMAIN_NAME) to be created inside the Docker image for WLS
 # 
 # Since : October, 2014
 # Author: bruno.borges@oracle.com
 # ==============================================
-admin_port = int(os.environ.get("ADMIN_PORT", "8001"))
-admin_pass = os.environ.get("ADMIN_PASSWORD", "welcome1")
+domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
+admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
+admin_pass   = os.environ.get("ADMIN_PASSWORD", "welcome1")
+cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
+domain_path  = '/u01/oracle/weblogic/user_projects/domains/' + domain_name
 
 # Open default domain template
 # ======================
@@ -14,14 +17,13 @@ readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
 
 # Configure the Administration Server and SSL port.
 # =========================================================
-cd('Servers/AdminServer')
+cd('/Servers/AdminServer')
 set('ListenAddress', '')
 set('ListenPort', admin_port)
 
 # Define the user password for weblogic
 # =====================================
-cd('/')
-cd('Security/base_domain/User/weblogic')
+cd('/Security/' + domain_name + '/User/weblogic')
 cmo.setPassword(admin_pass)
 
 # Create a JMS Server
@@ -37,12 +39,11 @@ cd('JMSSystemResource/myJmsSystemResource/JmsResource/NO_NAME_0')
 
 # Create a JMS Queue and its subdeployment
 # ========================================
-myq=create('myQueue','Queue')
+myq = create('myQueue','Queue')
 myq.setJNDIName('jms/myqueue')
 myq.setSubDeploymentName('myQueueSubDeployment')
 
-cd('/')
-cd('JMSSystemResource/myJmsSystemResource')
+cd('/JMSSystemResource/myJmsSystemResource')
 create('myQueueSubDeployment', 'SubDeployment')
 
 # Create and configure a JDBC Data Source, and sets the JDBC user
@@ -84,8 +85,7 @@ assign('JDBCSystemResource', 'myDataSource', 'Target', 'AdminServer')
 setOption('OverwriteDomain', 'true')
 setOption('ServerStartMode','prod')
 
-cd('/')
-cd('NMProperties')
+cd('/NMProperties')
 set('ListenAddress','')
 set('ListenPort',5556)
 set('NativeVersionEnabled', 'false')
@@ -93,14 +93,22 @@ set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
 
 # Set the Node Manager user name and password
-cd('/')
-cd('SecurityConfiguration/base_domain')
+cd('/SecurityConfiguration/' + domain_name)
 set('NodeManagerUsername', 'weblogic')
 set('NodeManagerPasswordEncrypted', admin_pass)
 
-domain_path = '/u01/oracle/weblogic/user_projects/domains/base_domain'
+# Define a WebLogic Cluster
+# =========================
+cd('/')
+create(cluster_name, 'Cluster')
 
+cd('/Clusters/' + cluster_name)
+cmo.setClusterMessagingMode('unicast')
+
+# Write Domain
+# ============
 writeDomain(domain_path)
+closeTemplate()
 
 # Exit WLST
 # =========
