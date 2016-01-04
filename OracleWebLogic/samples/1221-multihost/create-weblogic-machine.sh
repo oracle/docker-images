@@ -28,3 +28,4 @@ echo "Deploy more Managed Servers in this same machine by calling:"
 echo ""
 echo "  $ ./create-weblogic-server.sh $name"
 echo ""
+echo "Or just call the script above without arguments, and a new container will be created in the Swarm'
