@@ -12,7 +12,7 @@ echo "Creating WebLogic Docker Machine $name ..."
 docker-machine create -d virtualbox \
   --virtualbox-cpu-count=2 \
   --swarm \
-  --swarm-discovery="consul://$(docker-machine ip weblogic-admin):8500" \
+  --swarm-discovery="consul://$(docker-machine ip $orchestrator):8500" \
   --engine-insecure-registry $registry \
   --engine-opt="cluster-store=consul://$consul" \
   --engine-opt="cluster-advertise=eth1:2376" \
