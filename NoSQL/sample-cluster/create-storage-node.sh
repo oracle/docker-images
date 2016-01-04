@@ -5,17 +5,19 @@
 uuid=$(uuidgen)
 name=storage-node-$uuid
 machine=$1
-
-if [ "$machine" = "" ]; then
-  echo "You must inform the Docker Machine to use as first argument"
-  exit 1
-fi
-
-echo "Creating NoSQL Storage Node $name on Machine $machine ..."
-
-eval "$(docker-machine env $machine)"
+swarm=""
 
 . ./setenv.sh
+
+if [ "$machine" = "" ]; then
+  echo "No machine specified. Going to use the Swarm then."
+  machine="$prefix-admin"
+  swarm="--swarm"
+else
+  echo "Creating NoSQL Storage Node $name on Docker Machine $machine ..."
+fi
+
+eval "$(docker-machine env $swarm $machine)"
 
 docker run -d \
   --name=$name \
