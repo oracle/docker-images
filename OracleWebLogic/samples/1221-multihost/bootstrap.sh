@@ -25,13 +25,15 @@ docker run -d -p 8500:8500 --restart=always --name consul -h consul progrium/con
 echo "Creating machine weblogic-admin ..."
 docker-machine create -d virtualbox \
   --virtualbox-cpu-count=2 \
+  --swarm --swarm-master \
+  --swarm-discovery="consul://$(docker-machine ip $orchestrator):8500" \
   --engine-insecure-registry $registry \
   --engine-opt="cluster-store=consul://$consul" \
   --engine-opt="cluster-advertise=eth1:2376" \
   weblogic-admin
 
 echo "Creating the Docker Network Overlay '$network' ..."
-eval "$(docker-machine env weblogic-admin)"
+eval "$(docker-machine env --swarm weblogic-admin)"
 docker network create --driver overlay $network
 
 # Build and publish WebLogic Empty Domain Image

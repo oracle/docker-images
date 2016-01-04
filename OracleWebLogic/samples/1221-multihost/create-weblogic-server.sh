@@ -5,15 +5,17 @@
 uuid=$(uuidgen)
 name=managedserver-$uuid
 machine=$1
+swarm=""
 
 if [ "$machine" = "" ]; then
-  echo "You must inform which Docker Machine to use as first argument"
-  exit 1
+  echo "No machine specified. Going to use the Swarm then."
+  machine="weblogic-admin"
+  swarm="--swarm"
+else
+  echo "Creating WebLogic Managed Server $name on Docker Machine $machine ..."
 fi
 
-echo "Creating WebLogic Managed Server $name on Docker Machine $machine ..."
-
-eval "$(docker-machine env $machine)"
+eval "$(docker-machine env $swarm $machine)"
 
 . ./setenv.sh
 
