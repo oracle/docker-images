@@ -13,8 +13,9 @@ if [ "$machine" = "" ]; then
   echo "No machine specified. Going to use the Swarm then."
   machine="weblogic-admin"
   swarm="--swarm"
+  echo "Creating WebLogic Managed Server $name on Docker Machine Swarm of $machine..."
 else
-  echo "Creating WebLogic Managed Server $name on Docker Machine $machine ..."
+  echo "Creating WebLogic Managed Server $name on specific Docker Machine $machine ..."
 fi
 
 eval "$(docker-machine env $swarm $machine)"

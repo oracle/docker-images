@@ -11,7 +11,7 @@ echo ""
 
 # Booting up a Docker Machine instance to orchestrate Multihost Network (with Consul and Registry)
 echo "Creating Multihost Orchestrator Machine ..."
-docker-machine create -d virtualbox $orchestrator
+docker-machine create -d virtualbox --engine-insecure-registry 127.0.0.1:5000 $orchestrator 
 eval "$(docker-machine env $orchestrator)"
 
 # update variables
@@ -29,23 +29,29 @@ docker-machine create -d virtualbox \
   --virtualbox-cpu-count=2 \
   --swarm \
   --swarm-master \
-  --swarm-discovery="consul://$(docker-machine ip $orchestrator):8500" \
+  --swarm-discovery="consul://$consul" \
   --engine-insecure-registry $registry \
   --engine-opt="cluster-store=consul://$consul" \
   --engine-opt="cluster-advertise=eth1:2376" \
   weblogic-admin
 
-echo "Creating the Docker Network Overlay '$network' ..."
+# Create overlay Docker Multihost Network and set Docker environment pointing to Machine
 eval "$(docker-machine env --swarm weblogic-admin)"
+echo "Creating the Docker Network Overlay '$network' ..."
 docker network create --driver overlay $network
 
-# Build and publish WebLogic Empty Domain Image
-docker build -t oracle/weblogic:12.2.1-dev -f ../../dockerfiles/12.2.1/Dockerfile.developer ../../dockerfiles/12.2.1/
-docker build -t weblogic ../1221-domain/
-docker tag weblogic $registry/weblogic
-docker push $registry/weblogic
+# Save existing defined image to a file to be loaded later into the registry created above
+eval "$(docker-machine env -u)"
+docker save $image > weblogic.img
+
+# Load, tag, and publish WebLogic Image based on 1221-domain sample (by default; see setenv.sh)
+eval "$(docker-machine env $orchestrator)"
+docker load -i weblogic.img && rm weblogic.img
+docker tag $image 127.0.0.1:5000/weblogic
+docker push 127.0.0.1:5000/weblogic
 
 # Deploy WebLogic Admin Server
+eval "$(docker-machine env weblogic-admin)"
 docker run -d \
   --name=wlsadmin \
   --hostname=wlsadmin \
