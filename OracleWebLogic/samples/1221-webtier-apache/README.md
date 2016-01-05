@@ -28,3 +28,6 @@ Start the webtier container by calling:
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 8001.
 
 If you are using multihost network, remove --link and set --net=<your net>
+
+# Copyright
+Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.

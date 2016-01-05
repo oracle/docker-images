@@ -17,3 +17,5 @@ To start a Managed Server to self-register with the Admin Server above, run:
 
         $ docker run -d --link wlsadmin:wlsadmin -p 7001:7001 1221-domain createServer.sh
 
+# Copyright
+Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.

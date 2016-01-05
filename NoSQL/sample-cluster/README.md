@@ -13,3 +13,6 @@ This sample demonstrates how to create a scalable NoSQL cluster on Docker with M
  9. Check the web console again.
 
 Enjoy elastic Oracle NoSQL on Docker.
+
+# Copyright
+Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.

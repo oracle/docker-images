@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+#
 sample=$1
 
 # Define default command to create medrec domain 

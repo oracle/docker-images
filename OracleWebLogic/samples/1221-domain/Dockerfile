@@ -1,5 +1,7 @@
 # LICENSE CDDL 1.0 + GPL 2.0
 #
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This Dockerfile extends the Oracle WebLogic image by creating a sample domain.

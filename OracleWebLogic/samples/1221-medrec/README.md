@@ -19,4 +19,5 @@ To see other options, visit the [Supplemental Quick Installer README file](http:
 
         $ docker run d -p 7001:7001 1221-medrec mt.single.server.sample
 
-
+# Copyright
+Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.

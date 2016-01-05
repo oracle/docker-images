@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/bin/sh
+# 
+# Author: Bruno Borges <bruno.borges@oracle.com>
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+# 
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# 
 set -e
 
 declare -A aliases
@@ -15,6 +22,7 @@ versions=( */ )
 versions=( "${versions[@]%/}" )
 url='git://github.com/oracle/docker-images'
 
+echo '# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.'
 echo '# Maintainer: Bruno Borges <bruno.borges@oracle.com> (@brunoborges)'
 
 for version in "${versions[@]}"; do

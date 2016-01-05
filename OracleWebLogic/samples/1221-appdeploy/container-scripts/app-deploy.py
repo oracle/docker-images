@@ -1,3 +1,5 @@
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+#
 # WLST Offline for deploying an application under APP_NAME packaged in APP_PKG_FILE located in APP_PKG_LOCATION
 # It will read the domain under DOMAIN_HOME by default
 #

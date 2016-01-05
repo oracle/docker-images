@@ -1,3 +1,5 @@
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#
 # WebLogic on Docker Default Domain
 #
 # Default domain 'base_domain' (or anything defined under DOMAIN_NAME) to be created inside the Docker image for WLS

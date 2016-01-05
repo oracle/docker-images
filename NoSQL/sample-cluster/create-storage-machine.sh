@@ -1,7 +1,11 @@
 #!/bin/sh
+# 
+# Author: Bruno Borges <bruno.borges@oracle.com>
 #
-# author: Bruno Borges <bruno.borges@oracle.com>
-#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+# 
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# 
 . ./setenv.sh
 
 random=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 6 | head -n 1)

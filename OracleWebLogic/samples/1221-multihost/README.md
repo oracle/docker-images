@@ -13,3 +13,6 @@ This sample demonstrates how to create a cluster of WebLogic on a multihost netw
  9. Check the web console again.
 
 Enjoy multihost WebLogic on Docker.
+
+# Copyright
+Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.

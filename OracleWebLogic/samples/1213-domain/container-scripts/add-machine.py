@@ -4,6 +4,8 @@
 # Since: October, 2014
 # Author: bruno.borges@oracle.com
 #
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#
 # =============================
 import os
 import socket

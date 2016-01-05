@@ -1,6 +1,8 @@
 #!/bin/sh
 #
-# author: Bruno Borges <bruno.borges@oracle.com>
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# 
+# Author: Bruno Borges <bruno.borges@oracle.com>
 #
 uuid=$(uuidgen)
 name=managedserver-$uuid

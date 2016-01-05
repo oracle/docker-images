@@ -1,5 +1,7 @@
 # LICENSE CDDL 1.0 + GPL 2.0
 #
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# 
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This Dockerfile extends the Oracle WebLogic image built under 1221-domain with tag name '1221-domain'
@@ -27,7 +29,7 @@ ENV APP_NAME "sample"
 ENV APP_PKG_FILE "sample.war"
 ENV APP_PKG_LOCATION "/u01/oracle"
 
-# Copy files and deploy in WLST Offline mode
+# Copy files and deploy application in WLST Offline mode
 COPY container-scripts/* /u01/oracle/
 RUN sh appDeploy.sh
 

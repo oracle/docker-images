@@ -1,3 +1,7 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+# 
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# 
 FROM oracle/openjdk:latest
 
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>

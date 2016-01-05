@@ -1,6 +1,8 @@
 # Example of Apache Web Server with WebLogic plugin for load balancing WebLogic on Docker Containers
 #
-# author: Bruno Borges <bruno.borges@oracle.com>
+# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# 
+# Author: Bruno Borges <bruno.borges@oracle.com>
 #
 FROM httpd:2.4
 

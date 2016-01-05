@@ -49,3 +49,6 @@ OpenJDK is licensed under the [GNU General Public License v2.0 with the Classpat
 Oracle NoSQL Enterprise Edition is **not** certified on Docker.
 
 Oracle NoSQL Community Edition has **no** commercial support.
+
+# Copyright
+Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.

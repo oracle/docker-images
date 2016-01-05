@@ -1,7 +1,10 @@
 #!/bin/sh
+#
 # Cleanup docker files: untagged containers and images.
 #
 # Use `docker-cleanup -n` for a dry run to see what would be deleted.
+#
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 
 untagged_containers() {
   # Print containers using untagged images: $1 is used with awk's print: 0=line, 1=column 1.
