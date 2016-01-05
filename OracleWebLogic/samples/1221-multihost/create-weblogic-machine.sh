@@ -20,8 +20,6 @@ docker-machine create -d virtualbox \
   --engine-opt="cluster-advertise=eth1:2376" \
   $name
 
-eval "$(docker-machine env --swarm $name)"
-
 sh create-weblogic-server.sh $name
 
 echo ""
