@@ -106,12 +106,10 @@ echo "====================="
 echo "Building image '$IMAGE_NAME' based on '$DISTRIBUTION' distribution..."
 
 # BUILD THE IMAGE (replace all environment variables)
-rm -f Dockerfile && ln -s Dockerfile.$DISTRIBUTION Dockerfile
-docker build --force-rm=true --no-cache=true -t $IMAGE_NAME . || {
+docker build --force-rm=true --no-cache=true -t $IMAGE_NAME -f Dockerfile.$DISTRIBUTION . || {
   echo "There was an error building the image."
   exit 1
 }
-rm -f Dockerfile
 
 echo ""
 
