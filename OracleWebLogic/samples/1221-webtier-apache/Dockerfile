@@ -12,11 +12,9 @@ ENV MOD_WLS_PLUGIN mod_wl_24.so
 ENV LD_LIBRARY_PATH /root/lib
 
 COPY $PLUGIN_PKG /root/
-COPY update-httpd.sh /root/
-COPY weblogic.conf /usr/local/apache2/conf/
+COPY weblogic.conf /root/
 
 RUN apt-get update && apt-get install -y unzip && \
     unzip /root/$PLUGIN_PKG -d $PLUGIN_HOME && \
-    sh /root/update-httpd.sh && \
-    rm /root/update-httpd.sh && \
-    rm /root/$PLUGIN_PKG
+    cat /root/weblogic.conf >> /usr/local/apache2/conf/httpd.conf && \
+    rm /root/$PLUGIN_PKG /root/weblogic.conf
