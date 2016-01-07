@@ -6,18 +6,6 @@
 # --------------------------
 # This is the Dockerfile for WebLogic 12c (Full) Generic Distribution
 # 
-# IMPORTANT
-# ---------
-# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
-# For that, look into the folder 'samples' for an example on how
-# to create a domain on a new inherited image.
-#
-# You can go into 'samples/12.2.1-generic-domain' after building the generic raw image
-# and build that image, for example:
-# 
-#   $ cd samples/12c-generic-domain
-#   $ sudo docker build -t mywls .
-#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) fmw_12.2.1.0.0_wls.jar
@@ -31,6 +19,19 @@
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
 #      $ sudo docker build -t oracle/weblogic:12.2.1 . 
+#
+# IMPORTANT
+# ---------
+# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
+# For that, look into the folder 'samples' for an example on how
+# to create a domain on a new inherited image.
+#
+# You can go into 'samples/1221-domain' after building this Generic image,
+# update the Dockerfile's FROM entry to point to this image, and build the domain image
+# 
+#   $ cd samples/1221-domain
+#   -- modify Dockerfile FROM to point to this image
+#   $ sudo docker build -t mywls .
 #
 # Pull base image
 # ---------------

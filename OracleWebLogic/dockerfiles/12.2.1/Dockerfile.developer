@@ -6,18 +6,6 @@
 # --------------------------
 # This is the Dockerfile for WebLogic 12.2.1 Quick Install Distro
 # 
-# IMPORTANT
-# ---------
-# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
-# For that, look into the folder 'samples' for an example on how
-# to create a domain on a new inherited image.
-#
-# You can go into 'samples/1221-domain' after building the developer install image
-# and build the domain image, for example:
-# 
-#   $ cd samples/1221-domain
-#   $ sudo docker build -t mywls:1221 .
-#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) fmw_12.2.1.0.0_wls_quick.jar
@@ -32,6 +20,18 @@
 # Run: 
 #      $ sudo docker build -t oracle/weblogic:12.2.1-dev . 
 #
+# IMPORTANT
+# ---------
+# The resulting image of this Dockerfile DOES NOT contain a WLS Domain.
+# For that, look into the folder 'samples' for an example on how
+# to create a domain on a new inherited image.
+#
+# You can go into 'samples/1221-domain' after building the developer install image
+# and build the domain image, for example:
+# 
+#   $ cd samples/1221-domain
+#   $ sudo docker build -t mywls:1221 .
+
 # Pull base image
 # ---------------
 FROM oraclelinux:7
@@ -60,7 +60,7 @@ RUN mkdir /u01 && chmod a+xr /u01 && \
 COPY $WLS_PKG /u01/
 COPY $JAVA_RPM /u01/
 
-# Install and configure Oracle JDK 8u25
+# Install and configure Oracle JDK
 # -------------------------------------
 RUN rpm -i /u01/$JAVA_RPM && \ 
     rm /u01/$JAVA_RPM 
