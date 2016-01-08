@@ -13,6 +13,7 @@ domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/weblogic/user_projects/d
 appname    = os.environ.get('APP_NAME', 'sample')
 apppkg     = os.environ.get('APP_PKG_FILE', 'sample.war')
 appdir     = os.environ.get('APP_PKG_LOCATION', '/u01/oracle')
+cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
 
 # Read Domain in Offline Mode
 # ===========================
@@ -28,6 +29,7 @@ app.setStagingMode('nostage')
 # Assign application to AdminServer
 # =================================
 assign('AppDeployment', appname, 'Target', 'AdminServer')
+assign('AppDeployment', appname, 'Target', cluster_name)
 
 # Update Domain, Close It, Exit
 # ==========================
