@@ -1,9 +1,7 @@
-# Modified commEnv.sh to enable JPA 2.1 support by default on this WLS installation
-#
 # Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 #
+# Modified commEnv.sh to enable JPA 2.1 support by default on this WLS installation
 # =========================
-
 if [ -z "${MW_HOME}" -a -z "${WL_HOME}" ]; then
  echo "MW_HOME or WL_HOME is not set."
  exit 1

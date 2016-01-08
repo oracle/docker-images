@@ -1,10 +1,9 @@
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 #
 # Script to add NodeManager automatically to the domain's AdminServer running on 'wlsadmin'.
 #
 # Since: October, 2014
 # Author: bruno.borges@oracle.com
-#
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 #
 # =============================
 import os
