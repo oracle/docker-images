@@ -78,10 +78,7 @@ while getopts "hsdgiv:" optname; do
   esac
 done
 
-# WebLogic Image Name
-IMAGE_NAME="oracle/weblogic:$VERSION"
-
-# Developer or Generic?
+# Which distribution to use?
 if [ $((DEVELOPER + GENERIC + INFRASTRUCTURE)) -gt 1 ]; then
   usage
 elif [ $DEVELOPER -eq 1 ]; then
@@ -94,6 +91,9 @@ elif [ $INFRASTRUCTURE -eq 1 ] && [ "$VERSION" = "12.1.3" ]; then
 else
   DISTRIBUTION="infrastructure"
 fi
+
+# WebLogic Image Name
+IMAGE_NAME="oracle/weblogic:$VERSION-$DISTRIBUTION"
 
 # Go into version folder
 cd $VERSION
