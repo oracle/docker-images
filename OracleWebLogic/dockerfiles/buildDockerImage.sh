@@ -48,9 +48,10 @@ if [ "$#" -eq 0 ]; then usage; fi
 # Parameters
 DEVELOPER=0
 GENERIC=0
-VERSION="12.1.3"
+INFRASTRUCTURE=0
+VERSION="12.2.1"
 SKIPMD5=0
-while getopts "hsdgv:" optname; do
+while getopts "hsdgiv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -64,6 +65,9 @@ while getopts "hsdgv:" optname; do
     "g")
       GENERIC=1
       ;;
+    "i")
+      INFRASTRUCTURE=1
+      ;;
     "v")
       VERSION="$OPTARG"
       ;;
@@ -75,18 +79,20 @@ while getopts "hsdgv:" optname; do
 done
 
 # WebLogic Image Name
-DEFAULT_IMAGE_NAME="oracle/weblogic:$VERSION"
-DEFAULT_DEV_IMAGE_NAME="$DEFAULT_IMAGE_NAME-dev"
+IMAGE_NAME="oracle/weblogic:$VERSION"
 
 # Developer or Generic?
-if [ "$DEVELOPER" -eq "$GENERIC" ]; then
+if [ $((DEVELOPER + GENERIC + INFRASTRUCTURE)) -gt 1 ]; then
   usage
 elif [ $DEVELOPER -eq 1 ]; then
   DISTRIBUTION="developer"
-  IMAGE_NAME="$DEFAULT_DEV_IMAGE_NAME"
-else
+elif [ $GENERIC -eq 1 ]; then
   DISTRIBUTION="generic"
-  IMAGE_NAME="$DEFAULT_IMAGE_NAME"
+elif [ $INFRASTRUCTURE -eq 1 ] && [ "$VERSION" = "12.1.3" ]; then
+  echo "Version 12.1.3 does not have infrastructure distribution available."
+  exit 1
+else
+  DISTRIBUTION="infrastructure"
 fi
 
 # Go into version folder
@@ -103,7 +109,7 @@ echo "====================="
 # ################## #
 # BUILDING THE IMAGE #
 # ################## #
-echo "Building image '$IMAGE_NAME' based on '$DISTRIBUTION' distribution..."
+echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 docker build --force-rm=true --no-cache=true -t $IMAGE_NAME -f Dockerfile.$DISTRIBUTION . || {
@@ -114,7 +120,7 @@ docker build --force-rm=true --no-cache=true -t $IMAGE_NAME -f Dockerfile.$DISTR
 echo ""
 
 if [ $? -eq 0 ]; then
-  echo "WebLogic Docker Image for '$DISTRIBUTION' $VERSION is ready to be extended: $IMAGE_NAME"
+  echo "WebLogic Docker Image for '$DISTRIBUTION' version $VERSION is ready to be extended: $IMAGE_NAME"
 else
   echo "WebLogic Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi

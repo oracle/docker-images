@@ -1,0 +1,5 @@
+# Download the Infrastructure distribution of WebLogic 12.2.1 and place along with this .download file
+# ====
+#  - http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls_generic.html
+#
+c8658bb3869bb6a0cebb5805c59588b7  fmw_12.2.1.0.0_infrastructure.jar
