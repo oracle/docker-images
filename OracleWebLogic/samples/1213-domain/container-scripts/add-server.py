@@ -38,7 +38,7 @@ msinternal = socket.gethostbyname(socket.gethostname())
 msname = os.environ.get('MS_NAME', 'ManagedServer-' + socket.gethostname() + '-' + randomName())
 mshost = os.environ.get('MS_HOST', socket.gethostbyname(socket.gethostname()))
 msport = os.environ.get('MS_PORT', '7001')
-memargs = os.environ.get('USER_MEM_ARGS', '-Xms256m -Xmx512m -XX:MaxPermSize=512m')
+memargs = os.environ.get('USER_MEM_ARGS', '')
 
 # Connect to the AdminServer
 # ==========================
