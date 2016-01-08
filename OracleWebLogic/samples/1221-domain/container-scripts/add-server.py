@@ -24,10 +24,10 @@ def editActivate():
   activate(block="true")
   
 # AdminServer details
-username     = os.environ.get('ADMIN_USERNAME', 'weblogic')
-password     = os.environ.get('ADMIN_PASSWORD')
-adminhost    = os.environ.get('ADMIN_HOST', 'wlsadmin')
-adminport    = os.environ.get('ADMIN_PORT', '8001')
+username  = os.environ.get('ADMIN_USERNAME', 'weblogic')
+password  = os.environ.get('ADMIN_PASSWORD')
+adminhost = os.environ.get('ADMIN_HOST', 'wlsadmin')
+adminport = os.environ.get('ADMIN_PORT', '8001')
 cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
 
 # NodeManager details
@@ -38,6 +38,7 @@ msinternal = socket.gethostbyname(socket.gethostname())
 msname = os.environ.get('MS_NAME', 'ManagedServer-' + socket.gethostname() + '-' + randomName())
 mshost = os.environ.get('MS_HOST', socket.gethostbyname(socket.gethostname()))
 msport = os.environ.get('MS_PORT', '7001')
+memargs = os.environ.get('USER_MEM_ARGS', '')
 
 # Connect to the AdminServer
 # ==========================
@@ -86,7 +87,7 @@ cmo.setEnabled(false)
 # Custom Startup Parameters because NodeManager writes wrong AdminURL in startup.properties
 # -----------------------------------------------------------------------------------------
 cd('/Servers/' + msname + '/ServerStart/' + msname)
-arguments = '-Djava.security.egd=file:/dev/./urandom -Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + adminhost + ':' + adminport
+arguments = '-Djava.security.egd=file:/dev/./urandom -Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + adminhost + ':' + adminport + ' ' + memargs
 cmo.setArguments(arguments)
 editActivate()
 
