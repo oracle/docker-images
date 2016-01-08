@@ -59,3 +59,7 @@ docker run -d \
   --net=$network \
   --ulimit nofile=16384:16384 \
   $registry/weblogic
+
+echo ""
+echo "You may now access the WebLogic Admin Console at http://$(docker-machine ip weblogic-admin):8001/console"
+echo ""
