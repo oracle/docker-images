@@ -1,7 +1,6 @@
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 #
 # Script to add NodeManager automatically to the domain's AdminServer running on 'wlsadmin'.
-#
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: October, 2014
 # Author: bruno.borges@oracle.com
@@ -29,6 +28,7 @@ username  = os.environ.get('ADMIN_USERNAME', 'weblogic')
 password  = os.environ.get('ADMIN_PASSWORD')
 adminhost = os.environ.get('ADMIN_HOST', 'wlsadmin')
 adminport = os.environ.get('ADMIN_PORT', '8001')
+cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
 
 # NodeManager details
 nmname = os.environ.get('NM_NAME', 'Machine-' + socket.gethostname())
@@ -52,7 +52,7 @@ cmo.createServer(msname)
 
 cd('/Servers/' + msname)
 cmo.setMachine(getMBean('/Machines/' + nmname))
-cmo.setCluster(None)
+cmo.setCluster(getMBean('/Clusters/' + cluster_name))
 
 # Default Channel for ManagedServer
 # ---------------------------------

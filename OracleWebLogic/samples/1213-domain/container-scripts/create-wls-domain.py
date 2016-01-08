@@ -7,8 +7,11 @@
 # Since : October, 2014
 # Author: bruno.borges@oracle.com
 # ==============================================
-admin_port = int(os.environ.get("ADMIN_PORT", "8001"))
-admin_pass = os.environ.get("ADMIN_PASSWORD", "welcome1")
+domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
+admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
+admin_pass   = os.environ.get("ADMIN_PASSWORD", "welcome1")
+cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
+domain_path  = '/u01/oracle/weblogic/user_projects/domains/' + domain_name
 
 # Open default domain template
 # ======================
@@ -20,14 +23,13 @@ readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
 
 # Configure the Administration Server and SSL port.
 # =========================================================
-cd('Servers/AdminServer')
-set('ListenAddress','')
+cd('/Servers/AdminServer')
+set('ListenAddress', '')
 set('ListenPort', admin_port)
 
 # Define the user password for weblogic
 # =====================================
-cd('/')
-cd('Security/base_domain/User/weblogic')
+cd('/Security/' + domain_name + '/User/weblogic')
 cmo.setPassword(admin_pass)
 
 # Create a JMS Server
@@ -43,57 +45,53 @@ cd('JMSSystemResource/myJmsSystemResource/JmsResource/NO_NAME_0')
 
 # Create a JMS Queue and its subdeployment
 # ========================================
-myq=create('myQueue','Queue')
+myq = create('myQueue','Queue')
 myq.setJNDIName('jms/myqueue')
 myq.setSubDeploymentName('myQueueSubDeployment')
 
-cd('/')
-cd('JMSSystemResource/myJmsSystemResource')
+cd('/JMSSystemResource/myJmsSystemResource')
 create('myQueueSubDeployment', 'SubDeployment')
 
 # Create and configure a JDBC Data Source, and sets the JDBC user
 # ===============================================================
-# IF YOU WANT TO HAVE A DEFAULT DATA SOURCE CREATED, UNCOMMENT THIS SECTION BEFORE BUILD
+cd('/')
+create('myDataSource', 'JDBCSystemResource')
+cd('JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
+create('myJdbcDriverParams','JDBCDriverParams')
+cd('JDBCDriverParams/NO_NAME_0')
+set('DriverName','org.apache.derby.jdbc.ClientDriver')
+set('URL','jdbc:derby://localhost:1527/db;create=true')
+set('PasswordEncrypted', 'PBPUBLIC')
+set('UseXADataSourceInterface', 'false')
+create('myProps','Properties')
+cd('Properties/NO_NAME_0')
+create('user', 'Property')
+cd('Property/user')
+cmo.setValue('PBPUBLIC')
 
-# cd('/')
-# create('myDataSource', 'JDBCSystemResource')
-# cd('JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
-# create('myJdbcDriverParams','JDBCDriverParams')
-# cd('JDBCDriverParams/NO_NAME_0')
-# set('DriverName','org.apache.derby.jdbc.ClientDriver')
-# set('URL','jdbc:derby://localhost:1527/db;create=true')
-# set('PasswordEncrypted', 'PBPUBLIC')
-# set('UseXADataSourceInterface', 'false')
-# create('myProps','Properties')
-# cd('Properties/NO_NAME_0')
-# create('user', 'Property')
-# cd('Property/user')
-# cmo.setValue('PBPUBLIC')
+cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
+create('myJdbcDataSourceParams','JDBCDataSourceParams')
+cd('JDBCDataSourceParams/NO_NAME_0')
+set('JNDIName', java.lang.String("myDataSource_jndi"))
 
-# cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
-# create('myJdbcDataSourceParams','JDBCDataSourceParams')
-# cd('JDBCDataSourceParams/NO_NAME_0')
-# set('JNDIName', java.lang.String("myDataSource_jndi"))
-
-# cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
-# create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
-# cd('JDBCConnectionPoolParams/NO_NAME_0')
-# set('TestTableName','SYSTABLES')
+cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
+create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
+cd('JDBCConnectionPoolParams/NO_NAME_0')
+set('TestTableName','SYSTABLES')
 
 # Target resources to the servers 
 # ===============================
 cd('/')
 assign('JMSServer', 'myJMSServer', 'Target', 'AdminServer')
 assign('JMSSystemResource.SubDeployment', 'myJmsSystemResource.myQueueSubDeployment', 'Target', 'myJMSServer')
-# assign('JDBCSystemResource', 'myDataSource', 'Target', 'AdminServer')
+assign('JDBCSystemResource', 'myDataSource', 'Target', 'AdminServer')
 
 # Write the domain and close the domain template
 # ==============================================
 setOption('OverwriteDomain', 'true')
 setOption('ServerStartMode','prod')
 
-cd('/')
-cd('NMProperties')
+cd('/NMProperties')
 set('ListenAddress','')
 set('ListenPort',5556)
 set('NativeVersionEnabled', 'false')
@@ -101,13 +99,20 @@ set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
 
 # Set the Node Manager user name and password
-cd('/')
-cd('SecurityConfiguration/base_domain')
+cd('/SecurityConfiguration/' + domain_name)
 set('NodeManagerUsername', 'weblogic')
 set('NodeManagerPasswordEncrypted', admin_pass)
 
-domain_path = '/u01/oracle/weblogic/user_projects/domains/base_domain'
+# Define a WebLogic Cluster
+# =========================
+cd('/')
+create(cluster_name, 'Cluster')
 
+cd('/Clusters/' + cluster_name)
+cmo.setClusterMessagingMode('unicast')
+
+# Write Domain
+# ============
 writeDomain(domain_path)
 closeTemplate()
 
@@ -115,6 +120,7 @@ closeTemplate()
 # ===========================================
 readDomain(domain_path)
 addTemplate('/u01/oracle/jaxrs2-template.jar')
+assign('Library', 'jax-rs#2.0@2.5.1', 'Target', cluster_name)
 updateDomain()
 closeDomain()
 
