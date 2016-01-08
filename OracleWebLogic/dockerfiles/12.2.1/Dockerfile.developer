@@ -18,7 +18,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t oracle/weblogic:12.2.1-dev . 
+#      $ docker build -t oracle/weblogic:12.2.1-dev . 
 #
 # IMPORTANT
 # ---------
@@ -30,8 +30,8 @@
 # and build the domain image, for example:
 # 
 #   $ cd samples/1221-domain
-#   $ sudo docker build -t mywls:1221 .
-
+#   $ docker build -t mywls .
+#
 # Pull base image
 # ---------------
 FROM oraclelinux:7
@@ -42,42 +42,38 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_RPM jdk-8u65-linux-x64.rpm
-ENV WLS_PKG fmw_12.2.1.0.0_wls_quick.jar 
-ENV JAVA_HOME /usr/java/default
-ENV ORACLE_HOME /u01/oracle/weblogic
-ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
-ENV USER_MEM_ARGS -Xms256m -Xmx512m
-ENV _JAVA_OPTIONS -XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom
-ENV JAVA_OPTIONS $_JAVA_OPTIONS
-
-# Setup filesystem and oracle user
-# ------------------------------------------------------------
-RUN mkdir /u01 && chmod a+xr /u01 && \
-    useradd -b /u01 -m -s /bin/bash oracle
+ENV JAVA_RPM=jdk-8u65-linux-x64.rpm \
+    WLS_PKG=fmw_12.2.1.0.0_wls_quick.jar \
+    JAVA_HOME=/usr/java/default \
+    ORACLE_HOME=/u01/oracle/weblogic \
+    CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
+    USER_MEM_ARGS="-Xms256m -Xmx512m" \
+    _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
+    JAVA_OPTIONS=$_JAVA_OPTIONS \
+    PATH=$PATH:/u01/oracle/weblogic/oracle_common/common/bin
 
 # Copy packages
-COPY $WLS_PKG /u01/
-COPY $JAVA_RPM /u01/
+# -------------
+COPY $WLS_PKG $JAVA_RPM /u01/
 
+# Setup filesystem and oracle user
 # Install and configure Oracle JDK
-# -------------------------------------
-RUN rpm -i /u01/$JAVA_RPM && \ 
-    rm /u01/$JAVA_RPM 
-
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
-RUN chown oracle:oracle -R /u01
+# ------------------------------------------------------------
+RUN chmod a+xr /u01 && \
+    useradd -b /u01 -m -s /bin/bash oracle && \
+    rpm -i --quiet /u01/$JAVA_RPM &>/dev/null && \
+    rm /u01/$JAVA_RPM && \
+    chown oracle:oracle -R /u01 && \
+    yum -y clean all && \
+    rm -rf /var/cache/yum/*
 
-# Installation of Weblogic 
+# Installation of WebLogic
+# ------------------------
 USER oracle
-WORKDIR /u01
-RUN java -jar $WLS_PKG ORACLE_HOME=$ORACLE_HOME && \
-    rm /u01/$WLS_PKG && \
-    yum -y clean all && rm -rf /var/cache/yum/*
-
 WORKDIR /u01/oracle
-
-ENV PATH $PATH:/u01/oracle/weblogic/oracle_common/common/bin
+RUN java -jar /u01/$WLS_PKG ORACLE_HOME=$ORACLE_HOME && \
+    rm /u01/$WLS_PKG 
 
 # Define default command to start bash. 
 CMD ["bash"]
