@@ -18,7 +18,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/weblogic:12.1.3-dev . 
+#      $ docker build -t oracle/weblogic:12.1.3-developer . 
 #
 # IMPORTANT
 # ---------
