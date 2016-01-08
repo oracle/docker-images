@@ -3,7 +3,7 @@ Example of Image with WLS Domain
 This Dockerfile extends the Oracle WebLogic image by installing the Supplemental package of WebLogic which includes extra samples of Java EE, Coherence applications, and Multitenant domains.
 
 # How to build and run
-First make sure you have built **oracle/weblogic:12.2.1-dev**. Now to build this sample, run:
+First make sure you have built **oracle/weblogic:12.2.1-developer**. Now to build this sample, run:
 
         $ docker build -t 1221-medrec .
 
