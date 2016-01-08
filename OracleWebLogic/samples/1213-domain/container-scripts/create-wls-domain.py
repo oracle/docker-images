@@ -2,7 +2,7 @@
 #
 # WebLogic on Docker Default Domain
 #
-# Default domain 'base_domain' to be created inside the Docker image for WLS
+# Domain, as defined in DOMAIN_NAME, will be created in this script. Name defaults to 'base_domain'.
 # 
 # Since : October, 2014
 # Author: bruno.borges@oracle.com

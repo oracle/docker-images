@@ -2,8 +2,8 @@
 #
 # WebLogic on Docker Default Domain
 #
-# Default domain 'base_domain' (or anything defined under DOMAIN_NAME) to be created inside the Docker image for WLS
-# 
+# Domain, as defined in DOMAIN_NAME, will be created in this script. Name defaults to 'base_domain'.
+#
 # Since : October, 2014
 # Author: bruno.borges@oracle.com
 # ==============================================
@@ -16,6 +16,10 @@ domain_path  = '/u01/oracle/weblogic/user_projects/domains/' + domain_name
 # Open default domain template
 # ======================
 readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
+
+# Disable Admin Console
+# --------------------
+# cmo.setConsoleEnabled(false)
 
 # Configure the Administration Server and SSL port.
 # =========================================================
