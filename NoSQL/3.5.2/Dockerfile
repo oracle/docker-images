@@ -12,7 +12,7 @@ ENV VERSION="3.5.2" \
     BASE_URL="http://download.oracle.com/otn-pub/otn_software/nosql-database/" \
     KVHOME=/kv-$VERSION \
     KVROOT=/var/kvroot \
-    _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
+    _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom"
  
 RUN yum -y install unzip && \
     mkdir "${KVROOT}" && \
