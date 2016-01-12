@@ -13,7 +13,7 @@ import socket
 
 # Functions
 def randomName():
-  return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(16)])
+  return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(6)])
 
 def editMode():
   edit()
@@ -35,7 +35,7 @@ nmname = os.environ.get('NM_NAME', 'Machine-' + socket.gethostname())
 
 # ManagedServer details
 msinternal = socket.gethostbyname(socket.gethostname())
-msname = os.environ.get('MS_NAME', 'ManagedServer-' + socket.gethostname() + '-' + randomName())
+msname = os.environ.get('MS_NAME', 'ManagedServer-' randomName() + '@' socket.gethostname())
 mshost = os.environ.get('MS_HOST', socket.gethostbyname(socket.gethostname()))
 msport = os.environ.get('MS_PORT', '7001')
 memargs = os.environ.get('USER_MEM_ARGS', '')
