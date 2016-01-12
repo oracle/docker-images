@@ -4,6 +4,8 @@
 # 
 # Author: Bruno Borges <bruno.borges@oracle.com>
 #
+. ./setenv.sh
+
 uuid=$(uuidgen)
 name=$prefix-instance-$uuid
 machine=$1
@@ -19,8 +21,6 @@ else
 fi
 
 eval "$(docker-machine env $swarm $machine)"
-
-. ./setenv.sh
 
 docker run -d $DOCKER_CONTAINER_INSTANCE_OPTIONS \
   --name=$name \
