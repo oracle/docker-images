@@ -4,7 +4,7 @@
 #
 # Author: Bruno Borges <bruno.borges@oracle.com>
 # 
-echo "Bootstraping the required elements for Docker Machine and Swarm without using Compose ..."
+echo "Bootstraping the required elements for Docker Machine and Swarm ..."
 echo ""
 
 . ./setenv.sh
