@@ -38,7 +38,8 @@ ENV JAVA_RPM=jdk-8u65-linux-x64.rpm \
     FMW_JAR=fmw_12.2.1.0.0_coherence.jar \
     ORACLE_HOME=/u01/oracle/coherence \
     JAVA_HOME=/usr/java/default \
-    CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom
+    CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom \
++    _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
 
 # Copy files required to build this image
 COPY $FMW_PKG $JAVA_RPM container-scripts/* /u01/
