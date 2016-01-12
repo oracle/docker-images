@@ -10,7 +10,7 @@ ENV VERSION="3.4.7" \
     PACKAGE="kv-ce" \
     EXTENSION="zip" \
     BASE_URL="http://download.oracle.com/otn-pub/otn_software/nosql-database/" \
-    KVHOME=/kv-$VERSION \
+    KVHOME=/kv-3.4.7 \
     KVROOT=/var/kvroot \
     _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom"
  
