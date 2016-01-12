@@ -20,11 +20,9 @@ docker-machine create -d virtualbox \
   --engine-opt="cluster-advertise=eth1:2376" \
   $name
 
-sh create-container.sh $name
-
 echo ""
-echo "Machine $name successfuly created with one container of image [$image]."
-echo "Deploy more containers in this same machine by calling:"
+echo "Machine $name successfuly created."
+echo "Deploy more containers on this same machine by calling:"
 echo ""
 echo "  $ ./create-container.sh $name"
 echo ""

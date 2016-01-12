@@ -4,28 +4,27 @@
 # 
 # Author: Bruno Borges <bruno.borges@oracle.com>
 #
+. ./setenv.sh
+
 uuid=$(uuidgen)
-name=managedserver-$uuid
+name=$prefix-instance-$uuid
 machine=$1
 swarm=""
 
 if [ "$machine" = "" ]; then
   echo "No machine specified. Going to use the Swarm then."
-  machine="weblogic-admin"
+  machine="${prefix}-master"
   swarm="--swarm"
-  echo "Creating WebLogic Managed Server $name on Docker Machine Swarm of $machine..."
+  echo "Creating container instance $name on the Swarm of master $machine..."
 else
-  echo "Creating WebLogic Managed Server $name on specific Docker Machine $machine ..."
+  echo "Creating container instance $name on specific Docker Machine $machine ..."
 fi
 
 eval "$(docker-machine env $swarm $machine)"
 
-. ./setenv.sh
-
-docker run -d \
+docker run -d $DOCKER_CONTAINER_INSTANCE_OPTIONS \
   --name=$name \
   --hostname=$name \
   --net=$network \
   --ulimit nofile=16384:16384 \
-  $registry/weblogic sh createServer.sh
-
+  $registry/$image $DOCKER_CONTAINER_INSTANCE_CMD

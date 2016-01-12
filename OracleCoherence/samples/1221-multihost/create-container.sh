@@ -13,7 +13,7 @@ swarm=""
 
 if [ "$machine" = "" ]; then
   echo "No machine specified. Going to use the Swarm then."
-  machine="${prefix}01"
+  machine="${prefix}-master"
   swarm="--swarm"
   echo "Creating container instance $name on the Swarm of master $machine..."
 else
