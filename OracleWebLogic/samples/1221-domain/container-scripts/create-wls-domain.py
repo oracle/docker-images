@@ -11,11 +11,11 @@ domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
 admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD", "welcome1")
 cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
-domain_path  = '/u01/oracle/weblogic/user_projects/domains/' + domain_name
+domain_path  = '/u01/oracle/user_projects/domains/' + domain_name
 
 # Open default domain template
 # ======================
-readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
+readTemplate("/u01/oracle/wlserver/common/templates/wls/wls.jar")
 
 # Disable Admin Console
 # --------------------
@@ -52,39 +52,11 @@ myq.setSubDeploymentName('myQueueSubDeployment')
 cd('/JMSSystemResource/myJmsSystemResource')
 create('myQueueSubDeployment', 'SubDeployment')
 
-# Create and configure a JDBC Data Source, and sets the JDBC user
-# ===============================================================
-cd('/')
-create('myDataSource', 'JDBCSystemResource')
-cd('JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
-create('myJdbcDriverParams','JDBCDriverParams')
-cd('JDBCDriverParams/NO_NAME_0')
-set('DriverName','org.apache.derby.jdbc.ClientDriver')
-set('URL','jdbc:derby://localhost:1527/db;create=true')
-set('PasswordEncrypted', 'PBPUBLIC')
-set('UseXADataSourceInterface', 'false')
-create('myProps','Properties')
-cd('Properties/NO_NAME_0')
-create('user', 'Property')
-cd('Property/user')
-cmo.setValue('PBPUBLIC')
-
-cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
-create('myJdbcDataSourceParams','JDBCDataSourceParams')
-cd('JDBCDataSourceParams/NO_NAME_0')
-set('JNDIName', java.lang.String("myDataSource_jndi"))
-
-cd('/JDBCSystemResource/myDataSource/JdbcResource/myDataSource')
-create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
-cd('JDBCConnectionPoolParams/NO_NAME_0')
-set('TestTableName','SYSTABLES')
-
 # Target resources to the servers 
 # ===============================
 cd('/')
 assign('JMSServer', 'myJMSServer', 'Target', 'AdminServer')
 assign('JMSSystemResource.SubDeployment', 'myJmsSystemResource.myQueueSubDeployment', 'Target', 'myJMSServer')
-assign('JDBCSystemResource', 'myDataSource', 'Target', 'AdminServer')
 
 # Write the domain and close the domain template
 # ==============================================
