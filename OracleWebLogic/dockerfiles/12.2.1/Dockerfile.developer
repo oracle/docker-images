@@ -47,7 +47,6 @@ ENV JAVA_RPM=jdk-8u65-linux-x64.rpm \
     JAVA_HOME=/usr/java/default \
     ORACLE_HOME=/u01/oracle/weblogic \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    USER_MEM_ARGS="-Xms256m -Xmx512m" \
     _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
     JAVA_OPTIONS=$_JAVA_OPTIONS \
     PATH=$PATH:/u01/oracle/weblogic/oracle_common/common/bin
