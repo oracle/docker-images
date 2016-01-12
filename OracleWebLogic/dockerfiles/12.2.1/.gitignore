@@ -1,3 +1,2 @@
-fmw*.jar
-wls*.zip
-jdk*.rpm
+*.zip
+*.rpm
