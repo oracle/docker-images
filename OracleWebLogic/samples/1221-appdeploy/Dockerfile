@@ -24,12 +24,13 @@ FROM 1221-domain
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Define variables
-ENV APP_NAME "sample" \
-    APP_PKG_FILE "sample.war" \
-    APP_PKG_LOCATION "/u01/oracle"
+ENV APP_NAME="sample" \
+    APP_PKG_FILE="sample.war" \
+    APP_PKG_LOCATION="/u01/oracle"
 
 # Copy files and deploy application in WLST Offline mode
 COPY container-scripts/* /u01/oracle/
+
 RUN sh appDeploy.sh
 
 # Define default command to start WebLogic Admin Server
