@@ -4,12 +4,12 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for WebLogic 12c (Full) Generic Distribution
+# This is the Dockerfile for WebLogic 12.2.1 Generic Distro
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.0.0_wls.jar
-#     Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
+# (1) fmw_12.2.1.0.0_wls_Disk1_1of1.zip 
+#     Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
 # (2) jdk-8u65-linux-x64.rpm
 #     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
@@ -18,7 +18,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/weblogic:12.2.1 . 
+#      $ docker build -t oracle/weblogic:12.2.1-generic . 
 #
 # IMPORTANT
 # ---------
@@ -26,12 +26,13 @@
 # For that, look into the folder 'samples' for an example on how
 # to create a domain on a new inherited image.
 #
-# You can go into 'samples/1221-domain' after building this Generic image,
-# update the Dockerfile's FROM entry to point to this image, and build the domain image
+# You can go into 'samples/1221-domain' after building the Generic install image
+# and build the domain image, for example:
 # 
 #   $ cd samples/1221-domain
-#   -- modify Dockerfile FROM to point to this image
 #   $ docker build -t mywls .
+#
+# * the sample 1221-domain points to the developer image. Change FROM before building
 #
 # Pull base image
 # ---------------
@@ -41,41 +42,39 @@ FROM oraclelinux:7
 # ----------
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
-# Environment variables required for this build
-# ---------------------------------------------
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
 ENV JAVA_RPM=jdk-8u65-linux-x64.rpm \
-    WLS_PKG=fmw_12.2.1.0.0_wls.jar \
+    FMW_PKG=fmw_12.2.1.0.0_wls_Disk1_1of1.zip \
+    FMW_JAR=fmw_12.2.1.0.0_wls.jar \
+    ORACLE_HOME=/u01/oracle \
     JAVA_HOME=/usr/java/default \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
     JAVA_OPTIONS=$_JAVA_OPTIONS \
-    PATH=$PATH:/u01/oracle/weblogic/oracle_common/common/bin
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin
 
-# Copy packages and files
-# -----------------------
-COPY $WLS_PKG $JAVA_RPM install.file oraInst.loc /u01/
+# Copy packages
+# -------------
+COPY $FMW_PKG $JAVA_RPM install.file oraInst.loc /u01/
 
-# Setup required packages, filesystem, and oracle user.
+# Setup filesystem and oracle user
 # Install and configure Oracle JDK
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN chmod a+xr /u01 && \
+RUN rpm -i /u01/$JAVA_RPM && \
+    yum install -y unzip && \
+    chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
-    rpm -i --quiet /u01/$JAVA_RPM &>/dev/null && \
-    rm /u01/$JAVA_RPM && \
-    chown oracle:oracle -R /u01
+    echo oracle:oracle | chpasswd && \
+    unzip /u01/$FMW_PKG -d /u01 && \
+    chown oracle:oracle -R /u01 && \
+    su -c "java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE=\"WebLogic Server\"" - oracle && \
+    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/$JAVA_RPM /u01/oraInst.loc /u01/install.file && \
+    yum -y remove unzip && rm -rf /var/cache/yum/*
 
-WORKDIR /u01
 USER oracle
-
-# Installation of WebLogic 
-# ------------------------
-RUN mkdir /u01/oracle/.inventory && \
-    java -jar $WLS_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME && \
-    rm $WLS_PKG /u01/oraInst.loc /u01/install.file && \
-    yum -y clean all && rm -rf /var/cache/yum/*
-
-WORKDIR /u01/oracle/
+WORKDIR /u01/oracle
 
 # Define default command to start bash. 
 CMD ["bash"]

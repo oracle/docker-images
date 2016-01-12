@@ -31,7 +31,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # -------------------------------------------------------------
 ENV WLS_PKG fmw_12.2.1.0.0_wls_supplemental_quick.jar 
 ENV JAVA_HOME /usr/java/default
-ENV ORACLE_HOME /u01/oracle/weblogic
+ENV ORACLE_HOME /u01/oracle
 ENV MW_HOME $ORACLE_HOME
 ENV CONFIG_JVM_ARGS -Djava.security.egd=file:/dev/./urandom
 ENV USER_MEM_ARGS -Xms256m -Xmx512m -XX:MaxPermSize=2048m
@@ -48,10 +48,10 @@ WORKDIR /u01
 RUN java -jar $WLS_PKG ORACLE_HOME=$ORACLE_HOME && \
     rm /u01/$WLS_PKG
 
-COPY weblogic.properties /u01/oracle/weblogic/wlserver/samples/server/medrec/
-COPY startSample.sh /u01/oracle/weblogic/wlserver/samples/server/medrec/
+COPY weblogic.properties /u01/oracle/wlserver/samples/server/medrec/
+COPY startSample.sh /u01/oracle/wlserver/samples/server/medrec/
 
-ENV EXAMPLES_HOME /u01/oracle/weblogic/wlserver/samples/server
+ENV EXAMPLES_HOME /u01/oracle/wlserver/samples/server
 ENV CLASSPATH $JAVA_HOME/lib/tools.jar:$ORACLE_HOME/wlserver/modules/features/wlst.wls.classpath.jar
 ENV PATH $ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin
 

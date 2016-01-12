@@ -8,7 +8,7 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.0.0_wls_quick.jar
+# (1) fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip 
 #     Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
 # (2) jdk-8u65-linux-x64.rpm
@@ -43,36 +43,36 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV JAVA_RPM=jdk-8u65-linux-x64.rpm \
-    WLS_PKG=fmw_12.2.1.0.0_wls_quick.jar \
+    FMW_PKG=fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip \
+    FMW_JAR=fmw_12.2.1.0.0_wls_quick.jar \
+    ORACLE_HOME=/u01/oracle \
     JAVA_HOME=/usr/java/default \
-    ORACLE_HOME=/u01/oracle/weblogic \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
     JAVA_OPTIONS=$_JAVA_OPTIONS \
-    PATH=$PATH:/u01/oracle/weblogic/oracle_common/common/bin
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin
 
 # Copy packages
 # -------------
-COPY $WLS_PKG $JAVA_RPM /u01/
+COPY $FMW_PKG $JAVA_RPM install.file oraInst.loc /u01/
 
 # Setup filesystem and oracle user
 # Install and configure Oracle JDK
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN chmod a+xr /u01 && \
+RUN rpm -i /u01/$JAVA_RPM && \
+    yum install -y unzip && \
+    chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
-    rpm -i --quiet /u01/$JAVA_RPM &>/dev/null && \
-    rm /u01/$JAVA_RPM && \
+    echo oracle:oracle | chpasswd && \
+    unzip /u01/$FMW_PKG -d /u01 && \
     chown oracle:oracle -R /u01 && \
-    yum -y clean all && \
-    rm -rf /var/cache/yum/*
+    su -c "java -jar /u01/$FMW_JAR -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force ORACLE_HOME=$ORACLE_HOME" - oracle && \
+    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/$JAVA_RPM /u01/oraInst.loc /u01/install.file && \
+    yum -y remove unzip && rm -rf /var/cache/yum/*
 
-# Installation of WebLogic
-# ------------------------
 USER oracle
 WORKDIR /u01/oracle
-RUN java -jar /u01/$WLS_PKG ORACLE_HOME=$ORACLE_HOME && \
-    rm /u01/$WLS_PKG 
 
 # Define default command to start bash. 
 CMD ["bash"]

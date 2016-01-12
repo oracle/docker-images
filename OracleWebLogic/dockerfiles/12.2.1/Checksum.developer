@@ -1,10 +1,4 @@
-# WebLogic 12c Developer Distribution for Developers
-# ===
-# 1. Go to http://www.oracle.com/technetwork/middleware/weblogic/downloads/index.html
-# 2. Download the Free Oracle WebLogic Server 12c (12.2.1) JDK and Installers for Developers
-# 3. Open the download zip file and extract file fmw_12.2.1.0.0_wls_quick.jar into this folder containing the .download file
-# 
-6fa529c04d8de92d1b3ef78c202d663e  fmw_12.2.1.0.0_wls_quick.jar
+e9a0606d3f074c24ef72246efc5bdd85  fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip
 # Download this package from Oracle
 # ====
 #  - http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html

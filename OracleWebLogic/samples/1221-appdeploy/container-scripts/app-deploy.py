@@ -9,7 +9,7 @@
 import os
 
 # Deployment Information 
-domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/weblogic/user_projects/domains/base_domain')
+domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/user_projects/domains/base_domain')
 appname    = os.environ.get('APP_NAME', 'sample')
 apppkg     = os.environ.get('APP_PKG_FILE', 'sample.war')
 appdir     = os.environ.get('APP_PKG_LOCATION', '/u01/oracle')
