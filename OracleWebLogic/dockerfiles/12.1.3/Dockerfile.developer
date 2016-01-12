@@ -43,18 +43,18 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV JAVA_RPM=jdk-8u65-linux-x64.rpm \
-    WLS_PKG=wls1213_dev_update3.zip \
+    FMW_PKG=wls1213_dev_update3.zip \
     JAVA_HOME=/usr/java/default \
-    MW_HOME=/u01/oracle/wls12130 \
+    MW_HOME=/u01/oracle \
+    ORACLE_HOME=/u01/oracle \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    USER_MEM_ARGS="-Xms256m -Xmx512m" \
     _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
     JAVA_OPTIONS=$_JAVA_OPTIONS \
-    PATH=$PATH:/u01/oracle/weblogic/oracle_common/common/bin
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin
 
 # Copy packages
 # -------------
-COPY $WLS_PKG $JAVA_RPM /u01/
+COPY $FMW_PKG $JAVA_RPM /u01/
 
 # Setup filesystem and oracle user
 # Install and configure Oracle JDK
@@ -64,19 +64,17 @@ RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     rpm -i --quiet /u01/$JAVA_RPM &>/dev/null && \
     rm /u01/$JAVA_RPM && \
-    chown oracle:oracle -R /u01
-
-# Installation of WebLogic
-# ------------------------
-USER oracle
-WORKDIR /u01/oracle
-RUN jar xf /u01/$WLS_PKG && \
-    ln -s /u01/oracle/wls12130 /u01/oracle/weblogic && \
-    cd /u01/oracle/weblogic && \
+    jar xf /u01/$FMW_PKG && \
+    mv wls12130/* /u01/oracle && rmdir wls12130 && \
+    cd /u01/oracle && \
     sh configure.sh -silent && \
-    find /u01/oracle/wls12130 -name "*.sh" -exec chmod a+x {} \; && \
-    rm /u01/$WLS_PKG && \
+    find /u01/oracle -name "*.sh" -exec chmod a+x {} \; && \
+    rm /u01/$FMW_PKG && \
+    chown oracle:oracle -R /u01/oracle && \
     yum -y clean all && rm -rf /var/cache/yum/*
+
+WORKDIR /u01/oracle
+USER oracle
 
 # Define default command to start bash. 
 CMD ["bash"]

@@ -11,11 +11,11 @@ domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
 admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD", "welcome1")
 cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
-domain_path  = '/u01/oracle/weblogic/user_projects/domains/' + domain_name
+domain_path  = '/u01/oracle/user_projects/domains/' + domain_name
 
 # Open default domain template
 # ======================
-readTemplate("/u01/oracle/weblogic/wlserver/common/templates/wls/wls.jar")
+readTemplate("/u01/oracle/wlserver/common/templates/wls/wls.jar")
 
 # Disable Admin Console
 # --------------------
