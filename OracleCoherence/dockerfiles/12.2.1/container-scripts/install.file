@@ -1,0 +1,15 @@
+[ENGINE]
+
+#DO NOT CHANGE THIS.
+Response File Version=1.0.0.0.0
+
+[GENERIC]
+
+#Set this to true if you wish to skip software updates
+DECLINE_AUTO_UPDATES=true
+
+#The oracle home location. This can be an existing Oracle Home or a new Oracle Home
+ORACLE_HOME=/u01/oracle
+
+#Set this variable value to the Installation Type selected. e.g. Typical, Typical With Examples.
+INSTALL_TYPE=Typical With Examples
