@@ -12,6 +12,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 ENV GLASSFISH_PKG=glassfish-4.1.1-web.zip \
     GLASSFISH_URL=http://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1-web.zip \
     GLASSFISH_HOME=/glassfish4 \
+    MD5=44baeca38cf33bb655fd3dd09f7d2b78 \
     PATH=$PATH:/glassfish4/bin \
     PASSWORD=glassfish
 
@@ -20,6 +21,7 @@ ENV GLASSFISH_PKG=glassfish-4.1.1-web.zip \
 # Enable DAS
 RUN yum -y install wget unzip && \
     wget --quiet --no-check-certificate $GLASSFISH_URL && \
+    echo "$MD5 *$GLASSFISH_PKG" | md5sum -c - && \
     unzip -o $GLASSFISH_PKG && \
     rm -f $GLASSFISH_PKG && \
     yum -y remove wget unzip && rm -rf /var/cache/yum/* && \
