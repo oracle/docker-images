@@ -1,3 +1,4 @@
-*.zip
 *.rpm
+*.jar
+*.zip
 *.tar.gz
