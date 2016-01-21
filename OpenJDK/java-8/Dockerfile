@@ -4,7 +4,7 @@
 # 
 # Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
 # 
-FROM oracle/oraclelinux:latest
+FROM oraclelinux:latest
 
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
