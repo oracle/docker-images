@@ -43,9 +43,8 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV JAVA_PKG=server-jre-8u71-linux-x64.tar.gz \
-    JAVA_FOLDER=jdk1.8.0_71 \
+    JAVA_HOME=/usr/java/jdk1.8.0_71 \
     FMW_PKG=wls1213_dev_update3.zip \
-    JAVA_HOME=/usr/java/default \
     MW_HOME=/u01/oracle \
     ORACLE_HOME=/u01/oracle \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
@@ -64,15 +63,14 @@ ADD $JAVA_PKG /usr/java/
 # ------------------------------------------------------------
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
-    ln -s /usr/java/$JAVA_FOLDER /usr/java/default && \
-    ln -s /usr/java/$JAVA_FOLDER /usr/java/latest && \
+    echo oracle:oracle | chpasswd && \
+    chown oracle:oracle -R /u01 && \
     $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && \
     mv wls12130/* /u01/oracle && rmdir wls12130 && \
     cd /u01/oracle && \
     sh configure.sh -silent && \
     find /u01/oracle -name "*.sh" -exec chmod a+x {} \; && \
     rm /u01/$FMW_PKG && \
-    chown oracle:oracle -R /u01/oracle && \
     rm -rf /var/cache/yum/*
 
 WORKDIR /u01/oracle

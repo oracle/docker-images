@@ -11,7 +11,7 @@
 # (1) fmw_12.2.1.0.0_wls_Disk1_1of1.zip 
 #     Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
-# (2) server-jre-8u65-linux-x64.tar.gz
+# (2) server-jre-8uXX-linux-x64.tar.gz
 #     Download from http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html 
 #
 # HOW TO BUILD THIS IMAGE
@@ -44,12 +44,11 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_PKG=server-jre-8u65-linux-x64.tar.gz \
-    JAVA_FOLDER=jdk1.8.0_65 \
+ENV JAVA_PKG=server-jre-8u71-linux-x64.tar.gz \
+    JAVA_HOME=/usr/java/jdk1.8.0_71 \
     FMW_PKG=fmw_12.2.1.0.0_wls_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.0.0_wls.jar \
     ORACLE_HOME=/u01/oracle \
-    JAVA_HOME=/usr/java/default \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
     JAVA_OPTIONS=$_JAVA_OPTIONS \
@@ -64,17 +63,14 @@ ADD $JAVA_PKG /usr/java/
 # Install and configure Oracle JDK
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN yum install -y unzip && \
-    chmod a+xr /u01 && \
+RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    unzip /u01/$FMW_PKG -d /u01 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
     chown oracle:oracle -R /u01 && \
-    ln -s /usr/java/$JAVA_FOLDER /usr/java/default && \
-    ln -s /usr/java/$JAVA_FOLDER /usr/java/latest && \
     su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE=\"WebLogic Server\"" - oracle && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file && \
-    yum -y remove unzip && rm -rf /var/cache/yum/*
+    rm -rf /var/cache/yum/*
 
 USER oracle
 WORKDIR /u01/oracle
