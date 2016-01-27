@@ -7,11 +7,9 @@ FROM oraclelinux:latest
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 ENV JAVA_PKG=server-jre-7u80-linux-x64.tar.gz \
-    JAVA_FOLDER=jdk1.7.0_80 \
     JAVA_HOME=/usr/java/default \
     PATH=$PATH:/usr/java/default/bin
 
 ADD $JAVA_PKG /usr/java/
 
-RUN ln -s /usr/java/$JAVA_FOLDER /usr/java/default && \
-    ln -s /usr/java/$JAVA_FOLDER /usr/java/latest
+RUN ln -s $(ls -1 /usr/java) /usr/java/default
