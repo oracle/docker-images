@@ -45,7 +45,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV JAVA_PKG=server-jre-8u71-linux-x64.tar.gz \
-    JAVA_HOME=/usr/java/jdk1.8.0_71 \
+    JAVA_HOME=/usr/java/default \
     FMW_PKG=fmw_12.2.1.0.0_infrastructure_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.0.0_infrastructure.jar \
     ORACLE_HOME=/u01/oracle \
@@ -64,6 +64,7 @@ ADD $JAVA_PKG /usr/java/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
+    ln -s $(ls -1 /usr/java) /usr/java/default && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
     su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE=\"Fusion Middleware Infrastructure\"" - oracle && \
     chown oracle:oracle -R /u01 && \

@@ -43,7 +43,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV JAVA_PKG=server-jre-8u71-linux-x64.tar.gz \
-    JAVA_HOME=/usr/java/jdk1.8.0_71 \
+    JAVA_HOME=/usr/java/default \
     FMW_PKG=wls1213_dev_update3.zip \
     MW_HOME=/u01/oracle \
     ORACLE_HOME=/u01/oracle \
@@ -62,6 +62,7 @@ ADD $JAVA_PKG /usr/java/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
+    ln -s $(ls -1 /usr/java) /usr/java/default && \
     $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && \
     mv wls12130/* /u01/oracle && rmdir wls12130 && \
     cd /u01/oracle && \
