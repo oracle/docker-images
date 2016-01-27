@@ -1,9 +1,6 @@
-# Download this package from Oracle website
-# 
-# 
-e9a0606d3f074c24ef72246efc5bdd85  fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip
 # Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
 #
 #  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
 #
-cfd3c775a106381e82386fbd87e31efd  server-jre-8u65-linux-x64.tar.gz
+f3b7b50103a2b5c792c0314580c5dec6  server-jre-8u71-linux-x64.tar.gz
+e9a0606d3f074c24ef72246efc5bdd85  fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip
