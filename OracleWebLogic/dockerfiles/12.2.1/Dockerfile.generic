@@ -11,7 +11,7 @@
 # (1) fmw_12.2.1.0.0_wls_Disk1_1of1.zip 
 #     Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
-# (2) server-jre-8u65-linux-x64.gz
+# (2) server-jre-8u65-linux-x64.tar.gz
 #     Download from http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html 
 #
 # HOW TO BUILD THIS IMAGE
@@ -44,7 +44,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_PKG=server-jre-8u65-linux-x64.gz \
+ENV JAVA_PKG=server-jre-8u65-linux-x64.tar.gz \
     JAVA_FOLDER=jdk1.8.0_65 \
     FMW_PKG=fmw_12.2.1.0.0_wls_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.0.0_wls.jar \
