@@ -19,7 +19,7 @@ RUN yum -y install unzip && \
     curl -OLs "${BASE_URL}/${PACKAGE}-${VERSION}.${EXTENSION}" && \
     unzip "${PACKAGE}-${VERSION}.${EXTENSION}" && \
     rm "${PACKAGE}-${VERSION}.${EXTENSION}" && \
-    yum -y remove unzip && yum -y clean all && rm -rf /var/cache/yum/*
+    yum -y remove unzip && rm -rf /var/cache/yum/*
  
 WORKDIR "/kv-${VERSION}"
  
