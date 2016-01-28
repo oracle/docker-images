@@ -71,7 +71,7 @@ To try a sample of a WebLogic image with a domain configured, follow the steps b
 ### Running WebLogic AdminServer
 To start the WebLogic AdminServer, you can simply call **docker run -d 1221-domain** command. The sample Dockerfile defines **startWebLogic.sh** as the default CMD.
 
-    $ docker run -d --name=wlsadmin -p 8001:8001 samplewls:12.2.1
+    $ docker run -d --name=wlsadmin -p 8001:8001 1221-domain
 
 Now you can access the AdminServer Web Console at [http://localhost:8001/console](http://localhost:8001/console).
 
