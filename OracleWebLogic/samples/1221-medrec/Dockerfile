@@ -30,12 +30,8 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV WLS_PKG="fmw_12.2.1.0.0_wls_supplemental_quick.jar" \
-    JAVA_HOME="/usr/java/default" \
-    ORACLE_HOME="/u01/oracle" \
     MW_HOME="$ORACLE_HOME" \
-    CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    USER_MEM_ARGS="-Xms256m -Xmx512m -XX:MaxPermSize=2048m" \
-    _JAVA_OPTIONS="-XX:+PrintCommandLineFlags -Djava.security.egd=file:/dev/./urandom" \
+    ANT_OPTIONS="-Djava.security.egd=file:/dev/./urandom -Xms256m -Xmx1024m -XX:MaxPermSize=1024m" \
     EXAMPLES_HOME="/u01/oracle/wlserver/samples/server" \
     CLASSPATH="$JAVA_HOME/lib/tools.jar:$ORACLE_HOME/wlserver/modules/features/wlst.wls.classpath.jar" \
     PATH="$ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin"
