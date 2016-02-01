@@ -52,4 +52,6 @@ WORKDIR $ORACLE_HOME/wlserver/samples/server/medrec
 
 ENTRYPOINT ["./startSample.sh"]
 
+EXPOSE 7001
+
 CMD ["single.server.sample"]
