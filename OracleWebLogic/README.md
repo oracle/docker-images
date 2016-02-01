@@ -1,14 +1,18 @@
 WebLogic on Docker
 ===============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes [dockerfiles](dockerfiles/) and [samples](samples/) for both WebLogic 12.1.3 and 12.2.1 based on Oracle Linux and Oracle JDK 8 (Server).
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) and [samples](samples/) for both WebLogic 12.1.3 and 12.2.1 based on Oracle Linux and Oracle JDK 8 (Server).
 
-For more information on the Linux base image distribution, please check the [Docker Images from Oracle Linux](https://hub.docker.com/r/oracle/oraclelinux/) page.
+The certification of WebLogic on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
+
+For more information on the certification, please check the [WebLogic on Docker Certification Whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [WebLogic Blog](https://blogs.oracle.com/WebLogicServer/) for updates.
 
 ## How to build and run
 This project offers sample Dockerfiles for both WebLogic 12cR2 (12.2.1) and WebLogic 12c (12.1.3), and for each version it also provides at least one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
+The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
+
 ### Building WebLogic Docker Base Images
-**IMPORTANT:** you have to download the binaries of WebLogic and Oracle JDK and put them in place (see **.download** files inside dockerfiles/<version>).
+**IMPORTANT:** you have to download the binaries of WebLogic and Oracle JDK and put them in place (see `.download` files inside dockerfiles/<version>).
 
 Before you build, choose which version and distribution you want to build an image of, then download the required packages (see .download files) and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
 
@@ -83,7 +87,7 @@ You can deploy a cluster of WebLogic using Docker with the samples scripts defin
 
        $ docker run -d --link wlsadmin:wlsadmin 1221-domain createServer.sh
 
-Wait 5-10 seconds, and then go into the AdminServer Web Console and check in the Machines page if the NodeManager was registered. Then check if the Managed Server was also created and registered. The script **createServer.sh** starts a NodeManager insid the container and then it will also create a **ManagedServer**, and register both on the Admin Server located at **wlsadmin** as per the alias indicated.
+Wait 5-10 seconds, and then go into the AdminServer Web Console and check in the Machines page if the NodeManager was registered. Then check if the Managed Server was also created and registered. The script **createServer.sh** starts a NodeManager inside the container and then it will also create a **Managed Server**, and register both on the Admin Server located at **wlsadmin** as per the alias indicated.
 
 ### Clustering WebLogic on Docker Containers Across Multiple Hosts
 By using the sample [samples/1221-multihost](samples/1221-multihost), which contains a set of scripts that leverage [Docker Machine](https://docs.docker.com/machine/) and [Docker Swarm](https://docs.docker.com/swarm/), and by digging through the scripts that create the containers across multiple hosts combined with the scripts inside [1221-domain/container-scripts](samples/1221-domain/container-scripts), you can learn the necessary steps to deploy this with different Docker setups.
@@ -91,25 +95,28 @@ By using the sample [samples/1221-multihost](samples/1221-multihost), which cont
 The basic idea behind this setup is that you must have all the containers across different hosts assigned to a specific [Docker Overlay Network](https://docs.docker.com/engine/userguide/networking/dockernetworks/#an-overlay-network), a feature of Docker 1.9+ that allows containers to join the same network, even though they are running at different host environments.
 
 #### Create a WebLogic Server 12cR2 MedRec sample domain**
-The Supplemental Quick Installer is a lightweight installer that contains all the necessary artifacts to develop and test applications on Oracle WebLogic Server 12.2.1. You can extend the WebLogic developer install image **oracle/weblogic:12.2.1-developer** to create a domain image with the MedRec application deployed.
+The Supplemental Quick Installer is a lightweight installer that contains all of the necessary artifacts to develop and test applications on Oracle WebLogic Server 12.2.1. You can extend the WebLogic developer install image **oracle/weblogic:12.2.1-developer** to create a domain image with the MedRec application deployed.
 
-  1. Make sure you have **oracle/weblogic:12.2.1-developer** image built. If not go into [dockerfiles](dockerfiles/) and call 
+  1. Make sure you have `oracle/weblogic:12.2.1-developer` image built. If not go into [dockerfiles](dockerfiles/) and call 
 
         $ sh buildDockerImage.sh -v 12.2.1 -d
 
   2. Go to folder [samples/1221-medrec](samples/1221-medrec)
-  3. Run the following command: 
+  3. Download into this folder the supplemental package for WebLogic 12R2
+  4. Run the following command: 
 
         $ docker build -t 1221-medrec .
 
- 3. Now run a container from this new sample domain image
+  5. Now run a container from this new sample domain image
 
-        $ docker run -ti -p 7011:7011 1221-medrec
+        $ docker run -ti -p 7001:7001 1221-medrec
 
- 3. Now access the AdminServer Console at http://localhost:7011/medrec
+  6. Now access the AdminServer Console at 
+
+        http://localhost:7011/medrec
 
 ## Choose your WebLogic Distribution
-This project hosts two to three configurations for building Docker images with WebLogic 12c.
+This project hosts two to three configurations (depending on WebLogic version) for building Docker images with WebLogic 12c.
 
  * Quick Install Developer Distribution
 
