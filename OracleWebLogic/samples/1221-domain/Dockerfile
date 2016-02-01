@@ -37,7 +37,6 @@ USER oracle
 COPY container-scripts/* /u01/oracle/
 
 # Configuration of WLS Domain
-WORKDIR /u01/oracle
 RUN /u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/create-wls-domain.py && \
     mkdir -p /u01/oracle/user_projects/domains/base_domain/servers/AdminServer/security && \
     echo "username=weblogic" > /u01/oracle/user_projects/domains/base_domain/servers/AdminServer/security/boot.properties && \ 
@@ -45,7 +44,7 @@ RUN /u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/ora
     echo ". /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \ 
     echo "export PATH=$PATH:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin" >> /u01/oracle/.bashrc
 
-# Expose Node Manager default port, and also default http/https ports for admin console
+# Expose Node Manager default port, and also default for admin and managed server 
 EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT
 
 # Final setup
