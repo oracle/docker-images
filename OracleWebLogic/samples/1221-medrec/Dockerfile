@@ -9,7 +9,7 @@
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.0.0_wls_supplemental_quick.jar
+# (1) fmw_12.2.1.0.0_wls_supplemental_quick_Disk1_1of1.zip
 #     Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
 # HOW TO BUILD THIS IMAGE
