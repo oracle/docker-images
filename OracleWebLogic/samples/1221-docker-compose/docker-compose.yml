@@ -22,7 +22,7 @@ services:
     depends_on:
       - wlsadmin
     environment:
-      DELAY_NM_STARTUP: 15 # This is to ensure Admin is on RUNNING state before assigning managed server to the domain
+      DELAY_NM_REGISTRATION: 15 # This is to ensure Admin is on RUNNING state before registering NM and MS to the domain
   wlsadmin:
     image: 1221-domain
     container_name: wlsadmin

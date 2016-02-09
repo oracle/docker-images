@@ -7,7 +7,7 @@ WLST="wlst.sh -skipWLSModuleScanning"
 
 # Start Node Manager
 nohup startNodeManager.sh > log.nm &
-sleep $DELAY_NM_STARTUP
+sleep $DELAY_NM_REGISTRATION
 
 # Add a Machine to the AdminServer
 $WLST /u01/oracle/add-machine.py
