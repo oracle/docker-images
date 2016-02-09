@@ -12,7 +12,7 @@ import socket
 # Functions
 def editMode():
   edit()
-  startEdit()
+  startEdit(exclusive="true")
 
 def editActivate():
   save()

@@ -17,7 +17,7 @@ def randomName():
 
 def editMode():
   edit()
-  startEdit()
+  startEdit(waitTimeInMillis=-1, exclusive="true")
   
 def editActivate():
   save()
