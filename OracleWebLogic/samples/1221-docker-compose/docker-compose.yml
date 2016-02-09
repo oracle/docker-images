@@ -1,0 +1,34 @@
+# Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+#
+# Example of using Docker Compose to deploy a WebLogic Cluster from image '1221-domain'
+# 
+# This Docker Compose file will only work with Docker 1.10+ and Compose 1.6+
+#
+# To run, call:
+#   $ docker-compose up
+#
+# To scale, open a new terminal and call:
+#   $ docker-compose scale managedserver=2
+#
+# Author: Bruno Borges <bruno.borges@oracle.com> 
+#
+version: '2'
+services:
+  managedserver:
+    image: 1221-domain
+    command: createServer.sh
+    networks:
+      - wlsnet
+    depends_on:
+      - wlsadmin
+    environment:
+      DELAY_NM_STARTUP: 15 # This is to ensure Admin is on RUNNING state before assigning managed server to the domain
+  wlsadmin:
+    image: 1221-domain
+    container_name: wlsadmin
+    hostname: wlsadmin
+    networks:
+      - wlsnet
+networks:
+  wlsnet:
+    driver: bridge
