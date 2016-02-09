@@ -3,7 +3,7 @@
 # Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
 # 
 # GlassFish on Docker with Oracle Linux and OpenJDK
-FROM oracle/openjdk:8
+FROM oraclelinux:latest
 
 # Maintainer
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
@@ -14,12 +14,13 @@ ENV GLASSFISH_PKG=glassfish-4.1.1.zip \
     GLASSFISH_HOME=/glassfish4 \
     MD5=4e7ce65489347960e9797d2161e0ada2 \
     PATH=$PATH:/glassfish4/bin \
-    PASSWORD=glassfish
+    PASSWORD=glassfish \
+    JAVA_HOME=/usr/lib/jvm/java-openjdk
 
 # Install packages, download and extract GlassFish
 # Setup password file
 # Enable DAS
-RUN yum -y install wget unzip && \
+RUN yum -y install wget unzip java-1.8.0-openjdk-devel && \
     wget --quiet --no-check-certificate $GLASSFISH_URL && \
     echo "$MD5 *$GLASSFISH_PKG" | md5sum -c - && \
     unzip -o $GLASSFISH_PKG && \
