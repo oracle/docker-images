@@ -31,8 +31,7 @@ ENV DOMAIN_NAME="base_domain" \
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
     MS_PORT="7001" \
-    DELAY_NM_REGISTRATION="5" \
-    CLUSTER_NAME="Cluster-Docker" \
+    CLUSTER_NAME="DockerCluster" \
     PATH=$PATH:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin:/u01/oracle
 
 # Add files required to build this image
