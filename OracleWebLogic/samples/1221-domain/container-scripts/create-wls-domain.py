@@ -10,7 +10,7 @@
 domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
 admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD", "welcome1")
-cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
+cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 domain_path  = '/u01/oracle/user_projects/domains/' + domain_name
 
 # Open default domain template
@@ -67,9 +67,10 @@ cd('/NMProperties')
 set('ListenAddress','')
 set('ListenPort',5556)
 set('CrashRecoveryEnabled', 'true')
-set('NativeVersionEnabled', 'false')
+set('NativeVersionEnabled', 'true')
 set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
+set('LogLevel', 'FINEST')
 
 # Set the Node Manager user name and password
 cd('/SecurityConfiguration/' + domain_name)
