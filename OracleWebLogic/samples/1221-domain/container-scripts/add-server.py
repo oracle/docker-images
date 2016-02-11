@@ -11,23 +11,19 @@ import random
 import string
 import socket
 
-execfile('adminfuncs.py')
+execfile('commonfuncs.py')
 
 # Functions
 def randomName():
   return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(6)])
 
 # AdminServer details
-cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
-
-# NodeManager details
-nmname = os.environ.get('NM_NAME', 'Machine-' + socket.gethostname())
+cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 
 # ManagedServer details
-hostname = socket.gethostname()
 msinternal = socket.gethostbyname(hostname)
 msname = os.environ.get('MS_NAME', 'ManagedServer-' + randomName() + '@' + hostname)
-mshost = os.environ.get('MS_HOST', socket.gethostbyname(hostname))
+mshost = os.environ.get('MS_HOST', msinternal)
 msport = os.environ.get('MS_PORT', '7001')
 memargs = os.environ.get('USER_MEM_ARGS', '')
 

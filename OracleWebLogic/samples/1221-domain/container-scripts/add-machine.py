@@ -9,11 +9,9 @@
 import os
 import socket
 
-execfile('adminfuncs.py')
+execfile('commonfuncs.py')
 
 # NodeManager details
-hostname = socket.gethostname()
-nmname = os.environ.get('NM_NAME', 'Machine-' + hostname)
 nmhost = os.environ.get('NM_HOST', socket.gethostbyname(hostname))
 nmport = os.environ.get('NM_PORT', '5556')
 
