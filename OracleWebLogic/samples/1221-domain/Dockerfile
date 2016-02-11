@@ -25,7 +25,8 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # WLS Configuration
 # ----------------------------------------------------------
-ENV ADMIN_PASSWORD="welcome1" \
+ENV DOMAIN_NAME="base_domain" \
+    ADMIN_PASSWORD="welcome1" \
     ADMIN_PORT="8001" \
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
