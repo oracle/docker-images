@@ -12,8 +12,17 @@
 #
 # Author: Bruno Borges <bruno.borges@oracle.com> 
 #
+# Note: If scaling dozens of instances of managed server at once, you may face a StuckThreadMaxTime
+#
+# Important: Restarting services will not work as expected due to hostnames not being properly setup by Docker Compose.
+#            WLS still relying on IP addresses because of that.
+#            See https://github.com/docker/compose/issues/2551#issuecomment-183082781
+#            Issue is fixed on upstream only (1.7+), not 1.6.0
+#
 version: '2'
+
 services:
+
   managedserver:
     image: 1221-domain
     command: createServer.sh
@@ -21,14 +30,14 @@ services:
       - wlsnet
     depends_on:
       - wlsadmin
-    environment:
-      DELAY_NM_REGISTRATION: 15 # This is to ensure Admin is on RUNNING state before registering NM and MS to the domain
+
   wlsadmin:
     image: 1221-domain
     container_name: wlsadmin
     hostname: wlsadmin
     networks:
       - wlsnet
+
 networks:
   wlsnet:
     driver: bridge
