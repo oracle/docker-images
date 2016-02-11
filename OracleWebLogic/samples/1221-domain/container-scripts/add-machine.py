@@ -1,6 +1,6 @@
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 #
-# Script to add NodeManager automatically to the domain's AdminServer running on 'wlsadmin'.
+# Script to create and add NodeManager automatically to the domain's AdminServer running on '$ADMIN_HOST'.
 #
 # Since: October, 2014
 # Author: bruno.borges@oracle.com
@@ -9,43 +9,30 @@
 import os
 import socket
 
-# Functions
-def editMode():
-  edit()
-  startEdit(exclusive="true")
-
-def editActivate():
-  save()
-  activate(block="true")
-
-# Variables
-# =========
-
-# AdminServer details
-username  = os.environ.get('ADMIN_USERNAME', 'weblogic')
-password  = os.environ.get('ADMIN_PASSWORD')
-adminhost = os.environ.get('ADMIN_HOST', 'wlsadmin')
-adminport = os.environ.get('ADMIN_PORT', '8001')
+execfile('adminfuncs.py')
 
 # NodeManager details
-nmname = os.environ.get('NM_NAME', 'Machine-' + socket.gethostname())
-nmhost = os.environ.get('NM_HOST', socket.gethostbyname(socket.gethostname()))
+hostname = socket.gethostname()
+nmname = os.environ.get('NM_NAME', 'Machine-' + hostname)
+nmhost = os.environ.get('NM_HOST', socket.gethostbyname(hostname))
 nmport = os.environ.get('NM_PORT', '5556')
 
 # Connect to the AdminServer
 # ==========================
-connect(username, password, 't3://' + adminhost + ':' + adminport)
+connectToAdmin()
 
 # Create a Machine
 # ================
 editMode()
+
 cd('/')
 cmo.createMachine(nmname)
 cd('/Machines/' + nmname +'/NodeManager/' + nmname)
 cmo.setListenPort(int(nmport))
 cmo.setListenAddress(nmhost)
 cmo.setNMType('Plain')
-editActivate()
+
+saveActivate()
 
 # Exit
 # ====

@@ -1,6 +1,6 @@
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 #
-# Script to add NodeManager automatically to the domain's AdminServer running on 'wlsadmin'.
+# Script to create and add a Managed Server automatically to the domain's AdminServer running on 'wlsadmin'.
 #
 # Since: October, 2014
 # Author: bruno.borges@oracle.com
@@ -11,38 +11,29 @@ import random
 import string
 import socket
 
+execfile('adminfuncs.py')
+
 # Functions
 def randomName():
   return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(6)])
 
-def editMode():
-  edit()
-  startEdit(waitTimeInMillis=-1, exclusive="true")
-  
-def editActivate():
-  save()
-  activate(block="true")
-  
 # AdminServer details
-username  = os.environ.get('ADMIN_USERNAME', 'weblogic')
-password  = os.environ.get('ADMIN_PASSWORD')
-adminhost = os.environ.get('ADMIN_HOST', 'wlsadmin')
-adminport = os.environ.get('ADMIN_PORT', '8001')
 cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
 
 # NodeManager details
 nmname = os.environ.get('NM_NAME', 'Machine-' + socket.gethostname())
 
 # ManagedServer details
-msinternal = socket.gethostbyname(socket.gethostname())
-msname = os.environ.get('MS_NAME', 'ManagedServer-' + randomName() + '@' + socket.gethostname())
-mshost = os.environ.get('MS_HOST', socket.gethostbyname(socket.gethostname()))
+hostname = socket.gethostname()
+msinternal = socket.gethostbyname(hostname)
+msname = os.environ.get('MS_NAME', 'ManagedServer-' + randomName() + '@' + hostname)
+mshost = os.environ.get('MS_HOST', socket.gethostbyname(hostname))
 msport = os.environ.get('MS_PORT', '7001')
 memargs = os.environ.get('USER_MEM_ARGS', '')
 
 # Connect to the AdminServer
 # ==========================
-connect(username, password, 't3://' + adminhost + ':' + adminport)
+connectToAdmin()
 
 # Create a ManagedServer
 # ======================
@@ -87,9 +78,9 @@ cmo.setEnabled(false)
 # Custom Startup Parameters because NodeManager writes wrong AdminURL in startup.properties
 # -----------------------------------------------------------------------------------------
 cd('/Servers/' + msname + '/ServerStart/' + msname)
-arguments = '-Djava.security.egd=file:/dev/./urandom -Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + adminhost + ':' + adminport + ' ' + memargs
+arguments = '-Djava.security.egd=file:/dev/./urandom -Dweblogic.Name=' + msname + ' -Dweblogic.management.server=http://' + admin_host + ':' + admin_port + ' ' + memargs
 cmo.setArguments(arguments)
-editActivate()
+saveActivate()
 
 # Start Managed Server
 # ------------
