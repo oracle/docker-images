@@ -31,6 +31,14 @@ services:
     depends_on:
       - wlsadmin
 
+  nodemanager:
+    image: 1221-domain
+    command: createMachine.sh
+    networks:
+      - wlsnet
+    depends_on:
+      - wlsadmin
+
   wlsadmin:
     image: 1221-domain
     container_name: wlsadmin
