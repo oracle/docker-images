@@ -30,7 +30,6 @@ services:
   wlsadmin:
     image: &image 1221-domain
     container_name: &admin wlsadmin
-    hostname: *admin
     networks:
       - wlsnet
 
@@ -53,3 +52,4 @@ services:
 networks:
   wlsnet:
     driver: bridge
+
