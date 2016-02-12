@@ -1,10 +1,10 @@
-# Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
-#
-#  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
-#
-f3b7b50103a2b5c792c0314580c5dec6  server-jre-8u71-linux-x64.tar.gz
 # Download full distribution of WebLogic 12.1.3 from www.oracle.com
 # ====
 #  - http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 # 
 8378fe936b476a6f4ca5efa465a435e3  fmw_12.1.3.0.0_wls.jar
+# Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
+#
+#  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
+#
+eebf0876561b0291e7573cc34e640237  server-jre-8u73-linux-x64.tar.gz

@@ -1,12 +1,12 @@
+# WebLogic 12c ZIP Distribution for Developers
+# ===
+# 1. Go to http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
+# 2. Download the Free Oracle WebLogic Server 12c (12.1.3) Zip Distribution and Installers for Developers
+# 3. Drop the downloaded file wls1213_dev_update3.zip in the same folder as this file
+# 
+fb7076f4e332afd0b0496c216bb15c99  wls1213_dev_update3.zip
 # Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
 #
 #  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
 #
-f3b7b50103a2b5c792c0314580c5dec6  server-jre-8u71-linux-x64.tar.gz
-# WebLogic 12c ZIP Distribution for Developers
-# ===
-# 1. Go to http://www.oracle.com/technetwork/middleware/weblogic/downloads/index.html
-# 2. Download the Free Oracle WebLogic Server 12c (12.1.3) Zip Distribution and Installers for Developers
-# 3. Drop the downloaded file wls1213_dev.zip in the same folder as this file
-# 
-fb7076f4e332afd0b0496c216bb15c99  wls1213_dev_update3.zip
+eebf0876561b0291e7573cc34e640237  server-jre-8u73-linux-x64.tar.gz
