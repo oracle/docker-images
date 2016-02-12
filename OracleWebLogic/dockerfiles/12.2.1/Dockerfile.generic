@@ -44,7 +44,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_PKG=server-jre-8u71-linux-x64.tar.gz \
+ENV JAVA_PKG=server-jre-8u73-linux-x64.tar.gz \
     JAVA_HOME=/usr/java/default \
     FMW_PKG=fmw_12.2.1.0.0_wls_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.0.0_wls.jar \
