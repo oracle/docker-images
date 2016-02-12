@@ -7,8 +7,11 @@
 # To run, call:
 #   $ docker-compose up
 #
-# To scale, open a new terminal and call:
+# To scale Managed Servers, open a new terminal and call:
 #   $ docker-compose scale managedserver=2
+#
+# To scale Node Managers only instead, call:
+#   $ docker-compose scale nodemanager=2
 #
 # Author: Bruno Borges <bruno.borges@oracle.com> 
 #
