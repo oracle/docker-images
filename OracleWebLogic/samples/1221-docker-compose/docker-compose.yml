@@ -18,6 +18,7 @@
 #            WLS still relying on IP addresses because of that.
 #            See https://github.com/docker/compose/issues/2551#issuecomment-183082781
 #            Issue is fixed on upstream only (1.7+), not 1.6.0
+#            See https://github.com/docker/compose/pull/2853
 #
 version: '2'
 
