@@ -27,28 +27,28 @@ version: '2'
 
 services:
 
+  wlsadmin:
+    image: &image 1221-domain
+    container_name: &admin wlsadmin
+    hostname: *admin
+    networks:
+      - wlsnet
+
   managedserver:
-    image: 1221-domain
+    image: *image
     command: createServer.sh
     networks:
       - wlsnet
     depends_on:
-      - wlsadmin
+      - *admin
 
   nodemanager:
-    image: 1221-domain
+    image: *image
     command: createMachine.sh
     networks:
       - wlsnet
     depends_on:
-      - wlsadmin
-
-  wlsadmin:
-    image: 1221-domain
-    container_name: wlsadmin
-    hostname: wlsadmin
-    networks:
-      - wlsnet
+      - *admin
 
 networks:
   wlsnet:
