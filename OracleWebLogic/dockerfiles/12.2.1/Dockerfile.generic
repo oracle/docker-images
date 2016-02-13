@@ -44,7 +44,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_PKG=server-jre-8u71-linux-x64.tar.gz \
+ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     JAVA_HOME=/usr/java/default \
     FMW_PKG=fmw_12.2.1.0.0_wls_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.0.0_wls.jar \
@@ -69,7 +69,7 @@ RUN chmod a+xr /u01 && \
     su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE=\"WebLogic Server\"" - oracle && \
     chown oracle:oracle -R /u01 && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file && \
-    rm -rf /var/cache/yum/*
+    yum -y update && rm -rf /var/cache/yum/*
 
 USER oracle
 WORKDIR /u01/oracle
