@@ -27,12 +27,14 @@ version: '2'
 
 services:
 
+  # Deploys the AdminServer with default hostname 'wlsadmin' used by scripts in 1221-domain.
   wlsadmin:
-    image: &image 1221-domain
+    image: &image 1221-appdeploy
     container_name: &admin wlsadmin
     networks:
       - wlsnet
 
+  # Deploys a container running a Managed Server and a Node Manager to control MS from AdminServer
   managedserver:
     image: *image
     command: createServer.sh
@@ -41,6 +43,7 @@ services:
     depends_on:
       - *admin
 
+  # Deploys a container running only a node manager. to deploy a managed server here later, use AdminServer Web Console
   nodemanager:
     image: *image
     command: createMachine.sh
@@ -48,6 +51,16 @@ services:
       - wlsnet
     depends_on:
       - *admin
+
+  # WebTier for load balancing requests to cluster
+  webtier:
+    image: 1221-webtier-apache
+    networks:
+      - wlsnet
+    environment:
+      - WEBLOGIC_CLUSTER="managedserver:7001"
+    links:
+      - managedserver
 
 networks:
   wlsnet:
