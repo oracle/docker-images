@@ -12,13 +12,13 @@ if [ ! -f log.nm ]; then
     ADD_SERVER=1
 fi
 
+# Wait for AdminServer to become available for any subsequent operation
+./waitForAdminServer.sh
+
 # Start Node Manager
 echo "Starting NodeManager in background..."
 nohup startNodeManager.sh > log.nm 2>&1 &
 echo "NodeManager started."
-
-# Wait for AdminServer to become available for any subsequent operation
-./waitForAdminServer.sh
 
 # Add this 'Machine' and 'ManagedServer' to the AdminServer only if 1st execution
 if [ $ADD_SERVER -eq 1 ]; then
