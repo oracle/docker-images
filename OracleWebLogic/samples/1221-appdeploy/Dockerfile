@@ -32,6 +32,3 @@ ENV APP_NAME="sample" \
 COPY container-scripts/* /u01/oracle/
 
 RUN sh appDeploy.sh
-
-# Define default command to start WebLogic Admin Server
-CMD ["startWebLogic.sh"]
