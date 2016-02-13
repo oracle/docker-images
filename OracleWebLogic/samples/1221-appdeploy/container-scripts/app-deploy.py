@@ -13,7 +13,7 @@ domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/user_projects/domains/ba
 appname    = os.environ.get('APP_NAME', 'sample')
 apppkg     = os.environ.get('APP_PKG_FILE', 'sample.war')
 appdir     = os.environ.get('APP_PKG_LOCATION', '/u01/oracle')
-cluster_name = os.environ.get("CLUSTER_NAME", "Cluster-Docker")
+cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 
 # Read Domain in Offline Mode
 # ===========================
