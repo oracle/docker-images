@@ -25,21 +25,25 @@
 #
 version: '2'
 
+networks:
+  &network wlsnet:
+    driver: bridge
+
 services:
 
   # Deploys the AdminServer with default hostname 'wlsadmin' used by scripts in 1221-domain.
-  wlsadmin:
+  &admin adminserver:
     image: &image 1221-appdeploy
-    container_name: &admin wlsadmin
+    container_name: wlsadmin
     networks:
-      - wlsnet
+      - *network 
 
   # Deploys a container running a Managed Server and a Node Manager to control MS from AdminServer
   managedserver:
     image: *image
     command: createServer.sh
     networks:
-      - wlsnet
+      - *network 
     depends_on:
       - *admin
 
@@ -48,7 +52,7 @@ services:
     image: *image
     command: createMachine.sh
     networks:
-      - wlsnet
+      - *network 
     depends_on:
       - *admin
 
@@ -56,13 +60,9 @@ services:
   webtier:
     image: 1221-webtier-apache
     networks:
-      - wlsnet
+      - *network 
     environment:
       - WEBLOGIC_CLUSTER="managedserver:7001"
     links:
       - managedserver
-
-networks:
-  wlsnet:
-    driver: bridge
 
