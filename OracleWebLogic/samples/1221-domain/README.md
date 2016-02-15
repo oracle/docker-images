@@ -7,7 +7,7 @@ Util scripts are copied into the image enabling users to plug NodeManager automa
 # How to build and run
 First make sure you have built **oracle/weblogic:12.2.1-developer**. Now to build this sample, run:
 
-        $ docker build -t 1221-domain .
+        $ docker build -t 1221-domain --build-arg ADMIN_PASSWORD=welcome1 .
 
 To start the containerized Admin Server, run:
 
@@ -22,4 +22,4 @@ The above scenario from this sample will give you a WebLogic domain with a clust
 You may create more containerized Managed Servers by calling the `docker` command above for `createServer.sh` as long you link properly with the Admin Server. For an example of multihost enviornment, check the sample `1221-multihost`.
 
 # Copyright
-Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
