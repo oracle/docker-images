@@ -13,7 +13,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t 1221-domain .
+#      $ sudo docker build -t 1221-domain --build-arg ADMIN_PASSWORD=welcome1 .
 #
 # Pull base image
 # ---------------
@@ -25,8 +25,8 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # WLS Configuration
 # ----------------------------------------------------------
+ARG ADMIN_PASSWORD
 ENV DOMAIN_NAME="base_domain" \
-    ADMIN_PASSWORD="welcome1" \
     ADMIN_PORT="8001" \
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
