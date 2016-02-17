@@ -11,7 +11,7 @@ This project offers sample Dockerfiles for both WebLogic 12cR2 (12.2.1) and WebL
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
-### Building WebLogic Docker Base Images
+### Building WebLogic Docker Install Images
 **IMPORTANT:** you have to download the binaries of WebLogic and Oracle JDK and put them in place (see `.download` files inside dockerfiles/<version>).
 
 Before you build, choose which version and distribution you want to build an image of, then download the required packages (see .download files) and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
@@ -28,7 +28,7 @@ Before you build, choose which version and distribution you want to build an ima
            -i: creates image based on 'infrastructure' distribution
            -s: skips the MD5 check of packages
         
-        * use either -d or -g, obligatory.
+        * select one distribution only: -d, -g, or -i
         
         LICENSE CDDL 1.0 + GPL 2.0
         
@@ -42,16 +42,16 @@ To give users an idea on how to create a domain from a custom Dockerfile to exte
 ### Sample Domain for WebLogic 12.2.1
 This [Dockerfile](samples/1221-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.2.1-developer**. It will configure a **base_domain** with the following settings:
 
- * Admin Username: **weblogic**
- * Admin Password: **welcome1**
- * Oracle Linux Username: **oracle**
- * Oracle Linux Password: **welcome1**
- * WebLogic Domain Name: **base_domain**
- * Admin Server on port: **8001**
- * NodeManager on port: **5556**
- * Managed Server on port: **7001**
+ * Admin Username: `weblogic`
+ * Admin Password: provided by `ADMIN_PASSWORD` 
+ * Oracle Linux Username: `oracle`
+ * Oracle Linux Password: `welcome1`
+ * WebLogic Domain Name: `base_domain`
+ * Admin Server on port: `8001`
+ * NodeManager on port: `5556`
+ * Managed Server on port: `7001`
 
-Make sure you build the WebLogic 12.2.1 Image with **-d** to get the Developer Image first.
+Make sure you first build the WebLogic 12.2.1 Image with **-d** to get the Developer Image.
 
 ### Write your own WebLogic domain with WLST
 The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [create-wls-domain.py](samples/1221-domain/container-scripts/create-wls-domain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
@@ -66,9 +66,9 @@ To try a sample of a WebLogic image with a domain configured, follow the steps b
   2. Go to folder **samples/1221-domain**
   3. Run the following command: 
 
-        $ docker build -t 1221-domain .
+        $ docker build -t 1221-domain --build-arg ADMIN_PASSWORD=<define> .
 
-  4. Make sure you now have this image in place with 
+  4. Verify you now have this image in place with 
 
         $ docker images
 

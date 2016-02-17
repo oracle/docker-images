@@ -23,7 +23,7 @@ Parameters:
    -i: creates image based on 'infrastructure' distribution
    -s: skips the MD5 check of packages
 
-* use either -d or -g, obligatory.
+* select one distribution only: -d, -g, or -i
 
 LICENSE CDDL 1.0 + GPL 2.0
 
