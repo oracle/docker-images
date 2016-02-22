@@ -29,6 +29,7 @@ ARG ADMIN_PASSWORD
 ENV DOMAIN_NAME="base_domain" \
     ADMIN_PORT="8001" \
     ADMIN_HOST="wlsadmin" \
+    ADMIN_PASSWORD="$ADMIN_PASSWORD" \
     NM_PORT="5556" \
     MS_PORT="7001" \
     CLUSTER_NAME="DockerCluster" \
