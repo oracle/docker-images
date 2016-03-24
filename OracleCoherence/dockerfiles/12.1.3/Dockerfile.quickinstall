@@ -26,36 +26,37 @@
 
 # Pull base image
 # ---------------
-FROM oraclelinux:7
+FROM oraclelinux:latest
 
 # Maintainer
 # ----------
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
-ENV JAVA_RPM=jdk-8u65-linux-x64.rpm \
+ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
+    JAVA_HOME=/usr/java/default \
     FMW_PKG=fmw_12.1.3.0.0_coherence_quick_Disk1_1of1.zip \
     FMW_JAR=fmw_12.1.3.0.0_coherence_quick.jar \
     ORACLE_HOME=/u01/oracle \
-    JAVA_HOME=/usr/java/default \
+    PATH=$PATH:/usr/java/default/bin \
     CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom
 
 # Copy files required to build this image
-COPY $FMW_PKG $JAVA_RPM container-scripts/* /u01/
+COPY $FMW_PKG container-scripts/* /u01/
+ADD $JAVA_PKG /usr/java/
 
 # Install and configure Oracle JDK
 # Setup required packages (unzip), filesystem, and oracle user
 # ------------------------------------------------------------
-RUN rpm -i /u01/$JAVA_RPM && \
-    yum install -y unzip && \ 
-    chmod a+xr /u01 && \ 
+RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    unzip /u01/$FMW_PKG -d /u01 && \
+    ln -s $(ls -1 /usr/java) /usr/java/default && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
+    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME" - oracle && \
     chown oracle:oracle -R /u01 && \
-    su -c "java -jar /u01/$FMW_JAR -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force ORACLE_HOME=$ORACLE_HOME" - oracle && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/$JAVA_RPM /u01/oraInst.loc /u01/install.file && \
-    yum -y remove unzip && rm -rf /var/cache/yum/*
+    yum -y update && rm -rf /var/cache/yum/*
 
 USER oracle
 WORKDIR /u01/oracle/coherence
