@@ -24,7 +24,7 @@ EOF
 exit 0
 }
 
-if [ "$1" = "" ] || [ "$1" = "-h" ]; then
+if [ "$1" = "" ] || [ "$1" = "help" ]; then
   usage
 fi
 
@@ -38,6 +38,6 @@ elif [ "$1" = "console" ]; then
     -Dtangosol.coherence.cluster=$CLUSTER_NAME $COHERENCE_OPTIONS \
     com.tangosol.net.CacheFactory
 else
-  echo "Invalid option. See usage with -h"
+  echo "Invalid option. See usage with 'help'"
   exit 1
 fi
