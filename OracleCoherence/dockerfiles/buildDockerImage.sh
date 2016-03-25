@@ -12,15 +12,17 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] -t [type] [-s]
-Builds a base Docker Image for Oracle Coherence
+Usage: buildDockerImage.sh -v [version] [-q | -s] [-s]
+Builds a Docker Image for Oracle Coherence.
   
 Parameters:
-   -v: version to build. Required.
+   -v: version to build. Required. 
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
-   -t: type to build:
-       Choose one of: standalone, quickinstall
-   -s: skips the MD5 check of packages
+   -q: creates image based on 'quickinstall' distribution
+   -s: creates image based on 'standalone' distribution
+   -m: skips the MD5 check of packages
+
+* select one distribution only: -q or -s
 
 LICENSE CDDL 1.0 + GPL 2.0
 
@@ -44,21 +46,26 @@ checksumPackages() {
 if [ "$#" -eq 0 ]; then usage; fi
 
 # Parameters
+QUICKINSTALL=0
+STANDALONE=0
 VERSION="12.2.1"
 SKIPMD5=0
-while getopts "hst:v:" optname; do
+while getopts "hmv:qs" optname; do
   case "$optname" in
     "h")
       usage
       ;;
-    "s")
+    "m")
       SKIPMD5=1
       ;;
     "v")
       VERSION="$OPTARG"
       ;;
-    "t")
-      DISTRIBUTION="$OPTARG"
+    "q")
+      QUICKINSTALL=1
+      ;;
+    "s")
+      STANDALONE=1
       ;;
     *)
     # Should not occur
@@ -67,18 +74,23 @@ while getopts "hst:v:" optname; do
   esac
 done
 
+# Which distribution to use?
+if [ $((QUICKINSTALL + STANDALONE)) -gt 1 ]; then
+  usage
+elif [ $QUICKINSTALL -eq 1 ]; then
+  DISTRIBUTION="quickinstall"
+elif [ $STANDALONE -eq 1 ]; then
+  DISTRIBUTION="standalone"
+else  
+  echo "A valid distribution type has not been provided."
+  exit 1
+fi
+
 # Image Name
 IMAGE_NAME="oracle/coherence:$VERSION-$DISTRIBUTION"
 
 # Go into version folder
 cd $VERSION
-
-# Check distribution
-if [ "$DISTRIBUTION" = "" ]; then
-  usage
-elif ! [ -e Dockerfile.$DISTRIBUTION ]; then
-  echo "Enter a valid distribution"
-fi
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
@@ -94,15 +106,25 @@ echo "====================="
 echo "Building image '$IMAGE_NAME'..."
 
 # BUILD THE IMAGE (replace all environment variables)
+BUILD_START=$(date '+%s')
 docker build --force-rm=true --no-cache=true -t $IMAGE_NAME -f Dockerfile.$DISTRIBUTION . || {
   echo "There was an error building the image."
   exit 1
 }
+BUILD_END=$(date '+%s')
+BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
 
 if [ $? -eq 0 ]; then
-  echo "Coherence Docker Image for version $VERSION is ready to be extended: $IMAGE_NAME"
+cat << EOF
+  Coherence Docker Image for '$DISTRIBUTION' version $VERSION is ready to be used: 
+    
+    --> $IMAGE_NAME
+
+  Build completed in $BUILD_ELAPSED seconds.
+
+EOF
 else
   echo "Coherence Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
