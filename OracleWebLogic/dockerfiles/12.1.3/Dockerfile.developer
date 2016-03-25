@@ -48,7 +48,7 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     MW_HOME=/u01/oracle \
     ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
+    PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin
 
 # Copy packages
 # -------------
@@ -62,17 +62,17 @@ ADD $JAVA_PKG /usr/java/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    ln -s $(ls -1 /usr/java) /usr/java/default && \
+    ln -s $(ls -1 /usr/java) $JAVA_HOME && \
     $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && \
-    mv wls12130/* /u01/oracle && rmdir wls12130 && \
-    cd /u01/oracle && \
+    mv wls12130/* $ORACLE_HOME && rmdir wls12130 && \
+    cd $ORACLE_HOME && \
     sh configure.sh -silent && \
-    find /u01/oracle -name "*.sh" -exec chmod a+x {} \; && \
+    find $ORACLE_HOME -name "*.sh" -exec chmod a+x {} \; && \
     chown oracle:oracle -R /u01 && \
     rm /u01/$FMW_PKG && \
     yum -y update && rm -rf /var/cache/yum/*
 
-WORKDIR /u01/oracle
+WORKDIR $ORACLE_HOME 
 USER oracle
 
 # Define default command to start bash. 
