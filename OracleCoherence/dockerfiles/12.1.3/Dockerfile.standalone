@@ -42,7 +42,7 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom
 
 # Copy files required to build this image
-COPY $FMW_PKG container-scripts/* /u01/
+COPY $FMW_PKG install.file oraInst.loc /u01/
 ADD $JAVA_PKG /usr/java/
 
 # Install and configure Oracle JDK

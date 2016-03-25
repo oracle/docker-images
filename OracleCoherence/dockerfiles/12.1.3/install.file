@@ -9,5 +9,5 @@ Response File Version=1.0.0.0.0
 [GENERIC]
 
 DECLINE_AUTO_UPDATES=true
-ORACLE_HOME=/u01/oracle
+ORACLE_HOME=/u01/oracle/oracle_home
 INSTALL_TYPE=Typical
