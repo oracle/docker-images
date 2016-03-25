@@ -69,8 +69,7 @@ RUN chmod a+xr /u01 && \
     sh configure.sh -silent && \
     find $ORACLE_HOME -name "*.sh" -exec chmod a+x {} \; && \
     chown oracle:oracle -R /u01 && \
-    rm /u01/$FMW_PKG && \
-    yum -y update && rm -rf /var/cache/yum/*
+    rm /u01/$FMW_PKG
 
 WORKDIR $ORACLE_HOME 
 USER oracle

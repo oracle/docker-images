@@ -65,8 +65,7 @@ RUN chmod a+xr /u01 && \
     ln -s $(ls -1 /usr/java) $JAVA_HOME && \
     su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
     chown oracle:oracle -R /u01 && \
-    rm /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file && \
-    yum -y update && rm -rf /var/cache/yum/*
+    rm /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
 WORKDIR $ORACLE_HOME
 USER oracle
