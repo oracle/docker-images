@@ -1,0 +1,71 @@
+# LICENSE CDDL 1.0 + GPL 2.0
+#
+# Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile for Oracle Database Enterprise Edition 12c Release 1
+# 
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) linuxamd64_12102_database_1of2.zip
+#     linuxamd64_12102_database_2of2.zip
+#     Download Oracle Database Enterprise Edition 12c Release 1 for Linux x64 from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put all downloaded files in the same directory as this Dockerfile
+# Run: 
+#      $ docker build -t oracle/oracle:12.1.0.2-ee . 
+#
+# IMPORTANT
+# ---------
+# Make sure you are having fun with it
+#
+# Pull base image
+# ---------------
+FROM oraclelinux:latest
+
+# Maintainer
+# ----------
+MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+ENV ORACLE_BASE=/opt/oracle \
+    INSTALL_FILE_1="linuxamd64_12102_database_1of2.zip" \
+    INSTALL_FILE_2="linuxamd64_12102_database_2of2.zip" \
+    RESPONSE_FILE="ee.rsp"
+ENV INSTALL_DIR=$ORACLE_BASE/install
+
+
+# Copy binaries
+# -------------
+COPY $INSTALL_FILE_1 $INSTALL_DIR/
+COPY $INSTALL_FILE_2 $INSTALL_DIR/
+COPY $RESPONSE_FILE  $INSTALL_DIR/
+
+# Setup filesystem and oracle user
+# Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with WLS installation
+# ------------------------------------------------------------
+RUN groupadd -g 500 dba && \
+    groupadd -g 501 oinstall && \
+    useradd -d /home/oracle -g dba -G oinstall,dba -m -s /bin/bash oracle && \
+    echo oracle:oracle | chpasswd && \
+    chown -R oracle:dba $ORACLE_BASE &&\
+    yum -y update && \
+    yum -y install oracle-rdbms-server-12cR1-preinstall unzip && \
+    rm -rf /var/cache/yum/*
+
+USER oracle
+WORKDIR $INSTALL_DIR/
+
+RUN unzip $INSTALL_FILE_1 && \
+    unzip $INSTALL_FILE_2 && \
+    rm $INSTALL_FILE_1 && \
+    rm $INSTALL_FILE_2
+#RUN $INSTALL_DIR/database/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_DIR/ee.rsp -ignoresysprereqs -ignoreprereq
+RUN rm -rf /opt/oracle/install
+    
+# Define default command to start bash. 
+CMD ["bash"]
