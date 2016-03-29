@@ -137,7 +137,7 @@ This project hosts two to three configurations (depending on WebLogic version) f
 ## License
 To download and run WebLogic 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
-To download and run Oracle JDK regardless of inside or outside a DOcker container, you must download the binary from Oracle website and accept the license indicated at that pge.
+To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that pge.
 
 All scripts and files hosted in this project and GitHub [docker/OracleWebLogic](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
 
