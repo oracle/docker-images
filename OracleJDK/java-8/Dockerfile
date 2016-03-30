@@ -12,4 +12,4 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
 
 ADD $JAVA_PKG /usr/java/
 
-RUN ln -s $(ls -1 /usr/java) $JAVA_HOME
+RUN mv $(ls -1 -d /usr/java/*) $JAVA_HOME 

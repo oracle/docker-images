@@ -62,7 +62,7 @@ ADD $JAVA_PKG /usr/java/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    ln -s $(ls -1 /usr/java) $JAVA_HOME && \
+    mv $(ls -1 -d /usr/java/*) $JAVA_HOME && \
     su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
     chown oracle:oracle -R /u01 && \
     rm /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
