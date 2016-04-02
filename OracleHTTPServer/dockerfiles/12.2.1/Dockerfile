@@ -55,7 +55,7 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
 
 #Copy packages to the new drive
 #-------------------------------------------------------
-COPY $OHS_PKG ohssainstall.file oraInst.loc /u01/
+COPY $OHS_PKG install.file oraInst.loc /u01/
 ADD $JAVA_PKG /usr/java/
 
 # Install OL7 required packages. Refer FMW 12.2.1 System requirements guide for complete list of packages
@@ -82,8 +82,8 @@ RUN yum install -y \
 RUN ln -s $(ls -1 /usr/java) $JAVA_HOME && \
     cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
     chown oracle:oracle -R /u01 && cd - && \
-    su -c "/u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/ohssainstall.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
-    rm $FMW_JAR $FMW_PKG oraInst.loc ohssainstall.file
+    su -c "/u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
+    rm $FMW_JAR $FMW_PKG oraInst.loc install.file
 
 
 USER oracle
