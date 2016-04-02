@@ -68,10 +68,6 @@ RUN yum install -y \
         unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
         gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
 	libstdc++ libstdc++-devel ksh make ocfs2-tools sysstat && \
-    sed -i '/.*EOF/d' /etc/security/limits.conf && \
-    echo "* soft nofile 16384" >> /etc/security/limits.conf && \
-    echo "* hard nofile 16384" >> /etc/security/limits.conf && \
-    echo "# EOF"  >> /etc/security/limits.conf && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
