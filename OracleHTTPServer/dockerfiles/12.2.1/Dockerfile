@@ -76,7 +76,7 @@ RUN yum install -y \
 # Install and configure Oracle JDK
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
-RUN ln -s $(ls -1 /usr/java) $JAVA_HOME && \
+RUN mv $(ls -1 -d /usr/java/*) $JAVA_HOME && \
     cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
     chown oracle:oracle -R /u01 && cd - && \
     su -c "/u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
