@@ -66,6 +66,8 @@ done
 # OHS Image Name
 IMAGE_NAME="oracle/ohs:$VERSION-sa"
 
+cd $VERSION
+
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
 else
