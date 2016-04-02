@@ -52,6 +52,7 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     OHS_BIN=fmw_12.2.1.0.0_ohs_linux64.bin \
     JAVA_HOME=/usr/java/default \
     ORACLE_HOME=/u01/oracle/ohssa \
+    USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \ 
     PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin
 
 # Copy packages to the new drive
