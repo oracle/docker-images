@@ -18,10 +18,10 @@ IMPORTANT: the resulting images will NOT have a domain pre-configured.
 You must extend the image with your own Dockerfile, and create your domain using WLST. You might take a look at the use case samples as well below.
 
 ## Samples for OHS Domain Creation
-To give users an idea on how to create a domain from a custom Dockerfile to extend the OHS image, we provide a few samples. For an example on 12.2.1, you can use the sample inside samples/1221-OHS-domain folder for creating standalone OHS domain
+To give users an idea on how to create a domain from a custom Dockerfile to extend the OHS image, we provide a few samples. For an example on 12.2.1, you can use the sample inside **samples/1221-OHS-domain** folder for creating standalone OHS domain
 
 ### Sample Domain for OHS 12.2.1
-This Dockerfile will create an image by extending oracle/ohs:12.2.1-sa. It will configure a ohsDomain with the following settings:
+This Dockerfile will create an image by extending **oracle/ohs:12.2.1-sa** . It will configure a ohsDomain with the following settings:
 
  - Oracle Linux Username: oracle
  - Oracle Linux Password: welcome1
@@ -36,11 +36,11 @@ The best way to create your own, or extend domains is by using WebLogic Scriptin
 ## Building a sample Docker Image of a OHS Domain
 To try a sample of a OHS standalone image with a domain configured, follow the steps below:
 
-Make sure you have oracle/ohs:12.2.1-sa image built. If not go into dockerfiles and call:
+Make sure you have oracle/ohs:12.2.1-sa image built. If not go into **dockerfiles/12.2.1** and call:
 
         $ sh buildDockerImage.sh -v 12.2.1
 
-Go to folder samples/1221-OHS-domain
+Go to folder **samples/1221-OHS-domain**
 
 Run the following command:
 
@@ -51,42 +51,43 @@ Verify you now have this image in place with
         $ docker images
 
 ## Running Oracle HTTP Server
-To start the NodeManager and OHS server, you can simply call:
+To start the OHS container you can simply call:
 
-        $ docker run -d sampleohs:12.2.1 command.
+        $ docker run -d sampleohs:12.2.1
 
-The sample Dockerfile defines startNMandOHS.sh as the default CMD.
+        Or
 
         $ docker run -d --name ohssa --hostname ohssa -p 7777:7777 sampleohs:12.2.1
 
+Note the sample Dockerfile defines startNMandOHS.sh as the default CMD. This script will start the Node Manager and OHS server component.
 Now you can access the OHS index page at http://localhost:7777/index.html
 
-You can run a sanity check to see if OHS server is rendering the test static html packages by accessing URL http://localhost:7777/helloWorld.html
+You can also run a sanity check to see if OHS server is rendering the test static html packages by accessing URL http://localhost:7777/helloWorld.html
 
 ## Configuring the Oracle WebLogic Server Proxy Plug-In with Oracle HTTP Server
-Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs)is used for proxying requests from Oracle HTTP Server to Oracle WebLogic Server. The Oracle WebLogic Server Proxy Plug-In is included in the Oracle HTTP Server 12c (12.2.1) installation. Refer https://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553,
+Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs)is used for proxying requests from Oracle HTTP Server to Oracle WebLogic Server. The Oracle WebLogic Server Proxy Plug-In is included in the Oracle HTTP Server 12c (12.2.1) installation.
+Refer https://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553
 
-To test the sample OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sample has been provided under /plugin-samples folder for reference.
+To test the sample OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sample has been provided under **samples/1221-ohs-domain/container-scripts** folder for reference.
 
-The mod_wl_ohs.conf.sample file assumes that:
+The sample mod_wl_ohs.conf.sample file assumes that:
 
   1. WLS Admin Servers is running and accessible @ http://myhost:8001/console
   2. An application called chat is deployed on a cluster which has 2 WLS Managed server running under it and is accessible @ http://myhost:7001/chat and http://myhost:7004/chat
 
-How to configure on OHS container :
+###How to configure WLS proxy plugin on OHS container :
 
-  1. Build your docker image and run docker contianer using sample file under samples/1221-OHS-domain
-  2. Login to the running OHS docker container by executing
+  1. Build your docker image and run docker container using sample file under samples/1221-OHS-domain
+  2. Login to the running OHS docker container (as oracle user) by executing
+
 
         $ docker exec -i -t <container_id> /bin/bash
 
-    ** container_id can be found by running command docker ps -a
+  ** container_id can be found by running command $ docker ps -a
 
-  3. Navigate to /container-scripts folder and edit the mod_wl_ohs.conf.sample file with correct directives . Refer section 2.4 in Oracle docs
+  3. Navigate to /container-scripts folder and edit the mod_wl_ohs.conf.sample file with correct directives . Refer section 2.4 in above Oracle docs
   4. Run the script configureWLSProxyPlugin.sh . This will also restart the OHS server
-
-Now you will be able to access all URLS via the OHS Listen Port 7777
-
- - http://myhost:7777/console
- - http://myhost:7777/consolehelp
- - http://myhost:7777/chat
+  5. Now you will be able to access all URLS via the OHS Listen Port 7777
+     - http://myhost:7777/console
+     - http://myhost:7777/consolehelp
+     - http://myhost:7777/chat
