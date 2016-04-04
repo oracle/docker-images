@@ -68,21 +68,21 @@ To configure OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sam
    ```
    LoadModule weblogic_module   "/u01/oracle/ohssa/ohs/modules/mod_wl_ohs.so"
    <IfModule mod_weblogic.c>
-     WebLogicHost **myhost**
-     WebLogicPort **8001**
+     WebLogicHost myhost
+     WebLogicPort 8001
    </IfModule>
 
    #Admin Server Console
    <Location /console>
      SetHandler weblogic-handler
-     WebLogicHost **myhost**
-     WeblogicPort **8001**
+     WebLogicHost myhost
+     WeblogicPort 8001
    </Location>
 
    #Chat Application deployed on cluster
    <Location /chat>
      SetHandler weblogic-handler
-     WebLogicCluster **myhost:7001,myhost:7004**
+     WebLogicCluster myhost:7001,myhost:7004
    </Location>
    ```
 
