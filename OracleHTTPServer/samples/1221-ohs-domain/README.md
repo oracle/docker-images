@@ -51,11 +51,12 @@ To configure OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sam
 
 ##### Assume you have :
 
-1. WLS Container with Admin Servers running on 8001 port and console accessible @ http://myhost:8001/console
+1. WLS Container with Admin Servers running on 8001 port and console accessible at
+   - http://myhost:8001/console
+
 2. Two WLS Containers with Managed Servers running on 7001 and 7001 ports (inside same docker-cluster). An application called chat is deployed on the cluster and  accessible via
-   http://myhost:7001/chat
-   and
-   http://myhost:7004/chat
+   - http://myhost:7001/chat
+   - http://myhost:7004/chat
 
 ##### To configure on OHS container :
 
