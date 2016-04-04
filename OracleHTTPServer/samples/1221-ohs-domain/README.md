@@ -49,38 +49,43 @@ To configure OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sam
 
 ### Example with WLS Docker Container
 
-**Assume you have**
-1. WLS Container with Admin Servers running and console accessible @ http://myhost:8001/console
-2. WLS Containers with Managed Servers running inside same docker-cluster. An application called chat is deployed on the cluster (on both Managed Servers) and  accessible via
-   http://myhost:7001/chat
-   and
-   http://myhost:7004/chat
+##### Assume you have :
 
-**To configure on OHS container :**
+1. WLS Container with Admin Servers running on 8001 port and console accessible via URL
+   - http://myhost:8001/console
+
+2. Two WLS Containers with Managed Servers running on 7001 and 7004 ports (inside same docker-cluster). An application called chat is deployed on the cluster and  accessible via URLs
+   - http://myhost:7001/chat
+   - http://myhost:7004/chat
+
+##### To configure on OHS container :
+
 1. Login to the running OHS docker container by executing
 
         $ docker exec -i -t <container_id> /bin/bash
 
 2. Navigate to /u01/oracle/container-scripts folder and edit the mod_wl_ohs.conf.sample file with correct directives . Sample below
 
-   _LoadModule weblogic_module   "/u01/oracle/ohssa/ohs/modules/mod_wl_ohs.so"
+   ```
+   LoadModule weblogic_module   "/u01/oracle/ohssa/ohs/modules/mod_wl_ohs.so"
    <IfModule mod_weblogic.c>
-     WebLogicHost **myhost**
-     WebLogicPort **8001**
+     WebLogicHost myhost
+     WebLogicPort 8001
    </IfModule>
 
-   _#Admin Server and EM_
+   #Admin Server Console
    <Location /console>
      SetHandler weblogic-handler
-     WebLogicHost **myhost**
-     WeblogicPort **8001**
+     WebLogicHost myhost
+     WeblogicPort 8001
    </Location>
 
-   _#Chat Application deployed on cluster_
+   #Chat Application deployed on cluster
    <Location /chat>
      SetHandler weblogic-handler
-     WebLogicCluster **myhost:7001,myhost:7004**
-   </Location>_
+     WebLogicCluster myhost:7001,myhost:7004
+   </Location>
+   ```
 
 
 3. Run the script configureWLSProxyPlugin.sh . This will also restart the OHS server
@@ -88,3 +93,6 @@ To configure OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sam
 4. Now you will be able to access the URLS via the OHS Listen Port 7777
     - http://myhost:7777/console
     - http://myhost:7777/chat
+
+# Copyright
+Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
