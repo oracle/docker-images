@@ -93,3 +93,6 @@ To configure OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sam
 4. Now you will be able to access the URLS via the OHS Listen Port 7777
     - http://myhost:7777/console
     - http://myhost:7777/chat
+
+# Copyright
+Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
