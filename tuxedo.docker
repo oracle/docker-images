@@ -1,0 +1,9 @@
+KIT_LOCATION		/home/tuxtest/Downloads
+INSTALLER_DIR		/home/tuxtest/Downloads
+ORA_INVENTORY		/home/tuxtest/oraInventory
+PRODUCT_HOME		/home/tuxtest/tuxHome
+HOME_NAME		tuxHome
+USER_NAME		tuxtest
+GROUP_NAME		tuxtest
+TLISTEN_PORT		3050
+TLISTEN_PASSWORD	oracle
