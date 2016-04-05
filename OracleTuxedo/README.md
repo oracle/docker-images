@@ -6,7 +6,6 @@ Sample Docker configurations to facilitate installation, configuration, and envi
 The certification of Tuxedo on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## How to build and run
-# Introduction
 This folder contains the information and examples of how to use [Tuxedo](http://oracle.com/tuxedo) with [Docker](https://www.docker.com/).
 
 ## To use
