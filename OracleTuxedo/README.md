@@ -1,7 +1,7 @@
 
 Tuxedo on Docker
 ===============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) and [samples](samples/) for Tuxedo 12.1.3 based on Oracle Linux.
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes  [samples](samples/) for Tuxedo 12.1.3 based on Oracle Linux.
 
 The certification of Tuxedo on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
