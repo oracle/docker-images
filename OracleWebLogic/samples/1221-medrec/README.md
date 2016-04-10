@@ -21,7 +21,7 @@ By default the image will run the 'single.server.sample' of the Supplemental pac
 
 To see other options, visit the [Supplemental Quick Installer README file](http://download.oracle.com/otn/nt/middleware/12c/1221/wls_1221_SupplementalQuickInstaller_README.txt). To run other samples, you may try the following:
 
-        $ docker run d -p 7001:7001 1221-medrec mt.single.server.sample
+        $ docker run -d -p 7001:7001 1221-medrec mt.single.server.sample
 
 # Copyright
 Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
