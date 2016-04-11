@@ -1,0 +1,165 @@
+####################################################################
+## Copyright(c) Oracle Corporation 1998,2014. All rights reserved.##
+##                                                                ##
+## Specify values for the variables listed below to customize     ##
+## your installation.                                             ##
+##                                                                ##
+## Each variable is associated with a comment. The comment        ##
+## can help to populate the variables with the appropriate        ##
+## values.                                                        ##
+##                                                                ##
+## IMPORTANT NOTE: This file contains plain text passwords and    ##
+## should be secured to have read permission only by oracle user  ##
+## or db administrator who owns this installation.                ##
+##                                                                ##
+####################################################################
+
+
+#-------------------------------------------------------------------------------
+# Do not change the following system generated value. 
+#-------------------------------------------------------------------------------
+oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v12.1.0
+
+#-------------------------------------------------------------------------------
+# Specify the installation option.
+# It can be one of the following:
+#   - INSTALL_DB_SWONLY
+#   - INSTALL_DB_AND_CONFIG
+#   - UPGRADE_DB
+#-------------------------------------------------------------------------------
+oracle.install.option=INSTALL_DB_SWONLY
+
+#-------------------------------------------------------------------------------
+# Specify the hostname of the system as set during the install. It can be used
+# to force the installation to use an alternative hostname rather than using the
+# first hostname found on the system. (e.g., for systems with multiple hostnames 
+# and network interfaces)
+#-------------------------------------------------------------------------------
+ORACLE_HOSTNAME=localhost
+
+#-------------------------------------------------------------------------------
+# Specify the Unix group to be set for the inventory directory.  
+#-------------------------------------------------------------------------------
+UNIX_GROUP_NAME=dba
+
+#-------------------------------------------------------------------------------
+# Specify the location which holds the inventory files.
+# This is an optional parameter if installing on
+# Windows based Operating System.
+#-------------------------------------------------------------------------------
+INVENTORY_LOCATION=/opt/oracle/oraInventory
+#-------------------------------------------------------------------------------
+# Specify the languages in which the components will be installed.             
+# 
+# en   : English                  ja   : Japanese                  
+# fr   : French                   ko   : Korean                    
+# ar   : Arabic                   es   : Latin American Spanish    
+# bn   : Bengali                  lv   : Latvian                   
+# pt_BR: Brazilian Portuguese     lt   : Lithuanian                
+# bg   : Bulgarian                ms   : Malay                     
+# fr_CA: Canadian French          es_MX: Mexican Spanish           
+# ca   : Catalan                  no   : Norwegian                 
+# hr   : Croatian                 pl   : Polish                    
+# cs   : Czech                    pt   : Portuguese                
+# da   : Danish                   ro   : Romanian                  
+# nl   : Dutch                    ru   : Russian                   
+# ar_EG: Egyptian                 zh_CN: Simplified Chinese        
+# en_GB: English (Great Britain)  sk   : Slovak                    
+# et   : Estonian                 sl   : Slovenian                 
+# fi   : Finnish                  es_ES: Spanish                   
+# de   : German                   sv   : Swedish                   
+# el   : Greek                    th   : Thai                      
+# iw   : Hebrew                   zh_TW: Traditional Chinese       
+# hu   : Hungarian                tr   : Turkish                   
+# is   : Icelandic                uk   : Ukrainian                 
+# in   : Indonesian               vi   : Vietnamese                
+# it   : Italian                                                   
+#
+# all_langs   : All languages
+#
+# Specify value as the following to select any of the languages.
+# Example : SELECTED_LANGUAGES=en,fr,ja
+#
+# Specify value as the following to select all the languages.
+# Example : SELECTED_LANGUAGES=all_langs  
+#-------------------------------------------------------------------------------
+SELECTED_LANGUAGES=en
+
+#-------------------------------------------------------------------------------
+# Specify the complete path of the Oracle Home. 
+#------------------------------------------------------------------------------
+ORACLE_HOME=/opt/oracle/product/12.1.0.2/dbhome_1
+
+#-------------------------------------------------------------------------------
+# Specify the complete path of the Oracle Base. 
+#-------------------------------------------------------------------------------
+ORACLE_BASE=/opt/oracle
+
+#-------------------------------------------------------------------------------
+# Specify the installation edition of the component.                     
+#                                                             
+# The value should contain only one of these choices.  
+#   - EE     : Enterprise Edition 
+
+#-------------------------------------------------------------------------------
+oracle.install.db.InstallEdition=EE
+
+###############################################################################
+#                                                                             #
+# PRIVILEGED OPERATING SYSTEM GROUPS                                          #
+# ------------------------------------------                                  #
+# Provide values for the OS groups to which OSDBA and OSOPER privileges       #
+# needs to be granted. If the install is being performed as a member of the   #
+# group "dba", then that will be used unless specified otherwise below.       #
+#                                                                             #
+# The value to be specified for OSDBA and OSOPER group is only for UNIX based #
+# Operating System.                                                           #
+#                                                                             #
+###############################################################################
+
+#------------------------------------------------------------------------------
+# The DBA_GROUP is the OS group which is to be granted OSDBA privileges.
+#-------------------------------------------------------------------------------
+oracle.install.db.DBA_GROUP=dba
+
+#------------------------------------------------------------------------------
+# The OPER_GROUP is the OS group which is to be granted OSOPER privileges.
+# The value to be specified for OSOPER group is optional.
+#------------------------------------------------------------------------------
+oracle.install.db.OPER_GROUP=dba
+
+#------------------------------------------------------------------------------
+# The BACKUPDBA_GROUP is the OS group which is to be granted OSBACKUPDBA privileges.
+#------------------------------------------------------------------------------
+oracle.install.db.BACKUPDBA_GROUP=dba
+
+#------------------------------------------------------------------------------
+# The DGDBA_GROUP is the OS group which is to be granted OSDGDBA privileges.
+#------------------------------------------------------------------------------
+oracle.install.db.DGDBA_GROUP=dba
+
+#------------------------------------------------------------------------------
+# The KMDBA_GROUP is the OS group which is to be granted OSKMDBA privileges.
+#------------------------------------------------------------------------------
+oracle.install.db.KMDBA_GROUP=dba
+
+#------------------------------------------------------------------------------
+# Specify whether to enable the user to set the password for
+# My Oracle Support credentials. The value can be either true or false.
+# If left blank it will be assumed to be false.
+#
+# Example    : SECURITY_UPDATES_VIA_MYORACLESUPPORT=true
+#------------------------------------------------------------------------------
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+
+#------------------------------------------------------------------------------
+# Specify whether user doesn't want to configure Security Updates.
+# The value for this variable should be true if you don't want to configure
+# Security Updates, false otherwise.
+#
+# The value can be either true or false. If left blank it will be assumed
+# to be false.
+#
+# Example    : DECLINE_SECURITY_UPDATES=false
+#------------------------------------------------------------------------------
+DECLINE_SECURITY_UPDATES=true
