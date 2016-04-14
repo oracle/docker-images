@@ -15,7 +15,7 @@ As part of the Docker Workshop, in this document you will see how to create a Do
 ### Requirements / Prerequisites
 * Computer with 8GB RAM and 2-4 cores
 * VirtualBox 4.2.4+
-* Linux VM with Docker and Git installedlo
+* Linux VM with Docker and Git installed
 
 ### Tips
 * Allocate at least 4GB RAM to the VM, if not more
@@ -35,9 +35,9 @@ Navigate to ~/docker-images/OracleWebLogic/dockerfiles/12.2.1 and verify the con
 #### Java
 View the contents of the server-jar-jre-8u<version>.download
 
-![](images/02_catjava.png?raw=true)
-
     $ cat server-jar-jre-8u<version>.download
+
+![](images/02_catjava.png?raw=true)
 
 Right-click the link and select **Open Link** to open it in a browser.
 
@@ -47,9 +47,9 @@ Accept the license agreement and download server-jre-*.gz.
 View the contents of the fmw_12.2.1.0.0_wls_quick_Disk1_1of1.download
 
     $ cat fmw_12.2.1.0.0_wls_quick_Disk1_1of1.download
-    
+
 ![](images/03_catfmw.png?raw=true)    
-    
+
 Right-click the link and select **Open Link** to open it in a browser.
 
 Accept the license agreement. 
@@ -125,7 +125,7 @@ View the new oracle/weblogic Docker image:
 Please note that this image does NOT have a domain pre-configured. The image must be extended with our own Dockerfile. A new domain will be created using the WebLogic Scripting Tool (WLST).
 
 ### Domain Samples
-To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic install image, we provide samples under the folder ‘samples’ This Dockerfile will create an image by extending oracle/weblogic:12.2.1-developer (from the Developer distribution). It will configure a base_domain with the following settings:
+To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic install image, we provide samples under the folder ‘samples’. This Dockerfile will create an image by extending oracle/weblogic:12.2.1-developer (from the Developer distribution). It will configure a base_domain with the following settings:
 
     JPA 2.1 enabled
     JAX-RS 2.0 shared library deployed
