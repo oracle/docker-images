@@ -33,7 +33,7 @@ ENV DOMAIN_NAME="base_domain" \
     NM_PORT="5556" \
     MS_PORT="7001" \
     CLUSTER_NAME="DockerCluster" \
-    PATH=$PATH:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin:/u01/oracle
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin:/u01/oracle
 
 # Add files required to build this image
 USER oracle
