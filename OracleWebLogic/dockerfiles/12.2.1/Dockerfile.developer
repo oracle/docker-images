@@ -48,7 +48,7 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     FMW_JAR=fmw_12.2.1.0.0_wls_quick.jar \
     ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
 
 # Copy packages
 # -------------

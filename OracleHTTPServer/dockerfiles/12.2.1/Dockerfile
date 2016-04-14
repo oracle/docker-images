@@ -53,7 +53,7 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     JAVA_HOME=/usr/java/default \
     ORACLE_HOME=/u01/oracle/ohssa \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \ 
-    PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/ohssa/oracle_common/common/bin
 
 # Copy packages to the new drive
 # -------------------------------------------------------
@@ -65,11 +65,11 @@ ADD $JAVA_PKG /usr/java/
 # Setup filesystem and oracle user
 #---------------------------------------------------------------------------------------------------------
 # Proxy needs to be set before running yum in /etc/yum.conf
-RUN yum install -y \
-        unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
-        gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
-	libstdc++ libstdc++-devel ksh make ocfs2-tools sysstat && \
-    chmod a+xr /u01 && \
+#RUN yum install -y \
+#        unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
+#        gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
+#	libstdc++ libstdc++-devel ksh make ocfs2-tools sysstat && \
+RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
     mkdir /u01/oracle/.inventory
@@ -78,8 +78,8 @@ RUN yum install -y \
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
 RUN mv $(ls -1 -d /usr/java/*) $JAVA_HOME && \
-    cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
-    chown oracle:oracle -R /u01 && cd - && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$OHS_PKG && chmod a+x /u01/$OHS_BIN && cd - && \
+    chown oracle:oracle -R /u01 && \
     su -c "/u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
     rm $FMW_JAR $FMW_PKG oraInst.loc install.file
 

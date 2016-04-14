@@ -38,7 +38,7 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     FMW_PKG=fmw_12.1.3.0.0_coherence_quick_Disk1_1of1.zip \
     FMW_JAR=fmw_12.1.3.0.0_coherence_quick.jar \
     ORACLE_HOME=/u01/oracle/oracle_home \
-    PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/bin \
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_home/oracle_common/bin \
     CONFIG_JVM_ARGS=-Djava.security.egd=file:/dev/./urandom
 
 # Copy files required to build this image
