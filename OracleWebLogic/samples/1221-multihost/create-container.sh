@@ -7,7 +7,8 @@
 . ./setenv.sh
 
 uuid=$(uuidgen)
-name=$prefix-instance-$uuid
+#Define unique server name using suffix entered by user
+name=server$2
 machine=$1
 swarm=""
 
@@ -23,6 +24,8 @@ fi
 eval "$(docker-machine env $swarm $machine)"
 
 docker run -d $DOCKER_CONTAINER_INSTANCE_OPTIONS \
+  -e MS_HOST=$name\
+  -e MS_NAME=$name\
   --name=$name \
   --hostname=$name \
   --net=$network \
