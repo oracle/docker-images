@@ -42,19 +42,9 @@ docker network create --driver overlay $network
 
 # Save existing defined image to a file to be loaded later into the registry created above
 eval "$(docker-machine env -u)"
-docker save $adminimage > _tmp_docker.img 
-
-# Load, tag, and publish the admin server image servlet-proxy in setenv.sh
-eval "$(docker-machine env $orchestrator)"
-docker load -i _tmp_docker.img && rm _tmp_docker.img
-docker tag $adminimage 127.0.0.1:5000/$adminimage
-docker push 127.0.0.1:5000/$adminimage
-
-# Save existing defined image to a file to be loaded later into the registry created above
-eval "$(docker-machine env -u)"
 docker save $image > _tmp_docker.img 
 
-# Load, tag, and publish the managed server image app-deploy set in setenv.sh
+# Load, tag, and publish the image set in setenv.sh
 eval "$(docker-machine env $orchestrator)"
 docker load -i _tmp_docker.img && rm _tmp_docker.img
 docker tag $image 127.0.0.1:5000/$image
