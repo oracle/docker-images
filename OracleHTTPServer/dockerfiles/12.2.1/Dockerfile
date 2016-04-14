@@ -65,11 +65,11 @@ ADD $JAVA_PKG /usr/java/
 # Setup filesystem and oracle user
 #---------------------------------------------------------------------------------------------------------
 # Proxy needs to be set before running yum in /etc/yum.conf
-#RUN yum install -y \
-#        unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
-#        gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
-#	libstdc++ libstdc++-devel ksh make ocfs2-tools sysstat && \
-RUN chmod a+xr /u01 && \
+RUN yum install -y \
+        unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
+        gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
+	libstdc++ libstdc++-devel ksh make ocfs2-tools sysstat && \
+    chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
     mkdir /u01/oracle/.inventory
@@ -78,7 +78,7 @@ RUN chmod a+xr /u01 && \
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
 RUN mv $(ls -1 -d /usr/java/*) $JAVA_HOME && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$OHS_PKG && chmod a+x /u01/$OHS_BIN && cd - && \
+    cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
     chown oracle:oracle -R /u01 && \
     su -c "/u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
     rm $FMW_JAR $FMW_PKG oraInst.loc install.file
