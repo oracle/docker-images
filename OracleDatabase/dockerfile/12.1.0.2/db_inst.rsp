@@ -88,21 +88,22 @@ SELECTED_LANGUAGES=en
 #-------------------------------------------------------------------------------
 # Specify the complete path of the Oracle Home. 
 #------------------------------------------------------------------------------
-ORACLE_HOME=/opt/oracle/product/12.1.0.2/dbhome_1
+ORACLE_HOME=###ORACLE_HOME###
 
 #-------------------------------------------------------------------------------
 # Specify the complete path of the Oracle Base. 
 #-------------------------------------------------------------------------------
-ORACLE_BASE=/opt/oracle
+ORACLE_BASE=###ORACLE_BASE###
 
 #-------------------------------------------------------------------------------
 # Specify the installation edition of the component.                     
 #                                                             
 # The value should contain only one of these choices.  
 #   - EE     : Enterprise Edition 
+#   - SE2    : Standard Edition Two
 
 #-------------------------------------------------------------------------------
-oracle.install.db.InstallEdition=EE
+oracle.install.db.InstallEdition=###ORACLE_EDITION###
 
 ###############################################################################
 #                                                                             #

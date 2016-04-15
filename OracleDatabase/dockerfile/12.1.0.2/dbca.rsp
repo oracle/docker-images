@@ -75,7 +75,7 @@ OPERATION_TYPE = "createDatabase"
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-GDBNAME = "ORCLCDB"
+GDBNAME = "###ORACLE_SID###"
 
 #-----------------------------------------------------------------------------
 # Name          : DATABASECONFTYPE
@@ -95,7 +95,7 @@ GDBNAME = "ORCLCDB"
 # Default value : <db_name> specified in GDBNAME
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-SID = "ORCLCDB"
+SID = "###ORACLE_SID###"
 
 #-----------------------------------------------------------------------------
 # Name          : CREATEASCONTAINERDATABASE 
@@ -125,7 +125,7 @@ NUMBEROFPDBS = 1
 # Default value : None
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-PDBNAME = "ORCLPDB1"
+PDBNAME = "###ORACLE_PDB###"
 
 #-----------------------------------------------------------------------------
 # Name          : PDBADMINPASSWORD

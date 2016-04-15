@@ -8,15 +8,15 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) linuxamd64_12102_database_1of2.zip
-#     linuxamd64_12102_database_2of2.zip
-#     Download Oracle Database Enterprise Edition 12c Release 1 for Linux x64 from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+# (1) linuxamd64_12102_database_se2_1of2.zip
+#     linuxamd64_12102_database_se2_2of2.zip
+#     Download Oracle Database Standard Edition 2 12c Release 1 for Linux x64 from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/oracle:12.1.0.2-ee . 
+#      $ docker build -t oracle/oracle:12.1.0.2-se2 . 
 #
 # IMPORTANT
 # ---------
@@ -36,8 +36,8 @@ ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/12.1.0.2/dbhome_1 \
     ORACLE_SID=ORCLCDB \
     ORACLE_PDB=ORCLPDB1 \
-    INSTALL_FILE_1="linuxamd64_12102_database_1of2.zip" \
-    INSTALL_FILE_2="linuxamd64_12102_database_2of2.zip" \
+    INSTALL_FILE_1="linuxamd64_12102_database_se2_1of2.zip" \
+    INSTALL_FILE_2="linuxamd64_12102_database_se2_2of2.zip" \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp" \
     RUN_FILE="runOracle.sh"
@@ -70,7 +70,7 @@ WORKDIR $INSTALL_DIR
 
 # Replace place holders
 # ---------------------
-RUN sed -i -e "s|###ORACLE_EDITION###|EE|g" $INSTALL_DIR/$INSTALL_RSP &&        \
+RUN sed -i -e "s|###ORACLE_EDITION###|SE2|g" $INSTALL_DIR/$INSTALL_RSP &&       \
     sed -i -e "s|###ORACLE_BASE###|$ORACLE_BASE|g" $INSTALL_DIR/$INSTALL_RSP && \
     sed -i -e "s|###ORACLE_HOME###|$ORACLE_HOME|g" $INSTALL_DIR/$INSTALL_RSP && \
     sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $INSTALL_DIR/$CONFIG_RSP &&    \
