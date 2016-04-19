@@ -4,6 +4,12 @@ Sample Docker configurations to facilitate installation, configuration, and envi
 The certification of OHS on Docker does not require the use of any file presented in this repository.
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
+### Building Oracle JDK (Server JRE) base image
+Before you can build these WebLogic images, you must download the Oracle Server JRE binary and drop in folder `OracleJDK/java-8` and build that image.
+
+        $ cd OracleJDK/java-8
+        $ sh build.sh
+
 ## How to Build and Run
 This project offers sample Dockerfiles for Oracle HTTP Server 12cR2 (12.2.1) in standalone mode. To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage
 

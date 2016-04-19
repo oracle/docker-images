@@ -12,6 +12,12 @@ For more information and documentation, read the [Docker Images from Oracle Linu
 ### Standalone Distribution
 Fore more information on the Coherence 12c Standalone Distribution, visit [Coherence 12.1.3 Documentation](http://docs.oracle.com/middleware/1213/coherence/index.html).
 
+## Building Oracle JDK (Server JRE) base image
+Before you can build these WebLogic images, you must download the Oracle Server JRE binary and drop in folder `OracleJDK/java-8` and build that image.
+
+        $ cd OracleJDK/java-8
+        $ sh build.sh
+
 ## How to Build
 
 Follow this procedure:
