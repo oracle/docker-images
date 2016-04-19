@@ -13,7 +13,7 @@ if [ ! -f log.nm ]; then
 fi
 
 # Wait for AdminServer to become available for any subsequent operation
-./waitForAdminServer.sh
+/u01/oracle/waitForAdminServer.sh
 
 # Start Node Manager
 echo "Starting NodeManager in background..."

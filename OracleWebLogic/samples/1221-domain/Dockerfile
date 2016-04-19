@@ -27,12 +27,14 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # ----------------------------------------------------------
 ARG ADMIN_PASSWORD
 ENV DOMAIN_NAME="base_domain" \
-    ADMIN_PASSWORD="$ADMIN_PASSWORD" \
+    DOMAIN_HOME="/u01/oracle/user_projects/domains/base_domain" \
     ADMIN_PORT="8001" \
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
     MS_PORT="7001" \
     CLUSTER_NAME="DockerCluster" \
+    CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true" \
+#    WLST_PROPERTIES="-Dpython.cachedir.skip=true" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin:/u01/oracle
 
 # Add files required to build this image
@@ -50,8 +52,7 @@ RUN /u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/ora
 # Expose Node Manager default port, and also default for admin and managed server 
 EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT
 
-# Final setup
-WORKDIR /u01/oracle
+WORKDIR $DOMAIN_HOME
 
 # Define default command to start bash. 
 CMD ["startWebLogic.sh"]

@@ -11,7 +11,7 @@ import random
 import string
 import socket
 
-execfile('commonfuncs.py')
+execfile('/u01/oracle/commonfuncs.py')
 
 # Functions
 def randomName():
