@@ -5,13 +5,14 @@
 
 . ./setenv.sh
 
+#start WLS Admin Server
 eval "$(docker-machine env $prefix-master)"
 docker run -d ${POST_BOOTSTRAP_DOCKER_OPTS} \
   --name=${prefix}01 \
   --hostname=${prefix}01 \
   --net=$network \
   --ulimit nofile=16384:16384 \
-  $registry/$image
+  $registry/$adminimage
 
 # Output some message to the user
 echo ""
