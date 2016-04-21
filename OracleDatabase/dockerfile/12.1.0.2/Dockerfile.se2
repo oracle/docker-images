@@ -4,23 +4,20 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database Enterprise Edition 12c Release 1
+# This is the Dockerfile for Oracle Database 12c Release 1 Standard Edition 2
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) linuxamd64_12102_database_se2_1of2.zip
 #     linuxamd64_12102_database_se2_2of2.zip
-#     Download Oracle Database Standard Edition 2 12c Release 1 for Linux x64 from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+#     Download Oracle Database 12c Release 1 Standard Edition 2 for Linux x64
+#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
 #      $ docker build -t oracle/oracle:12.1.0.2-se2 . 
-#
-# IMPORTANT
-# ---------
-# Make sure you are having fun with it
 #
 # Pull base image
 # ---------------
@@ -129,10 +126,9 @@ RUN echo "LISTENER = \
 RUN echo "DEDICATED_THROUGH_BROKER_LISTENER=ON"  >> $ORACLE_HOME/network/admin/listener.ora
 RUN echo "DEFAULT_SERVICE_LISTENER = ($ORACLE_SID)" >> $ORACLE_HOME/network/admin/listener.ora
 
-RUN bash -lc "lsnrctl start"
-
-RUN dbca -silent -responseFile $INSTALL_DIR/$CONFIG_RSP || \
-cat /opt/oracle/cfgtoollogs/dbca/ORCLCDB.log
+RUN bash -lc "lsnrctl start" && \
+    dbca -silent -responseFile $INSTALL_DIR/$CONFIG_RSP || \
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log
 
 RUN echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" >> $ORACLE_HOME/network/admin/tnsnames.ora
 RUN echo "$ORACLE_PDB= \
@@ -143,6 +139,10 @@ RUN echo "$ORACLE_PDB= \
       (SERVICE_NAME = $ORACLE_PDB) \
     ) \
   )" >> /$ORACLE_HOME/network/admin/tnsnames.ora
+
+RUN echo "startup;" | sqlplus / as sysdba && \
+    echo "ALTER PLUGGABLE DATABASE $ORACLE_PDB OPEN;" | sqlplus / as sysdba && \
+    echo "ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;" | sqlplus / as sysdba
 
 RUN rm -rf $INSTALL_DIR
 EXPOSE 1521
