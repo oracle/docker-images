@@ -64,7 +64,7 @@ In steps 1 through 4 above, we extend the **1221-domain** image, define applicat
 Like before, you can open the Dockerfile in another terminal window to see the definition of the build steps Docker is running.
 
 ### Apache Plugin Web Tier Images
-The Apache Plugin will provide us the ability to load balance traffic to WebLogic Managed servers in a WebLogic cluster.  Each Managed server is running in its own Docker container, the Apache Plugin Web tier is also running inside of its own Docker container.  In this project we take advantage of the Apache Web tier to load balance traffic to Managed servers running in containers in a multi host environment.
+The Apache Plugin will provide us the ability to load balance traffic to WebLogic Managed servers in a WebLogic cluster.  Each Managed server is running in its own Docker container, the Apache Plugin Web tier is also running inside of its own Docker container.  In this project we take advantage of the Apache Plugin Web tier to load balance traffic to Managed servers running in containers in a multi host environment.
 
 To give users an idea on how to create the Apache Plugin Web tier images from a custom Dockerfile to extend the  **httpd:2.4** image, we provide samples under the folder 'samples/1221-webtier-apache'.  The best way to create your own, is edit the weblogic.conf file with the environment variables needed to configure the Apache Plugin Web tier.  You can modify this file to set your own configuration.  In the Dockerfile we extend the **httpd:2.4** image, and install the Apache Plugin.
 
