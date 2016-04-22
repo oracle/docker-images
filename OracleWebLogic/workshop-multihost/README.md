@@ -32,7 +32,7 @@ You should have 3 images already running in your machine the Oracle Linux Image,
 
 We now have a new image **oracle/jdk:8b**, this image is built by extending the Oracle Linux image.  The WebLogic install image will extend the **oracle/jdk:8b**.
 
-![](https://github.com/mriccell/docker-images/OracleWebLogic/workshop-multihost/images/02_oracle_jdk_buildimage.png "JDK 8 Docker image")
+![](https://github.com/mriccell/docker-images/blob/master/OracleWebLogic/workshop-multihost/images/02_oracle_jdk_buildimage.png "JDK 8 Docker image")
 
 To see the base images used in this workshop run the command,
 
@@ -58,7 +58,7 @@ To try building the WebLogic **appdeploy** Application image:
 
 Like before, you can open the Dockerfile in another terminal window to see the definition of the build steps Docker is running.
 
-![](images/04_appdeploy.pgn?raw=true)
+![](images/04_appdeploy.png)
 
 Is steps 1 through 4 above, we extend the **1221-domain** image, define application name, name of the war file, and location where it should be copied. 
 
@@ -106,11 +106,11 @@ To make it easy to build a multi host environment we take advantage of the follo
 
 To give users an idea on how to create a WebLogic Server Domain in a Multi Host environment we have scripts under **1221-multihost**.  The '~/docker-images/OracleWebLogic/samples/1221-multihost/bootstrap.sh' script starts 2 Docker Machines the **weblogic-Orchestrator** and **weblogic-master** . The weblogic-orchestrater Docker Machine has the **Docker Registry** where we register the images we need to run containers from, and we run the **Consul** to help us start services. The weblogic-master Docker Machine has the Docker Swarm Image, the Overlay Network, and the WebLogic Admin Server container running in the VM. The **1221-appdeploy** image is pushed into the registry running in the Orchestrator machine.  Finally the bootstrap script calls the post-bootstrap script to start an Admin Server container on the weblogic-master machine.
 
-![](images/09_bootstrap_vi.pgn?raw=true)
+![](images/09_bootstrap_vi.pgn)
 
 The '~/docker-images/OracleWebLogic/samples/1221-multihost/post-bootstrap.sh' script runs an Admin server Docker Container in the weblogic-master machine from the app-deploy image that has been pushed to the registry.
 
-![](images/10_post_bootstrap_vi.pgn?raw=true)
+![](images/10_post_bootstrap_vi.pgn)
 
 After running the bootstrap.sh script successfully we can see the two Docker machines running, run `docker-machine ls` command.
 
