@@ -124,7 +124,7 @@ Every virtual machine that is part of the Docker Swarm will be networked togethe
    
 ![](images/14_network_inspect.png)
 
-Open the Admin Console by using the ip address of the weblogic-master machine and port 8001, http://192.168.99.101:8001/console to view the admin console.  View the Admin server running and the deployment of the sample application.
+Open the Admin Console by using the ip address of the weblogic-master machine and port 8001, http://192.168.99.101:8001/consolee.  View the Admin server running, and the deployed **sample** application.
 
 ![](images/15_console_login.png)
 ![](images/16_console_admin_server.png)
