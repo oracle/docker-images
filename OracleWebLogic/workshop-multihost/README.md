@@ -31,6 +31,7 @@ This lab document assumes you have created the WebLogic 12.2.1 Install image and
 You should have 3 images already running in your machine the Oracle Linux Image, WebLogic Install image, and the WebLogic Domain image.  These images have been created following the instructions from the workshop.
 
 We now have a new image **oracle/jdk:8b**, this image is built by extending the Oracle Linux image.  The WebLogic install image will extend the **oracle/jdk:8b**.
+
 ![](images/02_oracle_jdk_buildimage.pgn)
 
 To see the base images used in this workshop run the command,
