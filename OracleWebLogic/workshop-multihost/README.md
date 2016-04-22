@@ -130,7 +130,7 @@ Open the Admin Console by using the ip address of the weblogic-master machine an
 ![](images/16_console_admin_server.png)
 ![](images/17_console_deployment.png)
 
-Next we will start a new VM where the managed servers will run. Simply call the '~/docker-images/OracleWebLogic/samples/1221-multihost/create-machine.sh' script. This script will create a new Docker Machine which we will use in this project to run 2 WLS managed servers.  The new Docker machine will be part of the Docker Swarm and the Managed server containers running in this VM will be able to network via the Overlay network with other containers in the Swarm.  After running the create-machine.sh script if we look at what Docker Machines are running by invoking `docker-machine ls` we can see a third Docker Machine **weblogic-gv082o**.
+Next we will start a new VM where the managed servers will run. Simply call the '~/docker-images/OracleWebLogic/samples/1221-multihost/create-machine.sh' script. This script will create a new Docker machine, in this project we will run two WebLogic Managed servers.  The new Docker machine will be part of the Docker Swarm and the Managed server containers running in this VM will be able to network via the Overlay network with other containers in the Swarm.  After running the **create-machine.sh** script we see the Docker Machines running by invoking `docker-machine ls`, we can see a third Docker Machine **weblogic-gv082o**.
 
 ![](images/18_create_machine.png)
 
