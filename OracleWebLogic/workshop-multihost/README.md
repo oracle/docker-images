@@ -104,7 +104,7 @@ The '~/docker-images/OracleWebLogic/samples/1221-multihost/post-bootstrap.sh' sc
 
 ![](images/10_post_bootstrap_vi.png)
 
-After running the bootstrap.sh script successfully we can see the two Docker machines running, run `docker-machine ls` command.
+After running the bootstrap.sh script successfully, we can see the two Docker machines running  using the `docker-machine ls` command.
 
 ![](images/11_docker_machine_after_bootstrap.png)
 
