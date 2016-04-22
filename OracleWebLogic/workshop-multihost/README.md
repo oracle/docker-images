@@ -48,7 +48,7 @@ Under the **samples** directory we have subdirectories that contain Dockerfiles 
 This project offers a couple of Dockerfiles to create the Application image. The Application image **1221-appdeploy** extends a WebLogic Domain image to deploy the application **sample** to servers running in a WebLogic 12.2.1 domain. This Dockerfile can be easily change to extend a WebLogic 12.1.3 Domain image. 
 
 ### Application Images
-To give users an idea on how to create the Application images from a custom Dockerfile to extend the WebLogic Domain image, we provide samples under the folder **samples/1221-appdeploy**  The best way to create your own, or extend domains is by using WebLogic Scripting Tool. The WLST script used to deploy the sample application and create the 1221-appdeploy image is '~/docker-images/OracleWebLogic/samples/1221-appdeploy/container-scripts/app-deploy.py'. This script by default deploys the sample application to all servers in the domain. You can deploy your own applications by modifying the WLST scripts, or create a new one with WLST.
+To give users an idea on how to create the Application images from a custom Dockerfile to extend the WebLogic Domain image, we provide samples under the folder '~/docker-images/OracleWebLogic/samples/1221-appdeploy'.  The best way to create your own, or extend domains is by using WebLogic Scripting Tool. The WLST script used to deploy the **sample** application and create the **1221-appdeploy** image is '~/docker-images/OracleWebLogic/samples/1221-appdeploy/container-scripts/app-deploy.py'. This script by default deploys the sample application to all servers in the domain. You can deploy your own applications by modifying the WLST scripts, or create a new one with WLST.
 
 To try building the WebLogic **appdeploy** Application image:
 
@@ -71,7 +71,7 @@ Like before, you can open the Dockerfile in another terminal window to see the d
 ### Apache Plugin Web tier Images
 The Apache Plugin will provide us the ability to load balance traffic to WebLogic Managed servers in a WebLogic cluster.  Each Managed server is running in its own Docker container, the Apache Plugin Web tier is also running inside of its own Docker container.  In this project we take advantage of the Apache Web tier to load balance traffic to Managed servers running in containers in a multi host environment.
 
-To give users an idea on how to create the Apache Plugin Web tier images from a custom Dockerfile to extend the  **httpd:2.4** image, we provide samples under the folder **samples/1221-webtier-apache**.  The best way to create your own, is edit the weblogic.conf file with the environment variables needed to configure the Apache Plugin Web tier.  You can modify this file to set your own configuration.  In the Dockerfile we extend the **httpd:2.4** image, and install the Apache Plugin.
+To give users an idea on how to create the Apache Plugin Web tier images from a custom Dockerfile to extend the  **httpd:2.4** image, we provide samples under the folder 'samples/1221-webtier-apache'.  The best way to create your own, is edit the weblogic.conf file with the environment variables needed to configure the Apache Plugin Web tier.  You can modify this file to set your own configuration.  In the Dockerfile we extend the **httpd:2.4** image, and install the Apache Plugin.
 
 To try building the WebLogic **webtier** image:
 
