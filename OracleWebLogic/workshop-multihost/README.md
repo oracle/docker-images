@@ -117,7 +117,7 @@ If we ssh into the weblogic-master machine by running `docker-machine ssh weblog
 
 ![](images/13_master.png)
 
-Every virtual machine that is part of the Docker Swarm will be networked together with the overlay network.  Every container running in the VM will be able to communicate with the any other container running in a different VM in the Docker Swarm.  This allows us to run the WebLogic servers in many different VMs and distribute the WLS domain orcluster across several VMs.  Let's take a look to the Docker networks and we can inspect the overlay network by running `docker inspect` using the overlay network name.  Run commands:
+Every virtual machine that is part of the Docker Swarm will be networked together with the **Overlay network**.  Every container running in the VM will be able to communicate with any other container running in a different VM in the Docker Swarm.  This allows us to run the WebLogic servers in many different VMs and distribute the WLS domain or cluster across several VMs.  Let's take a look at the Docker networks and we can inspect the **Overlay network** by running `docker inspect` using the overlay network name.  Run commands:
 
     $ docker network ld
     $ docker network inspect weblogic-net 
