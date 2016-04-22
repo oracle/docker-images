@@ -187,7 +187,7 @@ Use the `docker rmi` command to delete each of these Docker images
 ![](images/28_docker_rmi.pgn?raw=true)
  
 ### More Information
-* [Oracle WebLogic Server 12.2.1 Running on Docker Containers ](https://blogs.oracle.com/WebLogicServer/entry/oracle_weblogic_server_12_21)
+* [New WebLogic Server Running on Docker in Multi-Host Environments ](https://blogs.oracle.com/WebLogicServer/entry/new)
 
 * [White Paper - Oracle  WebLogic Server on Docker Containers](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf)
 
