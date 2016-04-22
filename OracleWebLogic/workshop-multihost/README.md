@@ -151,11 +151,11 @@ The '~/docker-images/OracleWebLogic/samples/1221-multihost/start-webtier.sh' scr
 ![](images/22_start_webtier.png)
 ![](images/23_start_webtier2.png)
 
-After invoking the script '~/docker-images/OracleWebLogic/samples/1221-multihoststart-webtier.sh', find the Apache Web tier container running in the **weblogic-master** machine.
+After invoking the script '~/docker-images/OracleWebLogic/samples/1221-multihoststart-webtier.sh', find the **Apache Web tier** container running in the **weblogic-master** machine.
 
 ![](images/24_start_webtier_running.png)
 
-Go into weblogic-master machine `docker-machine ssh weblogic-master` and run `docker ps`, see the newly created Apache Web tier container running.
+Go into **weblogic-master** machine `docker-machine ssh weblogic-master` and run `docker ps`, see the newly created **Apache Web tier** container running.
 
 ![](images/25_webtier_container_onmaster.png)
 
