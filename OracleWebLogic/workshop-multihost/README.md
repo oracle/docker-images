@@ -159,7 +159,7 @@ Go into **weblogic-master** machine `docker-machine ssh weblogic-master` and run
 
 ![](images/25_webtier_container_onmaster.png)
 
-Call the sample app deployed to the WebLogic cluster via the Apache Web tier, in your browser use the ip address of the weblogic-master machine and port 80, http://192.168.99.101:80/sample.
+Call the sample application deployed to the WebLogic cluster via the **Apache Web tier**, in your browser use the ip address of the **weblogic-master** machine and port 80, http://192.168.99.101:80/sample.
 
 ![](images/26_call_sample.png)
 
@@ -177,8 +177,6 @@ Use the `docker rmi` command to delete each of these Docker images
 
     $ docker rmi <IMAGE ID>
 
-![](images/28_docker_rmi.png)
- 
 ### More Information
 * [New WebLogic Server Running on Docker in Multi-Host Environments ](https://blogs.oracle.com/WebLogicServer/entry/new)
 
