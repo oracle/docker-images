@@ -108,7 +108,7 @@ After running the bootstrap.sh script successfully, we can see the two Docker ma
 
 ![](images/11_docker_machine_after_bootstrap.png)
 
-If we ssh into the weblogic-orchestrator machine by running 'docker-machine ssh weblogic-orchestrator' command we can see the registry and consul images and containers running in this machine.  Use the commands `docker images` to see images and `docker ps` to see containers.
+If we ssh into the weblogic-orchestrator machine by running `docker-machine ssh weblogic-orchestrator` command we can see the registry and consul images and containers running in this machine.  Use the commands `docker images` to see images and `docker ps` to see containers.
 
 ![](images/12_orchestrator.png)
 
