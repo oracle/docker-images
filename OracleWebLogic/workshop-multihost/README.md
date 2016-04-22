@@ -32,7 +32,7 @@ You should have 3 images already running in your machine the Oracle Linux Image,
 
 We now have a new image **oracle/jdk:8b**, this image is built by extending the Oracle Linux image.  The WebLogic install image will extend the **oracle/jdk:8b**.
 
-![](images/02_oracle_jdk_buildimage.pgn)
+![](docker-images/OracleWebLogic/workshop-multihost/images/02_oracle_jdk_buildimage.png)
 
 To see the base images used in this workshop run the command,
 
