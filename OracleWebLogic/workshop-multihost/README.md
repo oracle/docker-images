@@ -60,7 +60,7 @@ Like before, you can open the Dockerfile in another terminal window to see the d
 
 ![](images/04_appdeploy.png)
 
-Is steps 1 through 4 above, we extend the **1221-domain** image, define application name, name of the war file, and location where it should be copied. 
+In steps 1 through 4 above, we extend the **1221-domain** image, define application name, name of the war file, and location where it should be copied. 
 
 To try building the WebLogic **servlet-proxy** Application image:
 
