@@ -89,7 +89,7 @@ To make it easy to build a multi host environment we take advantage of the follo
 
 **Docker Overlay Network**: Dockers Overlay network driver supports multi-host networking natively out-of-the-box, while still providing better container isolation.
 
-**Docker Compose**: Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a Compose file to configure your applicationb services. Then, using a single command, you create and start all the services from your configuration.
+**Docker Compose**: Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a Compose file to configure your application services. Then, using a single command, you create and start all the services from your configuration.
 
 **Docker Registry**: The Registry is a stateless, highly scalable server side application that stores and lets you distribute Docker images.
 
