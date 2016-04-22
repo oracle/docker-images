@@ -134,7 +134,7 @@ Next we will start a new VM where the managed servers will run. Simply call the 
 
 ![](images/18_create_machine.png)
 
-Now that the machine is up, start Managed Server containers from the app-deploy image running in this machine.  Invoke '~/docker-images/OracleWebLogic/samples/1221-multihost/create-container.sh' script. If you want the Managed server container to be started in a particular Docker Machine provide the machine name as parameter `./create-container.sh weblogic-gv082o`, otherwise the container will be started in one of the Docker Machines in the Swarm.
+Now that the machine is up, we will start Managed Server containers from the app-deploy image.  Invoke '~/docker-images/OracleWebLogic/samples/1221-multihost/create-container.sh' script. If you want the Managed server container to be started in a particular Docker Machine provide the machine name as parameter `./create-container.sh weblogic-gv082o`, otherwise the container will be started in any of the Docker Machines in the Swarm.
 
 ![](images/19_create_container.png)
 
