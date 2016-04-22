@@ -104,11 +104,11 @@ To make it easy to build a multi host environment we take advantage of the follo
 
 **Consul**: Consul makes it simple for services to register themselves and to discover other services via a DNS or HTTP interface.
 
-To give users an idea on how to create a WebLogic Server Domain in a Multi Host environment we have scripts under **1221-multihost**.  The b ~/docker-images/OracleWebLogic/samples/1221-multihost/bootstrap.shb  script starts 2 Docker Machines the b weblogic-Orchestratorb  and b weblogic-masterb  . The weblogic-orchestrater Docker Machine has the b Docker Registryb  where we register the images we need to run containers from, and we run the b Consulb  to help us start services. The weblogic-master Docker Machine has the Docker Swarm Image, the Overlay Network, and the WebLogic Admin Server container running in the VM. The 1221-appdeploy image is pushed into the registry running in the Orchestrator machine.  Finally the bootstrap script calls the post-bootstrap script to start an Admin Server container on the weblogic-master machine.
+To give users an idea on how to create a WebLogic Server Domain in a Multi Host environment we have scripts under **1221-multihost**.  The '~/docker-images/OracleWebLogic/samples/1221-multihost/bootstrap.sh' script starts 2 Docker Machines the **weblogic-Orchestrator** and **weblogic-master** . The weblogic-orchestrater Docker Machine has the **Docker Registry** where we register the images we need to run containers from, and we run the **Consul** to help us start services. The weblogic-master Docker Machine has the Docker Swarm Image, the Overlay Network, and the WebLogic Admin Server container running in the VM. The 1221-appdeploy image is pushed into the registry running in the Orchestrator machine.  Finally the bootstrap script calls the post-bootstrap script to start an Admin Server container on the weblogic-master machine.
 
 ![](images/09_bootstrap_vi.pgn?raw=true)
 
-The b ~/docker-images/OracleWebLogic/samples/1221-multihost/post-bootstrap.shb  script runs an Admin server Docker Container in the weblogic-master machine from the app-deploy image that has been pushed to the registry.
+The '~/docker-images/OracleWebLogic/samples/1221-multihost/post-bootstrap.sh' script runs an Admin server Docker Container in the weblogic-master machine from the app-deploy image that has been pushed to the registry.
 
 ![](images/10_post_bootstrap_vi.pgn?raw=true)
 
@@ -116,7 +116,7 @@ After running the bootstrap.sh script successfully we can see the two Docker mac
 
 ![](images/11_docker_machine_after_bootstrap.pgn?raw=true)
 
-If we ssh into the weblogic-orchestrator machine by running `docker-machine ssh weblogic-orchestrator` command we can see the registry and consul images and containers running in this machine.  Use the commands `docker images` to see images and `docker ps` to see containers.
+If we ssh into the weblogic-orchestrator machine by running 'docker-machine ssh weblogic-orchestrator' command we can see the registry and consul images and containers running in this machine.  Use the commands `docker images` to see images and `docker ps` to see containers.
 
 ![](images/12_orchestrator.pgn?raw=true)
 
@@ -125,23 +125,23 @@ If we ssh into the weblogic-master machine by running `docker-machine ssh weblog
 
 ![](images/13_master.pgn?raw=true)
 
-Every virtual machine that is part of the Docker Swarm will be networked together with the overlay network.  Every container running in the VM will be able to communicate with the any other container running in a different VM in the Docker Swarm.  This allows us to run the WebLogic servers in many different VMs and distribute the WLS domain/cluster across several VMs.  Letb s take a look to the Docker networks and we can inspect the overlay network by running `docker inspect` using the overlay network name.  Run commands:
-	$docker network ls
-        $docker network inspect weblogic-net
+Every virtual machine that is part of the Docker Swarm will be networked together with the overlay network.  Every container running in the VM will be able to communicate with the any other container running in a different VM in the Docker Swarm.  This allows us to run the WebLogic servers in many different VMs and distribute the WLS domain orcluster across several VMs.  Let's take a look to the Docker networks and we can inspect the overlay network by running `docker inspect` using the overlay network name.  Run commands:
+    $docker network ls
+    $docker network inspect weblogic-net
 
 ![](images/14_network_inspect.pgn?raw=true)
 
-Letb s now open the Admin Console by using the ip address of the weblogic-master machine and the 8001 port, b http://192.168.99.101:8001/consoleb  to view the admin console.  View the Admin server running and the deployment of the sample application.
+Open the Admin Console by using the ip address of the weblogic-master machine and the 8001 port, **http://192.168.99.101:8001/console** to view the admin console.  View the Admin server running and the deployment of the sample application.
 
 ![](images/15_console_login.pgn?raw=true)
 ![](images/16_console_admin_server.pgn?raw=true)
 ![](images/17_console_deployments.pgn?raw=true)
 
-Next we will start a new VM where the managed servers will run. Simply call the b ~/docker-images/OracleWebLogic/samples/1221-multihost/create-machine.shb  script. This script will create a new Docker Machine which we will use in this project to run 2 WLS managed servers.  The new Docker machine will be part of the Docker Swarm and the Managed server containers running in this VM will be able to network via the Overlay network with other containers in the Swarm.  After running the create-machine.sh script if we look at what Docker Machines are running by invoking `docker-machine ls` we can see a third Docker Machine weblogic-gv082o.
+Next we will start a new VM where the managed servers will run. Simply call the '~/docker-images/OracleWebLogic/samples/1221-multihost/create-machine.sh' script. This script will create a new Docker Machine which we will use in this project to run 2 WLS managed servers.  The new Docker machine will be part of the Docker Swarm and the Managed server containers running in this VM will be able to network via the Overlay network with other containers in the Swarm.  After running the create-machine.sh script if we look at what Docker Machines are running by invoking `docker-machine ls` we can see a third Docker Machine weblogic-gv082o.
 
 ![](images/18_create_machine.pgn?raw=true)
 
-Now that the machine is up, letb s start Managed Server containers from the app-deploy image running in this machine.  Invoke b ~/docker-images/OracleWebLogic/samples/1221-multihost/create-container.shb  script. If you want the Managed server container to be started in a particular Docker Machine provide the machine name as parameter `./create-container.sh weblogic-gv082o`, otherwise the container will be started in one of the Docker Machines in the Swarm.
+Now that the machine is up, start Managed Server containers from the app-deploy image running in this machine.  Invoke '~/docker-images/OracleWebLogic/samples/1221-multihost/create-container.sh' script. If you want the Managed server container to be started in a particular Docker Machine provide the machine name as parameter `./create-container.sh weblogic-gv082o`, otherwise the container will be started in one of the Docker Machines in the Swarm.
 
 ![](images/19_create_container.pgn?raw=true)
 
@@ -152,12 +152,12 @@ Look at the Managed server container running on Docker Machine weblogic-gv082o, 
 
 ![](images/20_ms_containers?raw=true)
 
-Now that the entire WebLogic domain has been started and the application `sample` is deployed to the cluster, letb s start an Apache Plugin Web tier running in its own Container.  The Apache Plugin will load balance invocation of the sample deployed to the Managed servers in the cluster. Simply call the b ~/docker-images/OracleWebLogic/samples/1221-multihoststart-webtier.shb  script. This script discovers all Managed servers running in the Swarm and creates the string WEBLOGIC_CLUSTER.  The WEBLOGIC_CLUSTER string is set as an environment parameter so that when starting the Apache Web tier container the value is set in the weblogic.conf file.  Also note that the Apache Web tier container is bound to port 80 of the weblogic-master machine.
+Now that the entire WebLogic domain has been started and the application `sample` is deployed to the cluster, start an Apache Plugin Web tier running in its own Container.  The Apache Plugin will load balance invocation of the sample deployed to the Managed servers in the cluster. Simply call the '~/docker-images/OracleWebLogic/samples/1221-multihoststart-webtier.sh' script. This script discovers all Managed servers running in the Swarm and creates the string WEBLOGIC_CLUSTER.  The WEBLOGIC_CLUSTER string is set as an environment parameter so that when starting the Apache Web tier container the value is set in the weblogic.conf file.  Also note that the Apache Web tier container is bound to port 80 of the weblogic-master machine.
 
 ![](images/22_start_webtier.pgn?raw=true)
 ![](images/23_start_webtier2.pgn?raw=true)
 
-After invoking the script b ~/docker-images/OracleWebLogic/samples/1221-multihoststart-webtier.shb , find the Apache Web tier container running in the weblogic-master machine.
+After invoking the script '~/docker-images/OracleWebLogic/samples/1221-multihoststart-webtier.sh', find the Apache Web tier container running in the weblogic-master machine.
 
 ![](images/24_start_webtier_running.pgn?raw=true)
 
@@ -165,17 +165,14 @@ Go into weblogic-master machine `docker-machine ssh weblogic-master` and run `do
 
 ![](images/25_webtier_container_onmaster.pgn?raw=true)
 
-Letb s call the sample app deployed to the WebLogic cluster via the Apache Web tier, in your browser use the ip address of the weblogic-master machine and port 80,  b ~http://192.168.99.101:80/sampleb 
+Call the sample app deployed to the WebLogic cluster via the Apache Web tier, in your browser use the ip address of the weblogic-master machine and port 80,  **~http://192.168.99.101:80/sample**
 
 ![](images/26_call_sample.pgn?raw=true)
-
 ### Clean Up
-### Clean Up
-Clean Docker Machines running, call script b ~/docker-images/OracleWebLogic/samples/1221-multihost/destroy-all-machines.shb 
+Clean Docker Machines running, call script '~/docker-images/OracleWebLogic/samples/1221-multihost/destroy-all-machines.sh'
 
     $ ./destroy-all-machines.sh
 
- 
 Verify the Docker images that exist currently:  
 
     $ docker images
