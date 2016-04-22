@@ -76,9 +76,7 @@ Like before, you can open the Dockerfile in another terminal window to see the d
 
 ![](images/06_webtier_image.png)
  
-The image is successfully built, belonging to the repository **webtier**, and tag **latest**.
-
-And now that this image is created, this will be reflected when we do a `docker images`
+The image is successfully built, belonging to the repository **webtier**, and tag **latest**.  When the image is created, it will be reflected when we do a `docker images`
 
 ![](images/07_all_images.png)
 
