@@ -61,12 +61,6 @@ Like before, you can open the Dockerfile in another terminal window to see the d
 ![](images/04_appdeploy.png)
 
 In steps 1 through 4 above, we extend the **1221-domain** image, define application name, name of the war file, and location where it should be copied. 
-
-To try building the WebLogic **servlet-proxy** Application image:
-
-    $ cd ~/docker-images/OracleWebLogic/samples/1221-servlet-proxy
-    $ docker build -t 1221-servlet-proxy .
-
 Like before, you can open the Dockerfile in another terminal window to see the definition of the build steps Docker is running.
 
 ### Apache Plugin Web tier Images
