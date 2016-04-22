@@ -49,7 +49,7 @@ Under the **samples** directory we have subdirectories that contain Dockerfiles 
 This project offers a couple of Dockerfiles to create the Application image. The Application image (1221-appdeploy) extends a WebLogic Domain image to deploy the application (sample) to servers running in a WebLogic 12.2.1 domain. This Dockerfile can be easily change to extend a WebLogic 12.1.3 Domain image. 
 
 ### Application Images
-To give users an idea on how to create the Application images from a custom Dockerfile to extend the WebLogic Domain image, we provide samples under the folder **samples/1221-appdeploy**  The best way to create your own, or extend domains is by using WebLogic Scripting Tool. The WLST script used to deploy the sample application and create the 1221-appdeploy image is **~/docker-images/OracleWebLogic/samples/1221-appdeploy/container-scripts/app-deploy.py**. This script by default deploys the sample application to all servers in the domain. You can deploy your own applications by modifying the WLST scripts, or create a new one with WLST.
+To give users an idea on how to create the Application images from a custom Dockerfile to extend the WebLogic Domain image, we provide samples under the folder **samples/1221-appdeploy**  The best way to create your own, or extend domains is by using WebLogic Scripting Tool. The WLST script used to deploy the sample application and create the 1221-appdeploy image is '~/docker-images/OracleWebLogic/samples/1221-appdeploy/container-scripts/app-deploy.py'. This script by default deploys the sample application to all servers in the domain. You can deploy your own applications by modifying the WLST scripts, or create a new one with WLST.
 
 To try building the WebLogic **appdeploy** Application image:
 
@@ -126,9 +126,10 @@ If we ssh into the weblogic-master machine by running `docker-machine ssh weblog
 ![](images/13_master.pgn?raw=true)
 
 Every virtual machine that is part of the Docker Swarm will be networked together with the overlay network.  Every container running in the VM will be able to communicate with the any other container running in a different VM in the Docker Swarm.  This allows us to run the WebLogic servers in many different VMs and distribute the WLS domain orcluster across several VMs.  Let's take a look to the Docker networks and we can inspect the overlay network by running `docker inspect` using the overlay network name.  Run commands:
-    $docker network ls
-    $docker network inspect weblogic-net
 
+    $ docker network ld
+    $ docker network inspect weblogic-net 
+   
 ![](images/14_network_inspect.pgn?raw=true)
 
 Open the Admin Console by using the ip address of the weblogic-master machine and the 8001 port, **http://192.168.99.101:8001/console** to view the admin console.  View the Admin server running and the deployment of the sample application.
@@ -137,7 +138,7 @@ Open the Admin Console by using the ip address of the weblogic-master machine an
 ![](images/16_console_admin_server.pgn?raw=true)
 ![](images/17_console_deployments.pgn?raw=true)
 
-Next we will start a new VM where the managed servers will run. Simply call the '~/docker-images/OracleWebLogic/samples/1221-multihost/create-machine.sh' script. This script will create a new Docker Machine which we will use in this project to run 2 WLS managed servers.  The new Docker machine will be part of the Docker Swarm and the Managed server containers running in this VM will be able to network via the Overlay network with other containers in the Swarm.  After running the create-machine.sh script if we look at what Docker Machines are running by invoking `docker-machine ls` we can see a third Docker Machine weblogic-gv082o.
+Next we will start a new VM where the managed servers will run. Simply call the '~/docker-images/OracleWebLogic/samples/1221-multihost/create-machine.sh' script. This script will create a new Docker Machine which we will use in this project to run 2 WLS managed servers.  The new Docker machine will be part of the Docker Swarm and the Managed server containers running in this VM will be able to network via the Overlay network with other containers in the Swarm.  After running the create-machine.sh script if we look at what Docker Machines are running by invoking `docker-machine ls` we can see a third Docker Machine **weblogic-gv082o**.
 
 ![](images/18_create_machine.pgn?raw=true)
 
