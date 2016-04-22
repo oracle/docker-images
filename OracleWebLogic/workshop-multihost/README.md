@@ -45,7 +45,7 @@ Under the **samples** directory we have subdirectories that contain Dockerfiles 
 
 ![](images/05_samples_dir_ls.pgn?raw=true)
 
-This project offers a couple of Dockerfiles to create the Application image. The Application image (1221-appdeploy) extends a WebLogic Domain image to deploy the application (sample) to servers running in a WebLogic 12.2.1 domain. This Dockerfile can be easily change to extend a WebLogic 12.1.3 Domain image. 
+This project offers a couple of Dockerfiles to create the Application image. The Application image **1221-appdeploy** extends a WebLogic Domain image to deploy the application **sample** to servers running in a WebLogic 12.2.1 domain. This Dockerfile can be easily change to extend a WebLogic 12.1.3 Domain image. 
 
 ### Application Images
 To give users an idea on how to create the Application images from a custom Dockerfile to extend the WebLogic Domain image, we provide samples under the folder **samples/1221-appdeploy**  The best way to create your own, or extend domains is by using WebLogic Scripting Tool. The WLST script used to deploy the sample application and create the 1221-appdeploy image is '~/docker-images/OracleWebLogic/samples/1221-appdeploy/container-scripts/app-deploy.py'. This script by default deploys the sample application to all servers in the domain. You can deploy your own applications by modifying the WLST scripts, or create a new one with WLST.
