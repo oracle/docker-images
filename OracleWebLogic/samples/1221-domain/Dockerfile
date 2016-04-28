@@ -34,7 +34,6 @@ ENV DOMAIN_NAME="base_domain" \
     MS_PORT="7001" \
     CLUSTER_NAME="DockerCluster" \
     CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true" \
-#    WLST_PROPERTIES="-Dpython.cachedir.skip=true" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin:/u01/oracle
 
 # Add files required to build this image
@@ -42,7 +41,7 @@ USER oracle
 COPY container-scripts/* /u01/oracle/
 
 # Configuration of WLS Domain
-RUN /u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/create-wls-domain.py && \
+RUN /u01/oracle/wlst /u01/oracle/create-wls-domain.py && \
     mkdir -p /u01/oracle/user_projects/domains/base_domain/servers/AdminServer/security && \
     echo "username=weblogic" > /u01/oracle/user_projects/domains/base_domain/servers/AdminServer/security/boot.properties && \ 
     echo "password=$ADMIN_PASSWORD" >> /u01/oracle/user_projects/domains/base_domain/servers/AdminServer/security/boot.properties && \

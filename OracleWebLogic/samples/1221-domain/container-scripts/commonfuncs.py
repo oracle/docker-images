@@ -7,7 +7,7 @@ import socket
 hostname       = socket.gethostname()
 # Admin Vars
 admin_username = os.environ.get('ADMIN_USERNAME', 'weblogic')
-admin_password = os.environ.get('ADMIN_PASSWORD')
+admin_password = os.environ.get('ADMIN_PASSWORD') # this is read only once when creating domain (during docker image build)
 admin_host     = os.environ.get('ADMIN_HOST', 'wlsadmin')
 admin_port     = os.environ.get('ADMIN_PORT', '8001')
 # Node Manager Vars
