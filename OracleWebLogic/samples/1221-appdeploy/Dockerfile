@@ -31,4 +31,4 @@ ENV APP_NAME="sample" \
 # Copy files and deploy application in WLST Offline mode
 COPY container-scripts/* /u01/oracle/
 
-RUN sh appDeploy.sh
+RUN wlst /u01/oracle/app-deploy.py
