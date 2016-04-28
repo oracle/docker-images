@@ -32,32 +32,6 @@ set('ListenPort', admin_port)
 cd('/Security/' + domain_name + '/User/weblogic')
 cmo.setPassword(admin_pass)
 
-# Create a JMS Server
-# ===================
-cd('/')
-create('myJMSServer', 'JMSServer')
-
-# Create a JMS System resource
-# ============================
-cd('/')
-create('myJmsSystemResource', 'JMSSystemResource')
-cd('JMSSystemResource/myJmsSystemResource/JmsResource/NO_NAME_0')
-
-# Create a JMS Queue and its subdeployment
-# ========================================
-myq = create('myQueue','Queue')
-myq.setJNDIName('jms/myqueue')
-myq.setSubDeploymentName('myQueueSubDeployment')
-
-cd('/JMSSystemResource/myJmsSystemResource')
-create('myQueueSubDeployment', 'SubDeployment')
-
-# Target resources to the servers 
-# ===============================
-cd('/')
-assign('JMSServer', 'myJMSServer', 'Target', 'AdminServer')
-assign('JMSSystemResource.SubDeployment', 'myJmsSystemResource.myQueueSubDeployment', 'Target', 'myJMSServer')
-
 # Write the domain and close the domain template
 # ==============================================
 setOption('OverwriteDomain', 'true')
