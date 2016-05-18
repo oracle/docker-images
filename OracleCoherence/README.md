@@ -1,6 +1,6 @@
 Oracle Coherence Docker Image
 ===============
-This is a Dockerfile for [Oracle Coherence](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html). The purpose of this Docker container is to facilitate the setup of development and integration testing environments for developers. This project includes example [dockerfiles](dockerfiles/) and documentation for Coherence 12.2.1 based on Oracle Linux and Oracle JDK 8.
+This section is about using [Oracle Coherence](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html) in Docker. The purpose of the Docker images described here is to facilitate the setup of development and integration testing environments for developers. This project includes example [dockerfiles](dockerfiles/12.2.1) and documentation for Coherence 12.2.1 based on Oracle Linux and Oracle JDK 8.
 
 The certification of Coherence on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
@@ -11,7 +11,7 @@ For more information and documentation, read the [Docker Images from Oracle Linu
 For more information on the Coherence Standalone Distribution, visit [Coherence 12.2.1 Documentation](http://docs.oracle.com/middleware/1221/coherence/index.html).
 
 ## Building Oracle JDK (Server JRE) base image
-Before you can build these Oracle Coherence images you must have built the required Oracle Java 8 base image (see [Oracle JDK](../Oracle JDK/))
+Before you can build these Oracle Coherence images you must have built the required Oracle Java 8 base image (see [Oracle JDK](../OracleJDK/))
 
 ## How to Build
 
