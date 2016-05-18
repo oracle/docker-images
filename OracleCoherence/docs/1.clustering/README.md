@@ -192,12 +192,17 @@ The servers can be stopped and removed with these commands:
 ### Limitations
 Due to the limitations of how Docker does networking this is obviously going mean that there are limitations on the functionality available for Coherence. In the example above the cluster was formed by using the overlay network. This network is only visible to containers and so it is not possible to mix cluster membership using containerized and non-containerized processes.
 
-It is possible to use Docker's host network configuration by using `--net=host` and this will make the containers use the host's network stack instead of Docker's virtualized networks. Host networking removes the limitations on Coherence imposed by Docker but at the cost of possibly making it harder to manage container port clashes etc. For Coherence port management from version 12.2.1 onwards is much easier as Coherence will use ephemeral ports so there are no ports to be configured so Coherence could run as easily with host networking as it does with the overlay network.
+It is possible to use Docker's host network configuration by using the `--net=host` argument when running a container and this will make the containers use the host's network stack instead of Docker's virtualized networks. Host networking removes the limitations on Coherence imposed by Docker but at the cost of possibly making it harder to manage container port clashes etc. For Coherence port management from version 12.2.1 onwards is much easier as Coherence will use ephemeral ports so there are no ports to be configured so Coherence could run as easily with host networking as it does with the overlay network.
 
 ### Recap of the Important Points
 Oracle Coherence will form a cluster across multiple hosts in Docker containers with the following configuration:
+
 1. All of the containers in the cluster must be attached to the same overlay network.
+
 2. Set the container name and host name to the same value.
+
 2. Start the containers named in the WKA list first.
+
 2. Configure the cluster to use well known addressing.
+
 3. Set the `coherence.localhost` system property to the host name of the container.

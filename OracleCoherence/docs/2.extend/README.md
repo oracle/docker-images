@@ -133,9 +133,16 @@ Alternatively a custom `AddressProvider` could be used, especially if your Docke
     </remote-cache-scheme>
 ```
 
+## Host Networking
+It is possible to use Docker's host network configuration by using the `--net=host` argument when running the container and this will make the containers use the host's network stack instead of Docker's virtualized networks. Host networking removes the limitations on Coherence imposed by Docker but at the cost of possibly making it harder to manage container port clashes etc. For Coherence port management from version 12.2.1 onwards is much easier as Coherence will use ephemeral ports so there are no ports to be configured so Coherence could run as easily with host networking as it does with the overlay network. When using host networking all Coherence *Extend features will work.
+
 ### Recap of the Important Points
 Oracle Coherence Extend clients will work providing the following points are noted
+
 1. If both client and proxy are containerized attached to the same overlay network then all Coherence *Extend features will work.
+
 1. If the client is containerized and the proxy is not running in a container then all Coherence *Extend features will work.
+
 2. If connecting from a non-containerized client to a containerized proxy the `<load-balancer>client<load-balancer>` setting must be used in the proxy configuration
+
 2. If connecting from a non-containerized client to a containerized proxy  the NameService cannot be used by the client to lookup Extend proxies. Proxy addresses must be specifically set either in the client configuration or by using an AddressProvider.
