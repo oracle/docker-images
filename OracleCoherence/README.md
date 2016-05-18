@@ -11,7 +11,7 @@ For more information and documentation, read the [Docker Images from Oracle Linu
 For more information on the Coherence Standalone Distribution, visit [Coherence 12.2.1 Documentation](http://docs.oracle.com/middleware/1221/coherence/index.html).
 
 ## Building Oracle JDK (Server JRE) base image
-Before you can build these Oracle Coherence images you must have built the required Oracle Java 8 base image (see [Oracle JDK](../OracleJDK/))
+Before you can build these Oracle Coherence images you must have built the required Oracle Java 8 base image (see [Oracle JDK images](../OracleJDK/))
 
 ## How to Build
 
@@ -51,8 +51,11 @@ Follow this procedure:
 
 ## Documentation
 Documentation covering the different aspects of running Oracle Coherence in Docker containers is covered in the [docs](docs) section.
+
 1. [Clustering](docs/1.clustering)
+
 2. [Coherence *Extend](docs/2.extend)
+
 
 ## Issues
 If you find any issues with this Docker project, please report through the [GitHub Issues page](https://github.com/oracle/docker-images/issues).
