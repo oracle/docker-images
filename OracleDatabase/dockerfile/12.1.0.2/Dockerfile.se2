@@ -58,9 +58,9 @@ RUN mkdir -p $ORACLE_BASE && \
     groupadd -g 501 oinstall && \
     useradd -d /home/oracle -g dba -G oinstall,dba -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    yum -y update && \
+    yum -y upgrade && \
     yum -y install oracle-rdbms-server-12cR1-preinstall unzip && \
-    rm -rf /var/cache/yum/* && \
+    yum clean all && \
     chown -R oracle:dba $ORACLE_BASE
 
 WORKDIR $INSTALL_DIR
@@ -103,16 +103,8 @@ source $HOME/.bashrc
 
 RUN mkdir -p $ORACLE_HOME/network/admin
 RUN echo "NAME.DIRECTORY_PATH= {TNSNAMES, EZCONNECT, HOSTNAME}" > $ORACLE_HOME/network/admin/sqlnet.ora
-RUN echo "SID_LIST_LISTENER = \
-  (SID_LIST = \
-    (SID_DESC = \
-      (GLOBAL_DBNAME = $ORACLE_SID) \
-        (SID_NAME = $ORACLE_SID) \
-        (ORACLE_HOME = $ORACLE_HOME) \
-      ) \
-    ) \
-\
-" > $ORACLE_HOME/network/admin/listener.ora
+
+# Listener.ora
 RUN echo "LISTENER = \
   (DESCRIPTION_LIST = \
     (DESCRIPTION = \
@@ -121,11 +113,13 @@ RUN echo "LISTENER = \
     ) \
   ) \
 \
-" >> $ORACLE_HOME/network/admin/listener.ora
+" > $ORACLE_HOME/network/admin/listener.ora
 
 RUN echo "DEDICATED_THROUGH_BROKER_LISTENER=ON"  >> $ORACLE_HOME/network/admin/listener.ora
 RUN echo "DEFAULT_SERVICE_LISTENER = ($ORACLE_SID)" >> $ORACLE_HOME/network/admin/listener.ora
+RUN echo "DIAG_ADR_ENABLED = off"  >> $ORACLE_HOME/network/admin/listener.ora;
 
+# Start LISTENER and run DBCA
 RUN bash -lc "lsnrctl start" && \
     dbca -silent -responseFile $INSTALL_DIR/$CONFIG_RSP || \
     cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log
