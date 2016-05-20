@@ -1,0 +1,44 @@
+###############################################################################
+#                                                                             #
+# HTTP port that will be used to access APEX admin page                       #
+# Default : 8080							      #
+#                                                                             #
+###############################################################################
+ORACLE_HTTP_PORT=8080
+
+###############################################################################
+#                                                                             #
+# TNS port that will be used to configure listener 			      #
+# Default : 1521							      #
+#                                                                             #
+###############################################################################
+ORACLE_LISTENER_PORT=1521
+
+###############################################################################
+#                                                                             #
+# Passwords can be supplied for the following two schemas in the              #
+# starter database:                                                           #
+#   SYS                                                                       #
+#   SYSTEM                                                                    #
+#                                                                             #
+###############################################################################
+ORACLE_PASSWORD=oracle
+
+###############################################################################
+#                                                                             #
+# Passwords can be supplied for the following two schemas in the              #
+# starter database:                                                           #
+#   SYS                                                                       #
+#   SYSTEM                                                                    #
+#                           						      #
+#   ORACLE_CONFIRM_PASSWORD should be same as ORACLE_PASSWORD                 #
+#                           						      #
+###############################################################################
+ORACLE_CONFIRM_PASSWORD=oracle
+
+###############################################################################
+#                                                                             #
+# To start/stop listener and database instance up on system boot	      #
+#                                                                             #
+###############################################################################
+ORACLE_DBENABLE=y

@@ -16,14 +16,14 @@ Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
-   -v: version to build. Required.
+   -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
    -i: Ignores the MD5 checksums
 
-* select one EDITION only: -e, -s, or -x
+* select one edition only: -e, -s, or -x
 
 LICENSE CDDL 1.0 + GPL 2.0
 
@@ -52,6 +52,8 @@ STANDARD=0
 EXPRESS=0
 VERSION="12.1.0.2"
 SKIPMD5=0
+DOCKEROPS=""
+
 while getopts "hesxiv:" optname; do
   case "$optname" in
     "h")
@@ -90,7 +92,8 @@ elif [ $EXPRESS -eq 1 ] && [ "$VERSION" = "12.1.0.2" ]; then
   echo "Version 12.1.0.2 does not have Express Edition available."
   exit 1
 else
-  EDITION="xe"
+  EDITION="xe";
+  DOCKEROPS="--shm-size=1G";
 fi
 
 # Oracle Database Image Name
@@ -136,7 +139,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
+docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
   echo "There was an error building the image."
   exit 1
 }
