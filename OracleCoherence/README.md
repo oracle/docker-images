@@ -52,9 +52,12 @@ Follow this procedure:
 ## Documentation
 Documentation covering the different aspects of running Oracle Coherence in Docker containers is covered in the [docs](docs) section.
 
-1. [Clustering](docs/1.clustering)
-
-2. [Coherence *Extend](docs/2.extend)
+1. [Setup](docs/0.setup) - Setting up a demo Docker Machine environment
+2. [Clustering](docs/1.clustering) - Running Coherence Clusters in Docker
+3. [Coherence Extend](docs/2.extend) - Running Coherence Extend in Docker
+4. [Federated Caching](docs/3.federation) - Federated Caching in Docker
+5. [Disc Based Functionality](docs/4.disc_based) - Elastic Data and Persistence in Docker
+6. [JMX Monitoring](docs/5.monitoring) - Using JMX in Docker
 
 
 ## Issues

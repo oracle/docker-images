@@ -1,1 +1,0 @@
-# Federated Caching in Docker

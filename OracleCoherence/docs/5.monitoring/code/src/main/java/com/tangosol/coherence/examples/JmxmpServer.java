@@ -1,4 +1,6 @@
-package com.tangosol.coherence.examples ;
+package com.tangosol.coherence.examples;
+
+import com.tangosol.net.CacheFactory;
 
 import com.tangosol.net.management.MBeanServerFinder;
 
@@ -53,6 +55,8 @@ public class JmxmpServer
                 s_connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(s_jmxServiceURL, null, server);
 
                 s_connectorServer.start();
+
+                CacheFactory.log("JMXMP MBean server url " + s_jmxServiceURL)
                 }
 
             return s_connectorServer;
