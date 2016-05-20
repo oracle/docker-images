@@ -1,7 +1,7 @@
 # Example Docker Setup
-The examples in the Docs section show various different aspects of Oracle Coherence functionality running in a multi-host Docker environment. The examples require a Docker environment with two Docker hosts configured to run Docker's overlay network, i.e. with a suitable key store configured. The easiest way to configure a suitable example environment is to use Docker Machine to set up some temporary virtual machines that can then be disposed of afterwards. aA very similar configuration can be used to that described in Docker's own [Get Started with multi-host networking](https://docs.docker.com/engine/userguide/networking/get-started-overlay/) examples using Consul as the keystore required to use Docker networking. This example is not going to use Swarm so there is no requirement to configure it. 
+The examples in the Docs section show various different aspects of Oracle Coherence functionality running in a multi-host Docker environment. The examples require a Docker environment with two Docker hosts configured to run Docker's overlay network, i.e. with a suitable key store configured. The easiest way to configure a suitable example environment is to use Docker Machine to set up some temporary virtual machines that can then be disposed of afterwards.  
 
-1. Create the key store machine using the following command
+1. Create a machine that will run the key store required to use Docker's overlay network using the following command
 
     `$ docker-machine create -d virtualbox coh-keystore`
 
@@ -11,7 +11,7 @@ The examples in the Docs section show various different aspects of Oracle Cohere
     
     `$ eval "$(docker-machine env coh-keystore)"`
     
-3. Start a `progrium/consul` container running on the coh-keystore machine.
+3. Start a `progrium/consul` container to run the Consul key store on the `coh-keystore` machine.
     
     `$ docker run -d -p "8500:8500" -h "consul" progrium/consul -server -bootstrap`
     
