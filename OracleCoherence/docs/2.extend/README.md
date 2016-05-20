@@ -1,15 +1,17 @@
 #Using Coherence *Extend in Docker
 
-Coherence *Extend clients can be used with Docker, the exact configuration depends on whether the cluster or client is inside or outside of a Docker container.
+## Using Host Networking
+Coherence Extend clients can be used with Docker and as with clustering, the easiest way to make Extend work is to start the containers with `--net=host` to use host networking. When using host networking the container uses the Docker host's network interfaces instead of virtualized interfaces so all of the features of Coherence Extend will work as normal.
+
+## Using Overlay Networks
+If host networking is not available then Extend will also work using Docker's overlay and bridge networks. There are different configuration choices available depending on whether the Coherence cluster and Extend client are both running in containers or whether one is containerized and the other is not.   
 
 ##Examples
-The examples in this section follow on from those in the [Clustering Section](../1.clustering). To run the examples below the three Docker Machine VMs should have been created as previously explained along with the Consul key store container, image creation and network creation steps.
 
 ##Cluster and Client Both Containerized
-If both the cluster members and the Extend client are inside Docker containers all attached to the same network then everything will work as normal.
+If both the cluster members and the Extend client are inside Docker containers all attached to the same overlay network then everything will work as normal. The client and proxy services in the cluster can communicate using the overlay network. 
 
-1. Start a DefaultCacheServer on the coh-demo0 machine using the same command as previously:
-
+1. In Coherence 12.2.1 using the default cache configuration in the JAR file every storage member will also start a Proxy that listens on an ephemeral port. Start a DefaultCacheServer on the coh-demo0 machine using the same command as previously:
 ```
 $ docker $(docker-machine config coh-demo0) run -d \
 --name=coh1 --hostname=coh1 --net=coh-net \
@@ -19,9 +21,8 @@ oracle/coherence:12.2.1.0.0-standalone \
 -Dcoherence.localhost=coh1 -Dcoherence.wka=coh1 \
 com.tangosol.net.DefaultCacheServer
 ```
-In Coherence 12.2.1 using the default cache configuration in the JAR file every storage member will also start a Proxy that listens on an ephemeral port. An Extend client can be run in another container that will connect to the Proxy.
-
-2. The client used in this example will be the CacheFactory console application. The default cache configuration file in 12.2.1 allows a JVM to be configured as a cluster member or an Extend client by setting the `coherence.client` system property. There are two valid values for this property `direct` for cluster members and `remote` for Extend clients. As of Coherence 12.2.1 Extend clients can locate a Proxy to connect to without requiring to know any of the ports that the proxies are listening on. The client only needs to locate the cluster and then using the NameService in the cluster it can look-up the  The client can be started with the following command:
+2. The client used in this example will be the CacheFactory console application. The default cache configuration file in 12.2.1 allows a JVM to be configured as a cluster member or an Extend client by setting the `coherence.client` system property. There are two valid values for this property `direct` for cluster members and `remote` for Extend clients. As of Coherence 12.2.1 Extend clients can locate a Proxy to connect to without requiring to know any of the ports that the proxies are listening on. The client only needs to locate the cluster and then using the NameService in the cluster it can look-up the proxy service. When using overlay networks cluster discovery uses well-known-addressing so the Extend client must also be configured with the WKA list of the cluster. 
+A client can be started with the following command:
 ```
 $ docker $(docker-machine config coh-demo1) run -i -t \
 --name=coh2 --hostname=coh2 --net=coh-net \
@@ -31,15 +32,15 @@ oracle/coherence:12.2.1.0.0-standalone \
 -Dcoherence.client=remote -Dcoherence.wka=coh1 \
 com.tangosol.net.CacheFactory
 ```
-* The container is started in interactive mode so that commands can be typed into the console.
-* As before the container is given a unique name and host name on the overlay network using the `--name=coh2 --hostname=coh2` arguments.
-* The container is attached to the same overlay network as the storage member using the `--net=coh-net` argument.
-* The container is configured to act as a client using the `-Dcoherence.client=remote` system property
-* The WKA property `-Dcoherence.wka=coh1` is set so that the client can locate the cluster.
 
-When the command is run the CachFactory console should start and display the `Map (?): ` prompt.
+    * The container is started in interactive mode so that commands can be typed into the console.
+    * As before the container is given a unique name and host name on the overlay network using the `--name=coh2 --hostname=coh2` arguments.
+    * The container is attached to the same overlay network as the storage member using the `--net=coh-net` argument.
+    * The container is configured to act as a client using the `-Dcoherence.client=remote` system property
+    * The WKA property `-Dcoherence.wka=coh1` is set so that the client can locate the cluster.
 
-3. Create a cache in the console using the following command:
+
+3. After the above command is run the CacheFactory console should start and display the `Map (?): ` prompt. Create a cache in the console using the following command:
 
 ```
 Map (?): cache foo
