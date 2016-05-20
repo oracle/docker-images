@@ -12,14 +12,14 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with `sudo` privileges:
 
-	[oracle@localhost docker]$ ./buildDockerImage.sh -h
+	[oracle@localhost dockerfiles]$ ./buildDockerImage.sh -h
 	
 	Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
 	Builds a Docker Image for Oracle Database.
 	
 	Parameters:
 	   -v: version to build
-	       Choose one of: 12.1.0.2
+	       Choose one of: 11.2.0.2  12.1.0.2
 	   -e: creates image based on 'Enterprise Edition'
 	   -s: creates image based on 'Standard Edition 2'
 	   -x: creates image based on 'Express Edition'
