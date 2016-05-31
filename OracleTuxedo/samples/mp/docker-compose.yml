@@ -3,17 +3,17 @@ services:
   node1:
     hostname: node1
     build: .
-    command: /bin/bash -x /home/tuxtest/sleep.sh &> sleep.log
+    command: /bin/bash -x /home/oracle/sleep.sh &> sleep.log
   node2:
     hostname: node2
     build: .
-    command: /bin/bash -x /home/tuxtest/sleep.sh &> sleep.log
+    command: /bin/bash -x /home/oracle/sleep.sh &> sleep.log
     depends_on:
       - node1
   node3:
     hostname: node3
     build: .
-    command: /bin/bash -x /home/tuxtest/sleep.sh &> sleep.log
+    command: /bin/bash -x /home/oracle/sleep.sh &> sleep.log
     depends_on:
       - node1
 
