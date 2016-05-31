@@ -68,7 +68,7 @@ The examples in the Docs section show various different aspects of Oracle Cohere
     
 9. As these example uses Docker Machine the virtual machines need to be configured to correctly route Coherence multicast traffic over the correct network interface. A Docker Machine VM has multiple NICs and inter-machine multicast traffic will only work over one of them. The following step would not normally be required on Docker hosts that are real physical boxes or that are configured to correctly route multicast traffic. 
 
-    Run the followin commands to route multicast traffic over the eth1 interface, which is externally visible to other machines:
+    Run the following commands to route multicast traffic over the eth1 interface, which is externally visible to other machines:
  
     `docker-machine ssh coh-demo0 'route add -net 224.0.0.0 netmask 224.0.0.0 dev eth1`
  
