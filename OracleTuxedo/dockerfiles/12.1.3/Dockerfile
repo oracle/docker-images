@@ -5,10 +5,6 @@
 #   tuxedo121300_64_Linux_01_x86.zip	from http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html
 #   p22090512_121300_Linux-x86-64.zip 	or whatever the latest Tuxedo rolling patch is from My Oracle Support
 #
-# Download and unzip into the same directory
-#   tuxedo_docker.zip			from https://github.com/TuxedoUsers/Tuxedo-samples/tree/master/docker
-#
-#
 
 # Pull base image
 FROM oraclelinux
@@ -16,21 +12,21 @@ FROM oraclelinux
 MAINTAINER Todd Little <todd.little@oracle.com>
 
 # Core install doesn't include unzip or gcc, add them
-# Create the installation directory tree and user tuxtest with a password of tuxtest
+# Create the installation directory tree and user oracle with a password of oracle
 RUN yum -y install unzip gcc file; yum -y clean all && \
-    groupadd -g 1000 tuxtest; useradd -b /home -m -g tuxtest -u 1000 -s /bin/bash tuxtest && \
-    echo tuxtest:tuxtest | chpasswd; echo root:samplesvm | chpasswd
+    groupadd -g 1000 oracle; useradd -b /home -m -g oracle -u 1000 -s /bin/bash oracle && \
+    echo oracle:oracle | chpasswd; echo root:samplesvm | chpasswd
 
-COPY tuxedo12.1.3_silent_install.sh tuxedo12.1.3.rsp p*_121300_Linux-x86-64.zip tuxedo121300_64_Linux_01_x86.zip <KIT_LOCATION>/
-#ADD simpapp_runme.sh start_tlisten.sh /home/tuxtest/
+COPY install.sh tuxedo12.1.3.rsp p*_121300_Linux-x86-64.zip tuxedo121300_64_Linux_01_x86.zip /home/oracle/Downloads/
+#ADD simpapp_runme.sh start_tlisten.sh /home/oracle/
 
-RUN chown tuxtest:tuxtest -R /home/tuxtest
-WORKDIR <KIT_LOCATION>
-USER tuxtest
+RUN chown oracle:oracle -R /home/oracle
+WORKDIR /home/oracle/Downloads
+USER oracle
 
 # Install Tuxedo, SALT, and TSAM Agent
 RUN sh tuxedo12.1.3_silent_install.sh p*_121300_Linux-x86-64.zip tuxedo121300_64_Linux_01_x86.zip
-ENV TUXDIR /home/tuxtest/tuxHome/tuxedo12.1.3.0.0
+ENV TUXDIR /home/oracle/tuxHome/tuxedo12.1.3.0.0
 
 # Clean up installer files
 RUN rm -f *.zip
@@ -43,8 +39,8 @@ RUN rm -f *.zip
 #USER root
 #RUN yum -y install bind-utils
 
-USER tuxtest
-WORKDIR /home/tuxtest
+USER oracle
+WORKDIR /home/oracle
 
 
 
