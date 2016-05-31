@@ -123,9 +123,9 @@ fi
 echo "====================="
 
 # Fix up the locations of things
-sh fix_locations.sh tuxedo.docker ${VERSION}/tuxedo${VERSION}.rsp.template >tuxedo${VERSION}.rsp
-sh fix_locations.sh tuxedo.docker ${VERSION}/tuxedo${VERSION}_silent_install.sh.template >tuxedo${VERSION}_silent_install.sh
-sh fix_locations.sh tuxedo.docker ${VERSION}/Dockerfile >Dockerfile
+cp ${VERSION}/tuxedo${VERSION}.rsp .
+cp ${VERSION}/install.sh .
+cp ${VERSION}/Dockerfile .
 
 docker build -t oracle/tuxedo:${VERSION} .
 if [ "$?" = "0" ]
