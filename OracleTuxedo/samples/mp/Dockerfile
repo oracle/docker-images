@@ -3,20 +3,17 @@
 # 
 
 # Pull base image
-FROM oracle/tuxedo:12.1.3
+FROM oracle/tuxedo:<VERSION>
 
 MAINTAINER Todd Little <todd.little@oracle.com>
-COPY simpapp_runme.sh simpappmp_runme.sh sleep.sh start_tlisten.sh /home/tuxtest/
+COPY simpapp_runme.sh simpappmp_runme.sh sleep.sh start_tlisten.sh /home/oracle/
 
 USER root
-RUN chown tuxtest:tuxtest -R /home/tuxtest
+RUN chown oracle:oracle -R /home/oracle
 
-USER tuxtest
-RUN hostname; mkdir /home/tuxtest/simpappmp
-WORKDIR /home/tuxtest/simpappmp
+USER oracle
+RUN hostname; mkdir /home/oracle/simpappmp
+
+WORKDIR /home/oracle/simpappmp
+
 RUN sh -x ../simpapp_runme.sh
-
-
-
-
-
