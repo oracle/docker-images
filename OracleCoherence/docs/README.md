@@ -1,7 +1,7 @@
 #Documentation
 This section includes documentation on running Oracle Coherence clusters inside Docker.
 
-1. [Setup](0.setup) - Setting up a demo Docker Machine environment
+1. [Setup](0.setup) - Setting Up a Demo Docker Machine Environment
 2. [Clustering](1.clustering) - Running Coherence Clusters in Docker
 3. [Coherence Extend](2.extend) - Running Coherence Extend in Docker
 4. [Federated Caching](3.federation) - Federated Caching in Docker
