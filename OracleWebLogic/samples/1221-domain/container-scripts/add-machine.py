@@ -25,7 +25,7 @@ editMode()
 
 cd('/')
 cmo.createMachine(nmname)
-cd('/Machines/' + nmname +'/NodeManager/' + nmname)
+cd('/Machines/%s/NodeManager/%s' % (nmname, nmname))
 cmo.setListenPort(int(nmport))
 cmo.setListenAddress(nmhost)
 cmo.setNMType('Plain')
