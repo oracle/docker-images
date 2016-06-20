@@ -46,6 +46,7 @@ Make sure you have oracle/ohs:12.2.1-sa image built. If not go into **dockerfile
 
         $ sh buildDockerImage.sh -v 12.2.1
 
+### How to Build Image
 Go to folder **samples/1221-OHS-domain**
 
 Run the following command:
@@ -56,48 +57,37 @@ Verify you now have this image in place with
 
         $ docker images
 
-## Running Oracle HTTP Server
-To start the OHS container you can simply call:
+### How to run container
+1. Edit the env.list file with relevant data from Weblogic container, cluster info etc.
 
-        $ docker run -d sampleohs:12.2.1
-
-        Or
-
-        $ docker run -d --name ohssa --hostname ohssa -p 7777:7777 sampleohs:12.2.1
-
-Note the sample Dockerfile defines startNMandOHS.sh as the default CMD. This script will start the Node Manager and OHS server component.
-Now you can access the OHS index page at http://localhost:7777/index.html
-
-You can also run a sanity check to see if OHS server is rendering the test static html packages by accessing URL http://localhost:7777/helloWorld.html
-
-## Configuring the Oracle WebLogic Server Proxy Plug-In with Oracle HTTP Server
-Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs)is used for proxying requests from Oracle HTTP Server to Oracle WebLogic Server. The Oracle WebLogic Server Proxy Plug-In is included in the Oracle HTTP Server 12c (12.2.1) installation.
-Refer https://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553
-
-To test the sample OHS server with WLS Proxy Plugin, a sample file mod_wl_ohs.conf.sample has been provided under **samples/1221-ohs-domain/container-scripts** folder for reference.
-
-The sample mod_wl_ohs.conf.sample file assumes that:
-
-  1. WLS Admin Servers is running and accessible @ http://myhost:8001/console
-  2. An application called chat is deployed on a cluster which has 2 WLS Managed server running under it and is accessible @ http://myhost:7001/chat and http://myhost:7004/chat
-
-###How to configure WLS proxy plugin on OHS container :
-
-  1. Build your docker image and run docker container using sample file under samples/1221-OHS-domain
-  2. Login to the running OHS docker container (as oracle user) by executing
+        WEBLOGIC_HOST=myhost
+        WEBLOGIC_PORT=7001
+        WEBLOGIC_CLUSTER=myhost:9001,myhost:9002
 
 
-        $ docker exec -i -t <container_id> /bin/bash
+The values of WEBLOGIC_HOST, WEBLOGIC_PORT and WEBLOGIC_CLUSTER must be valid, existing containers running WebLogic servers.
 
-  ** container_id can be found by running command $ docker ps -a
+2. Run this image by calling
 
-  3. Navigate to /container-scripts folder and edit the mod_wl_ohs.conf.sample file with correct directives . Refer section 2.4 in above Oracle docs
-  4. Run the script configureWLSProxyPlugin.sh . This will also restart the OHS server
-  5. Now you will be able to access all URLS via the OHS Listen Port 7777
-     - http://myhost:7777/console
-     - http://myhost:7777/consolehelp
-     - http://myhost:7777/chat
+        $ docker run -d --env-file ./env.list -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
 
+
+   The **configureWLSProxyPlugin.sh** script will be the default script to be run . This script
+   - Starts the Node Manager and OHS server
+   - Edits the mod_wl_ohs.conf.sample with values passed via env.list
+   - Copies the mod_wl_ohs.conf file under INSTANCE home
+   - Restarts OHS server
+
+3. Sanity URLs check for OHS server
+   - Now you can access the OHS index page @ http://localhost:7777/index.html
+   - Static html page @ URL http://localhost:7777/helloWorld.html
+
+4. Weblogic Cluster : Now you will be able to access all URLS via the OHS Listen Port 7777, instead of using port 7001, 9001 and 9002
+    - http://myhost:7777/console
+    - http://myhost:7777/<application>
+
+# Copyright
+Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 
 ## License
 To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.

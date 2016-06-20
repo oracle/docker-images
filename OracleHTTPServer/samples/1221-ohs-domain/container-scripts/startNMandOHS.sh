@@ -38,11 +38,6 @@ export JAVA_OPTIONS
 JAVA_HOME=${ORACLE_HOME}/oracle_common/jdk/jre
 export JAVA_HOME
 
-#################################################################
-echo "Killing previous running NodeManager of ohs server if any"
-kill -9 `ps -ef | grep Node | grep -v grep | awk '{print $2}'`
-kill -9 `ps -ef | grep ohssa | grep -v grep | awk '{print $2}'`
-
 #Declare and initializing NMSTATUS
 declare -a NMSTATUS
 NMSTATUS[0]="NOT RUNNING"
@@ -51,6 +46,8 @@ NMSTATUS[0]="NOT RUNNING"
 # Start node manager
 ${WL_HOME}/server/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &
 statusfile=/tmp/notifyfifo.$$
+
+#Check if Node Manager is up and running by inspecting logs
 mkfifo "${statusfile}" || exit 1
 {
     # run tail in the background so that the shell can kill tail when notified that grep has exited
@@ -69,13 +66,12 @@ mkfifo "${statusfile}" || exit 1
         echo "Node manager is running"
     echo >${statusfile}
 }
-# clean up
+# clean up temporary files
 rm "${statusfile}"
+
+#Start OHS component only if Node Manager is up
 if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
 echo "Node manager running, hence starting OHS server"
 ${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/start-ohs.py
 echo "OHS server has been started "
 fi
-
-#Display the NM logs and server logs
-tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.out
