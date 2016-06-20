@@ -39,7 +39,7 @@
 #
 # Pull Oracle Linux 7 base image
 # -----------------------------------
-FROM oraclelinux:latest
+FROM oracle/jdk:8
 
 # Maintainer
 # ------------------------------------
@@ -47,18 +47,15 @@ MAINTAINER Hemastuti Baruah <hemastuti.baruah@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # ----------------------------------------------
-ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
-    OHS_PKG=fmw_12.2.1.0.0_ohs_linux64_Disk1_1of1.zip \
+ENV OHS_PKG=fmw_12.2.1.0.0_ohs_linux64_Disk1_1of1.zip \
     OHS_BIN=fmw_12.2.1.0.0_ohs_linux64.bin \
-    JAVA_HOME=/usr/java/default \
     ORACLE_HOME=/u01/oracle/ohssa \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \ 
-    PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/ohssa/oracle_common/common/bin
 
 # Copy packages to the new drive
 # -------------------------------------------------------
 COPY $OHS_PKG install.file oraInst.loc /u01/
-ADD $JAVA_PKG /usr/java/
 
 # Install OL7 required packages. Refer FMW 12.2.1 System requirements guide for complete list of packages
 # Change the open file limits and kernel parameters that need changing
@@ -77,11 +74,10 @@ RUN yum install -y \
 # Install and configure Oracle JDK
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
-RUN mv $(ls -1 -d /usr/java/*) $JAVA_HOME && \
-    cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
-    chown oracle:oracle -R /u01 && cd - && \
+RUN cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
+    chown oracle:oracle -R /u01 && \
     su -c "/u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
-    rm $FMW_JAR $FMW_PKG oraInst.loc install.file
+    rm $FMW_JAR $FMW_PKG /u01/oraInst.loc /u01/install.file
 
 USER oracle
 WORKDIR /u01/oracle/

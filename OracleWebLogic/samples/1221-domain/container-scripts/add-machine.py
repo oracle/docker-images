@@ -9,7 +9,7 @@
 import os
 import socket
 
-execfile('commonfuncs.py')
+execfile('/u01/oracle/commonfuncs.py')
 
 # NodeManager details
 nmhost = os.environ.get('NM_HOST', socket.gethostbyname(hostname))
@@ -25,7 +25,7 @@ editMode()
 
 cd('/')
 cmo.createMachine(nmname)
-cd('/Machines/' + nmname +'/NodeManager/' + nmname)
+cd('/Machines/%s/NodeManager/%s' % (nmname, nmname))
 cmo.setListenPort(int(nmport))
 cmo.setListenAddress(nmhost)
 cmo.setNMType('Plain')

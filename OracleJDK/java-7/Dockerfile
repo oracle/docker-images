@@ -8,7 +8,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 ENV JAVA_PKG=server-jre-7u*-linux-x64.tar.gz \
     JAVA_HOME=/usr/java/default \
-    PATH=$PATH:$JAVA_HOME/bin
+    PATH=$PATH:/usr/java/default/bin
 
 ADD $JAVA_PKG /usr/java/
 

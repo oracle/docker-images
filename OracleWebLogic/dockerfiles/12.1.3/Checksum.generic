@@ -3,8 +3,3 @@
 #  - http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 # 
 8378fe936b476a6f4ca5efa465a435e3  fmw_12.1.3.0.0_wls.jar
-# Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
-#
-#  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
-#
-32f19f3a0fb872f363689c85321e0021  server-jre-8u77-linux-x64.tar.gz

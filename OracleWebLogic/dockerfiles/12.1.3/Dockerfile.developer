@@ -34,7 +34,7 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:latest
+FROM oracle/jdk:8 
 
 # Maintainer
 # ----------
@@ -42,18 +42,15 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
-    JAVA_HOME=/usr/java/default \
-    FMW_PKG=wls1213_dev_update3.zip \
+ENV FMW_PKG=wls1213_dev_update3.zip \
     MW_HOME=/u01/oracle \
     ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
 
 # Copy packages
 # -------------
 COPY $FMW_PKG /u01/
-ADD $JAVA_PKG /usr/java/
 
 # Setup filesystem and oracle user
 # Install and configure Oracle JDK
@@ -62,7 +59,6 @@ ADD $JAVA_PKG /usr/java/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    mv $(ls -1 -d /usr/java/*) $JAVA_HOME && \
     $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && \
     mv wls12130/* $ORACLE_HOME && rmdir wls12130 && \
     cd $ORACLE_HOME && \
