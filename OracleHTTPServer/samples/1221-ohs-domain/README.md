@@ -32,9 +32,9 @@ The values for WEBLOGIC_HOST, WEBLOGIC_PORT and WEBLOGIC_CLUSTER will be used fr
    - http://myhost:7001/console
 
 2. Two WLS Containers with Managed Servers running on 9001 and 9002 ports (inside same weblogic cluster).
-   Sample application is deployed on the cluster and  accessible via URLs
-   - http://myhost:9001/sample
-   - http://myhost:9002/sample
+   Some sample application is deployed on the cluster and  accessible via URLs
+   - http://myhost:9001/sample1
+   - http://myhost:9002/sample2
 
 ##### To configure Oracle WebLogic Server Proxy Plug-In inside OHS container
 

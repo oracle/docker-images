@@ -58,7 +58,9 @@ Verify you now have this image in place with
         $ docker images
 
 ### How to run container
-1. Edit the env.list file with relevant data from Weblogic container, cluster info etc.
+1. Edit the env.list file with relevant data from Weblogic container like host, port, cluster info etc.
+
+        For example:
 
         WEBLOGIC_HOST=myhost
         WEBLOGIC_PORT=7001
@@ -72,7 +74,8 @@ The values of WEBLOGIC_HOST, WEBLOGIC_PORT and WEBLOGIC_CLUSTER must be valid, e
         $ docker run -d --env-file ./env.list -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
 
 
-   The **configureWLSProxyPlugin.sh** script will be the default script to be run . This script
+   The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
+   This script will perform the following actions:
    - Starts the Node Manager and OHS server
    - Edits the mod_wl_ohs.conf.sample with values passed via env.list
    - Copies the mod_wl_ohs.conf file under INSTANCE home
@@ -82,9 +85,9 @@ The values of WEBLOGIC_HOST, WEBLOGIC_PORT and WEBLOGIC_CLUSTER must be valid, e
    - Now you can access the OHS index page @ http://localhost:7777/index.html
    - Static html page @ URL http://localhost:7777/helloWorld.html
 
-4. Weblogic Cluster : Now you will be able to access all URLS via the OHS Listen Port 7777, instead of using port 7001, 9001 and 9002
+4. Weblogic Cluster : Now you will be able to access all URLS via the OHS Listen Port 7777 (instead of using port 7001, 9001 and 9002)
     - http://myhost:7777/console
-    - http://myhost:7777/<application>
+    - http://myhost:7777/$application_url_endpoint
 
 # Copyright
 Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
