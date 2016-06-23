@@ -4,7 +4,7 @@ Sample Docker configurations to facilitate installation, configuration, and envi
 The certification of OHS on Docker does not require the use of any file presented in this repository.
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
-### Building Oracle JDK (Server JRE) base image
+## Building Oracle JDK (Server JRE) base image
 Before you can build these WebLogic images, you must download the Oracle Server JRE binary and drop in folder `OracleJDK/java-8` and build that image.
 
         $ cd OracleJDK/java-8
@@ -58,7 +58,9 @@ Verify you now have this image in place with
         $ docker images
 
 ### How to run container
-1. Edit the env.list file with relevant data from Weblogic container, cluster info etc.
+1. Edit the env.list file with relevant data from Weblogic container like Admin Server host, port, cluster info etc.
+
+        For example:
 
         WEBLOGIC_HOST=myhost
         WEBLOGIC_PORT=7001
@@ -72,7 +74,8 @@ The values of WEBLOGIC_HOST, WEBLOGIC_PORT and WEBLOGIC_CLUSTER must be valid, e
         $ docker run -d --env-file ./env.list -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
 
 
-   The **configureWLSProxyPlugin.sh** script will be the default script to be run . This script
+   The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
+   This script will perform the following actions:
    - Starts the Node Manager and OHS server
    - Edits the mod_wl_ohs.conf.sample with values passed via env.list
    - Copies the mod_wl_ohs.conf file under INSTANCE home
@@ -82,12 +85,9 @@ The values of WEBLOGIC_HOST, WEBLOGIC_PORT and WEBLOGIC_CLUSTER must be valid, e
    - Now you can access the OHS index page @ http://localhost:7777/index.html
    - Static html page @ URL http://localhost:7777/helloWorld.html
 
-4. Weblogic Cluster : Now you will be able to access all URLS via the OHS Listen Port 7777, instead of using port 7001, 9001 and 9002
-    - http://myhost:7777/console
-    - http://myhost:7777/<application>
-
-# Copyright
-Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+4. Weblogic Cluster : Now you will be able to access all URLS via the OHS Listen Port 7777
+    - Weblogic Console : http://myhost:7777/console
+    - Applications deployed on Weblogic Cluster : http://myhost:7777/$application_url_endpoint
 
 ## License
 To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
