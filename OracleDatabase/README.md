@@ -47,6 +47,10 @@ Once the container has been started you can connect to it just like to any other
 
 	sqlplus system/<your password>@//localhost:1521/ORCLCDB
 	sqlplus pdbadmin/<your password>@//localhost:1521/ORCLPDB1
+	
+The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
+
+	https://localhost:5500/em/
 
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
