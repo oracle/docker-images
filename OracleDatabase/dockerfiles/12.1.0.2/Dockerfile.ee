@@ -17,7 +17,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/oracle:12.1.0.2-ee . 
+#      $ docker build -t oracle/database:12.1.0.2-ee . 
 #
 # Pull base image
 # ---------------
@@ -38,6 +38,10 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp" \
     RUN_FILE="runOracle.sh"
+
+# Oracle password
+ARG ORACLE_PWD
+
 # Use second ENV so that variable get substituted
 ENV INSTALL_DIR=$ORACLE_BASE/install \
     PATH=$ORACLE_HOME/bin:$PATH
@@ -70,7 +74,8 @@ RUN sed -i -e "s|###ORACLE_EDITION###|EE|g" $INSTALL_DIR/$INSTALL_RSP &&        
     sed -i -e "s|###ORACLE_BASE###|$ORACLE_BASE|g" $INSTALL_DIR/$INSTALL_RSP && \
     sed -i -e "s|###ORACLE_HOME###|$ORACLE_HOME|g" $INSTALL_DIR/$INSTALL_RSP && \
     sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $INSTALL_DIR/$CONFIG_RSP &&    \
-    sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $INSTALL_DIR/$CONFIG_RSP
+    sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $INSTALL_DIR/$CONFIG_RSP &&    \
+    sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $INSTALL_DIR/$CONFIG_RSP
 
 # Start installation
 # -------------------

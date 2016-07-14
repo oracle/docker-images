@@ -16,7 +16,7 @@
 # -----------------------
 # Put the downloaded file in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/oracle:11.2.0.2-xe . 
+#      $ docker build -t oracle/database:11.2.0.2-xe . 
 #
 # IMPORTANT
 # ---------
@@ -50,9 +50,8 @@ COPY $CONFIG_RSP $INSTALL_DIR/
 
 # Update yum
 # ----------
-RUN yum -y update && \
-    yum -y install unzip libaio bc initscripts net-tools && \
-    rm -rf /var/cache/yum/*
+RUN yum -y install unzip libaio bc initscripts net-tools && \
+    yum clean all
     
 WORKDIR $INSTALL_DIR
 
@@ -81,7 +80,8 @@ RUN echo "DEFAULT_SERVICE_LISTENER = ($ORACLE_SID) \
 " >> $ORACLE_HOME/network/admin/listener.ora
 RUN echo "DIAG_ADR_ENABLED = off"  >> $ORACLE_HOME/network/admin/listener.ora;
 
-RUN echo "EXEC DBMS_XDB.SETLISTENERLOCALACCESS(FALSE);" | sqlplus SYSTEM/oracle@//`hostname`:1521/XE
+RUN /etc/init.d/oracle-xe start && \
+    echo "EXEC DBMS_XDB.SETLISTENERLOCALACCESS(FALSE);" | sqlplus SYSTEM/oracle@//localhost:1521/XE
 
 WORKDIR $HOME
 RUN rm -rf $INSTALL_DIR

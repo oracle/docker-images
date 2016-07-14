@@ -135,7 +135,7 @@ PDBNAME = "###ORACLE_PDB###"
 # Default value : None
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-PDBADMINPASSWORD = "oracle"
+PDBADMINPASSWORD = "###ORACLE_PWD###"
 
 #-----------------------------------------------------------------------------
 # Name          : TEMPLATENAME
@@ -155,7 +155,7 @@ TEMPLATENAME = "General_Purpose.dbc"
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-SYSPASSWORD = "oracle"
+SYSPASSWORD = "###ORACLE_PWD###"
 
 #-----------------------------------------------------------------------------
 # Name          : SYSTEMPASSWORD
@@ -165,7 +165,7 @@ SYSPASSWORD = "oracle"
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-SYSTEMPASSWORD = "oracle"
+SYSTEMPASSWORD = "###ORACLE_PWD###"
 
 #-----------------------------------------------------------------------------
 # Name          : SERVICEUSERPASSWORD
@@ -207,7 +207,7 @@ EMEXPRESSPORT = "5500"
 # Mandatory     : Yes, if EMCONFIGURATION is specified or
 #                 the value of RUNCVUCHECKS is TRUE
 #-----------------------------------------------------------------------------
-DBSNMPPASSWORD = "oracle"
+DBSNMPPASSWORD = "###ORACLE_PWD###"
 
 #-----------------------------------------------------------------------------
 # Name          : STORAGETYPE

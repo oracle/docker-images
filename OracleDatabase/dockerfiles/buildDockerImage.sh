@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-p] [-i]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
@@ -21,6 +21,7 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
+   -p: Password for Oracle Database admin accounts (will be generated if obmitted)
    -i: Ignores the MD5 checksums
 
 * select one edition only: -e, -s, or -x
@@ -53,8 +54,10 @@ EXPRESS=0
 VERSION="12.1.0.2"
 SKIPMD5=0
 DOCKEROPS=""
+ORACLE_PWD=""
+GENERATED_PWD=1
 
-while getopts "hesxiv:" optname; do
+while getopts "hesxivp:" optname; do
   case "$optname" in
     "h")
       usage
@@ -73,6 +76,10 @@ while getopts "hesxiv:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "p")
+      ORACLE_PWD="$OPTARG"
+      GENERATED_PWD=0
       ;;
     *)
     # Should not occur
@@ -96,8 +103,13 @@ else
   DOCKEROPS="--shm-size=1G";
 fi
 
+# Is password omitted?
+if [ "$GENERATED_PWD" -eq 1 ]; then
+   ORACLE_PWD="`pwmake 64`";
+fi
+
 # Oracle Database Image Name
-IMAGE_NAME="oracle/oracle:$VERSION-$EDITION"
+IMAGE_NAME="oracle/database:$VERSION-$EDITION"
 
 # Go into version folder
 cd $VERSION
@@ -139,7 +151,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
+docker build --build-arg ORACLE_PWD=$ORACLE_PWD --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
   echo "There was an error building the image."
   exit 1
 }
@@ -153,10 +165,20 @@ cat << EOF
   Oracle Database Docker Image for '$EDITION' version $VERSION is ready to be extended: 
     
     --> $IMAGE_NAME
-
-  Build completed in $BUILD_ELAPSED seconds.
+    
+EOF
+  if [ "$GENERATED_PWD" -eq 1 ]; then
+    cat <<EOF
+  GENERATED PASSWORD (SYS, SYSTEM, PDBADMIN): $ORACLE_PWD
 
 EOF
+  fi
+
+cat << EOF
+  Build completed in $BUILD_ELAPSED seconds.
+  
+EOF
+
 else
   echo "Oracle Database Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
