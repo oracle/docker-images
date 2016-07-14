@@ -1,6 +1,6 @@
 Oracle Database on Docker
 ===============
-Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users.
+Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Database Online Documentation](http://docs.oracle.com/database/121/index.htm).
 
 ## How to build and run
 This project offers sample Dockerfiles for both Oracle Database 12c (12.1.0.2) Enterprise Edition and Standard Edition. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
@@ -32,7 +32,7 @@ Before you build the image make sure that you have provided the installation bin
 	
 	Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 
-**IMPORTANT:** The resulting images will be an newly installed Oracle Database. You must extend the image with your own Dockerfile and create the users and tablespaces that you may need.
+**IMPORTANT:** The resulting images will be an newly installed Oracle Database. You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
 ### Running Oracle Database in a Docker container
 To run your Oracle Database Docker image just use the **docker run** command as follows:
@@ -42,6 +42,11 @@ To run your Oracle Database Docker image just use the **docker run** command as 
 There are two ports that are exposed in this image:
 * 1521 which is the port to connect to the Oracle Database.
 * 5500 which is the port of Oracle Enterprise Manager Express.
+
+Once the container has been started you can connect to it just like to any other database:
+
+	sqlplus system/<your password>@//localhost:1521/ORCLCDB
+	sqlplus pdbadmin/<your password>@//localhost:1521/ORCLPDB1
 
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
