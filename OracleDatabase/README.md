@@ -14,7 +14,7 @@ Before you build the image make sure that you have provided the installation bin
 
 	[oracle@localhost dockerfiles]$ ./buildDockerImage.sh -h
 	
-	Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
+	Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-p] [-i]
 	Builds a Docker Image for Oracle Database.
 	
 	Parameters:
@@ -23,6 +23,7 @@ Before you build the image make sure that you have provided the installation bin
 	   -e: creates image based on 'Enterprise Edition'
 	   -s: creates image based on 'Standard Edition 2'
 	   -x: creates image based on 'Express Edition'
+	   -p: Password for Oracle Database admin accounts (will be generated if omitted)
 	   -i: Ignores the MD5 checksums
 	
 	* select one edition only: -e, -s, or -x
@@ -32,6 +33,15 @@ Before you build the image make sure that you have provided the installation bin
 	Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will be an newly installed Oracle Database. You must extend the image with your own Dockerfile and create the users and tablespaces that you may need.
+
+### Running Oracle Database in a Docker container
+To run your Oracle Database Docker image just use the **docker run** command as follows:
+
+	docker run -p 1521:1521 -p 5500:5500 oracle/database:12.1.0.2-ee
+
+There are two ports that are exposed in this image:
+* 1521 which is the port to connect to the Oracle Database.
+* 5500 which is the port of Oracle Enterprise Manager Express.
 
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
