@@ -23,8 +23,8 @@ Before you build the image make sure that you have provided the installation bin
 	   -e: creates image based on 'Enterprise Edition'
 	   -s: creates image based on 'Standard Edition 2'
 	   -x: creates image based on 'Express Edition'
-	   -p: Password for Oracle Database admin accounts (will be generated if omitted)
-	   -i: Ignores the MD5 checksums
+	   -p: password for database admin accounts (it will be generated if omitted)
+	   -i: ignores the MD5 checksums
 	
 	* select one edition only: -e, -s, or -x
 	
@@ -43,11 +43,19 @@ There are two ports that are exposed in this image:
 * 1521 which is the port to connect to the Oracle Database.
 * 5500 which is the port of Oracle Enterprise Manager Express.
 
+The admin accounts created are:
+* system (SYSDBA for ORCLCDB)
+* pdbadmin (ORCLPDB1)
+
 Once the container has been started you can connect to it just like to any other database:
 
 	sqlplus system/<your password>@//localhost:1521/ORCLCDB
 	sqlplus pdbadmin/<your password>@//localhost:1521/ORCLPDB1
 	
+You may use the same Docker image to run `sqlplus`, for example:
+
+        docker run --rm -ti oracle/database:12.1.0.2-ee sqlplus pdbadmin/<yourpassword>@//<db-container-ip>:1521/ORCLPDB1
+
 The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
 
 	https://localhost:5500/em/
