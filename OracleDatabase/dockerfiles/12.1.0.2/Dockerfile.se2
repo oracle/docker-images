@@ -48,11 +48,8 @@ ENV INSTALL_DIR=$ORACLE_BASE/install \
 
 # Copy binaries
 # -------------
-COPY $INSTALL_FILE_1 $INSTALL_DIR/
-COPY $INSTALL_FILE_2 $INSTALL_DIR/
-COPY $INSTALL_RSP    $INSTALL_DIR/
-COPY $CONFIG_RSP     $INSTALL_DIR/
-COPY $RUN_FILE       $ORACLE_BASE/
+COPY $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $CONFIG_RSP $INSTALL_DIR/
+COPY $RUN_FILE $ORACLE_BASE/
 
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
@@ -97,17 +94,17 @@ WORKDIR /home/oracle
 
 # Set environment variables for oracle user
 RUN echo "export ORACLE_UNQNAME=$ORACLE_SID \
-export ORACLE_BASE=$ORACLE_BASE \
-export ORACLE_HOME=$ORACLE_HOME \
-export ORACLE_SID=$ORACLE_SID \
-export PATH=\$ORACLE_HOME/bin:\$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
-export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib \
-export CLASSPATH=\$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib \
-" >> $HOME/.bashrc && \
-source $HOME/.bashrc
+    export ORACLE_BASE=$ORACLE_BASE \
+    export ORACLE_HOME=$ORACLE_HOME \
+    export ORACLE_SID=$ORACLE_SID \
+    export PATH=\$ORACLE_HOME/bin:\$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
+    export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib \
+    export CLASSPATH=\$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib \
+    " >> $HOME/.bashrc && \
+    source $HOME/.bashrc
 
-RUN mkdir -p $ORACLE_HOME/network/admin
-RUN echo "NAME.DIRECTORY_PATH= {TNSNAMES, EZCONNECT, HOSTNAME}" > $ORACLE_HOME/network/admin/sqlnet.ora
+RUN mkdir -p $ORACLE_HOME/network/admin && \
+    echo "NAME.DIRECTORY_PATH= {TNSNAMES, EZCONNECT, HOSTNAME}" > $ORACLE_HOME/network/admin/sqlnet.ora
 
 # Listener.ora
 RUN echo "LISTENER = \
@@ -120,17 +117,17 @@ RUN echo "LISTENER = \
 \
 " > $ORACLE_HOME/network/admin/listener.ora
 
-RUN echo "DEDICATED_THROUGH_BROKER_LISTENER=ON"  >> $ORACLE_HOME/network/admin/listener.ora
-RUN echo "DEFAULT_SERVICE_LISTENER = ($ORACLE_SID)" >> $ORACLE_HOME/network/admin/listener.ora
-RUN echo "DIAG_ADR_ENABLED = off"  >> $ORACLE_HOME/network/admin/listener.ora;
+RUN echo "DEDICATED_THROUGH_BROKER_LISTENER=ON"  >> $ORACLE_HOME/network/admin/listener.ora && \
+    echo "DEFAULT_SERVICE_LISTENER = ($ORACLE_SID)" >> $ORACLE_HOME/network/admin/listener.ora && \
+    echo "DIAG_ADR_ENABLED = off"  >> $ORACLE_HOME/network/admin/listener.ora;
 
 # Start LISTENER and run DBCA
 RUN bash -lc "lsnrctl start" && \
     dbca -silent -responseFile $INSTALL_DIR/$CONFIG_RSP || \
     cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log
 
-RUN echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" >> $ORACLE_HOME/network/admin/tnsnames.ora
-RUN echo "$ORACLE_PDB= \
+RUN echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" >> $ORACLE_HOME/network/admin/tnsnames.ora && \
+    echo "$ORACLE_PDB= \
   (DESCRIPTION = \
     (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521)) \
     (CONNECT_DATA = \
@@ -144,8 +141,7 @@ RUN echo "startup;" | sqlplus / as sysdba && \
     echo "ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;" | sqlplus / as sysdba
 
 RUN rm -rf $INSTALL_DIR
-EXPOSE 1521
-EXPOSE 5500
+EXPOSE 1521 5500
     
 # Define default command to start Oracle Database. 
 CMD $ORACLE_BASE/runOracle.sh
