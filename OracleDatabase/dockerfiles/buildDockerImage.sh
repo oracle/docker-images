@@ -21,8 +21,8 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
-   -p: Password for Oracle Database admin accounts (will be generated if omitted)
-   -i: Ignores the MD5 checksums
+   -p: password for database admin accounts (it will be generated if omitted)
+   -i: ignores the MD5 checksums
 
 * select one edition only: -e, -s, or -x
 
