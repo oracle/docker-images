@@ -57,7 +57,7 @@ DOCKEROPS=""
 ORACLE_PWD=""
 GENERATED_PWD=1
 
-while getopts "hesxivp:" optname; do
+while getopts "hesxiv:p:" optname; do
   case "$optname" in
     "h")
       usage
