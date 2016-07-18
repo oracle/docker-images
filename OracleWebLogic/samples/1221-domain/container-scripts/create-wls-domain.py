@@ -11,11 +11,19 @@ domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
 admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD")
 cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
-domain_path  = '/u01/oracle/user_projects/domains/' + domain_name
+domain_path  = '/u01/oracle/user_projects/domains/%s' % domain_name
+
+print('domain_name : [%s]' % domain_name);
+print('admin_port  : [%s]' % admin_port);
+print('cluster_name: [%s]' % cluster_name);
+print('domain_path : [%s]' % domain_path);
 
 # Open default domain template
 # ======================
 readTemplate("/u01/oracle/wlserver/common/templates/wls/wls.jar")
+
+set('Name', domain_name)
+setOption('DomainName', domain_name)
 
 # Disable Admin Console
 # --------------------
@@ -29,34 +37,8 @@ set('ListenPort', admin_port)
 
 # Define the user password for weblogic
 # =====================================
-cd('/Security/' + domain_name + '/User/weblogic')
+cd('/Security/%s/User/weblogic' % domain_name)
 cmo.setPassword(admin_pass)
-
-# Create a JMS Server
-# ===================
-cd('/')
-create('myJMSServer', 'JMSServer')
-
-# Create a JMS System resource
-# ============================
-cd('/')
-create('myJmsSystemResource', 'JMSSystemResource')
-cd('JMSSystemResource/myJmsSystemResource/JmsResource/NO_NAME_0')
-
-# Create a JMS Queue and its subdeployment
-# ========================================
-myq = create('myQueue','Queue')
-myq.setJNDIName('jms/myqueue')
-myq.setSubDeploymentName('myQueueSubDeployment')
-
-cd('/JMSSystemResource/myJmsSystemResource')
-create('myQueueSubDeployment', 'SubDeployment')
-
-# Target resources to the servers 
-# ===============================
-cd('/')
-assign('JMSServer', 'myJMSServer', 'Target', 'AdminServer')
-assign('JMSSystemResource.SubDeployment', 'myJmsSystemResource.myQueueSubDeployment', 'Target', 'myJMSServer')
 
 # Write the domain and close the domain template
 # ==============================================
@@ -72,8 +54,8 @@ set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
 set('LogLevel', 'FINEST')
 
-# Set the Node Manager user name and password
-cd('/SecurityConfiguration/' + domain_name)
+# Set the Node Manager user name and password (domain name will change after writeDomain)
+cd('/SecurityConfiguration/base_domain')
 set('NodeManagerUsername', 'weblogic')
 set('NodeManagerPasswordEncrypted', admin_pass)
 
@@ -82,7 +64,7 @@ set('NodeManagerPasswordEncrypted', admin_pass)
 cd('/')
 create(cluster_name, 'Cluster')
 
-cd('/Clusters/' + cluster_name)
+cd('/Clusters/%s' % cluster_name)
 cmo.setClusterMessagingMode('unicast')
 
 # Write Domain

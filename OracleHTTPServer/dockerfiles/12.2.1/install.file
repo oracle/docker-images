@@ -1,0 +1,21 @@
+# LICENSE CDDL 1.0 + GPL 2.0
+#
+# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+[ENGINE]
+
+#DO NOT CHANGE THIS.
+Response File Version=1.0.0.0.0
+
+[GENERIC]
+
+#Set this to true if you wish to skip software updates
+DECLINE_AUTO_UPDATES=true
+
+#Set this variable value to the Installation Type selected as either Standalone HTTP Server (Managed independently of WebLogic server) OR Colocated HTTP Server (Managed through WebLogic server)
+INSTALL_TYPE=Standalone HTTP Server (Managed independently of WebLogic server)
+
+#Set this to true if you wish to decline the security updates. Setting this to true and providing empty string for My Oracle Support username will ignore the Oracle Configuration Manager configuration
+DECLINE_SECURITY_UPDATES=true
+
+#Set this to true if My Oracle Support Password is specified
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false

@@ -35,7 +35,7 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:latest
+FROM oracle/jdk:8 
 
 # Maintainer
 # ----------
@@ -43,16 +43,14 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build
 # ---------------------------------------------
-ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
-    JAVA_HOME=/usr/java/default \
-    FMW_PKG=fmw_12.1.3.0.0_wls.jar \
+ENV FMW_PKG=fmw_12.1.3.0.0_wls.jar \
+    ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
 
 # Copy packages and files
 # -----------------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
-ADD $JAVA_PKG /usr/java/
 
 # Setup required packages, filesystem, and oracle user.
 # Install and configure Oracle JDK
@@ -61,13 +59,11 @@ ADD $JAVA_PKG /usr/java/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    ln -s $(ls -1 /usr/java) /usr/java/default && \
-    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME" - oracle && \
+    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
     chown oracle:oracle -R /u01 && \
-    rm /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file && \
-    yum -y update && rm -rf /var/cache/yum/*
+    rm /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
-WORKDIR /u01/oracle/
+WORKDIR $ORACLE_HOME
 USER oracle
 
 # Define default command to start bash. 

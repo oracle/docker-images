@@ -1,6 +1,0 @@
-# Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
-# Drop the downloaded file in the same folder as this .download file (along with the corresponding Dockerfile)
-#
-#  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
-#
-32f19f3a0fb872f363689c85321e0021  server-jre-8u77-linux-x64.tar.gz

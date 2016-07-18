@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-d | -g | -i] [-s]
+Usage: buildDockerImage.sh -v [version] [-d | -g | -i] [-s] [-c]
 Builds a Docker Image for Oracle WebLogic.
   
 Parameters:
@@ -21,6 +21,7 @@ Parameters:
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
    -i: creates image based on 'infrastructure' distribution
+   -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
 
 * select one distribution only: -d, -g, or -i
@@ -52,7 +53,8 @@ GENERIC=0
 INFRASTRUCTURE=0
 VERSION="12.2.1"
 SKIPMD5=0
-while getopts "hsdgiv:" optname; do
+NOCACHE=true
+while getopts "hcsdgiv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -71,6 +73,9 @@ while getopts "hsdgiv:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "c")
+      NOCACHE=false
       ;;
     *)
     # Should not occur
@@ -136,7 +141,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$DISTRIBUTION . || {
+docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$DISTRIBUTION . || {
   echo "There was an error building the image."
   exit 1
 }

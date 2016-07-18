@@ -1,56 +1,70 @@
-# Oracle Coherence 12c Docker Image
+Oracle Coherence Docker Image
+===============
+This section is about using [Oracle Coherence](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html) in Docker. The purpose of the Docker images described here is to facilitate the setup of development and integration testing environments for developers. This project includes example [dockerfiles](dockerfiles/12.2.1) and documentation for Coherence 12.2.1 based on Oracle Linux and Oracle JDK 8.
 
-This is a Dockerfile for [Oracle Coherence 12c](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html). The purpose of this Docker container is to facilitate the setup of development and integration testing environments for developers.
-
-This image uses the Standalone Distribution of Coherence 12c.
-
-**IMPORTANT**: Oracle **does not support Coherence on Docker**, including but not limited to Development, Integration, and Production environments.
+The certification of Coherence on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## Oracle Linux Base Image
 For more information and documentation, read the [Docker Images from Oracle Linux](https://registry.hub.docker.com/_/oraclelinux/) page.
 
 ### Standalone Distribution
-Fore more information on the Coherence 12c Standalone Distribution, visit [Coherence 12.1.3 Documentation](http://docs.oracle.com/middleware/1213/coherence/index.html).
+For more information on the Coherence Standalone Distribution, visit [Coherence 12.2.1 Documentation](http://docs.oracle.com/middleware/1221/coherence/index.html).
+
+## Building Oracle JDK (Server JRE) base image
+Before you can build these Oracle Coherence images you must have built the required Oracle Java 8 base image (see [Oracle JDK images](../OracleJDK/))
 
 ## How to Build
 
 Follow this procedure:
 
-1. Checkout the GitHub weblogic-docker repository
+1. Checkout the GitHub Oracle Docker Images repository
 
-	$ git checkout git@github.com:oracle/docker-images.git
+	`$ git checkout git@github.com:oracle/docker-images.git`
 
-2. Go to the **OracleCoherence** folder
+2. Go to the **OracleCoherence/dockerfiles/12.2.1** folder
 
-	$ cd OracleCoherence 
+        $ cd OracleCoherence/dockerfiles/12.2.1
 
-3. [Download](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) and drop the Oracle JDK 8u25 RPM 64bit file **jdk-8u25-linux-x64.rpm** in this folder
+3. [Download](http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html) and drop the Coherence distribution file of your choice into this folder. The build script supports either building an image from either the Standalone Installer, **fmw_12.2.1.0.0_coherence_Disk1_1of1.zip** or the Quick Installer **fmw_12.2.1.0.0_coherence_quick_Disk1_1of1.zip**
 
-	Linux x64	135.6 MB  	jdk-8u25-linux-x64.rpm
+4. Execute the build script `buildDockerImage.sh`.
 
-4. [Download](http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html) and drop the Coherence 12c Standalone Distribution file **fmw_12.1.3.0.0_coherence_Disk1_1of1.zip** in this folder
+        $ sh buildDockerImage.sh
 
-	Coherence Stand-Alone Install  (87 MB) - fmw_12.1.3.0.0_coherence_Disk1_1of1.zip
-
-5. Execute the build script as **root**
+    or if your Docker client requires commands to be run as root you can run
 
         $ sudo sh buildDockerImage.sh
 
-## Booting up Oracle Coherence 12c on Docker
+    The script will determine which installer and image it is building from the installer file that is in the working directory. If both the Standalone and Quick installers are present then the default will be to use the Standalone installer. You can specify which installer to use with a script argument. To run the Standalone installer use:
 
-Along with the Dockerfile, two scripts are also provided to help you run Cache Servers, and the Coherence Console (without local storage).
+        $ sh buildDockerImage.sh -s
 
-Start a CacheServer:
-	$ sudo sh dockCacheServer.sh [fullpath dir w/ tangosol-coherence-override.xml and cache configs]
+    Or to run the Quick installer use:
 
-Start Coherence Console:
-	$ sudo sh dockCoherenceConsole.sh [fullpath dir w/ tangosol-coherence-override.xml and cache configs]
+        $ sh buildDockerImage.sh -q
+
+    If you are using a later version of Coherence than 12.2.1.0.0 then you can use the `-v` parameter to specify a version. For example if you are using `12.2.1.1.0` you would run:
+
+        $ sh buildDockerImage.sh -v 12.2.1.1.0
+
+5. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example if the Standalone installer is used the image will be `oracle/coherence:12.2.1.0.0-standalone`
+
+## Documentation
+Documentation covering the different aspects of running Oracle Coherence in Docker containers is covered in the [docs](docs) section.
+
+1. [Setup](docs/0.setup) - Setting up a demo Docker Machine environment
+2. [Clustering](docs/1.clustering) - Running Coherence Clusters in Docker
+3. [Coherence Extend](docs/2.extend) - Running Coherence Extend in Docker
+4. [Federated Caching](docs/3.federation) - Federated Caching in Docker
+5. [Disc Based Functionality](docs/4.disc_based) - Elastic Data and Persistence in Docker
+6. [JMX Monitoring](docs/5.monitoring) - Using JMX in Docker
+
 
 ## Issues
 If you find any issues with this Docker project, please report through the [GitHub Issues page](https://github.com/oracle/docker-images/issues).
 
 ## License
-To download and run Coherence 12c Distribution regardless of inside or outside a Docker container, and regardless of which distribution, you must agree and accept the [OTN Standard License Terms](http://www.oracle.com/technetwork/licenses/standard-license-152015.html).
+To download and run Coherence Distribution regardless of inside or outside a Docker container, and regardless of which distribution, you must agree and accept the [OTN Standard License Terms](http://www.oracle.com/technetwork/licenses/standard-license-152015.html).
 
 To download and run Oracle JDK regardless of inside or outside a Docker container, you must agree and accept the [Oracle Binary Code License Agreement for Java SE](http://www.oracle.com/technetwork/java/javase/terms/license/index.html).
 
