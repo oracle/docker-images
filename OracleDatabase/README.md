@@ -76,6 +76,11 @@ Once the container has been started you can connect to it just like to any other
 
 	sqlplus system/<your password>@//localhost:1521/XE
 
+### Running SQL*Plus in a Docker container
+You may use the same Docker image you used to start the database, to run `sqlplus` to connect to it, for example:
+
+        docker run --rm -ti oracle/database:12.1.0.2-ee sqlplus pdbadmin/<yourpassword>@//<db-container-ip>:1521/ORCLPDB1
+
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
