@@ -57,7 +57,7 @@ DOCKEROPS=""
 ORACLE_PWD=""
 GENERATED_PWD=1
 
-while getopts "hesxivp:" optname; do
+while getopts "hesxiv:p:" optname; do
   case "$optname" in
     "h")
       usage
@@ -166,15 +166,8 @@ cat << EOF
     
     --> $IMAGE_NAME
     
-EOF
-  if [ "$GENERATED_PWD" -eq 1 ]; then
-    cat <<EOF
-  GENERATED PASSWORD (SYS, SYSTEM, PDBADMIN): $ORACLE_PWD
+  ORACLE PASSWORD (SYS, SYSTEM, PDBADMIN): $ORACLE_PWD
 
-EOF
-  fi
-
-cat << EOF
   Build completed in $BUILD_ELAPSED seconds.
   
 EOF
