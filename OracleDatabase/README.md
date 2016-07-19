@@ -85,6 +85,9 @@ Another option is to use `docker exec` and run `sqlplus` from within the same co
 
         docker exec -ti <container-id> sqlplus pdbadmin@ORCLPDB1
 
+## Support
+Currently Oracle Database on Docker is **NOT** supported by Oracle. Use these files at your own discretion.
+
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
