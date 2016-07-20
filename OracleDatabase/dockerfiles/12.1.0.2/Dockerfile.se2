@@ -37,6 +37,7 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_FILE_2="linuxamd64_12102_database_se2_2of2.zip" \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp" \
+    PERL_INSTALL_FILE="installPerl.sh" \
     RUN_FILE="runOracle.sh"
 
 # Oracle password
@@ -48,7 +49,7 @@ ENV INSTALL_DIR=$ORACLE_BASE/install \
 
 # Copy binaries
 # -------------
-COPY $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $CONFIG_RSP $INSTALL_DIR/
+COPY $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $CONFIG_RSP $PERL_INSTALL_FILE $INSTALL_DIR/
 COPY $RUN_FILE $ORACLE_BASE/
 
 # Setup filesystem and oracle user
@@ -59,7 +60,7 @@ RUN mkdir -p $ORACLE_BASE && \
     groupadd -g 501 oinstall && \
     useradd -d /home/oracle -g dba -G oinstall,dba -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    yum -y install oracle-rdbms-server-12cR1-preinstall unzip && \
+    yum -y install oracle-rdbms-server-12cR1-preinstall unzip wget tar && \
     yum clean all && \
     chown -R oracle:dba $ORACLE_BASE
 
@@ -84,6 +85,11 @@ RUN unzip $INSTALL_FILE_1 && \
     rm $INSTALL_FILE_2 &&    \
     $INSTALL_DIR/database/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_DIR/$INSTALL_RSP -ignoresysprereqs -ignoreprereq && \
     rm -rf $INSTALL_DIR/database
+
+# Check whether Perl is working
+RUN chmod u+x $INSTALL_DIR/installPerl.sh && \
+    $ORACLE_HOME/perl/bin/perl -v || \ 
+    $INSTALL_DIR/installPerl.sh
 
 USER root
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
