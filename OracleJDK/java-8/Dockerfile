@@ -6,7 +6,7 @@ FROM oraclelinux:latest
 
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
-ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
+ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz.download \
     JAVA_HOME=/usr/java/default \
     PATH=$PATH:/usr/java/default/bin
 
