@@ -1,5 +1,5 @@
 Example of Image with Starter set data
-================================
+======================================
 This Dockerfile extends the Oracle Database image by creating a sample starter set.
 
 The starterset.sql file is copied into the image which contains the commands for creating the starter set.
@@ -14,7 +14,7 @@ To start the containerized Oracle Database, run:
 
         docker run --name starterset -p 1521:1521 example/starterset
 
-After the container is up and running, you can connect with the TEST user and query the table COOL_PEOPLE:
+After the container is up and running you can connect with the TEST user and query the table COOL_PEOPLE:
 
         sql test/test@//localhost:1521/ORCLPDB1
 
