@@ -37,5 +37,5 @@ RUN bash -lc "lsnrctl start" && \
 EXPOSE 1521 5500
     
 # Define default command to start Oracle Database. 
-CMD $ORACLE_BASE/runOracle.sh
+CMD $ORACLE_BASE/$RUN_FILE
 
