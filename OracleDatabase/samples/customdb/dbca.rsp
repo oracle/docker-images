@@ -1,0 +1,272 @@
+##############################################################################
+##                                                                          ##
+##                            DBCA response file                            ##
+##                            ------------------                            ##
+## Copyright   1998, 2014, Oracle Corporation. All Rights Reserved.         ##
+##                                                                          ##
+## Specify values for the variables listed below to customize Oracle        ##
+## Database Configuration installation.                                     ##
+##                                                                          ##
+## Each variable is associated with a comment. The comment identifies the   ##
+## variable type.                                                           ##
+##                                                                          ##
+## Please specify the values in the following format :                      ##
+##          Type       :  Example                                           ##
+##          String     :  "<value>"                                         ##
+##          Boolean    :  True or False                                     ##
+##          Number     :  <numeric value>                                   ##
+##          StringList :  {"<value1>","<value2>"}                           ##
+##                                                                          ##
+## Examples :                                                               ##
+##     1. dbca -progress_only -responseFile <response file>                 ##
+##        Display a progress bar depicting progress of database creation    ##
+##        process.                                                          ##
+##                                                                          ##
+##     2. dbca -silent -responseFile <response file>                        ##
+##        Creates database silently. No user interface is displayed.        ##
+##                                                                          ##
+##     3. dbca -silent -createDatabase -cloneTemplate                       ##
+##			 -responseFile <response file>                      ##
+##        Creates database silently with clone template. The template in    ##
+##	  responsefile is a clone template. 			            ##
+##                                                                          ##
+##     4. dbca -silent -deleteDatabase -responseFile <response file>        ##
+##        Deletes database silently.                                        ##
+##############################################################################
+
+#-----------------------------------------------------------------------------
+# GENERAL section is required for all types of database creations.
+#-----------------------------------------------------------------------------
+[GENERAL]
+
+#-----------------------------------------------------------------------------
+# Name          : RESPONSEFILE_VERSION
+# Datatype      : String
+# Description   : Version of the database to create
+# Valid values  : "12.1.0"
+# Default value : None
+# Mandatory     : Yes
+#-----------------------------------------------------------------------------
+RESPONSEFILE_VERSION = "12.1.0"
+
+#-----------------------------------------------------------------------------
+# Name          : OPERATION_TYPE
+# Datatype      : String
+# Description   : Type of operation
+# Valid values  : "createDatabase" \ "createTemplateFromDB" \ "createCloneTemplate" \ "deleteDatabase" \ "configureDatabase" \ "addInstance" (RAC-only) \ "deleteInstance" (RAC-only) \ "createPluggableDatabase" \ "unplugDatabase" \ "deletePluggableDatabase" \ "configurePluggableDatabase"
+# Default value : None
+# Mandatory     : Yes
+#-----------------------------------------------------------------------------
+OPERATION_TYPE = "createDatabase"
+
+#-----------------------*** End of GENERAL section ***------------------------
+
+#-----------------------------------------------------------------------------
+# CREATEDATABASE section is used when OPERATION_TYPE is defined as "createDatabase". 
+#-----------------------------------------------------------------------------
+[CREATEDATABASE]
+
+#-----------------------------------------------------------------------------
+# Name          : GDBNAME
+# Datatype      : String
+# Description   : Global database name of the database
+# Valid values  : <db_name>.<db_domain> - when database domain isn't NULL
+#                 <db_name>             - when database domain is NULL
+# Default value : None
+# Mandatory     : Yes
+#-----------------------------------------------------------------------------
+GDBNAME = "###ORACLE_SID###"
+
+#-----------------------------------------------------------------------------
+# Name          : DATABASECONFTYPE
+# Datatype      : String
+# Description   : database conf type as Single Instance, Real Application Cluster or Real Application Cluster One Nodes database
+# Valid values  : SI\RAC\RACONENODE
+# Default value : SI
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+#DATABASECONFTYPE  = "SI"
+
+#-----------------------------------------------------------------------------
+# Name          : SID
+# Datatype      : String
+# Description   : System identifier (SID) of the database
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : <db_name> specified in GDBNAME
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+SID = "###ORACLE_SID###"
+
+#-----------------------------------------------------------------------------
+# Name          : CREATEASCONTAINERDATABASE 
+# Datatype      : boolean
+# Description   : flag to create database as container database 
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : false
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+CREATEASCONTAINERDATABASE = "true"
+
+#-----------------------------------------------------------------------------
+# Name          : NUMBEROFPDBS
+# Datatype      : Number
+# Description   : Specify the number of pdb to be created
+# Valid values  : 0 to 252
+# Default value : 0
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+NUMBEROFPDBS = 1
+
+#-----------------------------------------------------------------------------
+# Name          : PDBNAME 
+# Datatype      : String
+# Description   : Specify the pdbname/pdbanme prefix if one or more pdb need to be created
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : None
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+PDBNAME = "###ORACLE_PDB###"
+
+#-----------------------------------------------------------------------------
+# Name          : PDBADMINPASSWORD
+# Datatype      : String
+# Description   : PDB Administrator user password
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : None
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+PDBADMINPASSWORD = "###ORACLE_PWD###"
+
+#-----------------------------------------------------------------------------
+# Name          : TEMPLATENAME
+# Datatype      : String
+# Description   : Name of the template
+# Valid values  : Template file name
+# Default value : None
+# Mandatory     : Yes
+#-----------------------------------------------------------------------------
+TEMPLATENAME = "General_Purpose.dbc"
+
+#-----------------------------------------------------------------------------
+# Name          : SYSPASSWORD
+# Datatype      : String
+# Description   : Password for SYS user
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : None
+# Mandatory     : Yes
+#-----------------------------------------------------------------------------
+SYSPASSWORD = "###ORACLE_PWD###"
+
+#-----------------------------------------------------------------------------
+# Name          : SYSTEMPASSWORD
+# Datatype      : String
+# Description   : Password for SYSTEM user
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : None
+# Mandatory     : Yes
+#-----------------------------------------------------------------------------
+SYSTEMPASSWORD = "###ORACLE_PWD###"
+
+#-----------------------------------------------------------------------------
+# Name          : SERVICEUSERPASSWORD
+# Datatype      : String
+# Description   : Password for Windows Service user
+# Default value : None
+# Mandatory     : If Oracle home is installed with windows service user
+#-----------------------------------------------------------------------------
+#SERVICEUSERPASSWORD = "password"
+
+#-----------------------------------------------------------------------------
+# Name          : EMCONFIGURATION
+# Datatype      : String
+# Description   : Enterprise Manager Configuration Type
+# Valid values  : CENTRAL|DBEXPRESS|ALL|NONE
+# Default value : NONE
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+EMCONFIGURATION = "DBEXPRESS"
+
+
+#-----------------------------------------------------------------------------
+# Name          : EMEXPRESSPORT
+# Datatype      : Number
+# Description   : Enterprise Manager Configuration Type
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : NONE
+# Mandatory     : No, will be picked up from DBEXPRESS_HTTPS_PORT env variable
+#                 or auto generates a free port between 5500 and 5599
+#-----------------------------------------------------------------------------
+EMEXPRESSPORT = "5500"
+
+#-----------------------------------------------------------------------------
+# Name          : DBSNMPPASSWORD
+# Datatype      : String
+# Description   : Password for DBSNMP user
+# Valid values  : Check Oracle12c Administrator's Guide
+# Default value : None
+# Mandatory     : Yes, if EMCONFIGURATION is specified or
+#                 the value of RUNCVUCHECKS is TRUE
+#-----------------------------------------------------------------------------
+DBSNMPPASSWORD = "###ORACLE_PWD###"
+
+#-----------------------------------------------------------------------------
+# Name          : STORAGETYPE
+# Datatype      : String
+# Description   : Specifies the storage on which the database is to be created
+# Valid values  : FS (CFS for RAC), ASM
+# Default value : FS
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+#STORAGETYPE=FS
+
+#-----------------------------------------------------------------------------
+# Name          : CHARACTERSET
+# Datatype      : String
+# Description   : Character set of the database
+# Valid values  : Check Oracle12c National Language Support Guide
+# Default value : "US7ASCII"
+# Mandatory     : NO
+#-----------------------------------------------------------------------------
+CHARACTERSET = "AL32UTF8"
+
+#-----------------------------------------------------------------------------
+# Name          : NATIONALCHARACTERSET
+# Datatype      : String
+# Description   : National Character set of the database
+# Valid values  : "UTF8" or "AL16UTF16". For details, check Oracle12c National Language Support Guide
+# Default value : "AL16UTF16"
+# Mandatory     : No
+#-----------------------------------------------------------------------------
+NATIONALCHARACTERSET= "UTF8"
+
+#-----------------------------------------------------------------------------
+# Name          : INITPARAMS
+# Datatype      : String
+# Description   : comma separated list of name=value pairs. Overrides initialization parameters defined in templates
+# Default value : None
+# Mandatory     : NO
+#-----------------------------------------------------------------------------
+#INITPARAMS = 
+
+#-----------------------------------------------------------------------------
+# Name          : AUTOMATICMEMORYMANAGEMENT
+# Datatype      : Boolean
+# Description   : flag to indicate Automatic Memory Management is used
+# Valid values  : TRUE/FALSE
+# Default value : TRUE
+# Mandatory     : NO
+#-----------------------------------------------------------------------------
+AUTOMATICMEMORYMANAGEMENT = "FALSE"
+
+#-----------------------------------------------------------------------------
+# Name          : TOTALMEMORY
+# Datatype      : String
+# Description   : total memory in MB to allocate to Oracle
+# Valid values  : 
+# Default value : 
+# Mandatory     : NO
+#-----------------------------------------------------------------------------
+TOTALMEMORY = "2048"
+
+
+#-----------------------*** End of CREATEDATABASE section ***------------------------
