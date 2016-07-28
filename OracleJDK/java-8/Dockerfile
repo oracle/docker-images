@@ -2,6 +2,7 @@
 #
 # Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
 #
+# Use ln instead of mv to decrease image size
 FROM oraclelinux:latest
 
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
@@ -12,4 +13,4 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
 
 ADD $JAVA_PKG /usr/java/
 
-RUN mv $(ls -1 -d /usr/java/*) $JAVA_HOME 
+RUN ln -s $(ls -1 -d /usr/java/*) $JAVA_HOME 
