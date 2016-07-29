@@ -46,6 +46,8 @@ ENV FMW_PKG=fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.0.0_wls_quick.jar \
     ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
+    DEBUG_FLAG=true\
+    PRODUCTION_MODE=dev\
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
 
 # Copy packages
