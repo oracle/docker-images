@@ -48,7 +48,7 @@ ENV FMW_PKG=fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     DEBUG_FLAG=true\
     PRODUCTION_MODE=dev\
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin
 
 # Copy packages
 # -------------
@@ -61,8 +61,9 @@ COPY $FMW_PKG install.file oraInst.loc /u01/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
-    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME" - oracle && \
+    cd /u01 && jar xf /u01/$FMW_PKG && cd - && \
+    export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::") && \
+    su -c "java -jar /u01/$FMW_JAR -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME" - oracle && \
     chown oracle:oracle -R /u01 && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
