@@ -45,7 +45,9 @@ ARG ORACLE_PWD
 
 # Use second ENV so that variable get substituted
 ENV INSTALL_DIR=$ORACLE_BASE/install \
-    PATH=$ORACLE_HOME/bin:$PATH
+    PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
+    LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib \
+    CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
 
 # Copy binaries
 # -------------
@@ -98,17 +100,6 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 USER oracle
 WORKDIR /home/oracle
 
-# Set environment variables for oracle user
-RUN echo "export ORACLE_UNQNAME=$ORACLE_SID \
-    export ORACLE_BASE=$ORACLE_BASE \
-    export ORACLE_HOME=$ORACLE_HOME \
-    export ORACLE_SID=$ORACLE_SID \
-    export PATH=\$ORACLE_HOME/bin:\$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
-    export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib \
-    export CLASSPATH=\$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib \
-    " >> $HOME/.bashrc && \
-    source $HOME/.bashrc
-
 RUN mkdir -p $ORACLE_HOME/network/admin && \
     echo "NAME.DIRECTORY_PATH= {TNSNAMES, EZCONNECT, HOSTNAME}" > $ORACLE_HOME/network/admin/sqlnet.ora
 
@@ -150,4 +141,4 @@ RUN rm -rf $INSTALL_DIR
 EXPOSE 1521 5500
     
 # Define default command to start Oracle Database. 
-CMD $ORACLE_BASE/runOracle.sh
+CMD $ORACLE_BASE/$RUN_FILE

@@ -12,11 +12,13 @@ admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD")
 cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 domain_path  = '/u01/oracle/user_projects/domains/%s' % domain_name
+production_mode         = os.environ.get("PRODUCTION_MODE", "prod")
 
 print('domain_name : [%s]' % domain_name);
 print('admin_port  : [%s]' % admin_port);
 print('cluster_name: [%s]' % cluster_name);
 print('domain_path : [%s]' % domain_path);
+print('production_mode : [%s]' % production_mode);
 
 # Open default domain template
 # ======================
@@ -43,7 +45,7 @@ cmo.setPassword(admin_pass)
 # Write the domain and close the domain template
 # ==============================================
 setOption('OverwriteDomain', 'true')
-setOption('ServerStartMode','prod')
+setOption('ServerStartMode',production_mode)
 
 cd('/NMProperties')
 set('ListenAddress','')
