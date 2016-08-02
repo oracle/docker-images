@@ -106,6 +106,10 @@ fi
 # Is password omitted?
 if [ "$GENERATED_PWD" -eq 1 ]; then
    ORACLE_PWD="`pwmake 64`";
+   if [ -z "$ORACLE_PWD" ]; then
+     echo "Your OS does not have 'pwmake'. Use -p <password> parameter explicitly"
+     exit 1
+   fi
 fi
 
 # Oracle Database Image Name
