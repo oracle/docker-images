@@ -6,10 +6,14 @@ FROM oraclelinux:latest
 
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
-ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz 
+ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
+    JAVA_HOME=/usr/java/latest
 
 ADD $JAVA_PKG /usr/java/
 
-RUN alternatives --install /usr/bin/java java $(ls -1 -d /usr/java/*)/bin/java 20000 && \
-    alternatives --install /usr/bin/javac javac $(ls -1 -d /usr/java/*)/bin/javac 20000 && \
-    alternatives --install /usr/bin/jar jar $(ls -1 -d /usr/java/*)/bin/jar 20000
+RUN export JAVA_DIR=$(ls -1 -d /usr/java/*) && \
+    ln -s $JAVA_DIR /usr/java/latest && \
+    ln -s $JAVA_DIR /usr/java/default && \
+    alternatives --install /usr/bin/java java $JAVA_DIR/bin/java 20000 && \
+    alternatives --install /usr/bin/javac javac $JAVA_DIR/bin/javac 20000 && \
+    alternatives --install /usr/bin/jar jar $JAVA_DIR/bin/jar 20000 
