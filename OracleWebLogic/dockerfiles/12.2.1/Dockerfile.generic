@@ -18,7 +18,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/weblogic:12.2.1-generic . 
+#      $ docker build -f Dockerfile.generic -t oracle/weblogic:12.2.1-generic . 
 #
 # IMPORTANT
 # ---------
