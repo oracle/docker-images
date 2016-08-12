@@ -51,6 +51,7 @@ ARG ORACLE_PWD
 # Copy binaries
 # -------------
 COPY $INSTALL_FILE_1 $CONFIG_RSP $INSTALL_DIR/
+COPY $RUN_FILE $INSTALL_DIR/
 
 # Update yum
 # ----------
@@ -65,11 +66,9 @@ RUN unzip $INSTALL_FILE_1 && \
     rm $INSTALL_FILE_1 &&    \
     rpm -i Disk1/*.rpm &&    \
     sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $INSTALL_DIR/$CONFIG_RSP && \
-    /etc/init.d/oracle-xe configure responseFile=$CONFIG_RSP
-
-COPY $RUN_FILE $ORACLE_BASE/
-
-RUN rm -rf $INSTALL_DIR && \
+    /etc/init.d/oracle-xe configure responseFile=$CONFIG_RSP && \
+    mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
+    rm -rf $INSTALL_DIR && \
     chown -R oracle:dba $ORACLE_BASE && \
     chmod u+x $ORACLE_BASE/$RUN_FILE
     
