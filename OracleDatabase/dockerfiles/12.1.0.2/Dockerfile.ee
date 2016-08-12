@@ -61,10 +61,7 @@ RUN mkdir -p $ORACLE_BASE/oradata && \
     echo oracle:oracle | chpasswd && \
     yum -y install oracle-rdbms-server-12cR1-preinstall unzip wget tar openssl && \
     yum clean all && \
-    chown -R oracle:dba $ORACLE_BASE && \
-    ln -s $ORACLE_BASE/$PWD_FILE $HOME/
-
-WORKDIR $INSTALL_DIR
+    chown -R oracle:dba $ORACLE_BASE
 
 # Replace place holders
 # ---------------------
@@ -76,12 +73,16 @@ RUN sed -i -e "s|###ORACLE_EDITION###|EE|g" $INSTALL_DIR/$INSTALL_RSP &&        
 # -------------------
 USER oracle
 
-RUN unzip $INSTALL_FILE_1 && \
-    rm $INSTALL_FILE_1 &&    \
+RUN cd $INSTALL_DIR       && \
+    unzip $INSTALL_FILE_1 && \
+    rm $INSTALL_FILE_1    && \
     unzip $INSTALL_FILE_2 && \
-    rm $INSTALL_FILE_2 &&    \
+    rm $INSTALL_FILE_2    && \
     $INSTALL_DIR/database/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_DIR/$INSTALL_RSP -ignoresysprereqs -ignoreprereq && \
-    rm -rf $INSTALL_DIR/database
+    rm -rf $INSTALL_DIR/database && \
+    ln -s $ORACLE_BASE/$PWD_FILE $HOME/ && \
+    echo "DEDICATED_THROUGH_BROKER_LISTENER=ON"  >> $ORACLE_HOME/network/admin/listener.ora && \
+    echo "DIAG_ADR_ENABLED = off"  >> $ORACLE_HOME/network/admin/listener.ora;
 
 # Check whether Perl is working
 RUN chmod u+x $INSTALL_DIR/installPerl.sh && \
@@ -90,15 +91,12 @@ RUN chmod u+x $INSTALL_DIR/installPerl.sh && \
 
 USER root
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh
+    $ORACLE_HOME/root.sh && \
+    rm -rf $INSTALL_DIR
 
 USER oracle
 WORKDIR /home/oracle
 
-RUN echo "DEDICATED_THROUGH_BROKER_LISTENER=ON"  >> $ORACLE_HOME/network/admin/listener.ora && \
-    echo "DIAG_ADR_ENABLED = off"  >> $ORACLE_HOME/network/admin/listener.ora;
-
-RUN rm -rf $INSTALL_DIR
 VOLUME ["/opt/oracle/oradata"]
 EXPOSE 1521 5500
     
