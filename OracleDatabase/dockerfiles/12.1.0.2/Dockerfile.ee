@@ -97,7 +97,6 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 USER oracle
 WORKDIR /home/oracle
 
-VOLUME ["/opt/oracle/oradata"]
 EXPOSE 1521 5500
     
 # Define default command to start Oracle Database. 
