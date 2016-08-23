@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-p] [-i]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
@@ -21,7 +21,6 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
-   -p: password for database admin accounts (it will be generated if omitted)
    -i: ignores the MD5 checksums
 
 * select one edition only: -e, -s, or -x
@@ -54,10 +53,8 @@ EXPRESS=0
 VERSION="12.1.0.2"
 SKIPMD5=0
 DOCKEROPS=""
-ORACLE_PWD=""
-GENERATED_PWD=1
 
-while getopts "hesxiv:p:" optname; do
+while getopts "hesxiv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -76,10 +73,6 @@ while getopts "hesxiv:p:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
-      ;;
-    "p")
-      ORACLE_PWD="$OPTARG"
-      GENERATED_PWD=0
       ;;
     *)
     # Should not occur
@@ -101,15 +94,6 @@ elif [ $EXPRESS -eq 1 ] && [ "$VERSION" = "12.1.0.2" ]; then
 else
   EDITION="xe";
   DOCKEROPS="--shm-size=1G";
-fi
-
-# Is password omitted?
-if [ "$GENERATED_PWD" -eq 1 ]; then
-   ORACLE_PWD="`pwmake 64`";
-   if [ -z "$ORACLE_PWD" ]; then
-     echo "Your OS does not have 'pwmake'. Use -p <password> parameter explicitly"
-     exit 1
-   fi
 fi
 
 # Oracle Database Image Name
@@ -155,7 +139,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --build-arg ORACLE_PWD=$ORACLE_PWD --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
+docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
   echo "There was an error building the image."
   exit 1
 }
@@ -169,8 +153,6 @@ cat << EOF
   Oracle Database Docker Image for '$EDITION' version $VERSION is ready to be extended: 
     
     --> $IMAGE_NAME
-    
-  ORACLE PASSWORD (SYS, SYSTEM, PDBADMIN): $ORACLE_PWD
 
   Build completed in $BUILD_ELAPSED seconds.
   
