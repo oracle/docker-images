@@ -53,12 +53,6 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
 
-On the first startup of the container a random password will be generated for the database. You can find this password in the output line:
-	ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN:
-
-The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
-	docker exec oracle ./setPassword.sh <your password>
-
 Once the container has been started and the database created you can connect to it just like to any other database:
 
 	sqlplus sys/<your password>@//localhost:1521/<your SID> as sysdba
@@ -68,6 +62,14 @@ Once the container has been started and the database created you can connect to 
 The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
 
 	https://localhost:5500/em/
+
+#### Changing the admin accounts passwords
+
+On the first startup of the container a random password will be generated for the database. You can find this password in the output line:
+	ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN:
+
+The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
+	docker exec oracle ./setPassword.sh <your password>
 
 #### Running Oracle Database Express Edition in a Docker container
 To run your Oracle Database Express Edition Docker image use the **docker run** command as follows:

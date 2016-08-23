@@ -1,34 +1,25 @@
-Example of Image for creating custom database
+Example of creating a custom database
 =============================================
-This Dockerfile extends the Oracle Database image by creating a custom database.
+Once you have built your image you can create a database with a custom name by passing on two environment variables.
 
-This example drops the provided database and creates a new one with a different name.
-This example is provided because a lot of people have their own naming conventions and
-would like to use them rather than having a predefined database name.
+# How to start the container
+First make sure you have built **oracle/database:12.1.0.2-ee**. Now start the container as follow:
 
-# How to build and run
-First make sure you have built **oracle/database:12.1.0.2-ee**. Now, to build this sample, run:
-
-        docker build \
-        --build-arg DB_PWD=<Original DB SYS password> \
-        --build-arg DB_PWD_NEW=<New DB password> \
-        --build-arg SID=<Database SID> \
-        --build-arg PDB=<PDB name> \
-        -t example/customdb .
+	docker run --name customdb \
+	-p 1521:1521 -p 5500:5500 \
+	-e ORACLE_SID=<your SID> \
+	-e ORACLE_PDB=<your PDB name> \
+	oracle/database:12.1.0.2-ee
 
 Following parameters are passed on:
-* DB_PWD: The password of the originally created database (the one used for building the base image)
-* DB_PWD_NEW: The new password that should be used (remains unchanged by default)
-* SID: The new database SID that should be used (i.e. CDB name)
-* PDB: The new PDB name that should be used
+* ORACLE_SID: The Oracle SID and container database name
+* ORACLE_PDB: The Oracle PDB name
 
-To start the containerized Oracle Database, run:
+After the container is up and running you can connect to the new database.
+Remember that the database uses an automatically generated password for the admin accounts.
+If you want to change the password refer to [Changing the admin accounts passwords](../README.md):
 
-        docker run --name customdb -p 1521:1521 example/customdb
-
-After the container is up and running you can connect to the new database:
-
-        sql system/<your new db password>@//localhost:1521/<your new SID/PDB name>
+	sql system/<your new db password>@//localhost:1521/<your new SID/PDB name>
 
 The above scenario from this sample will give you a new custom database within the Oracle Database Docker image.
 
