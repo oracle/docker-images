@@ -66,6 +66,7 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 #### Changing the admin accounts passwords
 
 On the first startup of the container a random password will be generated for the database. You can find this password in the output line:
+
 	ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN:
 
 The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
