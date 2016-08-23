@@ -1,7 +1,7 @@
 Examples of how to extend the Oracle Database Docker Image
 ================================
 # starterset
-Example of how to add starter set data to the image. Useful for example 
+Example of how to add starter set data to the database inside the container. Useful for example 
 to setup test environments.
 
 # customdb
