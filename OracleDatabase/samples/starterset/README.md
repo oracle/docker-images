@@ -1,44 +1,46 @@
 Example of Image with Starter set data
 ======================================
-This Dockerfile extends the Oracle Database image by creating a sample starter set.
-
-The starterset.sql file is copied into the image which contains the commands for creating the starter set.
-This example creates a new user TEST within the ORCLPDB1 PDB and then adds a new table called COOL_PEOPLE.
+This example shows how to create starter set data in the Oracle Database inside a Docker container.
+The starterset.sql file contains the desired SQL commands to be executed.
+This example creates a new user TEST within the STARTERSET PDB, creates a new table called COOL_PEOPLE and add some data.
 
 # How to build and run
-First make sure you have built **oracle/database:12.1.0.2-ee**. Now, to build this sample, run:
+First make sure you have started a container using the **oracle/database:12.1.0.2-ee** image:
 
-        docker build --build-arg ORACLE_PWD=<Your DB password> -t example/starterset .
+	docker run --name starterset -p 1521:1521 -e ORACLE_PDB=STARTERSET oracle/database:12.1.0.2-ee
 
-To start the containerized Oracle Database, run:
+Then change the password of the admin accounts:
 
-        docker run --name starterset -p 1521:1521 example/starterset
+	docker exec starterset ./setPassword.sh LetsDocker
 
-After the container is up and running you can connect with the TEST user and query the table COOL_PEOPLE:
+Now you can just execute the starterset.sql file outside the container:
 
-        sql test/test@//localhost:1521/ORCLPDB1
+	sql sys/LetsDocker@//localhost:1521/STARTERSET as sysdba @starterset.sql
 
-        SQLcl: Release 4.2.0.16.175.1027 RC on Mon Jul 25 22:42:52 2016
+And then connect with the TEST user and query the table COOL_PEOPLE:
 
-        Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+	sql test/test@//localhost:1521/STARTERSET
 
-        Connected to:
-        Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
-        With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
+	SQLcl: Release 4.2.0.16.175.1027 RC on Tue Aug 23 11:00:04 2016
+
+	Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+
+	Connected to:
+	Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+	With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
 
 
-        SQL> SELECT name FROM cool_people;
+	SQL> SELECT name FROM cool_people;
 
-        NAME
-        ----------
-        Larry
-        Bruno
-        Gerald
+	NAME
+	----------
+	Larry
+	Bruno
+	Gerald
 
-        SQL> exit
-
-        Disconnected from Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
-        With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
+	SQL> exit
+	Disconnected from Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+	With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options
 
 The above scenario from this sample will give you a starter set within the Oracle Database Docker image.
 

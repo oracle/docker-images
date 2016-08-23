@@ -1,10 +1,11 @@
 -- Create test user
 GRANT CONNECT, RESOURCE, UNLIMITED TABLESPACE TO TEST IDENTIFIED BY test;
 -- Connect as test user
-CONN TEST/test@//localhost:1521/ORCLPDB1
+CONN TEST/test@//localhost:1521/STARTERSET
 -- Create starter set
 CREATE TABLE COOL_PEOPLE(name VARCHAR2(10));
 INSERT INTO COOL_PEOPLE (name) VALUES ('Larry');
 INSERT INTO COOL_PEOPLE (name) VALUES ('Bruno');
 INSERT INTO COOL_PEOPLE (name) VALUES ('Gerald');
 COMMIT;
+exit;
