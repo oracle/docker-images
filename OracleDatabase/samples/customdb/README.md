@@ -17,7 +17,7 @@ Following parameters are passed on:
 
 After the container is up and running you can connect to the new database.
 Remember that the database uses an automatically generated password for the admin accounts.
-If you want to change the password refer to [Changing the admin accounts passwords](../README.md):
+If you want to change the password refer to [Changing the admin accounts passwords](https://github.com/gvenzl/docker-images/tree/master/OracleDatabase#changing-the-admin-accounts-passwords):
 
 	sql system/<your new db password>@//localhost:1521/<your new SID/PDB name>
 
