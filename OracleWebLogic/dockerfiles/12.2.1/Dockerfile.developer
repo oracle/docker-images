@@ -34,7 +34,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/jdk:8
+FROM oracle/openjdk:8
 
 # Maintainer
 # ----------
