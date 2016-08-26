@@ -1,5 +1,24 @@
 #!/bin/bash
 
+########### SIGTERM handler ############
+function _term() {
+   echo "Stopping container."
+   echo "SIGTERM received, shutting down database!"
+   sqlplus / as sysdba <<EOF
+   shutdown immediate;
+EOF
+   lsnrctl stop
+}
+
+########### SIGKILL handler ############
+function _kill() {
+   echo "SIGKILL received, shutting down database!"
+   sqlplus / as sysdba <<EOF
+   shutdown abort;
+EOF
+   lsnrctl stop
+}
+
 ############# Create DB ################
 function createDB {
 
@@ -71,6 +90,12 @@ EOF
 
 ############# MAIN ################
 
+# Set SIGTERM handler
+trap _term SIGTERM
+
+# Set SIGKILL handler
+trap _kill SIGKILL
+
 # Default for ORACLE SID
 if [ "$ORACLE_SID" == "" ]; then
    export ORACLE_SID=ORCLCDB
@@ -92,4 +117,6 @@ echo "#########################"
 echo "DATABASE IS READY TO USE!"
 echo "#########################"
 
-tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log
+tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
+childPID=$!
+wait $childPID

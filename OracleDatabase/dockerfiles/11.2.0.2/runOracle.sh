@@ -1,5 +1,18 @@
 #!/bin/bash
 
+########### SIGTERM handler ############
+function _term() {
+   echo "Stopping container."
+   echo "SIGTERM received, shutting down database!"
+  /etc/init.d/oracle-xe stop
+}
+
+########### SIGKILL handler ############
+function _kill() {
+   echo "SIGKILL received, shutting down database!"
+   /etc/init.d/oracle-xe stop
+}
+
 ############# Create DB ################
 function createDB {
    # Auto generate ORACLE PWD
@@ -30,6 +43,12 @@ EOF"
 
 ############# MAIN ################
 
+# Set SIGTERM handler
+trap _term SIGTERM
+
+# Set SIGKILL handler
+trap _kill SIGKILL
+
 /etc/init.d/oracle-xe start | grep -qc "Oracle Database 11g Express Edition is not configured"
 if [ "$?" == "0" ]; then
    createDB;
@@ -39,4 +58,6 @@ echo "#########################"
 echo "DATABASE IS READY TO USE!"
 echo "#########################"
 
-tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log
+tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
+childPID=$!
+wait $childPID
