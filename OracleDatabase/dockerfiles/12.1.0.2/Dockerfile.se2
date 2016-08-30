@@ -57,6 +57,7 @@ RUN mkdir -p $ORACLE_BASE/oradata && \
     mv $INSTALL_DIR/$CONFIG_RSP $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
     chmod ug+x $ORACLE_BASE/$PWD_FILE && \
+    chmod ug+x $ORACLE_BASE/$RUN_FILE && \    
     groupadd -g 500 dba && \
     groupadd -g 501 oinstall && \
     useradd -d /home/oracle -g dba -G oinstall,dba -m -s /bin/bash oracle && \
