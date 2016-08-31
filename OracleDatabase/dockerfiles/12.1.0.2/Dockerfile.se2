@@ -17,7 +17,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build --build-arg ORACLE_PWD=<Your DB password> -t oracle/database:12.1.0.2-se2 . 
+#      $ docker build -t oracle/database:12.1.0.2-se2 . 
 #
 # Pull base image
 # ---------------
