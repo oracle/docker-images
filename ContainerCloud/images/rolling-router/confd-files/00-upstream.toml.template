@@ -1,0 +1,10 @@
+[template]
+src = "00-upstream.template"
+dest = "/tmp/00-upstream.sh"
+
+keys = [
+"rolling/APP_NAME/blendpercent",
+"{{ getv "/rolling/APP_NAME/stable/id" }}",
+"{{ getv "/rolling/APP_NAME/candidate/id" }}"
+]
+reload_cmd = "sh /tmp/00-upstream.sh"

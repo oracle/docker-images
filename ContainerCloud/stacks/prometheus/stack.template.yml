@@ -1,0 +1,25 @@
+version: "2"
+services:
+  cadvisor:
+    image: "google/cadvisor:v0.23.2"
+    environment:
+      - "occs:availability=per-host"
+      - "occs:description=cAdvisor exposes metrics about running containers on a host. Prometheus is used to pull metrics from each host and aggregate them in a time series database."
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+    ports:
+      - "8081:8080/tcp"
+  prometheus:
+    image: "__REGISTRY_NAME__/prometheus:__VERSION_PROMETHEUS__"
+    environment:
+      - "occs:availability=per-pool"
+      - "OCCS_API_TOKEN={{api_token}}"
+      - "KV_IP=172.17.0.1"
+      - "KV_PORT=9109"
+      - "OCCS_BACKEND_KEY={{sd_deployment_containers_path \"cadvisor\" 8080}}"
+      - "occs:description=This is an out of the box prometheus stack with cadvisor agents running on each host. Visit port 9090 on the host running prometheus to view the running example. Because this service has a static host-bound port, only one deployment can be done per host without getting port conflicts."
+    ports:
+      - "9090:9090/tcp"

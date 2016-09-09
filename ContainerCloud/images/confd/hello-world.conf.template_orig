@@ -1,0 +1,8 @@
+database:
+  cluster:
+    targets:
+        [ {{$service := "/OCCS_BACKEND_KEY/*"}}
+        gratuitous text = {{.Key}}
+        {{range gets (print $service)}}
+        '{{.Value}}',{{end}}
+        ]
