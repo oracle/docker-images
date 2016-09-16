@@ -63,11 +63,12 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl && \
     mv $INSTALL_DIR/$CONFIG_RSP $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
+    ln -s $ORACLE_BASE/$PWD_FILE / && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
     chmod u+x $ORACLE_BASE/$RUN_FILE && \
     chmod u+x $ORACLE_BASE/$PWD_FILE
-    
+
 EXPOSE 1521 8080
 
 CMD $ORACLE_BASE/$RUN_FILE
