@@ -13,8 +13,8 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with `sudo` privileges:
 
 	[oracle@localhost dockerfiles]$ ./buildDockerImage.sh -h
-	
-	Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-p] [-i]
+
+	Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
 	Builds a Docker Image for Oracle Database.
 	
 	Parameters:
@@ -23,13 +23,12 @@ Before you build the image make sure that you have provided the installation bin
 	   -e: creates image based on 'Enterprise Edition'
 	   -s: creates image based on 'Standard Edition 2'
 	   -x: creates image based on 'Express Edition'
-	   -p: password for database admin accounts (it will be generated if omitted)
 	   -i: ignores the MD5 checksums
 	
 	* select one edition only: -e, -s, or -x
-	
+
 	LICENSE CDDL 1.0 + GPL 2.0
-	
+
 	Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
@@ -65,8 +64,8 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
 #### Changing the admin accounts passwords
 
-On the first startup of the container a random password will be generated for the database. You can find this password in the output line:
-
+On the first startup of the container a random password will be generated for the database. You can find this password in the output line:  
+	
 	ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN:
 
 The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
