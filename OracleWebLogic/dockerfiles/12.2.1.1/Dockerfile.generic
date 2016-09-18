@@ -4,7 +4,7 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for WebLogic 12.2.1 Generic Distro
+# This is the Dockerfile for Oracle WebLogic Server 12.2.1.1 Generic Distro
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -42,6 +42,7 @@ ARG ADMIN_PASSWORD
 # -------------------------------------------------------------
 ENV FMW_PKG=fmw_12.2.1.1.0_wls_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.1.0_wls.jar \
+    SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     DEBUG_FLAG=true \
@@ -54,12 +55,14 @@ ENV FMW_PKG=fmw_12.2.1.1.0_wls_Disk1_1of1.zip \
 # Copy packages
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
+COPY $SCRIPT_FILE container-scripts/create-wls-domain.py /u01/oracle
 
 # Setup filesystem and oracle user
 # Install and configure Oracle JDK
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
 RUN chmod a+xr /u01 && \
+    chmod +xr $SCRIPT_FILE && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
@@ -67,8 +70,7 @@ RUN chmod a+xr /u01 && \
     chown oracle:oracle -R /u01 && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
-COPY container-scripts/* /u01/oracle/
 WORKDIR ${ORACLE_HOME}
 
 # Define default command to start script. 
-CMD ["sh","./createAndStartEmptyDomain.sh"]
+CMD ["createAndStartEmptyDomain.sh"]
