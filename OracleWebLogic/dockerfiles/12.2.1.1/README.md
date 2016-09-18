@@ -59,7 +59,9 @@ The image **oracle/weblogic:12.2.1.1-developer** will configure a **base_domain*
 
 On the first startup of the container a random password will be generated for the Administration of the domain. You can find this password in the output line:
 
-ORACLE AUTO GENERATED ADMIN PASSWORD:
+`Oracle WebLogic Server auto generated Admin password:`
+
+If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
 
 ### Write your own Oracle WebLogic Server domain with WLST
 The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [create-wls-domain.py](dockerfiles/12.2.1.1/container-scripts/create-wls-domain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.

@@ -66,4 +66,4 @@ COPY container-scripts/* /u01/oracle/
 WORKDIR ${ORACLE_HOME} 
 
 # Define default command to start script. 
-CMD ["./createAndStartEmptyDomain.sh"]
+CMD ["sh","./createAndStartEmptyDomain.sh"]
