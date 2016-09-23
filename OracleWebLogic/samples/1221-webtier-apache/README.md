@@ -7,12 +7,12 @@ Download file **Oracle WebLogic Server Proxy Plugins 12.2.1** [fmw_12.2.1.0.0_wl
 
 You may build this image with:
 
-        $ docker build -t webtier .
+        $ docker build -t 1221-webtier .
 
 # How to run container
 Run this image by calling:
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port --net=<some net> -p 80:80 webtier
+        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port --net=<some net> -p 80:80 1221-webtier
 
 The values of **WEBLOGIC_CLUSTER** must be valid, existing containers running WebLogic servers.
 
@@ -23,7 +23,7 @@ Start an AdminServer from the **1221-domain** sample by calling:
 
 Start the webtier container by calling:
 
-        $ docker run -d --link wlsadmin:wlsadmin -e WEBLOGIC_CLUSTER=wlsadmin:8001 -p 80:80 webtier
+        $ docker run -d --link wlsadmin:wlsadmin -e WEBLOGIC_CLUSTER=wlsadmin:8001 -p 80:80 1221-webtier
 
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 8001.
 
