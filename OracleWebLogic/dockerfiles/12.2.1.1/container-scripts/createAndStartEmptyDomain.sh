@@ -41,9 +41,9 @@ if [ $ADD_DOMAIN -eq 0 ]; then
 ADMIN_PASSWORD=$(cat date| md5sum | fold -w 8 | head -n 1) 
 
 echo ""
-echo "    Oracle WebLogic Server Auto Generated Admin password:"
+echo "    Oracle WebLogic Server Auto Generated Empty Domain:"
 echo ""
-echo "      ----> $ADMIN_PASSWORD"
+echo "      ----> 'weblogic' admin password: $ADMIN_PASSWORD"
 echo ""
 
 sed -i -e "s|ADMIN_PASSWORD|$ADMIN_PASSWORD|g" /u01/oracle/create-wls-domain.py
