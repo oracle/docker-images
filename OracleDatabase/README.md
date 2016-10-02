@@ -44,13 +44,14 @@ You may extend the image with your own Dockerfile and create the users and table
 #### Running Oracle Database Enterprise and Standard Edition in a Docker container
 To run your Oracle Database Docker image use the **docker run** command as follows:
 
-	docker run --name oracle -p 1521:1521 -p 5500:5500 -e ORACLE_SID=<your SID> -e ORACLE_PDB=<your PDB name> oracle/database:12.1.0.2-ee
+	docker run --name <container name> -p <host port>:1521 -p <host port>:5500 -e ORACLE_SID=<your SID> -e ORACLE_PDB=<your PDB name> -v [<host mount point>:]/opt/oracle/oradata oracle/database:12.1.0.2-ee
 	
 	Parameters:
-	   --name: The name of the container itself
-	   -p:     The port mapping of the host port to the container port. Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
+	   --name:        The name of the container (default: auto generated)
+	   -p:            The port mapping of the host port to the container port. Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
+	   -v             The data volume to use for the database. Has to be owned by the Unix user "oracle" or set appropriately. If omitted the database will not be persisted over container recreation.
 
 Once the container has been started and the database created you can connect to it just like to any other database:
 
@@ -69,7 +70,8 @@ On the first startup of the container a random password will be generated for th
 	ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN:
 
 The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
-	docker exec oracle ./setPassword.sh <your password>
+
+	docker exec <container name> ./setPassword.sh <your password>
 
 #### Running Oracle Database Express Edition in a Docker container
 To run your Oracle Database Express Edition Docker image use the **docker run** command as follows:
