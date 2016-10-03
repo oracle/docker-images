@@ -59,6 +59,7 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl && \
     unzip $INSTALL_FILE_1 && \
     rm $INSTALL_FILE_1 &&    \
     rpm -i Disk1/*.rpm &&    \
+    mkdir $ORACLE_BASE/oradata && \
     chown -R oracle:dba $ORACLE_BASE && \
     mv $INSTALL_DIR/$CONFIG_RSP $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
@@ -69,6 +70,7 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl && \
     chmod u+x $ORACLE_BASE/$RUN_FILE && \
     chmod u+x $ORACLE_BASE/$PWD_FILE
 
+VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 8080
 
 CMD $ORACLE_BASE/$RUN_FILE

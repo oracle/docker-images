@@ -1,5 +1,34 @@
 #!/bin/bash
 
+########### Move DB files ############
+function moveFiles {
+   if [ ! -d $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID ]; then
+      mkdir -p $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   fi;
+   
+   mv $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_HOME/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   
+   symLinkFiles;
+}
+
+########### Symbolic link DB files ############
+function symLinkFiles {
+
+   if [ ! -L $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
+   fi;
+   
+   if [ ! -L $ORACLE_HOME/dbs/orapw$ORACLE_SID ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
+   fi;
+   
+   if [ ! -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
+   fi;
+}
+
 ########### SIGTERM handler ############
 function _term() {
    echo "Stopping container."
@@ -59,31 +88,30 @@ function createDB {
       (SERVER = DEDICATED)
       (SERVICE_NAME = $ORACLE_PDB)
     )
-  )" >> /$ORACLE_HOME/network/admin/tnsnames.ora
+  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
 
    sqlplus / as sysdba << EOF
+      ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
       ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
 EOF
 
   rm $ORACLE_BASE/dbca.rsp
+  
+  # Move database operational files to oradata
+  moveFiles;
 
-}
-
-############# Check DB ################
-function checkDBExists {
-   # No entry in oratab, DB doesn't exist yet
-   if [ "`grep $ORACLE_SID /etc/oratab`" == "" ]; then
-      echo 0;
-   else
-      echo 1;
-   fi;
 }
 
 ############# Start DB ################
 function startDB {
+   # Make sure audit file destination exists
+   if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
+      mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
+   fi;
+   
    lsnrctl start
-   sqlplus / as sysdba <<EOF
-   startup;
+   sqlplus / as sysdba << EOF
+      STARTUP;
 EOF
 
 }
@@ -107,10 +135,16 @@ if [ "$ORACLE_PDB" == "" ]; then
 fi;
 
 # Check whether database already exists
-if [ "`checkDBExists`" == "0" ]; then
-   createDB;
-else
+if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
+   symLinkFiles;
    startDB;
+else
+   # Remove database config files, if they exist
+   rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
+   rm -f $ORACLE_HOME/dbs/orapw$ORACLE_SID
+   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
+   
+   createDB;
 fi;
 
 echo "#########################"
