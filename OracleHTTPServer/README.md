@@ -13,12 +13,14 @@ Before you can build these WebLogic images, you must download the Oracle Server 
 ## How to Build and Run
 This project offers sample Dockerfiles for Oracle HTTP Server 12cR2 (12.2.1) in standalone mode. To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage
 
-The **buildDockerImage.sh** script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their prefered set of parameters.
+The **buildDockerImage.sh** script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their preferred set of parameters.
 
 ### Building OHS Docker Install Images
 IMPORTANT: You have to download the binaries of OHS and Oracle JDK and put them in place (see .download files inside dockerfiles/).
 
 Download the required packages (see .download files) and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
+
+    $ sh buildDockerImage.sh -v 12.2.1
 
 IMPORTANT: the resulting images will NOT have a domain pre-configured.
 You must extend the image with your own Dockerfile, and create your domain using WLST. You might take a look at the use case samples as well below.
@@ -42,11 +44,11 @@ The best way to create your own, or extend domains is by using WebLogic Scriptin
 ## Building a sample Docker Image of a OHS Domain
 To try a sample of a OHS standalone image with a domain configured, follow the steps below:
 
-Make sure you have oracle/ohs:12.2.1-sa image built. If not go into **dockerfiles/12.2.1** and call:
+Make sure you have **oracle/ohs:12.2.1-sa** image built. If not go into **dockerfiles/12.2.1** and call:
 
         $ sh buildDockerImage.sh -v 12.2.1
 
-### How to Build Image
+### How to Build OHS domain Image
 Go to folder **samples/1221-OHS-domain**
 
 Run the following command:
@@ -58,36 +60,46 @@ Verify you now have this image in place with
         $ docker images
 
 ### How to run container
-1. Edit the env.list file with relevant data from Weblogic container like Admin Server host, port, cluster info etc.
+1. As prerequisite run the below command to create a docker data volume.
 
-        For example:
+       Eg:$ docker volume create --name volume
 
-        WEBLOGIC_HOST=myhost
-        WEBLOGIC_PORT=7001
-        WEBLOGIC_CLUSTER=myhost:9001,myhost:9002
+_This volume will be created in "/var/lib/docker" directory or the location where "/var/lib/docker" points to._
 
 
-The values of WEBLOGIC_HOST, WEBLOGIC_PORT and WEBLOGIC_CLUSTER must be valid, existing containers running WebLogic servers.
+2. Depending on your weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553)
 
-2. Run this image by calling
+3. Place the custom_mod_wl_ohs.conf file in docker data volume directory . e.g /var/lib/docker/volume
 
-        $ docker run -d --env-file ./env.list -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
+4. To start the OHS Container with above sampleohs:12.2.1 image , run command from docker voume directory
+
+       For e.g.
+       $ cd /var/lib/docker/volume
+       $ docker run -v `pwd`:/volume -w /volume -d --name ohs -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
 
 
    The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
    This script will perform the following actions:
-   - Starts the Node Manager and OHS server
-   - Edits the mod_wl_ohs.conf.sample with values passed via env.list
-   - Copies the mod_wl_ohs.conf file under INSTANCE home
-   - Restarts OHS server
+   - Start the Node Manager and OHS server
+   - Fetch the custom_mod_wl_ohs.conf file from mounted shared data volume
+   - Place the custom_mod_wl_ohs.conf file under OHS INSTANCE home
+   - Restart OHS server
 
-3. Sanity URLs check for OHS server
+_NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html._
+
+_Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script._
+
+
+5. Sanity URLs check for OHS server
    - Now you can access the OHS index page @ http://localhost:7777/index.html
    - Static html page @ URL http://localhost:7777/helloWorld.html
 
-4. Weblogic Cluster : Now you will be able to access all URLS via the OHS Listen Port 7777
-    - Weblogic Console : http://myhost:7777/console
-    - Applications deployed on Weblogic Cluster : http://myhost:7777/$application_url_endpoint
+6. All applications should now be routed via the OHS port 7777.
+
+
+## Support
+Currently Oracle HTTP Server on Docker is NOT supported by Oracle. Use these files at your own discretion.
+
 
 ## License
 To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
