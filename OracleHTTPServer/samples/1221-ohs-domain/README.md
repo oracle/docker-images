@@ -21,14 +21,15 @@ _This data volume will be created in "/var/lib/docker" directory or the location
 
 4. Place the custom_mod_wl_ohs.conf file in docker data volume directory . e.g /var/lib/docker/volume
 
-4. To start the OHS Container with above sampleohs:12.2.1 image , run command  from data volume directory:
+5. To start the OHS Container with above sampleohs:12.2.1 image , run command  from data volume directory:
 
        $ cd /var/lib/docker/volume
        $ docker run -v `pwd`:/volume -w /volume -d --name ohs -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
 
-5. All applications will now be accessible via the OHS port 7777.
+6. All applications will now be accessible via the OHS port 7777.
 
-######NOTE: If custom_mod_wl_ohs.conf is not provided, then configureWLSProxyPlugin.sh will just start OHS which will be accessible @ http://localhost:7777/index.html. Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script.
+######NOTE: If custom_mod_wl_ohs.conf is not provided, then configureWLSProxyPlugin.sh will just start OHS which will be accessible @ http://localhost:7777/index.html.
+######Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script.
 
 
 ## Configuring the Oracle WebLogic Server Proxy Plug-In with Oracle HTTP Server
@@ -90,17 +91,16 @@ Depending on the nature of your applications create your own "custom_mod_wl_ohs.
 
    The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
    This script will perform the following actions:
-   - Start the Node Manager and OHS server
    - Fetch the custom_mod_wl_ohs.conf file from mounted shared data volume
    - Place the custom_mod_wl_ohs.conf file under OHS INSTANCE home
-   - Restart OHS server
+   - Start Node Manager and OHS server
 
 4. Now you will be able to access all the URLS via the OHS Listen Port 7777
     - http://localhost:7777/console
     - http://localhost:7777/weblogic/sample
 
  _NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html._
- _Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script._
+ _Later you can login to running container and configure Weblogic Server proxy plugin file and run **restartOHS.sh** script._
 
 
 # Copyright

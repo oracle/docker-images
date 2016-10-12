@@ -15,7 +15,7 @@
 #MW_HOME    - The root directory of your OHS standalone install
 #DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDOmain"
 #OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs_sa1"
-#WEBLOGIC_HOST, WEBLOGIC_PORT, WEBLOGIC_CLUSTER - Env values passed from env.list
+#WEBLOGIC_HOST, WEBLOGIC_PORT, WEBLOGIC_CLUSTER - Env values passed from command line
 #*************************************************************************
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
@@ -29,11 +29,6 @@ INSTANCE_CONFIG_HOME=$DOMAIN_HOME/config/fmwconfig/components/OHS/${OHS_COMPONEN
 export INSTANCE_CONFIG_HOME
 echo "INSTANCE_CONFIG_DIR=${INSTANCE_CONFIG_HOME}"
 
-#Start NodeManager and OHS server
-echo "Starting Node Manager and OHS server"
-/u01/oracle/container-scripts/startNMandOHS.sh
-
-
 #Modify the variables in the mod_wl_ohs.conf.sample file with values provided in the env.file
 cp /u01/oracle/container-scripts/mod_wl_ohs.conf.sample /u01/oracle/container-scripts/mod_wl_ohs.conf.sample.WLSMultiHost
 sed -i -e "s/WEBLOGIC_HOST/$WEBLOGIC_HOST/g" -e "s/WEBLOGIC_PORT/$WEBLOGIC_PORT/g" -e "s/WEBLOGIC_CLUSTER/$WEBLOGIC_CLUSTER/g" mod_wl_ohs.conf.sample.WLSMultiHost
@@ -45,9 +40,6 @@ mv mod_wl_ohs.conf mod_wl_ohs.conf.ORIGINAL
 echo "Copying plugin file to INSTANCE_CONFIG_DIR=${INSTANCE_CONFIG_HOME}"
 cp /u01/oracle/container-scripts/mod_wl_ohs.conf.sample.WLSMultiHost ${INSTANCE_CONFIG_HOME}/mod_wl_ohs.conf
 
-# Restart ohs server
-echo "Restarting OHS server "
-/u01/oracle/container-scripts/restartOHS.sh
-
-#Tail all server logs
-tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.out
+#Start NodeManager and OHS server
+echo "Starting Node Manager and OHS server"
+/u01/oracle/container-scripts/startNMandOHS.sh

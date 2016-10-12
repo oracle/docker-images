@@ -80,10 +80,9 @@ _This volume will be created in "/var/lib/docker" directory or the location wher
 
    The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
    This script will perform the following actions:
-   - Start the Node Manager and OHS server
    - Fetch the custom_mod_wl_ohs.conf file from mounted shared data volume
    - Place the custom_mod_wl_ohs.conf file under OHS INSTANCE home
-   - Restart OHS server
+   - Start Node manager and OHS server
 
 _NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html._
 

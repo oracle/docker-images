@@ -75,3 +75,7 @@ echo "Node manager running, hence starting OHS server"
 ${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/start-ohs.py
 echo "OHS server has been started "
 fi
+
+
+#Tail all server logs
+tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.out
