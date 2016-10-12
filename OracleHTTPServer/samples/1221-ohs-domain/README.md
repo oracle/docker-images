@@ -15,7 +15,7 @@ $ docker images
 
        Eg:$ docker volume create --name volume
 
-_This data volume will be created in "/var/lib/docker" directory or the location where "/var/lib/docker" points to._
+   _This data volume will be created in "/var/lib/docker" directory or the location where "/var/lib/docker" points to._
 
 3. Depending on your Weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553)
 
@@ -59,27 +59,28 @@ Depending on the nature of your applications create your own "custom_mod_wl_ohs.
 
 1. Create the custom_mod_wl_ohs.conf file by referring to container-scripts/mod_wl_ohs.conf.sample
 
-       For e.g
-       LoadModule weblogic_module   "/u01/oracle/ohssa/ohs/modules/mod_wl_ohs.so"
-       <IfModule mod_weblogic.c>
-       WebLogicHost myhost
-       WebLogicPort 7001
-       </IfModule>
-       #
-       # Directive for weblogic admin console deployed on Admin Server
-       <Location /console>
-       WLSRequest On
-       WebLogicHost myhost
-       WeblogicPort 7001
-       </Location>
-       #
-       # Directive for all application deployed on weblogic cluster with prepath /weblogic
-       <Location /weblogic>
-       WLSRequest On
-       WebLogicCluster myhost:9001,myhost:9002
-       PathTrim /weblogic
-       </Location>
-
+         ```
+         For e.g
+         LoadModule weblogic_module  "$OHS_ORACLE_HOME/ohs/modules/mod_wl_ohs.so"
+         <IfModule mod_weblogic.c>
+         WebLogicHost myhost
+         WebLogicPort 7001
+         </IfModule>
+         #
+         # Directive for weblogic admin console deployed on Admin Server
+         <Location /console>
+         WLSRequest On
+         WebLogicHost myhost
+         WeblogicPort 7001
+         </Location>
+         #
+         # Directive for all application deployed on weblogic cluster with prepath /weblogic
+         <Location /weblogic>
+         WLSRequest On
+         WebLogicCluster myhost:9001,myhost:9002
+         PathTrim /weblogic
+         </Location>
+         ```
 
 2. Place it in docker data volume directory say /var/lib/docker/volume
 
