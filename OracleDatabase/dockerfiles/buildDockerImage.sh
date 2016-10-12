@@ -10,7 +10,7 @@
 # 
 
 usage() {
-cat << EOF
+  cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
 Builds a Docker Image for Oracle Database.
@@ -30,7 +30,7 @@ LICENSE CDDL 1.0 + GPL 2.0
 Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 
 EOF
-exit 0
+  exit 0
 }
 
 # Validate packages
@@ -44,7 +44,13 @@ checksumPackages() {
   fi
 }
 
-if [ "$#" -eq 0 ]; then usage; fi
+##############
+#### MAIN ####
+##############
+
+if [ "$#" -eq 0 ]; then
+  usage;
+fi
 
 # Parameters
 ENTERPRISE=0
