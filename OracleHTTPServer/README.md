@@ -60,6 +60,7 @@ Verify you now have this image in place with
         $ docker images
 
 ### How to run container
+
 1. As prerequisite run the below command to create a docker data volume.
 
        Eg:$ docker volume create --name volume
@@ -84,16 +85,15 @@ _This volume will be created in "/var/lib/docker" directory or the location wher
    - Place the custom_mod_wl_ohs.conf file under OHS INSTANCE home
    - Start Node manager and OHS server
 
-_NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html._
-
-_Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script._
-
-
 5. Sanity URLs check for OHS server
    - Now you can access the OHS index page @ http://localhost:7777/index.html
    - Static html page @ URL http://localhost:7777/helloWorld.html
 
 6. All applications should now be routed via the OHS port 7777.
+
+######NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html.
+
+######Later you can login to running container and configure Weblogic Server proxy plugin file and run *restartOHS.sh* script.
 
 
 ## Support

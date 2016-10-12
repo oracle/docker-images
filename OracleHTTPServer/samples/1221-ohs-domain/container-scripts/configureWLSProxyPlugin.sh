@@ -44,7 +44,7 @@ echo "Copying ${modwlsconfigfile} to ${INSTANCE_CONFIG_HOME} "
 cp ${modwlsconfigfile} ${INSTANCE_CONFIG_HOME}/mod_wl_ohs.conf
 echo "Starting Node Manager and OHS server after successful configuration of WebLogic Server Proxy Plug-In "
 /u01/oracle/container-scripts/startNMandOHS.sh
-echo "You may now access the the application deployed to the weblogic Cluster @ http://localhost:7777/weblogic/application_end_url"
+echo "You may now access the the application via OHS port 7777 @ http://localhost:7777/application_end_url"
 #
 # Incase custom_mod_wl_ohs.conf file is not provided/found, OHS will be started with default settings
 else

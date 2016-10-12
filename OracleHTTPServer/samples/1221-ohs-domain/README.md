@@ -4,29 +4,30 @@ This Dockerfile extends the Oracle HTTP Install image by creating a sample OHSdo
 During OHS container creation Oracle WebLogic Server Proxy Plug-In can be configured in order to load balance applications deployed onto either the Weblogic Admin Server, the Managed Servers or the  WebLogic cluster running on docker containers within the same network.
 
 ## How to build image and run container
-First make sure you have the Oracle HTTP install image (oracle/ohs:12.2.1-sa) ready by running following command as root user
-$ docker images
+1.First make sure you have the Oracle HTTP install image (oracle/ohs:12.2.1-sa) ready by running following command as root user
 
-1.To build the OHS domain image using this sample Dockerfile, run command:
+    $ docker images
 
-      $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 --build-arg NM_PASSWORD=welcome1 .
+2.To build the OHS domain image using this sample Dockerfile, run command:
 
-2. Run the below command to create a docker data volume.
+    $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 --build-arg NM_PASSWORD=welcome1 .
 
-       Eg:$ docker volume create --name volume
+3.Run the below command to create a docker data volume.
+
+    Eg:$ docker volume create --name volume
 
    _This data volume will be created in "/var/lib/docker" directory or the location where "/var/lib/docker" points to._
 
-3. Depending on your Weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553)
+4.Depending on your Weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553)
 
-4. Place the custom_mod_wl_ohs.conf file in docker data volume directory . e.g /var/lib/docker/volume
+5.Place the custom_mod_wl_ohs.conf file in docker data volume directory . e.g /var/lib/docker/volume
 
-5. To start the OHS Container with above sampleohs:12.2.1 image , run command  from data volume directory:
+6.To start the OHS Container with above sampleohs:12.2.1 image , run command  from data volume directory:
 
        $ cd /var/lib/docker/volume
        $ docker run -v `pwd`:/volume -w /volume -d --name ohs -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
 
-6. All applications will now be accessible via the OHS port 7777.
+7.All applications will now be accessible via the OHS port 7777.
 
 ######NOTE: If custom_mod_wl_ohs.conf is not provided, then configureWLSProxyPlugin.sh will just start OHS which will be accessible @ http://localhost:7777/index.html.
 ######Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script.

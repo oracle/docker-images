@@ -43,3 +43,6 @@ cp /u01/oracle/container-scripts/mod_wl_ohs.conf.sample.WLSMultiHost ${INSTANCE_
 #Start NodeManager and OHS server
 echo "Starting Node Manager and OHS server"
 /u01/oracle/container-scripts/startNMandOHS.sh
+
+#Echo URL to be used for accessing applications deployed on weblogic clister
+echo "You may now access all the application deployed on weblogic cluster @ http://localhost:7777/weblogic/application_end_url"
