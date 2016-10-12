@@ -35,12 +35,16 @@ EOF
 
 # Validate packages
 checksumPackages() {
-  echo "Checking if required packages are present and valid..."
-  md5sum -c Checksum.$EDITION
-  if [ "$?" -ne 0 ]; then
-    echo "MD5 for required packages to build this image did not match!"
-    echo "Make sure to download missing files in folder $VERSION."
-    exit $?
+  if hash md5sum 2>/dev/null; then
+    echo "Checking if required packages are present and valid..."
+    md5sum -c Checksum.$EDITION
+    if [ "$?" -ne 0 ]; then
+      echo "MD5 for required packages to build this image did not match!"
+      echo "Make sure to download missing files in folder $VERSION."
+      exit $?
+    fi
+  else
+    echo "Ignored MD5 sum, 'md5sum' command not available.";
   fi
 }
 
