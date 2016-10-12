@@ -58,6 +58,12 @@ Depending on the nature of your applications create your own "custom_mod_wl_ohs.
 
 ##### To configure Oracle WebLogic Server Proxy Plug-In inside OHS container
 
+**Prerequisite** : Create a docker data volume which will contain the Oracle weblogic Porxy Plugin file
+
+       Eg:$ docker volume create --name volume
+
+_This volume will be created in "/var/lib/docker" directory or the location where "/var/lib/docker" points to._
+
 1. Create the custom_mod_wl_ohs.conf file by referring to container-scripts/mod_wl_ohs.conf.sample
 
          ```

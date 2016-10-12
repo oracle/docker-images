@@ -61,22 +61,22 @@ Verify you now have this image in place with
 
 ### How to run container
 
-1. As prerequisite run the below command to create a docker data volume.
+**Prerequisite** : Create a docker data volume which will contain the Oracle Weblogic Proxy Plugin file
 
-       Eg:$ docker volume create --name volume
+         Eg:$ docker volume create --name volume
 
 _This volume will be created in "/var/lib/docker" directory or the location where "/var/lib/docker" points to._
 
 
-2. Depending on your weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553)
+1. Depending on your weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553)
 
-3. Place the custom_mod_wl_ohs.conf file in docker data volume directory . e.g /var/lib/docker/volume
+2. Place the custom_mod_wl_ohs.conf file in docker data volume directory . e.g /var/lib/docker/volume
 
-4. To start the OHS Container with above sampleohs:12.2.1 image , run command from docker voume directory
+3. To start the OHS Container with above sampleohs:12.2.1 image , run command from docker voume directory
 
-       For e.g.
-       $ cd /var/lib/docker/volume
-       $ docker run -v `pwd`:/volume -w /volume -d --name ohs -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
+         For e.g
+         $ cd /var/lib/docker/volume
+         $ docker run -v `pwd`:/volume -w /volume -d --name ohs -p 7777:7777  sampleohs:12.2.1 configureWLSProxyPlugin.sh
 
 
    The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
@@ -85,11 +85,11 @@ _This volume will be created in "/var/lib/docker" directory or the location wher
    - Place the custom_mod_wl_ohs.conf file under OHS INSTANCE home
    - Start Node manager and OHS server
 
-5. Sanity URLs check for OHS server
+4. Sanity URLs check for OHS server
    - Now you can access the OHS index page @ http://localhost:7777/index.html
    - Static html page @ URL http://localhost:7777/helloWorld.html
 
-6. All applications should now be routed via the OHS port 7777.
+5. All applications should now be routed via the OHS port 7777.
 
 ######NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html.
 
