@@ -60,4 +60,4 @@ USER oracle
 WORKDIR /u01/oracle/container-scripts
 
 # Define default command to start bash
-CMD ["bash"]
+CMD ["startNMandOHS.sh"]

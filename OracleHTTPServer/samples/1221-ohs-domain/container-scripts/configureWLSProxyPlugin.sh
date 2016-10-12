@@ -22,7 +22,6 @@
 #MW_HOME    - The root directory of your OHS standalone install
 #DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDOmain"
 #OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs_sa1"
-#WEBLOGIC_HOST, WEBLOGIC_PORT, WEBLOGIC_CLUSTER - Env values passed from env.list
 #*************************************************************************
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
@@ -33,11 +32,6 @@ INSTANCE_CONFIG_HOME=$DOMAIN_HOME/config/fmwconfig/components/OHS/${OHS_COMPONEN
 export INSTANCE_CONFIG_HOME
 echo "INSTANCE_CONFIG_DIR=${INSTANCE_CONFIG_HOME}"
 
-#Start NodeManager and OHS server
-echo "Starting Node Manager and OHS server"
-/u01/oracle/container-scripts/startNMandOHS.sh
-
-
 #Search for the customized mod_wl_ohs.conf file
 modwlsconfigfile=`find / -name 'custom_mod_wl_ohs.conf' 2>&1 | grep -v 'Permission denied'`
 export modwlsconfigfile
@@ -46,15 +40,16 @@ export modwlsconfigfile
 if [[ -n "${modwlsconfigfile/[ ]*\n/}" ]]; then
 cd ${INSTANCE_CONFIG_HOME}
 mv mod_wl_ohs.conf mod_wl_ohs.conf.ORIGINAL
-echo "Copying ${modwlsconfigfile} to ${INSTANCE_CONFIG_HOME} and restarting OHS server"
+echo "Copying ${modwlsconfigfile} to ${INSTANCE_CONFIG_HOME} "
 cp ${modwlsconfigfile} ${INSTANCE_CONFIG_HOME}/mod_wl_ohs.conf
-echo "Restarting OHS server after successful configuration of WebLogic Server Proxy Plug-In "
-/u01/oracle/container-scripts/restartOHS.sh
-echo "You may now access the the application deployed to the DockerCluster @ http://myhost:7777/weblogic/application_end_url"
+echo "Starting Node Manager and OHS server after successful configuration of WebLogic Server Proxy Plug-In "
+/u01/oracle/container-scripts/startNMandOHS.sh
+echo "You may now access the the application via OHS port 7777 @ http://localhost:7777/application_end_url"
+#
+# Incase custom_mod_wl_ohs.conf file is not provided/found, OHS will be started with default settings
 else
-echo "Customized mod_wl_ohs.conf file not found in mounted volume!!! WebLogic Server Proxy Plug-In has not been configured, but OHS is running  "
-echo "You may now access OHS @ http://myhost:7777/index.html"
+echo "Customized mod_wl_ohs.conf file not found in mounted volume!!! WebLogic Server Proxy Plug-In has not been configured."
+echo "Starting Node Manager and OHS server with default settings "
+/u01/oracle/container-scripts/startNMandOHS.sh
+echo "You may now access OHS @ http://localhost:7777/index.html"
 fi
-
-#Tail all server logs
-tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.out
