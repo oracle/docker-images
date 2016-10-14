@@ -8,7 +8,7 @@ This project offers sample Dockerfiles for both Oracle Database 12c (12.1.0.2) E
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle Database Docker Install Images
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. You also have to make sure to have internet connectivity for yum.
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. You also have to make sure to have internet connectivity for yum. Note that you don't need to uncompress the binaries in order to use them, the script will handle it for you.
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with `sudo` privileges:
 
