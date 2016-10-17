@@ -21,7 +21,7 @@ Now you can just execute the starterset.sql file outside the container:
 
 	sql sys/LetsDocker@//localhost:1521/STARTERSET as sysdba @starterset.sql
 
-And then connect with the TEST user and query the table COOL_PEOPLE:
+And then connect with the `TEST` user and query the table `PEOPLE`:
 
 	sql test/test@//localhost:1521/STARTERSET
 
