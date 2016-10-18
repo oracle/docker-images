@@ -118,6 +118,14 @@ EOF
 
 ############# MAIN ################
 
+# Check whether container has enough memory
+if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes` -lt 2147483648 ]; then
+   echo "Error: The container doesn't have enough memory allocated."
+   echo "A database container needs at least 2 GB of memory."
+   echo "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
+   exit 1;
+fi;
+
 # Set SIGTERM handler
 trap _term SIGTERM
 
