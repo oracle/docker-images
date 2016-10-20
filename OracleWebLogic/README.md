@@ -12,9 +12,9 @@ This project offers sample Dockerfiles for both WebLogic 12cR2 (12.2.1) and WebL
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle JDK (Server JRE) base image
-You must first download the Oracle Server JRE binary and drop in folder `../OracleJDK/java-8` and build that image. For more information, visit the [OracleJDK](../OracleJDK) folder's [README](../OracleJDK/README.md) file.
+You must first download the Oracle Server JRE binary and drop in folder `../OracleJava/java-8` and build that image. For more information, visit the [OracleJava](../OracleJava) folder's [README](../OracleJava/README.md) file.
 
-        $ cd ../OracleJDK/java-8
+        $ cd ../OracleJava/java-8
         $ sh build.sh
 
 ### Building WebLogic Docker Install Images

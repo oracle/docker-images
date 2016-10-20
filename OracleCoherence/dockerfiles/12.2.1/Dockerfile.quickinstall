@@ -6,8 +6,8 @@
 # 
 # REQUIRED BASE IMAGE TO BUILD THIS IMAGE
 # ---------------------------------------
-# This Dockerfile requires the base image oracle/jdk:8
-# (see https://github.com/oracle/docker-images/tree/master/OracleJDK)
+# This Dockerfile requires the base image oracle/serverjre:8
+# (see https://github.com/oracle/docker-images/tree/master/OracleJava)
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -27,7 +27,7 @@
 
 # Pull base image
 # ---------------
-FROM oracle/jdk:8
+FROM oracle/serverjre:8
 
 # Maintainer
 # ----------

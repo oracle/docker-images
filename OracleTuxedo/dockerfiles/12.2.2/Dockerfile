@@ -1,15 +1,15 @@
-#
 # Dockerfile template for Tuxedo 12.2.2
 # 
 # Download the following files to an empty directory:
 #   tuxedo122200_64_Linux_01_x86.zip	from http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html
 #
-# For Tuxedo 12.2.2, you need JRE installed first, so before you can build this image, you must download the Oracle Server JRE binary and drop in folder OracleJDK/java-8 and build that image.
-#   cd OracleJDK/java-8
+# For Tuxedo 12.2.2, you need JRE installed first, so before you can build this image, you must download the Oracle Server JRE binary and drop in folder OracleJava/java-8 and build that image.
+#
+#   cd ../OracleJava/java-8
 #   sh build.sh
 
 # Pull base image
-FROM oracle/jdk:8
+FROM oracle/serverjre:8
 
 MAINTAINER Todd Little <todd.little@oracle.com>
 

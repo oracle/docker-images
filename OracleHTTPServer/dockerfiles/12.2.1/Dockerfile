@@ -39,7 +39,7 @@
 #
 # Pull Oracle Linux 7 base image
 # -----------------------------------
-FROM oracle/jdk:8
+FROM oracle/serverjre:8
 
 # Maintainer
 # ------------------------------------

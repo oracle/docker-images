@@ -5,9 +5,9 @@ The certification of OHS on Docker does not require the use of any file presente
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## Building Oracle JDK (Server JRE) base image
-Before you can build these WebLogic images, you must download the Oracle Server JRE binary and drop in folder `OracleJDK/java-8` and build that image.
+Before you can build these WebLogic images, you must download the Oracle Server JRE binary and drop in folder `OracleJava/java-8` and build that image.
 
-        $ cd OracleJDK/java-8
+        $ cd ../OracleJava/java-8
         $ sh build.sh
 
 ## How to Build and Run
