@@ -19,7 +19,7 @@ When you run the container a patched WebLogic Server 12.2.1.1 empty domain is cr
 
 `Oracle WebLogic Server auto generated Admin password:`
 
-
+Go to your browser and start the Adminsitration console by running:
         http://localhost:7001/console
 
 Extend this patched image to create a domain image and start WebLogic Servers running in containers.
