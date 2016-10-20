@@ -30,19 +30,22 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV FMW_PKG="fmw_12.2.1.1.0_wls_supplemental_quick_Disk1_1of1.zip" \
+    FMW_JAR="fmw_12.2.1.1.0_wls_supplemental_quick.jar" \
     MW_HOME="$ORACLE_HOME" \ 
     PATH="$ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/samples/server/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin"
 
 # Copy supplemental package and scripts
 # --------------------------------
-COPY $FMW_PKG startSample.sh ./
+COPY $FMW_PKG startSample.sh /u01/
 
 # Installation of Supplemental Quick Installer 
 # --------------------------------------------
-RUN jar xvf $FMW_PKG && \
-    java -jar $(ls -1 *.jar) ORACLE_HOME=$ORACLE_HOME && \
-    mv startSample.sh /u01/oracle/wlserver/samples/server/ && \ 
-    rm $FMW_PKG $(ls -1 *.jar)
+RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
+    chown oracle:oracle -R /u01 && \ 
+    echo oracle:oracle | chpasswd && \ 
+    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR  ORACLE_HOME=$ORACLE_HOME" - oracle && \
+    mv /u01/startSample.sh /u01/oracle/wlserver/samples/server/  && \
+    rm /u01/$FMW_PKG /u01/$FMW_JAR
 
 WORKDIR $ORACLE_HOME/wlserver/samples/server
 
