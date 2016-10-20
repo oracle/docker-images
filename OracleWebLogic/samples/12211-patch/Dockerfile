@@ -4,9 +4,8 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This Dockerfile extends the Oracle WebLogic image by installing the Supplemental package of WebLogic which 
-# includes extra samples of Java EE, Coherence applications, and Multitenant domains. 
-#
+# This Dockerfile extends the Oracle WebLogic install image and applies a PSU patch.
+
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) p24286152_122110_Generic.zip
