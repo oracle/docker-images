@@ -4,7 +4,7 @@ This example demonstrates how to unplug a PDB inside a Docker container.
 Unplugging a PDB allows you to move the PDB from a Container Database (CDB) to another.
 The other CDB can reside either in another Docker container or outside.
 
-Also have a look at `samples/plugpdb` for how to plug a PDB into a CDB inside a Docker container.
+Also have a look at [samples/plugpdb](../plugpdb) for how to plug a PDB into a CDB inside a Docker container.
 
 # How to build and run
 First make sure you have started a container using the **oracle/database:12.1.0.2-ee** image:
