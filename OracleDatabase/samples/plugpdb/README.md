@@ -5,7 +5,7 @@ Plugging a PDB into a CDB allows you to open an already existing PDB in another 
 This approach gives you great flexibility of moving databases (PDBs) around.
 Note that the CDB can reside inside a Docker container but does not have to!
 
-Also have a look at `samples/unplugpdb` for how to unplug a PDB inside a Docker container.
+Also have a look at [samples/unplugpdb](../unplugpdb) for how to unplug a PDB inside a Docker container.
 
 # How to build and run
 First make sure you have started a container using the **oracle/database:12.1.0.2-ee** image:
