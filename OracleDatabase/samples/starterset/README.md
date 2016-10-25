@@ -10,7 +10,7 @@ First make sure you have started a container using the **oracle/database:12.1.0.
 	docker run --name starterset \
 	-p 1521:1521 -p 5500:5500 \
 	-e ORACLE_PDB=STARTERSET \
-	-v /home/oracle/oradata:/opt/oracle/oradata
+	-v /home/oracle/oradata:/opt/oracle/oradata \
 	oracle/database:12.1.0.2-ee
 
 Then change the password of the admin accounts:
