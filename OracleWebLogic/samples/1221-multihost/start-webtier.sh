@@ -8,7 +8,7 @@ echo "Creating  the Apache WebTier to load balance requests to a WLS cluster for
 echo ""
 machine=$1
 swarm=""
-webtierimage=webtier
+webtierimage=1221-webtier
 wlscluster=""
 . ./setenv.sh
 
