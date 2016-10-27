@@ -13,7 +13,7 @@ usage() {
 cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-d | -g | -i] [-s] [-c]
-Builds a Docker Image for Oracle WebLogic.
+Builds a Docker Image for Oracle SOA.
 
 Parameters:
    -v: version to build. Required.
@@ -90,7 +90,7 @@ else
   DISTRIBUTION="quickstart"
 fi
 
-# WebLogic Image Name
+# SOA Image Name
 IMAGE_NAME="oracle/soa:$VERSION-$DISTRIBUTION"
 
 # Go into version folder
@@ -152,5 +152,5 @@ cat << EOF
 
 EOF
 else
-  echo "WebLogic Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "SOA Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
