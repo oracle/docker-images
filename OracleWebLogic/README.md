@@ -25,7 +25,7 @@ Before you build, choose which version and distribution you want to build an ima
         $ sh buildDockerImage.sh -h
         Usage: buildDockerImage.sh -v [version] [-d | -g | -i] [-s]
         Builds a Docker Image for Oracle WebLogic.
-          
+
         Parameters:
            -v: version to build. Required.
            Choose one of: 12.1.3  12.2.1  
@@ -34,23 +34,23 @@ Before you build, choose which version and distribution you want to build an ima
            -i: creates image based on 'infrastructure' distribution
            -c: enables Docker image layer cache during build
            -s: skips the MD5 check of packages
-        
+
         * select one distribution only: -d, -g, or -i
-        
+
         LICENSE CDDL 1.0 + GPL 2.0
-        
+
         Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** the resulting images will NOT have a domain pre-configured. You must extend the image with your own Dockerfile, and create your domain using WLST. You might take a look at the use case samples as well below.
 
 ## Samples for WebLogic Domain Creation
-To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic image, we provide a few samples for 12c versions for the Developer distribution. For an example on **12.2.1**, you can use the sample inside [samples/1221-domain](samples/1221-domain) folder. For the **12.1.3** version, check the folder [samples/1213c-domain](samples/1213-domain). 
+To give users an idea on how to create a domain from a custom Dockerfile to extend the WebLogic image, we provide a few samples for 12c versions for the Developer distribution. For an example on **12.2.1**, you can use the sample inside [samples/1221-domain](samples/1221-domain) folder. For the **12.1.3** version, check the folder [samples/1213c-domain](samples/1213-domain).
 
 ### Sample Domain for WebLogic 12.2.1
 This [Dockerfile](samples/1221-domain/Dockerfile) will create an image by extending **oracle/weblogic:12.2.1-developer**. It will configure a **base_domain** with the following settings:
 
  * Admin Username: `weblogic`
- * Admin Password: provided by `ADMIN_PASSWORD` 
+ * Admin Password: provided by `ADMIN_PASSWORD`
  * Oracle Linux Username: `oracle`
  * Oracle Linux Password: `welcome1`
  * WebLogic Domain Name: `base_domain`
@@ -66,16 +66,16 @@ The best way to create your own, or extend domains is by using [WebLogic Scripti
 ## Building a sample Docker Image of a WebLogic Domain
 To try a sample of a WebLogic image with a domain configured, follow the steps below:
 
-  1. Make sure you have **oracle/weblogic:12.2.1-developer** image built. If not go into **dockerfiles** and call 
+  1. Make sure you have **oracle/weblogic:12.2.1-developer** image built. If not go into **dockerfiles** and call
 
         $ sh buildDockerImage.sh -v 12.2.1 -d
 
   2. Go to folder **samples/1221-domain**
-  3. Run the following command: 
+  3. Run the following command:
 
         $ docker build -t 1221-domain --build-arg ADMIN_PASSWORD=<define> .
 
-  4. Verify you now have this image in place with 
+  4. Verify you now have this image in place with
 
         $ docker images
 
@@ -104,13 +104,13 @@ The basic idea behind this setup is that you must have all the containers across
 #### Create a WebLogic Server 12cR2 MedRec sample domain**
 The Supplemental Quick Installer is a lightweight installer that contains all of the necessary artifacts to develop and test applications on Oracle WebLogic Server 12.2.1. You can extend the WebLogic developer install image **oracle/weblogic:12.2.1-developer** to create a domain image with the MedRec application deployed.
 
-  1. Make sure you have `oracle/weblogic:12.2.1-developer` image built. If not go into [dockerfiles](dockerfiles/) and call 
+  1. Make sure you have `oracle/weblogic:12.2.1-developer` image built. If not go into [dockerfiles](dockerfiles/) and call
 
         $ sh buildDockerImage.sh -v 12.2.1 -d
 
   2. Go to folder [samples/1221-medrec](samples/1221-medrec)
   3. Download into this folder the supplemental package for WebLogic 12R2
-  4. Run the following command: 
+  4. Run the following command:
 
         $ docker build -t 1221-medrec .
 
@@ -118,7 +118,7 @@ The Supplemental Quick Installer is a lightweight installer that contains all of
 
         $ docker run -ti -p 7001:7001 1221-medrec
 
-  6. Now access the AdminServer Console at 
+  6. Now access the AdminServer Console at
 
         http://localhost:7011/medrec
 
@@ -144,7 +144,7 @@ This project hosts two to three configurations (depending on WebLogic version) f
 ## License
 To download and run WebLogic 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
-To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that pge.
+To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project and GitHub [docker/OracleWebLogic](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
 
