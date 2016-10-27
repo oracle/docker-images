@@ -1,0 +1,12 @@
+[ENGINE]
+
+#DO NOT CHANGE THIS.
+Response File Version=1.0.0.0.0
+
+[GENERIC]
+
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+
+#The oracle home location. This can be an existing Oracle Home or a new Oracle Home
+#ORACLE_HOME=D:\dev\oracle\fmw\soa-qs\12.1.3.0-2
