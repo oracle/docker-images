@@ -83,11 +83,11 @@ done
 if [ $((QUICKSTART + GENERIC)) -gt 1 ]; then
   usage
 elif [ $QUICKSTART -eq 1 ]; then
-  DISTRIBUTION="qs"
+  DISTRIBUTION="quickstart"
 elif [ $GENERIC -eq 1 ]; then
   DISTRIBUTION="generic"
 else
-  DISTRIBUTION="qs"
+  DISTRIBUTION="quickstart"
 fi
 
 # WebLogic Image Name
