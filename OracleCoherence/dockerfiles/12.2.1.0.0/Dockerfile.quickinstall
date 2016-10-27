@@ -2,40 +2,40 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Coherence 12.2.1 Standalone Distribution
+# This is the Dockerfile for Coherence 12.2.1 Quick Install Distribution
 # 
 # REQUIRED BASE IMAGE TO BUILD THIS IMAGE
 # ---------------------------------------
-# This Dockerfile requires the base image oracle/jdk:8
-# (see https://github.com/oracle/docker-images/tree/master/OracleJDK)
+# This Dockerfile requires the base image oracle/serverjre:8
+# (see https://github.com/oracle/docker-images/tree/master/OracleJava)
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.0.0_coherence_Disk1_1of1.zip
+# (1) fmw_12.2.1.0.0_coherence_quick_Disk1_1of1
 #
-#     Download the Standalone installer from http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html
+#     Download the Quick installer from http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sh buildDockerImage.sh -s
+#      $ sh buildDockerImage.sh -q
 #
 # or if your Docker client requires root access you can run:
-#      $ sudo sh buildDockerImage.sh -s
+#      $ sudo sh buildDockerImage.sh -q
 #
 
 # Pull base image
 # ---------------
-FROM oracle/jdk:8
+FROM oracle/serverjre:8
 
 # Maintainer
 # ----------
 MAINTAINER Jonathan Knight
 
 # Environment variables required for this build (do NOT change)
-ENV FMW_PKG=fmw_12.2.1.0.0_coherence_Disk1_1of1.zip \
-    FMW_JAR=fmw_12.2.1.0.0_coherence.jar \
+ENV FMW_PKG=fmw_12.2.1.0.0_coherence_quick_Disk1_1of1.zip \
+    FMW_JAR=fmw_12.2.1.0.0_coherence_quick.jar \
     ORACLE_HOME=/u01/oracle/oracle_home \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_home/oracle_common/common/bin \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
@@ -48,7 +48,7 @@ COPY $FMW_PKG install.file oraInst.loc /u01/
 # Install and configure Oracle JDK
 # Setup required packages (unzip), filesystem, and oracle user
 # ------------------------------------------------------------
-RUN chmod a+xr /u01 && \ 
+RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \

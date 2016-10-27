@@ -4,7 +4,7 @@ This repository stores Dockerfiles and samples to build Docker images for Oracle
 
  - [Oracle Coherence](./OracleCoherence)
  - [Oracle Database](./OracleDatabase)
- - [Oracle Java JDK](./OracleJDK)
+ - [Oracle Java](./OracleJava)
  - [Oracle HTTP Server](./OracleHTTPServer)
  - [Oracle Tuxedo](./OracleTuxedo)
  - [Oracle WebLogic](./OracleWebLogic)

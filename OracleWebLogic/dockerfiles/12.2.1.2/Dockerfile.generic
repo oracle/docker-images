@@ -4,11 +4,11 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle WebLogic Server 12.2.1.1 Generic Distro
+# This is the Dockerfile for Oracle WebLogic Server 12.2.1.2 Generic Distro
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.1.0_wls_Disk1_1of1.zip 
+# (1) fmw_12.2.1.2.0_wls_Disk1_1of1.zip 
 #     Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
 #
 # (2) server-jre-8uXX-linux-x64.tar.gz
@@ -18,7 +18,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -f Dockerfile.generic -t oracle/weblogic:12.2.1.1-generic . 
+#      $ docker build -f Dockerfile.generic -t oracle/weblogic:12.2.1.2-generic . 
 #
 # IMPORTANT
 # ---------
@@ -27,7 +27,7 @@
 # Pull base image
 # From the Oracle Registry
 # -------------------------
-FROM oracle/serverjre:8
+FROM oracle/jdk:8
 
 # Maintainer
 # ----------
@@ -40,8 +40,8 @@ ARG ADMIN_PASSWORD
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV FMW_PKG=fmw_12.2.1.1.0_wls_Disk1_1of1.zip \
-    FMW_JAR=fmw_12.2.1.1.0_wls.jar \
+ENV FMW_PKG=fmw_12.2.1.2.0_wls_Disk1_1of1.zip \
+    FMW_JAR=fmw_12.2.1.2.0_wls.jar \
     SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \

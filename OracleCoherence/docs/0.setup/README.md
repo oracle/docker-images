@@ -46,7 +46,7 @@ The examples in the `/docs` section show different aspects of Oracle Coherence f
 
     This creates an overlay network called `coh-net` available to both the `coh-demo0` and `coh-demo1` machines.
     
-7. Build the Java 8 image. Change directory to the `OracleJDK/java-8` directory, make sure the required JRE install (as documented in the [OracleJDK](../../../OracleJDK) section) has been downloaded to that directory, and then run these commands:
+7. Build the Java 8 image. Change directory to the `OracleJava/java-8` directory, make sure the required JRE install (as documented in the [OracleJava](../../../OracleJava) section) has been downloaded to that directory, and then run these commands:
     
     `$ eval $(docker-machine env coh-demo0)`
     

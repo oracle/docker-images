@@ -96,6 +96,14 @@ EOF"
 
 ############# MAIN ################
 
+# Check whether container has enough memory
+if [ `df -k /dev/shm | tail -n 1 | awk '{print $2}'` -lt 1048576 ]; then
+   echo "Error: The container doesn't have enough memory allocated."
+   echo "A database XE container needs at least 1 GB of shared memory (/dev/shm)."
+   echo "You currently only have $((`df -k /dev/shm | tail -n 1 | awk '{print $2}'`/1024)) MB allocated to the container."
+   exit 1;
+fi;
+
 # Set SIGTERM handler
 trap _term SIGTERM
 

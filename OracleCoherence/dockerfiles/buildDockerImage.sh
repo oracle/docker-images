@@ -18,7 +18,8 @@ Builds a Docker Image for Oracle Coherence.
 Parameters:
    -q: creates image based on 'quickinstall' distribution
    -s: creates image based on 'standalone' distribution
-   -v: version to build
+   -v: version to build. Required.
+       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
 
 * select one distribution only: -q or -s
 
@@ -55,7 +56,7 @@ while getopts "hmv:qs" optname; do
   esac
 done
 
-
+cd $VERSION
 
 # Which distribution to use?
 if [ $((QUICKINSTALL + STANDALONE)) -gt 1 ]; then
