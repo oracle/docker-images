@@ -1,6 +1,6 @@
 SOA on Docker
 =============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for both SOA 12.1.3 based on Oracle Linux and Oracle JDK 8 (Server).
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for both SOA 12.1.3 based on Oracle Linux and Oracle JDK 7 (Server).
 
 ## How to build and run
 This project offers sample Dockerfiles for SOA 12c (12.1.3), and one Dockerfile for the 'quickstart' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
@@ -10,7 +10,7 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 ### Building Oracle JDK (Server JRE) base image
 You must first download the Oracle Server JRE binary and drop in folder `../OracleJava/java-8` and build that image. For more information, visit the [OracleJava](../OracleJava) folder's [README](../OracleJava/README.md) file.
 
-        $ cd ../OracleJava/java-8
+        $ cd ../OracleJava/java-7
         $ sh build.sh
 
 ### Building SOA Docker Install Images
