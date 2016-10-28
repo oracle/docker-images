@@ -1,6 +1,6 @@
 # Pull base image
 # ---------------
-FROM oracle/serverjre:8
+FROM oracle/serverjre:7
 
 # Maintainer
 # ----------
