@@ -139,7 +139,7 @@ if [ "${no_proxy}" != "" ]; then
 fi
 
 if [ "$PROXY_SETTINGS" != "" ]; then
-  echo "Proxy settings were found and will be used during build."
+  echo "Proxy settings were found and will be used during the build."
 fi
 
 # ################## #
