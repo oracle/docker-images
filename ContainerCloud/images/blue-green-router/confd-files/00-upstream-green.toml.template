@@ -1,0 +1,8 @@
+[template]
+src = "00-upstream-green.template"
+dest = "/etc/nginx/sites-enabled/00-upstream-green"
+
+keys = [
+"{{ getv "/blue-green/APP_NAME/green/id" }}"
+]
+reload_cmd = "sv reload nginx"
