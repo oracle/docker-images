@@ -19,11 +19,10 @@ Parameters:
    -v: version to build. Required.
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -q: creates image based on 'quickstart' distribution
-   #-g: creates image based on 'generic' distribution
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
 
-* select one distribution only: -q #, or -g
+* select one distribution only: -q 
 
 LICENSE CDDL 1.0 + GPL 2.0
 
@@ -63,9 +62,6 @@ while getopts "hcsdgiv:" optname; do
     "q")
       QUICKSTART=1
       ;;
-    #"g")
-    #  GENERIC=1
-    #  ;;
     "v")
       VERSION="$OPTARG"
       ;;
