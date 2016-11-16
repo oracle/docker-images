@@ -101,7 +101,9 @@ if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
       mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
    fi;
    
+   # Start database
    $ORACLE_BASE/$START_FILE;
+   
 else
    # Remove database config files, if they exist
    rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
