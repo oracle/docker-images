@@ -46,7 +46,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 ENV FMW_PKG=fmw_12.1.3.0.0_wls.jar \
     ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
+    PATH=$PATH:/usr/bin:/u01/oracle/oracle_common/common/bin
 
 # Copy packages and files
 # -----------------------
