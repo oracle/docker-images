@@ -4,4 +4,5 @@
 # If you know what you are doing, call actual wlst.sh
 #
 export USER_MEM_ARGS="-Xms512m -Xmx1024m -XX:MaxPermSize=1024m"
+export CONFIG_JVM_ARGS="-Djava.security.egd=file:///dev/urandom"
 wlst.sh -skipWLSModuleScanning  $@
