@@ -47,6 +47,16 @@ function symLinkFiles {
 
 }
 
+########### SIGINT handler ############
+function _int() {
+   echo "Stopping container."
+   echo "SIGINT received, shutting down database!"
+   sqlplus / as sysdba <<EOF
+   shutdown immediate;
+EOF
+   lsnrctl stop
+}
+
 ########### SIGTERM handler ############
 function _term() {
    echo "Stopping container."
@@ -75,6 +85,9 @@ if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes` -lt 2147483648 ]; then
    echo "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
    exit 1;
 fi;
+
+# Set SIGINT handler
+trap _int SIGINT
 
 # Set SIGTERM handler
 trap _term SIGTERM

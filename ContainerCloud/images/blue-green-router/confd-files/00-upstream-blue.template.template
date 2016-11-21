@@ -1,0 +1,6 @@
+upstream blue {
+  least_conn;
+  server 127.0.0.1 down;
+  {{"{{"}}range gets "/{{ getv "/blue-green/APP_NAME/blue/id" }}/*"{{"}}"}}
+  server {{"{{"}}.Value{{"}}"}};{{"{{"}}end{{"}}"}}
+}
