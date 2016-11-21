@@ -1,5 +1,8 @@
 Examples of how to extend the Oracle Database Docker Image
 ================================
+# 12102-docker-compose
+Provides a Docker Compose example file.
+
 # customdb
 Example of how to create a database with user defined names.
 
