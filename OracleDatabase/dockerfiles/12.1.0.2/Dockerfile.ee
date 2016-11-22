@@ -37,7 +37,9 @@ ENV ORACLE_BASE=/opt/oracle \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
     PERL_INSTALL_FILE="installPerl.sh" \
-    RUN_FILE="runOracle.sh"
+    RUN_FILE="runOracle.sh" \
+    START_FILE="startDB.sh" \
+    CREATE_DB_FILE="createDB.sh"
 
 # Use second ENV so that variable get substituted
 ENV INSTALL_DIR=$ORACLE_BASE/install \
@@ -48,7 +50,7 @@ ENV INSTALL_DIR=$ORACLE_BASE/install \
 # Copy binaries
 # -------------
 COPY $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $PERL_INSTALL_FILE $INSTALL_DIR/
-COPY $RUN_FILE $CONFIG_RSP $PWD_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $ORACLE_BASE/
 
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
@@ -56,6 +58,8 @@ COPY $RUN_FILE $CONFIG_RSP $PWD_FILE $ORACLE_BASE/
 RUN mkdir -p $ORACLE_BASE/oradata && \
     chmod ug+x $ORACLE_BASE/$PWD_FILE && \
     chmod ug+x $ORACLE_BASE/$RUN_FILE && \
+    chmod ug+x $ORACLE_BASE/$START_FILE && \
+    chmod ug+x $ORACLE_BASE/$CREATE_DB_FILE && \
     groupadd -g 500 dba && \
     groupadd -g 501 oinstall && \
     useradd -d /home/oracle -g dba -G oinstall,dba -m -s /bin/bash oracle && \

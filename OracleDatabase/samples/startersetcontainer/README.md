@@ -1,5 +1,5 @@
-Example of Image with Starter set data
-======================================
+Example of a container including Starter Set data
+=================================================
 This example shows how to create starter set data in the Oracle Database inside a Docker container.
 The starterset.sql file contains the desired SQL commands to be executed.
 This example creates a new user `TEST` within the `STARTERSET` PDB, creates a new table called `PEOPLE` and add some data.

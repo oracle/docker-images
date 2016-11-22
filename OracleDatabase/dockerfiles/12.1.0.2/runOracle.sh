@@ -1,4 +1,14 @@
 #!/bin/bash
+# LICENSE CDDL 1.0 + GPL 2.0
+#
+# Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
+# 
+# Since: November, 2016
+# Author: gerald.venzl@oracle.com
+# Description: Runs the Oracle Database inside the container
+# 
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+# 
 
 ########### Move DB files ############
 function moveFiles {
@@ -66,74 +76,6 @@ EOF
    lsnrctl stop
 }
 
-############# Create DB ################
-function createDB {
-
-   # Auto generate ORACLE PWD
-   ORACLE_PWD=`openssl rand -base64 8`
-   echo "ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN: $ORACLE_PWD";
-
-   cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
-
-   sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
-   sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
-   sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
-
-   mkdir -p $ORACLE_HOME/network/admin
-   echo "NAME.DIRECTORY_PATH= {TNSNAMES, EZCONNECT, HOSTNAME}" > $ORACLE_HOME/network/admin/sqlnet.ora
-
-   # Listener.ora
-   echo "LISTENER = 
-  (DESCRIPTION_LIST = 
-    (DESCRIPTION = 
-      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1)) 
-      (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521)) 
-    ) 
-  ) 
-
-" > $ORACLE_HOME/network/admin/listener.ora
-
-# Start LISTENER and run DBCA
-   lsnrctl start &&
-   dbca -silent -responseFile $ORACLE_BASE/dbca.rsp ||
-    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log
-
-   echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" >> $ORACLE_HOME/network/admin/tnsnames.ora
-   echo "$ORACLE_PDB= 
-  (DESCRIPTION = 
-    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
-    (CONNECT_DATA =
-      (SERVER = DEDICATED)
-      (SERVICE_NAME = $ORACLE_PDB)
-    )
-  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
-
-   sqlplus / as sysdba << EOF
-      ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
-      ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
-EOF
-
-  rm $ORACLE_BASE/dbca.rsp
-  
-  # Move database operational files to oradata
-  moveFiles;
-
-}
-
-############# Start DB ################
-function startDB {
-   # Make sure audit file destination exists
-   if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
-      mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
-   fi;
-   
-   lsnrctl start
-   sqlplus / as sysdba << EOF
-      STARTUP;
-EOF
-
-}
-
 ############# MAIN ################
 
 # Check whether container has enough memory
@@ -166,14 +108,26 @@ fi;
 # Check whether database already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    symLinkFiles;
-   startDB;
+   
+   # Make sure audit file destination exists
+   if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
+      mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
+   fi;
+   
+   # Start database
+   $ORACLE_BASE/$START_FILE;
+   
 else
    # Remove database config files, if they exist
    rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
    rm -f $ORACLE_HOME/dbs/orapw$ORACLE_SID
    rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
-   createDB;
+   # Create database
+   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB;
+   
+   # Move database operational files to oradata
+   moveFiles;
 fi;
 
 echo "#########################"
