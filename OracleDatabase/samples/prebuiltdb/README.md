@@ -33,33 +33,36 @@ Now start the container as follow:
 docker run --name oracle-build -p 1521:1521 -p 5500:5500 oracle/database:12.1.0.2-ee
 ```
 
-## 3. Reset passwords and shutdown the database
+## 3. Reset passwords (optional)
 
-Now you need to connect to the database, reset passwords and shutdown the database:
+It's recommended to reset passwords before creating the image. This way you don't have to do it everytime you create a new container.
+
+Now you should connect to the container and reset passwords:
 (Note! The brackets([ ]) resembles the host and container prompts.)
 ```
-[host] docker exec -it ora-build /bin/bash
+[host] docker exec -it oracle-build /bin/bash
 [oracle@<container>] ./setPassword.sh oracle
-[oracle@<container>] sqlplus "/as sysdba"<<EOF
-> shutdown immediate;
-> EOF
 [oracle@<container>] exit
 ```
-Leave the container running and continue with next section.
+## 4. Stop the running container
 
-## 4. Create the image with the prebuilt database
+Stop the container (and therefore also the database) before generating your new prebuilt image:
+```
+docker stop oracle-build
+```
+
+## 5. Create the image with the prebuilt database
 
 Open a new console on your host and run the following command:
 ```
-docker commit -m "Image with prebuilt database" ora-build oracle/db-prebuilt:12.1.0.2-ee
+docker commit -m "Image with prebuilt database" oracle-build oracle/db-prebuilt:12.1.0.2-ee
 ```
 
 ## 5. Clean up
 
-Shutdown and remove the temporary container:
+Remove the temporary container:
 ```
-docker stop ora-build
-docker rm ora-build
+docker rm oracle-build
 ```
 Remove the image without VOLUME and rename the old image (if exists):
 ```
@@ -86,6 +89,7 @@ services:
     image: oracle/db-prebuilt:12.1.0.2-ee
     ports:
       - "1521:1521"
+      - "5500:5500"
 ```
 And run:
 ```
