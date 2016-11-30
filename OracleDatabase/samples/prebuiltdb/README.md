@@ -39,7 +39,7 @@ It's recommended to reset passwords before creating the image. This way you don'
 
 Now you should connect to the container and reset passwords:
 ```
-docker exec -it oracle-build setPassword.sh oracle
+docker exec -it oracle-build setPassword.sh <newPassword>
 ```
 ## 4. Stop the running container
 
