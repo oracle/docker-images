@@ -38,11 +38,8 @@ docker run --name oracle-build -p 1521:1521 -p 5500:5500 oracle/database:12.1.0.
 It's recommended to reset passwords before creating the image. This way you don't have to do it everytime you create a new container.
 
 Now you should connect to the container and reset passwords:
-(Note! The brackets([ ]) resembles the host and container prompts.)
 ```
-[host] docker exec -it oracle-build /bin/bash
-[oracle@<container>] ./setPassword.sh oracle
-[oracle@<container>] exit
+docker exec -it oracle-build setPassword.sh oracle
 ```
 ## 4. Stop the running container
 
