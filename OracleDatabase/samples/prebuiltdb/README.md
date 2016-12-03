@@ -20,7 +20,7 @@ docker tag oracle/database:12.1.0.2-ee oracle/database-org:12.1.0.2-ee
 Then create an image without a VOLUME:
 ```
 cd docker-images/OracleDatabase/dockerfiles
-sh buildDockerimage.sh -v 12.1.0.2 -e -i 
+sh buildDockerImage.sh -v 12.1.0.2 -e -i 
 ```
 Note! When the build completes remember to uncomment the VOLUME command in the current dockerfile.
 
@@ -39,7 +39,7 @@ It's recommended to reset passwords before creating the image. This way you don'
 
 Now you should connect to the container and reset passwords:
 ```
-docker exec -it oracle-build setPassword.sh <newPassword>
+docker exec oracle-build ./setPassword.sh <newPassword>
 ```
 ## 4. Stop the running container
 
@@ -67,6 +67,10 @@ docker rmi oracle/database:12.1.0.2-ee
 docker tag oracle/database-org:12.1.0.2-ee oracle/database:12.1.0.2-ee
 ```
 
+Uncomment the volume instruction in your Dockerfile:
+```
+VOLUME ["$ORACLE_BASE/oradata"]
+```
 ## 6. Ready to use your image with prebuild database
 
 Run your prebuild image:
@@ -92,7 +96,6 @@ And run:
 ```
 docker-compose up
 ```
-Good luck!
 
 # Copyright
 Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
