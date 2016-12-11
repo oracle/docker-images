@@ -117,8 +117,10 @@ if [ ! "$SKIPMD5" -eq 1 ]; then
 else
   echo "Ignored MD5 checksum."
 fi
-
-echo "====================="
+echo "=========================="
+echo "DOCKER version:"
+docker version
+echo "=========================="
 
 # Proxy settings
 PROXY_SETTINGS=""
