@@ -39,7 +39,9 @@ ENV ORACLE_BASE=/opt/oracle \
     PERL_INSTALL_FILE="installPerl.sh" \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
-    CREATE_DB_FILE="createDB.sh"
+    CREATE_DB_FILE="createDB.sh" \
+    SETUP_LINUX="setupLinuxEnv.sh" \
+    INSTALL_DB_BINARIES="installDBBinaries.sh"
 
 # Use second ENV so that variable get substituted
 ENV INSTALL_DIR=$ORACLE_BASE/install \
@@ -49,50 +51,15 @@ ENV INSTALL_DIR=$ORACLE_BASE/install \
 
 # Copy binaries
 # -------------
-COPY $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $PERL_INSTALL_FILE $INSTALL_DIR/
+COPY $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $PERL_INSTALL_FILE $SETUP_LINUX $INSTALL_DB_BINARIES $INSTALL_DIR/
 COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $ORACLE_BASE/
 
-# Setup filesystem and oracle user
-# Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
-# ------------------------------------------------------------
-RUN mkdir -p $ORACLE_BASE/oradata && \
-    chmod ug+x $ORACLE_BASE/$PWD_FILE && \
-    chmod ug+x $ORACLE_BASE/$RUN_FILE && \
-    chmod ug+x $ORACLE_BASE/$START_FILE && \
-    chmod ug+x $ORACLE_BASE/$CREATE_DB_FILE && \
-    groupadd -g 500 dba && \
-    groupadd -g 501 oinstall && \
-    useradd -d /home/oracle -g dba -G oinstall,dba -m -s /bin/bash oracle && \
-    echo oracle:oracle | chpasswd && \
-    yum -y install oracle-rdbms-server-12cR1-preinstall unzip wget tar openssl && \
-    yum clean all && \
-    chown -R oracle:dba $ORACLE_BASE
+RUN chmod ug+x $INSTALL_DIR/$SETUP_LINUX && \
+    $INSTALL_DIR/$SETUP_LINUX
 
-# Replace place holders
-# ---------------------
-RUN sed -i -e "s|###ORACLE_EDITION###|SE2|g" $INSTALL_DIR/$INSTALL_RSP &&       \
-    sed -i -e "s|###ORACLE_BASE###|$ORACLE_BASE|g" $INSTALL_DIR/$INSTALL_RSP && \
-    sed -i -e "s|###ORACLE_HOME###|$ORACLE_HOME|g" $INSTALL_DIR/$INSTALL_RSP
-
-# Start installation
-# -------------------
+# Install DB software binaries
 USER oracle
-
-RUN cd $INSTALL_DIR       && \
-    unzip $INSTALL_FILE_1 && \
-    rm $INSTALL_FILE_1    && \
-    unzip $INSTALL_FILE_2 && \
-    rm $INSTALL_FILE_2    && \
-    $INSTALL_DIR/database/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_DIR/$INSTALL_RSP -ignoresysprereqs -ignoreprereq && \
-    rm -rf $INSTALL_DIR/database && \
-    ln -s $ORACLE_BASE/$PWD_FILE $HOME/ && \
-    echo "DEDICATED_THROUGH_BROKER_LISTENER=ON"  >> $ORACLE_HOME/network/admin/listener.ora && \
-    echo "DIAG_ADR_ENABLED = off"  >> $ORACLE_HOME/network/admin/listener.ora;
-
-# Check whether Perl is working
-RUN chmod u+x $INSTALL_DIR/installPerl.sh && \
-    $ORACLE_HOME/perl/bin/perl -v || \ 
-    $INSTALL_DIR/installPerl.sh
+RUN $INSTALL_DIR/$INSTALL_DB_BINARIES SE2
 
 USER root
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
