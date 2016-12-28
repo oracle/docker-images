@@ -58,7 +58,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
-	   -e INIT_PARAMS:The Oracle Database initialization parameter to be added (default: "")
+	   -e INIT_PARAMS:The Oracle Database initialization parameter to be added. (default: "")
+	                  Parameter format as Param1=Value1. Each Parameter are comma separated as Param1=Value1,Param2=Value2.
 	   -v             The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
