@@ -25,6 +25,12 @@ if [ "$ORACLE_PDB" == "" ]; then
   ORACLE_PDB=ORCLPDB1
 fi;
 
+# Default for INIT_PARAMS
+INIT_PARAMS=$3
+if [ ! "$INIT_PARAMS" == "" ]; then
+   INIT_PARAMS=",$INIT_PARAMS"
+fi;
+
 # Auto generate ORACLE PWD
 ORACLE_PWD="`openssl rand -base64 8`1"
 echo "ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN: $ORACLE_PWD";
@@ -34,6 +40,7 @@ cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
+sed -i -e "s|###INIT_PARAMS###|$INIT_PARAMS|g" $ORACLE_BASE/dbca.rsp
 
 # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
 mkdir -p $ORACLE_HOME/network/admin
