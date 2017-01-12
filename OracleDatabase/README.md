@@ -71,6 +71,8 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
 	https://localhost:5500/em/
 
+**NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
+
 #### Changing the admin accounts passwords
 
 On the first startup of the container a random password will be generated for the database. You can find this password in the output line:  
