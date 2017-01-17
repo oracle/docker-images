@@ -120,7 +120,7 @@ The Supplemental Quick Installer is a lightweight installer that contains all of
 
   6. Now access the AdminServer Console at 
 
-        http://localhost:7011/medrec
+        http://localhost:7001/medrec
 
 ## Choose your WebLogic Distribution
 This project hosts two to three configurations (depending on WebLogic version) for building Docker images with WebLogic 12c.
