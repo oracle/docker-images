@@ -1,4 +1,4 @@
-IMAGES=apache-backend nginx-lb
+IMAGES=runit confd apache-backend nginx-lb
 
 # Include the common makefile which provides the following targets:
 # stack (default):    runs images, publish, and generate-stack-yml targets

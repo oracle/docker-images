@@ -1,4 +1,4 @@
-IMAGES=nginx-backend haproxy
+IMAGES=runit confd nginx-backend haproxy
 
 # Include the common makefile which provides the following targets:
 # stack (default):    runs images, publish, and generate-stack-yml targets
