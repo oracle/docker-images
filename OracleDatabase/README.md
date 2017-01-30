@@ -39,6 +39,8 @@ Before you build the image make sure that you have provided the installation bin
 
 You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
+The character set for the database is set during creating of the database. 11g Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
+
 ### Running Oracle Database in a Docker container
 
 #### Running Oracle Database Enterprise and Standard Edition in a Docker container
@@ -48,6 +50,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-p <host port>:1521 -p <host port>:5500 \
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
+	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
 	oracle/database:12.1.0.2-ee
 	
@@ -57,6 +60,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
+	   -e ORACLE_CHARACTERSET:
+	                  The character set to use when creating the database (default: AL32UTF8)
 	   -v             The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
