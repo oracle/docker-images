@@ -128,8 +128,8 @@ if [ "$ORACLE_PDB" == "" ]; then
 fi;
 
 # Default for ORACLE CHARACTERSET
-if [ "$ORACLE_CHARACTERSET" == ""]; then
-	export ORACLE_CHARACTERSET=AL32UTF8
+if [ "$ORACLE_CHARACTERSET" == "" ]; then
+   export ORACLE_CHARACTERSET=AL32UTF8
 fi;
 
 # Check whether database already exists
