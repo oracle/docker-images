@@ -3,10 +3,10 @@ Example of how to create a patched database image
 Once you have built your base image you can create a patched version of it.
 In order to build such an image you will have to provide the patch zip file.
 Note: Some patches require a newer version of `OPatch`, the Oracle Interim Patch Installer utility.
-The scripts will automatically install a newer OPatch version if provided.
+The scripts will automatically install a newer OPatch version, if provided.
 
 # The patch structure
-The script used in this example relies on following structure:
+The scripts used in this example rely on following directory structure:
 
     12.1.0.2
        patches
@@ -17,11 +17,11 @@ The script used in this example relies on following structure:
           p6880880*.zip (optional, OPatch zip file)
        
 **patches:** The working directory for patch installation.  
-**001:** The first directory containing the patch zip file.  
-**00N:** The second, third, ... directory containing the patch zip file.
+**001:** The directory containing the patch zip file.  
+**00N:** The second, third, ... directory containing the second, third, ... patch zip file.
 This is useful if you want to install multiple patches at once. The script will
-go into each of these directories in the numbered order and apply the patches.
-**Important*: It is up to the user to guarantee the patch order, if any.
+go into each of these directories in the numbered order and apply the patches.  
+**Important**: It is up to the user to guarantee the patch order, if any.
 
 # Installing the patch
 You will need to build a new Docker image with the patches in place. In order
