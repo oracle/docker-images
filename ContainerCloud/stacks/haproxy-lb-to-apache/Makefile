@@ -1,4 +1,4 @@
-IMAGES=apache-backend haproxy
+IMAGES=runit confd apache-backend haproxy
 
 # Include the common makefile which provides the following targets:
 # stack (default):    runs images, publish, and generate-stack-yml targets
