@@ -3,6 +3,9 @@ Examples of how to extend the Oracle Database Docker Image
 # 12102-docker-compose
 Provides a Docker Compose example file.
 
+# applypatch
+Example of how to apply a custom patch or PSU to the image
+
 # customdb
 Example of how to create a database with user defined names.
 
