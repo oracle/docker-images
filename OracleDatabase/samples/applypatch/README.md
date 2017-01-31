@@ -30,12 +30,12 @@ If you have multiple patches to be applied at once, add more sub directories fol
 numbering scheme of 002, 003, 004, 005, 00N.  
 If you have a new version of OPatch, put the OPatch zip file directly into the
 patches directory. Do not change the name of the zip file!
-A utility script named `applyPatch.sh` has been provided to assist with building
+A utility script named `buildPatchedDockerImage.sh` has been provided to assist with building
 the patched image:
 
-    [oracle@localhost applypatch]# ./applyPatches.sh -h
+    [oracle@localhost applypatch]# ./buildPatchedDockerImage.sh -h
     
-    Usage: applyPatches.sh -v [version] [-e | -s] -p [patch label]
+    Usage: ./buildPatchedDockerImage.sh -v [version] [-e | -s] -p [patch label]
     Builds a patched Docker Image for Oracle Database.
     
     Parameters:

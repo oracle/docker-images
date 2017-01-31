@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: applyPatches.sh -v [version] [-e | -s] -p [patch label]
+Usage: ./buildPatchedDockerImage.sh -v [version] [-e | -s] -p [patch label]
 Builds a patched Docker Image for Oracle Database.
   
 Parameters:
@@ -66,7 +66,7 @@ while getopts "hesv:p:" optname; do
       ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside applyPatches.sh"
+      echo "Unknown error while processing options inside buildPatchedDockerImage.sh"
       ;;
   esac
 done
