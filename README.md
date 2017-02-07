@@ -22,4 +22,4 @@ For pre-built images containing Oracle software, please check the [Oracle Contai
 
 For support and certification information, please consult the documentation for each product.
 
-For community support, discussions and feedback about the provided Dockerfiles visit the [OTN Community Docker Space](https://community.oracle.com/community/docker/overview)
+For community support, discussions and feedback about the provided Dockerfiles visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers)
