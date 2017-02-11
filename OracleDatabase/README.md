@@ -101,7 +101,7 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 	   --name:     The name of the container (default: auto generated)
 	   --shm-size: Amount of Linux shared memory
 	   -p:         The port mapping of the host port to the container port.
-	               Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
+	               Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
 	   -v          The data volume to use for the database.
 	               Has to be owned by the Unix user "oracle" or set appropriately.
 	               If omitted the database will not be persisted over container recreation.
