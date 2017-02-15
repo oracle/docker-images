@@ -10,7 +10,7 @@ During OHS container creation Oracle WebLogic Server Proxy Plug-In can be config
 
 2.To build the OHS domain image using this sample Dockerfile, run command:
 
-    $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 --build-arg NM_PASSWORD=welcome1 .
+    $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 .
 
 3.Run the below command to create a docker data volume.
 
@@ -31,8 +31,13 @@ During OHS container creation Oracle WebLogic Server Proxy Plug-In can be config
 
 ######NOTE: If custom_mod_wl_ohs.conf is not provided, then configureWLSProxyPlugin.sh will just start OHS which will be accessible @ http://localhost:7777/index.html.
 ######Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script.
+## Node Manager Password
 
+On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the output line:
 
+        NodeManager Password Auto Generated::
+
+If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
 ## Configuring the Oracle WebLogic Server Proxy Plug-In with Oracle HTTP Server
 
 Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs)is used for proxying requests from Oracle HTTP Server to Oracle WebLogic Server.
