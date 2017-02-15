@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 # 
 
 usage() {
@@ -27,7 +27,7 @@ Parameters:
 
 LICENSE CDDL 1.0 + GPL 2.0
 
-Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
 EOF
   exit 0
