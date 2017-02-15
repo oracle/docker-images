@@ -98,7 +98,7 @@ _This volume will be created in "/var/lib/docker" directory or the location wher
 
 On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the output line:
 
-NodeManager Password Auto Generated::
+        NodeManager Password Auto Generated::
 
 If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
 
