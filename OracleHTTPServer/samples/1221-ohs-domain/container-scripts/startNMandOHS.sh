@@ -53,7 +53,7 @@ NM_PASSWORD=$(cat date| md5sum | fold -w 8 | head -n 1)
 echo ""
 echo "    NodeManager Password Auto Generated:"
 echo ""
-echo "      ----> 'OHS' node manager password: $NM_PASSWORD"
+echo "      ----> 'OHS' Node Manager password: $NM_PASSWORD"
 echo ""
 
 sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/create-sa-ohs-domain.py
