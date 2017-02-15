@@ -53,7 +53,7 @@ Go to folder **samples/1221-OHS-domain**
 
 Run the following command:
 
-        $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 --build-arg NM_PASSWORD=welcome1 .
+        $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 .
 
 Verify you now have this image in place with
 
