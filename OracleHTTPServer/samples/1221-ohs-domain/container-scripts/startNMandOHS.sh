@@ -42,6 +42,29 @@ export JAVA_HOME
 declare -a NMSTATUS
 NMSTATUS[0]="NOT RUNNING"
 
+# If nodemanager$$.log does not exists,this is the first time configuring the NM 
+# generate the NM password 
+
+if [ !  -f /u01/oracle/logs/nodemanager$$.log ]; then
+    
+# Auto generate node manager  password
+NM_PASSWORD=$(cat date| md5sum | fold -w 8 | head -n 1) 
+
+echo ""
+echo "    NodeManager Password Auto Generated:"
+echo ""
+echo "      ----> 'OHS' node manager password: $NM_PASSWORD"
+echo ""
+
+sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/create-sa-ohs-domain.py
+
+# Create an empty ohs domain
+wlst.sh -skipWLSModuleScanning /u01/oracle/create-sa-ohs-domain.py
+# Set the NM username and password in the properties file
+echo "username=weblogic" > /u01/oracle/user_projects/domains/$DOMAIN_NAME/nodemanager/config/nm_password.properties
+echo "password=$NM_PASSWORD" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/nodemanager/config/nm_password.properties
+${ORACLE_HOME}/oracle_common/common/bin/commEnv.sh
+fi
 
 # Start node manager
 ${WL_HOME}/server/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &
