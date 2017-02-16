@@ -22,7 +22,7 @@ MAINTAINER Hemastuti Baruah <hemastuti.baruah@oracle.com>
 # Node Manager Password (Change it !)
 # Setup environment variables
 # ----------------------------------------------------------
-# ARG NM_PASSWORD
+
 ENV NM_PORT=5556 \
     OHS_LISTEN_PORT=7777 \
     OHS_SSL_PORT=3333 \
@@ -47,9 +47,8 @@ COPY container-scripts/* /u01/oracle/container-scripts/
 # Copy static html for sanity check
 #---------------------------------------------------
 RUN mv /u01/oracle/container-scripts/commEnv.sh $ORACLE_HOME/oracle_common/common/bin/commEnv.sh && \
-    echo "export PATH=$PATH:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin" >> /u01/oracle/.bashrc && \
-    mv /u01/oracle/container-scripts/helloWorld.html $ORACLE_HOME/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs_sa1/htdocs/helloWorld.html
-
+    echo "export PATH=$PATH:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin" >> /u01/oracle/.bashrc 
+    
 #Expose all Ports
 EXPOSE $OHS_SSL_PORT $OHS_LISTEN_PORT $NM_PORT
 
