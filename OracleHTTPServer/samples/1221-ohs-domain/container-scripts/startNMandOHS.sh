@@ -56,13 +56,16 @@ echo ""
 echo "      ----> 'OHS' Node Manager password: $NM_PASSWORD"
 echo ""
 
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/create-sa-ohs-domain.py
+sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/create-sa-ohs-domain.py
+sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/start-ohs.py
+sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/restart-ohs.py
+
 
 # Create an empty ohs domain
-wlst.sh -skipWLSModuleScanning /u01/oracle/create-sa-ohs-domain.py
+wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
-echo "username=weblogic" > /u01/oracle/user_projects/domains/$DOMAIN_NAME/nodemanager/config/nm_password.properties
-echo "password=$NM_PASSWORD" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/nodemanager/config/nm_password.properties
+echo "username=weblogic" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
+echo "username=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 ${ORACLE_HOME}/oracle_common/common/bin/commEnv.sh
 fi
 
