@@ -94,11 +94,12 @@ _This volume will be created in "/var/lib/docker" directory or the location wher
 ######NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html.
 
 ######Later you can login to running container and configure Weblogic Server proxy plugin file and run *restartOHS.sh* script.
+
 ## Node Manager Password
 
 On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the output line:
 
-        NodeManager Password Auto Generated::
+        NodeManager Password Auto Generated:
 
 If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
 
