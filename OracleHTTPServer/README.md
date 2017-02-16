@@ -97,11 +97,13 @@ _This volume will be created in "/var/lib/docker" directory or the location wher
 
 ## Node Manager Password
 
-On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the output line:
+On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the container logs generated during the startup of the container.  Look for the string:
 
-        NodeManager Password Auto Generated:
+        ----> 'OHS' Node Manager password:
 
-If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
+To look at the Docker Container logs run:
+
+        $ docker logs --details <Container-id>
 
 ## Support
 Currently Oracle HTTP Server on Docker is NOT supported by Oracle. Use these files at your own discretion.
