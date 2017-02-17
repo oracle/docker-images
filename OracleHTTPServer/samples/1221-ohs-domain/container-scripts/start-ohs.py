@@ -5,7 +5,7 @@
 # ==============================================
 import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
-#nm_pass   = os.environ.get("NM_PASSWORD", "welcome1")
+nm_pass   = os.environ.get("NM_PASSWORD", "welcome1")
 ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs_sa1")
 domain_name  = os.environ.get("DOMAIN_NAME", "ohsDomain")
 domain_path  = '/u01/oracle/ohssa/user_projects/domains/' + domain_name
