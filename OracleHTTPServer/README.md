@@ -105,6 +105,7 @@ To look at the Docker Container logs run:
 
         $ docker logs --details <Container-id>
 
+
 ## Support
 Currently Oracle HTTP Server on Docker is NOT supported by Oracle. Use these files at your own discretion.
 
