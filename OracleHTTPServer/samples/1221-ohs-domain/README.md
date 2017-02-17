@@ -33,12 +33,14 @@ During OHS container creation Oracle WebLogic Server Proxy Plug-In can be config
 ######Later you can login to running container and configure Weblogic Server proxy plugin file and run restartOHS script.
 ## Node Manager Password
 
-On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the output line:
+On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the container logs generated during the startup of the container. Look for the string:
 
-        NodeManager Password Auto Generated::
+        ----> 'OHS' Node Manager password:
 
-If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
+To look at the Docker Container logs run:
 
+        $ docker logs --details <Container-id>
+        
 ## Configuring the Oracle WebLogic Server Proxy Plug-In with Oracle HTTP Server
 
 Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs)is used for proxying requests from Oracle HTTP Server to Oracle WebLogic Server.

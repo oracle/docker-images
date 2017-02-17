@@ -53,7 +53,7 @@ Go to folder **samples/1221-OHS-domain**
 
 Run the following command:
 
-        $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 --build-arg NM_PASSWORD=welcome1 .
+        $ docker build --force-rm=true --no-cache=true --rm=true -t sampleohs:12.2.1 .
 
 Verify you now have this image in place with
 
@@ -94,13 +94,17 @@ _This volume will be created in "/var/lib/docker" directory or the location wher
 ######NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html.
 
 ######Later you can login to running container and configure Weblogic Server proxy plugin file and run *restartOHS.sh* script.
+
 ## Node Manager Password
 
-On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the output line:
+On the first startup of the container a random password will be generated for the Node Manager in the OHS domain. You can find this password in the container logs generated during the startup of the container.  Look for the string:
 
-        NodeManager Password Auto Generated::
+        ----> 'OHS' Node Manager password:
 
-If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
+To look at the Docker Container logs run:
+
+        $ docker logs --details <Container-id>
+
 
 ## Support
 Currently Oracle HTTP Server on Docker is NOT supported by Oracle. Use these files at your own discretion.
