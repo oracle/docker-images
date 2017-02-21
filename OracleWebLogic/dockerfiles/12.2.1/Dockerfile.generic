@@ -61,6 +61,7 @@ COPY $FMW_PKG install.file oraInst.loc /u01/
 RUN chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
+    yum -y install util-linux && yum clean all && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
     su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE=\"WebLogic Server\"" - oracle && \
     chown oracle:oracle -R /u01 && \
