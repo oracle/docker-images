@@ -34,10 +34,10 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 ARG ADMIN_PASSWORD
 ENV DOMAIN_NAME="base_domain" \
     DOMAIN_HOME="/u01/oracle/user_projects/domains/base_domain" \
-    ADMIN_PORT="8001" \
+    ADMIN_PORT="7001" \
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
-    MS_PORT="7001" \
+    MS_PORT="7002" \
     CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin:/u01/oracle
 
