@@ -127,6 +127,11 @@ if [ "$ORACLE_PDB" == "" ]; then
    export ORACLE_PDB=ORCLPDB1
 fi;
 
+# Default for ORACLE CHARACTERSET
+if [ "$ORACLE_CHARACTERSET" == "" ]; then
+   export ORACLE_CHARACTERSET=AL32UTF8
+fi;
+
 # Check whether database already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    symLinkFiles;
