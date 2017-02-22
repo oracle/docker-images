@@ -42,7 +42,7 @@ ENV SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     PRODUCTION_MODE=dev \
     DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain} \
-    ADMIN_PORT="${ADMIN_PORT:-8001}" \
+    ADMIN_PORT="${ADMIN_PORT:-7001}" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin
     
 # Copy scripts
