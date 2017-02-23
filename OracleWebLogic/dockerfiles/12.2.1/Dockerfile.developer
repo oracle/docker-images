@@ -40,33 +40,39 @@ FROM oracle/serverjre:8
 # ----------
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
+#Common ENV
+#-----------
+ENV ORACLE_HOME=/u01/oracle \
+    USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
+
+# Setup filesystem and oracle user
+# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
+# ------------------------------------------------------------
+RUN mkdir -p /u01/oracle && \
+    chmod a+xr /u01 && \
+    useradd -b /u01 -m -s /bin/bash oracle && \
+    echo oracle:oracle | chpasswd && \
+    chown oracle:oracle -R /u01 
+
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV FMW_PKG=fmw_12.2.1.0.0_wls_quick_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.0.0_wls_quick.jar \
-    ORACLE_HOME=/u01/oracle \
-    USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     DEBUG_FLAG=true\
-    PRODUCTION_MODE=dev\
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
-
+    PRODUCTION_MODE=dev
+   
 # Copy packages
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
-
-# Setup filesystem and oracle user
-# Install and configure Oracle JDK
-# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
-# ------------------------------------------------------------
-RUN chmod a+xr /u01 && \
-    useradd -b /u01 -m -s /bin/bash oracle && \
-    echo oracle:oracle | chpasswd && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
-    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME" - oracle && \
-    chown oracle:oracle -R /u01 && \
+      
+# Install
+#-------------------------------------------------------------
+USER oracle
+RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
+    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
-USER oracle
 WORKDIR $ORACLE_HOME 
 
 # Define default command to start bash. 

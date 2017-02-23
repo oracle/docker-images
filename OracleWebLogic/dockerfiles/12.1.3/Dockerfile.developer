@@ -40,14 +40,27 @@ FROM oracle/serverjre:8
 # ----------
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
-# Environment variables required for this build (do NOT change)
-# -------------------------------------------------------------
-ENV FMW_PKG=wls1213_dev_update3.zip \
-    MW_HOME=/u01/oracle \
-    ORACLE_HOME=/u01/oracle \
+# Environment variables required for this build
+# ---------------------------------------------
+ENV ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
 
+# Setup required packages, filesystem, and oracle user.
+# Install and configure Oracle JDK
+# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
+# ------------------------------------------------------------
+RUN mkdir -p /u01/oracle && \
+    chmod a+xr /u01 && \
+    useradd -b /u01 -m -s /bin/bash oracle && \
+    echo oracle:oracle | chpasswd && \
+    chown oracle:oracle -R /u01 
+    
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+ENV FMW_PKG=wls1213_dev_update3.zip \
+    MW_HOME=/u01/oracle 
+    
 # Copy packages
 # -------------
 COPY $FMW_PKG /u01/
@@ -56,16 +69,11 @@ COPY $FMW_PKG /u01/
 # Install and configure Oracle JDK
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN chmod a+xr /u01 && \
-    useradd -b /u01 -m -s /bin/bash oracle && \
-    echo oracle:oracle | chpasswd && \
-    yum -y install util-linux && yum clean all && \
-    $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && \
+RUN $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && \
     mv wls12130/* $ORACLE_HOME && rmdir wls12130 && \
     cd $ORACLE_HOME && \
     sh configure.sh -silent && \
     find $ORACLE_HOME -name "*.sh" -exec chmod a+x {} \; && \
-    chown oracle:oracle -R /u01 && \
     rm /u01/$FMW_PKG
 
 WORKDIR $ORACLE_HOME 

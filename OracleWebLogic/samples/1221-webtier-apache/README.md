@@ -23,9 +23,9 @@ Start an AdminServer from the **1221-domain** sample by calling:
 
 Start the webtier container by calling:
 
-        $ docker run -d --link wlsadmin:wlsadmin -e WEBLOGIC_CLUSTER=wlsadmin:8001 -p 80:80 1221-webtier
+        $ docker run -d --link wlsadmin:wlsadmin -e WEBLOGIC_CLUSTER=wlsadmin:7001 -p 80:80 1221-webtier
 
-Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 8001.
+Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 7001.
 
 If you are using multihost network, remove --link and set --net=<your net>
 

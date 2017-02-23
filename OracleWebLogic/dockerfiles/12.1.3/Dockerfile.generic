@@ -43,29 +43,31 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
 # Environment variables required for this build
 # ---------------------------------------------
-ENV FMW_PKG=fmw_12.1.3.0.0_wls.jar \
-    ORACLE_HOME=/u01/oracle \
+ENV ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin
-
-# Copy packages and files
-# -----------------------
-COPY $FMW_PKG install.file oraInst.loc /u01/
 
 # Setup required packages, filesystem, and oracle user.
 # Install and configure Oracle JDK
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN chmod a+xr /u01 && \
+RUN mkdir -p /u01/oracle && \
+    chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
-    yum -y install util-linux && yum clean all && \
-    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
-    chown oracle:oracle -R /u01 && \
+    chown oracle:oracle -R /u01 
+    
+ENV FMW_PKG=fmw_12.1.3.0.0_wls.jar 
+
+# Copy packages and files
+# -----------------------
+COPY $FMW_PKG install.file oraInst.loc /u01/
+    
+USER oracle
+RUN $JAVA_HOME/bin/java -jar /u01/$FMW_PKG -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
     rm /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
 WORKDIR $ORACLE_HOME
-USER oracle
 
 # Define default command to start bash. 
 CMD ["bash"]

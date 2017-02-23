@@ -11,7 +11,7 @@ First make sure you have built sample image inside **1221-domain**. Now to build
 
 To start the Admin Server with the application automatically deployed, run:
 
-        $ docker run -d -p 8001:8001 1221-appdeploy
+        $ docker run -d -p 7001:7001 1221-appdeploy
 
 To access the sample application, go to **http://localhost:8001/sample**.
 

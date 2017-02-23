@@ -11,11 +11,11 @@ First make sure you have built **oracle/weblogic:12.2.1-developer**. Now to buil
 
 To start the containerized Admin Server, run:
 
-        $ docker run -d --name wlsadmin --hostname wlsadmin -p 8001:8001 1221-domain
+        $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 1221-domain
 
 To start a containerized Managed Server to self-register with the Admin Server above, run:
 
-        $ docker run -d --link wlsadmin:wlsadmin -p 7001:7001 1221-domain createServer.sh
+        $ docker run -d --link wlsadmin:wlsadmin -p 7002:7002 1221-domain createServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a cluster setup, on a single host environment.
 
