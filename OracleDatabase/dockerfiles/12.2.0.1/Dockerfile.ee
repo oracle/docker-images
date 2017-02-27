@@ -30,7 +30,7 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/12.2.0.1/dbhome_1 \
-    INSTALL_FILE_1="linuxamd64_12201_database.zip" \
+    INSTALL_FILE_1="V839960-01.zip" \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
