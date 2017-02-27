@@ -11,9 +11,9 @@ First make sure you have built **oracle/weblogic:12.1.3-developer**. Now to buil
 
 To start the Admin Server, run:
 
-        $ docker run -d --name wlsadmin --hostname wlsadmin -p 8001:8001 1213-domain
+        $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 1213-domain
 
 To start a Managed Server to self-register with the Admin Server above, run:
 
-        $ docker run -d --link wlsadmin:wlsadmin -p 7001:7001 1213-domain createServer.sh
+        $ docker run -d --link wlsadmin:wlsadmin -p 7002:7002 1213-domain createServer.sh
 

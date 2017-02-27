@@ -49,7 +49,7 @@ The image **oracle/weblogic:12.2.1.1-developer** will configure a **base_domain*
  * Oracle Linux Username: `oracle`
  * Oracle Linux Password: `welcome1`
  * WebLogic Server Domain Name: `base_domain`
- * Admin Server on port: `8001`
+ * Admin Server on port: `7001`
  * Production Mode: `developer`
   
 **IMPORTANT:** If you intend to run these images in production you must change the Production Mode to production.
@@ -61,7 +61,9 @@ On the first startup of the container a random password will be generated for th
 
 `Oracle WebLogic Server auto generated Admin password:`
 
-If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container.
+If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container. To look at the Docker Container logs run:
+
+        $ docker logs --details <Container-id>
 
 ### Write your own Oracle WebLogic Server domain with WLST
 The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [create-wls-domain.py](dockerfiles/12.2.1.1/container-scripts/create-wls-domain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
@@ -84,7 +86,7 @@ To try a sample of a WebLogic Server image with a base domain configured, follow
   4. Run the administration console
 
         $ docker inspect --format '{{.NewworkSettings.IPAddress}}' <container-name>
-        This returns the IPAddress (example xxx.xx.x.x) of the container.  Got to your browser and enter http://xxx.xx.x.x:8001/console
+        This returns the IPAddress (example xxx.xx.x.x) of the container.  Got to your browser and enter http://xxx.xx.x.x:7001/console
         
 
 ## Choose your Oracle WebLogic Server Distribution
