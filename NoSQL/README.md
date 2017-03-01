@@ -17,19 +17,20 @@ You can also use the Oracle NoSQL Command Line Interface (CLI). Start the follow
 
         kv-> ping 
         Pinging components of store kvstore based upon topology sequence #14
-        10 partitions and 1 storage nodes
-        Time: 2015-12-11 09:26:07 UTC   Version: 12.1.3.4.7
-        Shard Status: healthy:1 writable-degraded:0 read-only:0 offline:0
-        Admin Status: healthy
-        Zone [name=KVLite id=zn1 type=PRIMARY]   RN Status: online:1 offline:0
-        Storage Node [sn1] on e91227b8b450:5000    Zone: [name=KVLite id=zn1 type=PRIMARY]    
-        Status: RUNNING   Ver: 12cR1.3.4.7 2015-10-01 04:48:39 UTC  Build id: 44f8b0e7d93a
-        Admin [admin1]		Status: RUNNING,MASTER
-        Rep Node [rg1-rn1]	Status: RUNNING,MASTER sequenceNumber:39 haPort:5006
-
+	10 partitions and 1 storage nodes
+	Time: 2017-02-28 15:37:41 UTC   Version: 12.1.4.3.11
+	Shard Status: healthy:1 writable-degraded:0 read-only:0 offline:0
+	Admin Status: healthy
+	Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false]   RN Status: online:1 offline:0
+	Storage Node [sn1] on 659dbf4fba07:5000    
+	Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false]    
+	Status: RUNNING   Ver: 12cR1.4.3.11 2017-02-17 06:52:09 UTC  Build id: 0e3ebe7568a0
+	Admin [admin1]		Status: RUNNING,MASTER
+	Rep Node [rg1-rn1]	Status: RUNNING,MASTER sequenceNumber:49 haPort:5006
+        
         kv-> put kv -key /SomeKey -value SomeValue
         Operation successful, record inserted.
-        kv-> kv-> get kv -key /SomeKey
+        kv-> get kv -key /SomeKey
         SomeValue
         kv->
 
@@ -41,7 +42,7 @@ For more information on Oracle NoSQL, visit the [homepage](http://www.oracle.com
 This image contains Oracle NoSQL Community Edition and OpenJDK.
 
 # Licenses
-Oracle NoSQL Community Edition is licensed under the [GNU AFFERO GENERAL PUBLIC LICENSE v3.0](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/documentation/nosql-db-agpl-license-1432845.txt).
+Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt).
 
 OpenJDK is licensed under the [GNU General Public License v2.0 with the Classpath Exception](http://openjdk.java.net/legal/gplv2+ce.html)
 
@@ -51,4 +52,4 @@ Oracle NoSQL Enterprise Edition is **not** certified on Docker.
 Oracle NoSQL Community Edition has **no** commercial support.
 
 # Copyright
-Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
