@@ -3,7 +3,12 @@ Oracle Database on Docker
 Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Database Online Documentation](http://docs.oracle.com/database/121/index.htm).
 
 ## How to build and run
-This project offers sample Dockerfiles for both Oracle Database 12c (12.1.0.2) Enterprise Edition and Standard Edition as well as Oracle Database 11g Express Edition. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+This project offers sample Dockerfiles for:
+ * Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition
+ * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition
+ * Oracle Database 11g Release 2 (11.2.0.2) Express Edition.
+
+To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
@@ -13,23 +18,23 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with `sudo` privileges:
 
 	[oracle@localhost dockerfiles]$ ./buildDockerImage.sh -h
-
+	
 	Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
 	Builds a Docker Image for Oracle Database.
 	
 	Parameters:
 	   -v: version to build
-	       Choose one of: 11.2.0.2  12.1.0.2
+	       Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1
 	   -e: creates image based on 'Enterprise Edition'
 	   -s: creates image based on 'Standard Edition 2'
 	   -x: creates image based on 'Express Edition'
 	   -i: ignores the MD5 checksums
 	
 	* select one edition only: -e, -s, or -x
-
+	
 	LICENSE CDDL 1.0 + GPL 2.0
-
-	Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+	
+	Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
@@ -52,7 +57,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
-	oracle/database:12.1.0.2-ee
+	oracle/database:12.2.0.1-ee
 	
 	Parameters:
 	   --name:        The name of the container (default: auto generated)
@@ -124,7 +129,7 @@ Once the container has been started you can connect to it just like to any other
 ### Running SQL*Plus in a Docker container
 You may use the same Docker image you used to start the database, to run `sqlplus` to connect to it, for example:
 
-	docker run --rm -ti oracle/database:12.1.0.2-ee sqlplus pdbadmin/<yourpassword>@//<db-container-ip>:1521/ORCLPDB1
+	docker run --rm -ti oracle/database:12.2.0.1-ee sqlplus pdbadmin/<yourpassword>@//<db-container-ip>:1521/ORCLPDB1
 
 Another option is to use `docker exec` and run `sqlplus` from within the same container already running the database:
 
@@ -140,4 +145,4 @@ To download and run Oracle Database, regardless whether inside or outside a Dock
 All scripts and files hosted in this project and GitHub [docker-images/OracleDatabase](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
 
 ## Copyright
-Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
