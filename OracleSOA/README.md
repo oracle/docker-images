@@ -1,9 +1,9 @@
 SOA on Docker
 =============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for both SOA 12.1.3 based on Oracle Linux and Oracle JDK 7 (Server).
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for both SOA 12.2.1.2 based on Oracle Linux and Oracle JDK 7 (Server).
 
 ## How to build and run
-This project offers sample Dockerfiles for SOA 12c (12.1.3), and one Dockerfile for the 'quickstart' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+This project offers sample Dockerfiles for SOA 12c (12.2.1.2), and one Dockerfile for the 'quickstart' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
@@ -24,7 +24,7 @@ Before you build, choose which version and distribution you want to build an ima
 
         Parameters:
            -v: version to build. Required.
-           Choose one of: 12.1.3  
+           Choose one of: 12.2.1.2  
            -q: creates image based on 'quickstart' distribution
            -c: enables Docker image layer cache during build
            -s: skips the MD5 check of packages
