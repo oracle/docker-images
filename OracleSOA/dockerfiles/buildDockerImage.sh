@@ -23,7 +23,7 @@ Parameters:
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
 
-* select one distribution only: -q #, or -g
+* select one distribution only: -q
 
 LICENSE CDDL 1.0 + GPL 2.0
 
@@ -49,7 +49,7 @@ if [ "$#" -eq 0 ]; then usage; fi
 # Parameters
 QUICKSTART=0
 GENERIC=0
-VERSION="12.1.3"
+VERSION="12.2.1.2"
 SKIPMD5=0
 NOCACHE=true
 while getopts "hcsdgiv:" optname; do
