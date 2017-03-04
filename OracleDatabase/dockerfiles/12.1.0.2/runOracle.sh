@@ -1,14 +1,28 @@
 #!/bin/bash
+# LICENSE CDDL 1.0 + GPL 2.0
+#
+# Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
+# 
+# Since: November, 2016
+# Author: gerald.venzl@oracle.com
+# Description: Runs the Oracle Database inside the container
+# 
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+# 
 
 ########### Move DB files ############
 function moveFiles {
+
    if [ ! -d $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID ]; then
       mkdir -p $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    fi;
-   
+
    mv $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    mv $ORACLE_HOME/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+
+   # oracle user does not have permissions in /etc, hence cp and not mv
+   cp /etc/oratab $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    
    symLinkFiles;
 }
@@ -27,6 +41,20 @@ function symLinkFiles {
    if [ ! -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
    fi;
+
+   # oracle user does not have permissions in /etc, hence cp and not ln 
+   cp $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab /etc/oratab
+
+}
+
+########### SIGINT handler ############
+function _int() {
+   echo "Stopping container."
+   echo "SIGINT received, shutting down database!"
+   sqlplus / as sysdba <<EOF
+   shutdown immediate;
+EOF
+   lsnrctl stop
 }
 
 ########### SIGTERM handler ############
@@ -48,83 +76,26 @@ EOF
    lsnrctl stop
 }
 
-############# Create DB ################
-function createDB {
-
-   # Auto generate ORACLE PWD
-   ORACLE_PWD=`openssl rand -base64 8`
-   echo "ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN: $ORACLE_PWD";
-
-   cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
-
-   sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
-   sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
-   sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
-
-   mkdir -p $ORACLE_HOME/network/admin
-   echo "NAME.DIRECTORY_PATH= {TNSNAMES, EZCONNECT, HOSTNAME}" > $ORACLE_HOME/network/admin/sqlnet.ora
-
-   # Listener.ora
-   echo "LISTENER = 
-  (DESCRIPTION_LIST = 
-    (DESCRIPTION = 
-      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1)) 
-      (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521)) 
-    ) 
-  ) 
-
-" > $ORACLE_HOME/network/admin/listener.ora
-
-# Start LISTENER and run DBCA
-   lsnrctl start &&
-   dbca -silent -responseFile $ORACLE_BASE/dbca.rsp ||
-    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log
-
-   echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" >> $ORACLE_HOME/network/admin/tnsnames.ora
-   echo "$ORACLE_PDB= 
-  (DESCRIPTION = 
-    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
-    (CONNECT_DATA =
-      (SERVER = DEDICATED)
-      (SERVICE_NAME = $ORACLE_PDB)
-    )
-  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
-
-   sqlplus / as sysdba << EOF
-      ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
-      ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
-EOF
-
-  rm $ORACLE_BASE/dbca.rsp
-  
-  # Move database operational files to oradata
-  moveFiles;
-
-}
-
-############# Start DB ################
-function startDB {
-   # Make sure audit file destination exists
-   if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
-      mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
-   fi;
-   
-   lsnrctl start
-   sqlplus / as sysdba << EOF
-      STARTUP;
-EOF
-
-}
-
+###################################
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ############# MAIN ################
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+###################################
 
 # Check whether container has enough memory
-if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes` -lt 2147483648 ]; then
-   echo "Error: The container doesn't have enough memory allocated."
-   echo "A database container needs at least 2 GB of memory."
-   echo "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
-   exit 1;
+# Github issue #219: Prevent integer overflow,
+# only check if memory digits are less than 11 (single GB range and below) 
+if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes | wc -c` -lt 11 ]; then
+   if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes` -lt 2147483648 ]; then
+      echo "Error: The container doesn't have enough memory allocated."
+      echo "A database container needs at least 2 GB of memory."
+      echo "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
+      exit 1;
+   fi;
 fi;
+
+# Set SIGINT handler
+trap _int SIGINT
 
 # Set SIGTERM handler
 trap _term SIGTERM
@@ -135,6 +106,20 @@ trap _kill SIGKILL
 # Default for ORACLE SID
 if [ "$ORACLE_SID" == "" ]; then
    export ORACLE_SID=ORCLCDB
+else
+  # Check whether SID is no longer than 12 bytes
+  # Github issue #246: Cannot start OracleDB image
+  if [ "${#ORACLE_SID}" -gt 12 ]; then
+     echo "Error: The ORACLE_SID must only be up to 12 characters long."
+     exit 1;
+  fi;
+  
+  # Check whether SID is alphanumeric
+  # Github issue #246: Cannot start OracleDB image
+  if [[ "$ORACLE_SID" =~ [^a-zA-Z0-9] ]]; then
+     echo "Error: The ORACLE_SID must be alphanumeric."
+     exit 1;
+   fi;
 fi;
 
 # Default for ORACLE PDB
@@ -142,17 +127,34 @@ if [ "$ORACLE_PDB" == "" ]; then
    export ORACLE_PDB=ORCLPDB1
 fi;
 
+# Default for ORACLE CHARACTERSET
+if [ "$ORACLE_CHARACTERSET" == "" ]; then
+   export ORACLE_CHARACTERSET=AL32UTF8
+fi;
+
 # Check whether database already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    symLinkFiles;
-   startDB;
+   
+   # Make sure audit file destination exists
+   if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
+      mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
+   fi;
+   
+   # Start database
+   $ORACLE_BASE/$START_FILE;
+   
 else
    # Remove database config files, if they exist
    rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
    rm -f $ORACLE_HOME/dbs/orapw$ORACLE_SID
    rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
-   createDB;
+   # Create database
+   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB;
+   
+   # Move database operational files to oradata
+   moveFiles;
 fi;
 
 echo "#########################"

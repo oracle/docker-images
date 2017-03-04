@@ -117,8 +117,10 @@ if [ ! "$SKIPMD5" -eq 1 ]; then
 else
   echo "Ignored MD5 checksum."
 fi
-
-echo "====================="
+echo "=========================="
+echo "DOCKER version:"
+docker version
+echo "=========================="
 
 # Proxy settings
 PROXY_SETTINGS=""
@@ -139,7 +141,7 @@ if [ "${no_proxy}" != "" ]; then
 fi
 
 if [ "$PROXY_SETTINGS" != "" ]; then
-  echo "Proxy settings were found and will be used during build."
+  echo "Proxy settings were found and will be used during the build."
 fi
 
 # ################## #

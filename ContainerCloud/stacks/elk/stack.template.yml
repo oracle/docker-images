@@ -1,0 +1,45 @@
+version: "2"
+services:
+  elasticsearch:
+    image: "elasticsearch:2.3.4"
+    ports:
+      - "9200:9200/tcp"
+      - "9300:9300/tcp"
+    environment:
+      - "OCCS_PHASE_ID=0"
+      - "occs:availability=per-pool"
+      - "occs:description=The backend to the ELK stack. Because this service has a static host-bound port, only one deployment can be done per host without getting port conflicts."
+  logstash:
+    image: "__REGISTRY_NAME__/logstash:__VERSION_LOGSTASH__"
+    ports:
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+    environment:
+      - LOGSPOUT=ignore
+      - "OCCS_PHASE_ID=1"
+      - "occs:availability=per-pool"
+      - "occs:description=Because this service has a static host-bound port, only one deployment can be done per host without getting port conflicts."
+    links:
+      - "elasticsearch:elasticsearch"
+  kibana:
+    image: "__REGISTRY_NAME__/kibana:__VERSION_KIBANA__"
+    ports:
+      - "5601:5601/tcp"
+    links:
+      - elasticsearch
+    environment:
+      - "OCCS_PHASE_ID=3"
+      - "occs:availability=per-pool"
+      - "occs:description=This is an out of the box ELK stack. Visit :5601 on the host running kibana to access the dashboard. Because this service has a static host-bound port, only one deployment can be done per host without getting port conflicts."
+  logspout:
+    image: "__REGISTRY_NAME__/logspout:__VERSION_LOGSPOUT__"
+    environment:
+      - DEBUG=true
+      - "OCCS_PHASE_ID=2"
+      - "OCCS_API_TOKEN={{api_token}}"
+      - "KV_IP=172.17.0.1"
+      - "KV_PORT=9109"
+      - "OCCS_LOGSTASH_KEY={{sd_deployment_containers_path \"logstash\" 5000}}"
+      - "occs:availability=per-host"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"

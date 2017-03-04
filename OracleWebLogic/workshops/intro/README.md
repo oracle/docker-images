@@ -177,11 +177,11 @@ In the above command:
     -d       =    Run container in background and print container ID
     -p       =    Publish a container's port(s) to the host
 
-This means for the image ‘samplewls:12.2.1-domain’ we want to start the Admin Server on port 8001 in a new container named ‘wlsadmin’ which would run in the background.
+This means for the image `samplewls:12.2.1-domain`, we want to start the Admin Server on port 8001 in a new container named `wlsadmin` which would run in the background.
 
 ![](images/13_dockerrun.png?raw=true)
  
-If you notice in the above figure, after the command was executed - a container ID has been printed. We can use the `docker logs` command to fetch the logs of a container.  Using the `--tail=all` option prints all the lines in the logs. Use the container ID printed after execution of the ‘startWeblogic.sh’ command above and print the logs of the container (as in the image above):
+If you notice in the above figure, after the command was executed - a container ID has been printed. We can use the `docker logs` command to fetch the logs of a container.  Using the `--tail=all` option prints all the lines in the logs. Use the container ID printed after execution of the `startWeblogic.sh` command above and print the logs of the container (as in the image above):
 
     $ docker logs --tail=all <container id>
 
@@ -203,7 +203,7 @@ Login using weblogic/welcome1 and verify that only one server (Admin Server) exi
 
 ![](images/16_console.png?raw=true)
 
-The ‘~/docker-images/OracleWebLogic/samples/1221-domain/container-scripts’ has useful Bash and WLST scripts that provide three possible modes to run WebLogic Managed Servers on a Docker container. Make sure you have an AdminServer container running before starting a ManagedServer container.
+The `~/docker-images/OracleWebLogic/samples/1221-domain/container-scripts` has useful Bash and WLST scripts that provide three possible modes to run WebLogic Managed Servers on a Docker container. Make sure you have an AdminServer container running before starting a ManagedServer container.
 
 The sample scripts will by default, attempt to find the AdminServer running at t3://wlsadmin:8001. You can change this. But most importantly, the AdminServer container has to be linked with Docker's `--link` parameter.
 
@@ -236,13 +236,13 @@ Parameters you can use:
 
 ![](images/17_scripts.png?raw=true)
 
-Log out of the Weblogic Server Admin Console. Let us go for the 3rd option : ‘Start NodeManager, Create a Machine, and Create a ManagedServer Automatically’
+Log out of the Weblogic Server Admin Console. Let us go for the 3rd option : `Start NodeManager, Create a Machine, and Create a ManagedServer Automatically`
 
     $ docker run -d --link wlsadmin:wlsadmin samplewls:12.2.1-domain createServer.sh
     
 ![](images/18_createserver.png?raw=true)
  
-As previously stated, the ‘docker run’ command prints a container ID as output. The `docker logs` command can be used to get the logs of this container ID. 
+As previously stated, the `docker run` command prints a container ID as output. The `docker logs` command can be used to get the logs of this container ID. 
 
 Running it multiple times would finally show that the Managed Server is up and running:
 
@@ -260,7 +260,7 @@ Click on the newly created Machine and then verify the NodeManager Configuration
 
 ![](images/22_consolenodemanager.png?raw=true)
 
-Instead of using these scripts (in location ~/docker-images/OracleWebLogic/samples/1221-domain/container-scripts) – we can also use the default scripts which come as part of the WebLogic Server domain setup. One such example is shown below, where we use the ‘stopManagedServer.sh’ script to stop a Managed Server
+Instead of using these scripts (in location ~/docker-images/OracleWebLogic/samples/1221-domain/container-scripts)  we can also use the default scripts which come as part of the WebLogic Server domain setup. One such example is shown below, where we use the `stopManagedServer.sh` script to stop a Managed Server
 
     $ docker run -d --link wlsadmin:wlsadmin samplewls:12.2.1-domain stopManagedWebLogic.sh <managed server name> t3://<ip address of admin console>:8001 weblogic welcome1
     
@@ -281,7 +281,7 @@ List all the containers that are running:
     
 ![](images/26_dockerps.png?raw=true)
  
-A script has been provided to kill all the ‘containers’ that have been started.  It is ‘/u02/Docker/docker-master/OracleWebLogic/samples/rm-containers.sh’. Executing the same is shown below:
+A script has been provided to kill all the containers that have been started.  It is `OracleWebLogic/samples/rm-containers.sh`. Executing the same is shown below:
 
     $ ./rm-containers.sh
     

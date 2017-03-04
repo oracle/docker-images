@@ -8,7 +8,7 @@ This project offers sample Dockerfiles for both Oracle Database 12c (12.1.0.2) E
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle Database Docker Install Images
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html). You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with `sudo` privileges:
 
@@ -39,6 +39,8 @@ Before you build the image make sure that you have provided the installation bin
 
 You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
+The character set for the database is set during creating of the database. 11g Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
+
 ### Running Oracle Database in a Docker container
 
 #### Running Oracle Database Enterprise and Standard Edition in a Docker container
@@ -48,6 +50,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-p <host port>:1521 -p <host port>:5500 \
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
+	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
 	oracle/database:12.1.0.2-ee
 	
@@ -57,6 +60,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
+	   -e ORACLE_CHARACTERSET:
+	                  The character set to use when creating the database (default: AL32UTF8)
 	   -v             The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
@@ -70,6 +75,8 @@ Once the container has been started and the database created you can connect to 
 The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
 
 	https://localhost:5500/em/
+
+**NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
 
 #### Changing the admin accounts passwords
 
@@ -94,7 +101,7 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 	   --name:     The name of the container (default: auto generated)
 	   --shm-size: Amount of Linux shared memory
 	   -p:         The port mapping of the host port to the container port.
-	               Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
+	               Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
 	   -v          The data volume to use for the database.
 	               Has to be owned by the Unix user "oracle" or set appropriately.
 	               If omitted the database will not be persisted over container recreation.
@@ -124,7 +131,8 @@ Another option is to use `docker exec` and run `sqlplus` from within the same co
 	docker exec -ti <container name> sqlplus pdbadmin@ORCLPDB1
 
 ## Support
-Currently Oracle Database on Docker is **NOT** supported by Oracle. Use these files at your own discretion.
+Oracle Database in single instance configuration is supported for Oracle Linux 7 and Red Hat Enterprise Linux (RHEL) 7.
+For more details please see My Oracle Support note: **Oracle Support for Database Running on Docker (Doc ID 2216342.1)**
 
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.

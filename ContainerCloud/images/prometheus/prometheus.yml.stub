@@ -1,0 +1,18 @@
+# This is meant to be the "default" configuration for
+# Prometheus. For a more dynamic configuration
+# we will mount a data volume container over this file.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  external_labels:
+    monitor: occs-blog-metrics
+
+rule_files:
+
+scrape_configs:
+- job_name: prometheus-scraper
+  scrape_interval: 5s
+  target_groups:
+    - targets: [
+      # Stub only. Confd has performed no magic.
+    ]

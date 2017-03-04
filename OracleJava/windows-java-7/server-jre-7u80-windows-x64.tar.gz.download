@@ -1,0 +1,6 @@
+# Download from Oracle JDK 7 archive page
+# Drop the downloaded file in the same folder as this .download file (along with the corresponding Dockerfile)
+#
+# - http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#sjre-7u80-oth-JPR
+#
+edc475c7aee0dd6652e846cb5cf7ada8  server-jre-7u80-windows-x64.tar.gz

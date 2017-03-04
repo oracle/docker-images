@@ -47,7 +47,7 @@ UNIX_GROUP_NAME=dba
 # This is an optional parameter if installing on
 # Windows based Operating System.
 #-------------------------------------------------------------------------------
-INVENTORY_LOCATION=/opt/oracle/oraInventory
+INVENTORY_LOCATION=###ORACLE_BASE###/oraInventory
 #-------------------------------------------------------------------------------
 # Specify the languages in which the components will be installed.             
 # 
