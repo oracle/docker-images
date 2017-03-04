@@ -7,7 +7,7 @@
 
 # Pull base image
 # ---------------
-FROM oracle/soa:12.1.3-quickstart
+FROM oracle/soa:12.2.1.2-quickstart
 
 # Maintainer
 # ----------
