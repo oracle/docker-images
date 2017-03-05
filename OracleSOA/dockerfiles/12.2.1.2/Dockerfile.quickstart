@@ -1,5 +1,33 @@
+# LICENSE CDDL 1.0 + GPL 2.0
+#
+# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile for SOA Suite 12.2.1.2 Quick Install Distro
+#
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) fmw_12.2.1.2.0_soaqs_Disk1_1of2.zip
+# (2) fmw_12.2.1.2.0_soaqs_Disk1_2of2.zip
+#     Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/soasuite/downloads/soasuite1221-quickstartdownload-3050431.html
+#
+# (3) server-jre-8uXX-linux-x64.tar.gz
+#     Download from http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put all downloaded files in the same directory as this Dockerfile
+# Run:
+#      $ docker build -t oracle/soa:12.2.1.2-quickstart . 
+#
+# IMPORTANT
+# ---------
+# The resulting image of this Dockerfile contains a WLS Empty Domain.
+#
 # Pull base image
-# ---------------
+# From the Oracle Registry
+# -------------------------
 FROM oracle/serverjre:8
 
 # Maintainer

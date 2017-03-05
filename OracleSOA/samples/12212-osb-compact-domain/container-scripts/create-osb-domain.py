@@ -1,3 +1,12 @@
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+# OSB on Docker Default Compact Domain
+#
+# Domain, as defined in DOMAIN_NAME, will be created in this script. Name defaults to 'base_domain'.
+#
+# Since : March, 2017
+# Author: TBD
+# ==============================================
 domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
 admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD")
