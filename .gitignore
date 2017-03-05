@@ -2,3 +2,4 @@
 **/*.jar
 **/*.zip
 **/*.tar.gz
+.idea/
