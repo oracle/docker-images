@@ -1,0 +1,10 @@
+version: '2'
+services:
+  database:
+    image: oracle/database:12.2.0.1-ee
+    volumes:
+      - /home/oracle/oradata:/opt/oracle/oradata # persistent oracle database data.
+    ports:
+      - 1521:1521
+      - 8080:8080
+      - 5500:5500
