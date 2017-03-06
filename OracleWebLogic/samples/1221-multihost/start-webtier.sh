@@ -29,7 +29,7 @@ do
     n=$(expr $(expr index $HOST /) + 1)
     length=$(expr "$HOST" : '.*')
     HOST=$(echo $HOST | cut -c$n-$length)
-    wlscluster=$wlscluster"$HOST:7001,"
+    wlscluster=$wlscluster"$HOST:7002,"
 done
 
 wlscluster=$(echo $wlscluster | sed 's/.$//')
