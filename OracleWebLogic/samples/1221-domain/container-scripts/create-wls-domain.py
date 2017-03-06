@@ -8,7 +8,7 @@
 # Author: bruno.borges@oracle.com
 # ==============================================
 domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
-admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
+admin_port   = int(os.environ.get("ADMIN_PORT", "7001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD")
 cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 domain_path  = '/u01/oracle/user_projects/domains/%s' % domain_name
