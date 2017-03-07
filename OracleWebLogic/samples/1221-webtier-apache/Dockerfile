@@ -10,7 +10,7 @@ ENV PLUGIN_PKG="WLSPlugin12.2.1-Apache2.2-Apache2.4-Linux_x86_64-12.2.1.0.0.zip"
     PLUGIN_HOME="/root" \
     MOD_WLS_PLUGIN="mod_wl_24.so" \
     LD_LIBRARY_PATH="/root/lib" \
-    WEBLOGIC_CLUSTER="server0:7001,server1:7001"
+    WEBLOGIC_CLUSTER="server0:7002,server1:7002"
 
 COPY $PLUGIN_PKG weblogic.conf /root/
 

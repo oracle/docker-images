@@ -62,7 +62,7 @@ services:
     networks:
       - *network 
     environment:
-      - WEBLOGIC_CLUSTER="managedserver:7001"
+      - WEBLOGIC_CLUSTER="managedserver:7002"
     links:
       - managedserver
 
