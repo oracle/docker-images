@@ -34,6 +34,7 @@ cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
+sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
 
 # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
 mkdir -p $ORACLE_HOME/network/admin
