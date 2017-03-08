@@ -88,6 +88,7 @@ function createDB {
       ALTER DATABASE DROP LOGFILE GROUP 2;
       
       ALTER SYSTEM SET db_recovery_file_dest='';
+      exit;
 EOF"
 
   # Move database operational files to oradata

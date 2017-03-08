@@ -53,6 +53,7 @@ function _int() {
    echo "SIGINT received, shutting down database!"
    sqlplus / as sysdba <<EOF
    shutdown immediate;
+   exit;
 EOF
    lsnrctl stop
 }
@@ -63,6 +64,7 @@ function _term() {
    echo "SIGTERM received, shutting down database!"
    sqlplus / as sysdba <<EOF
    shutdown immediate;
+   exit;
 EOF
    lsnrctl stop
 }
@@ -72,6 +74,7 @@ function _kill() {
    echo "SIGKILL received, shutting down database!"
    sqlplus / as sysdba <<EOF
    shutdown abort;
+   exit;
 EOF
    lsnrctl stop
 }
