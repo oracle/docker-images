@@ -52,8 +52,7 @@ ENV ORACLE_HOME=/u01/oracle \
 # ------------------------------------------------------------
 RUN mkdir -p /u01/oracle && \
     chmod a+xr /u01 && \
-    useradd -b /u01 -m -s /bin/bash oracle && \
-    echo oracle:oracle | chpasswd && \
+    useradd -b /u01 -M -s /bin/bash oracle && \
     chown oracle:oracle -R /u01 
     
 # Environment variables required for this build (do NOT change)
