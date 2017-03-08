@@ -27,7 +27,7 @@ USER oracle
 
 ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain} \
-    ADMIN_PORT="${ADMIN_PORT:-8001}" \
+    ADMIN_PORT="${ADMIN_PORT:-7001}" \
     PATH="$PATH:${DOMAIN_HOME}"
 
 RUN /u01/oracle/createDomain.sh
