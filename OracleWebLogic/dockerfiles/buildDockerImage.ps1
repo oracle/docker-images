@@ -2,7 +2,7 @@
 # 
 # Since: March, 2017
 # Author: fjhorrillo@gmail.com
-# Description: Build script for building Oracle Database Docker images.
+# Description: script to build a Docker image for WebLogic
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
@@ -12,18 +12,19 @@
 function usage() {
   Write-Host @"
 
-Usage: buildDockerImage.ps1 -v [version] [-e | -s | -x] [-i]
-Builds a Docker Image for Oracle Database.
+Usage: buildDockerImage.ps1 -v [version] [-d | -g | -i] [-s] [-c]
+Builds a Docker Image for Oracle WebLogic.
   
 Parameters:
-   -v: version to build
+   -v: version to build. Required.
        Choose one of: $(Get-ChildItem -Name -Directory)
-   -e: creates image based on 'Enterprise Edition'
-   -s: creates image based on 'Standard Edition 2'
-   -x: creates image based on 'Express Edition'
-   -i: ignores the MD5 checksums
+   -d: creates image based on 'developer' distribution
+   -g: creates image based on 'generic' distribution
+   -i: creates image based on 'infrastructure' distribution
+   -c: enables Docker image layer cache during build
+   -s: skips the MD5 check of packages
 
-* select one edition only: -e, -s, or -x
+* select one distribution only: -d, -g, or -i
 
 LICENSE CDDL 1.0 + GPL 2.0
 
@@ -72,14 +73,14 @@ function md5sum {
 function checksumPackages() {
   try {
     echo "Checking if required packages are present and valid..."
-    md5sum -c Checksum.$EDITION
+    md5sum -c Checksum.$DISTRIBUTION
   } catch {
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder $VERSION."
     exit $?
   }
 }
-s
+
 ##############
 #### MAIN ####
 ##############
@@ -89,12 +90,12 @@ if ( $args.Count -eq 0 ) {
 }
 
 # Parameters
-$ENTERPRISE=0
-$STANDARD=0
-$EXPRESS=0
-$VERSION="12.2.0.1"
+$DEVELOPER=0
+$GENERIC=0
+$INFRASTRUCTURE=0
+$VERSION="12.2.1"
 $SKIPMD5=0
-$DOCKEROPS=""
+$NOCACHE=$true
 
 for($i=0; $i -lt $args.Count; $i++) {
   $optname=$args[$i].TrimStart("-")
@@ -103,20 +104,23 @@ for($i=0; $i -lt $args.Count; $i++) {
     "h" {
       usage
     }
-    "i" {
+    "s" {
       $SKIPMD5=1
     }
-    "e" {
-      $ENTERPRISE=1
+    "d" {
+      $DEVELOPER=1
     }
-    "s" {
-      $STANDARD=1
+    "g" {
+      $GENERIC=1
     }
-    "x" {
-      $EXPRESS=1
+    "i" {
+      $INFRASTRUCTURE=1
     }
     "v" {
       $VERSION="$optarg"
+    }
+    "c" {
+      $NOCACHE=$false
     }
     default {
     # Should not occur
@@ -125,28 +129,22 @@ for($i=0; $i -lt $args.Count; $i++) {
   }
 }
 
-# Which Edition should be used?
-if ( $(($ENTERPRISE + $STANDARD + $EXPRESS)) -gt 1 ) {
+# Which distribution to use?
+if ( $(($DEVELOPER + $GENERIC + $INFRASTRUCTURE)) -gt 1 ) {
   usage
-} elseif ( $ENTERPRISE -eq 1 ) {
-  $EDITION="ee"
-} elseif ( $STANDARD -eq 1 ) {
-  if ( "$VERSION" -eq "12.2.0.1" ) {
-     echo "Version 12.2.0.1 does not have Standard Edition available.";
-     exit 1;
-  } else {
-     $EDITION="se2"
-  }
-} elseif (( $EXPRESS -eq 1 ) -And ( "$VERSION" -ne "11.2.0.2" )) {
-  echo "Version $VERSION does not have Express Edition available.";
-  exit 1;
+} elseif ( $DEVELOPER -eq 1 ) {
+  $DISTRIBUTION="developer"
+} elseif ( $GENERIC -eq 1 ) {
+  $DISTRIBUTION="generic"
+} elseif ( ($INFRASTRUCTURE -eq 1) -And ("$VERSION" -eq "12.1.3") ) {
+  echo "Version 12.1.3 does not have infrastructure distribution available."
+  exit 1
 } else {
-  $EDITION="xe";
-  $DOCKEROPS="--shm-size=1G";
+  $DISTRIBUTION="infrastructure"
 }
 
-# Oracle Database Image Name
-$IMAGE_NAME="oracle/database:$VERSION-$EDITION"
+# WebLogic Image Name
+$IMAGE_NAME="oracle/weblogic:$VERSION-$DISTRIBUTION"
 
 # Go into version folder
 cd $VERSION
@@ -154,8 +152,9 @@ cd $VERSION
 if ( -Not $SKIPMD5 -eq 1 ) {
   checksumPackages
 } else {
-  echo "Ignored MD5 checksum."
+  echo "Skipped MD5 checksum."
 }
+
 echo "=========================="
 echo "DOCKER version:"
 docker version
@@ -191,7 +190,7 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 $BUILD_START=Get-Date
 try {
-  docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION .
+  docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$DISTRIBUTION .
 } catch {
   echo "There was an error building the image."
   exit 1
@@ -203,7 +202,7 @@ echo ""
 
 if ( $? ) {
 Write-Host @"
-  Oracle Database Docker Image for '$EDITION' version $VERSION is ready to be extended: 
+  WebLogic Docker Image for '$DISTRIBUTION' version $VERSION is ready to be extended: 
     
     --> $IMAGE_NAME
 
@@ -212,6 +211,6 @@ Write-Host @"
 "@
 
 } else {
-  echo "Oracle Database Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "WebLogic Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 }
 
