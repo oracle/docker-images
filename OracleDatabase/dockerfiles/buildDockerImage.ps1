@@ -1,4 +1,4 @@
-#PowerShell
+#!/bin/powershell
 # 
 # Since: March, 2017
 # Author: fjhorrillo@gmail.com
