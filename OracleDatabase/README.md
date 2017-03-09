@@ -4,7 +4,7 @@ Sample Docker build files to facilitate installation, configuration, and environ
 
 ## How to build and run
 This project offers sample Dockerfiles for:
- * Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition
+ * Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition and Standard Edition
  * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition
  * Oracle Database 11g Release 2 (11.2.0.2) Express Edition.
 

@@ -97,12 +97,7 @@ if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
 elif [ $ENTERPRISE -eq 1 ]; then
   EDITION="ee"
 elif [ $STANDARD -eq 1 ]; then
-  if [ "$VERSION" = "12.2.0.1" ]; then
-     echo "Version 12.2.0.1 does not have Standard Edition available.";
-     exit 1;
-  else
-     EDITION="se2"
-  fi
+  EDITION="se2"
 elif [ $EXPRESS -eq 1 ] && [ "$VERSION" != "11.2.0.2" ]; then
   echo "Version $VERSION does not have Express Edition available.";
   exit 1;
@@ -123,8 +118,8 @@ else
   echo "Ignored MD5 checksum."
 fi
 echo "=========================="
-echo "DOCKER version:"
-docker version
+echo "DOCKER info:"
+docker info
 echo "=========================="
 
 # Proxy settings
