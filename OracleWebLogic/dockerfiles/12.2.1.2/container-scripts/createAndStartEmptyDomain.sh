@@ -5,6 +5,25 @@
 # If AdminServer.log does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer
 # Otherwise, only start NM (container restarted)
+########### SIGTERM handler ############
+function _term() {
+   echo "Stopping container."
+   echo "SIGTERM received, shutting down the server!"
+   ${DOMAIN_HOME}/bin/stopWebLogic.sh
+}
+
+########### SIGKILL handler ############
+function _kill() {
+   echo "SIGKILL received, shutting down the server!"
+   kill -9 $childPID
+}
+
+# Set SIGTERM handler
+trap _term SIGTERM
+
+# Set SIGKILL handler
+trap _kill SIGKILL
+
 ADD_DOMAIN=1
 if [ ! -f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log ]; then
     ADD_DOMAIN=0
