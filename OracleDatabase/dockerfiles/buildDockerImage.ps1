@@ -79,7 +79,7 @@ function checksumPackages() {
     exit $?
   }
 }
-s
+
 ##############
 #### MAIN ####
 ##############
