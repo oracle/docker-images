@@ -1,13 +1,15 @@
 WebLogic on Docker
 ===============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) and [samples](samples/) for both WebLogic 12.1.3 and 12.2.1 based on Oracle Linux and Oracle JDK 8 (Server).
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) and [samples](samples/) for WebLogic 12.1.3, 12.2.1, 12.2.1.1 and 12.2.1.2 based on Oracle Linux and Oracle JDK 8 (Server).
 
 The certification of WebLogic on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 For more information on the certification, please check the [WebLogic on Docker Certification Whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [WebLogic Blog](https://blogs.oracle.com/WebLogicServer/) for updates.
 
+For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
+
 ## How to build and run
-This project offers sample Dockerfiles for both WebLogic 12cR2 (12.2.1) and WebLogic 12c (12.1.3), and for each version it also provides at least one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+This project offers sample Dockerfiles for WebLogic 12cR2 (12.2.1.x) and WebLogic 12c (12.1.3), and for each version it also provides at least one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
@@ -54,9 +56,9 @@ This [Dockerfile](samples/1221-domain/Dockerfile) will create an image by extend
  * Oracle Linux Username: `oracle`
  * Oracle Linux Password: `welcome1`
  * WebLogic Domain Name: `base_domain`
- * Admin Server on port: `8001`
+ * Admin Server on port: `7001`
  * NodeManager on port: `5556`
- * Managed Server on port: `7001`
+ * Managed Server on port: `7002`
 
 Make sure you first build the WebLogic 12.2.1 Image with **-d** to get the Developer Image.
 
@@ -82,9 +84,9 @@ To try a sample of a WebLogic image with a domain configured, follow the steps b
 ### Running WebLogic AdminServer
 To start the WebLogic AdminServer, you can simply call **docker run -d 1221-domain** command. The sample Dockerfile defines **startWebLogic.sh** as the default CMD.
 
-    $ docker run -d --name=wlsadmin -p 8001:8001 1221-domain
+    $ docker run -d --name=wlsadmin -p 7001:7001 1221-domain
 
-Now you can access the AdminServer Web Console at [http://localhost:8001/console](http://localhost:8001/console).
+Now you can access the AdminServer Web Console at [http://localhost:7001/console](http://localhost:7001/console).
 
 ## Clustering WebLogic on Docker Containers
 WebLogic has a [Machine](https://docs.oracle.com/middleware/1221/wls/WLACH/taskhelp/machines/ConfigureMachines.html) concept, which is an operational system with an agent, the Node Manager. This resource allows WebLogic AdminServer to create and assign [Managed Servers](https://docs.oracle.com/middleware/1221/wls/WLACH/taskhelp/domainconfig/CreateManagedServers.html) of an underlying domain in order to expand an environment of servers for different applications and resources, and also to define a [Cluster](). By using **Machines** from containers, you can easily create a [Dynamic Cluster]() by simply firing new NodeManagers containers. With some WLST magic, your cluster can scale in and out.
@@ -116,11 +118,11 @@ The Supplemental Quick Installer is a lightweight installer that contains all of
 
   5. Now run a container from this new sample domain image
 
-        $ docker run -ti -p 7001:7001 1221-medrec
+        $ docker run -ti -p 7002:7002 1221-medrec
 
   6. Now access the AdminServer Console at 
 
-        http://localhost:7001/medrec
+        http://localhost:7002/medrec
 
 ## Choose your WebLogic Distribution
 This project hosts two to three configurations (depending on WebLogic version) for building Docker images with WebLogic 12c.

@@ -24,7 +24,7 @@ cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 msinternal = socket.gethostbyname(hostname)
 msname = os.environ.get('MS_NAME', 'ManagedServer-' + randomName() + '@' + hostname)
 mshost = os.environ.get('MS_HOST', msinternal)
-msport = os.environ.get('MS_PORT', '7001')
+msport = os.environ.get('MS_PORT', '7002')
 memargs = os.environ.get('USER_MEM_ARGS', '')
 
 # Connect to the AdminServer

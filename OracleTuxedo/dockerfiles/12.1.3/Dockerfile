@@ -25,7 +25,7 @@ WORKDIR /home/oracle/Downloads
 USER oracle
 
 # Install Tuxedo, SALT, and TSAM Agent
-RUN sh tuxedo12.1.3_silent_install.sh p*_121300_Linux-x86-64.zip tuxedo121300_64_Linux_01_x86.zip
+RUN sh install.sh p*_121300_Linux-x86-64.zip tuxedo121300_64_Linux_01_x86.zip
 ENV TUXDIR /home/oracle/tuxHome/tuxedo12.1.3.0.0
 
 # Clean up installer files

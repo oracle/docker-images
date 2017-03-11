@@ -6,7 +6,7 @@
 # This script is used to set up a common environment for starting WebLogic
 # Server, as well as WebLogic development.
 #*****************************************************************************
-${MW_HOME:=/u01/oracle/ohssa}
+MW_HOME=/u01/oracle/ohssa
 export MW_HOME
 if [ -z "${MW_HOME}" -a -z "${WL_HOME}" ]; then
  echo "Please set MW_HOME or WL_HOME."

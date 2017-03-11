@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 # 
 
 usage() {
@@ -27,7 +27,7 @@ Parameters:
 
 LICENSE CDDL 1.0 + GPL 2.0
 
-Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
 EOF
   exit 0
@@ -60,7 +60,7 @@ fi
 ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
-VERSION="12.1.0.2"
+VERSION="12.2.0.1"
 SKIPMD5=0
 DOCKEROPS=""
 
@@ -98,9 +98,9 @@ elif [ $ENTERPRISE -eq 1 ]; then
   EDITION="ee"
 elif [ $STANDARD -eq 1 ]; then
   EDITION="se2"
-elif [ $EXPRESS -eq 1 ] && [ "$VERSION" = "12.1.0.2" ]; then
-  echo "Version 12.1.0.2 does not have Express Edition available."
-  exit 1
+elif [ $EXPRESS -eq 1 ] && [ "$VERSION" != "11.2.0.2" ]; then
+  echo "Version $VERSION does not have Express Edition available.";
+  exit 1;
 else
   EDITION="xe";
   DOCKEROPS="--shm-size=1G";
@@ -118,8 +118,8 @@ else
   echo "Ignored MD5 checksum."
 fi
 echo "=========================="
-echo "DOCKER version:"
-docker version
+echo "DOCKER info:"
+docker info
 echo "=========================="
 
 # Proxy settings
