@@ -23,7 +23,7 @@
 
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.1.3-developer
+FROM oracle/weblogic:12.1.3-generic
 
 # Maintainer
 # ----------
@@ -32,12 +32,15 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # WLS Configuration
 # -------------------------------
 ARG ADMIN_PASSWORD
+ARG PRODUCTION_MODE
+
 ENV DOMAIN_NAME="base_domain" \
     DOMAIN_HOME="/u01/oracle/user_projects/domains/base_domain" \
     ADMIN_PORT="7001" \
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
     MS_PORT="7002" \
+    PRODUCTION_MODE="${PRODUCTION_MODE:-prod}" \
     CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/base_domain/bin:/u01/oracle
 
