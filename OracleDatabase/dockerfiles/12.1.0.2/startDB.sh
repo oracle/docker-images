@@ -24,4 +24,5 @@ lsnrctl start
 # Start database
 sqlplus / as sysdba << EOF
    STARTUP;
+   exit;
 EOF

@@ -21,7 +21,7 @@ wget -O /tmp/v${LOGSPOUT_VERSION}.tar.gz \
 
 cd /go/src/github.com/gliderlabs/logspout
 go get -x
-go build -v -ldflags "-X main.Version dev" -o /bin/logspout
+go build -v -ldflags "-X main.Version=dev" -o /bin/logspout
 
 apk del .build-deps
 rm -rf /go
