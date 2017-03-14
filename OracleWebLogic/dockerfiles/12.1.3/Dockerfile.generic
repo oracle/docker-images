@@ -51,10 +51,10 @@ ENV ORACLE_HOME=/u01/oracle \
 # Install and configure Oracle JDK
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN mkdir -p /u01/oracle && \
+RUN mkdir -p /u01 && \
     chmod a+xr /u01 && \
-    useradd -b /u01 -M -s /bin/bash oracle && \
-    chown oracle:oracle -R /u01 
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
+    chown oracle:oracle -R /u01
     
 ENV FMW_PKG=fmw_12.1.3.0.0_wls.jar 
 
