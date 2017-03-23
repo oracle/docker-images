@@ -76,4 +76,4 @@ VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 5500
     
 # Define default command to start Oracle Database. 
-CMD $ORACLE_BASE/$RUN_FILE
+CMD exec $ORACLE_BASE/$RUN_FILE
