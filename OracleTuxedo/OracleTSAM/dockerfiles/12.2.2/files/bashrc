@@ -1,0 +1,1036 @@
+if [ -z "$ENVDEBUG" ];then
+    set +x
+fi
+set +e
+export GLOBAL_ENV_DIR=/etc/envs
+export MY_ENV_DIR=$GLOBAL_ENV_DIR
+export RED='\033[1;31m'
+export GREEN='\033[1;32m'
+export YELLOW='\033[1;33m'
+export BLUE='\033[1;34m'
+export NC='\033[0m'
+export PROMPT_COMMAND='echo -ne "\033]0;"$LOGNAME@`uname -n`"\007"'
+export USR_TMP_DIR=~/.usrtmp
+export ENVS_FILE=bashrc
+export VIMCMD=vim
+export BUILD_MODE=${BUILD_MODE-internal}
+export DOMAIN=ucf
+
+function iscommand
+{
+    OUTPUT=`type $1 2>&1`
+    if [ -n "`echo $OUTPUT | grep 'not found'`" ];then echo n; else echo y; fi
+}
+if [ "$(iscommand whoami)" = y ];then WHOAMI=`whoami`; else WHOAMI=$LOGNAME; fi
+if [ -z "$JAVA_HOME" ];then [ -d /jdk ] && export JAVA_HOME=/jdk || export JAVA_HOME=/jre; fi
+export PATH=.:$GLOBAL_ENV_DIR:$USR_ENV_DIR:$JAVA_HOME/bin:/tools:/testarea/$WHOAMI/bin:~/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:$PATH
+
+if [ -z "$SYSTEM" ];then
+    SYSTEM=`uname -s`
+fi
+if [ -z "$HOST_NAME" ];then
+  HOST_NAME=`uname -n`; export HOST_NAME
+fi
+unalias ls 2>/dev/null
+unalias cp 2>/dev/null
+unalias rm 2>/dev/null
+unalias mv 2>/dev/null
+unalias pg 2>/dev/null
+unalias getfile 2>/dev/null
+
+if [ ! -d $USR_TMP_DIR ];then
+    mkdir $USR_TMP_DIR 2>/dev/null
+fi
+if [ ! -d $USR_ENV_DIR ];then
+    mkdir $USR_ENV_DIR 2>/dev/null
+fi
+
+function runfunc {
+    $*
+}
+function istty
+{
+    if [ "`tty`" = "not a tty" ];then
+        echo n
+    else
+        echo y
+    fi
+}
+function colormsg
+{
+    eval color=\$${1}
+    shift
+    msg="$*"
+    if [ `istty` = y ];then
+        msgstr="$color$msg${NC}\n"
+    else
+        msgstr="$msg\n"
+    fi
+    printf "$msgstr"
+}
+function hasdisp
+{
+    if [ -n "$DISPLAY" ];then
+        echo y
+    else
+        echo n
+    fi
+}
+
+function getdistro
+{
+    if [ "$SYSTEM" = AIX ];then
+        DISTRO=AIX
+        export DISTRO
+        return
+    elif [ "$SYSTEM" = SunOS ];then
+        DISTRO=SOL
+        export DISTRO
+        return
+    fi
+    ETC_ISSUE=`cat /etc/issue`
+    if [ -n "`echo $ETC_ISSUE|grep -i ubuntu`" ];then
+        DISTRO=ubuntu
+        export DISTRO_VER=`cat /etc/issue|awk '{print $2}'|awk -F. '{print $1}'`
+    elif [ -n "`echo $ETC_ISSUE|grep -i 'alpine'`" ];then
+        DISTRO=alpine
+    elif [ -n "`echo $ETC_ISSUE|grep -i 'oracle linux'`" ];then
+        DISTRO=redhat
+    elif [ -n "`echo $ETC_ISSUE|grep -i 'arch'`" ];then
+        DISTRO=arch
+    elif [ -n "`echo $ETC_ISSUE|grep -i 'suse'`" ];then
+        DISTRO=suse
+    elif [ -n "`echo $ETC_ISSUE|grep -i 'HP'`" ];then
+        DISTRO=HP
+    else
+        DISTRO=redhat # treat unknown as redhat
+    fi
+    export DISTRO
+    echo $DISTRO
+}
+function isfunction
+{
+    OUTPUT=`type $1 2>/dev/null`
+    if [ -n "`echo $OUTPUT | grep 'is a function'`" ];then echo y; else echo n; fi
+}
+if [ "$(iscommand wget)" = y ];then HASWGET=y; else HASWGET=n; fi
+if [ "$(iscommand curl)" = y ];then
+  HASCURL=y;
+else
+  HASCURL=n;
+fi
+
+if [ -z "$DISTRO_VER" ];then
+  if [ -z "$DISTRO" ];then
+    getdistro > /dev/null
+  elif [ "$DISTRO" = ubuntu ];then
+    getdistro > /dev/null
+  fi
+fi
+
+function ipcclean
+{
+    ipcs -q | grep ${LOGNAME} | awk '{print "ipcrm -q "$2}'|sh;ipcs -m | grep ${LOGNAME} | awk '{print "ipcrm -m "$2}' |sh;ipcs -s | grep ${LOGNAME} | awk '{print "ipcrm -s "$2}' |sh
+}
+
+function contains
+{
+    if [[ $1 == *$2* ]]
+    then
+        echo y
+    else
+        echo n
+    fi
+}
+
+function contains_ic
+{
+    if [[ ${1,,} == *${2,,}* ]]
+    then
+        echo y
+    else
+        echo n
+    fi
+}
+
+if [ "$SYSTEM" = Linux ];then
+    if [ -z "`grep -i alpine /etc/issue`" ];then
+        alias grep='grep --color=auto' 2>/dev/null
+    fi
+fi
+function ls {
+    if [ $SYSTEM = 'Linux' ];then
+        /bin/ls -ltrh --color $*
+    else
+        /bin/ls -ltrF $*
+    fi
+}
+if [ `uname -s` != Linux ];then
+    export TERM=xterm
+fi
+if [ "$(hasdisp)" = y -a -z "`type xclip 2>&1 | grep 'found'`" ];then HASXCLIP=y; else HASXCLIP=n; fi
+
+MACHINE=`uname -n`; export PS1='$LOGNAME@$MACHINE:$PWD> '
+alias tuxdir='cd $TUXDIR'
+alias oracle='cd ${ORACLE_HOME}'
+alias cdw='cd work'
+alias psd='ps -eaf|grep ${LOGNAME}'
+alias psa='ps -eaf'
+alias tout='tail -f *out'
+alias tlog='tail -f *log'
+alias cout='cat *out'
+alias cerr='cat *err'
+alias ctt='cat *txt'
+alias clog='cat *log'
+alias clogs='find -L . -name "*.log"|xargs cat'
+alias boot='tmboot -y'
+alias tmload='find . -name tuxconfig|xargs rm -f;tmloadcf -y ubb'
+alias dmload='rm -f bdmconfig;dmloadcf -y dubb'
+alias shut='tmshutdown -yc'
+alias culog='cat UL*'
+alias culogs='find -L . -name "ULOG*"|awk '\''{print "echo;echo "$0";echo @@@@@@@@@@@@@@@@@@@@@@@@@@@@@;cat "$0""}'\''|sh'
+alias culoge='cat UL* | grep ERROR'
+alias culogw='cat UL*'
+alias rmulogs='find . -name "UL*"|xargs rm -f'
+alias setenv='. ./setenv.sh'
+alias setenv1='. ./setenv.ksh'
+alias setenv2='. ./setenv'
+alias unsetpre='unset LD_PRELOAD'
+alias ..='cd ..'
+alias disp='export DISPLAY=$(hostboxip):0.0'
+alias disp0='export DISPLAY=:0'
+alias disp1='export DISPLAY=$(hostboxip):1.0'
+alias ckdisp='echo $DISPLAY'
+alias undisp='unset DISPLAY'
+alias rmulogs='find . -name "UL*"|xargs rm -f'
+alias rmlog='rm *.log 2>/dev/null'
+alias rmbin='rm *.bin 2>/dev/null'
+alias rmtxt='rm *.txt 2>/dev/null'
+alias rmenv='rm -f setenv.*'
+alias rmlogs='find . -name "*.log"|xargs rm -f'
+alias tuxconfig='export TUXCONFIG=$PWD/tuxconfig'
+alias rmipc='tmipcrm -y'
+alias vihosts='sudo $VIMCMD /etc/hosts'
+alias vilog='vi *log'
+alias rmswp='rm .*swp'
+alias rmcvs='find . -name CVS|xargs rm -rf;find . -name .svn|xargs rm -rf;find . -name ".*"|grep -v .adm|grep -v "^.$"|xargs rm -f'
+alias lsbk='ls *.bk'
+alias rmbk='rm -f *.bk'
+alias tmpdir='mkdir t>/dev/null 2>&1;cd t'
+alias unsetproxy='unset http_proxy;unset https_proxy'
+alias lst='/bin/ls -ltr|tail -20'
+alias rmtmplogs='rm -f rm.install*;rm -f rm.install*;rm -rf install.dir*;rm -f persistent_state'
+alias sshkey='ssh-keygen -t rsa'
+alias h='fc -s'
+alias findall='find -L . -name'
+function fif { find -L . -type f|awk -v myvar="\"$*\"" '{print "grep -iH "myvar" \""$0"\""}'|sh; }
+alias delcore='find . -name "core"|xargs rm -f;find . -name "core.*"|xargs rm -f;find . -name "hs_err*"|xargs rm -f'
+alias startvnc='vncserver -geometry 1600x960'
+alias restartvnc='stopvnc; sleep 0.5; startvnc'
+alias startvnc1='vncserver -geometry 1366x768'
+alias cktls='ps -ef|grep tlisten|grep -v grep|grep $LOGNAME'
+alias cktux='cktls;pg BBL'
+unalias myhalt 2>/dev/null
+function myhalt {
+    if [ -e /usr/bin/docker -a -n "`docker ps -a|grep Up`" ];then
+        docker stop -t 30 `docker ps -aq`
+    fi
+    sudo shutdown -h now
+}
+alias myreboot='sudo shutdown -r now'
+alias appdir='cd $APPDIR'
+alias cleanlogs='find . -name "*.out" -o -name "*err" -o -name "ULOG*" -o -name "tsam.log*" -o -name "log.*" -o -name "*.trc" -o -name "access.*" -o -name "id.out*" -o -name "core" -o -name "core.*" -o -name      "good.*" -o -name "tmusrevt.dat" -o -name "t1.log" -o -name "t2.log" -o -name "t3.log" -o -name "*  tlisten*.log"|xargs rm -f > /dev/null 2>&1'
+alias unora='unset ORACLE_HOME'
+alias jesadm='artjesadmin'
+alias javaenv='. ./java.env'
+alias setld='echo $PWD > $USR_TMP_DIR/..LD'
+alias cdld='cd `cat $USR_TMP_DIR/..LD`'
+alias setfd='echo $PWD > $USR_TMP_DIR/..FD'
+alias setfd1='echo $PWD > $USR_TMP_DIR/..FD1'
+alias setfd2='echo $PWD > $USR_TMP_DIR/..FD2'
+alias cdfd='cd `cat $USR_TMP_DIR/..FD`'
+alias cdfd1='cd `cat $USR_TMP_DIR/..FD1`'
+alias cdfd2='cd `cat $USR_TMP_DIR/..FD2`'
+alias mystrace='strace -f -F -r -o $USR_TMP_DIR/mystrace.log'
+alias mystrace1='strace -e trace=open,close,read,write,network -f -F -r -o $USR_TMP_DIR/mystrace.log'
+alias vienvs='vi $MY_ENV_DIR/$ENVS_FILE'
+alias vilenvs='vi $USR_ENV_DIR/..localenvs'
+alias viemenvs='vi $MY_ENV_DIR/$EMENVS_FILE'
+alias resrc='source ~/.bashrc;envs'
+alias resrcem='. $MY_ENV_DIR/$EMENVS_FILE;. $MY_ENV_DIR/$EMENVS_FILE.common;'
+alias profile='vi ~/.bashrc;source ~/.bashrc'
+alias dba='sqlplus / as sysdba'
+alias dbhome='cd $DB_HOME'
+alias disown1='disown -h %1'
+alias vnconfig='killall vncconfig 2>/dev/null;vncconfig -nowin &'
+alias jmxdebug='export TMJMX_DEBUG=0-3'
+alias papp='opatch apply'
+alias pls='opatch lsinv'
+alias prol='opatch rollback -id'
+alias envs='source $MY_ENV_DIR/$ENVS_FILE'
+alias emenvs='cd $MY_ENV_DIR;source $EMENVS_FILE;source $EMENVS_FILE.common;cd - >/dev/null'
+alias repupdate='sudo apt-get update;sudo apt-get -y dist-upgrade'
+alias repget='sudo apt-get -y install'
+alias repupgrade='sudo apt-get -y --allow-unauthenticated dist-upgrade'
+alias reppurge='sudo apt-get purge'
+alias repsearch='apt-cache search'
+alias kernels='dpkg -l|grep linux-|grep -e image -e headers'
+alias kernelsoel='sudo yum list|grep kernel|grep installed'
+alias vialias='vi ~/.alias;source ~/.alias'
+alias cdt='cd /testarea/$WHOAMI'
+alias yuminst='sudo yum -y install'
+alias yumerase='sudo yum erase'
+alias yumlist='yum list'
+alias egrep='egrep --color=auto' 2>/dev/null
+alias fgrep='fgrep --color=auto' 2>/dev/null
+alias lf='/bin/ls -C1t|sed -n "1p"'
+alias rmenvs='rm -f $MY_ENV_DIR/$ENVS_FILE'
+alias rmemenvs='rm -f $MY_ENV_DIR/..emenv*'
+alias rmallenvs='rm -f $MY_ENV_DIR/..emenv* $MY_ENV_DIR/$ENVS_FILE'
+
+alias vaginit='vagrant init'
+alias vaglist='vagrant box list'
+alias vagadd='vagrant box add'
+alias vagup='vagrant up'
+alias vagssh='vagrant ssh'
+alias vagrepro='vagrant reload --provision'
+alias vagreload='vagrant reload'
+alias vagsus='vagrant suspend'
+alias vaghalt='vagrant halt'
+alias vagdestroy='vagrant destroy'
+alias vagstat='vagrant status'
+alias vaggstat='vagrant global-status'
+alias vagpro='vagrant provision'
+alias vagproshell='vagrant provision --provision-with shell'
+alias vagremove='vagrant remove'
+alias vivag='vi Vagrantfile'
+alias mycleanview='cleanview -preserve_build'
+alias oradata='cd /home/oracle/app/oracle/oradata'
+alias wgeton='echo "use_proxy=on" > ~/.wgetrc'
+alias wgetoff='echo "use_proxy=off" > ~/.wgetrc'
+alias ckproxy='env|grep proxy'
+alias repup='sudo apt-get -y --allow-unauthenticated dist-upgrade'
+alias cdbox='cd ~/.vagrant.d/boxes'
+alias cksid='env|grep SID'
+alias yumrepos='cd /etc/yum.repos.d'
+alias sshup='sudo service ssh start'
+alias chris='sudo su - chris'
+alias root='sudo su -'
+alias suora='sudo su - oracle'
+alias suoracmd='/usr/local/bin/suora'
+alias suem='sudo su - em'
+alias suemcmd='/usr/local/bin/suem'
+alias noti='notify'
+alias vmuser='sudo su - vmuser'
+alias cdbin='cd ~/bin'
+alias ckenvs='echo $MY_ENV_DIR/$ENVS_FILE'
+alias rmcvsbk='find -L . -name ".#*"|xargs rm'
+alias tsam='sudo su - tsam'
+alias lsnrstat='lsnrctl status'
+alias startlsnr='lsnrctl start'
+alias stoplsnr='lsnrctl stop'
+alias tsam122='cd ~tsam/tsam/tsam12.2.2.0.0'
+#aliasl
+#####SEPARATOR#####
+function ns {
+    if [ "$SYSTEM" = Linux ];then
+        grepstr="listen\|udp\|established"
+    else
+        grepstr="listen"
+    fi
+    PORT=${1-1880};netstat -an | grep ".$PORT"|grep -v grep|grep -i $grepstr;
+}
+function cdl { cd $1; ls;}
+function stopvnc { DISPNUM=${1-1}; vncserver -kill :$DISPNUM; }
+function findin { find -L . -name "$1" | xargs grep "$2"; }
+function mychmod { if [ $# -eq 0 ]; then chmod -R 755 *; else chmod -R 755 $*; fi; }
+set -o vi
+function findw { find -L . -iname "*$1*" |tee $USR_TMP_DIR/find.out; }
+function killtls { ps -ef|grep $LOGNAME|grep tlisten|grep -v grep|awk '{print "kill -9 "$2}'|sh 2>/dev/null; }
+function killtux { killtls;ipcclean;killall -9 LMS;killall -9 BRIDGE;killall -9 jrly;cleanlogs 2>&1;rm -f boot.log shutdown.log config.log;rm -f slave/tuxconfig;killall -9 tux_snmpd 2>/dev/null;ps -ef|grep trapd|grep vmuser|grep -v grep|awk '{print "kill -9 "$2}'|sh; }
+alias emoraenv='. ~/oraenv.em'
+alias ulogdate='export ULOGDATE=`date +%m%d%y`'
+alias ulog='ULOGDIR=${ULOGDIR-.};vi $ULOGDIR/ULOG.`date +%m%d%y`'
+
+function path
+{
+    FILENAME=`/bin/ls -C1t -d "$1"|sed -n 1p`
+    cd "`dirname "$FILENAME"`"
+    DIRNAME=$PWD
+    FILENAME=${FILENAME##*/}
+    THEPATH=$DIRNAME/$FILENAME
+    rm -f $USR_TMP_DIR/.path
+    echo export THEPATH=$THEPATH > $USR_TMP_DIR/.path
+    export THEPATH
+    echo $THEPATH
+}
+function total
+{
+    /bin/ls -1 $1 | grep -v nfs | grep -v lost*found | awk '{print "du -sk \""$0"\""}'| sh | sort -n |awk '{printf "%7.2fM ----> %s\n",$1/1024,$2}'|sed 's:/.*/\([^/]\{1,\}\)$:\1:g'
+}
+
+function totalsudo
+{
+    /bin/ls -1 $1 | grep -v nfs | grep -v lost*found | awk '{print "du -sk \""$0"\""}'| sudo sh | sort -n |awk '{printf "%7.2fM ----> %s\n",$1/1024,$2}'|sed 's:/.*/\([^/]\{1,\}\)$:\1:g'
+}
+
+function pp { sudo lsof -i:$1; }
+
+function dbstart
+{
+    echo startup | sqlplus / as sysdba
+}
+
+function dbshut
+{
+    echo shutdown immediate | sqlplus / as sysdba
+}
+
+function settitle {
+    printf "\033k$1\033\\"
+}
+
+function ez { sqlplus $4/$5@//$1:$2/$3; }
+function ezdba { sqlplus $4/$5@//$1:$2/$3 as sysdba; }
+
+function crtlog
+{
+    export FSCONFIG=$PWD/TLOG
+    tmadmin -c<<!
+crdl -b 20000 -o 0 -z $FSCONFIG
+v
+lidl
+q
+!
+}
+
+if [ -d $GLOBAL_ENV_DIR/vagrant ];then
+    export PATH=$GLOBAL_ENV_DIR/vagrant/opt/vagrant/bin:$PATH
+elif [ -d $USR_ENV_DIR/vagrant ];then
+    export PATH=$USR_ENV_DIR/vagrant/opt/vagrant/bin:$PATH
+fi
+if [ -z "$LOGNAME" ];then
+    LOGNAME=$WHOAMI
+fi
+
+unalias dkip 2>/dev/null
+function dklongid { docker inspect --format '{{ .Id }}' $1; }
+function dkname { docker inspect --format '{{ .Name }}' $1; }
+function dkip { docker inspect --format '{{ .NetworkSettings.IPAddress }}' $1; }
+function dkrmcontainer
+{
+    ID=$1
+    if [ -z "$ID" ];then echo "No such container, exit."; return; fi
+    LINE=`docker ps -a|grep $ID`
+    echo "Remove following container?"
+    echo $LINE
+    read -n1 ANSWER
+    echo
+    if [ "$ANSWER" = y ];then
+        docker rm $ID
+    fi
+}
+
+function dkrmfcontainer
+{
+    ID=$1
+    if [ -z "$ID" ];then echo "No such container, exit."; return; fi
+    docker rm -f $ID
+}
+
+function dkattcontainer
+{
+    ID=$1
+    if [ -z "$ID" ];then
+        echo "No such container, exit."
+        return
+    fi
+    LINE=`docker ps -a|grep $ID`
+    if [ -n "`echo $LINE|grep Exited`" ];then
+        echo "Starting ..."
+        docker start $ID
+    fi
+    LINE=`docker ps -a|grep $ID`
+    echo $LINE
+    docker attach $ID
+}
+
+function dkexecontainer
+{
+    ID=$1
+    if [ -z "$ID" ];then
+        echo "No such container, exit."
+        return
+    fi
+    docker exec -it $ID bash
+}
+
+function dkstartcontainer
+{
+    ID=$1
+    if [ -z "$ID" ];then
+        echo "No such container, exit."
+        return
+    fi
+    docker start $ID
+}
+
+function dktypedcontainer
+{
+    IMGNAME=${1?image name is required}
+    NUM=${2-container index number is required}
+    docker ps -a | grep $IMGNAME: | awk '{print $1}' | sed -n ${NUM}p
+}
+
+function dkexetypedcontainer
+{
+    IMGNAME=${1?image name is required}
+    NUM=${2-container index number is required}
+    dkexecontainer `dktypedcontainer $IMGNAME $NUM`
+}
+
+function dkrmtypedcontainer
+{
+    IMGNAME=${1?image name is required}
+    NUM=${2-container index number is required}
+    dkrmfcontainer `dktypedcontainer $IMGNAME $NUM`
+}
+
+function dkport
+{
+    ID=$1
+    if [ -z "$ID" ];then
+        echo "No such container, exit."
+        return
+    fi
+    docker port $ID | sed "s?\(.*\)/.*:\(.*\)?\1 -> \2?"
+}
+
+function dkext
+{
+    FNAME=${1?function name is required}
+    FILE=${2-$USR_TMP_DIR/dkfuncs.tmp}
+    FNAMESHORT=`echo $FNAME|sed 's/container//'`
+    if [ -z "`type $FNAME 2>&1 | grep 'is a function'`" ]; then
+        echo "$FNAME is not a function"
+        return 1
+    fi
+    for i in 1 2 3 4 5 6 7 8 9; do
+        echo "function ${FNAMESHORT}$i { $FNAME \$(dk$i); }" >> $FILE
+    done
+}
+
+function dkextitype
+{
+    IMGNAME=${1?image name is required}
+    FILE=${2-$USR_TMP_DIR/dkfuncs.tmp}
+    IMGNAME_ALIAS=`echo $IMGNAME|awk -F: '{print $2}'`
+    if [ -n "$IMGNAME_ALIAS" ];then
+        IMGNAME=`echo $IMGNAME|awk -F: '{print $1}'`
+    else
+        IMGNAME_ALIAS=$IMGNAME
+    fi
+    for i in 1 2 3 4 5 6 7 8 9; do
+        echo "function dk${IMGNAME_ALIAS}$i { dkexetypedcontainer $IMGNAME $i; }" >> $FILE
+        echo "function dkrm${IMGNAME_ALIAS}$i { dkrmtypedcontainer $IMGNAME $i; }" >> $FILE
+    done
+}
+
+rmfuncsfile() { rm -f $USR_TMP_DIR/dkfuncs.tmp; }
+redkfuncs() { rmfuncsfile;dkfuncsnew; }
+
+waitfile()
+{
+    FILE=${1?"file path is required"}
+    WORD=${2?"string to grep is required"}
+    CHECKINTERVAL=${3-5}
+    TIMEOUT=${4-300}
+    ECHOWAIT=${5-y}
+    WAIT=0
+    WAIT=`expr $WAIT + $CHECKINTERVAL`
+    if [ $ECHOWAIT = y ];then
+        echo $WAIT
+    fi
+    while true;do
+        FINDOUT=`grep "$WORD" $FILE`
+        if [ -n "$FINDOUT" ];then
+            return 0
+        fi
+        sleep $CHECKINTERVAL
+        WAIT=`expr $WAIT + $CHECKINTERVAL`
+        if [ $ECHOWAIT = y ];then
+            echo $WAIT
+        fi
+        if [ $WAIT -gt $TIMEOUT ];then
+            echo "Wait for $TIMEOUT seconds, timeout."
+            notify "Wait for $TIMEOUT seconds, timeout."
+            return 1
+        fi
+    done
+}
+
+function pg { ps -eaf|grep ${LOGNAME}|grep -v grep|grep -i $*; }
+function oparext { empdk validate_plugin -plugin_archive 13.1*.opar -out_dir tmp -extractOnly; }
+update13() { emcli import_update -file=`/bin/ls $PWD/13.1.*_oracle.fmw.txdo_2000_0.opar` -omslocal; }
+checkjobid() {
+    if [ -z "$JOBID" ];then
+        export JOB_NEW=1
+        JOBID=AUTO_`date +%s`
+    else
+        export JOB_NEW=0
+        if [ `contains "$JOBID" "AUTO_"` = n ];then
+            NEWID=`echo $JOBID|awk -F@ '{print $2}'`
+            if [ -n "$NEWID" ];then JOBID=$NEWID; fi
+        fi
+    fi
+    if [ -z "$WORKSPACE" ];then return 0;fi
+    if [ `contains "$JOBID" "AUTO_"` = n ];then
+        TOPJOB=`echo $JOBID|awk -F- '{print $1}'`
+        WS_DIR=$WORKSPACE/../$TOPJOB/$JOBID
+    else
+        WS_DIR=$WORKSPACE/${JOB_NAME}-${BUILD_NUMBER}
+    fi
+    [ ! -d $WS_DIR ] && mkdir $WS_DIR || return 0
+}
+
+hasproc() { if [ -n "`ps -C $1 -o pid=`" ];then echo y; else echo n; fi; }
+
+resolvePatchScript() { # cvs:branch:/path/to/script.sh
+  if [ -n "`cat $PATCH_SCRIPT|grep "^cvs:"`" ];then
+    BRANCH=
+    MODULE=`cat $PATCH_SCRIPT|sed 's/^cvs://'`
+    if [ -n "`echo $MODULE|grep :`" ];then
+      BRANCH=`echo $MODULE|awk -F: '{print $1}'`
+      MODULE=`echo $MODULE|awk -F: '{print $2}'`
+      echo $BRANCH
+      echo $MODULE
+    fi
+    if [ -z "$BRANCH" ];then BRANCH=HEAD; fi
+    cvs export -r$BRANCH -d.cmdtmp $MODULE > /dev/null 2>&1
+    echo .cmdtmp/`basename $MODULE`
+  else
+    mkdir .cmdtmp 2>/dev/null
+    cp -f $PATCH_SCRIPT .cmdtmp/patch.sh
+    echo .cmdtmp/patch.sh
+  fi
+}
+dkconstat() { docker inspect --format '{{ .State.Status }}' $1 2>&1; }
+dkconexist ()
+{
+    dk_con_stat=`dkconstat $1`;
+    if [ -n "`echo $dk_con_stat|grep -i 'no such image or container\|no such image, container\|State is not a field\|map has no entry for key "State"'`" ]; then
+        echo n;
+    else
+        echo y;
+    fi
+}
+dkconrunning() {
+  dk_con_stat=`dkconstat $1`
+  if [ "$dk_con_stat" = running ];then echo y; else echo n; fi
+}
+unalias dkls 2>/dev/null
+dkls() {
+  docker ps -a --format="table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Command}}\t{{.Status}}\t{{.Ports}}"
+}
+unalias cdwww 2>/dev/null
+cdwww() { cd "/var/www/html"; }
+
+urlvalid() {
+  url="$*"
+  if NO_PROXY='*' http_proxy='' curl --output /dev/null --silent --head --fail -H "Cache-Control: no-cache" "$url"; then
+    echo y
+  else
+    echo n
+  fi
+}
+
+tcpvalid() {
+  host=${1?host name is required}
+  port=${2?port is required}
+  if nc -z $host $port; then
+    echo y
+  else
+    echo n
+  fi
+}
+
+tcpvalidbash() {
+  host=${1?host name is required}
+  port=${2?port is required}
+  if timeout 2 bash -c "cat < /dev/null > /dev/tcp/$host/$port"; then
+    echo y
+  else
+    if [ "`iscommand dig`" = y ];then
+      ipaddr=`dig +short $host`
+    else
+      ipaddr=
+    fi
+    if [ -n "$ipaddr" ];then
+      if timeout 2 bash -c "cat < /dev/null > /dev/tcp/$ipaddr/$port"; then
+        echo y
+      else
+        echo n
+      fi
+    else
+      echo n
+    fi
+  fi
+}
+
+waitport()
+{
+    PORT=$*
+    CHECKINTERVAL=5
+    TIMEOUT=600
+    WAIT=0
+    WAIT=`expr $WAIT + $CHECKINTERVAL`
+    while true;do
+        ready=true
+        for i in $PORT; do
+          if [ -z "`netstat -an|grep :$i|grep -v grep|grep LISTEN`" ];then
+            ready=false
+            break;
+          fi
+        done
+        if [ $ready = true ];then
+          return 0
+        fi
+        echo "Wait for port $PORT to be ready..."
+        sleep $CHECKINTERVAL
+        WAIT=`expr $WAIT + $CHECKINTERVAL`
+        if [ $WAIT -gt $TIMEOUT ];then
+            echo "Wait for $TIMEOUT seconds, timeout."
+            return 1
+        fi
+    done
+}
+
+unalias tulog 2>/dev/null
+tulog() {
+    ULOGDIR=${ULOGDIR-.}
+    tail -f "$ULOGDIR/ULOG.`date +%m%d%y`"
+}
+
+isnumber() { if echo $1 | egrep -q '^[0-9]+$'; then echo y; else echo n; fi; }
+
+jobidck() {
+  if [ ! -f $USR_TMP_DIR/.jobid ];then colormsg YELLOW "jobid file not found, exit." && return 1; fi
+  thejobid=`cat $USR_TMP_DIR/.jobid`
+}
+dkfunc() {
+  conname=${1?container name is required}
+  shift
+  docker exec $conname bash -c "source ~/.bashrc; $*"
+}
+xeenv() { source /u01/app/oracle/product/11.2.0/xe/bin/oracle_env.sh; }
+xecmd() {
+  if [ "`iscommand sqlplus`" = n ];then
+    xeenv
+  fi
+  user=${1-tsam}
+  pass=${2-tsam}
+  host=${3-localhost}
+  port=${4-1521}
+  addinfo=${5}
+  sqlplus $user/$pass@//$host:$port/xe $addinfo
+}
+xedba() {
+  host=${1-localhost}
+  port=${2-1521}
+  xecmd sys welcome1 $host $port "as sysdba"
+}
+xetsam() {
+  host=${1-localhost}
+  port=${2-1521}
+  xecmd tsam tsam $host $port
+}
+topnproc() {
+  num=${1?number is required}
+  addopts=$2
+  end=`expr 7 + $num`
+  top -b -n1 $addopts | sed -n "7,${end}p"
+}
+top5mem() { topnproc 5 "$(topmemopts)"; }
+top10mem() { topnproc 10 "$(topmemopts)"; }
+top5cpu() { topnproc 5; }
+top10cpu() { topnproc 10; }
+topmemopts() {
+  if [ "$DISTRO" = ubuntu ];then
+    echo "-o %MEM"
+  else
+    echo "-a"
+  fi
+}
+unalias pgg 2>/dev/null
+pgg() { ps -eaf|grep -v grep|grep -i $*; }
+#funcl
+
+######################
+# docker start
+######################
+alias dkver='docker version'
+alias dkinfo='docker info'
+alias dksrch='docker search'
+alias dkpull='docker pull'
+alias dkimg='docker images|grep -v REPOSITORY|tac'
+alias dkrm='docker rm'
+alias dkrmi='docker rmi'
+alias dkrmf='docker rm -f'
+alias dkhist='docker history'
+alias dkrun='docker run --privileged'
+alias dkrunrm='docker run --rm --privileged'
+alias dkrunit='docker run -it --privileged'
+alias dkps='docker ps'
+alias dkpsl='docker ps -l'
+alias dkpsa='docker ps -a'
+alias dkstart='docker start'
+alias dkstop='docker stop'
+alias dkdaemon='sudo su - -c "nohup docker daemon -D > /tmp/docker.log 2>&1 &"'
+alias dkinsp='docker inspect'
+alias dkcommit='docker commit'
+function dkrminone { docker images|grep "^<none"|awk '{print "docker rmi "$3}'|sh; }
+function getimgname {
+    IMG=`echo $1|sed "s/:.*//g"|sed "s?.*/??g"`
+    echo $IMG
+}
+function dkrunbash {
+    if [ -z "$1" ];then
+        echo "Usage: dkrunbash IMAGE HOSTNM NAME [OPTS]"
+        return
+    fi
+    unset OPT
+    IMAGE=$1
+    shift
+    if [ -n "$1" ];then
+        if [ "$1" = . ];then
+            HOST=`getimgname $IMAGE`
+        else
+            HOST=$1
+        fi
+        OPT="-h $HOST"
+        shift
+    fi
+    if [ -n "$1" ];then
+        if [ "$1" = . ];then
+            NAME=`getimgname $IMAGE`
+        else
+            NAME=$1
+        fi
+        if [ "$1" != dyn ];then OPT="$OPT --name $NAME"; fi
+        shift
+    fi
+    OPT="$OPT $*"
+    if [ -z "`echo $OPT|grep privileged`" ];then
+        OPT="$OPT --privileged"
+    fi
+    docker run -it $OPT $IMAGE /bin/bash
+}
+function dkinst {
+    docker run $1 apt-get install -y $2
+}
+function dksave {
+    docker save $1 | gzip > $2
+}
+function dkbld {
+    IMGNAME=${1-$(basename $(pwd))}
+    DKPATH=${2-.}
+    docker build --no-cache=true -t $IMGNAME $DKPATH
+}
+function dkstopall {
+    read -n1 -p "Stop ALL containers? " C
+    echo
+    if [ "$C" = y ];then
+        docker stop -t 30 `docker ps -a -q`
+    fi
+}
+alias dkrepo='cd ~/repos/docker-fork'
+alias dkkill='docker kill'
+alias dklog='docker logs'
+alias dklogf='docker logs -f'
+alias dkdiff='docker diff'
+alias dktop='docker top'
+alias dkcp='docker cp'
+alias dkrestart='docker restart'
+alias dkatt='docker attach'
+alias dkload='docker load -i'
+alias dklogin='docker login'
+alias dkpush='docker push'
+alias dkmls='docker-machine ls'
+alias dkmip='docker-machine ip'
+alias dkmip1='docker-machine ip $DOCKER_MACHINE_NAME'
+alias dkmenv='docker-machine env'
+alias dkmenv1='docker-machine env $DOCKER_MACHINE_NAME'
+alias dkmstart='docker-machine start'
+alias dkmstart1='docker-machine start $DOCKER_MACHINE_NAME && dkmuse1'
+alias dkmstop='docker-machine stop'
+alias dkmstop1='docker-machine stop $DOCKER_MACHINE_NAME'
+alias dkmrestart='docker-machine restart $DOCKER_MACHINE_NAME && dkmuse1'
+alias dkmuse1='dkmuse $DOCKER_MACHINE_NAME'
+alias dkmssh='docker-machine ssh $DOCKER_MACHINE_NAME'
+alias dkmssh1='docker-machine ssh'
+alias dkmrm='docker-machine rm'
+alias dkexe='docker exec'
+alias dkdbstart='dkexe db bash -c /start.sh'
+alias dkdbstop='dkexe db bash -c /stop.sh'
+alias dkstat="docker inspect --format '{{ .State.Status }}'"
+alias dkiimage="docker inspect --format '{{ .Image }}'"
+alias dkdb='dkdb1'
+alias dkem='dkem1'
+alias dktux='dktux1'
+alias dktsam='dktsam1'
+alias dkcver='docker-compose --version'
+alias dkcup='docker-compose up'
+alias dkcupd='docker-compose up -d'
+alias dkcps='docker-compose ps'
+alias dkcrun='docker-compose run'
+alias dkcstop='docker-compose stop'
+alias dktag='docker tag'
+alias vidkc='vi docker-compose.yml'
+function dkmuse {
+    eval "$(docker-machine env $1)"
+    unsetproxy
+}
+function dkcmd {
+    CONTAINER=$1
+    shift
+    dkexe $CONTAINER bash -c "$*"
+}
+function dkmstartuse {
+    dkmstart $1 && dkmuse $1
+}
+function dkexeit {
+    docker exec -it $1 bash
+}
+function dksshd {
+    docker exec $1 sudo /usr/sbin/sshd -D >/dev/null 2>&1 &
+}
+function dkrunimg {
+    if [ -z "$1" ];then
+        echo "Usage: dkrunimg IMAGE TAG DNS NAME [OPTS]"
+        return
+    fi
+    IMG=$1
+    TAG=$2
+    if [ "$TAG" = . ];then
+        TAG=latest
+    fi
+    DNS=$3
+    if [ -z "$DNS" ];then
+        NAME=$IMG
+    else
+        DNSSTR=
+        NAME=$4
+        if [ "$NAME" = . ];then
+            NAME=$IMG
+        fi
+        MOUNTS=$5
+        PORTS=$6
+        LINKS=$7
+        if [ "$LINKS" = null ];then
+            LINKS=
+        fi
+    fi
+
+    if [ -n "$SHMSIZE" ];then
+        SHMOPTS="--shm-size=$SHMSIZE"
+    fi
+
+    if [ -z "$HOSTNM" ];then HOSTNM=$NAME; fi
+    if [ -z "`echo $HOSTNM|grep '\.'`" ];then
+      HOST=$HOSTNM.box
+    else
+      HOST=$HOSTNM
+    fi
+    unset HOSTNM
+    dkrunbash $IMG:$TAG $HOST $NAME $DNSSTR $MOUNTS $PORTS $LINKS $SHMOPTS -d $ADDOPTS
+}
+function dkrundbimg {
+    SHMSIZE=2g dkrunimg db $1 $2 $3 "-p 1521 -p 22" $*
+}
+function dkrundb {
+    con_name=${2-.}
+    domain=${DOMAIN-ucf}
+    dkrundbimg $1 $domain $con_name $*
+}
+
+function runconfunc {
+    container_name=$1
+    shift
+    container_cmd="$*"
+    docker exec -t $container_name bash -ic "$container_cmd" | grep -v "no job control in this shell" | grep -v "cannot set terminal process group"
+}
+
+function runconusrfunc {
+    container_name=$1
+    shift
+    container_user=$1
+    shift
+    container_cmd="$*"
+    docker exec -t $container_name su - $container_user -c "bash -ic \"$container_cmd\"" | grep -v "no job control in this shell" | grep -v "cannot set terminal process group"
+}
+
+function dkrenet { sudo ip link set dev docker0 down;sleep 0.5;sudo ip link set dev docker0 up; }
+
+function dkexport { docker export $1|gzip; }
+
+dkredicli() { docker exec -it redis redis-cli; }
+dkredicmd() { docker exec redis redis-cli $*; }
+dkrediset() { dkredicmd set $*; }
+dkrediget() { dkredicmd get $*; }
+dkredisadd() { dkredicmd sadd $*; }
+dkrediismember() { dkredicmd sismember $*; }
+dkredimembers() { dkredicmd smembers $*; }
+dkredidel() { dkredicmd del $*; }
+#dockerl dklast
+
+tsamenv1() {
+    export TSAMHOME=/u01/oracle/oraHome/tsam12.2.2.0.0
+    export WL_DOM=$TSAMHOME/wls/user_projects/domains/tsamdomain
+    echo 1 > $USR_TMP_DIR/.tsamenv
+}
+tsamenv2() {
+    export TSAMHOME=/home/tsam/tsam/tsam12.2.2.0.0
+    export WL_DOM=$TSAMHOME/wls/user_projects/domains/tsamdomain
+    echo 2 > $USR_TMP_DIR/.tsamenv
+}
+tsamenv3() {
+    export TSAMHOME=`/bin/ls -d /home/tsam/tsam/tsam1*`
+    export WL_DOM=/home/tsam/domains/base_domain
+    echo 3 > $USR_TMP_DIR/.tsamenv
+}
+if [ -f $USR_TMP_DIR/.tsamenv ];then
+  tsamenvidx=`cat $USR_TMP_DIR/.tsamenv`
+  case $tsamenvidx in
+    1)
+      tsamenv1
+      ;;
+    2)
+      tsamenv2
+      ;;
+    3)
+      tsamenv3
+      ;;
+  esac
+else
+  if [ "$HOST_NAME" = "wls12c.box" ];then
+    export TSAMHOME=`/bin/ls -d /home/tsam/tsam/tsam1*`
+    export WL_DOM=/home/tsam/domains/base_domain
+  else
+    export TSAMHOME=/u01/oracle/oraHome/tsam12.2.2.0.0
+    export WL_DOM=$TSAMHOME/wls/user_projects/domains/tsamdomain
+  fi
+fi
+tsamdom() { cd $WL_DOM; }
+unalias wldom 2>/dev/null
+wldom() { cd $WL_DOM; }
+admsvr() { cd $WL_DOM/servers/AdminServer; }
+admlog() { vi $WL_DOM/servers/AdminServer/logs/AdminServer.log; }
+tsamapp() { cd $WL_DOM/servers/AdminServer/tmp/_WL_user/tsam_wls12c/jtcqn3/war; }
+webinf() { cd $WL_DOM/servers/AdminServer/tmp/_WL_user/tsam_wls12c/jtcqn3/war/WEB-INF; }
+vtlog() { vi $WL_DOM/tsam.log; }
+ctlog() { echo > $WL_DOM/tsam.log; }
+ttlog() { tail -f $WL_DOM/tsam.log; }
+wlsout() { vi $WL_DOM/wls.log; }
+twlsout() { tail -f $WL_DOM/wls.log; }
+tsamhome() { cd $TSAMHOME; }
+tsamdep() { cd $TSAMHOME/deploy; }
