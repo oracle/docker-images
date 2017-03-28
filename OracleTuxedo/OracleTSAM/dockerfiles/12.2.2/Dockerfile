@@ -10,7 +10,7 @@
 # (2) Oracle TSAM Plus 12.2.2 Rolling Patch 003: p25448043_12220_Linux-x86-64.zip
 #     Download from https://updates.oracle.com/Orion/Services/download/p25448043_12220_Linux-x86-64.zip?aru=20968945&patch_file=p25448043_12220_Linux-x86-64.zip
 #
-# (3) Oracle Database Instant Client: instantclient-basiclite-linux.x64-12.2.0.1.0.zip & instantclient-sqlplus-linux.x64-12.2.0.1.0.zip
+# (3) Oracle Database Instant Client: oracle-instantclient12.2-basiclite-12.2.0.1.0-1.x86_64.rpm & oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
 #     Download from http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -46,8 +46,8 @@ RUN mkdir -p /u01/oracle && \
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV FMW_PKG=tsam122200_64_Linux_x86.zip \
-ORACLT_PKG1=instantclient-basiclite-linux.x64-12.2.0.1.0.zip \
-ORACLT_PKG2=instantclient-sqlplus-linux.x64-12.2.0.1.0.zip \
+ORACLT_PKG1=oracle-instantclient12.2-basiclite-12.2.0.1.0-1.x86_64.rpm \
+ORACLT_PKG2=oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm \
 RP_PKG=p25448043_12220_Linux-x86-64.zip
 
 # Copy packages
@@ -100,10 +100,8 @@ RUN mkdir /etc/envs && \
       bash -c "echo . /etc/envs/bashrc >> /etc/bashrc" && \
       bash -c "echo . /etc/envs/bashrc >> /u01/oracle/.bashrc" && \
       cd /u01/oracle && \
-      jar xf /u01/$ORACLT_PKG1 && \
-      jar xf /u01/$ORACLT_PKG2 && \
-      chmod -R +x instantclient_* && \
-      mv /u01/oracle/instantclient* /u01/oracle/instantclient && \
+      rpm -i --nodeps /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
+      mkdir /u01/oracle/instantclient && \
       chown -R oracle:oracle \
       $TMPFILES/sbin \
       $TMPFILES/sqlrun \

@@ -9,23 +9,6 @@ exit_after_time() {
   exit 1
 }
 
-wait_for_local_db() {
-  COUNT=0
-  CHECKCMD='sudo service oracle-xe status|grep -C 3 XEXDB|grep -i "completed successfully"'
-  while :;do
-    CHECKOUTPUT=`echo $CHECKCMD|bash`
-    if [ -n "$CHECKOUTPUT" ];then
-      break;
-    fi
-    COUNT=`expr $COUNT + 1`
-    if [ "$COUNT" = 24 ];then
-      echo "Oracle DB failed to boot up, exit"
-      exit_after_time
-    fi
-    sleep 5
-  done
-}
-
 wait_for_remote_db() {
   COUNT=0
   CHECKCMD="tcpvalidbash $DB_HOST $DB_PORT"
