@@ -19,14 +19,14 @@ For this image following installation media / binaries are required:
 Please refer to the **REQUIRED FILES TO BUILD THIS IMAGE** section in the [Dockerfile](dockerfiles/12.2.2/Dockerfile) for more detail. Note that the downloaded file names must **NOT** be changed, they should remain the same with the file names mentioned in the [Dockerfile](dockerfiles/12.2.2/Dockerfile).
 
 ## Building Oracle TSAM Plus Docker Install Images
-Once you have provided the installation binaries and put them into the right folder (`dockerfiles/<version>`), go into it and run: 
+Once you have provided the installation binaries and put them into the right folder (`dockerfiles/<version>`), go into it and run:
 
 ```bash
 docker build -t oracle/tsam:12.2.2.1 .
 ```
 
 Since during the image building new packages required by this image will be installed by the `yum` repository manager, access to internet should be available. If you are building the image behind a HTTP proxy server, use below command:
- 
+
  ```bash
  docker build \
     --build-arg http_proxy=http://<hostname>:<port> \
@@ -74,7 +74,7 @@ The environment variables are explained as follow:
 * `DBA_USER` The Oracle Database DBA username, typically it's `sys`.
 * `DBA_PASSWD` Password of database `sys` user.
 * `DB_TSAM_TBLSPACE` The tablespace in which the new TSAM database user will be created. For testing purpose, it would be OK to just use the `users` tablespace.
-* `WLS_PW` The admin user password of new created Oracle WebLogic domain.  
+* `WLS_PW` The admin user password of new created Oracle WebLogic domain.
 
 To start the container, simply run below command in the same directly where above `docker-compose.yml` file resides.
 
@@ -86,9 +86,8 @@ docker-compose up
 
 Besides the above environment variables which are required, there are also some optional ones could be used to provide more control on the container.
 
-* `DEBUG_MODE` Whether or not to turn on debug mode. The value is either `true` or `false` (default). When the debug mode is turned on, more debug messages will be printed out to the container stdout. For example, the passed in environment variables and corresponding values, the Oracle WebLogic domain startup log, etc. Furthermore, when debug is on, the container will never terminate even though error is occurred during the container initialization. While in the normal mode, the container terminates after 120 seconds on failure. 
+* `DEBUG_MODE` Whether or not to turn on debug mode. The value is either `true` or `false` (default). When the debug mode is turned on, more debug messages will be printed out to the container stdout. For example, the passed in environment variables and corresponding values, the Oracle WebLogic domain startup log, etc. Furthermore, when debug is on, the container will never terminate even though error is occurred during the container initialization. While in the normal mode, the container terminates after 120 seconds on failure.
 * `DB_ENABLE_PARTITION` Whether or not to enable the Oracle Database Partitioning feature. The value is either `yes` or `no` (default). Please note only when a Oracle Database Enterprise Edition is being used, the database partitioning could be turned on. So for a Standard Edition or XE database, the value could only be `no`.
-* `SSH_PUBKEY` Insert the designated SSH public key string to the end of the `~/.ssh/authorized_keys` file. This is useful when you want to ssh directly into the container which is running in a Public Cloud environment, such as **[OCCS](https://cloud.oracle.com/container)**. Password authentication is usually forbidden in a Public Cloud service. Without providing this public key value, there will be no chance to log into the container through ssh once the container is started.
 * `ADMIN_PORT` The new created WebLogic domain Admin Server HTTP listening port, default is `7001`.
 * `ADMIN_SSL_PORT` The new created WebLogic domain Admin Server HTTPS listening port, default is `7002`.
 * `WLS_USER` The new created WebLogic domain admin user name, default is `weblogic`.
@@ -96,7 +95,7 @@ Besides the above environment variables which are required, there are also some 
 
 ### Running Oracle TSAM Plus with an existing TSAM database schema
 When an existing TSAM database is used for the TSAM Manager application, there will be no need to provide Oracle Database `sys` user related credentials. The `docker-compose.yml` looks like below:
- 
+
 ```yaml
 version: "2"
 services:
@@ -164,3 +163,4 @@ All scripts and files hosted in this project required to build the Docker images
 
 ## Copyright
 Copyright (c) 1996-2017 Oracle and/or its affiliates. All rights reserved.
+

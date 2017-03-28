@@ -2,19 +2,10 @@
 source ~/sbin/functions.sh
 source /etc/envs/bashrc
 
-nohup sudo /sbin/sshd -D >/dev/null 2>&1 &
-
 if [ ! -f /u01/app/oracle/product/11.2.0/xe/bin/oracle_env.sh ];then
   REMOTE_ONLY=y
 else
   REMOTE_ONLY=n
-fi
-
-if [ -n "$SSH_PUBKEY" ];then
-  if [ ! -d ~/.ssh ];then
-    mkdir ~/.ssh && chmod 700 ~/.ssh
-  fi
-  echo "$SSH_PUBKEY" >> ~/.ssh/authorized_keys
 fi
 
 cd ~/scripts && . ./setenv.sh
@@ -82,14 +73,7 @@ else # embedded oracle xe database
     exit_after_time
   fi
 
-  LISTENERS_ORA=/u01/app/oracle/product/11.2.0/xe/network/admin/listener.ora
-  TNSNAMES_ORA=/u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
-  sudo sed -i "s/oraclexe.docker/$HOSTNAME/g" "${LISTENERS_ORA}"
-  sudo sed -i "s/oraclexe.docker/$HOSTNAME/g" "${TNSNAMES_ORA}"
-
-  sudo service oracle-xe start
-
-  wait_for_local_db
+  # not provided in this version
 fi
 
 # Create new wls domain

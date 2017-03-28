@@ -40,13 +40,8 @@ RUN mkdir -p /u01/oracle && \
     chmod a+xr /u01 && \
     useradd -u 1000 -b /u01 -M -s /bin/bash oracle && \
     chown oracle:oracle -R /u01 && \
-    yum install -y libaio vim tar net-tools openssh-server rsync sudo && \
-    yum clean all && \
-    sshd-keygen > /dev/null 2>&1; \
-    sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config && \
-    sed -i '/GSSAPIAuthentication yes/d' /etc/ssh/sshd_config && \
-    sed -i "s/^Defaults    requiretty/#Defaults    requiretty/g" /etc/sudoers && \
-    echo 'oracle   ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers
+    yum install -y libaio vim tar net-tools && \
+    yum clean all
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
