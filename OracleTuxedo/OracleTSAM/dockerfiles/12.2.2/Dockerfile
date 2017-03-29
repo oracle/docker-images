@@ -10,7 +10,7 @@
 # (2) Oracle TSAM Plus 12.2.2 Rolling Patch 003: p25448043_12220_Linux-x86-64.zip
 #     Download from https://updates.oracle.com/Orion/Services/download/p25448043_12220_Linux-x86-64.zip?aru=20968945&patch_file=p25448043_12220_Linux-x86-64.zip
 #
-# (3) Oracle Database Instant Client: oracle-instantclient12.2-basiclite-12.2.0.1.0-1.x86_64.rpm & oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
+# (3) Oracle Database Instant Client: oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm & oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
 #     Download from http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -31,24 +31,11 @@ MAINTAINER Chris Guo <chris.guo@oracle.com>
 # --------------------------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
     PATH=$PATH:/usr/java/default/bin \
-    TMPFILES=/tmp/files
-
-# Setup filesystem and oracle user
-# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
-# ------------------------------------------------------------
-RUN mkdir -p /u01/oracle && \
-    chmod a+xr /u01 && \
-    useradd -u 1000 -b /u01 -M -s /bin/bash oracle && \
-    chown oracle:oracle -R /u01 && \
-    yum install -y libaio vim tar net-tools && \
-    yum clean all
-
-# Environment variables required for this build (do NOT change)
-# -------------------------------------------------------------
-ENV FMW_PKG=tsam122200_64_Linux_x86.zip \
-ORACLT_PKG1=oracle-instantclient12.2-basiclite-12.2.0.1.0-1.x86_64.rpm \
-ORACLT_PKG2=oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm \
-RP_PKG=p25448043_12220_Linux-x86-64.zip
+    TMPFILES=/tmp/files \
+    FMW_PKG=tsam122200_64_Linux_x86.zip \
+    ORACLT_PKG1=oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm \
+    ORACLT_PKG2=oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm \
+    RP_PKG=p25448043_12220_Linux-x86-64.zip
 
 # Copy packages
 # -------------
@@ -57,6 +44,17 @@ COPY $FMW_PKG \
       $ORACLT_PKG2 \
       $RP_PKG \
       /u01/
+
+# Setup filesystem and oracle user, install required packages including Oracle Instant Client
+# ------------------------------------------------------------
+RUN mkdir -p /u01/oracle && \
+    chmod a+xr /u01 && \
+    useradd -u 1000 -b /u01 -M -s /bin/bash oracle && \
+    chown oracle:oracle /u01 /u01/oracle && \
+    yum install -y vim tar net-tools && \
+    yum localinstall -y /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
+    rm -f /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
+    yum clean all
 
 # Copy files
 # ----------
@@ -72,10 +70,7 @@ RUN cd /u01 && \
       jar xf $FMW_PKG && \
       cd /u01/Disk1/install && \
       chmod -R +x * && \
-      sh ./runInstaller.sh -silent -waitforcompletion -responseFile /u01/tsam_install.rsp; \
-      if [ $? = 255 ];then \
-        sh ./runInstaller.sh -silent -waitforcompletion -responseFile /u01/tsam_install.rsp; \
-      fi && \
+      sh ./runInstaller.sh -silent -waitforcompletion -responseFile /u01/tsam_install.rsp && \
       rm -rf /u01/Disk1 \
               /u01/tsam_install.rsp \
               /u01/$FMW_PKG
@@ -100,7 +95,6 @@ RUN mkdir /etc/envs && \
       bash -c "echo . /etc/envs/bashrc >> /etc/bashrc" && \
       bash -c "echo . /etc/envs/bashrc >> /u01/oracle/.bashrc" && \
       cd /u01/oracle && \
-      rpm -i --nodeps /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
       mkdir /u01/oracle/instantclient && \
       chown -R oracle:oracle \
       $TMPFILES/sbin \
@@ -111,13 +105,11 @@ RUN mkdir /etc/envs && \
       /u01/oracle/.bashrc && \
       mv $TMPFILES/sbin $TMPFILES/scripts /u01/oracle && \
       mv $TMPFILES/sqlrun/* /u01/oracle/instantclient && \
-      mv $TMPFILES/DatabaseUpgradeOracleRP.sh /u01/oracle/oraHome/tsam12.2.2.0.0/deploy && \
-      rm -rf /u01/$ORACLT_PKG1 \
-             /u01/$ORACLT_PKG2
+      mv $TMPFILES/DatabaseUpgradeOracleRP.sh /u01/oracle/oraHome/tsam12.2.2.0.0/deploy
 
 USER oracle
 
 # Define default command to start script.
-ENTRYPOINT ["/u01/oracle/sbin/init.sh"]
+ENTRYPOINT ["/bin/bash", "/u01/oracle/sbin/init.sh"]
 
 EXPOSE 7001 22
