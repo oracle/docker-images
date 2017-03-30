@@ -135,6 +135,9 @@ Another option is to use `docker exec` and run `sqlplus` from within the same co
 
 	docker exec -ti <container name> sqlplus pdbadmin@ORCLPDB1
 
+## Known issues
+* OverlayFS (overlay) on CentOS has proven to run into Docker bug #25409. We recommend using `btrfs` or `overlay2` instead. For more details see issue #317.
+
 ## Support
 Oracle Database in single instance configuration is supported for Oracle Linux 7 and Red Hat Enterprise Linux (RHEL) 7.
 For more details please see My Oracle Support note: **Oracle Support for Database Running on Docker (Doc ID 2216342.1)**
