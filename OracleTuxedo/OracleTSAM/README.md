@@ -3,7 +3,7 @@ Oracle TSAM Plus on Docker
 Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users. This image has also been certified with [Oracle Container Cloud Service (OCCS)](https://cloud.oracle.com/container). For more information about **Oracle Tuxedo System and Applications Monitor Plus (TSAM Plus)** please see the [Oracle TSAM Plus Online Documentation](http://docs.oracle.com/cd/E72452_01/tsam/docs1222/index.html).
 
 This project offers Dockerfile for building:
- * Oracle TSAM Plus 12c Release 2 (12.2.2) + Rolling Patch 003
+ * Oracle TSAM Plus 12c Release 2 (12.2.2) + Rolling Patch 004
 
 ## Dependencies
 This project depends on the [Oracle Server JRE 8 Docker Image](../..//OracleJava). So, before you proceed to build this image, make sure the image `oracle/serverjre:8` has been built locally or is accessible in a remote Docker registry.
@@ -12,11 +12,11 @@ This project depends on the [Oracle Server JRE 8 Docker Image](../..//OracleJava
 
 For this image following installation media / binaries are required:
 
-* Oracle TSAM Plus 12.2.2 GA Installer
-* Oracle TSAM Plus 12.2.2 Rolling Patch 003
-* Oracle Database Instant Client
+* [Oracle TSAM Plus 12.2.2 GA Installer](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html) - `tsam122200_64_Linux_x86.zip`
+* [Oracle TSAM Plus 12.2.2 Rolling Patch 004](https://updates.oracle.com/Orion/Services/download/p25530287_12220_Linux-x86-64.zip?aru=21140450&patch_file=p25530287_12220_Linux-x86-64.zip) - `p25530287_12220_Linux-x86-64.zip`
+* [Oracle Database Instant Client](http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html) - `oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm` and `oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm`
 
-Please refer to the **REQUIRED FILES TO BUILD THIS IMAGE** section in the [Dockerfile](dockerfiles/12.2.2/Dockerfile) for more detail. Note that the downloaded file names must **NOT** be changed, they should remain the same with the file names mentioned in the [Dockerfile](dockerfiles/12.2.2/Dockerfile).
+The download links and `md5sum` of downloaded binaries could also be found in the `.download` files inside the `dockerfiles/<version>` folder. Note that the downloaded file names must **NOT** be changed, they should remain the same with the file names mentioned in the `.download` files.
 
 ## Building Oracle TSAM Plus Docker Install Images
 Once you have provided the installation binaries and put them into the right folder (`dockerfiles/<version>`), go into it and run:
@@ -27,14 +27,22 @@ docker build -t oracle/tsam:12.2.2.1 .
 
 Since during the image building new packages required by this image will be installed by the `yum` repository manager, access to internet should be available. If you are building the image behind a HTTP proxy server, use below command:
 
- ```bash
- docker build \
-    --build-arg http_proxy=http://<hostname>:<port> \
-    --build-arg https_proxy=http://<hostname>:<port> \
-    -t oracle/tsam:12.2.2.1 .
- ```
+```bash
+docker build \
+   --build-arg http_proxy=http://<hostname>:<port> \
+   --build-arg https_proxy=http://<hostname>:<port> \
+   -t oracle/tsam:12.2.2.1 .
+```
 
-**IMPORTANT:** The resulting image will be an image with the **Oracle TSAM Plus 12.2.2 + RP003** installed. On first startup of the container a new Oracle WebLogic domain will be created, followed by which the **TSAM Manager** application will be deployed into the domain.
+There will be more rolling patches delivered in the future. You can also pass in the `RP_PKG` build-time argument to override the default one in the `Dockerfile`:
+
+```bash
+docker build \
+   --build-arg RP_PKG=p25530287_12220_Linux-x86-64.zip \
+   -t oracle/tsam:12.2.2.1 .
+```
+
+**IMPORTANT:** The resulting image will be an image with the **Oracle TSAM Plus 12.2.2 + Rolling Patch** installed. On first startup of the container a new Oracle WebLogic domain will be created, followed by which the **TSAM Manager** application will be deployed into the domain.
 
 ## Running Oracle TSAM Plus in a Docker container
 The **TSAM Manager** application relies on a remote Oracle Database to run. So, on starting of the container, the required information need to be passed into the container by a set of environment variables, e.g. The database connection string, credentials, table space, Oracle WebLogic domain admin password, etc. The easiest way to do this is through the `docker-compose` command. For more information about `docker-compose`, check the Docker Compose [online documentation](https://docs.docker.com/compose/overview).
