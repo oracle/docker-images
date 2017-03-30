@@ -63,10 +63,6 @@ if [ -n "$DB_CONNSTR" ];then # external oracle database
     echo "ERROR initializing TSAM Manager database, exit."
     exit_after_time
   fi
-  if [ "$DB_TYPE" = new ];then
-    cd $DEPLOY && ORACLECLI_HOME=/u01/oracle/instantclient ./DatabaseUpgradeOracleRP.sh
-  fi
-
 else # embedded oracle xe database
   if [ "$REMOTE_ONLY" = y ];then
     echo "ERROR: Remote DB connection information is required, exit."

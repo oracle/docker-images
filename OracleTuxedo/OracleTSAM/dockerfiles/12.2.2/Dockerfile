@@ -7,8 +7,8 @@
 # (1) Oracle Tuxedo System and Applications Monitor (TSAM) Plus 12cR2 (12.2.2) GA Installer: tsam122200_64_Linux_x86.zip
 #     Download from http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html
 #
-# (2) Oracle TSAM Plus 12.2.2 Rolling Patch 003: p25448043_12220_Linux-x86-64.zip
-#     Download from https://updates.oracle.com/Orion/Services/download/p25448043_12220_Linux-x86-64.zip?aru=20968945&patch_file=p25448043_12220_Linux-x86-64.zip
+# (2) Oracle TSAM Plus 12.2.2 Rolling Patch 004: p25530287_12220_Linux-x86-64.zip
+#     Download from https://updates.oracle.com/Orion/Services/download/p25530287_12220_Linux-x86-64.zip?aru=21140450&patch_file=p25530287_12220_Linux-x86-64.zip
 #
 # (3) Oracle Database Instant Client: oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm & oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
 #     Download from http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
@@ -34,8 +34,9 @@ ENV ORACLE_HOME=/u01/oracle \
     TMPFILES=/tmp/files \
     FMW_PKG=tsam122200_64_Linux_x86.zip \
     ORACLT_PKG1=oracle-instantclient12.2-basic-12.2.0.1.0-1.x86_64.rpm \
-    ORACLT_PKG2=oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm \
-    RP_PKG=p25448043_12220_Linux-x86-64.zip
+    ORACLT_PKG2=oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64.rpm
+
+ARG RP_PKG=p25530287_12220_Linux-x86-64.zip
 
 # Copy packages
 # -------------
@@ -49,6 +50,7 @@ COPY $FMW_PKG \
 # ------------------------------------------------------------
 RUN mkdir -p /u01/oracle && \
     chmod a+xr /u01 && \
+    chmod a+r /u01/$FMW_PKG /u01/$RP_PKG && \
     useradd -u 1000 -b /u01 -M -s /bin/bash oracle && \
     chown oracle:oracle /u01 /u01/oracle && \
     yum install -y vim tar net-tools && \
@@ -83,8 +85,9 @@ RUN cd /u01/oracle && \
       ln -s $JAVA_HOME oraHome/jdk && \
       mkdir tmp && cd tmp && \
       jar xf /u01/$RP_PKG && \
-      /u01/oracle/oraHome/OPatch/opatch apply 25448043.zip && \
-      cd && rm -rf tmp /u01/$RP_PKG
+      manager_patch=`find . -size +10M` && \
+      /u01/oracle/oraHome/OPatch/opatch apply $manager_patch && \
+      cd && rm -rf tmp /u01/$RP_PKG temp
 
 WORKDIR /u01/oracle
 
@@ -100,12 +103,10 @@ RUN mkdir /etc/envs && \
       $TMPFILES/sbin \
       $TMPFILES/sqlrun \
       $TMPFILES/scripts \
-      $TMPFILES/DatabaseUpgradeOracleRP.sh \
       /u01/oracle/instantclient \
       /u01/oracle/.bashrc && \
       mv $TMPFILES/sbin $TMPFILES/scripts /u01/oracle && \
-      mv $TMPFILES/sqlrun/* /u01/oracle/instantclient && \
-      mv $TMPFILES/DatabaseUpgradeOracleRP.sh /u01/oracle/oraHome/tsam12.2.2.0.0/deploy
+      mv $TMPFILES/sqlrun/* /u01/oracle/instantclient
 
 USER oracle
 
