@@ -87,26 +87,22 @@ RUN cd /u01/oracle && \
       jar xf /u01/$RP_PKG && \
       manager_patch=`find . -size +10M` && \
       /u01/oracle/oraHome/OPatch/opatch apply $manager_patch && \
-      cd && rm -rf tmp /u01/$RP_PKG temp
+      cd && rm -rf tmp /u01/$RP_PKG
 
 WORKDIR /u01/oracle
 
 USER root
 COPY files /tmp/files/
-RUN mkdir /etc/envs && \
-      cp $TMPFILES/bashrc /etc/envs && \
-      bash -c "echo . /etc/envs/bashrc >> /etc/bashrc" && \
-      bash -c "echo . /etc/envs/bashrc >> /u01/oracle/.bashrc" && \
-      cd /u01/oracle && \
+RUN  cd /u01/oracle && \
       mkdir /u01/oracle/instantclient && \
+      cp -rf $TMPFILES/sbin $TMPFILES/scripts /u01/oracle && \
+      rm -rf $TMPFILES/sbin $TMPFILES/scripts && \
+      cp -f $TMPFILES/sqlrun/* /u01/oracle/instantclient && \
+      rm -rf $TMPFILES/sqlrun && \
       chown -R oracle:oracle \
-      $TMPFILES/sbin \
-      $TMPFILES/sqlrun \
-      $TMPFILES/scripts \
-      /u01/oracle/instantclient \
-      /u01/oracle/.bashrc && \
-      mv $TMPFILES/sbin $TMPFILES/scripts /u01/oracle && \
-      mv $TMPFILES/sqlrun/* /u01/oracle/instantclient
+        /u01/oracle/sbin \
+        /u01/oracle/instantclient \
+        /u01/oracle/scripts
 
 USER oracle
 

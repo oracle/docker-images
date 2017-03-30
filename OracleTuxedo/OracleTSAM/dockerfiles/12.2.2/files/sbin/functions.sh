@@ -9,6 +9,87 @@ exit_after_time() {
   exit 1
 }
 
+colormsg()
+{
+    eval color=\$${1}
+    shift
+    msg="$*"
+    if [ `istty` = y ];then
+        msgstr="$color$msg${NC}\n"
+    else
+        msgstr="$msg\n"
+    fi
+    printf "$msgstr"
+}
+
+waitfile()
+{
+    FILE=${1?"file path is required"}
+    WORD=${2?"string to grep is required"}
+    CHECKINTERVAL=${3-5}
+    TIMEOUT=${4-300}
+    ECHOWAIT=${5-y}
+    WAIT=0
+    WAIT=`expr $WAIT + $CHECKINTERVAL`
+    if [ $ECHOWAIT = y ];then
+        echo $WAIT
+    fi
+    while true;do
+        FINDOUT=`grep "$WORD" $FILE`
+        if [ -n "$FINDOUT" ];then
+            return 0
+        fi
+        sleep $CHECKINTERVAL
+        WAIT=`expr $WAIT + $CHECKINTERVAL`
+        if [ $ECHOWAIT = y ];then
+            echo $WAIT
+        fi
+        if [ $WAIT -gt $TIMEOUT ];then
+            echo "Wait for $TIMEOUT seconds, timeout."
+            notify "Wait for $TIMEOUT seconds, timeout."
+            return 1
+        fi
+    done
+}
+
+istty()
+{
+    if [ "`tty`" = "not a tty" ];then
+        echo n
+    else
+        echo y
+    fi
+}
+
+iscommand()
+{
+    OUTPUT=`type $1 2>&1`
+    if [ -n "`echo $OUTPUT | grep 'not found'`" ];then echo n; else echo y; fi
+}
+
+tcpvalidbash() {
+  host=${1?host name is required}
+  port=${2?port is required}
+  if timeout 2 bash -c "cat < /dev/null > /dev/tcp/$host/$port"; then
+    echo y
+  else
+    if [ "`iscommand dig`" = y ];then
+      ipaddr=`dig +short $host`
+    else
+      ipaddr=
+    fi
+    if [ -n "$ipaddr" ];then
+      if timeout 2 bash -c "cat < /dev/null > /dev/tcp/$ipaddr/$port"; then
+        echo y
+      else
+        echo n
+      fi
+    else
+      echo n
+    fi
+  fi
+}
+
 wait_for_remote_db() {
   COUNT=0
   CHECKCMD="tcpvalidbash $DB_HOST $DB_PORT"

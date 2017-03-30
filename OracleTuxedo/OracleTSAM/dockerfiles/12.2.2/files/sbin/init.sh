@@ -1,6 +1,5 @@
 #!/bin/bash
 source ~/sbin/functions.sh
-source /etc/envs/bashrc
 
 if [ ! -f /u01/app/oracle/product/11.2.0/xe/bin/oracle_env.sh ];then
   REMOTE_ONLY=y
