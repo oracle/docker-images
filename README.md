@@ -7,6 +7,7 @@ This repository stores Dockerfiles and samples to build Docker images for Oracle
  - [Oracle Java](./OracleJava)
  - [Oracle HTTP Server](./OracleHTTPServer)
  - [Oracle Tuxedo](./OracleTuxedo)
+ - [Oracle TSAM Plus](./OracleTSAM)
  - [Oracle WebLogic](./OracleWebLogic)
 
 And Open Source projects:
