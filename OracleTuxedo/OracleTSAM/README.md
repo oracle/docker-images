@@ -42,6 +42,8 @@ docker build \
    -t oracle/tsam:12.2.2.1 .
 ```
 
+> It is recommended to give read permission to all users on the downloaded binary files before building the image. Otherwise the resulting image will most probably get 1.7G larger.
+
 **IMPORTANT:** The resulting image will be an image with the **Oracle TSAM Plus 12.2.2 + Rolling Patch** installed. On first startup of the container a new Oracle WebLogic domain will be created, followed by which the **TSAM Manager** application will be deployed into the domain.
 
 ## Running Oracle TSAM Plus in a Docker container
