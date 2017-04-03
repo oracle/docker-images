@@ -29,7 +29,6 @@ services:
       - DB_ENABLE_PARTITION=no
       - DEBUG_MODE=false
       - WLS_PW=weblogic1
-      - DEBUG_MODE=true
     links:
       - "db:db.box"
   tuxedo:
@@ -39,6 +38,6 @@ services:
     ports:
       - 22/tcp
     environment:
-      - DEBUG_MODE=true
+      - DEBUG_MODE=false
     links:
       - "tsam:tsam.box"
