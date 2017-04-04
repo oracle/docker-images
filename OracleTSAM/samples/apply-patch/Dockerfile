@@ -44,5 +44,7 @@ RUN cd /u01/oracle && \
       jar xf /u01/$RP_PKG && \
       manager_patch=`find . -size +10M` && \
       /u01/oracle/oraHome/OPatch/opatch apply $manager_patch && \
-      cd && rm -rf tmp /u01/$RP_PKG
+      cd && rm -rf tmp /u01/$RP_PKG && \
+      sed -i "s?TSAMDeployer.jar:?TSAMDeployer.jar:/usr/lib/oracle/12.2/client64/lib/ojdbc8.jar:?" \
+      /u01/oracle/oraHome/tsam12.2.2.0.0/deploy/DatabaseDeployer.sh
 

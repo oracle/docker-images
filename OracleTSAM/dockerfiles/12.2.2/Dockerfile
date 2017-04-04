@@ -86,7 +86,9 @@ RUN  cd /u01/oracle && \
       chown -R oracle:oracle \
         /u01/oracle/sbin \
         /u01/oracle/instantclient \
-        /u01/oracle/scripts
+        /u01/oracle/scripts && \
+        sed -i "s?TSAMDeployer.jar:?TSAMDeployer.jar:/usr/lib/oracle/12.2/client64/lib/ojdbc8.jar:?" \
+        /u01/oracle/oraHome/tsam12.2.2.0.0/deploy/DatabaseDeployer.sh
 
 USER oracle
 
