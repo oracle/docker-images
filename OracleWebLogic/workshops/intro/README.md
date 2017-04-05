@@ -33,15 +33,8 @@ Navigate to ~/docker-images/OracleWebLogic/dockerfiles/12.2.1 and verify the con
 ![](images/01_ls1221.png?raw=true)
 
 #### Java
-View the contents of the server-jar-jre-8u<version>.download
-
-    $ cat server-jar-jre-8u<version>.download
-
-![](images/02_catjava.png?raw=true)
-
-Right-click the link and select **Open Link** to open it in a browser.
-
-Accept the license agreement and download server-jre-*.gz.
+To create the WebLogic install image you must first create the Java image.
+Find samples to build the Java image in the ~/docker-images/OracleJava
 
 #### WebLogic
 View the contents of the fmw_12.2.1.0.0_wls_quick_Disk1_1of1.download
