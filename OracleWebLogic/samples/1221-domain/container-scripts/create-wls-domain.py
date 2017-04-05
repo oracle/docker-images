@@ -8,6 +8,7 @@
 # Author: bruno.borges@oracle.com
 # ==============================================
 domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
+admin_name   = os.environ.get("ADMIN_NAME", "AdminSer")
 admin_port   = int(os.environ.get("ADMIN_PORT", "7001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD")
 cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
@@ -15,6 +16,7 @@ domain_path  = '/u01/oracle/user_projects/domains/%s' % domain_name
 production_mode         = os.environ.get("PRODUCTION_MODE", "prod")
 
 print('domain_name : [%s]' % domain_name);
+print('admin_name  : [%s]' % admin_name);
 print('admin_port  : [%s]' % admin_port);
 print('cluster_name: [%s]' % cluster_name);
 print('domain_path : [%s]' % domain_path);
@@ -34,6 +36,7 @@ setOption('DomainName', domain_name)
 # Configure the Administration Server and SSL port.
 # =========================================================
 cd('/Servers/AdminServer')
+set('Name', admin_name)
 set('ListenAddress', '')
 set('ListenPort', admin_port)
 

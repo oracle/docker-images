@@ -26,6 +26,7 @@ MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 # WLS Configuration (editable during build time)
 # ------------------------------
 ARG ADMIN_PASSWORD
+ARG ADMIN_NAME
 ARG DOMAIN_NAME
 ARG ADMIN_PORT
 ARG CLUSTER_NAME
@@ -44,6 +45,7 @@ ENV ADMIN_HOST="wlsadmin" \
 # -----------------------------------------------------------
 ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain} \
+    ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
     ADMIN_PORT="${ADMIN_PORT:-7001}" \
     CLUSTER_NAME="${CLUSTER_NAME:-DockerCluster}" \
     debugFlag="${DEBUG_FLAG:-false}" \
