@@ -184,8 +184,10 @@ verify_remote_db() {
     verify_env_var DB_TSAM_TBLSPACE
     verify_env_var TSAM_CONSOLE_ADMIN_PASSWD
     verify_sys_db > /dev/null 2>&1
-    if [ $? != 0 ];then
+    verify_result=$?
+    if [ $verify_result != 0 ];then
       tmpfile=/tmp/tmp.log
+      echo "INFO: DBA user valid, will create new DB user \"$DB_TSAM_USER\"."
       echo "Waiting for DB instance to boot up ..."
       sleep 15
       COUNT=0
@@ -214,6 +216,9 @@ verify_remote_db() {
     fi
 
     DB_TYPE=new
+    if [ $verify_result = 0 ];then
+      echo "INFO: DBA user valid, will create new DB user \"$DB_TSAM_USER\"."
+    fi
   else
     DB_TYPE=existing
   fi
