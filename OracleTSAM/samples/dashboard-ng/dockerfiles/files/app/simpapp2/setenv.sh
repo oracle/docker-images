@@ -1,7 +1,0 @@
-#env from sanity.config
-APPDIR=$APP_ROOT/simpapp2;export APPDIR
-TUXCONFIG=$APPDIR/tuxconfig;export TUXCONFIG
-BDMCONFIG=$APPDIR/bdmconfig;export BDMCONFIG
-
-TLISTEN_PORT=9021;export TLISTEN_PORT
-RMI_PORT=9022;export RMI_PORT

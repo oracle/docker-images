@@ -1,7 +1,0 @@
-*base 8000
-OPT_D	1		short	-	-
-OPT_N	2		short	-	-
-OPT_L	3		short	-	-
-OPT_I	4		short	-	-
-OPT_O	5		string	-	-
-OPT_Z	6		string	-	-
