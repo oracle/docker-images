@@ -95,4 +95,4 @@ USER oracle
 # Define default command to start script.
 ENTRYPOINT ["/bin/bash", "/u01/oracle/sbin/init.sh"]
 
-EXPOSE 7001 22
+EXPOSE 7001 7002

@@ -64,15 +64,20 @@ if [ -n "$DB_CONNSTR" ];then # external oracle database
     if [ -z "$TSAM_CONSOLE_ADMIN_PASSWD" ];then
       TSAM_CONSOLE_ADMIN_PASSWD=dummy;
     fi
-    ./DatabaseDeployer.sh $COMMON_ARGS
+    ./DatabaseDeployer.sh $COMMON_ARGS > /tmp/dbdeploy.log 2>&1
   else # DB_TYPE = new
     ./DatabaseDeployer.sh $COMMON_ARGS \
     -dbSysdbaUser $DBA_USER \
     -dbSysdbaPwd $DBA_PASSWD \
-    -tsamDbTablespace $DB_TSAM_TBLSPACE
+    -tsamDbTablespace $DB_TSAM_TBLSPACE > /tmp/dbdeploy.log 2>&1
+  fi
+  ret=$?
+
+  if [ "$DEBUG_MODE" = true ];then
+    cat /tmp/dbdeploy.log
   fi
 
-  if [ $? != 0 ];then
+  if [ $ret != 0 ];then
     echo "ERROR initializing TSAM Manager database, exit."
     exit_after_time
   fi
