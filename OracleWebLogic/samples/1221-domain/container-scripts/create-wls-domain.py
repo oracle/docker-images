@@ -8,7 +8,7 @@
 # Author: bruno.borges@oracle.com
 # ==============================================
 domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
-admin_name   = os.environ.get("ADMIN_NAME", "AdminSer")
+admin_name   = os.environ.get("ADMIN_NAME", "AdminServer")
 admin_port   = int(os.environ.get("ADMIN_PORT", "7001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD")
 cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
