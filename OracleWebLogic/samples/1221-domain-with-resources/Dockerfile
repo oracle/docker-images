@@ -21,7 +21,7 @@ FROM 1221-domain
 
 # Maintainer
 # ----------
-MAINTAINER Bruno Borges <bruno.borges@oracle.com>
+MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # Copy files and deploy application in WLST Offline mode
 COPY container-scripts/* /u01/oracle/

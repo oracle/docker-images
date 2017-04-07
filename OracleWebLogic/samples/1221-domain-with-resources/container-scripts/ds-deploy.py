@@ -12,6 +12,7 @@ import os
 domainname = os.environ.get('DOMAIN_NAME', 'base_domain')
 domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/user_projects/domains/' + domainname)
 cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
+admin_name = os.environ.get("ADMIN_NAME", "AdminServer")
 
 # Read Domain in Offline Mode
 # ===========================
@@ -57,7 +58,7 @@ set('TestTableName','SQL SELECT 1 FROM DUAL')
 
 # Assign
 # ======
-assign('JDBCSystemResource', dsname, 'Target', 'AdminServer')
+assign('JDBCSystemResource', dsname, 'Target', admin_name)
 assign('JDBCSystemResource', dsname, 'Target', cluster_name)
 
 # Update Domain, Close It, Exit
