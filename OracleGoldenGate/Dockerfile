@@ -44,6 +44,8 @@ ENV ORACLE_BASE=/opt/oracle 					\
     SETUP_LINUX="startDB.sh" 					\
     INSTALL_OGG_FILE="installOGG.sh" 
 
+# Additional environment variables that are populated from first
+# set of environment variables
 ENV INSTALL_DIR=$ORACLE_BASE/install 				\
     LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib 			\
     CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib		\
@@ -67,12 +69,8 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$SETUP_LINUX_FILE
 
-# Setup rlwrap aliases for use with ggsci and SQL*Plus to enable command line completion.
-# Note for SQL*Plus you can also use sqlcl locally on your host environment.
 USER oracle
-RUN $INSTALL_DIR/$INSTALL_OGG_FILE	 			&& \
-    echo "alias ggsci='rlwrap ggsci'" >> ~/.bashrc              && \
-    echo "alias sqlplus='rlwrap sqlplus'" >> ~/.bashrc
+RUN $INSTALL_DIR/$INSTALL_OGG_FILE
 
 WORKDIR /home/oracle
 
