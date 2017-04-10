@@ -13,7 +13,6 @@ ENV GLASSFISH_PKG=glassfish-4.1.2.zip \
     GLASSFISH_HOME=/glassfish4 \
     MD5=9a37928ea6e54334101b8a89e03a8d7d \
     PATH=$PATH:/glassfish4/bin \
-    PASSWORD=glassfish \
     JAVA_HOME=/usr/lib/jvm/java-openjdk
 
 # Install packages, download and extract GlassFish
@@ -24,17 +23,10 @@ RUN yum -y install wget unzip java-1.7.0-openjdk-devel && \
     echo "$MD5 *$GLASSFISH_PKG" | md5sum -c - && \
     unzip -o $GLASSFISH_PKG && \
     rm -f $GLASSFISH_PKG && \
-    yum -y remove wget unzip && rm -rf /var/cache/yum/* && \
-    echo "--- Setup the password file ---" && \
-    echo "AS_ADMIN_PASSWORD=" > /tmp/glassfishpwd && \
-    echo "AS_ADMIN_NEWPASSWORD=${PASSWORD}" >> /tmp/glassfishpwd  && \
-    echo "--- Enable DAS, change admin password, and secure admin access ---" && \
-    asadmin --user=admin --passwordfile=/tmp/glassfishpwd change-admin-password --domain_name domain1 && \
-    asadmin start-domain && \
-    echo "AS_ADMIN_PASSWORD=${PASSWORD}" > /tmp/glassfishpwd && \
-    asadmin --user=admin --passwordfile=/tmp/glassfishpwd enable-secure-admin && \
-    asadmin --user=admin stop-domain && \
-    rm /tmp/glassfishpwd
+    yum -y remove wget unzip && rm -rf /var/cache/yum/*
+
+COPY docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Ports being exposed
 EXPOSE 4848 8080 8181
