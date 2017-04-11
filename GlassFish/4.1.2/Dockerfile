@@ -7,6 +7,7 @@ FROM oraclelinux:latest
 
 # Maintainer
 MAINTAINER Arindam Bandyopadhyay<arindam.bandyopadhyay@oracle.com>
+
 # Set environment variables and default password for user 'admin'
 ENV GLASSFISH_PKG=glassfish-4.1.2.zip \
     GLASSFISH_URL=http://download.oracle.com/glassfish/4.1.2/release/glassfish-4.1.2.zip \
