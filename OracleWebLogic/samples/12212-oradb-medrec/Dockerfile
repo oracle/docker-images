@@ -16,7 +16,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t 12212-medrec .
+#      $ sudo docker build -t 12212-oradb-medrec .
 #
 
 # Pull base image

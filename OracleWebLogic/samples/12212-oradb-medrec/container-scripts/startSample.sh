@@ -11,15 +11,3 @@ wlst.sh -loadProperties /u01/oracle/oradatasource.properties /u01/oracle/medrec-
 
 ${ORACLE_HOME}/wlserver/samples/domains/medrec/startWebLogic.sh
 
-#touch ${ORACLE_HOME}/wlserver/samples/domains/medrec/servers/MedRecServer/logs/MedRecServer.log
-#tail -f  ${ORACLE_HOME}/wlserver/samples/domains/medrec/servers/MedRecServer/logs/MedRecServer.log &
-
-#childPID=$!
-#wait $childPID
-
-#cd ${ORACLE_HOME}/wlserver/samples/server/medrec 
-#ant -Ddb=oracle db.migrate
-
-#${ORACLE_HOME}/wlserver/samples/domains/medrec/bin/stopWebLogic.sh
-#wait 60
-#${ORACLE_HOME}/wlserver/samples/domains/medrec/startWebLogic.sh
