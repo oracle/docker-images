@@ -16,7 +16,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ sudo docker build -t 12212-medrec .
+#      $ sudo docker build -t 12212-oradb-medrec .
 #
 
 # Pull base image
@@ -38,7 +38,7 @@ ENV FMW_PKG="fmw_12.2.1.2.0_wls_supplemental_quick_Disk1_1of1.zip" \
 # --------------------------------
 COPY $FMW_PKG /u01/
 USER root
-COPY startSample.sh  /u01/oracle/
+COPY container-scripts/*  /u01/oracle/
 RUN chmod +xr /u01/oracle/startSample.sh 
 
 # Installation of Supplemental Quick Installer 
