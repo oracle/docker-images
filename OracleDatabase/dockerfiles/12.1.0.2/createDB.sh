@@ -8,26 +8,21 @@
 # Description: Creates an Oracle Database based on following parameters:
 #              $ORACLE_SID: The Oracle SID and CDB name
 #              $ORACLE_PDB: The PDB name
+#              $ORACLE_PWD: The Oracle password
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
 
-ORACLE_SID=$1
 # Check whether ORACLE_SID is passed on
-if [ "$ORACLE_SID" == "" ]; then
-  ORACLE_SID=ORCLCDB
-fi;
+export ORACLE_SID=${1:-ORCLCDB}
 
-ORACLE_PDB=$2
 # Check whether ORACLE_PDB is passed on
-if [ "$ORACLE_PDB" == "" ]; then
-  ORACLE_PDB=ORCLPDB1
-fi;
+export ORACLE_PDB=${2:-ORCLPDB1}
 
-# Auto generate ORACLE PWD
-ORACLE_PWD="`openssl rand -base64 8`1"
-echo "ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN: $ORACLE_PWD";
+# Auto generate ORACLE PWD if not passed on
+export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
+echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
 # Replace place holders in response file
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
