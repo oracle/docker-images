@@ -4,8 +4,8 @@ Sample Docker build files to facilitate installation, configuration, and environ
 
 ## How to build and run
 This project offers sample Dockerfiles for:
- * Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition and Standard Edition
- * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition
+ * Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition and Standard Edition 2
+ * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition 2
  * Oracle Database 11g Release 2 (11.2.0.2) Express Edition.
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
@@ -48,7 +48,7 @@ The character set for the database is set during creating of the database. 11g E
 
 ### Running Oracle Database in a Docker container
 
-#### Running Oracle Database Enterprise and Standard Edition in a Docker container
+#### Running Oracle Database Enterprise and Standard Edition 2 in a Docker container
 To run your Oracle Database Docker image use the **docker run** command as follows:
 
 	docker run --name <container name> \
@@ -87,9 +87,9 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
 #### Changing the admin accounts passwords
 
-On the first startup of the container a random password will be generated for the database. You can find this password in the output line:  
+On the first startup of the container a random password will be generated for the database if not provided. You can find this password in the output line:  
 	
-	ORACLE AUTO GENERATED PASSWORD FOR SYS, SYSTEM AND PDBAMIN:
+	ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN:
 
 The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
 
@@ -101,24 +101,27 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 	docker run --name <container name> \
 	--shm-size=1g \
 	-p 1521:1521 -p 8080:8080 \
+	-e ORACLE_PWD=<your database passwords> \
 	-v [<host mount point>:]/u01/app/oracle/oradata \
 	oracle/database:11.2.0.2-xe
 	
 	Parameters:
-	   --name:     The name of the container (default: auto generated)
-	   --shm-size: Amount of Linux shared memory
-	   -p:         The port mapping of the host port to the container port.
-	               Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
-	   -v          The data volume to use for the database.
-	               Has to be owned by the Unix user "oracle" or set appropriately.
-	               If omitted the database will not be persisted over container recreation.
+	   --name:        The name of the container (default: auto generated)
+	   --shm-size:    Amount of Linux shared memory
+	   -p:            The port mapping of the host port to the container port.
+	                  Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
+	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+
+	   -v             The data volume to use for the database.
+	                  Has to be owned by the Unix user "oracle" or set appropriately.
+	                  If omitted the database will not be persisted over container recreation.
 
 There are two ports that are exposed in this image:
 * 1521 which is the port to connect to the Oracle Database.
 * 8080 which is the port of Oracle Application Express (APEX).
 
-On the first startup of the container a random password will be generated for the database. You can find this password in the output line:
-	ORACLE AUTO GENERATED PASSWORD FOR SYS AND SYSTEM:
+On the first startup of the container a random password will be generated for the database if not provided. You can find this password in the output line:
+	ORACLE PASSWORD FOR SYS AND SYSTEM:
 
 The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
 	docker exec oraclexe /u01/app/oracle/setPassword.sh <your password>

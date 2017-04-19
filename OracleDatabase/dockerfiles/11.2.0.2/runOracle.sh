@@ -54,9 +54,9 @@ function _kill() {
 
 ############# Create DB ################
 function createDB {
-   # Auto generate ORACLE PWD
-   ORACLE_PWD=`openssl rand -hex 8`
-   echo "ORACLE AUTO GENERATED PASSWORD FOR SYS AND SYSTEM: $ORACLE_PWD";
+   # Auto generate ORACLE PWD if not passed on
+   export ORACLE_PWD=${ORACLE_PWD:-"`openssl rand -hex 8`"}
+   echo "ORACLE PASSWORD FOR SYS AND SYSTEM: $ORACLE_PWD";
 
    sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/$CONFIG_RSP && \
    /etc/init.d/oracle-xe configure responseFile=$ORACLE_BASE/$CONFIG_RSP
