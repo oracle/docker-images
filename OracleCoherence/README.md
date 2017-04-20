@@ -49,16 +49,18 @@ Follow this procedure:
 
 5. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example if the Standalone installer is used the image will be `oracle/coherence:12.2.1.0.0-standalone`
 
+6. The image is built with a shell script as its ENTRYPOINT that allows the image to be run using the normal Docker run command. See the [Image Usage](00.imageusage) documentation.
+
 ## Documentation
 Documentation covering the different aspects of running Oracle Coherence in Docker containers is covered in the [docs](docs) section.
 
-1. [Setup](docs/0.setup) - Setting up a demo Docker Machine environment
-2. [Clustering](docs/1.clustering) - Running Coherence Clusters in Docker
-3. [Coherence Extend](docs/2.extend) - Running Coherence Extend in Docker
-4. [Federated Caching](docs/3.federation) - Federated Caching in Docker
-5. [Disc Based Functionality](docs/4.disc_based) - Elastic Data and Persistence in Docker
-6. [JMX Monitoring](docs/5.monitoring) - Using JMX in Docker
-
+1. [Image Usage](00.imageusage) - Usage instructions for running the Coherence image
+2. [Setup](0.setup) - Setting Up a Demo Docker Machine Environment
+3. [Clustering](1.clustering) - Running Coherence Clusters in Docker
+4. [Coherence Extend](2.extend) - Running Coherence Extend in Docker
+5. [Federated Caching](3.federation) - Federated Caching in Docker
+6. [Disc Based Functionality](4.disc_based) - Elastic Data and Persistence in Docker
+7. [JMX Monitoring](5.monitoring) - Using JMX in Docker
 
 ## Issues
 If you find any issues with this Docker project, please report through the [GitHub Issues page](https://github.com/oracle/docker-images/issues).
