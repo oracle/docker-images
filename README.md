@@ -2,19 +2,20 @@
 
 This repository stores Dockerfiles and samples to build Docker images for Oracle products and Open Source projects.
 
- - [Oracle Coherence](./OracleCoherence)
- - [Oracle Database](./OracleDatabase)
- - [Oracle Java](./OracleJava)
- - [Oracle HTTP Server](./OracleHTTPServer)
- - [Oracle Tuxedo](./OracleTuxedo)
- - [Oracle WebLogic](./OracleWebLogic)
+ - [Oracle Coherence](https://github.com/oracle/docker-images/tree/master/OracleCoherence)
+ - [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase)
+ - [Oracle Java](https://github.com/oracle/docker-images/tree/master/OracleJava)
+ - [Oracle HTTP Server](https://github.com/oracle/docker-images/tree/master/OracleHTTPServer)
+ - [Oracle Tuxedo](https://github.com/oracle/docker-images/tree/master/OracleTuxedo)
+ - [Oracle TSAM Plus](https://github.com/oracle/docker-images/tree/master/OracleTSAM)
+ - [Oracle WebLogic](https://github.com/oracle/docker-images/tree/master/OracleWebLogic)
 
 And Open Source projects:
 
- - [GlassFish](./GlassFish)
+ - [GlassFish](https://github.com/oracle/docker-images/tree/master/GlassFish)
  - [MySQL](https://github.com/mysql/mysql-docker/)
- - [NoSQL](./NoSQL)
- - [OpenJDK](./OpenJDK)
+ - [NoSQL](https://github.com/oracle/docker-images/tree/master/NoSQL)
+ - [OpenJDK](/OpenJDK)
 
 Oracle Linux images can be found in the [`OracleLinux-images`](https://github.com/oracle/docker/tree/OracleLinux-images) branch of this repository.
 

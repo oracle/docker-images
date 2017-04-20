@@ -1,6 +1,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 # 
 # GlassFish on Docker with Oracle Linux and OpenJDK
 FROM oraclelinux:latest
@@ -9,10 +9,10 @@ FROM oraclelinux:latest
 MAINTAINER Arindam Bandyopadhyay<arindam.bandyopadhyay@oracle.com>
 
 # Set environment variables and default password for user 'admin'
-ENV GLASSFISH_PKG=glassfish-4.1.1-web.zip \
-    GLASSFISH_URL=http://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1-web.zip \
+ENV GLASSFISH_PKG=glassfish-4.1.2-web.zip \
+    GLASSFISH_URL=http://download.oracle.com/glassfish/4.1.2/release/glassfish-4.1.2-web.zip \
     GLASSFISH_HOME=/glassfish4 \
-    MD5=44baeca38cf33bb655fd3dd09f7d2b78 \
+    MD5=6d0e8d860c451938bd671b27c5e348f2 \
     PATH=$PATH:/glassfish4/bin \
     JAVA_HOME=/usr/lib/jvm/java-openjdk
 
