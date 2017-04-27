@@ -19,7 +19,7 @@ Follow this procedure:
 
 1. Checkout the GitHub Oracle Docker Images repository
 
-	`$ git checkout git@github.com:oracle/docker-images.git`
+	`$ git clone git@github.com:oracle/docker-images.git`
 
 2. Go to the **OracleCoherence/dockerfiles/12.2.1** folder
 
