@@ -9,7 +9,7 @@ For more information on the certification, please check the [WebLogic on Docker 
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 
 ## How to build and run
-This project offers sample Dockerfiles for WebLogic 12cR2 (12.2.1.x) and WebLogic 12c (12.1.3), and for each version it also provides at least one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+This project offers sample Dockerfiles for WebLogic 12cR2 (12.2.1.x) and WebLogic 12c (12.1.3), and for each version it also provides at least one Dockerfile for the 'developer' distribution, a second Dockerfile for the 'generic' distribution, and a third Dockerfile for the 'infrastructure' distribution. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 

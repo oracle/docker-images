@@ -7,7 +7,7 @@ The certification of Oracle WebLogic Server on Docker does not require the use o
 For more information on the certification, please check the [Oracle WebLogic Server on Docker Certification Whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [WebLogic Server Blog](https://blogs.oracle.com/WebLogicServer/) for updates.
 
 ## How to build and run
-This project offers sample Dockerfiles for Oracle WebLogic Server 12cR2 (12.2.1.2), and it provides at least one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution, as well more if necessary. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+This project offers sample Dockerfiles for Oracle WebLogic Server 12cR2 (12.2.1.2), and it provides at least one Dockerfile for the 'developer' distribution, a second Dockerfile for the 'generic' distribution, and a third Dockerfile for the 'infrastructure' distribution. To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
