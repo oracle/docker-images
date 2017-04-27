@@ -15,7 +15,7 @@ docker run [docker-args] \
 
 All of the arguments shown above are optional. For example:
  
-`docker run -d oracle/coherence:12.2.1.1.0`
+`docker run -d oracle/coherence:12.2.1.2`
 
 The above command will start a storage enabled DefaultCacheServer.
 
