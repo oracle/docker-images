@@ -22,6 +22,6 @@ groupadd -g 500 dba && \
 groupadd -g 501 oinstall && \
 useradd  -u 500 -d /home/oracle -g dba -G dba,oinstall -m -s /bin/bash oracle && \
 echo oracle:oracle | chpasswd && \
-yum -y install oracle-database-server-12cR2-preinstall unzip wget tar openssl && \
+yum -y install oracle-database-server-12cR2-preinstall unzip wget tar openssl vim && \
 yum clean all && \
 chown -R oracle:dba $ORACLE_BASE
