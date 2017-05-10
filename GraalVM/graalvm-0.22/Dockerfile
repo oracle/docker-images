@@ -12,4 +12,9 @@ ENV GRAALVM_PKG=graalvm-0.22-linux-amd64-jdk8.tar.gz \
 
 ADD $GRAALVM_PKG /usr/
 
+RUN ln -s /usr/graalvm-0.22/jdk/bin/jar /usr/graalvm-0.22/bin/jar && \
+    alternatives --install /usr/bin/java  java  /usr/graalvm-0.22/bin/java 20000 && \
+    alternatives --install /usr/bin/javac javac /usr/graalvm-0.22/javac    20000 && \
+    alternatives --install /usr/bin/jar   jar   /usr/graalvm-0.22/jar      20000
+
 CMD ["graalvm", "--version"]
