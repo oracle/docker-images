@@ -5,11 +5,18 @@ Graal offers performance advantages not only to Java code, but also to dynamical
 Additionally, it enables the execution of native code on the JVM via an LLVM-based front end (project [Sulong](https://github.com/graalvm/sulong)).
 Languages are executed by Graal via the Truffle framework, which comes with seamless language interoperability, and polyglot debugging and profiling.
 
+## Building the Docker image
+
+The GraalVM image requires you to download the binary tarball from http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html and place it into the `graalvm-0.22` directory prior to running `build.sh` or `docker build`.
+
 ## Usage
 
-GraalVM requires the `JAVA_HOME` environment variable to point to a JVMCI enabled Java Development Kit or Java Runtime.
+GraalVM requires the `JAVA_HOME` environment variable to point to a JVMCI enabled Java Development Kit or Java Runtime. This is automatically configured by the `Dockerfile`.
+
 [Oracle Labs JDK](http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html) is a JVMCI enabled version of JDK 8 which can be used to run GraalVM.
+
 Alternatively, a JVMCI enabled JDK or JRE can be placed in the folder `./jdk` or `./jre` to override the `JAVA_HOME` environment variable.
+
 Please note that JDK 9 builds are not yet compatible. 
 
 The bin directory contains:
