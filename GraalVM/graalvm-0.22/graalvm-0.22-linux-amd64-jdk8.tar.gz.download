@@ -1,0 +1,5 @@
+# Download the latest GraalVM tarball from the following location:
+#
+# - http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html
+#
+b8d19672ea9e187e40c0d5a9128ed43e  graalvm-0.22-linux-amd64-jdk8.tar.gz
