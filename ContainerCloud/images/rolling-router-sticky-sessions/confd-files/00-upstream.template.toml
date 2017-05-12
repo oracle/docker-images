@@ -1,0 +1,10 @@
+[template]
+src = "00-upstream.template.template"
+dest = "/etc/confd/templates/00-upstream.template"
+
+keys = [
+"rolling/APP_NAME/stable/id",
+"rolling/APP_NAME/candidate/id",
+"rolling/APP_NAME/blendpercent",
+"rolling/APP_NAME/stickyness"
+]

@@ -1,0 +1,4 @@
+upstream rollingservices {
+  least_conn;
+  server 127.0.0.1 down;
+}
