@@ -2,7 +2,9 @@
 
 Graal is a new just-in-time (JIT) compiler for the JVM focused on peak performance and multi-language support.
 Graal offers performance advantages not only to Java code, but also to dynamically typed languages such as JavaScript, Ruby, and R.
+
 Additionally, it enables the execution of native code on the JVM via an LLVM-based front end (project [Sulong](https://github.com/graalvm/sulong)).
+
 Languages are executed by Graal via the Truffle framework, which comes with seamless language interoperability, and polyglot debugging and profiling.
 
 ## Building the Docker image
@@ -13,11 +15,7 @@ The GraalVM image requires you to download the binary tarball from http://www.or
 
 GraalVM requires the `JAVA_HOME` environment variable to point to a JVMCI enabled Java Development Kit or Java Runtime. This is automatically configured by the `Dockerfile`.
 
-[Oracle Labs JDK](http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html) is a JVMCI enabled version of JDK 8 which can be used to run GraalVM.
-
-Alternatively, a JVMCI enabled JDK or JRE can be placed in the folder `./jdk` or `./jre` to override the `JAVA_HOME` environment variable.
-
-Please note that JDK 9 builds are not yet compatible. 
+[Oracle Labs JDK](http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html) is a JVMCI enabled version of JDK 8 which is included in the Docker image and is used to run GraalVM.
 
 The bin directory contains:
 * `java` - Runs the JVM with Graal as the default dynamic compiler for Java.
@@ -28,7 +26,7 @@ The bin directory contains:
 * `R` - Drop-in replacement for GNU R with FastR as the executing R engine.
 * `aot-image` - Builds an ahead-of-time compiled executable or a shared library from Java programs, and the JavaScript and Ruby languages.
 
-To get started look at example applications and the README description in the `./examples` folder.
+To get started look at example applications and the README description in the `/opt/graalvm-0.22/examples` folder.
 
 ## Benefits
 
@@ -40,7 +38,7 @@ To get started look at example applications and the README description in the `.
 
 ## Learn more
 
-The COPYRIGHT, LICENSE and README files for those languages are in the `./language` folder of this distribution.
+The COPYRIGHT, LICENSE and README files for those languages are in the `/opt/graalvm-0.22/language` folder of this image.
 
 You can learn more about GraalVM on Oracle Technology Network [here](http://www.oracle.com/technetwork/oracle-labs/program-languages/overview/index.html).
 
