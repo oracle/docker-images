@@ -4,11 +4,11 @@
 # 
 # Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
 # 
-FROM oraclelinux:latest
+FROM oraclelinux:7-slim
 
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
-RUN yum -y install java-1.8.0-openjdk-devel && rm -rf /var/cache/yum/*
+RUN yum -y install java-1.8.0-openjdk-devel && yum clean all
 
 ENV JAVA_HOME /usr/lib/jvm/java-openjdk
 
