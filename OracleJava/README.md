@@ -21,6 +21,14 @@ Build it:
 $ cd java-7
 $ docker build -t oracle/serverjre:7 .
 ```
+## Java 8 JDK
+[Download Server JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) `.tar.gz` file and drop it inside folder `java-8-jdk`. 
+Build it:
+
+```
+$ cd java-8-jdk
+$ docker build -t oracle/serverjdk:8 .
+```
 
 ## Windows
 
