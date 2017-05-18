@@ -175,4 +175,14 @@ fi;
 echo "The following output is now a tail of the alert.log:"
 tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
 childPID=$!
+
+for f in /docker-entrypoint-initdb.d/*; do
+    case "$f" in
+        *.sh)     echo "$0: running $f"; . "$f" ;;
+        *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
+        *)        echo "$0: ignoring $f" ;;
+    esac
+    echo
+done
+
 wait $childPID
