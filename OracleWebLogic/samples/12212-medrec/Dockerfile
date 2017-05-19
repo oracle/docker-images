@@ -36,16 +36,22 @@ ENV FMW_PKG="fmw_12.2.1.2.0_wls_supplemental_quick_Disk1_1of1.zip" \
 
 # Copy supplemental package and scripts
 # --------------------------------
-COPY $FMW_PKG startSample.sh /u01/
+COPY $FMW_PKG /u01/
+USER root
+COPY startSample.sh  /u01/oracle/
+RUN chmod +xr /u01/oracle/startSample.sh 
 
 # Installation of Supplemental Quick Installer 
 # --------------------------------------------
+USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
-    chown oracle:oracle -R /u01 && \ 
-    echo oracle:oracle | chpasswd && \ 
-    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR  ORACLE_HOME=$ORACLE_HOME" - oracle && \
-    mv /u01/startSample.sh /u01/oracle/wlserver/samples/server/  && \
+    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR  ORACLE_HOME=$ORACLE_HOME && \
+    echo $USER && \
+    mv /u01/oracle/startSample.sh /u01/oracle/wlserver/samples/server/  && \
     rm /u01/$FMW_PKG /u01/$FMW_JAR
+
+USER root 
+RUN chmod +xr /u01/oracle/wlserver/samples/server/*.sh
 
 WORKDIR $ORACLE_HOME/wlserver/samples/server
 

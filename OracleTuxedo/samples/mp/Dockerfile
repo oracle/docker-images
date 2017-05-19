@@ -16,4 +16,4 @@ RUN hostname; mkdir /home/oracle/simpappmp
 
 WORKDIR /home/oracle/simpappmp
 
-RUN sh -x ../simpapp_runme.sh
+RUN sh -x ../simpappmp_runme.sh

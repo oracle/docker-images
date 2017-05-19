@@ -36,10 +36,9 @@ COPY $PSU_PKG /u01/
 
 # Installation of Supplemental Quick Installer 
 # --------------------------------------------
+USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PSU_PKG && cd - && \
-    chown oracle:oracle -R /u01 && \ 
-    echo oracle:oracle | chpasswd && \ 
-    su -c "cd /u01/24286152 && $ORACLE_HOME/OPatch/opatch apply -silent" - oracle && \
+    cd /u01/24286152 && $ORACLE_HOME/OPatch/opatch apply -silent - oracle && \
     rm /u01/$PSU_PKG 
 
 WORKDIR ${ORACLE_HOME}

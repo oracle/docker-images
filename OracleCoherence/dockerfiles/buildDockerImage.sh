@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-q | -s] [-s]
+Usage: buildDockerImage.sh -v [version] [-q | -s]
 Builds a Docker Image for Oracle Coherence.
   
 Parameters:

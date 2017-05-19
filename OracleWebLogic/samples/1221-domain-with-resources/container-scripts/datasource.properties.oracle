@@ -1,0 +1,9 @@
+dsname=DockerDS2
+dsdbname=default;create=true
+dsjndiname=jdbc/DockerDS2
+dsdriver=oracle.jdbc.OracleDriver
+dsurl=jdbc:oracle:thin:@//xxx.xxx.x.xxx:1521/ORCLCDB
+dsusername=system
+dspassword=LetsDocker
+dstestquery=SQL ISVALID
+dsmaxcapacity=1

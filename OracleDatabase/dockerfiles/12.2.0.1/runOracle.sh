@@ -126,14 +126,10 @@ else
 fi;
 
 # Default for ORACLE PDB
-if [ "$ORACLE_PDB" == "" ]; then
-   export ORACLE_PDB=ORCLPDB1
-fi;
+export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 
 # Default for ORACLE CHARACTERSET
-if [ "$ORACLE_CHARACTERSET" == "" ]; then
-   export ORACLE_CHARACTERSET=AL32UTF8
-fi;
+export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
 # Check whether database already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
@@ -154,16 +150,29 @@ else
    rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
    # Create database
-   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB;
+   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD;
    
    # Move database operational files to oradata
    moveFiles;
 fi;
 
-echo "#########################"
-echo "DATABASE IS READY TO USE!"
-echo "#########################"
+# Check whether database is up and running
+$ORACLE_BASE/$CHECK_DB_FILE
+if [ $? -eq 0 ]; then
+   echo "#########################"
+   echo "DATABASE IS READY TO USE!"
+   echo "#########################"
+else
+   echo "#####################################"
+   echo "########### E R R O R ###############"
+   echo "DATABASE SETUP WAS NOT SUCCESSFUL!"
+   echo "Please check output for further info!"
+   echo "########### E R R O R ###############" 
+   echo "#####################################"
+fi;
 
+# Tail on alert log and wait (otherwise container will exit)
+echo "The following output is now a tail of the alert.log:"
 tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
 childPID=$!
 wait $childPID

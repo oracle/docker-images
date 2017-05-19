@@ -44,14 +44,22 @@ ENV COHERENCE_HOME=$ORACLE_HOME/coherence
 
 # Copy files required to build this image
 COPY $FMW_PKG install.file oraInst.loc /u01/
+COPY start.sh                          /start.sh
+COPY extend-cache-config.xml           $COHERENCE_HOME/conf/extend-cache-config.xml
+
+RUN useradd -b /u01 -m -s /bin/bash oracle && \
+   echo oracle:oracle | chpasswd && \
+   chmod +x /start.sh && \
+   chmod a+xr /u01 && \
+   chown -R oracle:oracle /u01
+
+USER oracle
 
 # Install and configure Oracle JDK
 # Setup required packages (unzip), filesystem, and oracle user
 # ------------------------------------------------------------
-RUN chmod a+xr /u01 && \ 
-    useradd -b /u01 -m -s /bin/bash oracle && \
-    echo oracle:oracle | chpasswd && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
-    su -c "$JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME" - oracle && \
-    chown oracle:oracle -R /u01 && \
+RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
+    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
+
+ENTRYPOINT ["/start.sh"]

@@ -1,0 +1,9 @@
+dsname=DockerDS
+dsdbname=default;create=true
+dsjndiname=jdbc/DockerDS
+dsdriver=org.apache.derby.jdbc.ClientDataSource
+dsurl=jdbc:derby://localhost:1527/default;ServerName=localhost;databaseName=default;create=true
+dsusername=
+dspassword=
+dstestquery=SQL SELECT 1 FROM SYS.SYSTABLES
+dsmaxcapacity=1
