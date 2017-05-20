@@ -66,8 +66,8 @@ ENV FMW_PKG=fmw_12.2.1.2.0_wls_quick_Disk1_1of1.zip \
 # Copy packages
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
-
-RUN chmod +xr $SCRIPT_FILE
+RUN  chown oracle:oracle -R /u01  && \
+     chmod +xr $SCRIPT_FILE
 
 # Install 
 # ------------------------------------------------------------
