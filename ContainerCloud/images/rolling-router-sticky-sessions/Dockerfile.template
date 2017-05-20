@@ -71,9 +71,11 @@ ADD nginx-files/00-upstream-placeholder \
     /etc/nginx/sites-enabled/00-upstream
 
 ADD nginx.sh /etc/sv/nginx/run
+RUN chmod +x /etc/sv/nginx/run
 
 # Override the confd start script
 ADD confd.sh /etc/sv/confd/run
+RUN chmod +x /etc/sv/confd/run
 
 # Cleanup unneeded files from upstream confd image
 RUN rm /etc/confd/conf.d/hello-world.toml.template \
