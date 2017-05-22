@@ -1,6 +1,5 @@
 <?php
 
-// Mika Rinne ORACLE
 if($_SERVER['REQUEST_METHOD'] == POST)
 {
 	$token = $_POST['bearer'];
