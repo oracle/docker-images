@@ -3,11 +3,14 @@ FROM __REGISTRY_NAME__/confd:__VERSION_CONFD__
 RUN \
     build_pkgs="build-base linux-headers openssl-dev pcre-dev wget zlib-dev" && \
     runtime_pkgs="ca-certificates openssl pcre zlib" && \
-    apk --update add ${build_pkgs} ${runtime_pkgs} && \
+    php_pkgs="php5-fpm php5-mcrypt php5-soap php5-openssl php5-gmp php5-pdo_odbc php5-json php5-dom php5-pdo php5-zip php5-mysql php5-mysqli php5-sqlite3 php5-apcu php5-pdo_pgsql php5-bcmath php5-gd php5-xcache php5-odbc php5-pdo_mysql php5-pdo_sqlite php5-gettext php5-xmlreader php5-xmlrpc php5-bz2 php5-memcache php5-mssql php5-iconv php5-pdo_dblib php5-curl php5-ctype" && \
+    apk --update add ${build_pkgs} ${runtime_pkgs} ${php_pkgs} && \
     cd /tmp && \
     mkdir unzip && \
     wget https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng/get/08a395c66e42.zip && \
     unzip 08a395c66e42.zip -d unzip && \
+    ls -la /tmp/unzip && \
+    ls -la /tmp/unzip/nginx-goodies-nginx-sticky-module-ng-08a395c66e42 && \
     wget http://nginx.org/download/nginx-1.10.1.tar.gz && \
     tar xzf nginx-1.10.1.tar.gz && \
     cd /tmp/nginx-1.10.1 && \
@@ -46,6 +49,8 @@ RUN \
     && make && \
     make install
 
+RUN sed -i -e "s/include/;include/g" /etc/php5/php-fpm.conf
+
 # Lay down the configuration templates
 ADD confd-files/00-upstream.toml.toml \
     /etc/confd/conf.d/00-upstream.toml.toml
@@ -72,6 +77,19 @@ ADD nginx-files/00-upstream-placeholder \
 
 ADD nginx.sh /etc/sv/nginx/run
 RUN chmod +x /etc/sv/nginx/run
+
+RUN mkdir -pv /etc/sv/php-fpm && \
+    chmod 2775 /etc/sv/php-fpm  && \
+    ln -sv /etc/sv/php-fpm /service
+
+ADD php-fpm.sh /tmp
+RUN chmod +x /tmp/php-fpm.sh
+
+ADD php-fpm2.sh /etc/sv/php-fpm/run
+RUN chmod +x /etc/sv/php-fpm/run
+
+ADD ui /etc/nginx/html
+ADD mime.types /etc/nginx
 
 # Override the confd start script
 ADD confd.sh /etc/sv/confd/run

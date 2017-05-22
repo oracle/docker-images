@@ -1,0 +1,99 @@
+<script>
+$('html,body').scrollTop(0);
+</script>
+
+<blockquote>
+  OCCS rolling router - manage and promote deployment
+</blockquote>
+<p>
+<br>
+<br>
+
+<b>Application name</b> <span ng-if="appname">{{ appname }}</span><span ng-if="!appname"> - </span>
+<b>port</b> <span ng-if="port">{{ port }}</span><span ng-if="!port"> - </span>
+<br>
+<br>
+
+<div ng-if="promoting">
+  <div class="alert alert-info" role="alert">
+    Promoting.. please wait
+  </div>
+</div>
+
+<div ng-if="notfound">
+  <div class="alert alert-warning" role="alert">
+    Keyvalues for {{ appname }} not found. Select values to create.<br><a href='/#/'>Set up the port</a> first for a new application.
+  </div>
+</div>
+
+<div ng-if="connecterror">
+  <div class="alert alert-warning" role="alert">
+    Could not connect. <a href='/#/'>Try setting up again</a>.
+  </div>
+</div>
+
+<h3><font size=+1>Stable</font>
+  <span class="label label-primary">{{ stable }}</span>
+<div class="btn-group">
+  <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li ng-repeat="deployment in deployments"><a ng-click="setStable(deployment.deployment_id)">{{ deployment.deployment_id }} ({{ deployment.deployment_name }})</a></li>
+  </ul>
+</div>
+</h3>
+
+<h3><font size=+1>Candidate</font>
+  <span class="label label-success">{{ candidate }}</span>
+  <div class="btn-group">
+  <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li ng-repeat="deployment in deployments"><a ng-click="setCandidate(deployment.deployment_id)">{{ deployment.deployment_id }} ({{ deployment.deployment_name }})</a></li>
+  </ul>
+  </div>
+  <button ng-if="candidate!=='' && candidate!='rolling/null'" type="button" class="btn btn-success" ng-click="promote()"><b> Promote </b></button>
+</h3>
+
+<h3><font size=+1>Blend</font>
+  <span class="label label-info">{{ blendpercent }}%</span>
+  <div class="btn-group">
+    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a ng-click="setBlendpercent(0)">0</a></li>
+      <li><a ng-click="setBlendpercent(10)">10</a></li>
+      <li><a ng-click="setBlendpercent(20)">20</a></li>
+      <li><a ng-click="setBlendpercent(30)">30</a></li>
+      <li><a ng-click="setBlendpercent(40)">40</a></li>
+      <li><a ng-click="setBlendpercent(50)">50</a></li>
+      <li><a ng-click="setBlendpercent(60)">60</a></li>
+      <li><a ng-click="setBlendpercent(70)">70</a></li>
+      <li><a ng-click="setBlendpercent(80)">80</a></li>
+      <li><a ng-click="setBlendpercent(90)">90</a></li>
+      <li><a ng-click="setBlendpercent(100)">100</a></li>
+    </ul>
+  </div>
+</h3>
+
+<h3><font size=+1>Sticky sessions</font>
+  <span class="label label-warning" ng-if="stickyness=='1'">true</span>
+  <span class="label label-default" ng-if="stickyness=='0'">false</span>
+  <div class="btn-group">
+    <button ng-if="stickyness=='1'" type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="caret"></span>
+    </button>
+    <button ng-if="!stickyness || stickyness=='0'" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a ng-click="setStickyness('1')">true</a></li>
+      <li><a ng-click="setStickyness('0')">false</a></li>
+    </ul>
+  </div>
+</h3>
+
+<p>

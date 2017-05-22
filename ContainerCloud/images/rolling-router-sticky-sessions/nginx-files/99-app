@@ -1,6 +1,17 @@
+
+server {
+  listen  8080;
+  root  /etc/nginx/html;
+  location ~ \.php$ {
+              fastcgi_pass      127.0.0.1:9000;
+              fastcgi_index     index.php;
+              include           fastcgi.conf;
+        }
+}
+
 server {
   listen 80;
   location / {
-    proxy_pass http://rollingservices;
+    proxy_pass  http://rollingservices;
   }
 }
