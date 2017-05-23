@@ -53,8 +53,7 @@ ENV ORACLE_HOME=/u01/oracle \
 # ------------------------------------------------------------
 RUN mkdir -p /u01 && \
     chmod a+xr /u01 && \
-    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
-    chown oracle:oracle -R /u01
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -64,6 +63,8 @@ ENV FMW_PKG=fmw_12.2.1.0.0_infrastructure_Disk1_1of1.zip \
 # Copy packages
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
+RUN chown oracle:oracle -R /u01
+
 
 # Install
 #-------------------------------------------------------------

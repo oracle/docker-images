@@ -52,8 +52,7 @@ ENV ORACLE_HOME=/u01/oracle \
 # ------------------------------------------------------------
 RUN mkdir -p /u01 && \
     chmod a+xr /u01 && \
-    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
-    chown oracle:oracle -R /u01
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
     
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -63,6 +62,8 @@ ENV FMW_PKG=wls1213_dev_update3.zip \
 # Copy packages
 # -------------
 COPY $FMW_PKG /u01/
+RUN  chown oracle:oracle -R /u01
+
 
 # Setup filesystem and oracle user
 # Install and configure Oracle JDK
