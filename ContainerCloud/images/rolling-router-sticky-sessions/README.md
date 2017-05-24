@@ -53,6 +53,12 @@ Four service discovery keys are required for this implementation:
 
 The router configuration is based on NGINX. The NGINX configuration files need to dynamically change when containers are deployed in OCCS. Confd provides the mechanism to watch service discovery keys in OCCS and generate dynamic configuraiton files for NGINX.
 
+### Management UI in port 8080
+
+Router configuration can also be done via an interactive management UI.
+
+The management UI listens on port 8080 in the container. When running the container, map some port, e.g. 8080, to port 8080 in the container.
+
 ### Virtual Host
 
 The [nginx-files/99-app](./nginx-files/99-app) file defines the virtual host that will proxy to the backend services.
@@ -75,3 +81,7 @@ Second, Confd automatically uses the generated files to generate a new file. The
 NGINX's frontend listens on port 80 in the container. When running the container, map some port, e.g. 8000, to port 80 in the container.
 
 Once the image is up and running, you can then access the frontend by navigating to http://mgr:8000 (where *mgr* is the host or IP address of the host running your router container, and port 8000 is the host port mapped to port 80 in the container).
+
+The management UI listens on port 8080 in the container. When running the container, map some port, e.g. 8080, to port 8080 in the container.
+
+Once the image is up and running, you can then access the management UI by navigating to http://mgr:8080 (where *mgr* is the host or IP address of the host running your router container, and port 8080 is the host port mapped to port 8080 in the container).
