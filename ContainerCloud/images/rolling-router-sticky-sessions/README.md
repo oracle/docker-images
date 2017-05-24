@@ -55,7 +55,7 @@ The router configuration is based on NGINX. The NGINX configuration files need t
 
 ### Management UI in port 8080
 
-Router configuration can also done via an interactive management UI.
+Router configuration can also be done via an interactive management UI.
 
 The management UI listens on port 8080 in the container. When running the container, map some port, e.g. 8080, to port 8080 in the container.
 
