@@ -20,7 +20,7 @@ $('html,body').scrollTop(0);
   </div>
 </div>
 
-<div ng-if="notfound">
+<div ng-if="notfound && !connecterror">
   <div class="alert alert-warning" role="alert">
     Keyvalues for {{ appname }} not found. Select values to create.<br><a href='/#/'>Set up the port</a> first for a new application.
   </div>

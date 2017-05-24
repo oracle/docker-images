@@ -170,9 +170,12 @@ function getData($http, $rootScope, $scope, callback)
   getDeployments($http, $rootScope.host, $rootScope.bearer, function (err, data) {
     if(!err)
     {
-      var deployment = { deployment_name : 'rolling/null', deployment_id : 'rolling/null' };
-      data.push(deployment);
-      $scope.deployments = data;
+      if(data)
+      {
+         var deployment = { deployment_name : 'rolling/null', deployment_id : 'rolling/null' };
+         data.push(deployment);
+         $scope.deployments = data;
+     }
     }
   });
 }
@@ -201,7 +204,7 @@ function keyValue(http, host, bearer, key, callback)
       callback(null, value);
   })
   .error(function (data, status, header, config) {
-      callback(status, '');
+      callback(1, '');
   });
 }
 
@@ -224,7 +227,7 @@ function setKeyValue(http, host, bearer, key, value, callback)
       callback(null, '');
   })
   .error(function (data, status, header, config) {
-      callback(status, '');
+      callback(1, '');
   });
 }
 
@@ -248,7 +251,7 @@ function getDeployments(http, host, bearer, callback)
       callback(null, data.deployments);
   })
   .error(function (data, status, header, config) {
-      callback(status, '');
+      callback(1, '');
   });
 }
 
