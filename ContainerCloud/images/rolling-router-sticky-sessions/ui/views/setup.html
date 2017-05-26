@@ -1,0 +1,44 @@
+<script>
+$('html,body').scrollTop(0);
+</script>
+
+<blockquote>
+  OCCS rolling router - login and setup
+</blockquote>
+<p>
+<br>
+<h2>Setup</h2>
+<br>
+
+<p>
+<div class="col-8 col-md-6 pull-md-4 bd-content">
+  <form ng-submit="login(data)" ng-controller="rollingRouterController">
+    <div class="form-group">
+      <label for="host">Admin host IP</label>
+      <input class="form-control" type="text" id="host" ng-model="data.host" name="host">
+      <small class="form-text text-muted">OCCS service admin node IP address</small>
+    </div>
+    <br>
+    <div class="form-group">
+      <label for="bearer">Bearer</label>
+      <input class="form-control" type="text" id="bearer" ng-model="data.bearer" name="bearer">
+      <small class="form-text text-muted">OCCS service My Profile API Token</small>
+    </div>
+    <br>
+    <div class="form-group">
+      <label for="appname">Application name</label>
+      <input class="form-control" type="text" id="appname" ng-model="data.appname" name="appname">
+      <small class="form-text text-muted">Application name to be rolled e.g. docker-hello-world</small>
+    </div>
+    <br>
+    <div class="form-group">
+      <label for="port">Application port (optional)</label>
+      <input class="form-control" type="text" id="port" ng-model="data.port" name="port">
+      <small class="form-text text-muted">Enter if creating a new app. For existing keyvalues not needed.</small>
+    </div>
+    <p>
+    <br>
+    <button class="btn btn-success" type="submit" value="setup"><b> OK </b></button>
+  </form>
+</div>
+<p>
