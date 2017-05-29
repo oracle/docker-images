@@ -58,6 +58,15 @@ echo "password=$s" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/Adm
 ${DOMAIN_HOME}/bin/setDomainEnv.sh 
 fi
 
+# Deploying Applications
+for f in *;
+do
+   if [[ "${f: -4}" == ".war" || "${f: -4}" == ".ear" ]]
+   then
+     echo "Deploying $f"
+     wlst.sh deploy.py $f
+   fi
+done
 
 # Start Admin Server and tail the logs
 ${DOMAIN_HOME}/startWebLogic.sh

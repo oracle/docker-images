@@ -48,7 +48,7 @@ RUN mkdir -p /u01 && \
     
 # Copy scripts
 #-------------
-COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls-domain.py /u01/oracle/
+COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls-domain.py container-scripts/deploy-app.py /u01/oracle/
 
 ENV SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
