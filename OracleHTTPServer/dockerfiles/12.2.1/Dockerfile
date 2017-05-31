@@ -71,7 +71,6 @@ RUN yum install -y \
     echo oracle:oracle | chpasswd && \
     mkdir /u01/oracle/.inventory
 
-# Install and configure Oracle JDK
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
 RUN cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
