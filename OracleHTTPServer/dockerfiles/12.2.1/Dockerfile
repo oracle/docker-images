@@ -66,6 +66,8 @@ RUN yum install -y \
         unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
         gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
 	libstdc++ libstdc++-devel ksh make ocfs2-tools sysstat && \
+    yum clean all && \
+    rm -rf /var/cache/yum/* && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
