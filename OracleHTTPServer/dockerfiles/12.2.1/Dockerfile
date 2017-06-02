@@ -71,13 +71,12 @@ RUN yum install -y \
     echo oracle:oracle | chpasswd && \
     mkdir /u01/oracle/.inventory
 
-# Install and configure Oracle JDK
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
-RUN cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
+RUN unzip -q -d /u01 /u01/$OHS_PKG && \
     chown oracle:oracle -R /u01 && \
     su -c "/u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME ORACLE_HOME=$ORACLE_HOME" - oracle && \
-    rm $FMW_JAR $FMW_PKG /u01/oraInst.loc /u01/install.file
+    rm /u01/$OHS_PKG /u01/$OHS_BIN /u01/fmw_*_readme.htm /u01/oraInst.loc /u01/install.file
 
 USER oracle
 WORKDIR /u01/oracle/
