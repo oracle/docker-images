@@ -26,31 +26,28 @@ MAINTAINER Aseem Bajaj <aseem.bajaj@oracle.com>
 
 # Arguments
 # ---------
-ARG NUMBER_OF_MS=10
+ARG number_of_ms=10
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV MW_HOME="$ORACLE_HOME"
-ENV PATH="$ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/samples/server/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin"
-ENV number_of_ms=$NUMBER_OF_MS
+ENV MW_HOME="$ORACLE_HOME" \
+    PATH="$ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/samples/server/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin" \
+    NUMBER_OF_MS=$number_of_ms \
+    DOMAINS_DIR=$ORACLE_HOME/wlserver/samples/domains \
+    DOMAIN_NAME=msi-sample \
+    DEFAULT_MS_NAME=ms1
 
 # Copy scripts
 # --------------------------------
 USER oracle
-COPY container-scripts/provision-domain-for-msi.py /u01/oracle/
-COPY container-scripts/shutdown-servers.py /u01/oracle/
-COPY container-scripts/provision-domain-for-msi.sh /u01/oracle/
+COPY container-scripts/* /u01/oracle/
 
 # Default directory creation, Admin Server boot
 # ---------------------------------------------
 RUN . $ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh && \
     cd /u01/oracle && \
-    ./provision-domain-for-msi.sh msi-sample $ORACLE_HOME/wlserver/common/templates/wls/wls.jar $ORACLE_HOME/wlserver/samples/domains weblogic weblogic1 8001 ms1 8011 dev $number_of_ms
-
-# Scripts and parameters for launching
-# -----------------------------------
-COPY container-scripts/launcher.sh /u01/oracle/
+    ./provision-domain-for-msi.sh $DOMAIN_NAME $ORACLE_HOME/wlserver/common/templates/wls/wls.jar $DOMAINS_DIR weblogic weblogic1 8001 $DEFAULT_MS_NAME 8011 dev $NUMBER_OF_MS
 
 EXPOSE 8011
-WORKDIR $ORACLE_HOME/wlserver/samples/domains/msi-sample
-ENTRYPOINT "/usr/bin/bash" "/u01/oracle/launcher.sh" "$ORACLE_HOME/wlserver/samples/domains/msi-sample" "ms1" "weblogic" "weblogic1" $number_of_ms
+WORKDIR $DOMAINS_DIR/$DOMAIN_NAME
+ENTRYPOINT ["/u01/oracle/launcher.sh"]

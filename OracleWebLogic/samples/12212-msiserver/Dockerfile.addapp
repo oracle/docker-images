@@ -29,9 +29,9 @@ MAINTAINER Aseem Bajaj <aseem.bajaj@oracle.com>
 
 # Arguments
 # ---------
-ARG name
-ARG source
-ARG simple_filename
+ARG name=summercamps
+ARG source=apps/summercamps.ear
+ARG simple_filename=summercamps.ear
 	
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -41,10 +41,9 @@ ENV MW_HOME="$ORACLE_HOME" \
 # Copy scripts
 # --------------------------------
 USER oracle
-COPY container-scripts/add-app-to-domain.py /u01/oracle/
 COPY ${source} /u01/apps/${simple_filename}
 
 # WLST offline use to update domain configuration
 # ---------------------------------------------
 RUN . $ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh && \
-    java weblogic.WLST /u01/oracle/add-app-to-domain.py $ORACLE_HOME/wlserver/samples/domains/msi-sample $number_of_ms $name /u01/apps/${simple_filename}
+    java weblogic.WLST /u01/oracle/add-app-to-domain.py $ORACLE_HOME/wlserver/samples/domains/msi-sample $NUMBER_OF_MS $name /u01/apps/${simple_filename}
