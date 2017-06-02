@@ -18,11 +18,11 @@ ENV GLASSFISH_PKG=latest-web.zip \
 # Install packages, download and extract GlassFish
 # Setup password file
 # Enable DAS
-RUN yum -y install wget unzip java-1.8.0-openjdk-devel && \
-    wget --quiet --no-check-certificate $GLASSFISH_URL && \
+RUN yum -y install unzip java-1.8.0-openjdk-devel && \
+    curl -Ok $GLASSFISH_URL && \
     unzip -o $GLASSFISH_PKG && \
     rm -f $GLASSFISH_PKG && \
-    yum -y remove wget unzip && \
+    yum -y remove unzip && \
     yum clean all
 
 COPY docker-entrypoint.sh /entrypoint.sh
