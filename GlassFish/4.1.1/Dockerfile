@@ -3,14 +3,14 @@
 # Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
 # 
 # GlassFish on Docker with Oracle Linux and OpenJDK
-FROM oraclelinux:latest
+FROM oraclelinux:7-slim
 
 # Maintainer
 MAINTAINER Arindam Bandyopadhyay<arindam.bandyopadhyay@oracle.com>
 
 # Set environment variables and default password for user 'admin'
 ENV GLASSFISH_PKG=glassfish-4.1.1.zip \
-    GLASSFISH_URL=http://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1.zip \
+    GLASSFISH_URL=https://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1.zip \
     GLASSFISH_HOME=/glassfish4 \
     MD5=4e7ce65489347960e9797d2161e0ada2 \
     PATH=$PATH:/glassfish4/bin \
@@ -19,12 +19,13 @@ ENV GLASSFISH_PKG=glassfish-4.1.1.zip \
 # Install packages, download and extract GlassFish
 # Setup password file
 # Enable DAS
-RUN yum -y install wget unzip java-1.7.0-openjdk-devel && \
-    wget --quiet --no-check-certificate $GLASSFISH_URL && \
+RUN yum -y install unzip java-1.7.0-openjdk-devel && \
+    curl -Ok $GLASSFISH_URL && \
     echo "$MD5 *$GLASSFISH_PKG" | md5sum -c - && \
     unzip -o $GLASSFISH_PKG && \
     rm -f $GLASSFISH_PKG && \
-    yum -y remove wget unzip && rm -rf /var/cache/yum/*
+    yum -y remove unzip && \
+    yum clean all
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
