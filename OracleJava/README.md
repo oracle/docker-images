@@ -12,16 +12,6 @@ Build it:
 $ cd java-8
 $ docker build -t oracle/serverjre:8 .
 ```
-
-## Java 7
-[Download Server JRE 7](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#sjre-7u80-oth-JPR) `.tar.gz` file and drop it inside folder `java-7`: 
-Build it:
-
-```
-$ cd java-7
-$ docker build -t oracle/serverjre:7 .
-```
-
 ## Windows
 
 ### Java 8
@@ -32,15 +22,4 @@ Build it:
 $ cd windows-java-8
 $ docker build -t oracle/serverjre:8-windowsservercore -f windowsservercore/Dockerfile .
 $ docker build -t oracle/serverjre:8-nanoserver -f nanoserver/Dockerfile .
-```
-
-### Java 7
-[Download Server JRE 7](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#sjre-7u80-oth-JPR) `.tar.gz` file and drop it inside folder `windows-java-7`. You also have to extract all files as there are issues adding the `tar.gz` file directly. 
-Build it:
-
-```
-$ cd windows-java-7
-$ tar xzf server-jre-7u80-windows-x64.tar.gz
-$ docker build -t oracle/serverjre:7-windowsservercore -f windowsservercore/Dockerfile .
-$ docker build -t oracle/serverjre:7-nanoserver -f nanoserver/Dockerfile .
 ```

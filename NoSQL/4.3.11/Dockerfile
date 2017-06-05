@@ -19,8 +19,9 @@ RUN yum -y install unzip && \
     rm "${PACKAGE}-${VERSION}.${EXTENSION}" && \
     yum -y remove unzip && rm -rf /var/cache/yum/*
  
-WORKDIR "/kv-${VERSION}"
- 
+WORKDIR "$KVHOME"
+
+VOLUME ["$KVHOME"] 
 EXPOSE 5000 5001 5010-5020
 
 CMD ["java", "-jar", "lib/kvstore.jar", "kvlite", "-secure-config", "disable"]
