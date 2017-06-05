@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>OCCS rolling router</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.css">
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/navbar.css">
+
+</head>
+<body ng-app="rollingRouter">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-fixed-top grey">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/#/"><img src="/oracle-logo.png"></a></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/#/">Setup</a></li>
+            <li class="active"><a href="/#/manage">Manage</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container" ng-view="">
+    </div>
+
+  <script src="https://code.jquery.com/jquery-2.1.3.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular-route.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.js"></script>
+  <script src="controllers/rollingRouter.js"></script>
+  <script src="controllers/rollingRouterController.js"></script>
+</body>
+</html>
