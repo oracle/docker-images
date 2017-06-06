@@ -10,7 +10,7 @@ MAINTAINER Arindam Bandyopadhyay<arindam.bandyopadhyay@oracle.com>
 
 # Set environment variables and default password for user 'admin'
 ENV GLASSFISH_PKG=latest-web.zip \
-    GLASSFISH_URL=https://download.oracle.com/glassfish/5.0/nightly/latest-web.zip \
+    GLASSFISH_URL=http://download.oracle.com/glassfish/5.0/nightly/latest-web.zip \
     GLASSFISH_HOME=/glassfish5 \
     PATH=$PATH:/glassfish5/bin \
     JAVA_HOME=/usr/lib/jvm/java-openjdk
@@ -19,7 +19,7 @@ ENV GLASSFISH_PKG=latest-web.zip \
 # Setup password file
 # Enable DAS
 RUN yum -y install unzip java-1.8.0-openjdk-devel && \
-    curl -Ok $GLASSFISH_URL && \
+    curl -O $GLASSFISH_URL && \
     unzip -o $GLASSFISH_PKG && \
     rm -f $GLASSFISH_PKG && \
     yum -y remove unzip && \
