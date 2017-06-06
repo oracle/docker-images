@@ -19,4 +19,17 @@ if [ "$ms_name_from_image" != "$ms_name" ]; then
   mv servers/$ms_name_from_image servers/$ms_name
 fi
 
-bin/startManagedWebLogic.sh $ms_name
+# Relays SIGTERM to all java processes
+function relay_SIGTERM {
+  pid=`grep java /proc/[0-9]*/comm | awk -F / '{ print $3; }'`
+  echo "Sending SIGTERM to java process " $pid
+  kill -SIGTERM $pid
+}
+
+trap relay_SIGTERM SIGTERM
+
+bin/startManagedWebLogic.sh $ms_name &
+while true
+do
+  tail -f /dev/null & wait ${!}
+done
