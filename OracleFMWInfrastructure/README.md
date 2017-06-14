@@ -47,14 +47,15 @@ The image **oracle/fmw-infrastructure:12.2.1.2** will configure a **base_domain*
 
  * Admin Username: `weblogic`
  * Admin Password: `Auto generated` 
+ * DB Schema Password: 'Auto generated'
+ * DB Password: 'Auto Generated at runtime by DB container' 
  * Oracle Linux Username: `oracle`
  * Oracle Linux Password: `welcome1`
  * Domain Name: `InfraDomain`
  * Admin Server on port: `7001`
- * Production Mode: `developer`
+ * Managed Server on port: `8001`
+ * Production Mode: `production`
   
-**IMPORTANT:** If you intend to run these images in production you must change the Production Mode to production.
- 
 
 ###Admin Password and Database Schema Password
 
@@ -66,7 +67,7 @@ An Oracle Database Schema password will be genrated randomly. You can find this 
 
 `Database Schema password Auto Generated :`
 
-If you need to find the passwords at a later time, grep for "password" in the Docker logs generated during the startup of the container.  To look at the Docker Container logs run:
+If you need to find the passwords at a later time, grep for "password" in the Docker logs generated during the startup of the  container.  To look at the Docker Container logs run:
 
         $ docker logs --details <Container-id>
 
@@ -74,7 +75,7 @@ If you need to find the passwords at a later time, grep for "password" in the Do
 The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [createInfraDomain.py](dockerfiles/12.2.1.2/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Building and Running the Oracle FMW Infrastructure Docker Image
-To try a sample of a FMW Infrastructure Domain image configured, you will need two images, the FMW Infrastructure Domain image and an Oracle Database image. The Oracle Database image can be pulled from the Oracle Container Registry or you can build your own using the Dockerfiles and scripts in GitHub. 
+To try a sample of a FMW Infrastructure Domain image configured, you will need two images, the FMW Infrastructure Domain image and an Oracle Database image. The Oracle Database image can be pulled from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in GitHub. 
 
 Follow the steps below:
 
