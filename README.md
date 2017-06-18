@@ -1,14 +1,3 @@
-# Supported tags and respective `Dockerfile` links
-
-- [`7`, `7.0`, `latest` (*OracleLinux/7.0/Dockerfile*)](https://github.com/oracle/docker-images/blob/6657d15b4d2282674a2c8395f1e5c90364a3793b/OracleLinux/7.0/Dockerfile)
-- [`6`, `6.6` (*OracleLinux/6.6/Dockerfile*)](https://github.com/oracle/docker-images/blob/6657d15b4d2282674a2c8395f1e5c90364a3793b/OracleLinux/6.6/Dockerfile)
-
-For more information about this image and its history, please see the [relevant
-manifest file
-(`library/oraclelinux`)](https://github.com/docker-library/official-images/blob/master/library/oraclelinux)
-in the [`docker-library/official-images` GitHub
-repo](https://github.com/docker-library/official-images).
-
 # Oracle Linux
 
 ![logo](https://raw.githubusercontent.com/docker-library/docs/master/oraclelinux/logo.png)
@@ -34,7 +23,7 @@ base of an image, specify `FROM oraclelinux:6`.
 
 ## Social media resources
 
-* [Twitter](https://twitter.com/ORCL_Linux)
+* [Twitter](https://twitter.com/OracleLinux)
 * [Facebook](https://www.facebook.com/OracleLinux)
 * [YouTube](https://www.youtube.com/user/OracleLinuxChannel)
 * [Blog](http://blogs.oracle.com/linux)
