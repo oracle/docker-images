@@ -28,16 +28,16 @@ base of an image, specify `FROM oraclelinux:6`.
 
 ## Official Resources
 
-* [Learn more about Oracle Linux] (http://oracle.com/linux)
-* [Unbreakable Linux Network] (https://linux.oracle.com)
-* [Oracle Public Yum] (http://public-yum.oracle.com)
+* [Learn more about Oracle Linux](http://oracle.com/linux)
+* [Unbreakable Linux Network](https://linux.oracle.com)
+* [Oracle Public Yum](http://public-yum.oracle.com)
 
 ## Social media resources
 
-* [Twitter] (https://twitter.com/ORCL_Linux)
-* [Facebook] (https://www.facebook.com/OracleLinux)
-* [YouTube] (https://www.youtube.com/user/OracleLinuxChannel)
-* [Blog] (http://blogs.oracle.com/linux)
+* [Twitter](https://twitter.com/ORCL_Linux)
+* [Facebook](https://www.facebook.com/OracleLinux)
+* [YouTube](https://www.youtube.com/user/OracleLinuxChannel)
+* [Blog](http://blogs.oracle.com/linux)
 
 # License
 
@@ -55,7 +55,7 @@ Support for older versions (down to 1.0) is provided on a best-effort basis.
 ## Customer Support
 
 Oracle provides support to Oracle Linux subscription customers via the 
-[My Oracle Support] (https://support.oracle.com) portal. The Oracle Linux 
+[My Oracle Support](https://support.oracle.com) portal. The Oracle Linux 
 Docker images are covered by Oracle Linux Basic and Premier support 
 subscriptions. Customers should follow existing support procedures to obtain 
 support for Oracle Linux running in a Docker container.
@@ -65,7 +65,7 @@ support for Oracle Linux running in a Docker container.
 For Oracle Linux users without a paid support subscription, the following resources 
 are available:
 
-* The [Oracle Linux Forum] (https://community.oracle.com/community/server_%26_storage_systems/linux/oracle_linux) on the [Oracle Technology Network Community] (https://community.oracle.com/welcome).
+* The [Oracle Linux Forum](https://community.oracle.com/community/server_%26_storage_systems/linux/oracle_linux) on the [Oracle Technology Network Community](https://community.oracle.com/welcome).
 * The `#oraclelinux` IRC channel on Freenode.
 
 ## Contributing
