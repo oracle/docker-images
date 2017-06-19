@@ -12,14 +12,13 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-s] [-c]
+Usage: buildDockerImage.sh -v [version] [-c]
 Builds a Docker Image for Oracle FMW Infrastructure.
   
 Parameters:
    -v: version to build. Required.
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -c: enables Docker image layer cache during build
-   -s: skips the MD5 check of packages
 
 
 LICENSE CDDL 1.0 + GPL 2.0
@@ -30,17 +29,6 @@ EOF
 exit 0
 }
 
-# Validate packages
-checksumPackages() {
-  echo "Checking if required packages are present and valid..."
-  md5sum -c Checksum
-  if [ "$?" -ne 0 ]; then
-    echo "MD5 for required packages to build this image did not match!"
-    echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"
-    exit $?
-  fi
-}
-
 if [ "$#" -eq 0 ]; then usage; fi
 
 # Parameters
@@ -48,13 +36,10 @@ VERSION="12.2.1.2"
 SKIPMD5=0
 NOCACHE=true
 
-while getopts "hcsv:" optname; do
+while getopts "hcv:" optname; do
 case "$optname" in
     "h")
       usage
-      ;;
-    "s")
-      SKIPMD5=1
       ;;
     "c")
       NOCACHE=false
@@ -77,11 +62,6 @@ IMAGE_NAME="oracle/fmw-infrastructure:$VERSION"
 # Go into version folder
 cd $VERSION
 
-if [ ! "$SKIPMD5" -eq 1 ]; then
-  checksumPackages
-else
-  echo "Skipped MD5 checksum."
-fi
 
 echo "====================="
 

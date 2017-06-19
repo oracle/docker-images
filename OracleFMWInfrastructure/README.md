@@ -1,6 +1,6 @@
 Oracle Fusion Middleware Infrastructure on Docker
 =================================================
-This Docker configuration has been used to create the Oracle Fusion Middleware Infrastructure image. Providing this FMW image facilitates the configuration, and environment setup for DevOps users. This project includes the installation and the creation of an  FMW Infrastructure domain. These Fusion Middleware Infrastructure 12.2.1.2 images are based on Oracle Linux and Oracle JDK 8 (Server).
+This Docker configuration has been used to create the Oracle Fusion Middleware Infrastructure image. Providing this FMW image facilitates the configuration, and environment setup for DevOps users. This project includes the creation of an  FMW Infrastructure domain. These Fusion Middleware Infrastructure 12.2.1.2 images are based on Oracle WebLogic 12.2.1.2 Infrastructure image.
 
 The certification of Oracle FMW Infrastructure on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
@@ -11,29 +11,25 @@ This project offers a sample Dockerfile and scripts to build a Oracle Fusion Mid
 The `buildDockerImage.sh` script is just a utility shell script that takes the version of the image that needs to be built. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 
-### Building Oracle JDK (Server JRE) base image
-**IMPORTANT:**You must first download the Oracle Server JRE binary and drop in folder `../OracleJava/java-8` and build that image. For more information, visit the [OracleJava
-](../OracleJava) folder's [README](../OracleJava/README.md) file.
+### Building the Oracle WebLogic Infrastructure 12.2.1.2 base image
+**IMPORTANT:**If you are building the Oracle WebLogic Infrastructure image you must first download the Oracle WebLogic Infrastructure 12.2.1.2 binary and drop in folder `../OracleWebLogic/dockerfiles/12.2.1.2` and build that image. For more information, visit the [OracleWeblogic](../OracleWebLogic) folder's [README](../OracleWebLogic/README.md) file.
 
-        $ cd ../OracleJava/java-8
-        $ sh build.sh
+        $ cd ../OracleWebLogic/dockerfiles
+        $ ./buildDockerImage.sh -v 12.2.1.2 -i
 
-### Building Oracle FMW Infrastructure Docker Install Images
-**IMPORTANT:** you have to download the binary of Oracle FMW Infrastructure and put it in place (see `.download` files inside dockerfiles/<version>).
+### Building Oracle FMW Infrastructure Docker  Image
+**IMPORTANT:**The Oracle FMW Infrastructure image extends the Oracle WebLogic 12.2.1.2 Infrastructure install image. You must build the Oracle WebLogic Infrastructure image. See "Building the Oracle WebLogic Infrastructure 12.2.1.2 base image".
 
-Before you build, either pull the corresponding version of the Oracle Server JRE 8 image from the Oracle Container Regisrty, or manually create the Java image using the Dockerfile and scripts in GitHub as described above.  
-
-Before you build, choose which version of the image you want to build,then download the required packages (see .download files) and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
+Choose which version of the image you want to build, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
 
         $ sh buildDockerImage.sh
-        Usage: buildDockerImage.sh -v [version] [-s]
+        Usage: buildDockerImage.sh -v [version]
         Builds a Docker Image for Oracle FMW Infrastructure.
 
         Parameters:
            -v: version to build. Required.
            Choose : 12.2.1.2
            -c: enables Docker image layer cache during build
-           -s: skips the MD5 check of packages
 
         LICENSE CDDL 1.0 + GPL 2.0
 
@@ -48,7 +44,9 @@ The image **oracle/fmw-infrastructure:12.2.1.2** will configure a **base_domain*
  * Admin Username: `weblogic`
  * Admin Password: `Auto generated` 
  * DB Schema Password: 'Auto generated'
+ * DB Username: 'sys' 
  * DB Password: 'Auto Generated at runtime by DB container' 
+ * RCU Prefix: 'INFRA6'
  * Oracle Linux Username: `oracle`
  * Oracle Linux Password: `welcome1`
  * Domain Name: `InfraDomain`
@@ -123,14 +121,6 @@ Follow the steps below:
   7. Start a container to launch the Managed Server from the image created in step 3. The environment variables used to run the Managed Server image are defined in the file infraserver.env.list. Call docker run from the **dockerfiles/12.2.1.2** directory where the infraserver.env.list file is and pass the file name at runtime. To run a Managed Server container call:
 
         $ docker run --detach=true -i -t -p 9801:8001 --network=InfraNET --volumes-from InfraAdminContainer --name InfraManagedContainer --env-file ./infraServer.env.list oracle/fmw-infrastructure:12.2.1.2 startManagedServer.sh
-
-
-## License
-To download and run Oracle FMW Infrastructure 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
-
-To download and run Oracle Server JRE regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that page.
-
-All scripts and files hosted in this project and GitHub [docker/OracleFMWInfrastructure](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GN U Public License 2.0 licenses.
 
 ## Copyright
 Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
