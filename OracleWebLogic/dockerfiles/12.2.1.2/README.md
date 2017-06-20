@@ -13,7 +13,7 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 
 
 ### Building Oracle WebLogic Server Docker Install Images
-**IMPORTANT:** you have to download the binary of Oracle WebLogic Server and put it in place (see `.download` files inside dockerfiles/<version>). The WebLogic image extends the Oracle JRE 8 image, you must either build the imageing Dockerfile in [../../../OracleJava/java8](https://github.com/oracle/docker-images/tree/master/OracleJava/java-8) or pull the latest image from the [Oracle Cointainer Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com).
+**IMPORTANT:** you have to download the binary of Oracle WebLogic Server and put it in place (see `.download` files inside dockerfiles/<version>). The WebLogic image extends the Oracle JRE Server 8 image, you must either build the image by using the Dockerfile in [../../../OracleJava/java8](https://github.com/oracle/docker-images/tree/master/OracleJava/java-8) or pull the latest image from the [Oracle Cointainer Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com).
 
 Before you build, choose which version and distribution you want to build an image,then download the required packages (see .download files) and drop them in the folder of your distribution version of choice. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
 
