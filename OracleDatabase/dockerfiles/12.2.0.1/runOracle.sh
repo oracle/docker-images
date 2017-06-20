@@ -171,10 +171,7 @@ else
    echo "#####################################"
 fi;
 
-# Tail on alert log and wait (otherwise container will exit)
-echo "The following output is now a tail of the alert.log:"
-tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
-childPID=$!
+echo "Executing user defined scripts"
 
 for f in /docker-entrypoint-initdb.d/*; do
     case "$f" in
@@ -185,4 +182,11 @@ for f in /docker-entrypoint-initdb.d/*; do
     echo
 done
 
+echo "DONE: Executing user defined scripts"
+
+
+# Tail on alert log and wait (otherwise container will exit)
+echo "The following output is now a tail of the alert.log:"
+tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
+childPID=$!
 wait $childPID

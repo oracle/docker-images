@@ -130,8 +130,7 @@ echo "#########################"
 echo "DATABASE IS READY TO USE!"
 echo "#########################"
 
-tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
-childPID=$!
+echo "Executing user defined scripts"
 
 for f in /docker-entrypoint-initdb.d/*; do
     case "$f" in
@@ -142,4 +141,8 @@ for f in /docker-entrypoint-initdb.d/*; do
     echo
 done
 
+echo "DONE: Executing user defined scripts"
+
+tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
+childPID=$!
 wait $childPID
