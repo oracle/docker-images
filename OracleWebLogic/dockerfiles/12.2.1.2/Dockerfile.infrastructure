@@ -34,6 +34,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # --------------------------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
+    SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin
     
 # Setup filesystem and oracle user
@@ -47,10 +48,16 @@ RUN mkdir -p /u01 && \
 #-------------
 COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls-domain.py /u01/oracle/
 
+# Domain and Server environment variables
+# ------------------------------------------------------------
 ENV SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain} \
-    ADMIN_PORT="${ADMIN_PORT:-7001}" 
+    ADMIN_PORT="${ADMIN_PORT:-7001}" \
+    ADMIN_USERNAME="${ADMIN_USERNAME:-weblogic}" \
+    ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
+    ADMIN_PASSWORD="${ADMIN_PASSWORD:-""}"
+
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
