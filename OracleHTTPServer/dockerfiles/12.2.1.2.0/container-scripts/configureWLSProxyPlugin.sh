@@ -7,7 +7,7 @@
 #This script will configure Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs),
 #in order to enable the Oracle HTTP Server instances to route applications
 #deployed on the Admin Server, Single Managed Server or the Oracle WebLogic Server clusters
-#Refer to Section 2.4 @ http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553
+#Refer to Section 2.4 @ http://docs.oracle.com/middleware/12212/webtier/develop-plugin/oracle.htm#PLGWL553
 #
 #Prerequisite:
 #1.Create docker volume e.g docker volume create --name volume
@@ -35,6 +35,7 @@ echo "INSTANCE_CONFIG_DIR=${INSTANCE_CONFIG_HOME}"
 #Search for the customized mod_wl_ohs.conf file
 modwlsconfigfile=`find / -name 'custom_mod_wl_ohs.conf' 2>&1 | grep -v 'Permission denied'`
 export modwlsconfigfile
+echo "MODWLSCONFIGFILE IS ${modwlsconfigfile}"
 
 # Check and copy custom_mod_wl_ohs.conf to OHS Instance Home
 if [[ -n "${modwlsconfigfile/[ ]*\n/}" ]]; then

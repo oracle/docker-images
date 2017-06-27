@@ -24,12 +24,19 @@ export MW_HOME ORACLE_HOME DOMAIN_NAME OHS_COMPONENT_NAME
 #Set WL_HOME, WLST_HOME, DOMAIN_HOME and NODEMGR_HOME
 WL_HOME=${ORACLE_HOME}/wlserver
 WLST_HOME=${ORACLE_HOME}/oracle_common/common/bin
+echo "WLST_HOME=${WLST_HOME}"
 
 DOMAIN_HOME=${ORACLE_HOME}/user_projects/domains/${DOMAIN_NAME}
 export DOMAIN_HOME
+echo "DOMAIN_HOME=${DOMAIN_HOME}"
 
 NODEMGR_HOME=${DOMAIN_HOME}/nodemanager
 export NODEMGR_HOME
+
+echo "PATH=${PATH}"
+PATH=$PATH:/usr/java/default/bin:/u01/oracle/ohssa/oracle_common/common/bin
+export PATH
+echo "PATH=${PATH}"
 
 #  Set JAVA_OPTIONS and JAVA_HOME for node manager
 JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.RootDirectory=${DOMAIN_HOME}"
@@ -48,7 +55,7 @@ NMSTATUS[0]="NOT RUNNING"
 if [ !  -f /u01/oracle/logs/nodemanager$$.log ]; then
     
 # Auto generate node manager  password
-NM_PASSWORD=$(cat date| md5sum | fold -w 8 | head -n 1) 
+NM_PASSWORD=$(date| md5sum | fold -w 8 | head -n 1) 
 
 echo ""
 echo "    NodeManager Password Auto Generated:"
@@ -58,7 +65,6 @@ echo ""
 
 sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/create-sa-ohs-domain.py
 sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/start-ohs.py
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/restart-ohs.py
 
 
 # Create an empty ohs domain
@@ -66,43 +72,5 @@ wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/create-sa-ohs-domai
 # Set the NM username and password in the properties file
 echo "username=weblogic" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 echo "username=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
-${ORACLE_HOME}/oracle_common/common/bin/commEnv.sh
 mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs_sa1/htdocs/helloWorld.html
 fi
-
-# Start node manager
-${WL_HOME}/server/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &
-statusfile=/tmp/notifyfifo.$$
-
-#Check if Node Manager is up and running by inspecting logs
-mkfifo "${statusfile}" || exit 1
-{
-    # run tail in the background so that the shell can kill tail when notified that grep has exited
-    tail -f /u01/oracle/logs/nodemanager$$.log &
-    # remember tail's PID
-    tailpid=$!
-    # wait for notification that grep has exited
-    read templine <${statusfile}
-	                echo ${templine}
-    # grep has exited, time to go
-    kill "${tailpid}"
-} | {
-    grep -m 1 "Secure socket listener started on port 5556"
-    # notify the first pipeline stage that grep is done
-        echo "RUNNING"> /u01/oracle/logs/Nodemanage$$.status
-        echo "Node manager is running"
-    echo >${statusfile}
-}
-# clean up temporary files
-rm "${statusfile}"
-
-#Start OHS component only if Node Manager is up
-if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
-echo "Node manager running, hence starting OHS server"
-${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/start-ohs.py
-echo "OHS server has been started "
-fi
-
-
-#Tail all server logs
-tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.out
