@@ -18,6 +18,7 @@ chmod ug+x $ORACLE_BASE/$PWD_FILE && \
 chmod ug+x $ORACLE_BASE/$RUN_FILE && \
 chmod ug+x $ORACLE_BASE/$START_FILE && \
 chmod ug+x $ORACLE_BASE/$CREATE_DB_FILE && \
+chmod ug+x $ORACLE_BASE/$CHECK_DB_FILE && \
 yum -y install oracle-rdbms-server-12cR1-preinstall unzip wget tar openssl && \
 yum clean all && \
 echo oracle:oracle | chpasswd && \
