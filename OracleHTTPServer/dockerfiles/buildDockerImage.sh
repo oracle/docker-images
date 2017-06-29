@@ -114,7 +114,7 @@ echo ""
 
 if [ $? -eq 0 ]; then
 cat << EOF
-  OHS Standalone Docker Image for version: $VERSION is ready to be extended.
+  OHS Standalone Docker Image for version: $VERSION is ready to be used.
 
     --> $IMAGE_NAME
 
