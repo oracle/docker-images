@@ -7,7 +7,7 @@ Util scripts are copied into the image enabling users to plug NodeManager automa
 # How to build and run
 First make sure you have built **oracle/weblogic:12.2.1.2-developer**. Now to build this sample, run:
 
-        $ docker build -t 12212-domain --build-arg ADMIN_PASSWORD=welcome1 .
+        $ docker build -t 12212-domain --build-arg ADMIN_PASS=welcome1 .
 
 To start the containerized Admin Server, run:
 

@@ -25,7 +25,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # WLS Configuration (editable during build time)
 # ------------------------------
-ARG ADMIN_PASSWORD
+ARG ADMIN_PASS
 ARG DOMAIN_NAME
 ARG ADMIN_PORT
 ARG CLUSTER_NAME
@@ -35,6 +35,7 @@ ARG PRODUCTION_MODE
 # WLS Configuration (editable during runtime)
 # ---------------------------
 ENV ADMIN_HOST="wlsadmin" \
+    ADMIN_PASSWORD="${ADMIN_PASS:-welcome1}" \
     NM_PORT="5556" \
     MS_PORT="7001" \
     DEBUG_PORT="8453" \
