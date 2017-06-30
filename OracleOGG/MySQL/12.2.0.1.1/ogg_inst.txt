@@ -1,0 +1,21 @@
+
+if [ ! -f "/.oggInstalled" ]; then
+   unzip $STAGE_SOFTWARE/$OGG_SHIPHOME -d $OGG_HOME
+   cd $OGG_HOME
+   tar -xvf *.tar
+   echo "create subdirs" | ggsci
+   echo ""
+   echo "port $OGG_PORT " > $OGG_HOME/dirprm/MGR.prm
+   echo "start mgr" | ggsci
+   echo ""
+   sleep 60
+   touch /.oggInstalled
+else
+   _start
+fi
+
+tail -f $OGG_HOME/dirrpt/MGR.rpt &
+childPID=$!
+
+exec "$@"
+
