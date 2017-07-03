@@ -25,7 +25,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # WLS Configuration (editable during build time)
 # ------------------------------
-ARG ADMIN_PASSWORD
+ARG ADMIN_PASSD
 ARG DOMAIN_NAME
 ARG ADMIN_PORT
 ARG CLUSTER_NAME
@@ -35,6 +35,7 @@ ARG PRODUCTION_MODE
 # WLS Configuration (editable during runtime)
 # ---------------------------
 ENV ADMIN_HOST="wlsadmin" \
+    ADMIN_PASSWORD="${ADMIN_PASSD}" \
     NM_PORT="5556" \
     MS_PORT="7001" \
     DEBUG_PORT="8453" \
@@ -51,15 +52,13 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain}/bin:/u01/oracle
 
 # Add files required to build this image
-USER oracle
+USER root
 COPY container-scripts/* /u01/oracle/
+RUN  chown oracle:oracle /u01/oracle/*
+USER oracle
 
 # Configuration of WLS Domain
-RUN /u01/oracle/wlst /u01/oracle/create-wls-domain.py && \
-    mkdir -p /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security && \
-    echo "username=weblogic" > /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties && \
-    echo "password=$ADMIN_PASSWORD" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties && \
-    echo ". /u01/oracle/user_projects/domains/$DOMAIN_NAME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc 
+RUN configureWLSDomain.sh
 
 # Expose Node Manager default port, and also default for admin and managed server 
 EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT $DEBUG_PORT
