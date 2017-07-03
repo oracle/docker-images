@@ -19,8 +19,12 @@ source oraenv
 sqlplus / as sysdba << EOF
       ALTER USER SYS IDENTIFIED BY "$ORACLE_PWD";
       ALTER USER SYSTEM IDENTIFIED BY "$ORACLE_PWD";
-      ALTER SESSION SET CONTAINER=$ORACLE_PDB;
-      ALTER USER PDBADMIN IDENTIFIED BY "$ORACLE_PWD";
+      `
+      if [ "$ORACLE_CONTAINERDB" == "true" ]; then
+            echo "ALTER SESSION SET CONTAINER=$ORACLE_PDB;"
+            echo "ALTER USER PDBADMIN IDENTIFIED BY "$ORACLE_PWD";"
+      fi;
+      `
       exit;
 EOF
 
