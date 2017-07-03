@@ -1,0 +1,93 @@
+/*
+	Copyright (c) 2011 Oracle, Inc.
+	All rights reserved
+
+	THIS IS UNPUBLISHED PROPRIETARY
+	SOURCE CODE OF ORACLE, Inc.
+	The copyright notice above does not
+	evidence any actual or intended
+	publication of such source code.
+*/
+
+
+/*	(c) 2003 BEA Systems, Inc. All Rights Reserved. */
+/*	Copyright (c) 1997 BEA Systems, Inc.
+  	All rights reserved
+
+  	THIS IS UNPUBLISHED PROPRIETARY
+  	SOURCE CODE OF BEA Systems, Inc.
+  	The copyright notice above does not
+  	evidence any actual or intended
+  	publication of such source code.
+*/
+
+/* #ident	"@(#) samples/atmi/simpapp/simpserv.c	$Revision: 1.7 $" */
+
+#include <stdio.h>
+#include <ctype.h>
+#include <atmi.h>	/* TUXEDO Header File */
+#include <userlog.h>	/* TUXEDO Header File */
+
+/* tpsvrinit is executed when a server is booted, before it begins
+   processing requests.  It is not necessary to have this function.
+   Also available is tpsvrdone (not used in this example), which is
+   called at server shutdown time.
+*/
+
+#if defined(__STDC__) || defined(__cplusplus)
+tpsvrinit(int argc, char *argv[])
+#else
+tpsvrinit(argc, argv)
+int argc;
+char **argv;
+#endif
+{
+	/* Some compilers warn if argc and argv aren't used. */
+	argc = argc;
+	argv = argv;
+
+	/* simpapp is non-transactional, so there is no need for tpsvrinit()
+	   to call tx_open() or tpopen().  However, if this code is modified
+	   to run in a Tuxedo group associated with a Resource Manager then
+	   either a call to tx_open() or a call to tpopen() must be inserted
+	   here.
+	*/
+
+	/* userlog writes to the central TUXEDO message log */
+	userlog("Welcome to the jolt server");
+	return(0);
+}
+
+/* This function performs the actual service requested by the client.
+   Its argument is a structure containing among other things a pointer
+   to the data buffer, and the length of the data buffer.
+*/
+
+#ifdef __cplusplus
+extern "C"
+#endif
+void
+#if defined(__STDC__) || defined(__cplusplus)
+TOUPPER(TPSVCINFO *rqst)
+#else
+TOUPPER(rqst)
+TPSVCINFO *rqst;
+#endif
+{
+
+    char *buf;
+    long len;
+    int ret;
+
+    len = strlen(rqst->data) + strlen(" If you see this message, jolt ran OK");
+    /* Allocate STRING buffers for the reply */
+    if((buf = (char *) tpalloc("STRING", NULL, len+1)) == NULL) {
+        tpreturn(TPFAIL, 0, NULL, 0L, 0);
+    }
+
+    strcpy(buf, rqst->data);
+    strcat(buf, " If you see this message, jolt ran OK");
+
+    /* Return the transformed buffer to the requestor. */
+    tpreturn(TPSUCCESS, 0, buf, 0L, 0);
+}
