@@ -45,10 +45,8 @@ COPY $BI_DISTRO_ZIP1 $BI_DISTRO_ZIP2 install.file oraInst.loc /u01/
 #-------------------------------------------------------------
 USER root
 
-# tools for installing BI
-RUN yum -y install unzip 
-# tools required for running BI
-RUN yum -y install libaio hostname
+# tools for installing and running BI
+RUN yum -y install unzip libaio hostname && yum clean all
 
 USER oracle
 RUN cd /u01 && unzip $BI_DISTRO_ZIP1 && unzip $BI_DISTRO_ZIP2 && cd - && \
