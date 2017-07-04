@@ -7,15 +7,16 @@ This folder contains the information on how to create a Tuxedo docker image base
   2. Download all the files from this github directory to a local directory
   3. Optionally download the latest Tuxedo rolling patch from My Oracle Support
 2. Into the local directory
-3. Execute buildDockerImage.sh -v 12.1.3 -i tuxedo121300_64_Linux_01_x86.zip -s to create an image for Tuxedo 12.1.3.
+3. Execute ``buildDockerImage.sh -v 12.1.3 -i tuxedo121300_64_Linux_01_x86.zip -s`` to create an image for Tuxedo 12.1.3.
 
 Notes:
    1. Before you run buildDockerImage.sh, if your Tuxedo was other than 12.1.3, you need change above command according to version, and installer name. For instance, 12.2.2 for version and tuxedo122200_64_Linux_01_x86.zip for the installer name.
    2. Before you run buildDockerImage.sh, if proxy is needed to access network, you need to set environment variables at first: http_proxy, https_proxy, ftp_proxy, no_proxy
    3. If the base image container-registry.oracle.com/java/serverjre could not be retrived, please run the command to download the base image manually. 
-      docker pull container-registry.oracle.com/java/serverjre
+   
+      ```docker pull container-registry.oracle.com/java/serverjre```
 	  
-	  Your Oracle account and password are required. Click [Here](https://profile.oracle.com/myprofile/account/create-account.jspx) or [Oracle webiste](www.oracle.com) to create your own Oracle account if you don't have one yet.
+   >  Your Oracle account and password are required. Click [Here](https://profile.oracle.com/myprofile/account/create-account.jspx) or [Oracle webiste](www.oracle.com) to create your own Oracle account if you don't have one yet.
 
 You should end up with a docker image tagged oracle/tuxedo:version, version is Tuxedo version number you may modify in buildDockerImage.sh.
 Have fun!
