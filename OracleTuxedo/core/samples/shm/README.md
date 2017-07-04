@@ -4,7 +4,7 @@ Tuxedo SHM sample on Docker
 
 ## Dependencies
 
-This sample is based on one of [oracle/tuxedo:12.2.2](../../dockerfiles/12.2.2/Dockerfile) and [oracle/tuxedo:12.1.3](../../dockerfiles/12.1.3/Dockerfile) base image. So, before you proceed to build this image, make sure the image oracle/tuxedo:12.2.2 has been built locally or is accessible in a remote Docker registry.
+This sample is based on one of [oracle/tuxedo:12.2.2](../../dockerfiles/12.2.2/Dockerfile) and [oracle/tuxedo:12.1.3](../../dockerfiles/12.1.3/Dockerfile) base image. So, before you proceed to build this image, make sure either oracle/tuxedo:12.2.2 or oracle/tuxedo:12.1.3 has been built locally or is accessible in a remote Docker registry.
 
 ## How to run
 docker build -t oracle/tuxedoshm .
