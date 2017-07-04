@@ -33,7 +33,7 @@
 #
 # Pull serverjre:8 base image
 # -----------------------------------
-FROM container-registry.oracle.com/java/serverjre:8
+FROM oracle/serverjre:8
 
 # Maintainer
 # ------------------------------------
@@ -68,11 +68,10 @@ COPY $OHS_PKG install.file oraInst.loc /u01/
 RUN yum install -y \
         unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
         gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
-	libstdc++ libstdc++-devel ksh make ocfs2-tools sysstat && \
+	libstdc++ libstdc++-devel ksh make sysstat && \
     yum clean all && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
-    echo oracle:oracle | chpasswd && \
     mkdir /u01/oracle/.inventory && \
     chown oracle:oracle -R /u01 
 
@@ -89,11 +88,6 @@ RUN cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
 # ------------------------------------------------------
 COPY container-scripts/* /u01/oracle/container-scripts/
 
-# Configuration of OHS domain
-# Copy static html for sanity check
-#---------------------------------------------------
-RUN echo "export PATH=$PATH:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin" >> /u01/oracle/.bashrc 
-    
 #Expose all Ports
 EXPOSE $OHS_SSL_PORT $OHS_LISTEN_PORT $NM_PORT
 
