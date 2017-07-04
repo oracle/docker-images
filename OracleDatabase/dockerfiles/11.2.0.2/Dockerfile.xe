@@ -34,8 +34,9 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV ORACLE_BASE=/u01/app/oracle \
-    ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe \
+ARG ORACLE_BASE
+ENV ORACLE_BASE ${ORACLE_BASE:-/opt/oracle}
+ENV ORACLE_HOME=$ORACLE_BASE/product/11.2.0/xe \
     ORACLE_SID=XE \
     INSTALL_FILE_1="oracle-xe-11.2.0-1.0.x86_64.rpm.zip" \
     INSTALL_DIR="$HOME/install" \

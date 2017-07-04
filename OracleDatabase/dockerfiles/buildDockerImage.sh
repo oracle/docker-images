@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-b ORACLE_BASE]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
@@ -22,6 +22,7 @@ Parameters:
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
+   -b: path of ORACLE BASE
 
 * select one edition only: -e, -s, or -x
 
@@ -63,8 +64,9 @@ EXPRESS=0
 VERSION="12.2.0.1"
 SKIPMD5=0
 DOCKEROPS=""
+ORACLE_BASE=""
 
-while getopts "hesxiv:" optname; do
+while getopts "hesxiv:b:" optname; do
   case "$optname" in
     "h")
       usage
@@ -84,9 +86,12 @@ while getopts "hesxiv:" optname; do
     "v")
       VERSION="$OPTARG"
       ;;
+    "b")
+      ORACLE_BASE="$OPTARG"
+      ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+      echo "Unknown error while processing options inside buildDockerImage.sh $optname"
       ;;
   esac
 done
@@ -123,25 +128,31 @@ docker info
 echo "=========================="
 
 # Proxy settings
-PROXY_SETTINGS=""
+BUILD_VARIABLES=""
 if [ "${http_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg http_proxy=${http_proxy}"
 fi
 
 if [ "${https_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg https_proxy=${https_proxy}"
 fi
 
 if [ "${ftp_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
 if [ "${no_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg no_proxy=${no_proxy}"
 fi
 
-if [ "$PROXY_SETTINGS" != "" ]; then
-  echo "Proxy settings were found and will be used during the build."
+# Oracle base settings
+if [ "${ORACLE_BASE}" != "" ]; then
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg ORACLE_BASE=${ORACLE_BASE}"
+fi
+
+if [ "$BUILD_VARIABLES" != "" ]; then
+  echo "Build variables were found and will be used during the build.";
+  echo "$BUILD_VARIABLES";
 fi
 
 # ################## #
@@ -151,7 +162,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
+docker build --force-rm=true --no-cache=true $DOCKEROPS $BUILD_VARIABLES -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
   echo "There was an error building the image."
   exit 1
 }
