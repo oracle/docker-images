@@ -66,9 +66,7 @@ COPY $OHS_PKG install.file oraInst.loc /u01/
 #---------------------------------------------------------------------------------------------------------
 # Proxy needs to be set before running yum in /etc/yum.conf
 RUN yum install -y \
-        unzip tar nfs-utils binutils compat-libcap1 compat-libstdc++ \
-        gcc gcc-c++ glibc glibc-devel libaio libaio-devel libgcc \
-	libstdc++ libstdc++-devel ksh make sysstat && \
+        unzip libaio sysstat && \
     yum clean all && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
