@@ -129,7 +129,7 @@ fi;
 if [ "$ORACLE_CONTAINERDB" == "" ]; then
    export ORACLE_CONTAINERDB=true
 else
-  if [ "$ORACLE_CONTAINERDB" != "true" || "$ORACLE_CONTAINERDB" != "false" ]; then
+  if [[ "$ORACLE_CONTAINERDB" != "true" && "$ORACLE_CONTAINERDB" != "false" ]]; then
     export ORACLE_CONTAINERDB=true
     echo "Warning: Database will be create as container database."
   fi;
