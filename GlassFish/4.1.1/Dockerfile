@@ -10,7 +10,7 @@ MAINTAINER Arindam Bandyopadhyay<arindam.bandyopadhyay@oracle.com>
 
 # Set environment variables and default password for user 'admin'
 ENV GLASSFISH_PKG=glassfish-4.1.1.zip \
-    GLASSFISH_URL=https://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1.zip \
+    GLASSFISH_URL=http://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1.zip \
     GLASSFISH_HOME=/glassfish4 \
     MD5=4e7ce65489347960e9797d2161e0ada2 \
     PATH=$PATH:/glassfish4/bin \
@@ -20,7 +20,7 @@ ENV GLASSFISH_PKG=glassfish-4.1.1.zip \
 # Setup password file
 # Enable DAS
 RUN yum -y install unzip java-1.7.0-openjdk-devel && \
-    curl -Ok $GLASSFISH_URL && \
+    curl -O $GLASSFISH_URL && \
     echo "$MD5 *$GLASSFISH_PKG" | md5sum -c - && \
     unzip -o $GLASSFISH_PKG && \
     rm -f $GLASSFISH_PKG && \
