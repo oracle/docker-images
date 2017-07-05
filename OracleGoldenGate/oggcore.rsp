@@ -1,0 +1,79 @@
+
+####################################################################
+## Copyright(c) Oracle Corporation 2014. All rights reserved.     ##
+##                                                                ##
+## Specify values for the variables listed below to customize     ##
+## your installation.                                             ##
+##                                                                ##
+## Each variable is associated with a comment. The comment        ##
+## can help to populate the variables with the appropriate        ##
+## values.                                                        ##
+##                                                                ##
+## IMPORTANT NOTE: This file should be secured to have read       ##
+## permission only by the oracle user or an administrator who     ##
+## own this installation to protect any sensitive input values.   ##
+##                                                                ##
+####################################################################
+
+#-------------------------------------------------------------------------------
+# Do not change the following system generated value. 
+#-------------------------------------------------------------------------------
+oracle.install.responseFileVersion=/oracle/install/rspfmt_ogginstall_response_schema_v12_1_2
+
+
+################################################################################
+##                                                                            ##
+## Oracle GoldenGate installation option and details                          ##
+##                                                                            ##
+################################################################################
+
+#-------------------------------------------------------------------------------
+# Specify the installation option.
+# Specify ORA12c for installing Oracle GoldenGate for Oracle Database 12c and
+#         ORA11g for installing Oracle GoldenGate for Oracle Database 11g 
+#-------------------------------------------------------------------------------
+INSTALL_OPTION=ORA12c
+
+#-------------------------------------------------------------------------------
+# Specify a location to install Oracle GoldenGate
+#-------------------------------------------------------------------------------
+SOFTWARE_LOCATION=###OGG_INSTALL_DIR###
+
+#-------------------------------------------------------------------------------
+# Specify true to start the manager after installation. 
+#-------------------------------------------------------------------------------
+START_MANAGER=false
+
+#-------------------------------------------------------------------------------
+# Specify a free port within the valid range for the manager process.
+# Required only if START_MANAGER is true.
+#-------------------------------------------------------------------------------
+MANAGER_PORT=3389
+
+#-------------------------------------------------------------------------------
+# Specify the location of the Oracle Database.
+# Required only if START_MANAGER is true.
+#-------------------------------------------------------------------------------
+DATABASE_LOCATION=
+
+
+################################################################################
+##                                                                            ##
+## Specify details to Create inventory for Oracle installs                    ##
+## Required only for the first Oracle product install on a system.            ##
+##                                                                            ##
+################################################################################
+
+#-------------------------------------------------------------------------------
+# Specify the location which holds the install inventory files.
+# This is an optional parameter if installing on
+# Windows based Operating System.
+#-------------------------------------------------------------------------------
+INVENTORY_LOCATION=/opt/oracle/ggInventory
+
+#-------------------------------------------------------------------------------
+# Unix group to be set for the inventory directory.  
+# This parameter is not applicable if installing on
+# Windows based Operating System.
+#-------------------------------------------------------------------------------
+UNIX_GROUP_NAME=oinstall
