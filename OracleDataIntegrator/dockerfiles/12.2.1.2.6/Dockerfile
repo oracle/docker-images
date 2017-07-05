@@ -53,9 +53,7 @@ ENV ODI_PKG1=fmw_12.2.1.2.6_odi_Disk1_1of2.zip \
 #
 # Proxy needs to be set before running yum 
 # ----------------------------------------
-RUN yum install -y vi unzip sysstat iputils hostname which less && \
-    yum -y clean all && \
-    mkdir /u01 && \
+RUN mkdir /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
     mkdir -p /u01/oracle/container-scripts /u01/oracle/logs && \
     chmod a+xr /u01 
