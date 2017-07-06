@@ -10,11 +10,12 @@ an issue too.
 
 ## Pull Request Process
 1. Fork this repository
-2. Create a branch in your fork to implement the changes. We recommend using
+1. Create a branch in your fork to implement the changes. We recommend using
 the issue number as part of your branch name, e.g. `1234-fixes`
-3. Ensure that any documentation is updated with the changes that are required
+1. Ensure that any documentation is updated with the changes that are required
 by your fix.
-4. Submit the pull request. *Do not leave the pull request blank*. Explain exactly
+1. Ensure that any samples are updated if the base image has been changed.
+1. Submit the pull request. *Do not leave the pull request blank*. Explain exactly
 what your changes are meant to do and provide simple steps on how to validate
 your changes. We will assign the pull request to 2-3 people for review before
 it is merged.
@@ -46,13 +47,18 @@ the image owner to implement it.
 
 1. Do not run `ssh` inside a container.
 1. Do not use host networking mode (`--net=host`) for a container.
-1. Do not hard-code any passwords.
+1. Do not hard-code any passwords. If passwords are required, generate them
+on container startup using `openssl rand` or accept a password argument during
+build.
 
 ### Guidelines and Recommendations
 
 The following are some guidelines that will not prevent an image from being
 merged, but are generally frowned upon if breached.
 
+- Always aim to produce the smallest possible image. This means the least amount
+of layers (combine directives wherever possible) and cleaning up as much as
+possible inside a single directive so the layer only stores the binary changes.
 - Don't install all possible required RPMs, even if the product
 documentation says so. Some RPMs aren't applicable inside a container, e.g
 filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
