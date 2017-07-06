@@ -24,6 +24,8 @@ You need to have a running database container or a database running on any machi
 The database connection details are required for creating ODI specific RCU schemas while configuring ODI domain. 
 While using a 12.2.0.1 CDB/PDB DB, ensure PDB is used to load the schemas. RCU loading on CDB is not supported.
 
+The Oracle Database image can be pulled from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleDatabase/dockerfiles/12.2.0.1)
+
 Create an environment file **db.env.list**
 
         ORACLE_SID=<DB SID>
@@ -36,9 +38,6 @@ Sample Data will look like this...
         ORACLE_PDB=odipdb
         ORACLE_PWD=Welcome1
         
-The Database 12.2.0.1 container can be started from the [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleDatabase/dockerfiles/12.2.0.1). 
-Follow the instructions to create a 12.2.0.1 based enterprise edition database or image can be pulled from OCR or DockerStore
-        
 Sample Command to Start the Database is as follows
 
          $ docker run --name ODI122126Database  -p 1521:1521 -p 5500:5500 -v /scratch/DockerVolume/ODIVolume/DB:/opt/oracle/oradata --env-file ./db.env.list  oracle/database:12.2.0.1-ee
@@ -46,7 +45,7 @@ Sample Command to Start the Database is as follows
 The above command starts a DB container attaching to a network and mounting a host directory as /opt/oracle/oradata for persistence. 
 It maps the containers 1521 adn 5500 port to respective host port such that the services can be accessible outside of localhost.
 
-### ODI Distributable version 12.2.1.2.6 Docker image Creation and Running
+## ODI Distributable version 12.2.1.2.6 Docker image Creation and Running
 
 To build a ODI image either you can start from building Oracle JDK or use the already available Oracle JDK image.
 The Oracle JDK  image is not currently available.
@@ -54,12 +53,7 @@ If plan to use available Oracle JDK image, skip next steps and jump to "Building
 
 ### Building Oracle JDK (Server JRE) base image
 
-Download the Oracle Server JRE binary and drop in folder `OracleJDK/java-8` and build that image.
-
-        $ cd OracleJDK/java-8
-        $ sh build.sh
-
-**NOTE:** The files to build JDK image can be found under [docker/OracleJDK](https://github.com/oracle/docker-images/tree/master/OracleJDK) or image can be pulled from OCR or DockerStore
+Oracle Server JRE image can be pulled from the [DockerStore](https://store.docker.com/images/oracle-serverjre-8) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleJava/java-8). For more information, visit the [OracleJava](../OracleJava) folder's [README](../OracleJava/README.md) file.
 
 ### Building Docker Image for ODI
 
@@ -121,7 +115,10 @@ Now you can access the Agent at http://<host name>:20910/oraclediagent
          
 **NOTES:** 
 
-1) If DB_SCHEMA_PASSWORD, SUPERVISOR_PASSWORD, WORK_REPO_PASSWORD are not provided in odi.env.list then it will generate random password and use it while running RCU. It will display generated random password on console or can be found by looking in the Docker logs
+1) If DB_SCHEMA_PASSWORD, SUPERVISOR_PASSWORD, WORK_REPO_PASSWORD are not provided in odi.env.list then it will generate random password and use it while running RCU. It will display generated random password on console. If you need to find the passwords at a later time, grep for "password" in the Docker logs generated during the startup of the  container.  To look at the Docker Container logs run:
+
+        $ docker logs --details <Container-id>
+
 
 2) 12.2.1.2.6 Studio is required to be used in conjunction with docker image for ODI 12.2.1.2.6
 
