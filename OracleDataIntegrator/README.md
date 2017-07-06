@@ -37,7 +37,7 @@ Sample Data will look like this...
         ORACLE_PWD=Welcome1
         
 The Database 12.2.0.1 container can be started from the [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleDatabase/dockerfiles/12.2.0.1). 
-Follow the instructions to create a 12.2.0.1 based enterprise edition database.
+Follow the instructions to create a 12.2.0.1 based enterprise edition database or image can be pulled from OCR or DockerStore
         
 Sample Command to Start the Database is as follows
 
@@ -59,7 +59,7 @@ Download the Oracle Server JRE binary and drop in folder `OracleJDK/java-8` and 
         $ cd OracleJDK/java-8
         $ sh build.sh
 
-**NOTE:** The files to build JDK image can be found under [docker/OracleJDK](https://github.com/oracle/docker-images/tree/master/OracleJDK)
+**NOTE:** The files to build JDK image can be found under [docker/OracleJDK](https://github.com/oracle/docker-images/tree/master/OracleJDK) or image can be pulled from OCR or DockerStore
 
 ### Building Docker Image for ODI
 
@@ -121,7 +121,7 @@ Now you can access the Agent at http://<host name>:20910/oraclediagent
          
 **NOTES:** 
 
-1) If DB_SCHEMA_PASSWORD, SUPERVISOR_PASSWORD, WORK_REPO_PASSWORD are not provided in odi.env.list then it will generate random password and use it while running RCU. It will display generated random password on console
+1) If DB_SCHEMA_PASSWORD, SUPERVISOR_PASSWORD, WORK_REPO_PASSWORD are not provided in odi.env.list then it will generate random password and use it while running RCU. It will display generated random password on console or can be found by looking in the Docker logs
 
 2) 12.2.1.2.6 Studio is required to be used in conjunction with docker image for ODI 12.2.1.2.6
 
