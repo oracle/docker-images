@@ -1,7 +1,7 @@
 # Contributing
 Oracle welcomes contributions to this repository from anyone.
 
-If you want to submit a pull request to fix an bug or enhance an existing
+If you want to submit a pull request to fix a bug or enhance an existing
 `Dockerfile`, please first open an issue and link to that issue when you
 submit your pull request.
 
