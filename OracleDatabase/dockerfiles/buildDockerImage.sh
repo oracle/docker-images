@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-b ORACLE_BASE]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
@@ -22,7 +22,6 @@ Parameters:
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
-   -b: path of ORACLE BASE
 
 * select one edition only: -e, -s, or -x
 
@@ -64,9 +63,8 @@ EXPRESS=0
 VERSION="12.2.0.1"
 SKIPMD5=0
 DOCKEROPS=""
-ORACLE_BASE=""
 
-while getopts "hesxiv:b:" optname; do
+while getopts "hesxiv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -85,9 +83,6 @@ while getopts "hesxiv:b:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
-      ;;
-    "b")
-      ORACLE_BASE="$OPTARG"
       ;;
     *)
     # Should not occur
@@ -143,11 +138,6 @@ fi
 
 if [ "${no_proxy}" != "" ]; then
   BUILD_VARIABLES="$BUILD_VARIABLES --build-arg no_proxy=${no_proxy}"
-fi
-
-# Oracle base settings
-if [ "${ORACLE_BASE}" != "" ]; then
-  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg ORACLE_BASE=${ORACLE_BASE}"
 fi
 
 if [ "$BUILD_VARIABLES" != "" ]; then
