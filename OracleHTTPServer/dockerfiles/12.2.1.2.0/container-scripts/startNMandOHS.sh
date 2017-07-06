@@ -3,10 +3,10 @@
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
 #*************************************************************************
-# script is used to start a NodeManager and OHS component server.
-#  This script should be used only when node manager is configured per domain.
-#  This script sets the following variables before starting
-#  the node manager:
+#  This script is used to start a NodeManager and OHS component server.
+#  It should be used only when node manager is configured per domain.
+#  It sets the following variables before starting
+#  the NodeManager:
 #
 #  WL_HOME    - The root directory of your WebLogic installation
 #  NODEMGR_HOME  - Absolute path to nodemanager directory under the configured domain home
@@ -35,27 +35,6 @@ echo "PATH=${PATH}"
 PATH=$PATH:/usr/java/default/bin:/u01/oracle/ohssa/oracle_common/common/bin
 export PATH
 echo "PATH=${PATH}"
-
-
-# If nodemanager$$.log does not exists,this is the first time configuring the NM 
-# generate the NM password 
-
-if [ !  -f /u01/oracle/logs/nodemanager$$.log ]; then
-    
-# Auto generate node manager  password
-NM_PASSWORD=$(date| md5sum | fold -w 8 | head -n 1) 
-
-echo ""
-echo "    NodeManager Password Auto Generated:"
-echo ""
-echo "      ----> 'OHS' Node Manager password: $NM_PASSWORD"
-echo ""
-
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/create-sa-ohs-domain.py
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/start-ohs.py
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/restart-ohs.py
-
-fi
 
 # Start node manager
 ${DOMAIN_HOME}/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &

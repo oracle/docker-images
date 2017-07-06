@@ -10,10 +10,10 @@
 #Refer to Section 2.4 @ http://docs.oracle.com/middleware/12212/webtier/develop-plugin/oracle.htm#PLGWL553
 #
 #Prerequisite:
-#1.Create docker volume e.g docker volume create --name volume
+#1.Create a directory which would be mounted to the container
 #2.Create "custom_mod_wl_ohs.conf"  as per your environment by referring to mod_wl_ohs.conf sample file and OHS document above
-#3.Place the "custom_mod_wl_ohs.conf" inside the docker volume
-#4.During OHS container creation mount the docker volume which contains the "custom_mod_wl_ohs.conf"
+#3.Place the "custom_mod_wl_ohs.conf" inside the directory which will be mounted in the container
+#4.During OHS container creation mount the directory  which contains the "custom_mod_wl_ohs.conf"
 #
 # Note :
 # If custom_mod_wl_ohs.conf is not provided, WebLogic Server Proxy Plug-In will not be configured. But OHS server will be still running.

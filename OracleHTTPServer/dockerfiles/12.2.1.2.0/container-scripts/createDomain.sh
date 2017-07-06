@@ -3,13 +3,11 @@
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
 #*************************************************************************
-# script is used to start a NodeManager and OHS component server.
-#  This script should be used only when node manager is configured per domain.
-#  This script sets the following variables before starting
-#  the node manager:
+#  This script is used to create a standalone OHS domain.
+#  This script sets the following variables:
 #
-#  WL_HOME    - The root directory of your WebLogic installation
-#  NODEMGR_HOME  - Absolute path to nodemanager directory under the configured domain home
+#  WL_HOME    - The Weblogic home directory
+#  NODEMGR_HOME  - Absolute path to Nodemanager directory under the configured domain home
 #  DOMAIN_HOME - Absolute path to configured domain home
 #  JAVA_HOME- Absolute path to jre inside the oracle home directory
 #*************************************************************************
@@ -54,8 +52,15 @@ NMSTATUS[0]="NOT RUNNING"
 
 if [ !  -f /u01/oracle/logs/nodemanager$$.log ]; then
     
-# Auto generate node manager  password
-NM_PASSWORD=$(date| md5sum | fold -w 8 | head -n 1) 
+# Auto generate Node Manager  password
+while true; do
+     NM_PASSWORD=$(cat /dev/urandom | tr -dc "A-Za-z0-9" | fold -w 8 | head -n 1)
+     if [[ ${#NM_PASSWORD} -ge 8 && "$NM_PASSWORD" == *[A-Z]* && "$NM_PASSWORD" == *[a-z]* && "$NM_PASSWORD" == *[0-9]*  ]]; then
+         break
+     else
+         echo "Password does not Match the criteria, re-generating..."
+     fi
+   done
 
 echo ""
 echo "    NodeManager Password Auto Generated:"
@@ -63,11 +68,7 @@ echo ""
 echo "      ----> 'OHS' Node Manager password: $NM_PASSWORD"
 echo ""
 
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/create-sa-ohs-domain.py
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/start-ohs.py
-
-
-# Create an empty ohs domain
+# Create an OHS domain
 wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
 echo "username=weblogic" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
