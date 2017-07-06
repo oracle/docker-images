@@ -24,7 +24,7 @@ You need to have a running database container or a database running on any machi
 The database connection details are required for creating ODI specific RCU schemas while configuring ODI domain. 
 While using a 12.2.0.1 CDB/PDB DB, ensure PDB is used to load the schemas. RCU loading on CDB is not supported.
 
-The Oracle Database image can be pulled from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleDatabase/dockerfiles/12.2.0.1)
+The Oracle Database image can be pulled from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleDatabase/dockerfiles/12.2.0.1)
 
 Create an environment file **db.env.list**
 
@@ -53,7 +53,7 @@ If plan to use available Oracle JDK image, skip next steps and jump to "Building
 
 ### Building Oracle JDK (Server JRE) base image
 
-Oracle Server JRE image can be pulled from the [DockerStore](https://store.docker.com/images/oracle-serverjre-8) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleJava/java-8). For more information, visit the [OracleJava](../OracleJava) folder's [README](../OracleJava/README.md) file.
+Oracle Server JRE image can be pulled from the [Docker Store](https://store.docker.com/images/oracle-serverjre-8) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleJava/java-8). For more information, visit the [OracleJava](../OracleJava) folder's [README](../OracleJava/README.md) file.
 
 ### Building Docker Image for ODI
 
