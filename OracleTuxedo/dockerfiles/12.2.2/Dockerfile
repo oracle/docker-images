@@ -15,7 +15,7 @@ MAINTAINER Todd Little <todd.little@oracle.com>
 
 # Core install doesn't include unzip or gcc, add them
 # Create the installation directory tree and user oracle with a password of oracle
-RUN yum -y install unzip gcc file; yum -y clean all && \
+RUN yum -y install unzip gcc file hostname; yum -y clean all && \
     groupadd -g 1000 oracle; useradd -b /home -m -g oracle -u 1000 -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd; echo root:samplesvm | chpasswd
 
@@ -26,6 +26,8 @@ USER oracle
 # Install Tuxedo, SALT, and TSAM Agent
 RUN sh install.sh tuxedo122200_64_Linux_01_x86.zip
 ENV TUXDIR /home/oracle/tuxHome/tuxedo12.2.2.0.0
+ENV PATH "$PATH:$TUXDIR/bin"
+ENV LD_LIBRARY_PATH /home/oracle/tuxHome/tuxedo12.2.2.0.0/lib
 
 # Clean up installer files
 RUN rm -f *.zip
@@ -40,7 +42,3 @@ RUN rm -f *.zip
 
 USER oracle
 WORKDIR /home/oracle
-
-
-
-
