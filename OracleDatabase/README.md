@@ -69,6 +69,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
+	   -e ORACLE_CONTAINERDB: 
+	                  The database is a container database (default: true)
 	   -v             The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.

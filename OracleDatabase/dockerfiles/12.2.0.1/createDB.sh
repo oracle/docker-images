@@ -30,6 +30,7 @@ sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
+sed -i -e "s|###ORACLE_CONTAINERDB###|$ORACLE_CONTAINERDB|g" $ORACLE_BASE/dbca.rsp
 
 # If there is greater than 8 CPUs default back to dbca memory calculations
 # dbca will automatically pick 40% of available memory for Oracle DB
@@ -73,9 +74,13 @@ echo "$ORACLE_PDB=
 
 # Remove second control file, make PDB auto open
 sqlplus / as sysdba << EOF
-   ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
-   ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
-   exit;
+  ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
+  `
+  if [ "$ORACLE_CONTAINERDB" == "true" ]; then
+    echo "ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;"
+  fi;
+  `
+  exit;
 EOF
 
 # Remove temporary response file
