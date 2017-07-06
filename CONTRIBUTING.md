@@ -40,6 +40,9 @@ script doesn't have the functionality you need, open an issue and work with
 the image owner to implement it.
 1. Specify a fixed version in the `FROM` directive, i.e. use
 `FROM oraclelinux:7-slim` or `FROM java/serverjre:8`.
+1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
+to be extended, then this should output documentation on how to extend the
+image to be useful.
 
 ### Security-related Rules
 
@@ -48,7 +51,9 @@ the image owner to implement it.
 1. Do not run `ssh` inside a container.
 1. Do not use host networking mode (`--net=host`) for a container.
 1. Do not hard-code any passwords. If passwords are required, generate them
-on container startup using `openssl rand` or accept a password argument during container startup (via `-e`).
+on container startup using `openssl rand` or accept a password argument during
+container startup (via `-e`).
+
 
 ### Guidelines and Recommendations
 
@@ -66,6 +71,12 @@ filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
 - Don't install `wget` as the base images already include `curl`.
 - Always remember to run `yum clean all` in the same `RUN` directive as a
 `yum install` so that the yum metadata is not stored in the layer.
+- Always document any inputs (via `--build-arg` or `-e`) required by
+`docker build` or `docker run`. This documentation should also clearly state
+any defaults that are used if no input is provided.
+- If a custom value must be provided by the end-user, the build or run should
+gracefully fail if that value is not provided.
+
 
 ## Oracle Contributor Agreement
 
