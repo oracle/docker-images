@@ -1,6 +1,6 @@
 # Docker Images from Oracle
 
-This repository stores Dockerfiles and samples to build Docker images for Oracle products and Open Source projects.
+This repository contains Dockerfiles and samples to build Docker images for Oracle products and open source projects.
 
  - [Oracle Coherence](https://github.com/oracle/docker-images/tree/master/OracleCoherence)
  - [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase)
