@@ -77,7 +77,7 @@ To try a sample of a ODI image with a domain configured, follow the steps below:
 
 Create an environment file **odi.env.list**
 
-        CONNECTION_STRING=<Database Container Name>:<port#>/<ORACLE_PDB>
+        CONNECTION_STRING=<Database Host Name>:<port#>/<ORACLE_PDB>
         RCUPREFIX=<RCU_Prefix>
         DB_PASSWORD=<database_password>
         DB_SCHEMA_PASSWORD=<RCU schema Password>
@@ -89,14 +89,14 @@ Create an environment file **odi.env.list**
         
 Sample Data will look like this...
 
-        CONNECTION_STRING=ODI122126Database:1521/odipdb
+        CONNECTION_STRING=<Database Host Name>:1521/odipdb
         RCUPREFIX=ODI1
         DB_PASSWORD=Welcome1
         DB_SCHEMA_PASSWORD=Welcome1
         SUPERVISOR_PASSWORD=Welcome1
         WORK_REPO_NAME=WORKREP
         WORK_REPO_PASSWORD=Welcome1
-        HOST_NAME=<Hostname where docker is running>
+        HOST_NAME=<Hostname where ODI docker container is running>
 
 To start a docker container with a ODI domain and Agent, call docker run command and pass the above odi.env.list file.
 
