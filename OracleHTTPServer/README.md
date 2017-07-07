@@ -14,7 +14,7 @@ You must first download the Oracle Server JRE binary and drop in folder `../Orac
 
         $ cd ../OracleJava/java-8
         $ sh build.sh
-You can also pull the Oracle Server JRE 8 image from Oracle Container Registry or the Docker Store.
+You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8).
 
 ### Building OHS Docker Image
 IMPORTANT: You have to download the OHS binary and put it in place (see .download files inside dockerfiles/).
@@ -36,13 +36,11 @@ If we want to start the OHS container without specifying any configuration for m
 If we want to start the OHS container with some pre-specified mod_weblogic configuration:
 1. Depending on your weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/12212/webtier/develop-plugin/oracle.htm#PLGWL553)
 
-2. Place the custom_mod_wl_ohs.conf file in a directory in the host say,"/scratch/DockerVoulme/OHSVolume" and then mount this directory into the container as a volume.
+2. Place the custom_mod_wl_ohs.conf file in a directory in the host say,"/scratch/DockerVolume/OHSVolume" and then mount this directory into the container at the location "/u01/oracle/ohssa/user_projects".
+   By doing so, the contents of host directory /scratch/DockerVolume/OHSVolume(and hence custom_mod_wl_ohs.conf) will become available in the container at the mount point.  
+   This mounting can be done by using the -v option with the 'docker run' command as shown below. The following command will start the OHS container with oracle/ohs:12.2.1.2.0-sa image and the host   directory "/scratch/DockerVolume/OHSVolume" will get mounted at the location "/u01/oracle/ohssa/user_projects" in the container:
 
-3. To start the OHS Container with above oracle/ohs:12.2.1.2.0-sa image, run command from the directory which has been mounted as a volume.
-
-         For e.g
-         $ cd /scratch/DockerVolume/OHSVolume
-         $ docker run -v `pwd`:/u01/oracle/ohssa/user_projects -w /u01/oracle/ohssa/user_projects -d --name ohs -p 7777:7777  oracle/ohs:12.2.1.2.0-sa configureWLSProxyPlugin.sh
+         $ docker run -v /scratch/DockerVolume/OHSVolume:/u01/oracle/ohssa/user_projects -w /u01/oracle/ohssa/user_projects -d --name ohs -p 7777:7777  oracle/ohs:12.2.1.2.0-sa configureWLSProxyPlugin.sh
 
 
    The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
