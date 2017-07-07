@@ -41,7 +41,7 @@ If we want to start the OHS container with some pre-specified mod_weblogic confi
 
          For e.g
          $ cd /scratch/DockerVolume/OHSVolume
-         $ docker run -v `pwd`:/volume -w /volume -d --name ohs -p 7777:7777  oracle/ohs:12.2.1.2.0-sa configureWLSProxyPlugin.sh
+         $ docker run -v `pwd`:/u01/oracle/ohssa/user_projects -w /u01/oracle/ohssa/user_projects -d --name ohs -p 7777:7777  oracle/ohs:12.2.1.2.0-sa configureWLSProxyPlugin.sh
 
 
    The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
