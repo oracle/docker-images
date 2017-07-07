@@ -9,13 +9,13 @@
 #   sh build.sh
 
 # Pull base image
-FROM oracle/serverjre:8
+FROM container-registry.oracle.com/java/serverjre
 
 MAINTAINER Todd Little <todd.little@oracle.com>
 
 # Core install doesn't include unzip or gcc, add them
 # Create the installation directory tree and user oracle with a password of oracle
-RUN yum -y install unzip gcc file; yum -y clean all && \
+RUN yum -y install unzip gcc file which; yum -y clean all && \
     groupadd -g 1000 oracle; useradd -b /home -m -g oracle -u 1000 -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd; echo root:samplesvm | chpasswd
 

@@ -120,6 +120,28 @@ fi
 #  exit
 #fi
 
+# Proxy settings
+PROXY_SETTINGS=""
+if [ "${http_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
+fi
+
+if [ "${https_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
+fi
+
+if [ "${ftp_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
+fi
+
+if [ "${no_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
+fi
+
+if [ "$PROXY_SETTINGS" != "" ]; then
+  echo "Proxy settings were found and will be used during build."
+fi
+
 echo "====================="
 
 # Fix up the locations of things
@@ -127,12 +149,13 @@ cp ${VERSION}/tuxedo${VERSION}.rsp .
 cp ${VERSION}/install.sh .
 cp ${VERSION}/Dockerfile .
 
-docker build -t oracle/tuxedo:${VERSION} .
+docker build $PROXY_SETTINGS -t oracle/tuxedo:${VERSION} .
 if [ "$?" = "0" ]
     then
 	echo ""
 	echo "Tuxedo Docker image is ready to be used. To create a container, run:"
-	echo "docker run -i -t oracle/tuxedo:${VERSION} /bin/bash"
+	echo "docker run -ti -v \${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedo:${VERSION} /bin/bash"
+	echo "Note: \${LOCAL_DIR} is a local dir which used in docker image as external storage, it can be any dir."
     else
 	echo "Build of Tuxedo Docker image failed."
 fi

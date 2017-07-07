@@ -6,19 +6,25 @@
 #
 # Author: Todd Little
 #
-# Usage: source simpapp_runme.sh [TuxedoDirectory]
+# Usage: source simpapp_runme.sh [TuxedoVersion]
+#        TuxedoVersion: 12.1.3 or 12.2.2, 12.2.2 by default
 #
+cd /u01/oracle/user_projects
+rm -rf simpapp
+mkdir simpapp
+cd simpapp
 if [ ! -z "$1" ]
     then
-	export TUXDIR=$1
+  if [ "$1" = "12.1.3" ]
+  then
+	export TUXDIR=~/tuxHome/tuxedo12.1.3.0.0
+  else
+	export TUXDIR=~/tuxHome/tuxedo12.2.2.0.0
+  fi
 elif [ -z "$TUXDIR" ]
     then
-	export TUXDIR=~/tuxHome/tuxedo12.1.3.0.0
+	export TUXDIR=~/tuxHome/tuxedo12.2.2.0.0
 fi
-
-# clean up from any previous run
-tmshutdown -y &>/dev/null 
-rm -Rf simpcl simpserv tuxconfig ubbsimple ULOG.*
 
 # Create environment setup script setenv.sh
 export HOSTNAME=`hostname`
@@ -32,6 +38,10 @@ export TUXCONFIG=${APPDIR}/tuxconfig
 export IPCKEY=112233
 EndOfFile
 source ./setenv.sh
+
+# clean up from any previous run
+tmshutdown -y &>/dev/null 
+rm -Rf simpcl simpserv tuxconfig ubbsimple ULOG.*
 
 # Create the Tuxedo configuration file
 cat >ubbsimple << EndOfFile
@@ -82,4 +92,4 @@ tmboot -y
 # Shutdown the domain
 tmshutdown -y
 
-
+/bin/bash

@@ -349,7 +349,16 @@ COMPONENT_LANGUAGES={"en"}
 #Component  : Tuxedo
 #-------------------------------------------------------------------------------
 
-INSTALL_TYPE="Full Install"
+INSTALL_TYPE="Custom Install"
+
+#-------------------------------------------------------------------------------
+#Name       : DEPENDENCY_LIST
+#Datatype   : StringList
+#Description: List of dependees that need to be installed along with this product.
+#Component  : Tuxedo
+#-------------------------------------------------------------------------------
+
+DEPENDENCY_LIST={"tuxedoServer:12.1.3.0.0","atmiClient:12.1.3.0.0","corbaClient:12.1.3.0.0","joltClient:12.1.3.0.0","joltJrly:12.1.3.0.0"}
 
 #-------------------------------------------------------------------------------
 #Name       : ENABLE_TSAM_AGENT
@@ -358,7 +367,7 @@ INSTALL_TYPE="Full Install"
 #Component  : tsamAgent
 #-------------------------------------------------------------------------------
 
-ENABLE_TSAM_AGENT=true
+ENABLE_TSAM_AGENT=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : LDAP_SUPPORT_SSL

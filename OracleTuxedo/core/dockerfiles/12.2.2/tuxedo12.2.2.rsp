@@ -349,7 +349,16 @@ COMPONENT_LANGUAGES={"en"}
 #Component  : Tuxedo
 #-------------------------------------------------------------------------------
 
-INSTALL_TYPE="Full Install"
+INSTALL_TYPE="Custom Install"
+
+#-------------------------------------------------------------------------------
+#Name       : DEPENDENCY_LIST
+#Datatype   : StringList
+#Description: List of dependees that need to be installed along with this product.
+#Component  : Tuxedo
+#-------------------------------------------------------------------------------
+
+DEPENDENCY_LIST={"tuxedoServer:12.2.2.0.0","atmiClient:12.2.2.0.0","corbaClient:12.2.2.0.0","joltClient:12.2.2.0.0","joltJrly:12.2.2.0.0"}
 
 #-------------------------------------------------------------------------------
 #Name       : ENABLE_TSAM_AGENT
