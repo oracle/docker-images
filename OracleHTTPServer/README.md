@@ -14,6 +14,7 @@ You must first download the Oracle Server JRE binary and drop in folder `../Orac
 
         $ cd ../OracleJava/java-8
         $ sh build.sh
+You can also pull the Oracle Server JRE 8 image from Oracle Container Registry or the Docker Store.
 
 ### Building OHS Docker Image
 IMPORTANT: You have to download the OHS binary and put it in place (see .download files inside dockerfiles/).
@@ -37,7 +38,7 @@ If we want to start the OHS container with some pre-specified mod_weblogic confi
 
 2. Place the custom_mod_wl_ohs.conf file in a directory in the host say,"/scratch/DockerVoulme/OHSVolume" and then mount this directory into the container as a volume.
 
-3. To start the OHS Container with above oracle/ohs:12.2.1.2.0-sa image , run command from the directory which ha sbeen mounted as a volume.
+3. To start the OHS Container with above oracle/ohs:12.2.1.2.0-sa image, run command from the directory which has been mounted as a volume.
 
          For e.g
          $ cd /scratch/DockerVolume/OHSVolume
