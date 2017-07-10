@@ -75,6 +75,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	                  If omitted the database will not be persisted over container recreation.
 	   -v /opt/oracle/scripts
 	                  Optional: A volume with custom scripts to be run after database startup.
+	                  For further details see the "Running scripts on startup" section below.
 
 Once the container has been started and the database created you can connect to it just like to any other database:
 
@@ -115,9 +116,13 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 	                  Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 
-	   -v             The data volume to use for the database.
+	   -v /u01/app/oracle/oradata
+	                  The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
+	   -v /u01/app/oracle/scripts
+	                  Optional: A volume with custom scripts to be run after database startup.
+	                  For further details see the "Running scripts on startup" section below.
 
 There are two ports that are exposed in this image:
 * 1521 which is the port to connect to the Oracle Database.
