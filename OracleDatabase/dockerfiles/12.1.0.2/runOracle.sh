@@ -172,12 +172,12 @@ else
 fi;
 
 # Execute custom provided files (only if directory exists and has files in it)
-if [ -d /opt/oracle/scripts ] && [ -n "$(ls -A /opt/oracle/scripts)" ]; then
+if [ -d $ORACLE_BASE/scripts ] && [ -n "$(ls -A $ORACLE_BASE/scripts)" ]; then
 
   echo "";
   echo "Executing user defined scripts"
 
-  for f in /opt/oracle/scripts/*; do
+  for f in $ORACLE_BASE/scripts/*; do
       case "$f" in
           *.sh)     echo "$0: running $f"; . "$f" ;;
           *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
