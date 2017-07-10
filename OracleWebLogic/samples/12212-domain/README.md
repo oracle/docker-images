@@ -4,7 +4,7 @@ This Dockerfile extends the Oracle WebLogic image by creating a sample WLS domai
 
 Util scripts are copied into the image enabling users to plug NodeManager automatically into the AdminServer running on another container.
 
-###Admin Password
+### Admin Password
 
 On the first startup of the container a random password will be generated for the Administration of the domain. You can find this password in the output line:
 
@@ -16,21 +16,30 @@ If you need to find the password at a later time, grep for "password" in the Doc
 
 Note: The administration password can be passed in at runtime and override the generated password.  If using the auto-generated password please make sure to pass the password into the Managed Server container at runtime.
 
-#How to Build and Run
+### How to Build and Run
 
 **NOTE:** First make sure you have built **oracle/weblogic:12.2.1.2-developer**. 
 
 You can define the following environment variables at docker runtime using the -e option  in the command line or defining them in the domain.properties file. These enviromental variables need to be set for the Admin Server as well as for the Managed Servers.
 
 Admin Password:      ADMIN_PASSWORD  Auto Generated (default)
+
 Admin Username:      ADMIN_USERNAME  weblogic       (default)
+
 Admin Name:          ADMIN_NAME      AdminServer    (default)
+
 Domain Name:         DOMAIN_NAME     base_domain    (default)
+
 Admin Port:          ADMIN_PORT      7001           (default)
+
 Admin Host:          ADMIN_HOST      wlsadmin       (default)
+
 Cluster Name:        CLUSTER_NAME    DockerCluster  (default)
+
 Debug Flag:          DEBUG_FLAG      false          (default)
+
 Production Mode:     PRODUCTION_MODE prod           (default)
+
 Managed Server Port: MS_PORT         8001           (default)
 
 To build this sample, run:
