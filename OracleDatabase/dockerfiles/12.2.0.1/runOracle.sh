@@ -172,12 +172,12 @@ else
 fi;
 
 # Execute custom provided files (only if directory exists and has files in it)
-if [ -d /docker-entrypoint-initdb.d ] && [ -n "$(ls -A /docker-entrypoint-initdb.d)" ]; then
+if [ -d /opt/oracle/scripts ] && [ -n "$(ls -A /opt/oracle/scripts)" ]; then
 
   echo "";
   echo "Executing user defined scripts"
 
-  for f in /docker-entrypoint-initdb.d/*; do
+  for f in /opt/oracle/scripts/*; do
       case "$f" in
           *.sh)     echo "$0: running $f"; . "$f" ;;
           *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
