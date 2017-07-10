@@ -1,21 +1,51 @@
 Example of Image with WLS Domain
 ================================
-This Dockerfile extends the Oracle WebLogic image by creating a sample empty domain.
+This Dockerfile extends the Oracle WebLogic image by creating a sample WLS domain and cluster.
 
 Util scripts are copied into the image enabling users to plug NodeManager automatically into the AdminServer running on another container.
 
-# How to build and run
-First make sure you have built **oracle/weblogic:12.2.1.2-developer**. Now to build this sample, run:
+###Admin Password
 
-        $ docker build -t 12212-domain --build-arg ADMIN_PASSWORD=welcome1 .
+On the first startup of the container a random password will be generated for the Administration of the domain. You can find this password in the output line:
 
-To start the containerized Admin Server, run:
+Oracle WebLogic Server auto generated Admin password:
 
-        $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 12212-domain
+If you need to find the password at a later time, grep for "password" in the Docker logs generated during the startup of the container. To look at the Docker Container logs run:
+
+    $ docker logs --details <Container-id>
+
+Note: The administration password can be passed in at runtime and override the generated password.  If using the auto-generated password please make sure to pass the password into the Managed Server container at runtime.
+
+#How to Build and Run
+
+**NOTE:** First make sure you have built **oracle/weblogic:12.2.1.2-developer**. 
+
+You can define the following environment variables at docker runtime using the -e option  in the command line or defining them in the domain.properties file. These enviromental variables need to be set for the Admin Server as well as for the Managed Servers.
+
+Admin Password:      ADMIN_PASSWORD  Auto Generated (default)
+Admin Username:      ADMIN_USERNAME  weblogic       (default)
+Admin Name:          ADMIN_NAME      AdminServer    (default)
+Domain Name:         DOMAIN_NAME     base_domain    (default)
+Admin Port:          ADMIN_PORT      7001           (default)
+Admin Host:          ADMIN_HOST      wlsadmin       (default)
+Cluster Name:        CLUSTER_NAME    DockerCluster  (default)
+Debug Flag:          DEBUG_FLAG      false          (default)
+Production Mode:     PRODUCTION_MODE prod           (default)
+Managed Server Port: MS_PORT         8001           (default)
+
+To build this sample, run:
+
+        $ docker build -t 12212-domain .
+
+The domain directory needs to be externalized by using Named Data Volumes. The Admin Server as well as the Managed Servers can all see the same DOMAIN_HOME. 
+
+To start the containerized Admin Server, run
+
+        $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001--env-file ./domain.properties -v <host directory>:/u01/oracle/user_projects 12212-domain
 
 To start a containerized Managed Server to self-register with the Admin Server above, run:
 
-        $ docker run -d --link wlsadmin:wlsadmin -p 7002:7002 12212-domain createServer.sh
+        $ docker run -d --link wlsadmin:wlsadmin -p 8001:8001 --env-file ./domain.properties --volumes-from wlsadmin 12212-domain createServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a cluster setup, on a single host environment.
 
