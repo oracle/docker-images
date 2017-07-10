@@ -1,18 +1,36 @@
-#!/bin/sh
-# Author: hemastuti.baruah@oracle.com
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+#!/bin/bash
+# Author: prabhat.kishore@oracle.com
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 #
 #*************************************************************************
-# script is used to start a NodeManager and OHS component server.
-#  This script should be used only when node manager is configured per domain.
-#  This script sets the following variables before starting
-#  the node manager:
+#  This script is used to create a standalone OHS domain and start NodeManager, OHS instance.
+#  This script sets the following variables:
 #
-#  WL_HOME    - The root directory of your WebLogic installation
-#  NODEMGR_HOME  - Absolute path to nodemanager directory under the configured domain home
+#  WL_HOME    - The Weblogic home directory
+#  NODEMGR_HOME  - Absolute path to Nodemanager directory under the configured domain home
 #  DOMAIN_HOME - Absolute path to configured domain home
 #  JAVA_HOME- Absolute path to jre inside the oracle home directory
 #*************************************************************************
+########### SIGTERM handler ############
+function _term() {
+   echo "Stopping container."
+   echo "SIGTERM received, shutting down the server!"
+   ${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/stop-ohs.py
+   ${DOMAIN_HOME}/bin/stopNodeManager.sh
+}
+
+########### SIGKILL handler ############
+function _kill() {
+   echo "SIGKILL received, shutting down the server!"
+   kill -9 $childPID
+}
+
+# Set SIGTERM handler
+trap _term SIGTERM
+
+# Set SIGKILL handler
+trap _kill SIGKILL
+
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "ORACLE_HOME=${ORACLE_HOME:?"Please set ORACLE_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
@@ -24,12 +42,19 @@ export MW_HOME ORACLE_HOME DOMAIN_NAME OHS_COMPONENT_NAME
 #Set WL_HOME, WLST_HOME, DOMAIN_HOME and NODEMGR_HOME
 WL_HOME=${ORACLE_HOME}/wlserver
 WLST_HOME=${ORACLE_HOME}/oracle_common/common/bin
+echo "WLST_HOME=${WLST_HOME}"
 
 DOMAIN_HOME=${ORACLE_HOME}/user_projects/domains/${DOMAIN_NAME}
 export DOMAIN_HOME
+echo "DOMAIN_HOME=${DOMAIN_HOME}"
 
 NODEMGR_HOME=${DOMAIN_HOME}/nodemanager
 export NODEMGR_HOME
+
+echo "PATH=${PATH}"
+PATH=$PATH:/usr/java/default/bin:/u01/oracle/ohssa/oracle_common/common/bin
+export PATH
+echo "PATH=${PATH}"
 
 #  Set JAVA_OPTIONS and JAVA_HOME for node manager
 JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.RootDirectory=${DOMAIN_HOME}"
@@ -47,8 +72,15 @@ NMSTATUS[0]="NOT RUNNING"
 
 if [ !  -f /u01/oracle/logs/nodemanager$$.log ]; then
     
-# Auto generate node manager  password
-NM_PASSWORD=$(cat date| md5sum | fold -w 8 | head -n 1) 
+# Auto generate Node Manager  password
+while true; do
+     NM_PASSWORD=$(cat /dev/urandom | tr -dc "A-Za-z0-9" | fold -w 8 | head -n 1)
+     if [[ ${#NM_PASSWORD} -ge 8 && "$NM_PASSWORD" == *[A-Z]* && "$NM_PASSWORD" == *[a-z]* && "$NM_PASSWORD" == *[0-9]*  ]]; then
+         break
+     else
+         echo "Password does not Match the criteria, re-generating..."
+     fi
+   done
 
 echo ""
 echo "    NodeManager Password Auto Generated:"
@@ -56,22 +88,16 @@ echo ""
 echo "      ----> 'OHS' Node Manager password: $NM_PASSWORD"
 echo ""
 
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/create-sa-ohs-domain.py
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/start-ohs.py
-sed -i -e "s|NM_PASSWORD|$NM_PASSWORD|g" /u01/oracle/container-scripts/restart-ohs.py
-
-
-# Create an empty ohs domain
+# Create an OHS domain
 wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
 echo "username=weblogic" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 echo "username=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
-${ORACLE_HOME}/oracle_common/common/bin/commEnv.sh
 mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs_sa1/htdocs/helloWorld.html
 fi
 
 # Start node manager
-${WL_HOME}/server/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &
+${DOMAIN_HOME}/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &
 statusfile=/tmp/notifyfifo.$$
 
 #Check if Node Manager is up and running by inspecting logs
@@ -83,7 +109,7 @@ mkfifo "${statusfile}" || exit 1
     tailpid=$!
     # wait for notification that grep has exited
     read templine <${statusfile}
-	                echo ${templine}
+                        echo ${templine}
     # grep has exited, time to go
     kill "${tailpid}"
 } | {
@@ -96,6 +122,11 @@ mkfifo "${statusfile}" || exit 1
 # clean up temporary files
 rm "${statusfile}"
 
+#Check if configureWLSProxyPlugin.sh needs to be invoked
+if [ -f /config/custom_mod_wl_ohs.conf ]; then
+configureWLSProxyPlugin.sh
+fi
+
 #Start OHS component only if Node Manager is up
 if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
 echo "Node manager running, hence starting OHS server"
@@ -103,6 +134,8 @@ ${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/start-ohs.py
 echo "OHS server has been started "
 fi
 
-
 #Tail all server logs
-tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.out
+tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.log &
+
+childPID=$!
+wait $childPID
