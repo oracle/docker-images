@@ -38,7 +38,7 @@ Cluster Name:        CLUSTER_NAME    DockerCluster  (default)
 
 Debug Flag:          DEBUG_FLAG      false          (default)
 
-Production Mode:     PRODUCTION_MODE prod           (default)
+Production Mode:     PRODUCTION_MODE dev           (default)
 
 Managed Server Port: MS_PORT         8001           (default)
 
@@ -46,7 +46,7 @@ To build this sample, run:
 
         $ docker build -t 12212-domain .
 
-The domain directory needs to be externalized by using Named Data Volumes. The Admin Server as well as the Managed Servers can all see the same DOMAIN_HOME. 
+**Important** The domain directory needs to be externalized by using Data Volumes (-v option). The Admin Server as well as the Managed Servers need to read/write to the same DOMAIN_HOME. 
 
 To start the containerized Admin Server, run
 
