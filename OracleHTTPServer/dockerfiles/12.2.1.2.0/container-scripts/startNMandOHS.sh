@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Author: hemastuti.baruah@oracle.com
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #

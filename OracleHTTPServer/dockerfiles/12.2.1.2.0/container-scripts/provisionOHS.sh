@@ -1,9 +1,9 @@
-#!/bin/sh
-# Author: hemastuti.baruah@oracle.com
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+#!/bin/bash
+# Author: prabhat.kishore@oracle.com
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 #
 #*************************************************************************
-#  This script is used to create a standalone OHS domain.
+#  This script is used to create a standalone OHS domain and start NodeManager, OHS instance.
 #  This script sets the following variables:
 #
 #  WL_HOME    - The Weblogic home directory
@@ -11,6 +11,26 @@
 #  DOMAIN_HOME - Absolute path to configured domain home
 #  JAVA_HOME- Absolute path to jre inside the oracle home directory
 #*************************************************************************
+########### SIGTERM handler ############
+function _term() {
+   echo "Stopping container."
+   echo "SIGTERM received, shutting down the server!"
+   ${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/stop-ohs.py
+   ${DOMAIN_HOME}/bin/stopNodeManager.sh
+}
+
+########### SIGKILL handler ############
+function _kill() {
+   echo "SIGKILL received, shutting down the server!"
+   kill -9 $childPID
+}
+
+# Set SIGTERM handler
+trap _term SIGTERM
+
+# Set SIGKILL handler
+trap _kill SIGKILL
+
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "ORACLE_HOME=${ORACLE_HOME:?"Please set ORACLE_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
@@ -75,3 +95,47 @@ echo "username=weblogic" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/co
 echo "username=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs_sa1/htdocs/helloWorld.html
 fi
+
+# Start node manager
+${DOMAIN_HOME}/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &
+statusfile=/tmp/notifyfifo.$$
+
+#Check if Node Manager is up and running by inspecting logs
+mkfifo "${statusfile}" || exit 1
+{
+    # run tail in the background so that the shell can kill tail when notified that grep has exited
+    tail -f /u01/oracle/logs/nodemanager$$.log &
+    # remember tail's PID
+    tailpid=$!
+    # wait for notification that grep has exited
+    read templine <${statusfile}
+                        echo ${templine}
+    # grep has exited, time to go
+    kill "${tailpid}"
+} | {
+    grep -m 1 "Secure socket listener started on port 5556"
+    # notify the first pipeline stage that grep is done
+        echo "RUNNING"> /u01/oracle/logs/Nodemanage$$.status
+        echo "Node manager is running"
+    echo >${statusfile}
+}
+# clean up temporary files
+rm "${statusfile}"
+
+#Check if configureWLSProxyPlugin.sh needs to be invoked
+if [ -f /config/custom_mod_wl_ohs.conf ]; then
+configureWLSProxyPlugin.sh
+fi
+
+#Start OHS component only if Node Manager is up
+if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
+echo "Node manager running, hence starting OHS server"
+${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/start-ohs.py
+echo "OHS server has been started "
+fi
+
+#Tail all server logs
+tail -f ${DOMAIN_HOME}/nodemanager/nodemanager.log ${DOMAIN_HOME}/servers/*/logs/*.log &
+
+childPID=$!
+wait $childPID

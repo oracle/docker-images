@@ -27,62 +27,25 @@ IMPORTANT: The resulting image will have a  pre-configured domain.
 
 ### How to run container
 
-If we want to start the OHS container without specifying any configuration for mod_weblogic:
+If you want to start the OHS container without specifying any configuration for mod_weblogic:
 1. To start the OHS container with above oracle/ohs:12.2.1.2.0-sa image, run the following command:
 
          docker run -it --name ohs -p 7777:7777 oracle/ohs:12.2.1.2.0-sa
 
 
-If we want to start the OHS container with some pre-specified mod_weblogic configuration:
+If you want to start the OHS container with some pre-specified mod_weblogic configuration:
 1. Depending on your weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/12212/webtier/develop-plugin/oracle.htm#PLGWL553)
 
-2. Place the custom_mod_wl_ohs.conf file in a directory in the host say,"/scratch/DockerVolume/OHSVolume" and then mount this directory into the container at the location "/u01/oracle/ohssa/user_projects".
+2. Place the custom_mod_wl_ohs.conf file in a directory in the host say,"/scratch/DockerVolume/OHSVolume" and then mount this directory into the container at the location "/config".
    By doing so, the contents of host directory /scratch/DockerVolume/OHSVolume(and hence custom_mod_wl_ohs.conf) will become available in the container at the mount point.  
-   This mounting can be done by using the -v option with the 'docker run' command as shown below. The following command will start the OHS container with oracle/ohs:12.2.1.2.0-sa image and the host   directory "/scratch/DockerVolume/OHSVolume" will get mounted at the location "/u01/oracle/ohssa/user_projects" in the container:
+   This mounting can be done by using the -v option with the 'docker run' command as shown below. The following command will start the OHS container with oracle/ohs:12.2.1.2.0-sa image and the host   directory "/scratch/DockerVolume/OHSVolume" will get mounted at the location "/config" in the container:
 
-         $ docker run -v /scratch/DockerVolume/OHSVolume:/u01/oracle/ohssa/user_projects -w /u01/oracle/ohssa/user_projects -d --name ohs -p 7777:7777  oracle/ohs:12.2.1.2.0-sa configureWLSProxyPlugin.sh
+         $ docker run -v /scratch/DockerVolume/OHSVolume:/config -w /config -d --name ohs -p 7777:7777  oracle/ohs:12.2.1.2.0-sa
 
+### Stopping the  OHS instance
+To stop the OHS instance, execute the following command:
 
-   The **configureWLSProxyPlugin.sh** script will be the first script to be run inside the OHS container .
-   This script will perform the following actions:
-   - Fetch the custom_mod_wl_ohs.conf file from mounted shared data volume
-   - Place the custom_mod_wl_ohs.conf file under OHS INSTANCE home
-   - Start Node manager and OHS server
-
-4. Sanity URLs check for OHS server
-   - Now you can access the OHS index page @ http://localhost:7777/index.html
-   - Static html page @ URL http://localhost:7777/helloWorld.html
-
-5. All applications should now be routed via the OHS port 7777.
-
-######NOTE: If custom_mod_wl_ohs.conf is not provided or not found under mounted shared data volume, then configureWLSProxyPlugin.sh will still start OHS server which will be accessible @ http://localhost:7777/index.html.
-
-######Later you can login to running container and configure Weblogic Server proxy plugin file and run *restartOHS.sh* script.
-
-### Stopping and re-starting OHS instance
-To stop the OHS instance, execute the following steps:
-1. Exec into the container and execute /bin/bash (Assuming the name of container is 'ohs')
-
-      docker exec -it ohs /bin/bash
-
-2. Navigate to /u01/oracle/ohssa/oracle_common/common/bin
-
-      cd /u01/oracle/ohssa/oracle_common/common/bin
-
-3. Execute stop-ohs.py 
- 
-      ./wlst.sh /u01/oracle/container-scripts/stop-ohs.py
-
-
-To re-start the OHS instance, execute the following steps:
-1.Exec into the container and execute /bin/bash (Assuming the name of container is 'ohs')
-
-      docker exec -it ohs /bin/bash
-
-2. Invoke restartOHS.sh
-
-      ./u01/oracle/container-scripts/restartOHS.sh
-
+      docker stop ohs (Assuming the name of conatiner is 'ohs')
 
 ## Node Manager Password
 
@@ -107,4 +70,4 @@ To download and run Oracle JDK regardless of inside or outside a Docker containe
 All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
 
 ## Copyright
-Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.

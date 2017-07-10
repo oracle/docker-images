@@ -53,7 +53,8 @@ ENV OHS_PKG=fmw_12.2.1.2.0_ohs_linux64_Disk1_1of1.zip \
     MW_HOME=/u01/oracle/ohssa \
     DOMAIN_NAME=ohsDomain \
     OHS_COMPONENT_NAME=ohs_sa1 \
-    PATH=$PATH:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts
+    PATH=$PATH:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts \
+    WLST_HOME=/u01/oracle/ohssa/oracle_common/common/bin
 
 
 # Copy packages to the new drive
@@ -65,15 +66,13 @@ COPY $OHS_PKG install.file oraInst.loc /u01/
 # Setup filesystem and oracle user
 #---------------------------------------------------------------------------------------------------------
 # Proxy needs to be set before running yum in /etc/yum.conf
-RUN yum install -y \
-        unzip libaio sysstat && \
+RUN yum install -y unzip libaio sysstat && \
     yum clean all && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     mkdir /u01/oracle/.inventory && \
     chown oracle:oracle -R /u01 
 
-# Install and configure Oracle JDK
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
 USER oracle
@@ -92,9 +91,6 @@ EXPOSE $OHS_SSL_PORT $OHS_LISTEN_PORT $NM_PORT
 # Final setup
 WORKDIR /u01/oracle/container-scripts
 
-# Create Doamin, OHS instance and start the  OHS instance
-RUN sh createDomain.sh 
-
-# Define default command to start bash
-CMD ["startNMandOHS.sh"]
+# Provision OHS instance
+CMD ["/u01/oracle/container-scripts/provisionOHS.sh"]
 
