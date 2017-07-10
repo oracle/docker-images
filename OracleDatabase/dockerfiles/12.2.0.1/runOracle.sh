@@ -171,19 +171,25 @@ else
    echo "#####################################"
 fi;
 
-echo "Executing user defined scripts"
+# Execute custom provided files (only if directory exists and has files in it)
+if [ -d /docker-entrypoint-initdb.d ] && [ -n "$(ls -A /docker-entrypoint-initdb.d)" ]; then
 
-for f in /docker-entrypoint-initdb.d/*; do
-    case "$f" in
-        *.sh)     echo "$0: running $f"; . "$f" ;;
-        *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
-        *)        echo "$0: ignoring $f" ;;
-    esac
-    echo
-done
+  echo "";
+  echo "Executing user defined scripts"
 
-echo "DONE: Executing user defined scripts"
+  for f in /docker-entrypoint-initdb.d/*; do
+      case "$f" in
+          *.sh)     echo "$0: running $f"; . "$f" ;;
+          *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
+          *)        echo "$0: ignoring $f" ;;
+      esac
+      echo
+  done
+  
+  echo "DONE: Executing user defined scripts"
+  echo "";
 
+fi;
 
 # Tail on alert log and wait (otherwise container will exit)
 echo "The following output is now a tail of the alert.log:"
