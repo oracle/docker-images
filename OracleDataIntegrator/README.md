@@ -3,7 +3,6 @@ ODI on Docker
 Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start [dockerfiles](dockerfiles/) for ODI 12.2.1.2.6 based on Oracle Linux 7, Oracle JRE 8 (Server).
 
 At the end of this configuration there will be 2 containers running : 1) DB Container 2) ODI Agent.
-The containers will be connected using a Docker User Defined network 
 
 ## Pre-Requisite
 
@@ -42,8 +41,8 @@ Sample Command to Start the Database is as follows
 
          $ docker run --name ODI122126Database  -p 1521:1521 -p 5500:5500 -v /scratch/DockerVolume/ODIVolume/DB:/opt/oracle/oradata --env-file ./db.env.list  oracle/database:12.2.0.1-ee
 
-The above command starts a DB container attaching to a network and mounting a host directory as /opt/oracle/oradata for persistence. 
-It maps the containers 1521 adn 5500 port to respective host port such that the services can be accessible outside of localhost.
+The above command starts a DB container mounting a host directory as /opt/oracle/oradata for persistence. 
+It maps the containers 1521 and 5500 port to respective host port such that the services can be accessible outside of localhost.
 
 ## ODI Distributable version 12.2.1.2.6 Docker image Creation and Running
 
@@ -106,12 +105,11 @@ A sample docker run command is given below:
 
 The options "-i -t" in the above command runs the container in interactive mode and you will be able to see the commands running in the container. 
 This includes the command for RCU creation, domain creation and configuration followed by starting ODI Agent. 
-Mapping container port 21910 to host port 21910 enables accessing of the Agent outside of the local host.
-Connecting to ODINet network enables accessing the DB container by it's name i.e ODI122126Database. If not using ODINet then hostname where DB is runnings needs to given in place of ODI122126Database in odi.env.list
+Mapping container port 20910 to host port 20910 enables accessing of the Agent outside of the local host.
 
 Once the ODI container is created logs will be tailed and displayed to keep the container running.
 
-Now you can access the Agent at http://<host name>:20910/oraclediagent 
+Now you can access the Agent at http://\<host name\>:20910/oraclediagent 
          
 **NOTES:** 
 
