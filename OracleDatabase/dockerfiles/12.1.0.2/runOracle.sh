@@ -172,24 +172,7 @@ else
 fi;
 
 # Execute custom provided files (only if directory exists and has files in it)
-if [ -d $ORACLE_BASE/scripts ] && [ -n "$(ls -A $ORACLE_BASE/scripts)" ]; then
-
-  echo "";
-  echo "Executing user defined scripts"
-
-  for f in $ORACLE_BASE/scripts/*; do
-      case "$f" in
-          *.sh)     echo "$0: running $f"; . "$f" ;;
-          *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
-          *)        echo "$0: ignoring $f" ;;
-      esac
-      echo
-  done
-  
-  echo "DONE: Executing user defined scripts"
-  echo "";
-
-fi;
+$ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts
 
 # Tail on alert log and wait (otherwise container will exit)
 echo "The following output is now a tail of the alert.log:"
