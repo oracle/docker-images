@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Shell script to build and run simpapp.  It assume TUXDIR has been set, or that 
 # Tuxedo has been installed to: ~/tuxHome/tuxedo12.1.3.0.0   If not, invoke 
@@ -6,25 +6,12 @@
 #
 # Author: Todd Little
 #
-# Usage: source simpapp_runme.sh [TuxedoVersion]
-#        TuxedoVersion: 12.1.3 or 12.2.2, 12.2.2 by default
+# Usage: source simpapp_runme.sh
 #
 cd /u01/oracle/user_projects
 rm -rf simpapp
 mkdir simpapp
 cd simpapp
-if [ ! -z "$1" ]
-    then
-  if [ "$1" = "12.1.3" ]
-  then
-	export TUXDIR=~/tuxHome/tuxedo12.1.3.0.0
-  else
-	export TUXDIR=~/tuxHome/tuxedo12.2.2.0.0
-  fi
-elif [ -z "$TUXDIR" ]
-    then
-	export TUXDIR=~/tuxHome/tuxedo12.2.2.0.0
-fi
 
 # Create environment setup script setenv.sh
 export HOSTNAME=`uname -n`

@@ -21,15 +21,17 @@ ENV ORACLE_HOME=/u01/oracle \
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN yum -y install unzip gcc file hostname which && yum -y clean all && \
+RUN yum -y install unzip gcc file hostname which util-linux && yum -y clean all && \
     mkdir -p /u01 && chmod a+xr /u01 && \
     groupadd -g 1000 oracle && useradd -b /u01 -m -g oracle -u 1000 -s /bin/bash oracle 
 
 # Copy packages
 # -------------
 COPY tuxedo12.1.3.rsp $TUX_PKG /u01/
+COPY init.sh /u01/oracle/
 COPY oraInst.loc /etc/
 RUN  chown oracle:oracle -R /u01
+RUN  chmod +x /u01/oracle/init.sh
 USER oracle
 
 # Install Tuxedo
@@ -60,3 +62,6 @@ ENV PATH=$PATH:$TUXDIR/bin \
 
 USER oracle
 WORKDIR /u01/oracle
+
+# Define ENTRYPOINT. 
+ENTRYPOINT ["/u01/oracle/init.sh"]

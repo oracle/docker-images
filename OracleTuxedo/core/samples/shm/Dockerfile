@@ -12,5 +12,5 @@ USER oracle
 WORKDIR /u01/oracle
 
 # Define ENTRYPOINT. 
-ENTRYPOINT ["bash","/u01/oracle/simpapp_runme.sh"]
+ENTRYPOINT ["/u01/oracle/simpapp_runme.sh"]
 

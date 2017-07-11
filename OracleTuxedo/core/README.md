@@ -26,7 +26,8 @@ Building Tuxedo Docker Install Images
 1. Into an empty directory:
   1. Download the Tuxedo 12.1.3 or 12.2.2 Linux 64bit installer from [OTN](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html)
   2. Download all the files from this github directory
-  3. Optionally download the latest Tuxedo rolling patch from My Oracle Support
+  3. Drop the downloaded Tuxedo installer to the corresponding version directory
+  4. Optionally download the latest Tuxedo rolling patch from My Oracle Support
 2. cd dockerfiles
 3. Execute 'bash buildDockerImage.sh' to show the usage of the command. Follow [the guide](./dockerfiles/README.md) to create a docker image.
 

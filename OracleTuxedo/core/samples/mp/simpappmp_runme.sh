@@ -1,8 +1,9 @@
 #!/bin/sh
 #
-# Shell script to build and run simpappmp.  It assume TUXDIR has been set, or that 
+# Shell script to run simpappmp.  It assume TUXDIR has been set, or that 
 # Tuxedo has been installed to: ~/tuxHome/tuxedo12.1.3.0.0   If not, invoke 
-# this script with a single argument indicating the location of TUXDIR.
+# this script with a single argument indicating the location of TUXDIR.  It
+# also assumes that simpappmp_build.sh was run during the image build.
 #
 # Author: Todd Little
 #
@@ -16,22 +17,14 @@ elif [ -z "$TUXDIR" ]
 	export TUXDIR=~/tuxHome/tuxedo12.1.3.0.0
 fi
 
+cd /u01/oracle/simpappmp
 # clean up from any previous run
 tmshutdown -y &>/dev/null 
-rm -Rf simpcl simpserv tuxconfig ubbsimple ULOG.*
+rm -Rf tuxconfig ubbsimple ULOG.*
 
-# Create environment setup script setenv.sh
-#export HOSTNAME=`hostname`
-export APPDIR=`pwd`
-
-cat >setenv.sh << EndOfFile
-source  ${TUXDIR}/tux.env
-export HOSTNAME=${LOCALHOST}
-export APPDIR=${APPDIR}
-export TUXCONFIG=${APPDIR}/tuxconfig
-export IPCKEY=112233
-EndOfFile
+# Setup environment variables
 source ./setenv.sh
+export HOSTNAME=`hostname`
 
 # Create the Tuxedo configuration file
 cat >ubbsimplemp << EndOfFile
@@ -81,20 +74,9 @@ simpserv	SRVGRP=APPGRP3 SRVID=1 CLOPT="-A"
 TOUPPER
 EndOfFile
 
-# Get the sources if not already in this directory
-if [ ! -r simpcl.c ]
-    then
-	cp $TUXDIR/samples/atmi/simpapp/simpcl.c .
-fi
-if [ ! -r simpserv.c ]
-    then
-	cp $TUXDIR/samples/atmi/simpapp/simpserv.c .
-fi
-
-# Compile the configuration file and build the client and server
+# Compile the configuration file
 tmloadcf -y ubbsimplemp
-buildclient -o simpcl -f simpcl.c
-buildserver -o simpserv -f simpserv.c -s TOUPPER
+
 # Boot up the domain
 tmboot -y
 # Run the client
@@ -103,7 +85,4 @@ tmboot -y
 ./simpcl "If you see this message, simpapp ran OK" &
 ./simpcl "If you see this message, simpapp ran OK" &
 ./simpcl "If you see this message, simpapp ran OK"
-# Shutdown the domain
-#tmshutdown -y
-
 
