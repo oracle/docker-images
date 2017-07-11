@@ -167,8 +167,8 @@ echo "#########################"
 echo "DATABASE IS READY TO USE!"
 echo "#########################"
 
-# Execute custom provided files (only if directory exists and has files in it)
-runUserScripts $ORACLE_BASE/scripts
+# Execute custom provided startup scripts
+runUserScripts $ORACLE_BASE/scripts/startup
 
 echo "The following output is now a tail of the alert.log:"
 tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
