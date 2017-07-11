@@ -161,6 +161,9 @@ if [ "$?" == "0" ]; then
    
    # Create database
    createDB;
+   
+   # Execute custom provided setup scripts
+   runUserScripts $ORACLE_BASE/scripts/setup
 fi;
 
 echo "#########################"

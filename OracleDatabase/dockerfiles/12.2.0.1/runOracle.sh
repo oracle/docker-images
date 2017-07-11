@@ -154,6 +154,9 @@ else
    
    # Move database operational files to oradata
    moveFiles;
+   
+  # Execute custom provided setup scripts
+  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/setup
 fi;
 
 # Check whether database is up and running
