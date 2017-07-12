@@ -48,7 +48,7 @@ image to be useful.
 
 1. Do not require the use of the `--privileged` flag when running a container.
 
-1. Do not run `ssh` inside a container.
+1. Do not run an SSH daemon (`sshd`) inside a container.
 1. Do not use host networking mode (`--net=host`) for a container.
 1. Do not hard-code any passwords. If passwords are required, generate them
 on container startup using `openssl rand` or accept a password argument during
