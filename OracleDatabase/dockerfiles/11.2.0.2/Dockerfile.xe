@@ -59,7 +59,7 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl && \
     unzip $INSTALL_FILE_1 && \
     rm $INSTALL_FILE_1 &&    \
     rpm -i Disk1/*.rpm &&    \
-    mkdir $ORACLE_BASE/scripts/setup && \
+    mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
     ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
     mkdir $ORACLE_BASE/oradata && \
