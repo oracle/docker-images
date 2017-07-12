@@ -12,6 +12,9 @@ Example of how to apply a custom patch or PSU to the image
 # customdb
 Example of how to create a database with user defined names.
 
+# customscripts
+Example of how to execute custom scripts on database setup/startup.
+
 # plugpdb
 Example of how to plug an existing PDB into a CDB inside the container.
 

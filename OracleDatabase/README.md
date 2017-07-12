@@ -69,9 +69,16 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
-	   -v             The data volume to use for the database.
+	   -v /opt/oracle/oradata
+	                  The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
+	   -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
+	                  Optional: A volume with custom scripts to be run after database startup.
+	                  For further details see the "Running scripts after setup and on startup" section below.
+	   -v /opt/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
+	                  Optional: A volume with custom scripts to be run after database setup.
+	                  For further details see the "Running scripts after setup and on startup" section below.
 
 Once the container has been started and the database created you can connect to it just like to any other database:
 
@@ -112,9 +119,16 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 	                  Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 
-	   -v             The data volume to use for the database.
+	   -v /u01/app/oracle/oradata
+	                  The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
+	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d
+	                  Optional: A volume with custom scripts to be run after database startup.
+	                  For further details see the "Running scripts after setup and on startup" section below.
+	   -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d
+	                  Optional: A volume with custom scripts to be run after database startup.
+	                  For further details see the "Running scripts after setup and on startup" section below.
 
 There are two ports that are exposed in this image:
 * 1521 which is the port to connect to the Oracle Database.
@@ -142,6 +156,25 @@ You may use the same Docker image you used to start the database, to run `sqlplu
 Another option is to use `docker exec` and run `sqlplus` from within the same container already running the database:
 
 	docker exec -ti <container name> sqlplus pdbadmin@ORCLPDB1
+
+### Running scripts after setup and on startup
+The docker images can be configured to run scripts after setup and on startup. Currently `sh` and `sql` extensions are supported.
+For post-setup scripts just mount the volume `/opt/oracle/scripts/setup` or extend the image to include scripts in this directory.
+For post-startup scripts just mount the volume `/opt/oracle/scripts/startup` or extend the image to include scripts in this directory.
+Both of those locations are also represented under the symbolic link `/docker-entrypoint-initdb.d`. This is done to provide
+synergy with other database Docker images. The user is free to decide whether he wants to put his setup and startup scripts
+under `/opt/oracle/scripts` or `/docker-entrypoint-initdb.d`.
+
+After the database is setup and/or started the scripts in those folders will be executed against the database in the container.
+SQL scripts will be executed as sysdba, shell scripts will be executed as the current user. To ensure proper order it is
+recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
+
+**Note:** The startup scripts will also be executed after the first time database setup is complete.
+
+The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
+
+    docker run --name oracle-ee -p 1521:1521 -v /home/oracle/myScripts:/opt/oracle/scripts/startup -v /home/oracle/oradata:/opt/oracle/oradata oracle/database:12.2.0.1-ee
+    
 
 ## Known issues
 * The [`overlay` storage driver](https://docs.docker.com/engine/userguide/storagedriver/selectadriver/) on CentOS has proven to run into Docker bug #25409. We recommend using `btrfs` or `overlay2` instead. For more details see issue #317.

@@ -154,14 +154,22 @@ else
    
    # Move database operational files to oradata
    moveFiles;
+   
+  # Execute custom provided setup scripts
+  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/setup
+
 fi;
 
 # Check whether database is up and running
 $ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
-   echo "#########################"
-   echo "DATABASE IS READY TO USE!"
-   echo "#########################"
+  echo "#########################"
+  echo "DATABASE IS READY TO USE!"
+  echo "#########################"
+     
+  # Execute custom provided startup scripts
+  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
+  
 else
    echo "#####################################"
    echo "########### E R R O R ###############"
