@@ -17,10 +17,7 @@ mkdir -p $ORACLE_BASE/scripts/setup && \
 mkdir $ORACLE_BASE/scripts/startup && \
 ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
 mkdir $ORACLE_BASE/oradata && \
-chmod ug+x $ORACLE_BASE/$PWD_FILE && \
-chmod ug+x $ORACLE_BASE/$RUN_FILE && \
-chmod ug+x $ORACLE_BASE/$START_FILE && \
-chmod ug+x $ORACLE_BASE/$CREATE_DB_FILE && \
+chmod ug+x $ORACLE_BASE/*.sh && \
 yum -y install oracle-rdbms-server-12cR1-preinstall unzip wget tar openssl && \
 yum clean all && \
 echo oracle:oracle | chpasswd && \

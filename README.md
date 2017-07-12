@@ -1,6 +1,6 @@
 # Docker Images from Oracle
 
-This repository stores Dockerfiles and samples to build Docker images for Oracle products and Open Source projects.
+This repository contains Dockerfiles and samples to build Docker images for Oracle products and open source projects.
 
  - [Oracle Coherence](https://github.com/oracle/docker-images/tree/master/OracleCoherence)
  - [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase)
@@ -9,6 +9,7 @@ This repository stores Dockerfiles and samples to build Docker images for Oracle
  - [Oracle Tuxedo](https://github.com/oracle/docker-images/tree/master/OracleTuxedo)
  - [Oracle TSAM Plus](https://github.com/oracle/docker-images/tree/master/OracleTSAM)
  - [Oracle WebLogic](https://github.com/oracle/docker-images/tree/master/OracleWebLogic)
+ - [Oracle Business Intelligence](https://github.com/oracle/docker-images/tree/master/OracleBI)
 
 And Open Source projects:
 
@@ -17,7 +18,7 @@ And Open Source projects:
  - [NoSQL](https://github.com/oracle/docker-images/tree/master/NoSQL)
  - [OpenJDK](/OpenJDK)
 
-Oracle Linux images can be found in the [`OracleLinux-images`](https://github.com/oracle/docker/tree/OracleLinux-images) branch of this repository.
+Oracle Linux images can be found in the [`Oracle Linux Container Images repository`](https://github.com/oracle/ol-container-images).
 
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 

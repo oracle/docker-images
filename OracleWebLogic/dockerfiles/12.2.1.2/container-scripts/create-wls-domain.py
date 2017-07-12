@@ -8,8 +8,10 @@
 # Author: bruno.borges@oracle.com
 # ==============================================
 domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
+admin_name  = os.environ.get("ADMIN_NAME", "AdminServer")
+admin_username  = os.environ.get("ADMIN_USERNAME", "weblogic")
+admin_pass  = "ADMIN_PASSWORD"
 admin_port   = int(os.environ.get("ADMIN_PORT", "7001"))
-admin_pass   = "ADMIN_PASSWORD" 
 domain_path  = '/u01/oracle/user_projects/domains/%s' % domain_name
 production_mode = os.environ.get("PRODUCTION_MODE", "prod")
 
@@ -18,6 +20,8 @@ print('admin_port      : [%s]' % admin_port);
 print('domain_path     : [%s]' % domain_path);
 print('production_mode : [%s]' % production_mode);
 print('admin password  : [%s]' % admin_pass);
+print('admin name      : [%s]' % admin_name);
+print('admin username  : [%s]' % admin_username);
 
 # Open default domain template
 # ======================
@@ -33,6 +37,7 @@ setOption('DomainName', domain_name)
 # Configure the Administration Server and SSL port.
 # =========================================================
 cd('/Servers/AdminServer')
+set('Name', admin_name)
 set('ListenAddress', '')
 set('ListenPort', admin_port)
 
@@ -57,7 +62,7 @@ set('LogLevel', 'FINEST')
 
 # Set the Node Manager user name and password (domain name will change after writeDomain)
 cd('/SecurityConfiguration/base_domain')
-set('NodeManagerUsername', 'weblogic')
+set('NodeManagerUsername', admin_username)
 set('NodeManagerPasswordEncrypted', admin_pass)
 
 # Write Domain

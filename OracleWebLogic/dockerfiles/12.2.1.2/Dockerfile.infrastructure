@@ -34,6 +34,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # --------------------------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
+    SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin
     
 # Setup filesystem and oracle user
@@ -41,17 +42,22 @@ ENV ORACLE_HOME=/u01/oracle \
 # ------------------------------------------------------------  
 RUN mkdir -p /u01 && \
     chmod a+xr /u01 && \
-    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
-    chown oracle:oracle -R /u01
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
    
 # Copy scripts
 #-------------
 COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls-domain.py /u01/oracle/
 
+# Domain and Server environment variables
+# ------------------------------------------------------------
 ENV SCRIPT_FILE=/u01/oracle/createAndStartEmptyDomain.sh \
     DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain} \
-    ADMIN_PORT="${ADMIN_PORT:-7001}" 
+    ADMIN_PORT="${ADMIN_PORT:-7001}" \
+    ADMIN_USERNAME="${ADMIN_USERNAME:-weblogic}" \
+    ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
+    ADMIN_PASSWORD="${ADMIN_PASSWORD:-""}"
+
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -61,7 +67,8 @@ ENV FMW_PKG=fmw_12.2.1.2.0_infrastructure_Disk1_1of1.zip \
 # Copy packages
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
-RUN chmod +xr $SCRIPT_FILE 
+RUN chown oracle:oracle -R /u01 && \
+    chmod +xr $SCRIPT_FILE 
 
 # Install
 # ------------------------------------------------------------

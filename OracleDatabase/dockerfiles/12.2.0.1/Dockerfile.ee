@@ -4,7 +4,7 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 12c Release 1 Enterprise Edition
+# This is the Dockerfile for Oracle Database 12c Release 2 Enterprise Edition
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
