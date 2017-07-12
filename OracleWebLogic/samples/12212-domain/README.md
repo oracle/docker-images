@@ -4,7 +4,7 @@ This Dockerfile extends the Oracle WebLogic image by creating a sample WLS domai
 
 Util scripts are copied into the image enabling users to plug NodeManager automatically into the AdminServer running on another container.
 
-###Admin Password
+### Admin Password
 
 On the first startup of the container a random password will be generated for the Administration of the domain. You can find this password in the output line:
 
@@ -14,9 +14,9 @@ If you need to find the password at a later time, grep for "password" in the Doc
 
     $ docker logs --details <Container-id>
 
-Note: The administration password can be passed in at runtime and override the generated password.  If using the auto-generated password please make sure to pass the password into the Managed Server container at runtime.
+**NOTE:** The administration password can be passed in at runtime by using the -e option and override the generated password.  If using the auto-generated password please make sure to pass the password into the Managed Server container at runtime.
 
-#How to Build and Run
+# How to Build and Run
 
 **NOTE:** First make sure you have built **oracle/weblogic:12.2.1.2-developer**. 
 
@@ -41,11 +41,11 @@ The domain directory needs to be externalized by using Named Data Volumes. The A
 
 To start the containerized Admin Server, run
 
-        $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001--env-file ./domain.properties -v <host directory>:/u01/oracle/user_projects 12212-domain
+        $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 --env-file ./domain.properties -e ADMIN_PASSWORD=<admin_password> -v <host directory>:/u01/oracle/user_projects 12212-domain
 
 To start a containerized Managed Server to self-register with the Admin Server above, run:
 
-        $ docker run -d --link wlsadmin:wlsadmin -p 8001:8001 --env-file ./domain.properties --volumes-from wlsadmin 12212-domain createServer.sh
+        $ docker run -d --link wlsadmin:wlsadmin -p 8001:8001 --env-file ./domain.properties -e ADMIN_PASSWORD=<admin password>  --volumes-from wlsadmin 12212-domain createServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a cluster setup, on a single host environment.
 
