@@ -6,7 +6,7 @@
 #
 #
 #Refer to OHS documentation for more details and examples
-#Section 2.4 @ http://docs.oracle.com/middleware/1221/webtier/develop-plugin/oracle.htm#PLGWL553
+#Section 2.4 @ http://docs.oracle.com/middleware/12212/webtier/develop-plugin/oracle.htm#PLGWL553
 #*************************************************************************
 LoadModule weblogic_module   "/u01/oracle/ohssa/ohs/modules/mod_wl_ohs.so"
 

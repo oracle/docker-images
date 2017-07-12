@@ -1,9 +1,7 @@
-#!/usr/bin/python
-# Author: hemastuti.baruah@oracle.com
-#
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
-# Starts the ohs_sa1 component server inside the ohsDomain
+# Author: hemastuti.baruah@oracle.com
+# Stops the ohs_sa1 component server inside the ohsDomain
 # ==============================================
 import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
@@ -27,6 +25,6 @@ except (KeyError), why:
     sys.exit("Error: Missing Environment Variables " + str(why))
 nmConnect(username='weblogic',password=nm_pass,domainName=domain_name)
 nmServerStatus(serverName=ohs_comp_name,serverType='OHS')
-nmSoftRestart(serverName=ohs_comp_name,serverType='OHS')
+nmKill(serverName=ohs_comp_name,serverType='OHS')
 nmServerStatus(serverName=ohs_comp_name,serverType='OHS')
 exit()
