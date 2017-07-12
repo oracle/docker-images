@@ -143,6 +143,17 @@ Another option is to use `docker exec` and run `sqlplus` from within the same co
 
 	docker exec -ti <container name> sqlplus pdbadmin@ORCLPDB1
 
+### Running scripts on startup
+The docker images can be configured to run scripts on startup. Currently `sh` and `sql` extensions are supported.  You can either 
+mount the volume `/docker-entrypoint-initdb.d` or extend the image to include scripts in this directory. After the image is started
+the scripts in `/docker-entrypoint-initdb.d` will be executed against the image. SQL scripts will be executed as sysdba, shell scripts 
+will be executed as the current user. To ensure proper order it is recommended to prefix your scripts with a number. For example 
+`01_users.sql`, `02_permissions.sql`, etc. The example below mounts the local directory scripts to `/docker-entrypoint-initdb.d`.
+
+    docker run --rm -ti -v scripts:/docker-entrypoint-initdb.d oracle/database:12.2.0.1-ee sqlplus pdbadmin/<yourpassword>@//<db-container-ip>:1521/ORCLPDB1
+    
+
+
 ## Known issues
 * The [`overlay` storage driver](https://docs.docker.com/engine/userguide/storagedriver/selectadriver/) on CentOS has proven to run into Docker bug #25409. We recommend using `btrfs` or `overlay2` instead. For more details see issue #317.
 

@@ -130,6 +130,19 @@ echo "#########################"
 echo "DATABASE IS READY TO USE!"
 echo "#########################"
 
+echo "Executing user defined scripts"
+
+for f in /docker-entrypoint-initdb.d/*; do
+    case "$f" in
+        *.sh)     echo "$0: running $f"; . "$f" ;;
+        *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
+        *)        echo "$0: ignoring $f" ;;
+    esac
+    echo
+done
+
+echo "DONE: Executing user defined scripts"
+
 tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
 childPID=$!
 wait $childPID
