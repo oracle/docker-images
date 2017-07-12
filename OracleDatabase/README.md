@@ -73,10 +73,10 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	                  The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
-	   -v /opt/oracle/scripts/startup
+	   -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
 	                  Optional: A volume with custom scripts to be run after database startup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
-	   -v /opt/oracle/scripts/setup
+	   -v /opt/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
 	                  Optional: A volume with custom scripts to be run after database setup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
 
@@ -123,10 +123,10 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 	                  The data volume to use for the database.
 	                  Has to be owned by the Unix user "oracle" or set appropriately.
 	                  If omitted the database will not be persisted over container recreation.
-	   -v /u01/app/oracle/scripts/startup
+	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d
 	                  Optional: A volume with custom scripts to be run after database startup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
-	   -v /u01/app/oracle/scripts/setup
+	   -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d
 	                  Optional: A volume with custom scripts to be run after database startup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
 
@@ -158,6 +158,9 @@ Another option is to use `docker exec` and run `sqlplus` from within the same co
 The docker images can be configured to run scripts after setup and on startup. Currently `sh` and `sql` extensions are supported.
 For post-setup scripts just mount the volume `/opt/oracle/scripts/setup` or extend the image to include scripts in this directory.
 For post-startup scripts just mount the volume `/opt/oracle/scripts/startup` or extend the image to include scripts in this directory.
+Both of those locations are also represented under the symbolic link `/docker-entrypoint-initdb.d`. This is done to provide
+synergy with other database Docker images. The user is free to decide whether he wants to put his setup and startup scripts
+under `/opt/oracle/scripts` or `/docker-entrypoint-initdb.d`.
 
 After the database is setup and/or started the scripts in those folders will be executed against the database in the container.
 SQL scripts will be executed as sysdba, shell scripts will be executed as the current user. To ensure proper order it is

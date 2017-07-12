@@ -144,16 +144,16 @@ if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    $ORACLE_BASE/$START_FILE;
    
 else
-   # Remove database config files, if they exist
-   rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
-   rm -f $ORACLE_HOME/dbs/orapw$ORACLE_SID
-   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
+  # Remove database config files, if they exist
+  rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
+  rm -f $ORACLE_HOME/dbs/orapw$ORACLE_SID
+  rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
-   # Create database
-   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD;
+  # Create database
+  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD;
    
-   # Move database operational files to oradata
-   moveFiles;
+  # Move database operational files to oradata
+  moveFiles;
    
   # Execute custom provided setup scripts
   $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/setup
