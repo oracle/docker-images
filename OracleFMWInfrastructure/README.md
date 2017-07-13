@@ -21,7 +21,7 @@ You must first download the Oracle Server JRE binary and drop in folder `../Orac
 You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8).
 
 ### Building the Oracle FMW Infrastructure 12.2.1.2 base image
-**IMPORTANT:**If you are building the Oracle FMW Infrastructure image you must first download the Oracle WebLogic FMW Infrastructure 12.2.1.2 binary and drop in folder `../OracleFMWInfrastructure/dockerfiles/12.2.1.2`. 
+**IMPORTANT:**If you are building the Oracle FMW Infrastructure image you must first download the Oracle FMW Infrastructure 12.2.1.2 binary and drop in folder `../OracleFMWInfrastructure/dockerfiles/12.2.1.2`. 
 
         $ sh buildDockerImage.sh
         Usage: buildDockerImage.sh -v [version]
@@ -31,6 +31,7 @@ You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry]
            -v: version to build. Required.
            Choose : 12.2.1.2
            -c: enables Docker image layer cache during build
+           -s: skips the MD5 check of packages
 
         LICENSE CDDL 1.0 + GPL 2.0
 
