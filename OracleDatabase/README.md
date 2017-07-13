@@ -12,6 +12,12 @@ To assist in building the images, you can use the [buildDockerImage.sh](dockerfi
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
+### Requirements for Building
+In order to successfully build this image, please ensure your host environment has:
+
+1. Enough Docker storage space: 20 GB minimum
+1. Enough Swap space: 1 GB minimum
+
 ### Building Oracle Database Docker Install Images
 **IMPORTANT:** You will have to provide the installation binaries of Oracle Database and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html). You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
