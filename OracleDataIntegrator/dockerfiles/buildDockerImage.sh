@@ -2,7 +2,7 @@
 #
 # Since: May, 2017
 # Author: manish.vaishnani@oracle.com
-# Description: script to build a Docker image for Oracle Data Intigrator. The install mode is "standalone"
+# Description: script to build a Docker image for Oracle Data Integrator. The install mode is "standalone"
 #
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -14,7 +14,7 @@ usage() {
 cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-s]
-Builds a Docker Image for Oracle Data Intigrator.
+Builds a Docker Image for Oracle Data Integrator.
 
 Parameters:
    -v: Release version to build. Required. E.g 12.2.1.2.6
@@ -115,7 +115,7 @@ echo ""
 
 if [ $? -eq 0 ]; then
 cat << EOF
-  Oracle Data Intigrator Docker Image for version: $VERSION is ready to be extended.
+  Oracle Data Integrator Docker Image for version: $VERSION is ready to be extended.
 
     --> $IMAGE_NAME
 
@@ -123,6 +123,6 @@ cat << EOF
 
 EOF
 else
-  echo "Oracle Data Intigrator Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "Oracle Data Integrator Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
 
