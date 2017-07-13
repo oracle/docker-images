@@ -1,5 +1,3 @@
-*                         @brunoborges @Djelibeybi
-
 OracleDatabase/*          @gvenzl
 OracleCoherence/*         @thegridman
 OracleJava/*              @aureliogrb
@@ -9,3 +7,5 @@ OracleInstantClient/*     @gvenzl
 OracleFMWInfrastructure/* @mriccell
 OracleTuxedo/*            @toddinpal
 ContainerCloud/*          @mikeraab
+
+*                         @brunoborges @Djelibeybi
