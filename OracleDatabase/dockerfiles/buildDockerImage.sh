@@ -88,6 +88,10 @@ while getopts "hesxiv:o:" optname; do
     "o")
       DOCKEROPS="$OPTARG"
       ;;
+    "?")
+      usage;
+      exit 1;
+      ;;
     *)
     # Should not occur
       echo "Unknown error while processing options inside buildDockerImage.sh"
