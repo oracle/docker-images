@@ -4,11 +4,11 @@ This folder contains the information on how to create a Tuxedo docker image base
 ## To use
 1. Into an empty directory:
   1. Download the Tuxedo 12.1.3 or 12.2.2 Linux 64 bit installer from [OTN](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html)
-  2. Download all the files from this github directory to a local directory
+  2. Download all the files from this GitHub repository to a local directory
   3. Drop the downloaded Tuxedo installer to the corresponding version directory
   4. Optionally download the latest Tuxedo rolling patch from My Oracle Support
 2. Into the local directory
-3. Execute ``buildDockerImage.sh -v 12.1.3 -i tuxedo121300_64_Linux_01_x86.zip -s`` to create an image for Tuxedo 12.1.3.
+3. Execute ``./buildDockerImage.sh -v 12.1.3 -i tuxedo121300_64_Linux_01_x86.zip -s`` to create an image for Tuxedo 12.1.3.
 
 Notes:
    1. Before you run buildDockerImage.sh, if your Tuxedo was other than 12.1.3, you need change above command according to version, and installer name. For instance, 12.2.2 for version and tuxedo122200_64_Linux_01_x86.zip for the installer name.

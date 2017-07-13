@@ -27,11 +27,11 @@ RUN yum -y install unzip gcc file hostname which util-linux && yum -y clean all 
 
 # Copy packages
 # -------------
-COPY tuxedo12.2.2.rsp $TUX_PKG /u01/
-COPY init.sh /u01/oracle/
-COPY oraInst.loc /etc/
-RUN  chown oracle:oracle -R /u01
-RUN  chmod +x /u01/oracle/init.sh
+COPY tuxedo12.2.2.rsp $TUX_PKG init.sh oraInst.loc /u01/ 
+RUN  mv /u01/init.sh /u01/oracle/init.sh && \
+     mv /u01/oraInst.loc /etc/ && \
+     chown oracle:oracle -R /u01 && \
+     chmod +x /u01/oracle/init.sh
 USER oracle
 
 # Install Tuxedo

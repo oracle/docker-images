@@ -93,7 +93,7 @@ echo "====================="
 if [ ! -e ${VERSION}/${INSTALLER} ]
 then
   echo "Download the Tuxedo ZIP Distribution and"
-  echo "drop the file ${INSTALLER} in this folder before"
+  echo "drop the file ${INSTALLER} in ${VERSION} folder before"
   echo "building this Tuxedo Docker container!"
   exit 
 fi
@@ -127,7 +127,7 @@ if [ "$?" = "0" ]
     then
 	echo ""
 	echo "Tuxedo Docker image is ready to be used. To create a container, run:"
-	echo "docker run -d -v \${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedo:${VERSION} /bin/bash"
+	echo "docker run -d -v \${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedo:${VERSION}"
 	echo "Note: \${LOCAL_DIR} is a local dir which used in docker image as external storage, it can be any dir."
     else
 	echo "Build of Tuxedo Docker image failed."

@@ -1,6 +1,6 @@
 Tuxedo on Docker
 ===============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes  [samples](samples/) for Tuxedo 12.1.3, and 12.2.2 based on Oracle Linux and Oracle JDK 8 (Server).
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes Dockerfiles for Tuxedo 12.1.3, and 12.2.2 based on Oracle Linux and Oracle JDK 8 (Server).
 
 The certification of Tuxedo on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
@@ -11,7 +11,7 @@ This folder contains the information and examples of how to use [Tuxedo](http://
 
 How to build and run
 
-This project offers sample Dockerfiles for Tuxedo 12cR2 (12.1.3.0) and Tuxedo 12cR2 (12.2.2.0). To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage.
+This project offers Dockerfiles for Tuxedo 12cR2 (12.1.3.0) and Tuxedo 12cR2 (12.2.2.0). To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage.
 
 The buildDockerImage.sh script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their prefered set of parameters.
 Building Oracle JDK (Server JRE) base image
@@ -25,17 +25,16 @@ Building Tuxedo Docker Install Images
 ## To use
 1. Into an empty directory:
   1. Download the Tuxedo 12.1.3 or 12.2.2 Linux 64bit installer from [OTN](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html)
-  2. Download all the files from this github directory
+  2. Download all the files from this GitHub repository
   3. Drop the downloaded Tuxedo installer to the corresponding version directory
   4. Optionally download the latest Tuxedo rolling patch from My Oracle Support
 2. cd dockerfiles
-3. Execute 'bash buildDockerImage.sh' to show the usage of the command. Follow [the guide](./dockerfiles/README.md) to create a docker image.
+3. Execute './buildDockerImage.sh' to show the usage of the command. Follow [the guide](./dockerfiles/README.md) to create a docker image.
 
 You should end up with a docker image tagged oracle/tuxedo:version, for instance, oracle/tuxedo:12.2.2.
 
-You can then start the image in a new container with:  `docker run -i -t oracle/tuxedo:<version> /bin/bash`, for instance, `docker run -i -t oracle/tuxedo:12.2.2 /bin/bash`
-which will put you into the container with a bash prompt.  If you want to test the new container, simply execute the `simpapp_runme.sh` in an empty
-directory and the script will build and run the Tuxedo simpapp application.
+You can then start the image in a new container with: ``docker run -d -v \${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedo:<VERSION>``.
+Note: \${LOCAL_DIR} is a local dir which used in docker image as external storage, it can be any dir.
 
 
  * Tuxedo Distribution and Documentation
