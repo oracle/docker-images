@@ -20,8 +20,8 @@ You must first download the Oracle Server JRE binary and drop in folder `../Orac
 
 You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8).
 
-### Building the Oracle WebLogic Infrastructure 12.2.1.2 base image
-**IMPORTANT:**If you are building the Oracle WebLogic Infrastructure image you must first download the Oracle WebLogic Infrastructure 12.2.1.2 binary and drop in folder `../OracleFMWInfrastructure/dockerfiles/12.2.1.2`. 
+### Building the Oracle FMW Infrastructure 12.2.1.2 base image
+**IMPORTANT:**If you are building the Oracle FMW Infrastructure image you must first download the Oracle WebLogic FMW Infrastructure 12.2.1.2 binary and drop in folder `../OracleFMWInfrastructure/dockerfiles/12.2.1.2`. 
 
         $ sh buildDockerImage.sh
         Usage: buildDockerImage.sh -v [version]
@@ -110,7 +110,7 @@ Follow the steps below:
   
   5. Start a container to launch the Admin Server from the image created in step 3. The environment variables used to configure the InfraDomain are defined in infraDomain.env.list file. Call docker run from the **dockerfiles/12.2.1.2** directory where the infraDomain.env.list file is and pass the file name at runtime. To run a Admin Server container call: 
 
-        $ docker run --detach=true -p 9001:7001 --network=InfraNET -v <host volume>:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
+        $ docker run --detach=true -p 9001:7001 --network=InfraNET -v "host volume":/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
 
   6. Access the administration console
 
