@@ -75,7 +75,7 @@ If you need to find the passwords at a later time, grep for "password" in the Do
 The best way to create your own domain or extend an existing domain is by using the [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [createInfraDomain.py](dockerfiles/12.2.1.2/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Running the Oracle FMW Infrastructure Domain Docker Image
-To try a sample of a FMW Infrastructure Domain image configured, you will need the FMW Infrastructure Domain image and an Oracle Database which could be running in a container. If you are interested in using the the Oracle Database image, you can be pull it from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in GitHub. 
+To try a sample of a FMW Infrastructure Domain image configured, you will need the FMW Infrastructure Domain image and an Oracle Database which could be running in a container. If you are interested in using the the Oracle Database image, you can pull it from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in GitHub. 
 
 Follow the steps below:
 
