@@ -72,10 +72,10 @@ If you need to find the passwords at a later time, grep for "password" in the Do
         $ docker logs --details <Container-id>
 
 ### Write your own Oracle Fusion Middleware Infrastructure domain with WLST
-The best way to create your own, or extend domains is by using [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [createInfraDomain.py](dockerfiles/12.2.1.2/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
+The best way to create your own domain or extend an existing domain is by using the [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [createInfraDomain.py](dockerfiles/12.2.1.2/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Running the Oracle FMW Infrastructure Domain Docker Image
-To try a sample of a FMW Infrastructure Domain image configured, you will need two images, the FMW Infrastructure Domain image and an Oracle Database image. The Oracle Database image can be pulled from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in GitHub. 
+To try a sample of a FMW Infrastructure Domain image configured, you will need the FMW Infrastructure Domain image and an Oracle Database which could be running in a container. If you are interested in using the the Oracle Database image, you can be pull it from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in GitHub. 
 
 Follow the steps below:
 
@@ -109,9 +109,9 @@ Follow the steps below:
 
         $ docker images
   
-  5. Start a container to launch the Admin Server from the image created in step 3. The environment variables used to configure the InfraDomain are defined in infraDomain.env.list file. Call docker run from the **dockerfiles/12.2.1.2** directory where the infraDomain.env.list file is and pass the file name at runtime. To run a Admin Server container call: 
+  5. Start a container to launch the Admin Server from the image created in step 3. The environment variables used to configure the InfraDomain are defined in infraDomain.env.list file. Call docker run from the **dockerfiles/12.2.1.2** directory where the infraDomain.env.list file is and pass the file name at runtime. To run an Admin Server container call: 
 
-        $ docker run --detach=true -p 9001:7001 --network=InfraNET -v "host volume":/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
+        $ docker run --detach=true -p 9001:7001 --network=InfraNET -v <host volume>:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
 
   6. Access the administration console
 
