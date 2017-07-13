@@ -86,7 +86,7 @@ while getopts "hesxiv:" optname; do
       ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+      echo "Unknown error while processing options inside buildDockerImage.sh $optname"
       ;;
   esac
 done
@@ -123,25 +123,26 @@ docker info
 echo "=========================="
 
 # Proxy settings
-PROXY_SETTINGS=""
+BUILD_VARIABLES=""
 if [ "${http_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg http_proxy=${http_proxy}"
 fi
 
 if [ "${https_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg https_proxy=${https_proxy}"
 fi
 
 if [ "${ftp_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
 if [ "${no_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
+  BUILD_VARIABLES="$BUILD_VARIABLES --build-arg no_proxy=${no_proxy}"
 fi
 
-if [ "$PROXY_SETTINGS" != "" ]; then
-  echo "Proxy settings were found and will be used during the build."
+if [ "$BUILD_VARIABLES" != "" ]; then
+  echo "Build variables were found and will be used during the build.";
+  echo "$BUILD_VARIABLES";
 fi
 
 # ################## #
@@ -151,7 +152,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
+docker build --force-rm=true --no-cache=true $DOCKEROPS $BUILD_VARIABLES -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
   echo "There was an error building the image."
   exit 1
 }
