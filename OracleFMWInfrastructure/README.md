@@ -18,8 +18,10 @@ You must first download the Oracle Server JRE binary and drop in folder `../Orac
         $ cd ../OracleJava/java-8
         $ sh build.sh
 
-You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8).  If you pull the Server JRE 8 from the Oracle Container Registry you must edit you Dockerfile and change the FROM clause to be "FROM container-registry.oracle.com/java/serverjre". If you pull the Server JRE 8 from the DockerStore you must edit you Dockerfile and change the FROM clause to be "FROM store/oracle/serverjre:8".
-
+You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8). When pulling the Server JRE 8 image retag the image so that it works with the existing Dockerfiles.
+        $ docker tag container-registry.oracle.com/java/serverjre:8 oracle/serverjre:8
+        $ docker tag store/oracle/serverjre:8 oracle/serverjre:8
+        
 ### Building the Oracle FMW Infrastructure 12.2.1.2 base image
 **IMPORTANT:**If you are building the Oracle FMW Infrastructure image you must first download the Oracle FMW Infrastructure 12.2.1.2 binary and drop in folder `../OracleFMWInfrastructure/dockerfiles/12.2.1.2`. 
 
@@ -75,7 +77,7 @@ If you need to find the passwords at a later time, grep for "password" in the Do
 The best way to create your own domain or extend an existing domain is by using the [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [createInfraDomain.py](dockerfiles/12.2.1.2/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create DataSources and Connection pools, Security Realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Running the Oracle FMW Infrastructure Domain Docker Image
-To try a sample of a FMW Infrastructure Domain image configured, you will need the FMW Infrastructure Domain image and an Oracle Database which could be running in a container. If you are interested in using the the Oracle Database image, you can pull it from the [DockerStore](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in GitHub. 
+To run a FMW Infrastructure Domain sample container, you will need the FMW Infrastructure Domain image and an Oracle Database. The Oracle Database could be remote or running in a container. If you want to run Oracle Database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or build your own image using the Dockerfiles and Scripts in this Git repository.
 
 Follow the steps below:
 
@@ -111,7 +113,7 @@ Follow the steps below:
   
   5. Start a container to launch the Admin Server from the image created in step 3. The environment variables used to configure the InfraDomain are defined in infraDomain.env.list file. Call docker run from the **dockerfiles/12.2.1.2** directory where the infraDomain.env.list file is and pass the file name at runtime. To run an Admin Server container call: 
 
-        $ docker run --detach=true -p 9001:7001 --network=InfraNET -v \<host volume\>:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
+        $ docker run -d -p 9001:7001 --network=InfraNET -v $HOST_VOLUME:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
 
   6. Access the administration console
 
@@ -122,7 +124,7 @@ Follow the steps below:
   
   7. Start a container to launch the Managed Server from the image created in step 3. The environment variables used to run the Managed Server image are defined in the file infraserver.env.list. Call docker run from the **dockerfiles/12.2.1.2** directory where the infraserver.env.list file is and pass the file name at runtime. To run a Managed Server container call:
 
-        $ docker run --detach=true -p 9801:8001 --network=InfraNET --volumes-from InfraAdminContainer --name InfraManagedContainer --env-file ./infraServer.env.list oracle/fmw-infrastructure:12.2.1.2 startManagedServer.sh
+        $ docker run -d -p 9801:8001 --network=InfraNET --volumes-from InfraAdminContainer --name InfraManagedContainer --env-file ./infraServer.env.list oracle/fmw-infrastructure:12.2.1.2 startManagedServer.sh
 
 ## Copyright
 Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
