@@ -19,6 +19,7 @@ You must first download the Oracle Server JRE binary and drop in folder `../Orac
         $ sh build.sh
 
 You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8). When pulling the Server JRE 8 image retag the image so that it works with the existing Dockerfiles.
+
         $ docker tag container-registry.oracle.com/java/serverjre:8 oracle/serverjre:8
         $ docker tag store/oracle/serverjre:8 oracle/serverjre:8
         
