@@ -37,13 +37,6 @@ checksumPackages() {
     echo "MD5 does not match! Download again!"
     exit
   fi
-
-#  md5sum -c Checksum.$DISTRIBUTION
-#  if [ "$?" -ne 0 ]; then
-#    echo "MD5 for required packages to build this image did not match!"
-#    echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"
-#    exit $?
-#  fi
 }
 
 if [ "$#" -eq 0 ]; then usage; fi
@@ -97,42 +90,45 @@ fi
 
 echo "====================="
 
-if [ ! -e ${INSTALLER} ]
+if [ ! -e ${VERSION}/${INSTALLER} ]
 then
   echo "Download the Tuxedo ZIP Distribution and"
-  echo "drop the file ${INSTALLER} in this folder before"
+  echo "drop the file ${INSTALLER} in ${VERSION} folder before"
   echo "building this Tuxedo Docker container!"
   exit 
 fi
 
-# You may need uncomment the following lines and RP file name if you need check the RP md5sum value:
-#if [ ! -e p*_121300_Linux-x86-64.zip ]
-#then
-#  echo "Installing Tuxedo without any patches"
-#fi
+# Proxy settings
+PROXY_SETTINGS=""
+if [ "${http_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
+fi
 
-#MD5="3b311c87e921fa9df696bf74c39c3348  p19927652_121300_Linux-x86-64.zip"
-#MD5_CHECK="`md5sum p19927652_121300_Linux-x86-64.zip`"
-#
-#if [ "$MD5" != "$MD5_CHECK" ]
-#then
-#  echo "MD5 does not match! Download again!"
-#  exit
-#fi
+if [ "${https_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
+fi
+
+if [ "${ftp_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
+fi
+
+if [ "${no_proxy}" != "" ]; then
+  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
+fi
+
+if [ "$PROXY_SETTINGS" != "" ]; then
+  echo "Proxy settings were found and will be used during build."
+fi
 
 echo "====================="
 
-# Fix up the locations of things
-cp ${VERSION}/tuxedo${VERSION}.rsp .
-cp ${VERSION}/install.sh .
-cp ${VERSION}/Dockerfile .
-
-docker build -t oracle/tuxedo:${VERSION} .
+docker build $PROXY_SETTINGS -t oracle/tuxedo:${VERSION} ${VERSION}/
 if [ "$?" = "0" ]
     then
 	echo ""
 	echo "Tuxedo Docker image is ready to be used. To create a container, run:"
-	echo "docker run -i -t oracle/tuxedo:${VERSION} /bin/bash"
+	echo "docker run -d -v \${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedo:${VERSION}"
+	echo "Note: \${LOCAL_DIR} is a local dir which used in docker image as external storage, it can be any dir."
     else
 	echo "Build of Tuxedo Docker image failed."
 fi

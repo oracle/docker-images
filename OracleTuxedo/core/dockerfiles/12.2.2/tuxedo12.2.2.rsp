@@ -1,5 +1,5 @@
 ####################################################################
-## Copyright (c) 1999, 2014 Oracle. All rights reserved.          ##
+## Copyright (c) 1999, 2016 Oracle. All rights reserved.          ##
 ##                                                                ##
 ## Specify values for the variables listed below to customize     ##
 ## your installation.                                             ##
@@ -40,7 +40,7 @@ UNIX_GROUP_NAME="oracle"
 #Description: Complete path to the products.xml.
 #Example: FROM_LOCATION = "../stage/products.xml"
 #-------------------------------------------------------------------------------
-FROM_LOCATION="/home/oracle/Downloads/Disk1/stage/products.xml"
+FROM_LOCATION="/u01/Disk1/stage/products.xml"
 
 #-------------------------------------------------------------------------------
 #Name       : FROM_LOCATION_CD_LABEL
@@ -56,7 +56,7 @@ FROM_LOCATION_CD_LABEL=<Value Unspecified>
 #Description: Complete path of the Oracle Home.
 #Example: ORACLE_HOME = "C:\OHOME1"
 #-------------------------------------------------------------------------------
-ORACLE_HOME="/home/oracle/tuxHome"
+ORACLE_HOME="/u01/oracle/tuxHome"
 
 #-------------------------------------------------------------------------------
 #Name       : ORACLE_BASE
@@ -203,9 +203,9 @@ NEXT_SESSION_RESPONSE=<Value Unspecified>
 #Name       : DEINSTALL_LIST
 #Datatype   : StringList
 #Description: List of components to be deinstalled during a deinstall session.
-#Example: DEINSTALL_LIST = {"Tuxedo","12.1.3.0.0"}
+#Example: DEINSTALL_LIST = {"Tuxedo","12.2.2.0.0"}
 #-------------------------------------------------------------------------------
-DEINSTALL_LIST={"Tuxedo","12.1.3.0.0"}
+DEINSTALL_LIST={"Tuxedo","12.2.2.0.0"}
 
 #-------------------------------------------------------------------------------
 #Name       : SHOW_DEINSTALL_CONFIRMATION
@@ -312,9 +312,9 @@ DONT_PROXY_FOR=<Value Unspecified>
 #Name       : TOPLEVEL_COMPONENT
 #Datatype   : StringList
 #Description: The top level component to be installed in the current session.
-#Example: TOPLEVEL_COMPONENT = {"Tuxedo","12.1.3.0.0"}
+#Example: TOPLEVEL_COMPONENT = {"Tuxedo","12.2.2.0.0"}
 #-------------------------------------------------------------------------------
-TOPLEVEL_COMPONENT={"Tuxedo","12.1.3.0.0"}
+TOPLEVEL_COMPONENT={"Tuxedo","12.2.2.0.0"}
 
 #-------------------------------------------------------------------------------
 #Name       : SHOW_SPLASH_SCREEN
@@ -336,7 +336,7 @@ SELECTED_LANGUAGES={"en"}
 #-------------------------------------------------------------------------------
 #Name       : COMPONENT_LANGUAGES
 #Datatype   : StringList
-#Description: Languages supported by this component.List of supported languages : {"en","ja","zh_CN"}
+#Description: Languages supported by this component.List of supported languages : {"en","ja"}
 #Component  : Tuxedo
 #-------------------------------------------------------------------------------
 
@@ -349,7 +349,16 @@ COMPONENT_LANGUAGES={"en"}
 #Component  : Tuxedo
 #-------------------------------------------------------------------------------
 
-INSTALL_TYPE="Full Install"
+INSTALL_TYPE="Custom Install"
+
+#-------------------------------------------------------------------------------
+#Name       : DEPENDENCY_LIST
+#Datatype   : StringList
+#Description: List of dependees that need to be installed along with this product.
+#Component  : Tuxedo
+#-------------------------------------------------------------------------------
+
+DEPENDENCY_LIST={"tuxedoServer:12.2.2.0.0","atmiClient:12.2.2.0.0","corbaClient:12.2.2.0.0","joltClient:12.2.2.0.0","joltJrly:12.2.2.0.0"}
 
 #-------------------------------------------------------------------------------
 #Name       : ENABLE_TSAM_AGENT
@@ -358,7 +367,7 @@ INSTALL_TYPE="Full Install"
 #Component  : tsamAgent
 #-------------------------------------------------------------------------------
 
-ENABLE_TSAM_AGENT=true
+ENABLE_TSAM_AGENT=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : LDAP_SUPPORT_SSL
@@ -367,7 +376,16 @@ ENABLE_TSAM_AGENT=true
 #Component  : tuxedoClientCore
 #-------------------------------------------------------------------------------
 
-LDAP_SUPPORT_SSL=false
+LDAP_SUPPORT_SSL=<Value Unspecified>
+
+#-------------------------------------------------------------------------------
+#Name       : INSTALL_SSL
+#Datatype   : Boolean
+#Description: This variable is to choose install SSL or not.
+#Component  : tuxedoClientCore
+#-------------------------------------------------------------------------------
+
+INSTALL_SSL=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : LDAP_FILTER_FILE
@@ -376,7 +394,7 @@ LDAP_SUPPORT_SSL=false
 #Component  : tuxedoClientCore
 #-------------------------------------------------------------------------------
 
-LDAP_FILTER_FILE=""
+LDAP_FILTER_FILE=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : LDAP_CONFIG
@@ -385,7 +403,7 @@ LDAP_FILTER_FILE=""
 #Component  : tuxedoClientCore
 #-------------------------------------------------------------------------------
 
-LDAP_CONFIG={"","",""}
+LDAP_CONFIG=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : TLISTEN_PORT
@@ -397,39 +415,13 @@ LDAP_CONFIG={"","",""}
 TLISTEN_PORT="3050"
 
 #-------------------------------------------------------------------------------
-#Name       : MIN_CRYPT_BITS_CHOOSE
-#Datatype   : Number
-#Description: This variable is for configure Min Encryption Bits, 
-#0 means min encryption bit set to 0 , 
-#1 means min encryption bit set to 56 , 
-#2 means min encryption bit set to 128, 
-#3 means min encryption bit set to 256.
-#Component  : tuxedoServerBase
-#-------------------------------------------------------------------------------
-
-MIN_CRYPT_BITS_CHOOSE=0
-
-#-------------------------------------------------------------------------------
-#Name       : MAX_CRYPT_BITS_CHOOSE
-#Datatype   : Number
-#Description: This variable is for configure Max Encryption Bits, 
-#0 means max encryption bit set to 0 , 
-#1 means max encryption bit set to 56 , 
-#2 means max encryption bit set to 128, 
-#3 means max encryption bit set to 256.
-#Component  : tuxedoServerBase
-#-------------------------------------------------------------------------------
-
-MAX_CRYPT_BITS_CHOOSE=3
-
-#-------------------------------------------------------------------------------
 #Name       : INSTALL_SAMPLES
 #Datatype   : Boolean
 #Description: This variable is for configure whether need to install Tuxedo samples
 #Component  : tuxedoServerBase
 #-------------------------------------------------------------------------------
 
-INSTALL_SAMPLES=true
+INSTALL_SAMPLES=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : ENCRYPT_CHOICE
@@ -438,7 +430,7 @@ INSTALL_SAMPLES=true
 #Component  : tuxedoServerBase
 #-------------------------------------------------------------------------------
 
-ENCRYPT_CHOICE=0
+ENCRYPT_CHOICE=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : CONFIG_TLISTEN
@@ -447,7 +439,7 @@ ENCRYPT_CHOICE=0
 #Component  : tuxedoServerBase
 #-------------------------------------------------------------------------------
 
-CONFIG_TLISTEN=true
+CONFIG_TLISTEN=<Value Unspecified>
 
 #-------------------------------------------------------------------------------
 #Name       : TLISTEN_PASSWORD
@@ -467,3 +459,42 @@ TLISTEN_PASSWORD="oracle"
 #-------------------------------------------------------------------------------
 
 SSL_PARAMETERS=<Value Unspecified>
+
+#-------------------------------------------------------------------------------
+#Name       : MIN_CRYPT_BITS_CHOOSE
+#Datatype   : Number
+#Description: This variable is for configure Min Encryption Bits, 
+#for LLE:
+#0 means min encryption bit set to 0 , 
+#1 means min encryption bit set to 56 , 
+#2 means min encryption bit set to 128, 
+#3 means min encryption bit set to 256.
+#
+#for SSL:
+#0 means min encryption bit set to 112 , 
+#1 means min encryption bit set to 128 , 
+#2 means min encryption bit set to 256
+#Component  : tuxedoServerBase
+#-------------------------------------------------------------------------------
+
+MIN_CRYPT_BITS_CHOOSE=<Value Unspecified>
+
+#-------------------------------------------------------------------------------
+#Name       : MAX_CRYPT_BITS_CHOOSE
+#Datatype   : Number
+#Description: This variable is for configure Max Encryption Bits, 
+#
+#for LLE:
+#0 means max encryption bit set to 0 , 
+#1 means max encryption bit set to 56 , 
+#2 means max encryption bit set to 128, 
+#3 means max encryption bit set to 256.
+#
+#for SSL:
+#0 means max encryption bit set to 112 , 
+#1 means max encryption bit set to 128 , 
+#2 means max encryption bit set to 256
+#Component  : tuxedoServerBase
+#-------------------------------------------------------------------------------
+
+MAX_CRYPT_BITS_CHOOSE=<Value Unspecified>
