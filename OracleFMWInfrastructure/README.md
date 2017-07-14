@@ -111,7 +111,7 @@ Follow the steps below:
   
   5. Start a container to launch the Admin Server from the image created in step 3. The environment variables used to configure the InfraDomain are defined in infraDomain.env.list file. Call docker run from the **dockerfiles/12.2.1.2** directory where the infraDomain.env.list file is and pass the file name at runtime. To run an Admin Server container call: 
 
-        $ docker run --detach=true -p 9001:7001 --network=InfraNET -v <host volume>:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
+        $ docker run --detach=true -p 9001:7001 --network=InfraNET -v \<host volume\>:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
 
   6. Access the administration console
 
