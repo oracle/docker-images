@@ -3,4 +3,3 @@ binlog-format=ROW
 max_allowed_packet=1G
 log-bin=mysqlLOG
 server-id=1
-binlog-ignore-db=oggddl

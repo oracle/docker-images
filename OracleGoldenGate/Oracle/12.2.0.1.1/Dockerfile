@@ -1,19 +1,25 @@
-#!/bin/bash
+# LICENSE CDDL 1.0 + GPL 2.0
 #
-# Since: June, 2017
-# Author: hadi.koesnodihardjo@oracle.com
-# Description: script to build a Docker image for Oracle GoldenGate for Oracle.
+# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 #
+# ORACLE GoldenGate DOCKERFILES PROJECT
+# -----------------------------------------
+# This is the DockerFile for Oracle GoldenGate for Oracle database 12.2.0.1.1
 #
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+# IMPORTANT
+# -------------------------------------------
+# The resulting image of this Dockerfile would have Oracle 12.1.0.2 and GoldenGate for Oracle Database 12.2.0.1.1 installed in standalone mode.
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) fbo_ggs_Linux_x64_shiphome.zip (Oracle GoldenGate 12c for Oracle Database (12.2.0.1.1))
+#     Download from http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html
 #
-#
-FROM oraclelinux:7-slim
-MAINTAINER OGG PM <bobby.curtis@oracle.com>
+# 
+FROM oracle/database:12.1.0.2-ee
+MAINTAINER Bobby Curtis <bobby.curtis@oracle.com>
 #Container Additional Environment Variables
-ENV OGG_SHIPHOME=V100692-01.zip \
+ENV OGG_SHIPHOME=fbo_ggs_Linux_x64_shiphome.zip \
     OGG_HOME=/u01/app/oracle/product/12.2.0.1/oggcore_1 \
     OGG_PORT=9500 \
     ORACLE_HOME=/u01/app/oracle/product/12.1.0.2/dbhome_1 \
@@ -26,35 +32,16 @@ ENV OGG_SHIPHOME=V100692-01.zip \
     TNS_ADMIN_FILE=$ORACLE_HOME/network/admin/tnsnames.ora \
     GLOBAL_DB_NAME=${HOSTNAME} \
     EM_EXPRESS_PORT=5500 \
-    ODB_SHIPHOME1=database1.zip \
-    ODB_SHIPHOME2=database2.zip \
-    STAGE_SOFTWARE=/u01/software \
-    ORACLE_HOSTNAME=db12cgg \
-    HOSTNAME=db12cgg
+    STAGE_SOFTWARE=/u01/software 
 ENV PATH=$PATH:$ORACLE_HOME/bin:$OGG_HOME \
-    LD_LIBRARY_PATH=.:./lib:/usr/lib/jvm/jre/lib/amd64/server:$OGG_HOME:$LD_LIBRAY_PATH:$ORACLE_HOME/lib \
+    LD_LIBRARY_PATH=/usr/lib/jvm/jre/lib/amd64/server:$OGG_HOME:$OGG_HOME/lib:$LD_LIBRAY_PATH:$ORACLE_HOME/lib \
     CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib:$CLASSPATH
 #Command during the build
-RUN yum install -y java-1.8.0-openjdk vim-minimal util-linux.x86_64 zip unzip tar oracle-rdbms-server-12cR1-preinstall && \ 
-    yum clean all
-
-#DB SHIPHOME
-RUN groupadd oracle && \ 
-    usermod -aG oracle oracle
-RUN mkdir -p $ORACLE_HOME $STAGE_SOFTWARE
-ADD $ODB_SHIPHOME1 $STAGE_SOFTWARE 
-ADD $ODB_SHIPHOME2 $STAGE_SOFTWARE
-ADD db_install.rsp $STAGE_SOFTWARE
-ADD runSQL.sql $STAGE_SOFTWARE
-EXPOSE $ORACLE_DB_LIST_PORT
-EXPOSE $EM_EXPRESS_PORT
-
+USER root
+RUN yum install -y java-1.8.0-openjdk util-linux zip unzip tar && yum clean all && \
+    mkdir -p $ORACLE_HOME $STAGE_SOFTWARE
+#Overwrite the original $RUN_FILE
+ADD runOracleGG.sh $ORACLE_BASE/$RUN_FILE
 #OGG SHIPHOME
-RUN mkdir -p $OGG_HOME && rmdir $OGG_HOME
-RUN chmod -R 777 /u01
-ADD $OGG_SHIPHOME $STAGE_SOFTWARE 
+ADD $OGG_SHIPHOME runSQL.sql $STAGE_SOFTWARE/ 
 EXPOSE $OGG_PORT
-
-#entrypoint info
-ADD entrypoint.sh /
-ENTRYPOINT /entrypoint.sh

@@ -17,5 +17,3 @@ fi
 tail -f $OGG_HOME/dirrpt/MGR.rpt &
 childPID=$!
 
-exec "$@"
-

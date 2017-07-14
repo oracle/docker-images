@@ -1,8 +1,8 @@
 #!/bin/bash
 # 
 # Since: June, 2017
-# Author: hadi.koesnodihardjo@oracle.com
-# Description: script to build a Docker image for GoldenGate BigData
+# Author: Hadi Koesnodihardjo <hadi.koesnodihardjo@oracle.com>
+# Description: script to build a Docker image for Oracle GoldenGate for BigData
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
@@ -10,20 +10,34 @@
 # 
 usage() {
 cat << EOF
-Usage: buildDockerImage.sh -v [version] [-c]
+Usage: buildDockerImage.sh -v [version] [-c] [-s]
 Builds a Docker Image for Oracle GoldenGate for BigData
   
 Parameters:
    -v: version to build. Required.
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -c: enables Docker image layer cache during build
+   -s: skips the MD5 check of packages
+
 * select one distribution only: -d, -g, or -i
 LICENSE CDDL 1.0 + GPL 2.0
-Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 EOF
 exit 0
 }
 if [ "$#" -eq 0 ]; then usage; fi
+
+# Validate packages
+checksumPackages() {
+  echo "Checking if required packages are present and valid..."
+  md5sum -c *.download
+  if [ "$?" -ne 0 ]; then
+    echo "MD5 for required packages to build this image did not match!"
+    echo "Make sure to download missing files in folder dockerfiles. See *.download files for more information"
+    exit $?
+  fi
+}
+
 # Parameters
 VERSION="12.3.0.1.0"
 SKIPMD5=0
@@ -35,6 +49,9 @@ while getopts "hcsdgiv:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "s")
+      SKIPMD5=1
       ;;
     "c")
       NOCACHE=false
@@ -49,6 +66,12 @@ done
 IMAGE_NAME="oracle/oggbigdata:$VERSION"
 # Go into version folder
 cd $VERSION
+# MD5 
+if [ ! "$SKIPMD5" -eq 1 ]; then
+  checksumPackages
+else
+  echo "Skipped MD5 checksum."
+fi
 # Proxy settings
 PROXY_SETTINGS=""
 if [ "${http_proxy}" != "" ]; then
