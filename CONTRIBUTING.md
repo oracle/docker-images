@@ -8,7 +8,30 @@ submit your pull request.
 If you have any questions about a possible submission, feel free to open
 an issue too.
 
-## Pull Request Process
+## Contributing to the Oracle Docker Images repository
+
+Pull requests can be made under
+[The Oracle Contributor Agreement](https://www.oracle.com/technetwork/community/oca-486395.html) (OCA).
+
+For pull requests to be accepted, the bottom of your commit message must have
+the following line using your name and e-mail address as it appears in the
+OCA Signatories list.
+
+```
+Signed-off-by: Your Name <you@example.org>
+```
+
+This can be automatically added to pull requests by committing with:
+
+```
+  git commit --signoff
+```
+
+Only pull requests from committers that can be verified as having
+signed the OCA can be accepted.
+
+### Pull request process
+
 1. Fork this repository
 1. Create a branch in your fork to implement the changes. We recommend using
 the issue number as part of your branch name, e.g. `1234-fixes`
@@ -78,11 +101,4 @@ any defaults that are used if no input is provided.
 gracefully fail if that value is not provided.
 
 
-## Oracle Contributor Agreement
-
-Oracle requires that contributors to all of its open-source projects sign the
-[Oracle Contributor Agreement (OCA)](http://www.oracle.com/technetwork/community/oca-486395.html)
-and email or fax back the completed agreement.
-
-If you have already signed an OCA, please let us know in your pull request, so
-we can flag the PR accordingly.
+*Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.*
