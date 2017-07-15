@@ -101,11 +101,4 @@ any defaults that are used if no input is provided.
 gracefully fail if that value is not provided.
 
 
-## Oracle Contributor Agreement
-
-Oracle requires that contributors to all of its open-source projects sign the
-[Oracle Contributor Agreement (OCA)](http://www.oracle.com/technetwork/community/oca-486395.html)
-and email or fax back the completed agreement.
-
-If you have already signed an OCA, please let us know in your pull request, so
-we can flag the PR accordingly.
+*Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.*
