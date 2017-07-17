@@ -1,0 +1,13 @@
+# LICENSE CDDL 1.0 + GPL 2.0
+#
+# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+[ENGINE]
+
+#DO NOT CHANGE THIS.
+Response File Version=1.0.0.0.0
+
+[GENERIC]
+INSTALL_TYPE=JDeveloper with Business Process Management
+
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
