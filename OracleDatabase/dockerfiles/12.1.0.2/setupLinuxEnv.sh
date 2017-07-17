@@ -13,7 +13,10 @@
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
-mkdir -p $ORACLE_BASE/oradata && \
+mkdir -p $ORACLE_BASE/scripts/setup && \
+mkdir $ORACLE_BASE/scripts/startup && \
+ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
+mkdir $ORACLE_BASE/oradata && \
 chmod ug+x $ORACLE_BASE/*.sh && \
 yum -y install oracle-rdbms-server-12cR1-preinstall unzip wget tar openssl && \
 yum clean all && \

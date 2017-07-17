@@ -19,3 +19,4 @@ DECLINE_SECURITY_UPDATES=true
 
 #Set this to true if My Oracle Support Password is specified
 SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+

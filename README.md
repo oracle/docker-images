@@ -18,7 +18,7 @@ And Open Source projects:
  - [NoSQL](https://github.com/oracle/docker-images/tree/master/NoSQL)
  - [OpenJDK](/OpenJDK)
 
-Oracle Linux images can be found in the [`OracleLinux-images`](https://github.com/oracle/docker/tree/OracleLinux-images) branch of this repository.
+Oracle Linux images can be found in the [`Oracle Linux Container Images repository`](https://github.com/oracle/ol-container-images).
 
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 
