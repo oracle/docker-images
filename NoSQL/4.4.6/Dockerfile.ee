@@ -8,13 +8,13 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) kv-ee4.4.4.6.zip
+# (1) kv-ee4.4.4.6.tar.gz
 #     Download Oracle NoSQL Database Enterprise Edition for Linux x64
 #     http://www.oracle.com/technetwork/database/database-technologies/nosqldb/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
+# Put all downloaded files (in tar.gz format) in the same directory as this Dockerfile
 # Run: 
 #      $ docker build -t oracle/nosqlee:4.4.6 . 
 #
@@ -27,15 +27,10 @@ MAINTAINER Mayuresh A Nirhali <mayuresh.nirhali@oracle.com>
 ENV VERSION="4.4.6" \
     KVHOME=/kv-4.4.6 \
     PACKAGE="kv-ee" \
-    EXTENSION="zip" \
+#    EXTENSION="tar.gz" \
     _JAVA_OPTIONS="-Djava.security.egd=file:/dev/./urandom"
 
-COPY ${PACKAGE}-${VERSION}.${EXTENSION} /
- 
-RUN yum -y install unzip && \
-    unzip kv-ee-4.4.6.zip && \
-    rm "${PACKAGE}-${VERSION}.${EXTENSION}" && \
-    yum -y remove unzip && rm -rf /var/cache/yum/*
+ADD ${PACKAGE}-${VERSION}.${EXTENSION} /
  
 VOLUME ["/kvroot"]
 
