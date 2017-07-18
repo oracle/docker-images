@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Since: March, 2016
-# Author: hemastuti.baruah@oracle.com
+# Since: May, 2017
+# Author: prabhat.kishore@oracle.com
 # Description: script to build a Docker image for Oracle HTTP Server. The install mode is "standalone" i.e. OHS is not managed by or registered to an Oracle WebLogic Server domain
 #
 #
@@ -17,7 +17,7 @@ Usage: buildDockerImage.sh -v [version] [-s]
 Builds a Docker Image for Oracle HTTP Server (standalone) .
 
 Parameters:
-   -v: Release version to build. Required. E.g 12.2.1
+   -v: Release version to build. Required. E.g 12.2.1.2.0
    -s: skips the MD5 check of packages
 
 LICENSE CDDL 1.0 + GPL 2.0
@@ -43,7 +43,7 @@ checksumPackages() {
 
 
 #Parameters
-VERSION="12.2.1"
+VERSION="12.2.1.2.0"
 SKIPMD5=0
 while getopts "hsdgiv:" optname; do
   case "$optname" in
@@ -114,7 +114,7 @@ echo ""
 
 if [ $? -eq 0 ]; then
 cat << EOF
-  OHS Standalone Docker Image for version: $VERSION is ready to be extended.
+  OHS Standalone Docker Image for version: $VERSION is ready to be used.
 
     --> $IMAGE_NAME
 
