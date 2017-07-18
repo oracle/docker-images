@@ -20,7 +20,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.2.1.2-infrastructure
+FROM oracle/fmw-infrastructure:12.2.1.2
 
 # Maintainer
 # ----------
@@ -31,11 +31,15 @@ MAINTAINER Steve Phillips <steve.phillips@oracle.com>
 ENV ORACLE_HOME=/u01/oracle
 
 # Environment variables required for this build (do NOT change)
+# (DOMAIN_NAME/HOME are reset here, to avoid FMW Infra environment leaking through)
 # -------------------------------------------------------------
 ENV BI_DISTRO_ZIP1=fmw_12.2.1.2.0_bi_linux64_Disk1_1of2.zip \
     BI_DISTRO_ZIP2=fmw_12.2.1.2.0_bi_linux64_Disk1_2of2.zip \
     BI_INSTALLER1=bi_platform-12.2.1.2.0_linux64.bin \
-    BI_INSTALLER2=bi_platform-12.2.1.2.0_linux64-2.zip
+    BI_INSTALLER2=bi_platform-12.2.1.2.0_linux64-2.zip \
+    DOMAIN_NAME="${BI_DOMAIN_NAME:-bi}" \
+    DOMAINS_DIR=$ORACLE_HOME/user_projects/domains \
+    DOMAIN_HOME=$ORACLE_HOME/user_projects/domains/${BI_DOMAIN_NAME:-bi}
 
 # Copy packages
 # -------------
@@ -46,7 +50,7 @@ COPY $BI_DISTRO_ZIP1 $BI_DISTRO_ZIP2 install.file oraInst.loc /u01/
 USER root
 
 # tools for installing and running BI
-RUN yum -y install unzip libaio hostname && yum clean all
+RUN yum -y install unzip hostname && yum clean all
 
 USER oracle
 RUN cd /u01 && unzip $BI_DISTRO_ZIP1 && unzip $BI_DISTRO_ZIP2 && cd - && \
