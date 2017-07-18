@@ -8,7 +8,7 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) kv-ee-4.4.4.6.tar.gz
+# (1) kv-ee-4.4.6.tar.gz
 #     Download Oracle NoSQL Database Enterprise Edition for Linux x64
 #     http://www.oracle.com/technetwork/database/database-technologies/nosqldb/downloads/index.html
 #
