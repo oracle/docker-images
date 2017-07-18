@@ -8,7 +8,7 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) kv-ee4.4.4.6.tar.gz
+# (1) kv-ee-4.4.4.6.tar.gz
 #     Download Oracle NoSQL Database Enterprise Edition for Linux x64
 #     http://www.oracle.com/technetwork/database/database-technologies/nosqldb/downloads/index.html
 #
@@ -27,7 +27,7 @@ MAINTAINER Mayuresh A Nirhali <mayuresh.nirhali@oracle.com>
 ENV VERSION="4.4.6" \
     KVHOME=/kv-4.4.6 \
     PACKAGE="kv-ee" \
-#    EXTENSION="tar.gz" \
+    EXTENSION="tar.gz" \
     _JAVA_OPTIONS="-Djava.security.egd=file:/dev/./urandom"
 
 ADD ${PACKAGE}-${VERSION}.${EXTENSION} /
