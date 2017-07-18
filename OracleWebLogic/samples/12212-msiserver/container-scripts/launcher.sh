@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#!/bin/bash
 
 ms_name_from_image=${DEFAULT_MS_NAME}
 number_of_ms=${NUMBER_OF_MS}
@@ -20,18 +20,3 @@ if [ "$ms_name_from_image" != "$ms_name" ]; then
 fi
 
 bin/startManagedWebLogic.sh $ms_name
-
-# Relays SIGTERM to all java processes
-# function relay_SIGTERM {
-#  pid=`grep java /proc/[0-9]*/comm | awk -F / '{ print $3; }'`
-#  echo "Sending SIGTERM to java process " $pid
-#  kill -SIGTERM $pid
-#}
-
-#trap relay_SIGTERM SIGTERM
-
-# bin/startManagedWebLogic.sh $ms_name &
-# while true
-# do
-  # tail -f /dev/null & wait ${!}
-# done

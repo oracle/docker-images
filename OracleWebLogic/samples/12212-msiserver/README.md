@@ -1,9 +1,9 @@
-Example of docker images with WebLogic server in MSI Mode
+Example of Docker images with WebLogic server in MSI Mode
 =========================================================
 This Dockerfile extends the Oracle WebLogic image by creating a domain that configures a managed
 server in MSI mode (or Managed Server Independence mode). In this mode, a managed server can run
 without the need of an admin server. Such a managed server is not driven by admin server for
-configuration or deployment changes. However, it can handle all configuration and deploymnets
+configuration or deployment changes. However, it can handle all configuration and deployments
 already in config.xml like any other managed server. For use cases where the managed server does
 not need to be updated for configuration or deployments, this image can be used by itself without
 running a admin server or node manager
@@ -18,21 +18,14 @@ Next, to build the base msi image, run:
 
 Finally, to start the Managed Server in MSI mode, run:
 
-        $ docker run -d -p 8011:8011 12212-msiserver
+        $ docker run -p 8011:8011 12212-msiserver
 
-Connect to this container instance. You'll notice that the managed server is running from a domain
-located at /u01/msi-server. Under the servers directory, you'll notice a server name that seems
-randomly generated. It is of pattern ms[0-9]*. Say that your generated container id is cf579fd131fc
-and you find that the random managed server name is ms3. You can verify the server is in MSI mode
-by searching for a catalog message BEA-150018
+Among the top few lines on stdout, you'll notice a line that states the randomly chosen server name
+MS Name to be used:  ms9
 
-$ docker ps
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
-cf579fd131fc        12212-msiserver     "/u01/oracle/launc..."   2 minutes ago       Up 2 minutes        0.0.0.0:8011->8011/tcp   vigilant_volhard
+Further down you'll notice a catalog message BEA-150018 indicating server started in Managed Server
+Independence mode
 
-$ docker exec -it cf579fd131fc bash
-
-$ cat servers/ms3/logs/ms3.log | grep BEA-150018
 ####<May 16, 2017, 6:30:09,993 PM GMT> <Info> <Configuration Management> <cf579fd131fc> <> <Thread-11> <> <> <> <1494959409993> <[severity-value: 64] [partition-id: 0] [partition-name: DOMAIN] > <BEA-150018> <This server is being started in Managed Server independence mode in the absence of the Administration Server.> 
 
 Also note that the this server does not have a publicly accessible URL since no application is
@@ -94,35 +87,18 @@ So "simple_filename" helps identify the name of the file where the source is cop
 Using swarm service creation with this image
 --------------------------------------------
 The image called 12212-summercamps-msiserver can be used for Docker service creation
-to scale out to multiple replicas. docker service creation can only be done
-using an image from a docker registry. If you don't have publishing rights to a docker
+to scale out to multiple replicas. Docker service creation can only be done
+using an image from a Docker registry. If you don't have publishing rights to a Docker
 registry you can start one locally. More details can be found here
 https://docs.docker.com/registry/deploying/
 
-Here are the three steps you'll need to start, use and push to your local registry.
-If you do have push rights to an existing docker registry, you can skip to the third
-step
-
-1. Start the registry
-docker run -d -p 5000:5000 --restart=always --name registry registry:2
-
-2. Change docker preferences to add this local registry to your list of insecure registries
-{
-  "insecure-registries" : [
-    "localhost:5000"
-  ]
-}
-
-3. Push to the local registry
+Here is an example of how this image can be pushed to the local registry
 docker tag 12212-summercamps-msiserver localhost:5000/12212-summercamps-msiserver
 docker push localhost:5000/12212-summercamps-msiserver
 
-Now that your image is published to the registry, start by joining swarm, either a swarm
-leader or as a swarm worker
-
-$ docker swarm init
-
-Next create a service using a command like this
+Now that your image is published to the registry, a service can be created using this
+image. You may need init swarm mode if not already done so. Please refer to Docker swarm
+documentation https://docs.docker.com/engine/swarm/
 
 $ docker service create --name city_activity_guide -p 8011:8011 --hostname "msihost" --host "msihost:127.0.0.1" --env "MS_NAME=ms{{.Task.Slot}}" --replicas 3 localhost:5000/12212-summercamps-msiserver:latest
 
