@@ -46,4 +46,4 @@ COPY ${source} /u01/apps/${simple_filename}
 # WLST offline use to update domain configuration
 # ---------------------------------------------
 RUN . $ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh && \
-    java weblogic.WLST /u01/oracle/add-app-to-domain.py $ORACLE_HOME/wlserver/samples/domains/msi-sample $NUMBER_OF_MS $name /u01/apps/${simple_filename}
+    java weblogic.WLST /u01/oracle/add-app-to-domain.py $DOMAINS_DIR/$DOMAIN_NAME $NUMBER_OF_MS $name /u01/apps/${simple_filename} $MS_NAME_PREFIX

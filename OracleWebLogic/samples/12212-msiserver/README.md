@@ -2,7 +2,11 @@ Example of docker images with WebLogic server in MSI Mode
 =========================================================
 This Dockerfile extends the Oracle WebLogic image by creating a domain that configures a managed
 server in MSI mode (or Managed Server Independence mode). In this mode, a managed server can run
-without the need of an admin server
+without the need of an admin server. Such a managed server is not driven by admin server for
+configuration or deployment changes. However, it can handle all configuration and deploymnets
+already in config.xml like any other managed server. For use cases where the managed server does
+not need to be updated for configuration or deployments, this image can be used by itself without
+running a admin server or node manager
 
 How to build and run the base image
 -----------------------------------
@@ -36,15 +40,32 @@ deployed to it yet. When additional images are created by adding application(s) 
 the same command (as above) may be used to launch the server and accessed using the URL
 http://localhost:8011/<relevant-context-root>
 
-Randomly generated managed server name can both be overridden using environment variable.
-For example, the following command may be used to run a managed server with name ms1
+Randomly generated managed server name can be overridden using build arguments or runtime variables.
 
-docker run --name msiserver --env MS_NAME=ms1 12212-msiserver
+**Build Argument ms_name_prefix**
+This argument may be used to alter the prefix of managed server name, and a random
+number prefix is appended to it. For example, the following command may be used to
+run a managed with a name managedServer<RandomNumber>
 
+docker build -t 12212-msiserver --build-arg ms_name_prefix=managedServer .
+
+**Build Argument number_of_ms**
 By default, this image comes configured with 10 managed servers, ms1 to ms10. However, the image
 can be built with configurable number of managed servers using NUMBER_OF_MS argument
 
-docker build -t 12212-msiserver --build-arg NUMBER_OF_MS=15 .
+docker build -t 12212-msiserver --build-arg number_of_ms=15 .
+
+**Other build arguments**
+* domain_name may be used to identify the name of generated domain that gets packed into MSI image. Default value msi-sample
+* domains_dir may be used identify the directory under $ORACLE_HOME where the domain home directory is created. Default value wlserver/samples/domains 
+* ms_port may be used to configure port of the managed server, default is 8011
+* prod_or_dev may be used to identify whether server is started in production or development mode. Defaults to "dev" for development mode.
+
+**Runtime Argument MS_NAME**
+This argument may be used to completely override the managed server name.
+For example, the following command may be used to run a managed server with name ms1
+
+docker run --name msiserver --env MS_NAME=managedServer1 12212-msiserver
 
 How to use the base image to add application
 --------------------------------------------
@@ -63,6 +84,12 @@ summercamps app will now be accessible at
 http://localhost:8011/
 
 As with the base image, you can still override managed server name and cluster name
+**Build arguments**
+Three build arguments may be used to customize the image to include an application of user
+choice. By default, the build arguments point to an example application included in this
+sample. The "name" argument helps identify the name of deployment, while the "source"
+argument helps identify the source of the application. The source is copied into the image.
+So "simple_filename" helps identify the name of the file where the source is copied to
 
 Using swarm service creation with this image
 --------------------------------------------
