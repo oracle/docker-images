@@ -11,7 +11,7 @@ This project offers sample Dockerfiles for:
 # Quickstart Building docker images for Oracle NoSQL Database
 For Enterprise Edition, download the bundle (in tar.gz format) from [Oracle Technology Network](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/downloads/index.html) and copy it in the same directory as the Enterprise Edition Dockerfile. then build the docker image as per below,
 
-        $ docker build -t oracle/nosqlee:4.4.6 -f Dockerfile.ee .
+        $ docker build -t oracle/nosqlee:4.4.6 .
 
 For Community Edition, the zip bundle is already downloaded and available in the oracle/nosql:latest docker image.
 
