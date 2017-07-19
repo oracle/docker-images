@@ -10,7 +10,7 @@ export DOMAIN_HOME=${DOMAIN_ROOT}/${DOMAIN_NAME}
 function _int() {
    echo "INFO: Stopping container."
    echo "INFO: SIGINT received, shutting down Managed Server!"
-   $DOMAIN_HOME/bin/stopManagedWebLogic.sh $server "http://"$adminhostname:$adminport
+   $DOMAIN_HOME/bin/stopManagedWebLogic.sh ${MANAGED_SERVER} "http://"${ADMIN_HOST}:${ADMIN_PORT}
    exit;
 }
 
@@ -18,14 +18,14 @@ function _int() {
 function _term() {
    echo "INFO: Stopping container."
    echo "INFO: SIGTERM received, shutting down Managed Server!"
-   $DOMAIN_HOME/bin/stopManagedWebLogic.sh $server "http://"$adminhostname:$adminport
+   $DOMAIN_HOME/bin/stopManagedWebLogic.sh ${MANAGED_SERVER} "http://"${ADMIN_HOST}:${ADMIN_PORT}
    exit;
 }
 
 #=================================================================
 function _kill() {
    echo "INFO: SIGKILL received, shutting down Managed Server!"
-   $DOMAIN_HOME/bin/stopManagedWebLogic.sh $server "http://"$adminhostname:$adminport
+   $DOMAIN_HOME/bin/stopManagedWebLogic.sh ${MANAGED_SERVER} "http://"${ADMIN_HOST}:${ADMIN_PORT}
    exit;
 }
 
@@ -37,18 +37,13 @@ trap _term SIGTERM
 trap _kill SIGKILL
 
 export vol_name=u01
-export adminhostname=$adminhostname
-export adminport=$adminport
 
-# First Update the server in the domain
-grepPat="<Notice> <WebLogicServer> <BEA-000360> <The server started in RUNNING mode.>"
 if [ "$DOMAIN_TYPE" = "soa" ] || [ "$DOMAIN_TYPE" = "bpm" ]
 then
-  server="soa_server1"
   grepPat="SOA Platform is running and accepting requests"
 elif [  "$DOMAIN_TYPE" = "osb" ]
 then
-  server="osb_server1"
+  grepPat="<Notice> <WebLogicServer> <BEA-000360> <The server started in RUNNING mode.>"
 else
   echo "ERROR: Invalid domain type. Cannot start the servers"
   exit
@@ -58,13 +53,13 @@ LOGDIR=${DOMAIN_HOME}/logs
 LOGFILE=${LOGDIR}/ms.log
 mkdir -p ${LOGDIR}
 
-export soa_host=`hostname -I`
-echo "INFO: Updating the Host name listen address"
-/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/updListenAddress.py $vol_name $soa_host $server > ${LOGDIR}/mslisten.log 2>&1
+export thehost=`hostname -I`
+echo "INFO: Updating the listen address - ${thehost} ${ADMIN_HOST}"
+/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/updListenAddress.py $vol_name $thehost ${MANAGED_SERVER} ${ADMIN_HOST} > ${LOGDIR}/mslisten.log 2>&1
 
 # Start SOA server
-echo "INFO: Starting the managed server ${server}"
-$DOMAIN_HOME/bin/startManagedWebLogic.sh $server "http://"$adminhostname:$adminport > ${LOGFILE} 2>&1 &
+echo "INFO: Starting the managed server ${MANAGED_SERVER}"
+$DOMAIN_HOME/bin/startManagedWebLogic.sh ${MANAGED_SERVER} "http://"${ADMIN_HOST}:${ADMIN_PORT} > ${LOGFILE} 2>&1 &
 statusfile=/tmp/notifyfifo.$$
 
 echo "INFO: Waiting for the Managed Server to accept requests..."

@@ -30,18 +30,18 @@ exportComposeEnv() {
   export DC_ORCL_OEM_PORT=5500
   export DC_ORCL_SID=soadb
   export DC_ORCL_PDB=soapdb
-  export DC_ORCL_SYSPWD=welcome1
+  export DC_ORCL_SYSPWD=
   export DC_ORCL_HOST=${DC_HOSTNAME}
   #
   export DC_ORCL_DBDATA=${DC_USERHOME}/dbdata
   #
   # AdminServer Password
   #
-  export DC_ADMIN_PWD=welcome1
+  export DC_ADMIN_PWD=
   #
   # RCU Common password for all schemas + Prefix Names
   #
-  export DC_RCU_SCHPWD=welcome1
+  export DC_RCU_SCHPWD=
   export DC_RCU_SOAPFX=SOA01
   export DC_RCU_BPMPFX=BPM01
   export DC_RCU_OSBPFX=OSB01

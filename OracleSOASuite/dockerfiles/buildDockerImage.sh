@@ -16,9 +16,11 @@ Parameters:
    -h: view usage
    -v: Release version to build. Required. Allowed values are
        12.2.1.2-soabpm
+   -s: Skip checksum verification
 
 LICENSE CDDL 1.0 + GPL 2.0
 Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
+
 EOF
 exit 0
 }
@@ -28,10 +30,13 @@ checksumPackages() {
   echo "INFO: Checking if required packages are present and valid..."
   md5sum -c *.download 2> /dev/null
   if [ "$?" -ne 0 ]; then
-    echo "ERROR: MD5 for required packages to build this image"
-    echo "       did not match. Please make sure to download"
-    echo "       missing files in folder dockerfiles. See"
-    echo "       Dockerfile for more information"
+    cat <<EOF
+
+ERROR: MD5 for required packages to build this image
+       did not match. Please make sure to download
+       missing files in the 12.2.1.2-soabpm folder.
+       See Dockerfile for more information
+EOF
     exit $?
   fi
 }
@@ -70,7 +75,7 @@ if [[ $VERSION =~ .*soabpm.* ]]
 then
   suffix="-soabpm"
   QSVERSION=${VERSION%$suffix}
-  IMAGE_NAME="${DC_REGISTRY_SOA}/middleware/soabpm:$QSVERSION-dev"
+  IMAGE_NAME="${DC_REGISTRY_SOA}/middleware/soabpm:$QSVERSION"
   DOCKERFILE_NAME=Dockerfile
   versionOK=true
 fi

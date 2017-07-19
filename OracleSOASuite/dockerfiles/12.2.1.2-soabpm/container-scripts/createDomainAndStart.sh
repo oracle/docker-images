@@ -61,6 +61,17 @@ setupRCU() {
 }
 
 #==================================================
+updateListenAddress() {
+  mkdir -p ${DOMAIN_HOME}/logs
+
+  export thehost=`hostname -I`
+  echo "INFO: Updating the listen address - ${thehost} ${ADMIN_HOST}"
+  cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/updListenAddress.py $vol_name ${thehost} AdminServer ${ADMIN_HOST}"
+  echo ${cmd}
+  ${cmd} > ${DOMAIN_HOME}/logs/aslisten.log 2>&1
+}
+
+#==================================================
 #== MAIN starts here...
 #==================================================
 trap _int SIGINT
@@ -101,19 +112,12 @@ then
   echo ""
 fi
 
-export CONNECTION_STRING=$CONNECTION_STRING
-export RCUPREFIX=$RCUPREFIX
-export ADMIN_PASSWORD=$ADMIN_PASSWORD
-export DB_PASSWORD=$DB_PASSWORD
-export DB_SCHEMA_PASSWORD=$DB_SCHEMA_PASSWORD
-export DOMAIN_TYPE=$DOMAIN_TYPE
-
 export jdbc_url="jdbc:oracle:thin:@"$CONNECTION_STRING
 export vol_name=u01
 
 echo -e $DB_PASSWORD"\n"$DB_SCHEMA_PASSWORD > /tmp/pwd.txt
 
-CTR_DIR=/$vol_name/oracle/user_projects/container
+CTR_DIR=/$vol_name/oracle/user_projects/container/${DOMAIN_NAME}
 
 #
 # Creating schemas needed for sample domain ####
@@ -132,7 +136,7 @@ then
     export jdbc_url="jdbc:oracle:thin:@"$CONNECTION_STRING
   fi
 else
-  mkdir $CTR_DIR
+  mkdir -p $CTR_DIR
 fi
 
 if [ -e $CTR_DIR/RCU.$RCUPREFIX.suc ] 
@@ -197,6 +201,7 @@ then
     echo "ERROR: Domain Configuration failed. Please check the logs"
     exit
   else
+    updateListenAddress
     # Write the Domain suc file... 
     touch $CTR_DIR/SOA.DOMAINCFG.suc
     echo ${cfgCmd} >> $CTR_DIR/SOA.DOMAINCFG.suc
@@ -212,21 +217,10 @@ EOF
   fi
 fi
 
-if [ "$DOMAIN_TYPE" = "soa" ] || [ "$DOMAIN_TYPE" = "bpm" ] 
-then
-    server="soa_server1"
-elif [  "$DOMAIN_TYPE" = "osb" ]
-then
-    server="osb_server1"
-else
-    echo "FATAL: Invalid domain type. Cannot start the servers"
-    exit 1
-fi
-
 #
 # Creating domain env file
 #=========================
-mkdir -p $DOMAIN_HOME/servers/AdminServer/security $DOMAIN_HOME/servers/$server/security
+mkdir -p $DOMAIN_HOME/servers/AdminServer/security $DOMAIN_HOME/servers/${MANAGED_SERVER}/security
 
 #
 # Password less Adminserver starting
@@ -237,8 +231,8 @@ echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/AdminServer/security/boo
 #
 # Password less Managed Server starting
 #======================================
-echo "username=weblogic" > $DOMAIN_HOME/servers/$server/security/boot.properties
-echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/$server/security/boot.properties
+echo "username=weblogic" > $DOMAIN_HOME/servers/${MANAGED_SERVER}/security/boot.properties
+echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/${MANAGED_SERVER}/security/boot.properties
 
 #
 # Setting env variables
