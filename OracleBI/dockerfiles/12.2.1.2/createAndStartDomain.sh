@@ -12,6 +12,8 @@ Start a Oracle Business Intelligence domain, creating one if not yet available.
 
 The following variables are mandatory when creating the domain (i.e. when starting the container first time):
   ORACLE_HOME - installation location (built into the image environment)
+  DOMAINS_DIR - directory containing DOMAIN_HOME (built into the image environment)
+  DOMAIN_NAME - Weblogic domain name (built into the image environment)
   ADMIN_USERNAME - WebLogic admin username for the new domain
   ADMIN_PASSWORD - Weblogic admin password
   DB_HOST - Host name for database into which new schemas will be created
@@ -70,8 +72,6 @@ function log () {
 # Mounting in $ORACLE_HOME/user_projects from a host o/s directory will work (if its permissions are correctly set).
 # Mounting in $ORACLE_HOME/user_projects/domains/$DOMAIN_NAME will fail with ScriptExecutor configuration error.
 # Separately mounting in $ORACLE_HOME/user_projects/domains/$DOMAIN_NAME/bidata (SDD) will fail with $DOMAIN_HOME in use configuration error.
-DOMAINS_DIR=$ORACLE_HOME/user_projects/domains
-DOMAIN_NAME=bi
 DOMAIN_HOME=$DOMAINS_DIR/$DOMAIN_NAME
 
 # Use a touch file controlled by this script to ensure a container restart will know to start a successfully created domain.
@@ -115,8 +115,8 @@ validateMandatoryParameter() {
   fi
 }
 
-# TODO only ORACLE_HOME is mandatory once domain is configured
-mandatoryParameters=(ORACLE_HOME ADMIN_USERNAME ADMIN_PASSWORD DB_HOST DB_PORT DB_SERVICE DB_USERNAME DB_PASSWORD SCHEMA_PREFIX SCHEMA_PASSWORD)
+# TODO only ORACLE_HOME/DOMAIN_NAME/DOMAINS_DIR is mandatory once domain is configured
+mandatoryParameters=(ORACLE_HOME DOMAIN_NAME DOMAINS_DIR ADMIN_USERNAME ADMIN_PASSWORD DB_HOST DB_PORT DB_SERVICE DB_USERNAME DB_PASSWORD SCHEMA_PREFIX SCHEMA_PASSWORD)
 missingMandatoryParameters=()
 for mandatoryParameter in "${mandatoryParameters[@]}"; do
   missingMandatoryParameters+=($(validateMandatoryParameter $mandatoryParameter))

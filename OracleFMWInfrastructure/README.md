@@ -1,11 +1,8 @@
 Oracle Fusion Middleware Infrastructure on Docker
 =================================================
-This Docker configuration has been used to create the Oracle Fusion Middleware Infrastructure image. Providing this FMW image facilitates the configuration, and environment setup for DevOps users. This project includes the creation of an  FMW Infrastructure domain. These Fusion Middleware Infrastructure 12.2.1.2 images are based on Oracle WebLogic 12.2.1.2 Infrastructure image.
+This Docker configuration has been used to create the Oracle Fusion Middleware Infrastructure image. Providing this FMW image facilitates the configuration, and environment setup for DevOps users. This project includes the creation of an  FMW Infrastructure domain. 
 
 The certification of Oracle FMW Infrastructure on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
-
-The FMW Infrastructure image is created using the  WebLogic 12.2.1.2 FMW Infrastructure installer. If you are interested in building the root WebLogic Infrastructure image use the files provided in `../OracleWebLogic/dockerfiles/12.2.1.2` and build that image. For more information, visit the [OracleWebLogic](../OracleWebLogic) folder's [README](../OracleWebLogic/README.md) file.
-
 
 ## How to build and run
 This project offers a sample Dockerfile and scripts to build a Oracle Fusion Middleware Infrastructue 12cR2 (12.2.1.2) image. To assist in building the image, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
@@ -116,6 +113,7 @@ Follow the steps below:
 
         $ docker run -d -p 9001:7001 --network=InfraNET -v $HOST_VOLUME:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.2
 
+Where $HOST_VOLUME stands for a directory on the host where you map your domain directory and both the Admin Server and Managed Server containers can read/write to.
   6. Access the administration console
 
         $ docker inspect --format '{{.NewworkSettings.IPAddress}}' <container-name>

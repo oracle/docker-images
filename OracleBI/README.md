@@ -1,6 +1,6 @@
 Oracle Business Intelligence on Docker
 =============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for Oracle Business Intelligence 12.2.1.2.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle WebLogic Infrastructure 12.2.1.2.0.
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for Oracle Business Intelligence 12.2.1.2.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle FMW Infrastructure 12.2.1.2.0.
 
 For more information about Oracle Business Intelligence please see the [Oracle Business Intelligence 12.2.1.2.0 Online Documentation](http://docs.oracle.com/middleware/12212/biee/index.html).
 
@@ -35,12 +35,12 @@ Please refer to README.md under [OracleJava](https://github.com/oracle/docker-im
 
 ### Building the Oracle FMW Infrastructure Image
  
-Download the binary of WebLogic Infrastructure into folder `OracleWebLogic/dockerfiles/12.2.1.2` and build the 12.2.1.2 infrastructure image:
+Download the binary of FMW Infrastructure into folder `OracleFMWInfrastructure/dockerfiles/12.2.1.2` and build the 12.2.1.2 infrastructure image:
 
-        $ cd OracleWebLogic/dockerfiles
-        $ ./buildDockerImage.sh -v 12.2.1.2 -i
+        $ cd OracleFMWInfrastructure/dockerfiles
+        $ ./buildDockerImage.sh -v 12.2.1.2
 
-Please refer to README.md under [OracleWebLogic](https://github.com/oracle/docker-images/tree/master/OracleWebLogic) for details on how to build WebLogic Infrastructure image.
+Please refer to README.md under [OracleFMWInfrastructure](https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure) for details on how to build FMW Infrastructure image.
 
 ### Building the Oracle Business Intelligence Image
 
