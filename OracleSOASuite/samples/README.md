@@ -12,6 +12,7 @@
 ```
 
 3. Setup and start the Database container
+
    - Ensure port 1521 is free for use for the database
 ```
 netstat -an | grep 1521
