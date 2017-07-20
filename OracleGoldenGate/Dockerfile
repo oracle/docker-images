@@ -39,42 +39,45 @@ ENV         JAVA_HOME=/usr/lib/jvm/jre \
             OGG_VERSION=${OGG_VERSION} \
             OGG_EDITION=${OGG_EDITION}
 
+ADD         ${OGG_TARFILE} \
+            runOracleGoldenGate.sh ${OGG_HOME}/
+
+RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFILE}" ]]; then \
+                echo "----------------------------------------------------------------------------------" && \
+                echo "-- Missing build argument for Dockerfile. See README.md for usage instructions. --" && \
+                echo "----------------------------------------------------------------------------------" && \
+                exit 1; \
+            fi; \
 #
 # Initial setup
-# The oracle:oinstall user must use the numeric identifiers 54321:54321
+# - Optional proxy setup for Yum
+# - The oracle:oinstall user must use the numeric identifiers 54321:54321
 #
-RUN         [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFILE}" ]] && \
-                echo "Missing build argument for Dockerfile. See README.md for usage instructions." && \
-                exit 1 \
-            || \
-                [[ -z ${http_proxy} ]] || echo "proxy=${http_proxy}" >> /etc/yum.conf && \
-                grep -q '^oinstall:x:54321' /etc/group  || groupadd -g 54321    oinstall        && \
-                grep -q '^oracle:x:54321'   /etc/passwd || useradd  -u 54321 -g oinstall oracle && \
-                mkdir -p              ${OGG_HOME} && \
-                chown oracle:oinstall ${OGG_HOME}
-
+            [[ -z ${http_proxy} ]] || echo "proxy=${http_proxy}" >> /etc/yum.conf && \
+            grep -q '^oinstall:x:54321' /etc/group  || groupadd -g 54321    oinstall        && \
+            grep -q '^oracle:x:54321'   /etc/passwd || useradd  -u 54321 -g oinstall oracle && \
+            mkdir -p              ${OGG_HOME} && \
+            chown oracle:oinstall ${OGG_HOME}; \
 #
 # Additional installation for Oracle GoldenGate Standard Edition
 # - 'vi' is used by the Oracle GoldenGate 'ggsci' utility to edit parameter
 #    files and must be run from inside the container.
 #
-RUN         [[ "${OGG_EDITION}" != "standard" ]] && exit 0 || \
+            if [[ "${OGG_EDITION}" == "standard" ]]; then \
                 yum -y install util-linux vi && \
-                yum -y clean  all
-
+                yum -y clean  all; \
+            fi; \
 #
 # Additional installation for Oracle GoldenGate Microservices Architecture
 #
-RUN         [[ "${OGG_EDITION}" != "microservices" ]] && exit 0 || \
+            if [[ "${OGG_EDITION}" == "microservices" ]]; then \
                 yum -y --enablerepo *software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless && \
                 yum -y clean  all && \
                 ln -s /etc/opt/rh/rh-nginx18/nginx /etc/nginx && \
                 sh /etc/ssl/certs/make-dummy-cert  /etc/nginx/ogg.pem && \
                 mkdir -p              ${OGG_DEPLOY_BASE} && \
-                chown oracle:oinstall ${OGG_DEPLOY_BASE}
-
-ADD         ${OGG_TARFILE}         ${OGG_HOME}/
-COPY        runOracleGoldenGate.sh ${OGG_HOME}/
+                chown oracle:oinstall ${OGG_DEPLOY_BASE}; \
+            fi;
 
 EXPOSE      443
 VOLUME     ["${OGG_DEPLOY_BASE}" ]
