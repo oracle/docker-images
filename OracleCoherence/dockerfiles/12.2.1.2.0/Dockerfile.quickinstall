@@ -49,7 +49,7 @@ COPY extend-cache-config.xml           $COHERENCE_HOME/conf/extend-cache-config.
 
 RUN useradd -b /u01 -m -s /bin/bash oracle && \
    echo oracle:oracle | chpasswd && \
-   chmod +x /start.sh && \
+   chmod 755 /start.sh && \
    chmod a+xr /u01 && \
    chown -R oracle:oracle /u01
 
