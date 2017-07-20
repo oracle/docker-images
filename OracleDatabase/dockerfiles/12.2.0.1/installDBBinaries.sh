@@ -45,12 +45,24 @@ fi;
 # ---------------------
 sed -i -e "s|###ORACLE_EDITION###|$EDITION|g" $INSTALL_DIR/$INSTALL_RSP && \
 sed -i -e "s|###ORACLE_BASE###|$ORACLE_BASE|g" $INSTALL_DIR/$INSTALL_RSP && \
-sed -i -e "s|###ORACLE_HOME###|$ORACLE_HOME|g" $INSTALL_DIR/$INSTALL_RSP && \
+sed -i -e "s|###ORACLE_HOME###|$ORACLE_HOME|g" $INSTALL_DIR/$INSTALL_RSP
+
+# Install Oracle binaries
 cd $INSTALL_DIR       && \
 unzip $INSTALL_FILE_1 && \
 rm $INSTALL_FILE_1    && \
-$INSTALL_DIR/database/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_DIR/$INSTALL_RSP -ignoresysprereqs -ignoreprereq && \
-rm -rf $INSTALL_DIR/database && \
+$INSTALL_DIR/database/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_DIR/$INSTALL_RSP -ignoresysprereqs -ignoreprereq
+
+# Remove not needed components
+rm -rf $ORACLE_HOME/apex && \
+rm -rf $ORACLE_HOME/jdbc && \
+rm -rf $ORACLE_HOME/lib/ra*.zip && \
+rm -rf $ORACLE_HOME/ords && \
+rm -rf $ORACLE_HOME/sqldeveloper && \
+rm -rf $ORACLE_HOME/ucp && \
+rm -rf $INSTALL_DIR/database
+
+# Link password reset file to home directory
 ln -s $ORACLE_BASE/$PWD_FILE $HOME/
 
 # Check whether Perl is working
