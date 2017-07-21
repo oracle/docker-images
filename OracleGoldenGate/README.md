@@ -8,23 +8,23 @@ This project provides a Dockerfile tested with:
  * Oracle GoldenGate Standard Edition 12c Release 3 (12.3.0.1)
  * Oracle GoldenGate Microservices Architecture 12c Release 3 (12.3.0.1)
 
-To build the images, use the [buildDockerImage.sh](buildDockerImage.sh) script.
+To build the images, use the [dockerBuild.sh](dockerBuild.sh) script.
 
 ### Building Oracle GoldenGate Docker Images
 **IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). You also must have Internet connectivity when building the Docker image for the package manager. Note that you must not uncompress the Oracle GoldenGate binaries. The script will handle that for you and fail if you uncompress them manually!
 
-Once you have downloaded the Oracle GoldenGate software, run the **`buildDockerImage.sh`** script:
+Once you have downloaded the Oracle GoldenGate software, run the **`dockerBuild.sh`** script:
 
-    [oracle@localhost dockerfiles]$ ./buildDockerImage.sh -h
+    [oracle@localhost dockerfiles]$ ./dockerBuild.sh -h
     Oracle GoldenGate distribution ZIP file not specified.
 
-    Usage: ./buildDockerImage.sh [-h | <ogg-zip-file-name>] [<docker-build-options> ...]
+    Usage: ./dockerBuild.sh [-h | <ogg-zip-file-name>] [<docker-build-options> ...]
     Where:
       ogg-zip-file-name       Name of OGG ZIP file
       docker-build-options    Command line options for Docker build
 
     Example:
-      buildDockerImage.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip --no-cache
+      dockerBuild.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip --no-cache
 
 **IMPORTANT:** The result will be a Docker image with the Oracle GoldenGate binaries installed. Created images will follow the naming convention of **oracle/goldengate-&lt;edition&gt;:&lt;version&gt;**, for example:
 
@@ -33,9 +33,9 @@ Once you have downloaded the Oracle GoldenGate software, run the **`buildDockerI
 - `oracle/goldengate-microservices:12.3.0.1.0`
 
 #### Changing the Base Image
-By default, the base image used when building Oracle GoldenGate Docker images is `container-registry.oracle.com/database/instantclient:12.2.0.1`.  This value can be changed by setting the environment variable `BASE_IMAGE` when executing the `buildDockerImage.sh` script. For example:
+By default, the base image used when building Oracle GoldenGate Docker images is `container-registry.oracle.com/database/instantclient:12.2.0.1`.  This value can be changed by setting the environment variable `BASE_IMAGE` when executing the `dockerBuild.sh` script. For example:
 
-    BASE_IMAGE="container-registry.oracle.com/database/enterprise" ./buildDockerImage.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip
+    BASE_IMAGE="container-registry.oracle.com/database/enterprise" ./dockerBuild.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip
 
 ### Running Oracle GoldenGate in a Docker container
 

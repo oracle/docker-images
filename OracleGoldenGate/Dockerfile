@@ -17,9 +17,9 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 #
-# Execute the "buildDockerImage.sh" shell script, with the name of the downloaded OGG filename.
+# Execute the "dockerBuild.sh" shell script, with the name of the downloaded OGG filename.
 # Example:
-#      $ ./buildDockerImage.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip
+#      $ ./dockerBuild.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip
 #
 
 ARG         BASE_IMAGE=oracle/instantclient:12.2.0.1
