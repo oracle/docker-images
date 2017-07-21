@@ -1,14 +1,15 @@
-How to Build the image
+How to build the image
 ======================
+
 Before you Start
 ----------------
-1. **FIRST TIME ONLY**
-   - Update the OracleSOASuite/setenv.sh file to point
+1. **FIRST TIME ONLY:**
+   - Update the `OracleSOASuite/setenv.sh` file to point
      to the right locations for the following environment variables
-     specific to your environment (See top of file)    
-     DC_USERHOME, DC_REGISTRY_SOA, DC_REGISTRY_DB    
+     specific to your environment (See top of file):
+     `DC_USERHOME`, `DC_REGISTRY_SOA`, `DC_REGISTRY_DB`
 
-SOA|BPM|OSB Domain images
+SOA/BPM/OSB domain images
 -------------------------
 1. You must have the install binaries downloaded from the
    [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/soasuite/downloads/index.html) site before proceeding. 

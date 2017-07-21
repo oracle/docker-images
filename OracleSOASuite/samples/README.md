@@ -1,18 +1,17 @@
-# Docker Compose to Orchestrate Containers
+# Using Docker Compose to orchestrate containers
 
-1. **FIRST TIME ONLY**
-   - Update the OracleSOASuite/setenv.sh file to point
-     to the right locations for the following environment variables
-     specific to your environment (See top of file)    
-     DC_USERHOME, DC_REGISTRY_SOA, DC_REGISTRY_DB    
+1. **FIRST TIME ONLY:**
+   - Update the `OracleSOASuite/setenv.sh` file to point
+     to the right locations for the following environment variables 
+     specific to your environment (See top of file):
+     `DC_USERHOME`, `DC_REGISTRY_SOA`, `DC_REGISTRY_DB`    
 
-2. Setup your current environment
+2. Setup your current environment (running `bash`)
 
-       exec bash (To replace your current shell with bash)
        # cd OracleSOASuite/samples
-       . ../setenv.sh
+       # source ../setenv.sh
 
-3. Setup and start the Database
+3. Setup and start the Database container
    - Ensure port 1521 is free for use for the database
 
          netstat -an | grep 1521
@@ -22,16 +21,17 @@
          docker-compose up -d soadb
          docker logs -f soadb
 
-4. Starting the Admin Server Container. **DB MUST BE UP**
-  - Start AS - First Run will run RCU and create the SOA schemas, 
-    Create the needed Domain (SOA/OSB/BPM etc) and Start the Admin 
-    Server
-  - Subsequent runs should simply start the Admin Server
+4. Starting the Admin Server (AS) container.
+   - **Ensure the Database is up first.**
+   - First run will run RCU and create the SOA schemas and the specified domain
+     (SOA/OSB/BPM etc) and then start the Admin Server
+   - Subsequent runs will just start the already configured Admin Server:
 
         docker-compose up -d soaas
         docker logs -f soaas
 
-5.  Starting the Managed Server Container **ADMINSERVER MUST BE UP**
+5.  Starting the Managed Server (MS) container
+    - **Ensure the Admin Server is up first**, then run:
 
-        docker-compose up -d soams
-        docker logs -f soams
+          docker-compose up -d soams
+          docker logs -f soams
