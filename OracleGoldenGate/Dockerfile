@@ -22,11 +22,11 @@
 #      $ ./buildDockerImage.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip
 #
 
-ARG         BASE_IMAGE=container-registry.oracle.com/database/instantclient:12.2.0.1
+ARG         BASE_IMAGE=oracle/instantclient:12.2.0.1
 FROM      ${BASE_IMAGE}
 LABEL       Description="Oracle GoldenGate on Docker" \
             Maintainer="Stephen Balousek <stephen.balousek@oracle.com>"
-user        root
+USER        root
 
 ARG         OGG_VERSION
 ARG         OGG_EDITION
@@ -39,8 +39,8 @@ ENV         JAVA_HOME=/usr/lib/jvm/jre \
             OGG_VERSION=${OGG_VERSION} \
             OGG_EDITION=${OGG_EDITION}
 
-ADD         ${OGG_TARFILE} \
-            runOracleGoldenGate.sh ${OGG_HOME}/
+ADD         ${OGG_TARFILE} ${OGG_HOME}/
+COPY        runOracleGoldenGate.sh /
 
 RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFILE}" ]]; then \
                 echo "----------------------------------------------------------------------------------" && \
@@ -50,10 +50,8 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
             fi; \
 #
 # Initial setup
-# - Optional proxy setup for Yum
 # - The oracle:oinstall user must use the numeric identifiers 54321:54321
 #
-            [[ -z ${http_proxy} ]] || echo "proxy=${http_proxy}" >> /etc/yum.conf && \
             grep -q '^oinstall:x:54321' /etc/group  || groupadd -g 54321    oinstall        && \
             grep -q '^oracle:x:54321'   /etc/passwd || useradd  -u 54321 -g oinstall oracle && \
             mkdir -p              ${OGG_HOME} && \
@@ -71,7 +69,8 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
 # Additional installation for Oracle GoldenGate Microservices Architecture
 #
             if [[ "${OGG_EDITION}" == "microservices" ]]; then \
-                yum -y --enablerepo *software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless && \
+                . /etc/os-release && MAJOR_VERSION="${VERSION/.*/}" && \
+                yum -y --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless && \
                 yum -y clean  all && \
                 ln -s /etc/opt/rh/rh-nginx18/nginx /etc/nginx && \
                 sh /etc/ssl/certs/make-dummy-cert  /etc/nginx/ogg.pem && \
@@ -82,4 +81,4 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
 EXPOSE      443
 VOLUME     ["${OGG_DEPLOY_BASE}" ]
 WORKDIR     "${OGG_HOME}"
-ENTRYPOINT ["sh", "-c", "exec ${OGG_HOME}/runOracleGoldenGate.sh"]
+ENTRYPOINT ["/runOracleGoldenGate.sh"]
