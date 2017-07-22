@@ -22,17 +22,17 @@
          docker logs -f soadb
 
 4. Starting the Admin Server (AS) container. 
-  - **Ensure Database is up first**
-  - Start AS - First Run will run RCU and create the SOA schemas, 
-    Create the needed Domain (SOA/OSB/BPM etc) and Start the Admin 
-    Server
-  - Subsequent runs will just start the already configured Admin Server
+    - **Ensure Database is up first**
+    - Start AS - First Run will run RCU and create the SOA schemas, 
+      Create the needed Domain (SOA/OSB/BPM etc) and Start the Admin 
+      Server
+    - Subsequent runs will just start the already configured Admin Server
 
-        docker-compose up -d soaas
-        docker logs -f soaas
+          docker-compose up -d soaas
+          docker logs -f soaas
 
 5.  Starting the Managed Server (MS) container 
-  - **Ensure the Admin Server is up first**, then run:
+    - **Ensure the Admin Server is up first**, then run:
 
-        docker-compose up -d soams
-        docker logs -f soams
+          docker-compose up -d soams
+          docker logs -f soams
