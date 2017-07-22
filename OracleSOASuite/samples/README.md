@@ -9,7 +9,7 @@
 2. Setup your current environment (running `bash`)
 
        # cd OracleSOASuite/samples
-       # . ../setenv.sh
+       # source ../setenv.sh
 
 3. Setup and start the Database container
    - Ensure port 1521 is free for use for the database
