@@ -1,13 +1,12 @@
 How to build the image
 ======================
-
 Before you Start
 ----------------
 1. **FIRST TIME ONLY:**
    - Update the `OracleSOASuite/setenv.sh` file to point
      to the right locations for the following environment variables
-     specific to your environment (See top of file):
-     `DC_USERHOME`, `DC_REGISTRY_SOA`, `DC_REGISTRY_DB`
+     specific to your environment (See top of file):    
+     `DC_USERHOME`, `DC_REGISTRY_SOA`, `DC_REGISTRY_DB`    
 
 SOA/BPM/OSB domain images
 -------------------------
