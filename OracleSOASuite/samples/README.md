@@ -15,7 +15,6 @@
    - Ensure port 1521 is free for use for the database
 
          netstat -an | grep 1521
-
    - Start the DB Container
 
          docker-compose up -d soadb
