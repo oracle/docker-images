@@ -3,8 +3,13 @@
 This repository contains Dockerfiles for Oracle Tuxedo products and some samples.
 
 The Dockerfiles for Oracle Tuxedo products can be found in the [`OracleTuxedo`](./) branch of this repository. Here is the description for each folder.
-* [Tuxedo Core](./core)          `Tuxedo core including server binaries, client libraries`
-* [TSAM Plus](./tsam)            `Tuxedo System and Applications Monitor Plus`
+
+* [Tuxedo Core](./core)                                  `Tuxedo core including server binaries, client libraries`
+* [TSAM Plus](./tsam)                                    `Tuxedo System and Applications Monitor Plus`
+* [Tuxedo Performance Pack](./performance_pack)          `Tuxedo Performance Pack`
+* [Tuxedo Message Queue](./tuxedo_message_q)             `Tuxedo Message Queue including binaries and a sample`
+* [ART Runtime](./art_runtime)                           `Tuxedo ART Runtime binaries, including CICS, Batch, and IMS`
+* [ART Workbench and Test Manager](./art_workbench_tm)   `Tuxedo ART Workbench and ART Test Manager`
 
 For support and certification information, please consult the documentation for each folder.
 
