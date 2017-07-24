@@ -223,6 +223,7 @@ function term_standard {
     echo -e "\nTerminating..."
     echo "Stop ER * !" | ${runAsUser} ${OGG_HOME}/ggsci
     echo "Stop MGR  !" | ${runAsUser} ${OGG_HOME}/ggsci
+    exit 1
 }
 
 ##
@@ -258,15 +259,18 @@ function term_microservices {
     pkill -SIGTERM '(adminsrvr|distsrvr|pmsrvr|recvsrvr)' && sleep 1
     pkill -SIGTERM '(extract|replicat)'
     local timeout=8
+    local rc=0
     while (true); do
         isOGGRunning || return 0
         sleep 1
         timeout=$(expr ${timeout} - 1)
         if [ ${timeout} -eq 0 ]; then
+            rc=1
             break
         fi
     done
     pkill -SIGKILL ${OGGProcesses}
+    exit ${rc}
 }
 
 ##

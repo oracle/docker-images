@@ -35,7 +35,7 @@ ARG         OGG_TARFILE
 ENV         JAVA_HOME=/usr/lib/jvm/jre \
             OGG_HOME=/u01/app/ogg \
             OGG_DEPLOY_BASE=/u02/ogg \
-            PATH=$PATH:/u01/app/ogg:/u01/app/ogg/bin \
+            PATH=${PATH}:/u01/app/ogg:/u01/app/ogg/bin \
             OGG_VERSION=${OGG_VERSION} \
             OGG_EDITION=${OGG_EDITION}
 
@@ -50,12 +50,18 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
             fi; \
 #
 # Initial setup
-# - The oracle:oinstall user must use the numeric identifiers 54321:54321
+# - This image will be smaller if the oracle:oinstall user has the numeric identifiers 54321:54321
 #
-            grep -q '^oinstall:x:54321' /etc/group  || groupadd -g 54321    oinstall        && \
-            grep -q '^oracle:x:54321'   /etc/passwd || useradd  -u 54321 -g oinstall oracle && \
-            mkdir -p              ${OGG_HOME} && \
+            groupadd -g 54321    oinstall        || /bin/true; \
+            useradd  -u 54321 -g oinstall oracle || /bin/true; \
             chown oracle:oinstall ${OGG_HOME}; \
+            if [[ $(find ${OGG_HOME} -mindepth 1 -maxdepth 1 -user 54321 -group 54321 2>/dev/null | wc -l) == "0" ]]; then \
+                echo "----------------------------------------------------------------------------------" && \
+                echo "-- OGG_TARFILE '${OGG_TARFILE}' not using UID:GID of 54321:54321"                   && \
+                echo "-- Resulting Docker image will be larger than necessary.                        --" && \
+                echo "----------------------------------------------------------------------------------" && \
+                chown -R oracle:oinstall ${OGG_HOME}; \
+            fi; \
 #
 # Additional installation for Oracle GoldenGate Standard Edition
 # - 'vi' is used by the Oracle GoldenGate 'ggsci' utility to edit parameter
