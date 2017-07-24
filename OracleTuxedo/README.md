@@ -3,8 +3,10 @@
 This repository contains Dockerfiles for Oracle Tuxedo products and some samples.
 
 The Dockerfiles for Oracle Tuxedo products can be found in the [`OracleTuxedo`](./) branch of this repository. Here is the description for each folder.
-* [Tuxedo Core](./core)          `Tuxedo core including server binaries, client libraries`
-* [TSAM Plus](./tsam)            `Tuxedo System and Applications Monitor Plus`
+
+* [Tuxedo Core](./core)                                  `Tuxedo core including server binaries, client libraries`
+* [TSAM Plus](./tsam)                                    `Tuxedo System and Applications Monitor Plus`
+* [Tuxedo Performance Pack](./performance_pack)          `Tuxedo Performance Pack and a sample application`
 
 For support and certification information, please consult the documentation for each folder.
 
