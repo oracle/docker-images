@@ -165,7 +165,7 @@ For the Microservices Architecture, Oracle GoldenGate data is located under the 
 #### Administrative Account Password for Microservices Architecture
 On the first startup of a Microservices Architecture container, a random password will be generated for the Oracle GoldenGate administrative user if not provided by the `OGG_ADMIN_PWD` environment variable. You can find this password at the start of the Docker container log:
 
-    $ docker logs <container name> | head -3
+    $ docker logs <container name> 2>/dev/null | head -3
     ----------------------------------------------------------------------------------
     --  Password for administrative user 'oggadmin' is 'qVc3bqNlwijk'
     ----------------------------------------------------------------------------------
