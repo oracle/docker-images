@@ -11,12 +11,6 @@ Parameters:
    -h: Help
    -v: Version to build. Required.
        Choose one of: $(for i in $(ls -d */|grep -v bin); do echo -n "${i%%/}  "; done)
-   -w: Tuxedo ART Workbench installer. Optional, Tuxedo ART Workbench 12.2.2 installer by default.
-   -t: Tuxedo ART TestManager installer. Optional, Tuxedo ART Test Manager 12.2.2 installer by default.
-   -e: Eclipse installer. Optional, eclipse-SDK-4.6.1 by default.
-   -p: Tuxedo and ART Workbench, and ART Test Manager patches. Optional.
-       For example, -p p26126370_122200_Linux-x86-64.zip,p26277335_122200_Linux-x86-64.zip
-       which will install Tuxedo ART Workbench RP16 and Tuxedo ART Test Manager RP03
 
 LICENSE CDDL 1.0 + GPL 2.0
 
@@ -38,22 +32,10 @@ ECLIPSE_INSTALLER=eclipse-SDK-4.6.1-linux-gtk-x86_64.tar.gz
 DERBY_INSTALLER=derby.tar.gz
 PATCH_LIST=
 
-while getopts "h:w:t::e:p:v:" optname; do
+while getopts "h:v:" optname; do
   case "$optname" in
     "h")
       usage
-      ;;
-    "w")
-      ARTWKB_INSTALLER="$OPTARG"
-      ;;
-    "t")
-      ARTTM_INSTALLER="$OPTARG"
-      ;;
-    "e")
-      ECLIPSE_INSTALLER="$OPTARG"
-      ;;
-    "p")
-      PATCH_LIST="$OPTARG"
       ;;
     "v")
       VERSION="$OPTARG"
@@ -76,27 +58,6 @@ then
     echo "drop the file ${ECLIPSE_INSTALLER} in ./bin/ folder before"
     echo "building this Tuxedo ART Docker container!"
     exit
-fi
-
-if [ ! -z "$PATCH_LIST" ]; then   # -p option is an OPTIONAL
-    PATCH_FILE="" 
-    PATCH_FILE_LIST="" 
-    OLD_IFS="$IFS" 
-    IFS="," 
-    arrPatch=($PATCH_LIST)
-    for s in ${arrPatch[@]}
-    do
-        if [ ! -e bin/${s} ]
-        then
-            echo "Download the patch file and"
-            echo "drop the file ${s} in ./bin/ folder before"
-            echo "building this Tuxedo ART Docker container!"
-            exit
-        fi
-        PATCH_FILE=${PATCH_FILE}"bin/$s "
-        PATCH_FILE_LIST=${PATCH_FILE_LIST}"$s "
-    done
-    IFS="$OLD_IFS"
 fi
 
 echo "====================="
@@ -143,13 +104,7 @@ fi
 
 
 # Fix up the locations of things
-cp ${VERSION}/*.rsp ${VERSION}/init.sh .
-sed -e "s:@ARTTM_PKG@:${ARTTM_INSTALLER}:g" \
-    -e "s:@ARTWKB_PKG@:${ARTWKB_INSTALLER}:g" \
-    -e "s:@ECLIPSE_PKG@:${ECLIPSE_INSTALLER}:g" \
-    -e "s:@COPY_PATCHFILE@:${PATCH_FILE}:g" \
-    -e "s:@PATCH_FILE_LIST@:${PATCH_FILE_LIST}:g" \
-    ${VERSION}/Dockerfile.template > Dockerfile
+cp ${VERSION}/* .
 
 docker build $PROXY_SETTINGS -t oracle/tuxedoartwkbtm:${VERSION} .
 if [ "$?" = "0" ]

@@ -1,10 +1,6 @@
 #
 # Dockerfile template for Tuxedo ART 12.2.2
 # 
-# For Tuxedo 12.2.2, you need JRE installed first, so before you can build this image, you must download the Oracle Server JRE binary and drop in folder OracleJDK/java-8 and build that image.
-#   cd OracleJDK/java-8
-#   sh build.sh
-
 # Pull base image
 FROM oracle/tuxedo:12.2.2
 
@@ -12,28 +8,26 @@ MAINTAINER Judy Liu <judy.liu@oracle.com>
 
 # Create the installation directory tree and user oracle with a password of oracle
 USER root
-RUN yum -y install perl perl-CPAN ksh mksh sudo make vim tar net-tools dos2unix tk tcl-devel tk-devel gtk2 expect libXtst gnome-desktop xorg-x11-xauth dejavu-lgc-sans-fonts liberation-sans-fonts libcanberra-gtk2 PackageKit-gtk3-module libaio openssh-server openssh-client rsync; yum -y clean all 
+RUN yum -y install perl perl-CPAN ksh mksh sudo make vim tar net-tools dos2unix tk tcl-devel tk-devel gtk2 expect libaio openssh-client rsync && yum -y clean all 
 
 #Set environments
 ENV ORACLE_HOME=/u01/oracle/tuxHome \
-    JAVA_HOME=/usr/java/default \
     PATH=/usr/java/default/bin:$PATH \
     TMPFILES=/tmp/files \
-    ECLIPSE_PKG=@ECLIPSE_PKG@ \
-    ARTTM_PKG=@ARTTM_PKG@ \
-    ARTWKB_PKG=@ARTWKB_PKG@
+    ARTTM_PKG=art_tm122200_64_linux_x86_64.zip \
+    ARTWKB_PKG=art_wb122200_64_linux_x86_64.zip
 
 #Install Derby
 ADD bin/derby.tar.gz /usr/java/default
 
 #Install Eclipse
-ADD bin/$ECLIPSE_PKG /u01/oracle
+ADD bin/eclipse*.gz /u01/oracle
 
 # Copy packages
 # -------------
 COPY bin/$ARTTM_PKG bin/$ARTWKB_PKG \
      tuxedoarttm12.2.2.rsp  tuxedoartwkb12.2.2.rsp init.sh \
-     @COPY_PATCHFILE@ /u01/
+     bin/p*.zip /u01/
 RUN  mv /u01/init.sh /u01/oracle/init.sh && \
      chown oracle:oracle -R /u01 && \
      chmod +x /u01/oracle/init.sh
@@ -62,16 +56,16 @@ RUN cd /u01 && \
 # Install Tuxedo and ART Patches
 RUN cd /u01/oracle && \
     ln -s $JAVA_HOME tuxHome/jdk && \
-    for patch_file in @PATCH_FILE_LIST@; do \
-      if [ "`/bin/ls -l /u01/$patch_file|cut -c8`" != r ];then \
-         chmod a+r /u01/$patch_file; \
+    for patch_file in `/bin/ls /u01/p*.zip`; do \
+      if [ "`/bin/ls -l $patch_file|cut -c8`" != r ];then \
+         chmod a+r $patch_file; \
       fi;  \
       cd /u01/oracle; \
       mkdir -p tmp ; cd tmp;  \
-      jar xf /u01/$patch_file; \
+      jar xf $patch_file; \
       tux_patch=`find . -name *.zip`; \
       /u01/oracle/tuxHome/OPatch/opatch apply $tux_patch; \
-      cd ; rm -rf tmp /u01/$patch_file; \
+      cd ; rm -rf tmp $patch_file; \
     done
 
 USER oracle

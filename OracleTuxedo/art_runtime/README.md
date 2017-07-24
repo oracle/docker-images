@@ -1,16 +1,16 @@
-# Introduction
-This folder contains the information and examples of how to use [Tuxedo ART Runtime](http://docs.oracle.com/cd/E72452_01/artrt/docs1222/index.html) with [Docker](https://www.docker.com/).
+Tuxedo Application Runtime on Docker
+===============
+This folder contains the information of how to use [Tuxedo ART Runtime](http://docs.oracle.com/cd/E72452_01/artrt/docs1222/index.html) with [Docker](https://www.docker.com/). Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## Contents
-It is based on the Oracle Tuxedo image.
+This folder contains dockerfile based on the Oracle Tuxedo image, in which it has installation of Tuxedo Application Runtime installation, Cobol-IT, and Oracle instance client. 
 
 ##Prerequisite
 1. Use btrfs with docker:
-   With big image size, it's better to use btrfs with docker, please follow the link below to set Docker using btrfs.
+   With big image size, it is better to use btrfs with docker, please follow the link below to set Docker using btrfs.
    https://docs.docker.com/engine/userguide/storagedriver/btrfs-driver/#configure-btrfs-on-sles
 
-
-## To use
+How to build and run
 Pre-installation:
 1. Download the binaries and copy them to `pwd`/bin
    1. Download all the files from this GitHub repository
@@ -23,10 +23,10 @@ Pre-installation:
    4. Download Cobol-IT installer
       For Cobol-IT license, after container started, copy the licnese file to /opt/cobol-it-64.
    5. Optionally download Tuxedo and Tuxedo ART Runtime patches
-   
-Installation:
+
+## To use
 Before you run buildDockerImage.sh, if proxy is needed to access network, you need to set environment variables at first: http_proxy, https_proxy, ftp_proxy, no_proxy
-     ./buildDockerImage.sh -v 12.2.2   
+     ./buildDockerImage.sh -v 12.2.2
 Note, before you run buildDockerImage.sh, if your Tuxedo ART was other than 12.2.2, you need change above command according to version.
 
 You should end up with a docker image tagged oracle/tuxedoartrt:<version>, version is Tuxedo ART version number you may modify in buildDockerImage.sh.

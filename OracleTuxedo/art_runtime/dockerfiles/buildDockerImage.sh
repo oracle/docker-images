@@ -11,11 +11,6 @@ Parameters:
    -h: Help
    -v: Version to build. Required.
        Choose one of: $(for i in $(ls -d */|grep -v bin); do echo -n "${i%%/}  "; done)
-   -c: Cobol-IT installer. Optional, CIT3.9.27 installer by default.
-   -r: Tuxedo ART Runtime installer. Optional, Tuxedo ART Runtime12.2.2 installer by default.
-   -p: Tuxedo and ART Runtime patches. Optional.
-       For example, -p p25442020_122200_Linux-x86-64.zip,p25671402_122200_Linux-x86-64.zip
-       which will install Tuxedo ART CICS RP05 and Tuxedo ART Batch RP11
 
 LICENSE CDDL 1.0 + GPL 2.0
 
@@ -40,19 +35,10 @@ ORACLE_DEVEL=oracle-instantclient12.2-devel-12.2.0.1.0-1.x86_64.rpm
 ORACLE_PRECOMP=oracle-instantclient12.2-precomp-12.2.0.1.0-1.x86_64.rpm
 PATCH_LIST=
 
-while getopts "h:c:r:p:v:" optname; do
+while getopts "h:v:" optname; do
   case "$optname" in
     "h")
       usage
-      ;;
-    "c")
-      CIT_INSTALLER="$OPTARG"
-      ;;
-    "r")
-      ARTRT_INSTALLER="$OPTARG"
-      ;;
-    "p")
-      PATCH_LIST="$OPTARG"
       ;;
     "v")
       VERSION="$OPTARG"
@@ -71,7 +57,7 @@ fi
 
 if [ ! -e bin/${CIT_INSTALLER} ]
 then
-    echo "Download the Cobol-IT Distribution and"
+    echo "Download the Coboli-IT Distribution and"
     echo "drop the file ${CIT_INSTALLER} in ./bin/ folder before"
     echo "building this Tuxedo ART Docker container!"
     exit
@@ -86,27 +72,6 @@ if [ ! -e bin/${ORACLE_BASE} ] && [ ! -e bin/${ORACLE_SQLPLUS} ] && \
   echo "              ${ORACLE_PRECOMP} in ./bin/ folder before"
   echo "building this Tuxedo ART Docker container!"
   exit
-fi
-
-if [ ! -z "$PATCH_LIST" ]; then   # -p option is an OPTIONAL
-    PATCH_FILE="" 
-    PATCH_FILE_LIST="" 
-    OLD_IFS="$IFS" 
-    IFS="," 
-    arrPatch=($PATCH_LIST)
-    for s in ${arrPatch[@]}
-    do
-        if [ ! -e bin/${s} ]
-        then
-            echo "Download the patch file and"
-            echo "drop the file ${s} in ./bin/ folder before"
-            echo "building this Tuxedo ART Docker container!"
-            exit
-        fi
-        PATCH_FILE=${PATCH_FILE}"bin/$s "
-        PATCH_FILE_LIST=${PATCH_FILE_LIST}"$s "
-    done
-    IFS="$OLD_IFS"
 fi
 
 echo "====================="
@@ -144,25 +109,18 @@ if [ "$PROXY_SETTINGS" != "" ]; then
 fi
 
 
-
 # Fix up the locations of things
-cp ${VERSION}/*.rsp ${VERSION}/init.sh .
-sed -e "s:@ARTRT_PKG@:${ARTRT_INSTALLER}:g" \
-    -e "s:@CIT_PKG@:${CIT_INSTALLER}:g" \
-    -e "s:@COPY_PATCHFILE@:${PATCH_FILE}:g" \
-    -e "s:@PATCH_FILE_LIST@:${PATCH_FILE_LIST}:g" \
-    ${VERSION}/Dockerfile.template > Dockerfile
-
+cp ${VERSION}/* .
 docker build $PROXY_SETTINGS -t oracle/tuxedoartrt:${VERSION} .
 if [ "$?" = "0" ]
     then
 	echo ""
 	echo "Tuxedo ART Docker image is ready to be used. To create a container, run:"
-	echo "docker run  -d \\
+        echo "docker run  -d \\
               -v \${LOCAL_DIR}:/u01/oracle/user_projects \\
               -h arthost --name tuxedoartrt oracle/tuxedoartrt:12.2.2"
-	echo "Note: \${LOCAL_DIR} is a local dir which used in docker image as external storage, it can be any dir."
+        echo "Note: \${LOCAL_DIR} is a local dir which used in docker image as external storage, it can be any dir."
     else
-	echo "Build of Tuxedo ART Docker image failed."
+        echo "Build of Tuxedo ART Docker image failed."
 fi
 
