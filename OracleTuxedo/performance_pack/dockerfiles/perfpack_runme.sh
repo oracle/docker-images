@@ -9,9 +9,14 @@
 # Usage: source perfpack_runme.sh
 #
 cd /u01/oracle/user_projects
-rm -rf perfpack
-mkdir perfpack
+
+if [ ! -e perfpack ] ; then
+  mkdir perfpack
+fi
+
 cd perfpack
+
+echo "Set APPDIR to perfpack"
 
 # Create environment setup script setenv.sh
 export HOSTNAME=`uname -n`
@@ -88,17 +93,55 @@ fi
 # Compile the configuration file and build the client and server
 echo "Build tuxedo configuration file..."
 tmloadcf -y ubbsimple
+if [[ $? -eq 0 ]] ; then
+  echo "Built Tuxedo configuration UBBCONFIG successfully"
+else
+  echo "Failed to build UBBCONFIG. Check log for details."
+  exit 1;
+fi
+
 echo "Build tuxedo client..."
 buildclient -o simpcl -f simpcl.c
+if [[ $? -eq 0 ]] ; then
+  echo "Built Tuxedo client program successfully"
+else
+  echo "Failed to build Tuxedo client program. Check log for details."
+  exit 1;
+fi
+
 echo "Build tuxedo server..."
 buildserver -o simpserv -f simpserv.c -s TOUPPER
+if [[ $? -eq 0 ]] ; then
+  echo "Built Tuxedo Server program successfully"
+else
+  echo "Failed to build Tuxedo Server program. Check log for details."
+  exit 1;
+fi
+
 # Boot up the domain
 echo "Boot up the domain..."
 tmboot -y
+if [[ $? -eq 0 ]] ; then
+  echo "Booted Tuxedo domain successfully"
+else
+  echo "Failed to boot Tuxedo domain. Check log/ULOG for details."
+  exit 1;
+fi
+
 # Run the client
 echo "Run the client..."
 ./simpcl "If you see this message, perfpack ran OK"
+if [[ ! $? -eq 0 ]] ; then
+  echo "Failed to run Tuxedo client. Check log/ULOG for details."
+fi
+
 # Shutdown the domain
 echo "Shutdown the domain..."
-tmshutdown -y
 
+tmshutdown -y
+if [[ $? -eq 0 ]] ; then
+  echo "Shut down Tuxedo domain successfully"
+else
+  echo "Failed to gracefully shutdown Tuxedo domain. The domain will be forcibly shut down in seconds."
+  tmshutdown -w 2 -y
+fi
