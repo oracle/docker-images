@@ -8,10 +8,7 @@
 # Description: Runs all tests for Oracle Database Docker containers
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
-
-WORKDIR=$PWD;
-BIN_DIR=$WORKDIR
+#
 
 # Function: runContainerTest
 # Runs a specific test
@@ -24,17 +21,17 @@ function runContainerTest {
   TEST_NAME="$1"
   CON_NAME="$2"
   IMAGE="$3"
-  ORACLE_SID={$4:-ORCLCDB}
+  ORACLE_SID=${4:-ORCLTEST}
 
   # Run and start container
-  docker run -d -e ORACLE_SID=$ORACLE_SID --name $CON_NAME $IMAGE
+  docker run -d -e ORACLE_SID="$ORACLE_SID" --name "$CON_NAME" "$IMAGE"
   
   # Check whether Oracle is OK
-  checkOracle "$TEST_NAME" $CON_NAME $ORACLE_SID
+  checkOracle "$TEST_NAME" "$CON_NAME" "$ORACLE_SID"
   testOK=$?
   
-  docker kill $CON_NAME
-  docker rm -v $CON_NAME
+  docker kill "$CON_NAME"
+  docker rm -v "$CON_NAME"
   
   checkError "$TEST_NAME" $testOK
 }
@@ -59,13 +56,6 @@ function checkError {
   fi;
 }
 
-# Function: cleanup
-# Cleans up the test directory
-function cleanup {
-  rm ./*/*.zip
-  cd $WORKDIR
-}
-
 # Function: checkOracle
 # Checks whether Oracle DB is up and running
 # Parameters:
@@ -84,75 +74,22 @@ function checkOracle {
     sleep 15;
     
     # Is the database ready to be used?
-    docker logs $CON_NAME | grep 'DATABASE IS READY TO USE' >/dev/null
-    if [ $? == 0 ]; then
+    docker logs $CON_NAME | grep 'DATABASE IS READY TO USE' >/dev/null;
+    if [ "$?" == "0" ]; then
       return 0;
     fi;
     
+    docker logs $CON_NAME | grep 'DATABASE SETUP WAS NOT SUCCESSFUL' >/dev/null;
     # Did something go wrong?
-    docker logs $CON_NAME | grep 'DATABASE SETUP WAS NOT SUCCESSFUL' >/dev/null
-    if [ $? == 0 ]; then
+    if [ "$?" == "0" ]; then
       return 1;
     fi;
     
   done;
 }
 
-cd ../dockerfiles
-
-###################### TEST ###########################
-
-# Copy binary file
-cp $BIN_DIR/oracle-xe-11.2.0-1.0.x86_64.rpm.zip ./11.2.0.2/
-
-# Build 11.2.0.2 XE images
-./buildDockerImage.sh -x -v 11.2.0.2
-checkError "Build 11.2.0.2 XE image" $?
-
-# Delete binary file
-rm ./11.2.0.2/oracle-xe-11.2.0-1.0.x86_64.rpm.zip
-
-###################### TEST ###########################
-
-# Copy binary file
-cp $BIN_DIR/linuxamd64_12102_database_se2_*.zip ./12.1.0.2/
-
-# Build 12.1.0.2 SE2 images
-./buildDockerImage.sh -s -v 12.1.0.2
-checkError "Build 12.1.0.2 SE2 image" $?
-
-# Delete binary file
-rm ./12.1.0.2/*.zip
-
-###################### TEST ###########################
-
-# Copy binary file
-cp $BIN_DIR/linuxamd64_12102_database_1of2.zip ./12.1.0.2/
-cp $BIN_DIR/linuxamd64_12102_database_2of2.zip ./12.1.0.2/
-
-# Build 12.1.0.2 EE images
-./buildDockerImage.sh -e -v 12.1.0.2
-checkError "Build 12.1.0.2 EE image" $?
-
-# Delete binary file
-rm ./12.1.0.2/*.zip
-
-###################### TEST ###########################
-
-# Copy binary file
-cp $BIN_DIR/linuxx64_12201_database.zip ./12.2.0.1/
-
-# Build 12.2.0.1 SE2 images
-./buildDockerImage.sh -s -v 12.2.0.1
-checkError "Build 122.0.1 SE2 image" $?
-
-###################### TEST ###########################
-
-# Build 12.2.0.1 EE images
-./buildDockerImage.sh -e -v 12.2.0.1
-checkError "Build 12.2.0.1 EE image" $?
-
-rm ./12.2.0.1/*.zip
+# Run image build tests
+./runImageBuildTests.sh
 
 ###################### TEST ###########################
 
