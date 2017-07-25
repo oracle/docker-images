@@ -162,6 +162,39 @@ For the Microservices Architecture, Oracle GoldenGate data is located under the 
 - `/u02/ogg/Local/etc/conf`     - Configuration files for the 'Local' deployment
 - `/u02/ogg/Local/var/lib/data` - Trail files for the 'Local' deployment
 
+#### SSL Certificate for Microservices Architecture
+When the Oracle GoldenGate Docker image is created for Microservices Architecture, a dummy SSL certificate is generated for the OGG Web UI. Your own SSL certificate can be used instead of the dummy certificate like this:
+
+    docker run --name ogg-test \
+        -e OGG_SCHEMA=ggadmin \
+        -e OGG_ADMIN=oggadmin \
+        -v /path/to/certificate.pem:/etc/nginx/ogg.pem \
+        oracle/goldengate-microservices:12.3.0.1.0
+
+The certificate file, `/path/to/certificate.pem`, needs to contain a **BEGIN PRIVATE KEY** section, followed by one or more **BEGIN CERTIFICATE** sections. For example:
+
+    -----BEGIN PRIVATE KEY-----
+    MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCqx5mEeaMNCqr
+    +5Bs+75+tA93TPus3Q8Q3LZnEw3Wp+fRPzBY69Q/pLF/kuByewoJVjPHOoSoQry4
+    ...
+    G4eJ5TiYh2TBWdt1DGqATYBVCVcdwsOn0GFHmo2bmdMHgA8EBLjVNhiHoysPCOtB
+    aecxSyWi/kHOBObhFe93xb7p
+    -----END PRIVATE KEY-----
+    -----BEGIN CERTIFICATE-----
+    MIIFBTCCA+2gAwIBAgISBJSzNXE+Ha5eDw76N5lgHhTpMA0GCSqGSIb3DQEBCwUA
+    MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+    ...
+    dr7wTE+AQwcOLAGjIvFOL7GK8JrhKvuFvnSoys/1O2CK3vVhBgS+mEF6D+QjIGTv
+    VC01LCPT51q58INy4RtDBPSqlJwrzz+pOOWd5rBWhu2UPktVHz3AtYE=
+    -----END CERTIFICATE-----
+    -----BEGIN CERTIFICATE-----
+    MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/
+    MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT
+    ...
+    PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6
+    KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
+    -----END CERTIFICATE-----
+
 #### Administrative Account Password for Microservices Architecture
 On the first startup of a Microservices Architecture container, a random password will be generated for the Oracle GoldenGate administrative user if not provided by the `OGG_ADMIN_PWD` environment variable. You can find this password at the start of the Docker container log:
 
