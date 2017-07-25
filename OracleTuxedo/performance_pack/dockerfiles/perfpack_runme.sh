@@ -22,16 +22,6 @@ echo "Set APPDIR to perfpack"
 export HOSTNAME=`uname -n`
 export APPDIR=`pwd`
 
-cat <<EOF
-All of the features in Tuxedo Advanced Performance Pack are enabled 
-if the OPTIONS parameter in RESOURES in UBBCONFIG is set to XPP. 
-    OPTIONS	        XPP
-And each of these features can be individually disabled if needed:
-    OPTIONS        NO_AA,XPP,NO_RDONLY1PC,NO_SHMQ
-    RMOPTIONS      NO_XAAFFINITY,SINGLETON,NO_FAN,NO_COMMONXID
-
-EOF
-
 cat >setenv.sh << EndOfFile
 source  ${TUXDIR}/tux.env
 export HOSTNAME=${HOSTNAME}

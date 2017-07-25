@@ -26,3 +26,14 @@ docker build $PROXY_SETTINGS -t oracle/tuxedoperfpack .
 echo "To run the Tuxedo performance pack sample container, use:"
 echo "docker run -d -h tuxhost -v \${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedoperfpack"
 echo "Note: \${LOCAL_DIR} is a local dir which used in docker image as external storage, it can be any dir."
+echo ""
+cat <<EOF
+All of the features in Tuxedo Advanced Performance Pack are enabled
+if the OPTIONS parameter in RESOURES in UBBCONFIG is set to XPP.
+    OPTIONS             XPP
+And each of these features can be individually disabled if needed:
+    OPTIONS        NO_AA,XPP,NO_RDONLY1PC,NO_SHMQ
+    RMOPTIONS      NO_XAAFFINITY,SINGLETON,NO_FAN,NO_COMMONXID
+
+EOF
+
