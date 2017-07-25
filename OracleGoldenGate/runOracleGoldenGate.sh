@@ -167,7 +167,7 @@ function createDeployment {
 
     local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*-jar-with-dependencies.jar)
     mkdir -p "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}"
-    chown -r oracle:oinstall "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}"
+    chown -R oracle:oinstall "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}"
 
     echo "${OGG_ADMIN_PWD}" | \
     ${runAsUser} java -classpath  ${OGG_JARFILE} ogg/OGGDeployment \
