@@ -68,7 +68,7 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
 #    files and must be run from inside the container.
 #
             if [[ "${OGG_EDITION}" == "standard" ]]; then \
-                yum -y install util-linux vi && \
+                yum -y install util-linux vi java-1.8.0-openjdk-headless && \
                 yum -y clean  all; \
             fi; \
 #
