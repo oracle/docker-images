@@ -10,13 +10,16 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-
 # Install latest Perl
+
+# Exit immediately if any command exits non-zero
+set -e
+
 cd $INSTALL_DIR
 mv $ORACLE_HOME/perl $ORACLE_HOME/perl.old
-wget http://www.cpan.org/src/5.0/perl-5.22.0.tar.gz
-tar -xzf perl-5.22.0.tar.gz
-cd perl-5.22.0
+curl -o perl.tar.gz http://www.cpan.org/src/5.0/perl-5.22.0.tar.gz
+tar -xzf perl.tar.gz
+cd perl-*
 ./Configure -des -Dprefix=$ORACLE_HOME/perl -Doptimize=-O3 -Dusethreads -Duseithreads -Duserelocatableinc
 make clean
 make
@@ -36,8 +39,12 @@ ln -sf ../javavm/jdk/jdk8/lib/libjavavm12.a
 
 # Relink Oracle
 cd $ORACLE_HOME/bin
-relink all
+if ! relink all; then
+	echo "Relink all failed"
+	cat "$ORACLE_HOME/install/relink.log"
+	exit 1
+fi
 
 # Cleanup
 rm -rf $ORACLE_HOME/perl.old
-rm -rf $INSTALL_DIR/perl-5.22.0*
+rm -rf $INSTALL_DIR/perl-*
