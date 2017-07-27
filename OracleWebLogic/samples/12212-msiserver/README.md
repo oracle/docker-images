@@ -105,6 +105,8 @@ https://docs.docker.com/registry/deploying/
 A service can be created using this image. You may need init swarm mode if not already done so. Please refer to Docker swarm
 documentation https://docs.docker.com/engine/swarm/
 
+Below is a sample command to create service, "localhost:5050" is the registry where the image has been published:
+
 `$ docker service create --name city_activity_guide -p 8011:8011 --hostname "msihost" --host "msihost:127.0.0.1" --env "MS_NAME=ms{{.Task.Slot}}" --replicas 3 localhost:5000/12212-summercamps-msiserver:latest`
 
 The following experimental feature in 17.03.1-ce is useful for examining logs for all
@@ -139,5 +141,66 @@ down to 1
 You can shutdown the service using
 
 `$ docker service rm city_activity_guide`
+
+Rolling update
+----------------------------------
+You can do rolling update of the service using the docker service update command.
+
+1. If you had shut down the service at the end of the last example, create the service again with three replicas:
+
+$ docker service create --name city_activity_guide -p 8011:8011 --hostname "msihost" --host "msihost:127.0.0.1" --env "MS_NAME=ms{{.Task.Slot}}" --replicas 3 localhost:5000/12212-summercamps-msiserver:latest
+
+Examine the service logs to make sure the service is up. Accessing the URL will dispatch the request to the three replicas based on default load balancing algorithm.
+$ curl http://localhost:8011/
+
+2. Now build a new version (1.1) of the summercamps image and publish in registry:
+
+$ docker build -t 12212-summercamps-msiserver:1.1 -f Dockerfile.addapp --build-arg name=summercamps  --build-arg source=apps1.1/summercamps.ear --build-arg simple_filename=summercamps.ear .
+
+In this version, the JSP file that the accessing URL hits has a title of "Account Profile 1.1"; whileas the original version has a title of "Account Profile".
+
+3. Rolling update the service with version 1.1 of the image.
+
+Below is a sample command to do rolling update, "localhost:5050" is the registry where the image has been published:
+
+$ docker service update --update-delay 10s --image localhost:5000/12212-summercamps-msiserver:1.1 city_activity_guide
+
+The --update-delay option specifies the delay between updates of the replicas.
+
+Use docker service ps command or the docker visualizer to monitor service update.
+$ docker service ps city_activity_guide
+
+Once all the replicas have been updated and back running, accessing the URL:
+
+$ curl http://localhost:8011/
+
+The request will be dispatched to the three replicas based on default load balancing algorithm, and the response will have "Account Profile 1.1" as the title.
+
+4. Next we will show how a failed service update can be rolled back.
+
+Rolling update the service with a non-existent version 1.2 of the image:
+
+$ docker service update --update-delay 10s --image localhost:5000/12212-summercamps-msiserver:1.2 city_activity_guide
+
+Use docker service ps command or the docker visualizer to monitor service update. You will see the update failed for the replica that's being updated.
+
+$ docker service ps city_activity_guide
+
+As this service update command is using the default value of the --update-failure-action option "pause", after the failure of the first replica update, the other two replicas will not be attempted for update.
+
+Accessing the URL will dispatch the request to those two replicas and response will have "Account Profile 1.1" as the title:
+$ curl http://localhost:8011/
+
+Roll back to the previous version 1.1 of the image:
+$ docker service update --rollback city_activity_guide
+
+Use docker service ps command or the docker visualizer to monitor service update. You will see the replica that failed to update previously now rolled back to version 1.1 and running.
+
+$ docker service ps city_activity_guide
+
+Accesing the URL will now dispatch the request to all three replicas and reponse has "Account Profile 1.1" as the title:
+$ curl http://localhost:8011/
+
+Note, the docker version used for this example is 17.03, and the rolling back in Docker 17.04 and higher should be automatic.
 
 Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
