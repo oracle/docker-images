@@ -44,8 +44,6 @@ ENV         JAVA_HOME=/usr/lib/jvm/jre \
 ADD         ${OGG_TARFILE} ${OGG_HOME}/
 COPY        runOracleGoldenGate.sh /
 
-RUN         yum clean all
-
 RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFILE}" ]]; then \
                 echo "----------------------------------------------------------------------------------" && \
                 echo "-- Missing build argument for Dockerfile. See README.md for usage instructions. --" && \
