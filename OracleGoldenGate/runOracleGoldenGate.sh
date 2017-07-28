@@ -53,7 +53,7 @@ function tailReport {
 }
 
 ##
-## Hook for launching another entrypoing in the container
+## Hook for launching another entrypoint in the container
 ## If defined, the command identified by ${BASE_COMMAND} will be run in the background.
 ##
 function runBaseCommand {
