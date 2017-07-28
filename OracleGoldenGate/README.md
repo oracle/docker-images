@@ -2,6 +2,8 @@ Oracle GoldenGate on Docker
 ===============
 Sample Docker build files to provide an installation of Oracle GoldenGate for DevOps users. For more information about Oracle GoldenGate please see the [Oracle GoldenGate On-line Documentation](https://docs.oracle.com/goldengate/c1221/gg-winux/index.html).
 
+**IMPORTANT:** To create images for Oracle GoldenGate on Docker, you must use Docker version 17.05.0 or later. You can check the version of Docker on your system with the `docker version` command.
+
 ## Usage
 This project provides a Dockerfile tested with:
 
