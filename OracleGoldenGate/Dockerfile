@@ -31,16 +31,20 @@ USER        root
 ARG         OGG_VERSION
 ARG         OGG_EDITION
 ARG         OGG_TARFILE
+ARG         BASE_COMMAND
 
 ENV         JAVA_HOME=/usr/lib/jvm/jre \
             OGG_HOME=/u01/app/ogg \
             OGG_DEPLOY_BASE=/u02/ogg \
             PATH=${PATH}:/u01/app/ogg:/u01/app/ogg/bin \
             OGG_VERSION=${OGG_VERSION} \
-            OGG_EDITION=${OGG_EDITION}
+            OGG_EDITION=${OGG_EDITION} \
+            BASE_COMMAND=${BASE_COMMAND}
 
 ADD         ${OGG_TARFILE} ${OGG_HOME}/
 COPY        runOracleGoldenGate.sh /
+
+RUN         yum clean all
 
 RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFILE}" ]]; then \
                 echo "----------------------------------------------------------------------------------" && \

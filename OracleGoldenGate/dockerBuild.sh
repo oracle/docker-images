@@ -10,7 +10,7 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-if [[ "${1--h}" == "-h" ]]; then
+if [[ "${1:--h}" == "-h" ]]; then
     echo "Oracle GoldenGate distribution ZIP file not specified."
     echo ""
     echo "Usage: $(basename $0) [-h | <ogg-zip-file-name>] [<docker-build-options> ...]"
@@ -29,7 +29,6 @@ if [[ ! -f "${OGG_DISTFILE}" ]]; then
     exit 1
 fi
 shift
-DOCKER_BUILD_OPTIONS="$*"
 pushd "$(dirname $(command -v $0))" &>/dev/null
 
 function cleanupAndExit {
@@ -95,5 +94,5 @@ docker build ${BASE_IMAGE_ARG} \
              --build-arg OGG_VERSION=${OGG_VERSION} \
              --build-arg OGG_EDITION=${OGG_EDITION} \
              --build-arg OGG_TARFILE=${OGG_TARFILE} \
-             --tag oracle/goldengate-${OGG_EDITION}:${OGG_VERSION} ${DOCKER_BUILD_OPTIONS} .
+             --tag oracle/goldengate-${OGG_EDITION}:${OGG_VERSION} "$@" .
 cleanupAndExit $?

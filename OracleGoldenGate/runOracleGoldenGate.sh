@@ -53,6 +53,15 @@ function tailReport {
 }
 
 ##
+## Hook for launching another entrypoing in the container
+## If defined, the command identified by ${BASE_COMMAND} will be run in the background.
+##
+function runBaseCommand {
+    [[ ! -z "${BASE_COMMAND}" ]] && \
+        ${BASE_COMMAND} &
+}
+
+##
 ## Mark applications and shared libraries executable
 ##
 function setExecutable {
@@ -278,6 +287,7 @@ function term_microservices {
 ##
 ## Main logic
 ##
+runBaseCommand
 trap term_${OGG_EDITION} SIGTERM SIGINT
      init_${OGG_EDITION} && \
      exec_${OGG_EDITION}

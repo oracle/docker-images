@@ -132,6 +132,11 @@ When manually creating the Docker image (see **Option 2**), the base image is sp
                    --build-arg OGG_TARFILE="fbo_ggs_Linux_x64_shiphome.tar" \
                    --tag oracle/goldengate-standard:12.2.0.1.1 --no-cache .
 
+### Running a Command from the Base Image
+If the base image provides run-time services, they can be specified at Docker image build time with the `BASE_COMMAND` argument. They can also be specified at run time with the `BASE_COMMAND` environment variable. The command specified by `BASE_COMMAND` will be executed in the background, before the Oracle GoldenGate services are run. For example, when the Oracle GoldenGate Docker image is based on `oracle/database:12.2.0.1-ee`, the RDBMS services can be specified with this command:
+
+   $ BASE_IMAGE="oracle/database:12.2.0.1-ee" ./dockerBuild.sh ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip --build-arg BASE_COMMAND="runuser -u oracle -- /opt/oracle/runOracle.sh"
+
 ### Running Oracle GoldenGate in a Docker container
 To run your Oracle GoldenGate Docker image use a **docker run** command like this:
 
