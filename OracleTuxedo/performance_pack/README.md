@@ -20,3 +20,17 @@ Note: \${LOCAL_DIR} is a local dir which used in docker image as external storag
 
 which will run the sample. You can check the logs from `docker logs <container_id>`, container_id can be checked by `docker ps -a`, the ULOG files can be check at \${LOCAL_DIR}/perfpack.
 
+## How to use the Dockerfile
+To extend your Tuxedo applications against the image, you need to update perfpack_runme.sh to initialize your Tuxedo applications. There are two approaches:
+1. If all files are source, including UBBCONFIG, BDMCONFIG and C code, you need to build them in perfpack_runme.sh in order to generate the binaries for runtime
+2. If they're already in binary format, you just need to put the binaries under a directory outside docker image, then map the directory to /u01/oracle/user_projects, like what the script buildDockerImage.sh does. Update perfpack_runme.sh to just set PATH and run 'tmboot -y' to boot your Tuxedo app.
+
+
+## License
+To download and run Oracle TSAM Plus, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
+
+All scripts and files hosted in this project required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
+
+## Copyright
+Copyright (c) 1996-2017 Oracle and/or its affiliates. All rights reserved.
+
