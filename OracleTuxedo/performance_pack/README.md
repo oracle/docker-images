@@ -27,7 +27,7 @@ To extend your Tuxedo applications against the image, you need to update perfpac
 
 
 ## License
-To download and run Oracle TSAM Plus, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
+To download and run Oracle Tuxedo, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
 
