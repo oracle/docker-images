@@ -83,6 +83,7 @@ OGG_VERSION=$(getVersion ggstar/keygen) && {
         cleanupAndExit 1
     }
 }
+find    ggstar -type f \( -name '*.so*' -o -not -name '*.*' \) -exec chmod +x {} \;
 tar Ccf ggstar ${OGG_TARFILE} --owner=54321 --group=54321 .
 rm -fr  ggstar
 
