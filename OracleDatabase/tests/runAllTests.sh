@@ -23,30 +23,19 @@ function runContainerTest {
   IMAGE="$3"
   ORACLE_SID=${4:-ORCLTEST}
 
+  echo "Test: $TEST_NAME"
+  
   # Run and start container
   docker run -d -e ORACLE_SID="$ORACLE_SID" --name "$CON_NAME" "$IMAGE"
   
   # Check whether Oracle is OK
   checkOracle "$TEST_NAME" "$CON_NAME" "$ORACLE_SID"
-  testOK=$?
+  TEST_OK=$?
   
   docker kill "$CON_NAME"
   docker rm -v "$CON_NAME"
   
-  checkError "$TEST_NAME" $testOK
-}
-
-# Function: checkError
-# Checks command result for errors
-# Parameter:
-# TEST_NAME: The test name
-# RETURN_CODE: The return code of the other command
-
-function checkError {
-  TEST_NAME="$1"
-  RETURN_CODE="$2"
-
-  if [ "$RETURN_CODE" != "0" ]; then
+  if [ "$TEST_OK" != "0" ]; then
     echo "Test $TEST_NAME: FAILED!";
     cleanup;
     exit 1;
@@ -114,6 +103,6 @@ runContainerTest "12.2.0.1 EE default database" "12.2.0.1-EE-default" "oracle/da
 ###################### TEST ###########################
 
 # Run 12.2.0.1 EE custom container
-runContainerTest "12.2.0.1-EE-custom database" "12.2.0.1-EE-custom" "oracle/database/12.2.0.1-ee" "TEST"
+runContainerTest "12.2.0.1-EE-custom database" "12.2.0.1-EE-custom" "oracle/database:12.2.0.1-ee" "TEST"
 
 # Run 12.2.0.1 EE custom characterset
