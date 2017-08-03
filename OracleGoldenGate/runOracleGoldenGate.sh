@@ -102,6 +102,7 @@ function createGlobals {
 ##
 CommonOU="OU=GoldenGate,OU=Enterprise Replication,OU=Server Technology,O=Oracle Corp,L=Redwood Shores,ST=CA,C=US"
 orapki="${runAsUser} orapki -nologo"
+OGG_WALLET_PWD="${OGG_ADMIN_PWD}-A1"
 
 function initSSL {
     local    deploymentName="$1"
@@ -113,7 +114,7 @@ function initCA {
     local    deploymentName="$1"
     createWallet "${deploymentName}" || return 0
     ${runAsUser} bash -c "date +%s  > ${OGG_DEPLOY_BASE}/ssl/${deploymentName}.serial"
-    ${orapki} crl      create -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_ADMIN_PWD}" -crl ${OGG_DEPLOY_BASE}/ssl/${deploymentName}.crl
+    ${orapki} crl      create -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_WALLET_PWD}" -crl ${OGG_DEPLOY_BASE}/ssl/${deploymentName}.crl
 }
 
 function initDN {
@@ -125,23 +126,25 @@ function initDN {
 
     createWallet ${hostName} || return 0
 
-    ${orapki} wallet export  -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_ADMIN_PWD}" -dn "CN=${deploymentName},${CommonOU}" -cert    ${deploymentCert}
-    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_ADMIN_PWD}"                          -trusted_cert -cert    ${deploymentCert}
+    ${orapki} wallet export  -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -cert    ${deploymentCert}
+    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_WALLET_PWD}"                          -trusted_cert -cert    ${deploymentCert}
     rm -f                                                                                                                                         ${deploymentCert}
 
-    ${orapki} wallet export  -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_ADMIN_PWD}" -dn "CN=${hostName},${CommonOU}"       -request ${hostRequest}
-    ${orapki} cert   create  -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_ADMIN_PWD}" -validity 3650                         -request ${hostRequest} \
+    ${orapki} wallet export  -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_WALLET_PWD}" -dn "CN=${hostName},${CommonOU}"       -request ${hostRequest}
+    ${orapki} cert   create  -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_WALLET_PWD}" -validity 3650                         -request ${hostRequest} \
                         -serial_file ${OGG_DEPLOY_BASE}/ssl/${deploymentName}.serial                                                         -cert    ${hostCert}
     rm -f                                                                                                                                             ${hostRequest}
-    ${orapki} wallet replace -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_ADMIN_PWD}"                          -user_cert    -cert    ${hostCert}
+    ${orapki} wallet replace -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_WALLET_PWD}"                          -user_cert    -cert    ${hostCert}
     rm -f                                                                                                                                             ${hostCert}
 }
 
 function createWallet {
     local        walletName="$1"
-    mkdir -p ${OGG_DEPLOY_BASE}/ssl/${walletName} 2>/dev/null || return 1
-    ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${walletName}     -pwd "${OGG_ADMIN_PWD}" -auto_login
-    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${walletName}     -pwd "${OGG_ADMIN_PWD}" -dn "CN=${walletName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
+    mkdir -p                         ${OGG_DEPLOY_BASE}/ssl
+    chown     oracle:oinstall        ${OGG_DEPLOY_BASE}/ssl
+    ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${walletName} 2>/dev/null || return 1
+    ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${walletName}     -pwd "${OGG_WALLET_PWD}" -auto_login
+    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${walletName}     -pwd "${OGG_WALLET_PWD}" -dn "CN=${walletName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
 }
 
 function initShell {
@@ -175,7 +178,7 @@ function createDeployment {
     fi
 
     local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*-jar-with-dependencies.jar)
-    mkdir -p "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}"
+    mkdir -p                 "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}"
     chown -R oracle:oinstall "${OGG_DEPLOY_BASE}"
 
     echo "${OGG_ADMIN_PWD}" | \
