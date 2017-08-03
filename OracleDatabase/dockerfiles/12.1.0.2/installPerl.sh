@@ -17,7 +17,7 @@ set -e
 
 cd $INSTALL_DIR
 mv $ORACLE_HOME/perl $ORACLE_HOME/perl.old
-curl -o perl.tar.gz http://www.cpan.org/src/5.0/perl-5.22.0.tar.gz
+curl -o perl.tar.gz http://www.cpan.org/src/5.0/perl-5.14.1.tar.gz
 tar -xzf perl.tar.gz
 cd perl-*
 ./Configure -des -Dprefix=$ORACLE_HOME/perl -Doptimize=-O3 -Dusethreads -Duseithreads -Duserelocatableinc

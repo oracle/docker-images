@@ -80,7 +80,7 @@ cp $BIN_DIR/linuxx64_12201_database.zip ./12.2.0.1/
 
 # Build 12.2.0.1 SE2 images
 ./buildDockerImage.sh -s -v 12.2.0.1
-checkError "Build 122.0.1 SE2 image" $?
+checkError "Build 12.2.0.1 SE2 image" $?
 
 ###################### TEST ###########################
 
