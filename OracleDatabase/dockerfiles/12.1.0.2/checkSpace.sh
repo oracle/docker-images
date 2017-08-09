@@ -11,7 +11,8 @@
 # 
 
 REQUIRED_SPACE_GB=12
-if [ `df -B 1G . | tail -n 1 | awk '{print $4'}` -lt $REQUIRED_SPACE_GB ]; then
+
+if [ `df -B 1G . | tail -n 1 | awk '{ print $4 }'` -lt $REQUIRED_SPACE_GB ]; then
   script_name=`basename "$0"`
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   echo "$script_name: ERROR - There is not enough space available in the docker container."
