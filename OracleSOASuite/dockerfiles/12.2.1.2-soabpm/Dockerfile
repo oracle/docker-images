@@ -12,7 +12,7 @@
 #
 # Pull base image
 # ---------------
-FROM middleware/fmw-infrastructure:12.2.1.2
+FROM oracle/fmw-infrastructure:12.2.1.2
 #
 # Maintainer
 # ----------
