@@ -146,6 +146,8 @@ Rolling update
 ----------------------------------
 You can do rolling update of the service using the docker service update command.
 
+This sample gives you instructions on how to update a WebLogic image in a rolling fashion. You might want to update your WebLogic image to update a deployed application, or patch your WebLogic Server, or update the Java version in your image.
+
 1. If you had shut down the service at the end of the last example, create the service again with three replicas:
 
 $ docker service create --name city_activity_guide -p 8011:8011 --hostname "msihost" --host "msihost:127.0.0.1" --env "MS_NAME=ms{{.Task.Slot}}" --replicas 3 localhost:5000/12212-summercamps-msiserver:latest
