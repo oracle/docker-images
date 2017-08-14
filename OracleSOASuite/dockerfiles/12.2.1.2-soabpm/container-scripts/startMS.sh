@@ -1,6 +1,13 @@
 #!/bin/bash
 #
-# Author:vivek.raj@oracle.com
+#
+#
+# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
+
+# Author:nevin.cleetus@oracle.com
 
 export DOMAIN_NAME=${DOMAIN_NAME:-soainfra}
 export DOMAIN_ROOT=${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}
