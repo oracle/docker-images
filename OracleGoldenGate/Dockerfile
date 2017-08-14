@@ -36,7 +36,8 @@ ARG         BASE_COMMAND
 ENV         JAVA_HOME=/usr/lib/jvm/jre \
             OGG_HOME=/u01/app/ogg \
             OGG_DEPLOY_BASE=/u02/ogg \
-            PATH=${PATH}:/u01/app/ogg:/u01/app/ogg/bin \
+            PATH=/u01/app/ogg:/u01/app/ogg/bin:/usr/lib/jvm/jre/bin:${PATH} \
+            LD_LIBRARY_PATH=/usr/lib/jvm/jre/lib/amd64/server \
             OGG_VERSION=${OGG_VERSION} \
             OGG_EDITION=${OGG_EDITION} \
             BASE_COMMAND=${BASE_COMMAND}
