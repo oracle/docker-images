@@ -44,7 +44,7 @@ COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $ORDS_HOME/
 # ------------------------------------------------------------
 RUN mkdir -p  $ORDS_HOME/doc_root && \
     chmod ug+x $ORDS_HOME/*.sh && \
-    groupadd -g 500 dba && \
+    groupadd dba && \
     useradd -d /home/oracle -g dba -m -s /bin/bash oracle && \
     echo oracle:oracle | chpasswd && \
     cd $ORDS_HOME && \
