@@ -46,7 +46,6 @@ RUN mkdir -p  $ORDS_HOME/doc_root && \
     chmod ug+x $ORDS_HOME/*.sh && \
     groupadd dba && \
     useradd -d /home/oracle -g dba -m -s /bin/bash oracle && \
-    echo oracle:oracle | chpasswd && \
     cd $ORDS_HOME && \
     jar -xf $INSTALL_FILE && \
     rm $INSTALL_FILE && \
