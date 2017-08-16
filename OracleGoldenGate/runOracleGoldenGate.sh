@@ -100,51 +100,24 @@ function createGlobals {
 ##
 ## Oracle GoldenGate Microservices Architecture functions
 ##
-CommonOU="OU=GoldenGate,OU=Enterprise Replication,OU=Server Technology,O=Oracle Corp,L=Redwood Shores,ST=CA,C=US"
-orapki="${runAsUser} orapki -nologo"
-OGG_WALLET_PWD="${OGG_ADMIN_PWD}-A1"
-
 function initSSL {
-    local    deploymentName="$1"
-    initCA ${deploymentName}
-    initDN ${deploymentName} $(hostname)
-}
+    local deploymentName="$1"
+    local       hostName="$(hostname)"
+    local       CommonOU="OU=GoldenGate,OU=Enterprise Replication,OU=Server Technology,O=Oracle Corp,L=Redwood Shores,ST=CA,C=US"
+    local         orapki="${runAsUser} orapki -nologo"
+    local OGG_WALLET_PWD="${OGG_ADMIN_PWD}-A1"
+    local      nginxCert="/etc/nginx/ogg.pem"
 
-function initCA {
-    local    deploymentName="$1"
-    createWallet "${deploymentName}" || return 0
-    ${runAsUser} bash -c "date +%s  > ${OGG_DEPLOY_BASE}/ssl/${deploymentName}.serial"
-    ${orapki} crl      create -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_WALLET_PWD}" -crl ${OGG_DEPLOY_BASE}/ssl/${deploymentName}.crl
-}
-
-function initDN {
-    local    deploymentName="$1"
-    local          hostName="$2"
-    local    deploymentCert="${OGG_DEPLOY_BASE}/ssl/${hostName}/${deploymentName}.crt"
-    local       hostRequest="/tmp/${hostName}.csr"
-    local          hostCert="/tmp/${hostName}.crt"
-
-    createWallet ${hostName} || return 0
-
-    ${orapki} wallet export  -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -cert    ${deploymentCert}
-    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_WALLET_PWD}"                          -trusted_cert -cert    ${deploymentCert}
-    rm -f                                                                                                                                         ${deploymentCert}
-
-    ${orapki} wallet export  -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_WALLET_PWD}" -dn "CN=${hostName},${CommonOU}"       -request ${hostRequest}
-    ${orapki} cert   create  -wallet ${OGG_DEPLOY_BASE}/ssl/${deploymentName} -pwd "${OGG_WALLET_PWD}" -validity 3650                         -request ${hostRequest} \
-                        -serial_file ${OGG_DEPLOY_BASE}/ssl/${deploymentName}.serial                                                         -cert    ${hostCert}
-    rm -f                                                                                                                                             ${hostRequest}
-    ${orapki} wallet replace -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName}       -pwd "${OGG_WALLET_PWD}"                          -user_cert    -cert    ${hostCert}
-    rm -f                                                                                                                                             ${hostCert}
-}
-
-function createWallet {
-    local        walletName="$1"
     mkdir -p                         ${OGG_DEPLOY_BASE}/ssl
     chown     oracle:oinstall        ${OGG_DEPLOY_BASE}/ssl
-    ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${walletName} 2>/dev/null || return 1
-    ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${walletName}     -pwd "${OGG_WALLET_PWD}" -auto_login
-    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${walletName}     -pwd "${OGG_WALLET_PWD}" -dn "CN=${walletName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
+    ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${hostName} 2>/dev/null || return 1
+    ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -auto_login
+    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -dn "CN=${hostName},${CommonOU}"       -keysize 2048 -self_signed -validity 7300
+    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
+
+    chmod 644               ${nginxCert}
+    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -trusted_cert -cert ${nginxCert}
+    chmod 600               ${nginxCert}
 }
 
 function initShell {
@@ -155,27 +128,30 @@ EOF
 }
 
 function createDeployment {
-    if [[ "${OGG_SECURE}" == "true" ]]; then
-        secureOption=""
-        if [[ ! -z "${OGG_SERVER_WALLET}" ]]; then
-            secureOption="${secureOption} --serverWrl=${OGG_SERVER_WALLET}"
-        fi
-        if [[ ! -z "${OGG_CLIENT_WALLET}" ]]; then
-            secureOption="${secureOption} --clientWrl=${OGG_CLIENT_WALLET}"
-        fi
-        if [[ ! -z "${OGG_CLIENT_ROLE}" ]]; then
-            secureOption="${secureOption} --clientRole=${OGG_CLIENT_ROLE}"
-        fi
-        if [[ ! -z "${OGG_CLIENT_INFO}" ]]; then
-            secureOption="${secureOption} --clientInfo=${OGG_CLIENT_INFO}"
-        fi
-        if [[ "${secureOption}" == "" ]]; then
-            initSSL ${OGG_DEPLOYMENT}
-            secureOption="--serverWrl=${OGG_DEPLOY_BASE}/ssl/${OGG_DEPLOYMENT}"
-        fi
-    else
-        secureOption="--nonSecure"
+    if [[ "${OGG_SECURE}" == "true" && -z "${OGG_SERVER_WALLET}" ]]; then
+        OGG_SERVER_WALLET="${OGG_DEPLOY_BASE}/ssl/$(hostname)"
     fi
+    if [[ -z "${OGG_CLIENT_WALLET}" ]]; then
+        OGG_CLIENT_WALLET="${OGG_DEPLOY_BASE}/ssl/$(hostname)"
+    fi
+
+    secureOption=""
+    if [[ ! -z "${OGG_SERVER_WALLET}" ]]; then
+        secureOption="${secureOption} --serverWrl=${OGG_SERVER_WALLET}"
+    else
+        secureOption="${secureOption} --nonSecure"
+    fi
+    if [[ ! -z "${OGG_CLIENT_WALLET}" ]]; then
+        secureOption="${secureOption} --clientWrl=${OGG_CLIENT_WALLET}"
+    fi
+    if [[ ! -z "${OGG_CLIENT_ROLE}" ]]; then
+        secureOption="${secureOption} --clientRole=${OGG_CLIENT_ROLE}"
+    fi
+    if [[ ! -z "${OGG_CLIENT_INFO}" ]]; then
+        secureOption="${secureOption} --clientInfo=${OGG_CLIENT_INFO}"
+    fi
+
+    initSSL ${OGG_DEPLOYMENT}
 
     local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*-jar-with-dependencies.jar)
     mkdir -p                 "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}"
@@ -251,9 +227,9 @@ Port_MetricsServer=$(expr ${PORT_BASE} + 4)
 Port_MetricsServerUDP=$(expr ${PORT_BASE} + 4)
 
 function init_microservices {
-    [[ -z "${OGG_DEPLOYMENT}"       ]] && export OGG_DEPLOYMENT="Local"
-    [[    "${OGG_SECURE}" == "1"    ]] && export OGG_SECURE="true"
-    [[    "${OGG_SECURE}" != "true" ]] && export OGG_SECURE="false"
+    [[   -z "${OGG_DEPLOYMENT}"       ]] && export OGG_DEPLOYMENT="Local"
+    [[ ! -z "${OGG_SERVER_WALLET}"    ]] && export OGG_SECURE="true"
+    [[      "${OGG_SECURE}" != "true" ]] && export OGG_SECURE="false"
     setExecutable
     initShell
     createDeployment
