@@ -4,6 +4,7 @@ This repository contains Dockerfiles and samples to build Docker images for Orac
 
  - [Oracle Coherence](https://github.com/oracle/docker-images/tree/master/OracleCoherence)
  - [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase)
+ - [Oracle GoldenGate](https://github.com/oracle/docker-images/tree/master/OracleGoldenGate)
  - [Oracle Java](https://github.com/oracle/docker-images/tree/master/OracleJava)
  - [Oracle HTTP Server](https://github.com/oracle/docker-images/tree/master/OracleHTTPServer)
  - [Oracle Tuxedo](https://github.com/oracle/docker-images/tree/master/OracleTuxedo)
