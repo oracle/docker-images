@@ -2,6 +2,8 @@
 #
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 # Create OHS Domain and OHS System component
 #
 # OHS Domain 'ohsDomain' (or anything defined under DOMAIN_NAME) to be created inside the Docker image for OHS
