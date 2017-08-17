@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [Docker build option]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
@@ -22,6 +22,7 @@ Parameters:
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
+   -o: passes on Docker build option
 
 * select one edition only: -e, -s, or -x
 
@@ -64,7 +65,7 @@ VERSION="12.2.0.1"
 SKIPMD5=0
 DOCKEROPS=""
 
-while getopts "hesxiv:" optname; do
+while getopts "hesxiv:o:" optname; do
   case "$optname" in
     "h")
       usage
@@ -83,6 +84,13 @@ while getopts "hesxiv:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "o")
+      DOCKEROPS="$OPTARG"
+      ;;
+    "?")
+      usage;
+      exit 1;
       ;;
     *)
     # Should not occur
@@ -103,7 +111,7 @@ elif [ $EXPRESS -eq 1 ] && [ "$VERSION" != "11.2.0.2" ]; then
   exit 1;
 else
   EDITION="xe";
-  DOCKEROPS="--shm-size=1G";
+  DOCKEROPS="--shm-size=1G $DOCKEROPS";
 fi
 
 # Oracle Database Image Name

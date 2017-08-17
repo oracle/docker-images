@@ -1,6 +1,6 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 #
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -18,7 +18,7 @@
 #
 # From 
 # -------------------------
-FROM oracle/weblogic:12.2.1.2-infrastructure
+FROM oracle/serverjre:8
 
 # Maintainer
 # ----------
@@ -28,27 +28,46 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # Common environment variables required for this build 
 # ----------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
+    SCRIPT_FILE=/u01/oracle/container-scripts/createInfraDomainAndStartAdmin.sh \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     DOMAIN_NAME="${DOMAIN_NAME:-InfraDomain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-InfraDomain} \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 
-USER root    
-# Setup subdirectory container-scripts
-# ------------------------------------------------------------  
-RUN mkdir -p /u01/oracle/container-scripts
+#USER root    
+# Setup subdirectory for FMW install package and container-scripts
+# -----------------------------------------------------------------  
+RUN mkdir -p /u01 && \ 
+    chmod a+xr /u01 && \
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
+    mkdir -p /u01/oracle/container-scripts
 
 
 # Copy packages and scripts
 # -------------
 COPY container-scripts/* /u01/oracle/container-scripts/
 
-RUN chmod +x /u01/oracle/container-scripts/*.sh && \
-    yum install -y libaio && \
-    yum clean all
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+ENV FMW_PKG=fmw_12.2.1.2.0_infrastructure_Disk1_1of1.zip \
+    FMW_JAR=fmw_12.2.1.2.0_infrastructure.jar
 
+# Copy packages
+# -------------
+COPY $FMW_PKG install.file oraInst.loc /u01/
+RUN chown oracle:oracle -R /u01 && \
+    chmod +xr $SCRIPT_FILE && \
+    yum install -y libaio && \
+    yum clean all 
+
+# Install 
+# ------------------------------------------------------------
 USER oracle
+RUN  cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
+    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
+    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
+
 WORKDIR ${ORACLE_HOME}
 
 # Define default command to start script.

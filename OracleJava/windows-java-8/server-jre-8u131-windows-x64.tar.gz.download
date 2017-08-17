@@ -1,0 +1,5 @@
+# Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
+#
+#  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
+#
+1806ebe235eab2b21c893acbf0b287a392ce6b5edfea3286fc8ff7d6defb19cb  server-jre-8u131-windows-x64.tar.gz
