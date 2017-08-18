@@ -7,7 +7,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -22,7 +22,7 @@ Parameters:
    -v: Release version to build. Required. E.g 12.2.1.2.6
    -s: skips the MD5 check of packages
 
-Copyright (c) 2014-2017: Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
 Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 EOF
