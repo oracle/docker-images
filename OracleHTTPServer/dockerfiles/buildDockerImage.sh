@@ -10,6 +10,8 @@
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
 #
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 usage() {
 cat << EOF
 
@@ -20,7 +22,7 @@ Parameters:
    -v: Release version to build. Required. E.g 12.2.1.2.0
    -s: skips the MD5 check of packages
 
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE Universal Permissive License v1.0
 
 Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
 

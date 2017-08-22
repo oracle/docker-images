@@ -2,6 +2,8 @@
 # Author: prabhat.kishore@oracle.com
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 #
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 #*************************************************************************
 #  This script is used to create a standalone OHS domain and start NodeManager, OHS instance.
 #  This script sets the following variables:

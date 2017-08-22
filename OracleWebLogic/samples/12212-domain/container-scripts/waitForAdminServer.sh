@@ -1,5 +1,9 @@
 #!/bin/bash
 # 
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 # This script will wait until Admin Server is available.
 # There is no timeout!
 #
