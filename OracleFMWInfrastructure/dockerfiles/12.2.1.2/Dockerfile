@@ -28,7 +28,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # Common environment variables required for this build 
 # ----------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
-    SCRIPT_FILE=/u01/oracle/container-scripts/createInfraDomainAndStartAdmin.sh \
+    SCRIPT_FILE=/u01/oracle/container-scripts/createOrStartInfraDomain.sh \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     DOMAIN_NAME="${DOMAIN_NAME:-InfraDomain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-InfraDomain} \
@@ -71,4 +71,4 @@ RUN  cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
 WORKDIR ${ORACLE_HOME}
 
 # Define default command to start script.
-CMD ["/u01/oracle/container-scripts/createInfraDomainAndStartAdmin.sh"]
+CMD ["/u01/oracle/container-scripts/createOrStartInfraDomain.sh"]
