@@ -1,5 +1,7 @@
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 # Author: hemastuti.baruah@oracle.com
 # Stops the ohs_sa1 component server inside the ohsDomain
 # ==============================================
