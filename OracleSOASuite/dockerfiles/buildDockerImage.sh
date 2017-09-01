@@ -19,10 +19,10 @@ Builds a Docker Image for Oracle SOA/OSB/BPM
 Parameters:
    -h: view usage
    -v: Release version to build. Required. Allowed values are
-       12.2.1.2-soabpm
+       12.2.1.2
    -s: Skip checksum verification
 
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE Universal Permissive License (UPL), Version 1.0
 Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
 
 EOF
@@ -38,7 +38,7 @@ checksumPackages() {
 
 ERROR: MD5 for required packages to build this image
        did not match. Please make sure to download
-       missing files in the 12.2.1.2-soabpm folder.
+       missing files in the ${VERSION} folder.
        See Dockerfile for more information
 EOF
     exit $?
@@ -75,11 +75,9 @@ fi
 . ../setenv.sh
 
 versionOK=false
-if [[ $VERSION =~ .*soabpm.* ]]
+if [[ $VERSION =~ 12.2.1.* ]]
 then
-  suffix="-soabpm"
-  QSVERSION=${VERSION%$suffix}
-  IMAGE_NAME="${DC_REGISTRY_SOA}/middleware/soabpm:$QSVERSION"
+  IMAGE_NAME="${DC_REGISTRY_SOA}/oracle/soasuite:$VERSION"
   DOCKERFILE_NAME=Dockerfile
   versionOK=true
 fi
@@ -87,6 +85,11 @@ fi
 if [ "${versionOK}" = "false" ]; then
   echo "ERROR: Incorrect version ${VERSION} specified"
   usage
+else
+  if [ ! -d ${VERSION} ]; then
+    echo "ERROR: Incorrect version ${VERSION} directory not found"
+    usage
+  fi
 fi
 
 # Go into version folder

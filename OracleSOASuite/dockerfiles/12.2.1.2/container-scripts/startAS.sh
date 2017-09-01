@@ -27,6 +27,7 @@ echo "INFO: Logs = ${LOGFILE}"
 $DOMAIN_HOME/bin/startWebLogic.sh > ${LOGFILE} 2>&1 &
 
 statusfile=/tmp/notifyfifo.$$
+rm -f "${statusfile}"
 mkfifo "${statusfile}" || exit 1
 {
   # run tail in the background so that the shell can kill tail when notified 
@@ -52,7 +53,7 @@ mkfifo "${statusfile}" || exit 1
 }
 
 # clean up
-rm "${statusfile}"
+rm -f "${statusfile}"
 if [ -f ${STSFILE} ]; then
   echo "INFO: Admin server running, ready to start managed server"
 fi
