@@ -3,11 +3,13 @@
 #
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 #*************************************************************************
 #This script will configure Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs),
 #in order to enable the Oracle HTTP Server instances to route applications
 #deployed on the Admin Server, Single Managed Server or the Oracle WebLogic Server clusters
-#Refer to Section 2.4 @ http://docs.oracle.com/middleware/12212/webtier/develop-plugin/oracle.htm#PLGWL553
+#Refer to Section 2.4 @ http://docs.oracle.com/middleware/12213/webtier/develop-plugin/oracle.htm#PLGWL553
 #
 #Prerequisite:
 #1.Create a directory which would be mounted to the container

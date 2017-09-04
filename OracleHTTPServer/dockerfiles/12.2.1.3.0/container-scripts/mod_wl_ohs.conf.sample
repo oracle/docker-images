@@ -1,12 +1,14 @@
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 #***************************************************************
 # NOTE : This is a sample template to configure mod_weblogic.
 # Author: hemastuti.baruah@oracle.com
 #
 #
 #Refer to OHS documentation for more details and examples
-#Section 2.4 @ http://docs.oracle.com/middleware/12212/webtier/develop-plugin/oracle.htm#PLGWL553
+#Section 2.4 @ http://docs.oracle.com/middleware/12213/webtier/develop-plugin/oracle.htm#PLGWL553
 #*************************************************************************
 LoadModule weblogic_module   "/u01/oracle/ohssa/ohs/modules/mod_wl_ohs.so"
 
