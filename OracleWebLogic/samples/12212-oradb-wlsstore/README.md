@@ -1,4 +1,4 @@
-#Example of Image with WLS Domain
+Example of Image with WLS Domain
 ================================
 This Dockerfile extends the Oracle WebLogic install image from the DockerStore configures a WebLogic domain, creates a DataSource that connects to a DB, and deploys a WLS application that does DB operations.
 
