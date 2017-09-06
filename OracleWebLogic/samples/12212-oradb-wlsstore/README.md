@@ -18,32 +18,13 @@ Follow the steps below:
  
 # Run the Database container 
 To create a database container, use the environment file below to set the database name, password, domain and feature bundle.  The example environment file env.txt is:
-####################################################################
-## Copyright(c) Oracle Corporation 1998,2016. All rights reserved.##
-##                                                                ##
-##                   Docker OL7 db12c dat file                    ##
-##                                                                ##
-####################################################################
-##------------------------------------------------------------------
-## Specify the basic DB parameters
-##------------------------------------------------------------------
-## db sid (name)
-## default : ORCL
-## cannot be longer than 8 characters
+
 DB_SID=infradb
 DB_PDB=infrapdb
-## db passwd
-## default : Oracle
 DB_PASSWD=Welcome1
-## db domain
-## default : localdomain
-DB_DOMAIN=
-## db bundle
-## default : basic
-## valid : basic / high / extreme 
-## (high and extreme are only available for enterprise edition)
+DB_DOMAIN=us.oracle.com
 DB_BUNDLE=basic
-## end
+
 
    $ docker run --name MYInfraDb --network=InfraNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:latest
 
