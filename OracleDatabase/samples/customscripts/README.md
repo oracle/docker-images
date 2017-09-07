@@ -3,8 +3,10 @@ Example of automatically executing custom scripts after database setup/startup
 This example shows how to automatically execute custom scripts after the database is started.
 The this done in both cases, once the database is setup and started, or once the container is restarted
 with an already existing database.  
-The container is aware of the location `/opt/oracle/scritps` (`/u01/app/oracle/scripts` for XE) and will
-automatically search for shell (*.sh) and SQL (*.sql) scripts. If found, the container will execute them.
+The container is aware of the location `/opt/oracle/scritps/setup` and `/opt/oracle/scripts/startup`
+(`/u01/app/oracle/scripts/setup` and `/u01/app/oracle/scripts/startup` for XE) and will
+automatically search for shell (*.sh) and SQL (*.sql) scripts.
+If found, the container will execute them either after the setup or the startup of the database.
 All the user has to do is to map a volume including those scripts to that location.  
 SQL scripts will be executed as sysdba, shell scripts will be executed as the current user.
 To ensure proper order it is recommended to prefix your scripts with a number. For example 
@@ -20,18 +22,18 @@ docker run --name customscripts \
 -e ORACLE_SID=ORCLSCRIPT \
 -e ORACLE_PDB=CUSTOMSCRIPTS \
 -v /home/oracle/oradata:/opt/oracle/oradata \
--v /home/oracle/docker/samples/customscripts:/opt/oracle/scripts \
+-v /home/oracle/docker/samples/customscripts:/opt/oracle/scripts/setup \
 oracle/database:12.2.0.1-ee
 ```
 
-Once the database is setup or started you will see the following in the output:
+Once the database is setup you will see the following in the output:
 
 ```
 Executing user defined scripts
-/opt/oracle/runOracle.sh: running /opt/oracle/scripts/01_shellExample.sh
+/opt/oracle/runOracle.sh: running /opt/oracle/scripts/setup/01_shellExample.sh
 Environment: Linux 51f09a648c8e 4.1.12-94.3.8.el7uek.x86_64 #2 SMP Fri Jun 30 10:40:13 PDT 2017 x86_64 x86_64 x86_64 GNU/Linux
 
-/opt/oracle/runOracle.sh: running /opt/oracle/scripts/02_createUser.sql
+/opt/oracle/runOracle.sh: running /opt/oracle/scripts/setup/02_createUser.sql
 
 Session altered.
 
@@ -46,7 +48,7 @@ User altered.
 
 
 
-/opt/oracle/runOracle.sh: running /opt/oracle/scripts/03_addTable.sql
+/opt/oracle/runOracle.sh: running /opt/oracle/scripts/setup/03_addTable.sql
 
 Table created.
 
@@ -64,7 +66,7 @@ Commit complete.
 
 
 
-/opt/oracle/runOracle.sh: ignoring /opt/oracle/scripts/README.md
+/opt/oracle/runOracle.sh: ignoring /opt/oracle/scripts/setup/README.md
 
 DONE: Executing user defined scripts
 ```
