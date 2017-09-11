@@ -169,7 +169,7 @@ In this mode, the containers are started in parallel and the BI container must w
 
 To download and run Oracle Business Intelligence 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
-All scripts and files hosted in this project and GitHub [docker/OracleBI](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
+All scripts and files hosted in this project and GitHub [docker/OracleBI](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 ## Copyright
 

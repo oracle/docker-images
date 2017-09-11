@@ -1,5 +1,3 @@
-# LICENSE CDDL 1.0 + GPL 2.0
-#
 #
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #

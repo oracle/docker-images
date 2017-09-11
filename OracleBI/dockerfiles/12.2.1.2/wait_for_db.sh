@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+
 if [ $# -ne 5 ]; then
   echo usage: wait_for_db.sh oracle_home username host port service
   echo password is provided on stdin

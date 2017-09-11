@@ -70,6 +70,7 @@ $DOMAIN_HOME/bin/startManagedWebLogic.sh ${MANAGED_SERVER} "http://"${ADMIN_HOST
 statusfile=/tmp/notifyfifo.$$
 
 echo "INFO: Waiting for the Managed Server to accept requests..."
+rm -f "${statusfile}"
 mkfifo "${statusfile}" || exit 1
 {
   # run tail in the background so that the shell can kill tail when notified 
@@ -91,7 +92,7 @@ mkfifo "${statusfile}" || exit 1
 }
 
 # clean up
-rm "${statusfile}"
+rm -f "${statusfile}"
 if [ -f ${LOGDIR}/ms.status ]; then
   echo "INFO: Managed server has been started"
 fi
