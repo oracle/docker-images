@@ -1,0 +1,12 @@
+﻿
+
+Signed-off-by: aquasheep20 <mzeece@pmcrock.com>
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch 567-managed-server-only-listens-on-IP
+# Changes to be committed:
+#	modified:   OracleWebLogic/samples/1213-domain/container-scripts/add-server.py
+#	modified:   OracleWebLogic/samples/1221-domain/container-scripts/add-server.py
+#	modified:   OracleWebLogic/samples/12212-domain/container-scripts/add-server.py
+#
