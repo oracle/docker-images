@@ -228,9 +228,9 @@ The **Admin Client** utility can be run in the OGG container with this command:
 None
 
 ## License
+All scripts and files hosted in this project and GitHub [docker-images/OracleGoldenGate](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License (UPL), Version 1.0.  See [LICENSE](./LICENSE) for details.
+
 To download and run Oracle GoldenGate, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub [docker-images/OracleGoldenGate](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
-
 ## Copyright
-Copyright &copy; 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright &copy; 2017 Oracle and/or its affiliates. All rights reserved.
