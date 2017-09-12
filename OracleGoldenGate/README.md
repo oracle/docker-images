@@ -178,7 +178,7 @@ When the Oracle GoldenGate Docker image is created for Microservices Architectur
         -v /path/to/certificate.pem:/etc/nginx/ogg.pem \
         oracle/goldengate-microservices:12.3.0.1.0
 
-The certificate file, `/path/to/certificate.pem`, needs to contain a **BEGIN PRIVATE KEY** section, followed by one or more **BEGIN CERTIFICATE** sections. For example:
+The certificate file, `/path/to/certificate.pem`, needs to contain a full certificate chain including the private key and all intermediate and root CA public keys. For example:
 
     -----BEGIN PRIVATE KEY-----
     MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCqx5mEeaMNCqr
