@@ -1,4 +1,6 @@
-# Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Script to create and add a Managed Server automatically to the domain's AdminServer running on 'wlsadmin'.
 #
@@ -11,22 +13,30 @@ import random
 import string
 import socket
 
+cluster_name  = os.environ.get("CLUSTER_NAME", "DockerCluster")
+ms_port   = int(os.environ.get("MS_PORT", "8001"))
+
+print('cluster_name     : [%s]' % cluster_name);
+print('ms_port          : [%s]' % ms_port);
+
 execfile('/u01/oracle/commonfuncs.py')
 
 # Functions
 def randomName():
   return ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(6)])
 
-# AdminServer details
-cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 
 # ManagedServer details
 msinternal = socket.gethostbyname(hostname)
 msname = os.environ.get('MS_NAME', 'ManagedServer-%s@%s' % (randomName(), hostname))
 mshost = os.environ.get('MS_HOST', msinternal)
-msport = os.environ.get('MS_PORT', '7001')
+msport = os.environ.get('MS_PORT', ms_port)
 memargs = os.environ.get('USER_MEM_ARGS', '')
 
+print('msname     : [%s]' % msname);
+print('mshost     : [%s]' % mshost);
+print('msport     : [%s]' % msport);
+print('memargs    : [%s]' % memargs);
 # Connect to the AdminServer
 # ==========================
 connectToAdmin()

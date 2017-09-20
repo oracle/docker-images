@@ -1,23 +1,29 @@
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # WebLogic on Docker Default Domain
 #
 # Domain, as defined in DOMAIN_NAME, will be created in this script. Name defaults to 'base_domain'.
 #
-# Since : October, 2014
-# Author: bruno.borges@oracle.com
+# Since : July, 2017
+# Author: monica.riccelli@oracle.com
 # ==============================================
-domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
-admin_port   = int(os.environ.get("ADMIN_PORT", "8001"))
-admin_pass   = os.environ.get("ADMIN_PASSWORD")
-cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
-domain_path  = '/u01/oracle/user_projects/domains/%s' % domain_name
-production_mode         = os.environ.get("PRODUCTION_MODE", "prod")
+#Env Vars
+# ------------------------------
+domain_name      = os.environ.get("DOMAIN_NAME", "base_domain")
+admin_name       = os.environ.get("ADMIN_NAME", "AdminServer")
+admin_port       = int(os.environ.get("ADMIN_PORT", "7001"))
+admin_pass       = "ADMIN_PASSWORD"
+cluster_name     = os.environ.get("CLUSTER_NAME", "DockerCluster")
+domain_path      = '/u01/oracle/user_projects/domains/%s' % domain_name
+production_mode  = os.environ.get("PRODUCTION_MODE", "prod")
 
-print('domain_name : [%s]' % domain_name);
-print('admin_port  : [%s]' % admin_port);
-print('cluster_name: [%s]' % cluster_name);
-print('domain_path : [%s]' % domain_path);
+print('domain_name     : [%s]' % domain_name);
+print('admin name      : [%s]' % admin_name);
+print('admin_port      : [%s]' % admin_port);
+print('cluster_name    : [%s]' % cluster_name);
+print('domain_path     : [%s]' % domain_path);
 print('production_mode : [%s]' % production_mode);
 
 # Open default domain template
@@ -34,6 +40,7 @@ setOption('DomainName', domain_name)
 # Configure the Administration Server and SSL port.
 # =========================================================
 cd('/Servers/AdminServer')
+set('Name', admin_name)
 set('ListenAddress', '')
 set('ListenPort', admin_port)
 

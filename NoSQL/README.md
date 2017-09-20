@@ -1,4 +1,24 @@
-# Quickstart Running Oracle NoSQL on Docker
+# Oracle NoSQL Database on Docker
+Sample Docker build files to facilitate installation and environment setup for DevOps users. For more information about Oracle NoSQL Database please see the [Oracle NoSQL Database Online Documentation](http://docs.oracle.com/cd/NOSQL/html/).
+
+This project offers sample Dockerfiles for:
+ * Oracle NoSQL Database (4.5.12) Enterprise Edition 
+ * Oracle NoSQL Database (4.4.6) Enterprise Edition 
+ * Oracle NoSQL Database (4.3.11) Community Edition 
+ * Oracle NoSQL Database (4.0.9) Community Edition 
+ * Oracle NoSQL Database (3.5.2) Community Edition 
+ * Oracle NoSQL Database (3.4.7) Community Edition 
+
+# Quickstart Building docker images for Oracle NoSQL Database
+For Enterprise Edition, download the bundle (in tar.gz format) from [Oracle Technology Network](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/downloads/index.html) and copy it in the same directory as the Enterprise Edition Dockerfile. then build the docker image as per below,
+
+        $ docker build -t oracle/nosqlee:4.5.12 .
+
+For Community Edition, the zip bundle is already downloaded and available in the oracle/nosql:latest docker image. There is no need to build docker image for Community Edition.
+
+# Quickstart Running Oracle NoSQL Database on Docker
+The steps outlined below are using Oracle NoSQL Database community edition, if you are using Oracle NoSQL Database Enterprise Edition, please use the appropriate docker image name.
+
 Start up KVLite in a Docker container. You must give it a name. Startup of KVLite is the default CMD of the Docker image:
 
         $ docker run -d --name=kvlite oracle/nosql
@@ -39,7 +59,8 @@ You have now Oracle NoSQL on a Docker container.
 # More information
 For more information on Oracle NoSQL, visit the [homepage](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html) and the [documentation](http://docs.oracle.com/cd/NOSQL/html/index.html) for specific NoSQL instructions.
 
-This image contains Oracle NoSQL Community Edition and OpenJDK.
+The Oracle NoSQL Database Community Edition also contains OpenJDK.
+The Oracle NoSQL Database Enterprise Edition also contains Oracle Java Server JRE.
 
 # Licenses
 Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt).
