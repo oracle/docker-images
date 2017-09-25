@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [Docker build option]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-n] [-i] [-o] [Docker build option]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
@@ -20,6 +20,7 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
+   -n: create a non CDB database
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
    -o: passes on Docker build option
@@ -63,9 +64,10 @@ STANDARD=0
 EXPRESS=0
 VERSION="12.2.0.1"
 SKIPMD5=0
+NONCDB="false"
 DOCKEROPS=""
 
-while getopts "hesxiv:o:" optname; do
+while getopts "hesxiv:o:n" optname; do
   case "$optname" in
     "h")
       usage
@@ -81,6 +83,9 @@ while getopts "hesxiv:o:" optname; do
       ;;
     "x")
       EXPRESS=1
+      ;;
+    "n")
+      NONCDB="true"
       ;;
     "v")
       VERSION="$OPTARG"
@@ -116,6 +121,10 @@ fi
 
 # Oracle Database Image Name
 IMAGE_NAME="oracle/database:$VERSION-$EDITION"
+
+if [ "$NONCDB" = "true" ]; then
+  IMAGE_NAME="$IMAGE_NAME-noncdb"
+fi
 
 # Go into version folder
 cd $VERSION
@@ -159,7 +168,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
+docker build --force-rm=true --no-cache=true --build-arg NONCDB=$NONCDB $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
   echo "There was an error building the image."
   exit 1
 }
