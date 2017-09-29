@@ -6,7 +6,7 @@ This Example demonstrates the orchestration of a WebLogic 12.2.1.3 domain cluste
 
 We use StatefulSets to define the WebLogic servers in the domain, this provides a consistent way of assigning managed server names and of giving managed servers in a WebLogic cluster consistent visibility to each other through well-known DNS names.  
 
-There are 2 applications deployed to the WebLogic cluster, the Open Sessioa application which will trigger the WLDF policy to scale the cluster by one managed server.  The Memory Load application which allocates heap memory in the JVM.
+There are 2 applications deployed to the WebLogic cluster, the Open Session application which will trigger the WLDF policy to scale the cluster by one managed server.  The Memory Load application which allocates heap memory in the JVM.
 
 When the WLDF policy is triggered it makes a call into a Webhook who is running in a container in the same pod as the Admin Server.  The webhook invokes a K8s API to trigger K8s to scale the K8s cluster and thus scale the WebLogic cluster.
 
