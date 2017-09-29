@@ -39,7 +39,7 @@ function cleanupAndExit {
 trap cleanupAndExit SIGTERM SIGINT
 
 if [[ "${OGG_DISTFILE/.zip/}" != "${OGG_DISTFILE}" ]]; then
-    targetJAR="$(basename ${OGG_DISTFILE} .zip)/Disk1/stage/Components/oracle.oggcore.*ora12c/*/1/DataFiles/filegroup1.jar"
+    targetJAR="*/Disk1/stage/Components/oracle.oggcore.*ora12c/*/1/DataFiles/filegroup1.jar"
     OGG_JARFILE="$(unzip -qp ${OGG_DISTFILE} ${targetJAR} 2>/dev/null > $(basename ${targetJAR}) && echo $(basename ${targetJAR}) || rm $(basename ${targetJAR}))"
     [[ "${OGG_JARFILE}" != "" ]] && {
         OGG_TARFILE="$(basename ${OGG_DISTFILE} .zip).tar"
