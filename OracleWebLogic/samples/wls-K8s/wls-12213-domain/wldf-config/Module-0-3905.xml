@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wldf-resource xmlns="http://xmlns.oracle.com/weblogic/weblogic-diagnostics" xmlns:sec="http://xmlns.oracle.com/weblogic/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-diagnostics http://xmlns.oracle.com/weblogic/weblogic-diagnostics/2.0/weblogic-diagnostics.xsd">
+  <name>Module-0</name>
+  <harvester>
+    <enabled>true</enabled>
+    <sample-period>60000</sample-period>
+    <harvested-type>
+      <name>weblogic.management.runtime.ServletRuntimeMBean</name>
+      <harvested-attribute>ExecutionTimeAverage</harvested-attribute>
+      <namespace>ServerRuntime</namespace>
+    </harvested-type>
+  </harvester>
+  <watch-notification>
+    <watch>
+      <name>myScaleUpPolicy</name>
+      <enabled>true</enabled>
+      <rule-type>Harvester</rule-type>
+      <rule-expression>wls:ClusterGenericMetricRule("DockerCluster","com.bea:Type=WebAppComponentRuntime,ApplicationRuntime=OpenSessionApp,*","OpenSessionsCurrentCount","&gt;=",0.01,5,"1 seconds","10 seconds")</rule-expression>
+      <expression-language>EL</expression-language>
+      <alarm-type>AutomaticReset</alarm-type>
+      <schedule>
+        <minute>*</minute>
+        <second>*/15</second>
+      </schedule>
+      <alarm-reset-period>60000</alarm-reset-period>
+      <notification>RestScaleUpAction</notification>
+    </watch>
+    <rest-notification>
+      <name>RestScaleUpAction</name>
+      <enabled>true</enabled>
+      <timeout>0</timeout>
+      <endpoint-url>http://${OPERATOR_ENDPOINT}/hooks/scale-up</endpoint-url>
+      <rest-invocation-method-type>PUT</rest-invocation-method-type>
+      <accepted-response-type>application/json</accepted-response-type>
+      <http-authentication-mode>None</http-authentication-mode>
+      <custom-notification-properties></custom-notification-properties>
+    </rest-notification>
+    <script-action>
+      <name>ScriptAction1</name>
+      <enabled>true</enabled>
+      <timeout>0</timeout>
+      <working-directory>/u01/oracle</working-directory>
+      <path-to-script>scaleUpAction.sh</path-to-script>
+      <environment xsi:nil="true"></environment>
+      <parameter>up</parameter>
+    </script-action>
+  </watch-notification>
+</wldf-resource>

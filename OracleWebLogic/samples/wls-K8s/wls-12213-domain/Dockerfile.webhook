@@ -1,0 +1,34 @@
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This Dockerfile  to create Webhook image 
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Run:
+#      $ sudo docker build \
+#         --build-arg http_proxy=http://www-proxy-hqdc.us.oracle.com:80 \
+#         --build-arg https_proxy=http://www-proxy-hqdc.us.oracle.com:80 \
+#         --build-arg no_proxy=127.0.0.1,localhost \
+#         -f Dockerfile.webhook -t oow-demo-webhook .
+#
+#Pull base image
+#-----------------
+FROM almir/webhook
+
+#----------------
+MAINTAINER Russell Gold <russell.gold@oracle.com>
+
+COPY webhooks/hooks.json /etc/webhook/
+COPY wldf-scripts/scaleUpAction.sh /var/scripts/
+
+
+# Install curl and jq
+RUN apk add --update curl jq && \
+    rm -rf /var/cache/apk/*
+
+CMD ["-verbose", "-hooks=/etc/webhook/hooks.json", "-hotreload"]
+
