@@ -94,7 +94,7 @@ To try a sample of a WebLogic Server image with a base domain configured, follow
 
   4. Run the administration console
 
-        $ docker inspect --format '{{.NewworkSettings.IPAddress}}' <container-name>
+        $ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>
         This returns the IPAddress (example xxx.xx.x.x) of the container.  Got to your browser and enter http://xxx.xx.x.x:8001/console
         
 
