@@ -1,11 +1,11 @@
 Oracle HTTP Server on Docker
 ===============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start dockerfiles and samples for Oracle HTTP Server Standalone 12.2.1.2.0 based on Oracle Linux and Oracle JDK 8 (Server).
+Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start dockerfiles and samples for standalone Oracle HTTP Server based on Oracle Linux and Oracle JDK 8 (Server).
 The certification of OHS on Docker does not require the use of any file presented in this repository.
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## How to Build and Run
-This project offers Dockerfile for Oracle HTTP Server 12.2.1.2.0 in standalone mode. To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage
+This project offers Dockerfile for Oracle HTTP Server in standalone mode. To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage
 
 The **buildDockerImage.sh** script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their preferred set of parameters.
 
@@ -19,7 +19,7 @@ You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry]
 ### Building OHS Docker Image
 IMPORTANT: You have to download the OHS binary and put it in place (see .download files inside dockerfiles/).
 
-Download the required package (see .download file) and drop them in the folder 12.2.1.2.0. Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root.
+Download the required package (see .download file) and drop them in the version folder (12.2.1.2.0 or 12.2.1.3.0). Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root providing the version name with -v option.
 
     $ sh buildDockerImage.sh -v 12.2.1.2.0
 
@@ -27,8 +27,10 @@ IMPORTANT: The resulting image will have a  pre-configured domain.
 
 ### How to run container
 
+Note: Use oracle/ohs:12.2.1.3.0-sa as the name of image in following commands, if you wish to run the container using OHS 12.2.1.3.0 docker image.
+
 If you want to start the OHS container without specifying any configuration for mod_weblogic:
-1. To start the OHS container with above oracle/ohs:12.2.1.2.0-sa image, run the following command:
+1. To start the OHS container with oracle/ohs:12.2.1.2.0-sa image, run the following command:
 
          docker run -it --name ohs -p 7777:7777 oracle/ohs:12.2.1.2.0-sa
 
