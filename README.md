@@ -18,11 +18,19 @@ And Open Source projects:
  - [NoSQL](https://github.com/oracle/docker-images/tree/master/NoSQL)
  - [OpenJDK](/OpenJDK)
 
-Oracle Linux images can be found in the [`Oracle Linux Container Images repository`](https://github.com/oracle/ol-container-images).
+## Other images
 
-MySQL images can be found in the ['MySQL image repository'](https://github.com/mysql/mysql-docker/).
+ - *Oracle Linux*: check the [ol-container-images](https://github.com/oracle/ol-container-images) repository.
+ - *MySQL*: check the [mysql-docker](https://github.com/mysql/mysql-docker/) repository.
+ 
+## Pre-built Images with Commercial Software
 
-For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
+You can find them on two locations:
+
+ 1. Our own [Oracle Container Registry](https://container-registry.oracle.com) server.
+ 2. On the [Docker Store](https://store.docker.com/search?certification_status=certified&q=oracle&source=verified&type=image)
+
+## Support
 
 For support and certification information, please consult the documentation for each product.
 
