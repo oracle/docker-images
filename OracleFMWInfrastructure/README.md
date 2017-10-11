@@ -33,7 +33,7 @@ You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry]
            -c: enables Docker image layer cache during build
            -s: skips the MD5 check of packages
 
-        LICENSE CDDL 1.0 + GPL 2.0
+        LICENSE UPL 1.0
 
         Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
