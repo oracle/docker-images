@@ -1,6 +1,4 @@
 # Docker Images from Oracle
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Foracle%2Fdocker-images.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Foracle%2Fdocker-images?ref=badge_shield)
-
 
 This repository contains Dockerfiles and samples to build Docker images for Oracle products and open source projects.
 
@@ -37,7 +35,3 @@ You can find them on two locations:
 For support and certification information, please consult the documentation for each product.
 
 For community support, discussions and feedback about the provided Dockerfiles visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers)
-
-
-## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Foracle%2Fdocker-images.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Foracle%2Fdocker-images?ref=badge_large)
