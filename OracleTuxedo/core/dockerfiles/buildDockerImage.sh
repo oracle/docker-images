@@ -14,9 +14,9 @@ Parameters:
    -s: Skips the MD5 check of packages.
    -i: Installer name. Required.
    -m: MD5 value expected. Required if -s not specified.
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE UPL 1.0 
 
-Copyright (c) 2016-2016 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 
 EOF
 exit 0

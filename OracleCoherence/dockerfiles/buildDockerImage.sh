@@ -23,7 +23,7 @@ Parameters:
 
 * select one distribution only: -q or -s
 
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE UPL 1.0
 
 Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
 

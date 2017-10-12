@@ -33,9 +33,6 @@ Before you build the image make sure that you have provided the installation bin
     
     * select one edition only: -e, -s, or -x
     
-    LICENSE CDDL 1.0 + GPL 2.0
-    
-    Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
@@ -187,7 +184,7 @@ For more details please see My Oracle Support note: **Oracle Support for Databas
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub [docker-images/OracleDatabase](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
+All scripts and files hosted in this project and GitHub [docker-images/OracleDatabase](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.

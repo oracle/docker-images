@@ -31,10 +31,6 @@ Before you build, choose which version and distribution you want to build an ima
            -s: skips the MD5 check of packages
         
         * select one distribution only: -d, -g, or -i
-        
-        LICENSE CDDL 1.0 + GPL 2.0
-        
-        Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** the resulting images will have an empty domain (only Admin Server) by default. You must extend the image with your own Dockerfile, and create your domain using WLST. You might take a look at the use case samples.
 
@@ -109,7 +105,7 @@ To download and run Oracle WebLogic Server 12c Distribution regardless of inside
 
 To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that pge.
 
-All scripts and files hosted in this project and GitHub [docker/OracleWebLogic](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
+All scripts and files hosted in this project and GitHub [docker/OracleWebLogic](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.

@@ -1,4 +1,4 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
