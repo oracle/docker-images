@@ -12,7 +12,7 @@ ENV GRAALVM_PKG=graalvm-0.22-linux-amd64-jdk8.tar.gz \
 
 ADD $GRAALVM_PKG /usr/
 
-RUN yum -y install gcc && yum clean all && \
+RUN yum -y install gcc && rm -rf /var/cache/yum && \
     alternatives --install /usr/bin/java  java  $JAVA_HOME/bin/java  20000 && \
     alternatives --install /usr/bin/javac javac $JAVA_HOME/bin/javac 20000 && \
     alternatives --install /usr/bin/jar   jar   $JAVA_HOME/bin/jar   20000

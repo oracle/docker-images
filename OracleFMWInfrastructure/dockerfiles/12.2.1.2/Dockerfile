@@ -59,7 +59,7 @@ COPY $FMW_PKG install.file oraInst.loc /u01/
 RUN chown oracle:oracle -R /u01 && \
     chmod +xr $SCRIPT_FILES && \
     yum install -y libaio && \
-    yum clean all 
+    rm -rf /var/cache/yum 
 
 # Install 
 # ------------------------------------------------------------
