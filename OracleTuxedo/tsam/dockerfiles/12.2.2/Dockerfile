@@ -51,7 +51,7 @@ RUN mkdir -p /u01/oracle && \
     yum install -y vim tar net-tools && \
     yum localinstall -y /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
     rm -f /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
-    yum clean all
+    rm -rf /var/cache/yum
 
 # Copy files
 # ----------
