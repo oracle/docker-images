@@ -65,7 +65,7 @@ COPY $OHS_PKG install.file oraInst.loc /u01/
 # Setup filesystem and oracle user
 #---------------------------------------------------------------------------------------------------------
 RUN yum install -y unzip libaio sysstat make psmisc gcc && \
-    yum clean all && \
+    rm -rf /var/cache/yum && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     mkdir /u01/oracle/.inventory && \
