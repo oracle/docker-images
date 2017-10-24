@@ -1,5 +1,4 @@
 # Example of creating an image with pre-built DB
-=================================================
 ***Warning: The description below requires changes in the dockerfile related to the version and edition in question (docker-images/OracleDatabase/dockerfiles/$VERSION/Dockerfile.$EDITION). It's recommended that you revert the changes after you have completed creating image without VOLUME (see next section).***
 
 ## 1. Create an image without a VOLUME
