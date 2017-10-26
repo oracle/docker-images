@@ -52,6 +52,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	docker run --name <container name> \
 	-p <host port>:1521 -p <host port>:5500 \
 	-e ORACLE_SID=<your SID> \
+	-e ORACLE_PDB_COUNT=<your PDB name> \
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_PWD=<your database passwords> \
 	-e ORACLE_CHARACTERSET=<your character set> \
@@ -63,7 +64,10 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -p:            The port mapping of the host port to the container port. 
 	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
-	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
+	   -e ORACLE_PDB_COUNT:
+	                  The number of Oracle Database PDBs that should be created (default: 1)
+	   -e ORACLE_PDB: The Oracle Database PDB name/prefix that should be used
+	                  (default: ORCLPDB1/ORCLPDB depending on ORACLE_PDB_COUNT=1/2+)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
