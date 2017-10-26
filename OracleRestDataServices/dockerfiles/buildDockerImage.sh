@@ -20,7 +20,7 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -i: ignores the MD5 checksums
 
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE UPL 1.0
 
 Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
