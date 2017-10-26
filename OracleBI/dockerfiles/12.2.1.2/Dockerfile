@@ -1,6 +1,6 @@
-# LICENSE CDDL 1.0 + GPL 2.0
-#
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -50,7 +50,7 @@ COPY $BI_DISTRO_ZIP1 $BI_DISTRO_ZIP2 install.file oraInst.loc /u01/
 USER root
 
 # tools for installing and running BI
-RUN yum -y install unzip hostname && yum clean all
+RUN yum -y install unzip hostname && rm -rf /var/cache/yum
 
 USER oracle
 RUN cd /u01 && unzip $BI_DISTRO_ZIP1 && unzip $BI_DISTRO_ZIP2 && cd - && \

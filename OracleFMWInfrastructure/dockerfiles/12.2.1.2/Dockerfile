@@ -1,6 +1,6 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 #
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -28,7 +28,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # Common environment variables required for this build 
 # ----------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
-    SCRIPT_FILE=/u01/oracle/container-scripts/createInfraDomainAndStartAdmin.sh \
+    SCRIPT_FILES=/u01/oracle/container-scripts/*.sh \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     DOMAIN_NAME="${DOMAIN_NAME:-InfraDomain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-InfraDomain} \
@@ -57,9 +57,9 @@ ENV FMW_PKG=fmw_12.2.1.2.0_infrastructure_Disk1_1of1.zip \
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
 RUN chown oracle:oracle -R /u01 && \
-    chmod +xr $SCRIPT_FILE && \
+    chmod +xr $SCRIPT_FILES && \
     yum install -y libaio && \
-    yum clean all 
+    rm -rf /var/cache/yum 
 
 # Install 
 # ------------------------------------------------------------
@@ -71,4 +71,4 @@ RUN  cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
 WORKDIR ${ORACLE_HOME}
 
 # Define default command to start script.
-CMD ["/u01/oracle/container-scripts/createInfraDomainAndStartAdmin.sh"]
+CMD ["/u01/oracle/container-scripts/createOrStartInfraDomain.sh"]

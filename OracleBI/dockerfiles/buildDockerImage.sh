@@ -1,13 +1,13 @@
 #!/bin/bash
 # 
-# Since: April, 2017
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
 # Author: steve.phillips@oracle.com
 # Description: script to build a Docker image for Oracle Business Intelligence
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
-# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
-# 
 
 usage() {
 cat << EOF
@@ -22,7 +22,7 @@ Parameters:
    -s: skips the MD5 check of packages
    -q: squash resulting image
 
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE UPL 1.0
 
 Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 

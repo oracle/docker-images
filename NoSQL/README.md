@@ -2,6 +2,7 @@
 Sample Docker build files to facilitate installation and environment setup for DevOps users. For more information about Oracle NoSQL Database please see the [Oracle NoSQL Database Online Documentation](http://docs.oracle.com/cd/NOSQL/html/).
 
 This project offers sample Dockerfiles for:
+ * Oracle NoSQL Database (4.5.12) Enterprise Edition 
  * Oracle NoSQL Database (4.4.6) Enterprise Edition 
  * Oracle NoSQL Database (4.3.11) Community Edition 
  * Oracle NoSQL Database (4.0.9) Community Edition 
@@ -11,9 +12,9 @@ This project offers sample Dockerfiles for:
 # Quickstart Building docker images for Oracle NoSQL Database
 For Enterprise Edition, download the bundle (in tar.gz format) from [Oracle Technology Network](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/downloads/index.html) and copy it in the same directory as the Enterprise Edition Dockerfile. then build the docker image as per below,
 
-        $ docker build -t oracle/nosqlee:4.4.6 .
+        $ docker build -t oracle/nosqlee:4.5.12 .
 
-For Community Edition, the zip bundle is already downloaded and available in the oracle/nosql:latest docker image.
+For Community Edition, the zip bundle is already downloaded and available in the oracle/nosql:latest docker image. There is no need to build docker image for Community Edition.
 
 # Quickstart Running Oracle NoSQL Database on Docker
 The steps outlined below are using Oracle NoSQL Database community edition, if you are using Oracle NoSQL Database Enterprise Edition, please use the appropriate docker image name.
@@ -65,6 +66,8 @@ The Oracle NoSQL Database Enterprise Edition also contains Oracle Java Server JR
 Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt).
 
 OpenJDK is licensed under the [GNU General Public License v2.0 with the Classpath Exception](http://openjdk.java.net/legal/gplv2+ce.html)
+
+The files in this repository folder are licensed under the [Universal Permissive License 1.0](http://oss.oracle.com/licenses/upl)
 
 # Commercial Support on Docker Containers
 Oracle NoSQL Enterprise Edition is **not** certified on Docker.

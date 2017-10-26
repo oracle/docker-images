@@ -21,7 +21,7 @@ services:
   # The SOA Admin Server
   #
   soaas:
-    image: ${DC_REGISTRY_SOA}/middleware/soabpm:12.2.1.2
+    image: ${DC_REGISTRY_SOA}/oracle/soasuite:${DC_SOA_VERSION}
     container_name: soaas
     command: /bin/bash -c "sleep 5s; /u01/oracle/dockertools/createDomainAndStart.sh"
     ports:
@@ -42,7 +42,7 @@ services:
   # The SOA Managed Server
   #
   soams:
-    image: ${DC_REGISTRY_SOA}/middleware/soabpm:12.2.1.2
+    image: ${DC_REGISTRY_SOA}/oracle/soasuite:${DC_SOA_VERSION}
     container_name: soams
     depends_on:
       - "soaas"
@@ -64,7 +64,7 @@ services:
   # The BPM Admin Server
   #
   bpmas:
-    image: ${DC_REGISTRY_SOA}/middleware/soabpm:12.2.1.2
+    image: ${DC_REGISTRY_SOA}/oracle/soasuite:${DC_SOA_VERSION}
     container_name: bpmas
     command: /bin/bash -c "sleep 5s; /u01/oracle/dockertools/createDomainAndStart.sh"
     ports:
@@ -85,7 +85,7 @@ services:
   # The BPM Managed Server
   #
   bpmms:
-    image: ${DC_REGISTRY_SOA}/middleware/soabpm:12.2.1.2
+    image: ${DC_REGISTRY_SOA}/oracle/soasuite:${DC_SOA_VERSION}
     container_name: bpmms
     depends_on:
       - "bpmas"
@@ -107,7 +107,7 @@ services:
   # The OSB Admin Server
   #
   osbas:
-    image: ${DC_REGISTRY_SOA}/middleware/soabpm:12.2.1.2
+    image: ${DC_REGISTRY_SOA}/oracle/soasuite:${DC_SOA_VERSION}
     container_name: osbas
     command: /bin/bash -c "sleep 5s; /u01/oracle/dockertools/createDomainAndStart.sh"
     ports:
@@ -128,7 +128,7 @@ services:
   # The OSB Managed Server
   #
   osbms:
-    image: ${DC_REGISTRY_SOA}/middleware/soabpm:12.2.1.2
+    image: ${DC_REGISTRY_SOA}/oracle/soasuite:${DC_SOA_VERSION}
     container_name: osbms
     depends_on:
       - "osbas"

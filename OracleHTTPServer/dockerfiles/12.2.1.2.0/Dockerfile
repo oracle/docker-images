@@ -1,6 +1,7 @@
-# LICENSE CDDL 1.0 + GPL 2.0
 #
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # ORACLE HTTP Server DOCKERFILES PROJECT
 # -----------------------------------------
@@ -67,7 +68,7 @@ COPY $OHS_PKG install.file oraInst.loc /u01/
 #---------------------------------------------------------------------------------------------------------
 # Proxy needs to be set before running yum in /etc/yum.conf
 RUN yum install -y unzip libaio sysstat && \
-    yum clean all && \
+    rm -rf /var/cache/yum && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     mkdir /u01/oracle/.inventory && \

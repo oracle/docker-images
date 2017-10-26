@@ -1,0 +1,10 @@
+# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+[ENGINE]
+
+#DO NOT CHANGE THIS.
+Response File Version=1.0.0.0.0
+
+[GENERIC]
+
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false

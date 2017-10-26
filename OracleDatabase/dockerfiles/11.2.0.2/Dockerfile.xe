@@ -1,4 +1,4 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
 #
@@ -54,7 +54,7 @@ COPY $INSTALL_FILE_1 $CONFIG_RSP $RUN_FILE $PWD_FILE $INSTALL_DIR/
 # ------------------------------
 
 RUN yum -y install unzip libaio bc initscripts net-tools openssl && \
-    yum clean all && \
+    rm -rf /var/cache/yum && \
     cd $INSTALL_DIR && \
     unzip $INSTALL_FILE_1 && \
     rm $INSTALL_FILE_1 &&    \
