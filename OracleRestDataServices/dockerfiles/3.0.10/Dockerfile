@@ -28,8 +28,7 @@ LABEL maintainer "gerald.venzl@oracle.com"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV ORACLE_BASE=/opt/oracle \
-    ORDS_HOME=/opt/oracle/ords \
+ENV ORDS_HOME=/opt/oracle/ords \
     INSTALL_FILE="ords.3.0.10.165.06.53.zip" \
     CONFIG_PROPS="ords_params.properties.tmpl" \
     STANDALONE_PROPS="standalone.properties.tmpl" \
@@ -49,8 +48,9 @@ RUN mkdir -p  $ORDS_HOME/doc_root && \
     cd $ORDS_HOME && \
     jar -xf $INSTALL_FILE && \
     rm $INSTALL_FILE && \
-    chown -R oracle:dba $ORACLE_BASE && \
-    java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config
+    mkdir -p $ORDS_HOME/config/ords && \
+    java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
+    chown -R oracle:dba $ORDS_HOME
 
 # Finalize setup
 # -------------------
