@@ -1,5 +1,4 @@
-Oracle REST Data Services on Docker
-===============
+# Oracle REST Data Services on Docker
 Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users. 
 For more information about Oracle REST Data Services (ORDS) please see the [ORDS Documentation](http://www.oracle.com/technetwork/developer-tools/rest-data-services/documentation/index.html).
 
@@ -35,29 +34,55 @@ Before you build the image make sure that you have provided the installation bin
 
 ### Running Oracle REST Data Services in a Docker container
 
+Before you run your ORDS Docker container you will have to specify a network in wich ORDS will communicate with the database you would like it to expose via REST.
+In order to do so you need to create a [user-defined network](https://docs.docker.com/engine/userguide/networking/#user-defined-networks) first.
+This can be done via following command:
+
+    docker network create <your network name> 
+
+Once you have created the network you can double check by running:
+
+    docker network ls
+
+You should see your network, amongst others, in the output.
+
+As a next step you will have to start your database container with the specified network. This can be done via the `docker run` `--network` option, for example:
+
+    docker run --name oracledb --network=<your network name> oracle/database:12.2.0.1-ee
+
+The database container will be visible within the network by its name passed on with the `--name` option, in the example above **oracledb**.
+Once your database container is up and running and the database available, you can run a new ORDS container.
+
 To run your ORDS Docker image use the **docker run** command as follows:
 
-	docker run --name <container name> \
-	-p <host port>:8888 \
-	-e ORACLE_HOST=<Your Oracle DB host (default: localhost)> \
-	-e ORACLE_PORT=<Your Oracle DB port (default: 1521)> \
-	-e ORACLE_SERVICE=<your Oracle DB Service name (default: ORCLPDB1)> \
-	-e ORACLE_PWD=<your database password> \
-	-e ORDS_PWD=<your ORDS password> \
-	oracle/restdataservices:3.0.10
-	
-	Parameters:
-	   --name:            The name of the container (default: auto generated)
-	   -p:                The port mapping of the host port to the container port. 
-	                      One port is exposed: 8888
-	   -e ORACLE_HOST:    The Oracle Database hostname that ORDS should use (default: localhost)
-	   -e ORACLE_PORT:    The Oracle Database port that ORSD should use (default: 1521)
-	   -e ORACLE_SERVICE: The Oracle Database Service name that ORDS should use (default: ORCLPDB1)
-	   -e ORACLE_PWD:     The Oracle Database SYS password
-	   -e ORDS_PWD:       The ORDS_PUBLIC_USER password
+    docker run --name <container name> \
+    --network=<name of your created network> \
+    -p <host port>:8888 \
+    -e ORACLE_HOST=<Your Oracle DB host (default: localhost)> \
+    -e ORACLE_PORT=<Your Oracle DB port (default: 1521)> \
+    -e ORACLE_SERVICE=<your Oracle DB Service name (default: ORCLPDB1)> \
+    -e ORACLE_PWD=<your database SYS password> \
+    -e ORDS_PWD=<your ORDS password> \
+    -v [<host mount point>:]/opt/oracle/ords/config/ords
+    oracle/restdataservices:3.0.10
+    
+    Parameters:
+       --name:            The name of the container (default: auto generated)
+       --network:         The network to use to communicate with databases.
+       -p:                The port mapping of the host port to the container port. 
+                          One port is exposed: 8888
+       -e ORACLE_HOST:    The Oracle Database hostname that ORDS should use (default: localhost)
+                          This should be the name that you gave your Oracle database Docker container, e.g. "oracledb"
+       -e ORACLE_PORT:    The Oracle Database port that ORSD should use (default: 1521)
+       -e ORACLE_SERVICE: The Oracle Database Service name that ORDS should use (default: ORCLPDB1)
+       -e ORACLE_PWD:     The Oracle Database SYS password
+       -e ORDS_PWD:       The ORDS_PUBLIC_USER password
+       -v /opt/oracle/ords/config/ords
+                          The data volume to use for the ORDS configuration files.
+                          Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+                          If omitted the ORDS configuration files will not be persisted over container recreation.
 
 Once the container has been started and ORDS configured you can send REST calls to ORDS.
-
 
 ## Known issues
 None
