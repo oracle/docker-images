@@ -17,7 +17,7 @@ The database connection details are required for creating midtier schemas for us
  
 If using an Oracle CDB/PDB database, ensure PDB is used when creating the schemas. CDB is not supported.
 
-An Oracle Database container can be created from [OracleDatabase](https://github.com/oracle/docker-images/tree/master/OracleDatabase) - follow the instructions to create a 12.1 or 12.2 Enterprise Edition database.
+An Oracle Database container can be created from an [OracleDatabase](https://github.com/oracle/docker-images/tree/master/OracleDatabase) image - follow the instructions to create a 12.1 or 12.2 Enterprise Edition database.
 
 For Oracle Business Intelligence 12.2.1.2.0, default installs of Oracle Database 12.2 are not supported - please see [Known Issues](#known-issues).
 
@@ -103,11 +103,11 @@ The following ports are used by the BI domain:
 * 9508 - OBI Cluster Controller, providing access to OBI Server system component
 * 9514 - OBI Server system component
 
-The following URLS provide access to the BI domain:
-* http://yourhost:9500/console - WebLogic Admin Console
-* http://yourhost:9502/analytics - BI Answers/Dashboards
-* http://yourhost:9502/va - Data Visualisation
-* http://yourhost:9502/xmlpserver- BI Publisher
+The following example URLS provide access to the BI domain:
+* http://www.example.com:9500/console - WebLogic Admin Console
+* http://www.example.com:9502/analytics - BI Answers/Dashboards
+* http://www.example.com:9502/va - Data Visualisation
+* http://www.example.com:9502/xmlpserver - BI Publisher
 
 ### Using a host directory for persistent data
 
