@@ -11,5 +11,5 @@
 #
 
 # Run image build tests
-./runImageBuildTests.sh
+./runImageBuildTests.sh && \
 ./runContainerTests.sh
