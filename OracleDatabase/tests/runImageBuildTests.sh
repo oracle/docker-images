@@ -25,7 +25,6 @@ function checkError {
 
   if [ "$RETURN_CODE" != "0" ]; then
     echo "Test $TEST_NAME: FAILED!";
-    cleanup;
     exit 1;
   else
     echo "Test $TEST_NAME: OK";
