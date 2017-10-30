@@ -80,29 +80,27 @@ function checkOracle {
   done;
 }
 
-###################### TEST ###########################
-
-# Run 12.1.0.2 SE2 default container
-runContainerTest "12.1.0.2 SE2 default database" "12.1.0.2-SE2-default" "oracle/database:12.1.0.2-se2"
-
-###################### TEST ###########################
-
-# Run 12.1.0.2 EE default container
-runContainerTest "12.1.0.2 EE default database" "12.1.0.2-EE-default" "oracle/database:12.1.0.2-ee"
-
-###################### TEST ###########################
-
-# Run 12.2.0.1 SE2 default container
-runContainerTest "12.2.0.1 SE2 default database" "12.2.0.1-SE2-default" "oracle/database:12.2.0.1-se2"
-
-###################### TEST ###########################
+###################### TEST 12.2.0.1 EE default ###########################
 
 # Run 12.2.0.1 EE default container
 runContainerTest "12.2.0.1 EE default database" "12.2.0.1-EE-default" "oracle/database:12.2.0.1-ee"
 
-###################### TEST ###########################
+###################### TEST 12.2.0.1 EE custom DB ###########################
 
 # Run 12.2.0.1 EE custom container
 runContainerTest "12.2.0.1-EE-custom database" "12.2.0.1-EE-custom" "oracle/database:12.2.0.1-ee" "TEST"
 
-# Run 12.2.0.1 EE custom characterset
+###################### TEST 12.2.0.1 SE2 default ###########################
+
+# Run 12.2.0.1 SE2 default container
+runContainerTest "12.2.0.1 SE2 default database" "12.2.0.1-SE2-default" "oracle/database:12.2.0.1-se2"
+
+###################### TEST 12.1.0.2 EE default ###########################
+
+# Run 12.1.0.2 EE default container
+runContainerTest "12.1.0.2 EE default database" "12.1.0.2-EE-default" "oracle/database:12.1.0.2-ee"
+
+###################### TEST 12.1.0.2 SE2 default ###########################
+
+# Run 12.1.0.2 SE2 default container
+runContainerTest "12.1.0.2 SE2 default database" "12.1.0.2-SE2-default" "oracle/database:12.1.0.2-se2"
