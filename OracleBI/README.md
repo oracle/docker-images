@@ -15,16 +15,15 @@ The instructions below can also be used to build and run Oracle Buisness Intelli
 You need to have a running Oracle Database, either in a Docker container or on a host. 
 The database connection details are required for creating midtier schemas for use by the BI domain.  The schemas are created automatically when the BI container is started.
  
-If using a 12.1.0.2 CDB/PDB database, ensure PDB is used when creating the schemas. CDB is not supported.
+If using an Oracle CDB/PDB database, ensure PDB is used when creating the schemas. CDB is not supported.
 
-An Oracle Database 12.1.0.2 container can be created from [OracleDatabase](https://github.com/oracle/docker-images/tree/master/OracleDatabase/dockerfiles/12.1.0.2). 
-Follow the instructions to create a 12.1.0.2-based Enterprise Edition database.
+An Oracle Database container can be created from [OracleDatabase](https://github.com/oracle/docker-images/tree/master/OracleDatabase) - follow the instructions to create a 12.1 or 12.2 Enterprise Edition database.
 
 For Oracle Business Intelligence 12.2.1.2.0, default installs of Oracle Database 12.2 are not supported - please see [Known Issues](#known-issues).
 
 ## Oracle Business Intelligence Docker Image Creation
 
-To build a BI image you start by building Oracle JDK and Oracle FMW Infrastructure images.
+To build a BI image you start by building the Oracle JDK image and then the Oracle FMW Infrastructure image.
 
 ### Building the Oracle JDK (Server JRE) Image
 
@@ -37,7 +36,15 @@ Please refer to README.md under [OracleJava](https://github.com/oracle/docker-im
 
 ### Building the Oracle FMW Infrastructure Image
  
-Download the binary of FMW Infrastructure into folder `OracleFMWInfrastructure/dockerfiles/12.2.1.3` and build the 12.2.1.3 infrastructure image:
+Download the binary of FMW Infrastructure into folder `OracleFMWInfrastructure/dockerfiles/12.2.1.3`.
+
+If a proxy is needed for the host to access yum.oracle.com during build, then first set up the appropriate environment, e.g.:
+
+        $ export http_proxy=myproxy.example.com:80
+        $ export https_proxy=myproxy.example.com:80
+        $ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
+
+Build the image:
 
         $ cd OracleFMWInfrastructure/dockerfiles
         $ ./buildDockerImage.sh -v 12.2.1.3
@@ -97,10 +104,10 @@ The following ports are used by the BI domain:
 * 9514 - OBI Server system component
 
 The following URLS provide access to the BI domain:
-* http://<yourhost>:9500/console - WebLogic Admin Console
-* http://<yourhost>:9502/analytics - BI Answers/Dashboards
-* http://<yourhost>:9502/va - Data Visualisation
-* http://<yourhost>:9502/xmlpserver- BI Publisher
+* http://yourhost:9500/console - WebLogic Admin Console
+* http://yourhost:9502/analytics - BI Answers/Dashboards
+* http://yourhost:9502/va - Data Visualisation
+* http://yourhost:9502/xmlpserver- BI Publisher
 
 ### Using a host directory for persistent data
 
@@ -163,9 +170,11 @@ In this mode, the containers are started in parallel and the BI container must w
         SQLNET.ALLOWED_LOGON_VERSION_SERVER=11
     For further information, see [Oracle Database Net Services Reference](http://docs.oracle.com/database/122/NETRF/parameters-for-the-sqlnet-ora-file.htm#GUID-1FA9D26C-4D97-4D1C-AB47-1EC234D924AA).
 
-3. If the container is restarted, it requires the same set of environment variables passed in again, even though the domain has already been created.
+3. Oracle Business Intelligence 12.2.1.3.0 configuration validation fails if the database hostname contains an underscore.
 
-4. Docker health-check is not implemented.
+4. If the container is restarted, it requires the same set of environment variables passed in again, even though the domain has already been created.
+
+5. Docker health-check is not implemented.
  
 ## License
 
