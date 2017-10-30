@@ -27,7 +27,7 @@ function runContainerTest {
   echo ""
   
   # Run and start container
-  docker run -d -e ORACLE_SID="$ORACLE_SID" --name "$CON_NAME" "$IMAGE"
+  docker run -d --shm-size=1g -e ORACLE_SID="$ORACLE_SID" --name "$CON_NAME" "$IMAGE"
   
   # Check whether Oracle is OK
   checkOracle "$TEST_NAME" "$CON_NAME" "$ORACLE_SID"
@@ -79,6 +79,11 @@ function checkOracle {
     
   done;
 }
+
+###################### TEST 11.2.0.2 XE default ###########################
+
+# Run 11.2.0.2 XE default container
+runContainerTest "11.2.0.2 XE default database" "11.2.0.2-XE-default" "oracle/database:11.2.0.2-xe"
 
 ###################### TEST 12.2.0.1 EE default ###########################
 
