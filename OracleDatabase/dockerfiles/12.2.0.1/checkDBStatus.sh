@@ -8,6 +8,10 @@
 # Description: Checks the status of Oracle Database.
 #              The ORACLE_HOME, ORACLE_SID and the PATH has to be set.
 # 
+# Return codes: 0 = Database is open and ready to use
+#               1 = Database is not open
+#               2 = Sql Plus execution failed
+#               3 = Environment variables aren't set
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
