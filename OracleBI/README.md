@@ -23,13 +23,13 @@ For Oracle Business Intelligence 12.2.1.2.0, default installs of Oracle Database
 
 ## Oracle Business Intelligence Docker Image Creation
 
-To build a BI image you start by building the Oracle JDK image and then the Oracle FMW Infrastructure image.
+To build a BI image you start by building the Oracle Java image and then the Oracle FMW Infrastructure image.
 
-### Building the Oracle JDK (Server JRE) Image
+### Building the Oracle Java (Server JRE) Image
 
-Download the Oracle Server JRE binary into folder `OracleJDK/java-8` and build the image:
+Download the Oracle Server JRE binary into folder `OracleJava/java-8` and build the image:
 
-        $ cd OracleJDK/java-8
+        $ cd OracleJava/java-8
         $ docker build -t oracle/serverjre:8 .
 
 Please refer to README.md under [OracleJava](https://github.com/oracle/docker-images/tree/master/OracleJava) for details on how to build Oracle Java image.
