@@ -1,5 +1,4 @@
-Oracle Database on Docker
-===============
+# Oracle Database on Docker
 Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Database Online Documentation](http://docs.oracle.com/database/121/index.htm).
 
 ## How to build and run
@@ -33,9 +32,6 @@ Before you build the image make sure that you have provided the installation bin
     
     * select one edition only: -e, -s, or -x
     
-    LICENSE CDDL 1.0 + GPL 2.0
-    
-    Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
@@ -72,7 +68,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	                  The character set to use when creating the database (default: AL32UTF8)
 	   -v /opt/oracle/oradata
 	                  The data volume to use for the database.
-	                  Has to be owned by the Unix user "oracle" or set appropriately.
+	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
 	                  If omitted the database will not be persisted over container recreation.
 	   -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
 	                  Optional: A volume with custom scripts to be run after database startup.
@@ -122,7 +118,7 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 
 	   -v /u01/app/oracle/oradata
 	                  The data volume to use for the database.
-	                  Has to be owned by the Unix user "oracle" or set appropriately.
+	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
 	                  If omitted the database will not be persisted over container recreation.
 	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d
 	                  Optional: A volume with custom scripts to be run after database startup.
@@ -176,9 +172,11 @@ The example below mounts the local directory myScripts to `/opt/oracle/myScripts
 
     docker run --name oracle-ee -p 1521:1521 -v /home/oracle/myScripts:/opt/oracle/scripts/startup -v /home/oracle/oradata:/opt/oracle/oradata oracle/database:12.2.0.1-ee
     
-
 ## Known issues
 * The [`overlay` storage driver](https://docs.docker.com/engine/userguide/storagedriver/selectadriver/) on CentOS has proven to run into Docker bug #25409. We recommend using `btrfs` or `overlay2` instead. For more details see issue #317.
+
+## Frequently asked questions
+Please see [FAQ.md](./FAQ.md) for frequently asked questions.
 
 ## Support
 Oracle Database in single instance configuration is supported for Oracle Linux 7 and Red Hat Enterprise Linux (RHEL) 7.
@@ -187,7 +185,7 @@ For more details please see My Oracle Support note: **Oracle Support for Databas
 ## License
 To download and run Oracle Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub [docker-images/OracleDatabase](./) repository required to build the Docker images are, unless otherwise noted, released under the Common Development and Distribution License (CDDL) 1.0 and GNU Public License 2.0 licenses.
+All scripts and files hosted in this project and GitHub [docker-images/OracleDatabase](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.

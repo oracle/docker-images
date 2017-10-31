@@ -1,5 +1,5 @@
 #!/bin/bash
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
 # 
@@ -27,7 +27,7 @@ function runContainerTest {
   echo ""
   
   # Run and start container
-  docker run -d -e ORACLE_SID="$ORACLE_SID" --name "$CON_NAME" "$IMAGE"
+  docker run -d --shm-size=1g -e ORACLE_SID="$ORACLE_SID" --name "$CON_NAME" "$IMAGE"
   
   # Check whether Oracle is OK
   checkOracle "$TEST_NAME" "$CON_NAME" "$ORACLE_SID"
@@ -80,29 +80,32 @@ function checkOracle {
   done;
 }
 
-###################### TEST ###########################
+###################### TEST 11.2.0.2 XE default ###########################
 
-# Run 12.1.0.2 SE2 default container
-runContainerTest "12.1.0.2 SE2 default database" "12.1.0.2-SE2-default" "oracle/database:12.1.0.2-se2"
+# Run 11.2.0.2 XE default container
+runContainerTest "11.2.0.2 XE default database" "11.2.0.2-XE-default" "oracle/database:11.2.0.2-xe"
 
-###################### TEST ###########################
-
-# Run 12.1.0.2 EE default container
-runContainerTest "12.1.0.2 EE default database" "12.1.0.2-EE-default" "oracle/database:12.1.0.2-ee"
-
-###################### TEST ###########################
-
-# Run 12.2.0.1 SE2 default container
-runContainerTest "12.2.0.1 SE2 default database" "12.2.0.1-SE2-default" "oracle/database:12.2.0.1-se2"
-
-###################### TEST ###########################
+###################### TEST 12.2.0.1 EE default ###########################
 
 # Run 12.2.0.1 EE default container
 runContainerTest "12.2.0.1 EE default database" "12.2.0.1-EE-default" "oracle/database:12.2.0.1-ee"
 
-###################### TEST ###########################
+###################### TEST 12.2.0.1 EE custom DB ###########################
 
 # Run 12.2.0.1 EE custom container
 runContainerTest "12.2.0.1-EE-custom database" "12.2.0.1-EE-custom" "oracle/database:12.2.0.1-ee" "TEST"
 
-# Run 12.2.0.1 EE custom characterset
+###################### TEST 12.2.0.1 SE2 default ###########################
+
+# Run 12.2.0.1 SE2 default container
+runContainerTest "12.2.0.1 SE2 default database" "12.2.0.1-SE2-default" "oracle/database:12.2.0.1-se2"
+
+###################### TEST 12.1.0.2 EE default ###########################
+
+# Run 12.1.0.2 EE default container
+runContainerTest "12.1.0.2 EE default database" "12.1.0.2-EE-default" "oracle/database:12.1.0.2-ee"
+
+###################### TEST 12.1.0.2 SE2 default ###########################
+
+# Run 12.1.0.2 SE2 default container
+runContainerTest "12.1.0.2 SE2 default database" "12.1.0.2-SE2-default" "oracle/database:12.1.0.2-se2"

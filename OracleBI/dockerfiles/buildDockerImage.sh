@@ -22,7 +22,7 @@ Parameters:
    -s: skips the MD5 check of packages
    -q: squash resulting image
 
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE UPL 1.0
 
 Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 

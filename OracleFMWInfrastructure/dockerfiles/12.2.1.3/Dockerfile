@@ -50,7 +50,6 @@ COPY container-scripts/* /u01/oracle/container-scripts/
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-#Temporary until we have the zip installer
 ENV FMW_PKG=fmw_12.2.1.3.0_infrastructure_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.3.0_infrastructure.jar
 
@@ -60,12 +59,13 @@ COPY $FMW_PKG install.file oraInst.loc /u01/
 RUN chown oracle:oracle -R /u01 && \
     chmod +xr $SCRIPT_FILE && \
     yum install -y libaio && \
-    yum clean all 
+    rm -rf /var/cache/yum 
 
 # Install 
 # ------------------------------------------------------------
 USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
+    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
 WORKDIR ${ORACLE_HOME}

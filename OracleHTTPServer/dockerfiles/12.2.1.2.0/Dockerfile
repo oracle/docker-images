@@ -68,7 +68,7 @@ COPY $OHS_PKG install.file oraInst.loc /u01/
 #---------------------------------------------------------------------------------------------------------
 # Proxy needs to be set before running yum in /etc/yum.conf
 RUN yum install -y unzip libaio sysstat && \
-    yum clean all && \
+    rm -rf /var/cache/yum && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
     mkdir /u01/oracle/.inventory && \

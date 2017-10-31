@@ -32,7 +32,7 @@ Before you build, choose which version and distribution you want to build an ima
         
         * select one distribution only: -d, -g, or -i
         
-        LICENSE CDDL 1.0 + GPL 2.0
+        LICENSE UPL 1.0
         
         Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
 
@@ -95,7 +95,7 @@ To try a sample of a WebLogic Server image with a base domain configured, follow
   4. Run the administration console
 
         $ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>
-        This returns the IPAddress (example xxx.xx.x.x) of the container.  Got to your browser and enter http://xxx.xx.x.x:8001/console
+        This returns the IPAddress (example xxx.xx.x.x) of the container.  Got to your browser and enter http://xxx.xx.x.x:7001/console
         
 
 ## Choose your Oracle WebLogic Server Distribution
