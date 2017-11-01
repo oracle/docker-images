@@ -20,7 +20,7 @@
 #
 # Pull base image
 # ---------------
-FROM openjdk:8
+FROM oracle/serverjre:8
 
 # Labels
 # ----------
