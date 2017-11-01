@@ -29,7 +29,7 @@ LABEL maintainer "gerald.venzl@oracle.com"
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV ORDS_HOME=/opt/oracle/ords \
-    INSTALL_FILE="ords.3.0.10.165.06.53.zip" \
+    INSTALL_FILE=ords*.zip \
     CONFIG_PROPS="ords_params.properties.tmpl" \
     STANDALONE_PROPS="standalone.properties.tmpl" \
     RUN_FILE="runOrds.sh"

@@ -3,32 +3,29 @@ Sample Docker build files to facilitate installation, configuration, and environ
 For more information about Oracle REST Data Services (ORDS) please see the [ORDS Documentation](http://www.oracle.com/technetwork/developer-tools/rest-data-services/documentation/index.html).
 
 ## How to build and run
-This project offers sample Dockerfiles for:
- * Oracle REST Data Services 3.0.10
+This project offers sample Dockerfiles for Oracle REST Data Services
  
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle REST Data Services Install Images
-**IMPORTANT:** You will have to provide the installation binaries of ORDS and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the version you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html). You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
+**IMPORTANT:** You will have to provide the installation binaries of ORDS and put them into the `dockerfiles` folder. You only need to provide the binaries for the version you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/developer-tools/rest-data-services/downloads/index.html). Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
-Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which version you want to build an image of, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with `sudo` privileges:
+Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have done that go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
 
-    [root@localhost dockerfiles]# ./buildDockerImage.sh -h
+    [oracle@localhost dockerfiles]$ ./buildDockerImage.sh -h
     
-    Usage: buildDockerImage.sh -v [version] [-i]
+    Usage: buildDockerImage.sh [-i] [-o] [Docker build option]
     Builds a Docker Image for Oracle Rest Data Services
     
     Parameters:
-       -v: version to build
-            Choose one of: 3.0.10
        -i: ignores the MD5 checksums
+       -o: passes on Docker build option
     
     LICENSE UPL 1.0
     
     Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
-
 
 **IMPORTANT:** The resulting images will be an image with the ORDS binaries installed. On first startup of the container ORDS will be setup.
 

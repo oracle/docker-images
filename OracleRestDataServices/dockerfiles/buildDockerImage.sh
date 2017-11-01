@@ -12,13 +12,12 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-i]
+Usage: buildDockerImage.sh [-i] [-o] [Docker build option]
 Builds a Docker Image for Oracle Rest Data Services
   
 Parameters:
-   -v: version to build
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -i: ignores the MD5 checksums
+   -o: passes on Docker build option
 
 LICENSE UPL 1.0
 
@@ -31,7 +30,7 @@ EOF
 # Validate packages
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
-  md5sum -c Checksum
+  md5sum -c Checksum.$VERSION
   if [ "$?" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder '$VERSION'."
@@ -40,11 +39,11 @@ checksumPackages() {
 }
 
 # Parameters
-VERSION="3.0.10"
+VERSION=""
 SKIPMD5=0
 DOCKEROPS=""
 
-while getopts "hiv:" optname; do
+while getopts "hio:" optname; do
   case "$optname" in
     "h")
       usage
@@ -52,8 +51,12 @@ while getopts "hiv:" optname; do
     "i")
       SKIPMD5=1
       ;;
-    "v")
-      VERSION="$OPTARG"
+    "o")
+      DOCKEROPS="$OPTARG"
+      ;;
+    "?")
+      usage;
+      exit 1;
       ;;
     *)
     # Should not occur
@@ -62,11 +65,25 @@ while getopts "hiv:" optname; do
   esac
 done
 
+# Determine latest version
+# Do this after the options so that users can still do a "-h"
+if [ `ls -al ords*zip 2>/dev/null | wc -l` -gt 1 ]; then
+  echo "ERROR: Found multiple versions of ORDS zip files.";
+  echo "ERROR: Please only put one ORDS zip file into this directory!";
+  exit 1;
+else
+  VERSION=$(ls ords*zip 2>/dev/null | awk 'match ($0, /(ords\.)(.{1,2}\..{1,2}\..{1,2})\.(.+.zip)/, result) { print result[2] }')
+fi;
+
+if [ -z "$VERSION" ]; then
+  echo "ERROR: No install file is in this directory!"
+  echo "ERROR: Please copy the install file into this directory or refer to the ReadMe!"
+  exit 1;
+fi;
+
+
 # Oracle Database Image Name
 IMAGE_NAME="oracle/restdataservices:$VERSION"
-
-# Go into version folder
-cd $VERSION
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
