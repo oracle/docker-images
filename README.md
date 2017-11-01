@@ -7,6 +7,7 @@ This repository contains Dockerfiles and samples to build Docker images for Orac
  - [Oracle GoldenGate](https://github.com/oracle/docker-images/tree/master/OracleGoldenGate)
  - [Oracle Java](https://github.com/oracle/docker-images/tree/master/OracleJava)
  - [Oracle HTTP Server](https://github.com/oracle/docker-images/tree/master/OracleHTTPServer)
+ - [Oracle SOA Suite](https://github.com/oracle/docker-images/tree/master/OracleSOASuite)
  - [Oracle Tuxedo](https://github.com/oracle/docker-images/tree/master/OracleTuxedo)
  - [Oracle TSAM Plus](https://github.com/oracle/docker-images/tree/master/OracleTSAM)
  - [Oracle WebLogic](https://github.com/oracle/docker-images/tree/master/OracleWebLogic)
