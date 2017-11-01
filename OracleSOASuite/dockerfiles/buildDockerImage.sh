@@ -18,7 +18,7 @@ Builds a Docker Image for Oracle SOA/OSB/BPM
 Parameters:
    -h: view usage
    -v: Release version to build. Required. Allowed values are
-       12.2.1.2
+       12.2.1.2, 12.2.1.3
    -s: Skip checksum verification
 
 LICENSE Universal Permissive License (UPL), Version 1.0
@@ -102,7 +102,7 @@ fi
 . ../setenv.sh
 
 versionOK=false
-if [ ${VERSION} = 12.2.1.2 ]
+if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 ]
 then
   IMAGE_NAME="${DC_REGISTRY_SOA}/oracle/soasuite:$VERSION"
   DOCKERFILE_NAME=Dockerfile

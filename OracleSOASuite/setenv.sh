@@ -54,7 +54,7 @@ exportComposeEnv() {
   #
   # Default version to use for compose images
   #
-  export DC_SOA_VERSION=12.2.1.2
+  export DC_SOA_VERSION=12.2.1.3
 }
 
 #===============================================

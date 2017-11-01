@@ -1,6 +1,6 @@
 Oracle SOA Suite/BPM on Docker
 ==============================
-Sample Docker build file to facilitate installation, configuration, and environment setup for DevOps users for Release 12.2.1.2.0. For more information check out
+Sample Docker build file to facilitate installation, configuration, and environment setup for DevOps users for Releases 12.2.1.2.0,12.2.1.3.0. For more information check out
 [Oracle Fusion Middleware](http://www.oracle.com/technetwork/middleware/fusion-middleware/overview/index.html) specifically the sections on
 - Service Integration (SOA)
 - Business Process Management
