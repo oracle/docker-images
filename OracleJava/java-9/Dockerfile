@@ -6,7 +6,7 @@ FROM oraclelinux:7-slim
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-ENV JAVA_PKG=serverjre-9*-linux-x64_bin.tar.gz \
+ENV JAVA_PKG=serverjre-9*_linux-x64_bin.tar.gz \
     JAVA_HOME=/usr/java/default
 
 ADD $JAVA_PKG /usr/java/
