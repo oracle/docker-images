@@ -84,22 +84,22 @@ Follow the steps below:
 	$ docker network create -d bridge InfraNET
   		
   2. Run the Database container to host the RCU schemas
+     The Oracle database server container requires custom configuration parameters for starting up the container.This custom configuration parameters correspond to the Data Source parameters in the FMW Infrastructure image to connect to the database running in the container. Add to an env 'env.txt' file the following parameters:
+     DB_SID=InfraDB
+     DB_PDB=InfraPDB1
+     DB_DOMAIN=us.oracle.com 
+     DB_BUNDLE=basic
   
-	$ docker run --detach=true --name MYInfraDB --network=InfraNET -p 1377:1521 -p 6500:5500 -e ORACLE_SID=MYInfraDB -e ORACLE_PDB=InfraPDB1 -e ORACLE_PWD=<DB Password> oracle/database:12.2.0.1-ee
-
-      Verify that the Database is running look at the logs from the run command:
+	$ docker run -d --name InfraDB --network=InfraNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1
  
-	$ docker logs -f <container id>
 
-     You should see the string 
+      Verify that the Database is running and healthy, the STATUS field shows (healthy) in the output of docker ps.
 
-     #########################
-     DATABASE IS READY TO USE!
-     #########################
+     The Database is created with the default password Oradoc_db1, to change the database password you must use sqlplus.  To run sqlplus pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a sqlplus container with the following command: 
 
-     The Database password is auto generated, one way to change the DB passcode 
-
-	$ docker exec MYInfraDB ./setPassword.sh <DB password>
+	$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA 
+	
+	SQL> alter user sys identified by MYDBPasswd container=all;
 
 
   3. Build the **12.2.1.x** FMW Infrastructure image. To build The FMW Infrastructure image run:
@@ -112,7 +112,7 @@ Follow the steps below:
   
   5. Start a container to launch the Admin Server from the image created in step three. The environment variables used to configure the InfraDomain are defined in infraDomain.env.list file. Replace in infraDomain.env.list the values for the Database and WebLogic passwords. Call docker run from the **dockerfiles/12.2.1.x** directory where the infraDomain.env.list file is and pass the file name at runtime. To run an Admin Server container call: 
 
-	$ docker run -d -p 9001:7001 --network=InfraNET -v $HOST_VOLUME:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.x
+	$ docker run -d -p 9001:7001 --network=InfraNET -v $HOST_VOLUME:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.X
 
 Where $HOST_VOLUME stands for a directory on the host where you map your domain directory and both the Admin Server and Managed Server containers can read/write to.
 
