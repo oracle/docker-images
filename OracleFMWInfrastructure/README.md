@@ -85,18 +85,19 @@ Follow the steps below:
   		
   2. Run the Database container to host the RCU schemas
      The Oracle database server container requires custom configuration parameters for starting up the container.This custom configuration parameters correspond to the Data Source parameters in the FMW Infrastructure image to connect to the database running in the container. Add to an env 'env.txt' file the following parameters:
-     DB_SID=InfraDB
-     DB_PDB=InfraPDB1
-     DB_DOMAIN=us.oracle.com 
-     DB_BUNDLE=basic
-  
+     
+	DB_SID=InfraDB
+	DB_PDB=InfraPDB1
+	DB_DOMAIN=us.oracle.com 
+	DB_BUNDLE=basic
+ 	
 	$ docker run -d --name InfraDB --network=InfraNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1
  
 
       Verify that the Database is running and healthy, the STATUS field shows (healthy) in the output of docker ps.
 
      The Database is created with the default password Oradoc_db1, to change the database password you must use sqlplus.  To run sqlplus pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a sqlplus container with the following command: 
-
+	
 	$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA 
 	
 	SQL> alter user sys identified by MYDBPasswd container=all;
