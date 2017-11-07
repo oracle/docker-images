@@ -32,6 +32,7 @@ ENV ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     DOMAIN_NAME="${DOMAIN_NAME:-InfraDomain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-InfraDomain} \
+    VOLUME_DIR=/u01/oracle/user_projects \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 
@@ -59,7 +60,12 @@ COPY $FMW_PKG install.file oraInst.loc /u01/
 RUN chown oracle:oracle -R /u01 && \
     chmod +xr $SCRIPT_FILE && \
     yum install -y libaio && \
-    rm -rf /var/cache/yum 
+    rm -rf /var/cache/yum && \
+    mkdir -p $VOLUME_DIR && \
+    chown -R oracle:oracle $VOLUME_DIR
+
+VOLUME  $VOLUME_DIR
+    
 
 # Install 
 # ------------------------------------------------------------
