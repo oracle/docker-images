@@ -72,7 +72,17 @@ if [ `ls -al ords*zip 2>/dev/null | wc -l` -gt 1 ]; then
   echo "ERROR: Please only put one ORDS zip file into this directory!";
   exit 1;
 else
-  VERSION=$(ls ords*zip 2>/dev/null | awk 'match ($0, /(ords\.)(.{1,2}\..{1,2}\..{1,2})\.(.+.zip)/, result) { print result[2] }')
+  # #644: using awk as below does not work in macOS bash as it's really gawk (3 params) - see ticket for more info
+  # VERSION=$(ls ords*zip 2>/dev/null | awk 'match ($0, /(ords\.)(.{1,2}\..{1,2}\..{1,2})\.(.+.zip)/, result) { print result[2] }')
+  ORDS_FILENAME=$(ls ords*zip 2>/dev/null)
+  ORDS_FILENAME_REGEXP="(ords\.)(.{1,2}\..{1,2}\..{1,2})\.(.+.zip)"
+
+  if [[ $ORDS_FILENAME =~ $ORDS_FILENAME_REGEXP ]]; then
+    VERSION=$(echo "$ORDS_FILENAME" | awk 'split($0, a, ".") {print a[2] "." a[3] "." a[4]}')
+  else
+    VERSION=""
+  fi;
+
 fi;
 
 if [ -z "$VERSION" ]; then
