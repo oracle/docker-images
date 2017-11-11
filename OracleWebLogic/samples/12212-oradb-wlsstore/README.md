@@ -9,7 +9,7 @@ Pull the WebLogic install image from the DockerStore at https://store.docker.com
 
 To run this sample you will need both the WebLogic container and an Oracle Database container. Pull the Oracle Database image from the Docker Store or the Oracle Container Registry.
 
-	$ docker pull container-registry.oracle.com/database/enterprise:latest 
+	$ docker pull container-registry.oracle.com/database/enterprise:12.2.0.1
 
 Follow the steps below:
 
@@ -20,26 +20,30 @@ Create the docker network for the WLS and Database containers to run
 ## Run the Database container 
 To create a database container, use the environment file below to set the database name, password, domain and feature bundle.  The example environment file env.txt is:
 
-	DB_SID=infradb
-	DB_PDB=infrapdb
-	DB_PASSWD=Welcome1
-	DB_DOMAIN=us.oracle.com
+	DB_SID=InfraDB
+	DB_PDB=InfraPDB1
+	DB_DOMAIN=us.oracle.com 
 	DB_BUNDLE=basic
 
+	$ docker run -d --name InfraDB --network=SampleNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1
 
-	$ docker run -d --name MYInfraDb --network=SampleNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:latest
 
-Verify that the Database is running you should see the string 
+	Verify that the Database is running and healthy, the STATUS field shows (healthy) in the output of docker ps.
 
-	Done ! The database is ready for use .
+	 The Database is created with the default password 'Oradoc_db1', to change the database password you must use sqlplus.  To run sqlplus pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a sqlplus container with the following command: 
+
+	$ docker run -ti --network=SampleNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA 
+
+	SQL> alter user system identified by MYDBPasswd container=all;
 
 To run the DDL that creates the tables needed by the application, copy createSchema.sql into the Database container
 
-	$ docker cp createSchema.sql MYInfraDb:/u01/app/oracle
+	$ docker cp createSchema.sql InfraDB:/u01/app/oracle
 
 Run sqlplus to run the DDL
 
-	$docker exec -ti MYInfraDb /u01/app/oracle/product/12.1.0/dbhome_1/bin/sqlplus system@infrapdb/<My DB Password> @/u01/app/oracle/createSchema.sql
+	$docker exec -ti InfraDB /u01/app/oracle/product/12.2.0/dbhome_1/bin/sqlplus system/MYDBPasswd@InfraDB:1521/InfraPDB1.us.oracle.com @/u01/app/oracle/createSchema.sql 
+
 
 ## Build the WebLogic image
 
@@ -51,7 +55,7 @@ or
 
 	$ ./build.sh
 
-To start the Admin Server, run:
+Before starting the WebLogic server make sure you change the file container-scripts/oradatasource.properties to set the database password for user 'system' to MYDBPasswd you set above. The Admin Server, run:
 
         $ docker run -d -i -t -p 7001:7001 --network=SampleNET --name WLSStoreContainer 12212-oradb-wlsstore:latest
 
