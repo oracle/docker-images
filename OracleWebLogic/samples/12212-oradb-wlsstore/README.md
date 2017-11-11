@@ -49,7 +49,7 @@ Run sqlplus to run the DDL
 
 When you build the image the domain and Admin Server are created, the Data Source is created and the Auction application is deployed
 
-        $ docker build -t 12212-oradb-wlsstore .
+	$ docker build -t 12212-oradb-wlsstore .
 
 or
 
@@ -57,7 +57,7 @@ or
 
 Before starting the WebLogic server make sure you change the file container-scripts/oradatasource.properties to set the database password for user 'system' to MYDBPasswd you set above. The Admin Server, run:
 
-        $ docker run -d -i -t -p 7001:7001 --network=SampleNET --name WLSStoreContainer 12212-oradb-wlsstore:latest
+	$ docker run -d -i -t -p 7001:7001 --network=SampleNET --name WLSStoreContainer 12212-oradb-wlsstore:latest
 
 ## Access the application:
 
