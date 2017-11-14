@@ -65,7 +65,7 @@ ENV CGI_APP_HOME="/u01/oracle/"$CGI_APP_NAME
 RUN mkdir $CGI_APP_HOME
 # Create the WEB-INF folder
 RUN mkdir $CGI_APP_HOME/WEB-INF
-# Add the 
+# Add the web.xml descriptor to the WEB-INF folder
 ADD web.xml $CGI_APP_HOME/WEB-INF
 # Set the values in the web.xml
 RUN sed -i -e "s|CGI_DIR_VALUE|$CGI_DIR_VALUE|g" $CGI_APP_HOME/WEB-INF/web.xml && \
