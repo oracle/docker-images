@@ -14,9 +14,9 @@ export DC_REGISTRY_SOA="localhost"
 export DC_REGISTRY_DB="localhost"
 
 # Proxy Environment
-export http_proxy=""
-export https_proxy=""
-export no_proxy=""
+#export http_proxy=""
+#export https_proxy=""
+#export no_proxy=""
 
 #===============================================
 exportComposeEnv() {
