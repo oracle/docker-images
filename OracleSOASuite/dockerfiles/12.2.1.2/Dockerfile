@@ -32,6 +32,7 @@ ENV FMW_JAR1=fmw_12.2.1.2.0_soa.jar \
 ADD  $FMW_JAR1 $FMW_JAR2 /u01/
 COPY container-scripts/* /u01/oracle/dockertools/
 RUN  yum install -y hostname &&    \
+     rm -rf /var/cache/yum &&      \
      cd /u01 && chmod 755 *.jar && \
      chmod a+xr /u01/oracle/dockertools/*.*
 #
