@@ -17,7 +17,7 @@ fi
 
 # Start Node Manager
 echo "Starting NodeManager in background..."
-nohup startNodeManager.sh > log.nm 2>&1 &
+nohup startNodeManager.sh > log_$MS_NAME.nm 2>&1 &
 echo "NodeManager started."
 
 # Add a Machine to the AdminServer only if 1st execution
