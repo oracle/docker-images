@@ -37,7 +37,7 @@ ENV ADMIN_HOST="wlsadmin" \
 # Domain and Server environment variables
 # ------------------------------------------------------------
 ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
-    PRE_DOMAIN_HOME=/u01/oracle/user_projects/domains \
+    PRE_DOMAIN_HOME=/u01/oracle/user_projects \
     ADMIN_PORT="${ADMIN_PORT:-7001}"  \
     ADMIN_USERNAME="${ADMIN_USERNAME:-weblogic}" \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
@@ -52,10 +52,14 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
 COPY container-scripts/* /u01/oracle/
 
 #Create directory where domain will be written to
-RUN mkdir -p $PRE_DOMAIN_HOME && \ 
+USER root
+RUN chmod +xw /u01/oracle/*.sh && \ 
+    chmod +xw /u01/oracle/*.py && \ 
+    mkdir -p $PRE_DOMAIN_HOME && \ 
     chmod a+xr $PRE_DOMAIN_HOME && \
-    chown oracle:oracle -R $PRE_DOMAIN_HOME
+    chown -R oracle:oracle $PRE_DOMAIN_HOME
 
+VOLUME $PRE_DOMAIN_HOME
 # Expose Node Manager default port, and also default for admin and managed server 
 EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT $DEBUG_PORT
 
