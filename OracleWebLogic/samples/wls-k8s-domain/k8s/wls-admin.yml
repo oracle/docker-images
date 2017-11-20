@@ -1,0 +1,67 @@
+apiVersion: apps/v1beta1 
+kind: Deployment 
+metadata:
+  name: admin-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: admin-server 
+    spec:
+      containers:
+      - name: admin-server
+        image: wls-k8s-domain 
+        imagePullPolicy: Never
+        command: ["sh"]
+        args: ["/u01/oracle/startadmin.sh"]
+        readinessProbe:
+            httpGet:
+              path: /weblogic/ready
+              port: 8001
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+        ports:
+        - containerPort: 8001
+
+        env:
+        - name: WLUSER
+          valueFrom:
+            secretKeyRef:
+              name: wlsecret
+              key: username
+        - name: WLPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: wlsecret
+              key: password
+        volumeMounts:
+        - mountPath: /u01/wlsdomain
+          name: domain-home
+      
+      volumes:
+      - name: domain-home
+        persistentVolumeClaim:
+          claimName: wlserver-pvc-1
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-server
+  labels:
+    app: admin-server 
+spec:
+  type: NodePort
+  selector:
+    app: admin-server
+  ports:
+    - name: client
+      protocol: TCP
+      port: 8001
+      targetPort: 8001
+      nodePort: 30007
+  selector:
+    app: admin-server
+
