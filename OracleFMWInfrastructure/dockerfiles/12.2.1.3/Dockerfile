@@ -77,4 +77,4 @@ RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
 WORKDIR ${ORACLE_HOME}
 
 # Define default command to start script.
-CMD ["/u01/oracle/container-scripts/createInfraDomainAndStartAdmin.sh"]
+CMD ["/u01/oracle/container-scripts/createOrStartInfraDomain.sh"]
