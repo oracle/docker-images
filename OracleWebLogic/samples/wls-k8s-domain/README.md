@@ -11,23 +11,20 @@ If you want to customize it, first get the encoded data of your username/passwor
 ## How to Build and Run
 
 ### 1. Build the WebLogic Image for This Sample Domain
-Pre-steps before build the image:
-1. You need to download get-pip.py from https://bootstrap.pypa.io/get-pip.py and save it to folder 'container-scripts'.
-2. If you run `docker build` behind a proxy, you need to set up http and https proxy in the Dockerfile.
-
-Then build the image:
+Build the image:
 ```
 $ docker build -t wls-k8s-domain .
 ```
-Or you can build the image by running build.sh directly.
+If you run `docker build` behind a proxy, you need to set proxy settings via `--build-arg`.
 
 ### 2. Prepare Volume Directories
-Three volumes are defined in k8s/pv.yml which refer to three external directories. You can choose to use host paths or shared NFS directories. Please change the paths accordingly. The external directories need to be initially empty.
+Three volumes are defined in `k8s/pv.yml` which refer to three external directories. You can choose to use host paths or shared NFS directories. Please change the paths accordingly. The external directories need to be initially empty.
 
-**NOTE:** The first two persistent volumes 'pv1' and 'pv2' will be used by WebLogic server pods. All processes in WebLogic server pods are running with UID 1000 and GID 1000 by default, so proper permissions need to be set to these two external directories to make sure that UID 1000 or GID 1000 have permission to read and write the volume directories. The third persistent volume 'pv3' is reserved for later use. We assume that root user will be used to access this volume so no particular permission need to be set to the directory.  
+**NOTE:** The first two persistent volumes `pv1` and `pv2` will be used by WebLogic server pods. All processes in WebLogic server pods are running with UID 1000 and GID 1000 by default, so proper permissions need to be set to these two external directories to make sure that UID 1000 or GID 1000 have permission to read and write the volume directories. The third persistent volume `pv3` is reserved for later use. We assume that root user will be used to access this volume so no particular permission need to be set to the directory.  
  
 ### 3. Deploy All the Kubernetes Resources
-Run the script deploy.sh to deploy all resources to your Kubernetes cluster. You can also deploy the resources indivisually by running the following commands:
+
+Run the following commands to deploy the Kubernetes resources:
 ```
 $ kubectl create -f  k8s/secrets.yml 
 $ kubectl create -f  k8s/pv.yml 
@@ -77,7 +74,6 @@ NAME             STATUS    VOLUME    CAPACITY   ACCESSMODES   STORAGECLASS   AGE
 wlserver-pvc-1   Bound     pv2       10Gi       RWX           manual         18m
 wlserver-pvc-2   Bound     pv3       10Gi       RWX           manual         18m
 ```
-We have three pv defined and two pvc defined. One pv is reserved for later use.
 
 #### 4.3 Check Secrets
 List all secrets:
@@ -93,7 +89,8 @@ The admin console URL is 'http://[hostIP]:30007/console'.
 
 ### 6. Troubleshooting
 You can trace WebLogic server output and logs for troubleshooting.
-Trace WebLogic server output. Note you need to replace $serverPod with the actual pod name of a WebLogic server.
+
+Trace WebLogic server output. Note you need to replace $serverPod with the actual pod name.
 ```
 $ kubectl logs -f $serverPod
 ```
@@ -104,7 +101,9 @@ $ kubectl exec managed-server-0 -- tail -f /u01/wlsdomain/servers/managed-server
 $ kubectl exec managed-server-0 -- tail -f /u01/wlsdomain/servers/AdminServer/logs/AdminServer.log
 ```
 
-### 7. Restart All Pods
+### 7. Restart Pods
+You may need to restart some or all of the WebLogic Server pods, for instance, you make some configuration change which can not be applied dynamically.
+
 #### 7.1 Shutdown the Managed Servers' Pods Gracefully
 ```
 $ kubectl exec -it managed-server-0 -- /u01/wlsdomain/bin/stopManagedWebLogic.sh managed-server-0 t3://admin-server:8001
@@ -123,7 +122,7 @@ After the pods are stopped, each pod's corresponding controller is responsible f
 Wait until all pods are running and ready again. Monitor status of pods via `kubectl get pod`.
 
 ### 8. Cleanup
-Run the script clean.sh to remove all resources from your Kubernetes cluster. You can also do the cleanup indivisually by running the following commands:
+Remove all resources from your Kubernetes cluster by running:
 ```
 $ kubectl delete -f k8s/wls-stateful.yml
 $ kubectl delete -f k8s/wls-admin.yml
@@ -131,7 +130,7 @@ $ kubectl delete -f k8s/pvc.yml
 $ kubectl delete -f k8s/pv.yml
 $ kubectl delete -f k8s/secrets.yml
 ```
-And you need to clean up all data in volume directories via `rm -rf *`.
-
+You can now delete all of data generated to the external directories.
 ## COPYRIGHT 
 Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+

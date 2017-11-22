@@ -24,7 +24,14 @@ function setupDomain {
 
 	# create domain resources
 	cd $ORACLE_HOME
-	python run.py createDomain
+        if [ "$USELEASING" == "TRUE" ]
+        then
+          echo "create domain with database leasing..."
+          python run.py createDomainWithLeasing
+        else
+          echo "create domain with no leasing..." 
+	  python run.py createDomainNoLeasing
+        fi
 } 
 
 # domain provision

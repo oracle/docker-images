@@ -15,40 +15,31 @@ from time import sleep
 from collections import OrderedDict
 import base
 
-clusterData='cluster.json'
+clusterNoLeasing='cluster-no-leasing.json'
+clusterWithLeasing='cluster-leasing.json'
 defaultDSModule='ds1-jdbc.xml'
-defaultDSJson='ds.json'
-defaultJMSModule='mymodule-jms.xml'
-defaultJMSJson='jmsres.json'
 
-def createAll():
-    createDomain()
-    createDS(defaultDSModule, defaultDSJson)
-    createJMS(defaultJMSModule, defaultJMSJSON)
- 
-def createDomain():
+def createDomainWithLeasing():
     base.waitAdmin()
-    base.createAll(clusterData)
+    base.cpJDBCResource(defaultDSModule);
+    base.createAll(clusterWithLeasing)
+ 
+def createDomainNoLeasing():
+    base.waitAdmin()
+    base.createAll(clusterNoLeasing)
 
-def createDS(DSModule, DSJson):
-    base.cpJDBCResource(DSModule)
-    base.createAll(DSJson)
-
-def createJMS(JMSModule, JMSJson):
-    base.cpJMSResource(JMSModule)
-    base.createAll(JMSJson)
+def createRes(jsonFile):
+    base.createAll(jsonFile)
 
 print 'url:', base.prefix 
 start=time()
 option=sys.argv[1]
-if(option == 'createDomain'):
-    createDomain()
-elif(option == 'createJMS'):
-    createJMS(sys.argv[2], sys.argv[3])
-elif(option == 'createDS'):
-    createDS(sys.argv[2], sys.argv[3])
-elif(option == 'createAll'):
-    createAll()
+if(option == 'createDomainNoLeasing'):
+    createDomainNoLeasing()
+elif(option == 'createDomainWithLeasing'):
+    createDomainWithLeasing();
+elif(option == 'createRes'):
+    createRes(sys.argv[2])
 
 end=time()
 print option, "spent", (end-start), "seconds"
