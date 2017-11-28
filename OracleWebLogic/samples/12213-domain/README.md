@@ -55,7 +55,7 @@ To build this sample, run:
 
 To start the containerized Admin Server, run
 
-	$ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -v /home/monica/temp:/u01/oracle/user_projects 12213-domain
+	$ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -v <host directory>:/u01/oracle/user_projects 12213-domain
 
 To start a containerized Managed Server (MS1) to self-register with the Admin Server above, run:
 

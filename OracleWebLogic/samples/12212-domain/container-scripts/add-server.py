@@ -29,11 +29,13 @@ def randomName():
 # ManagedServer details
 msinternal = socket.gethostbyname(hostname)
 msname = os.environ.get('MS_NAME', 'ManagedServer-%s@%s' % (randomName(), hostname))
+nmname = os.environ.get('NM_NAME', 'Machine-' + hostname)
 mshost = os.environ.get('MS_HOST', msinternal)
 msport = os.environ.get('MS_PORT', ms_port)
 memargs = os.environ.get('USER_MEM_ARGS', '')
 
 print('msname     : [%s]' % msname);
+print('nmname     : [%s]' % nmname);
 print('mshost     : [%s]' % mshost);
 print('msport     : [%s]' % msport);
 print('memargs    : [%s]' % memargs);
@@ -53,7 +55,7 @@ cmo.setCluster(getMBean('/Clusters/%s' % cluster_name))
 
 # Default Channel for ManagedServer
 # ---------------------------------
-cmo.setListenAddress(msinternal)
+cmo.setListenAddress(mshost)
 cmo.setListenPort(int(msport))
 cmo.setListenPortEnabled(true)
 cmo.setExternalDNSName(mshost)
