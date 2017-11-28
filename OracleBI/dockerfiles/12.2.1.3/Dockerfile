@@ -50,7 +50,7 @@ COPY $BI_DISTRO_ZIP1 $BI_DISTRO_ZIP2 install.file oraInst.loc /u01/
 USER root
 
 # tools for installing and running BI
-RUN yum -y install unzip hostname make && yum clean all
+RUN yum -y install unzip hostname && rm -rf /var/cache/yum
 
 USER oracle
 RUN cd /u01 && unzip $BI_DISTRO_ZIP1 && unzip $BI_DISTRO_ZIP2 && cd - && \

@@ -175,7 +175,15 @@ In this mode, the containers are started in parallel and the BI container must w
 4. If the container is restarted, it requires the same set of environment variables passed in again, even though the domain has already been created.
 
 5. Docker health-check is not implemented.
- 
+
+6. Oracle Business Intelligence R Installer will fail as `make` is not installed.
+
+  Prior to running `RInstaller.sh installpackages`, first run `yum install -y make`, setting `http_proxy` if required.
+
+  Note that `RInstaller.sh` needs to be run as root - this can be done by `docker exec -it -u root bi bash`.
+
+  For further information on R installation, please see [Oracle Fusion Middleware Installing and Configuring Oracle Business Intelligence](https://docs.oracle.com/middleware/12213/lcm/BIEIG/GUID-9094BFE3-0B41-40AD-83F5-23E0A2D7229F.htm#BIEIG-GUID-9094BFE3-0B41-40AD-83F5-23E0A2D7229F).
+
 ## License
 
 To download and run Oracle Business Intelligence 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
