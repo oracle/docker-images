@@ -1,0 +1,60 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv1
+  labels:
+    app: wls-domain
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle  # Retain, Recycle, Delete
+  hostPath:
+    path: "<localpath1>"
+  #nfs:
+    #server: <nfs_server_ip>
+    #path: <shared_path>
+---
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv2
+  labels:
+    app: wls-domain
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle  # Retain, Recycle, Delete
+  hostPath:
+    path: "<localpath2>"
+  #nfs:
+    #server: <nfs_server_ip> 
+    #path: <shared_path> 
+
+---
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv3
+  labels:
+    app: wls-domain
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle  # Retain, Recycle, Delete
+  hostPath:
+    path: "<localpath3>"
+  #nfs:
+    #server: <nfs_server_ip> 
+    #path: <shared_path> 
+
