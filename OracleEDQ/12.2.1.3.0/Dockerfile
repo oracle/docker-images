@@ -6,26 +6,12 @@
 # --------------------------
 # This is the Dockerfile for Oracle Enterprise Data Quality 12.2.1.3.0
 #
-# Base image of this dockerfile is Oracle Java 8 docker image.
-#
-# Pre-requisite to build oracle Oracle Enterprise Data Quality 12.2.1.3.0 image is to have
-# Oracle Java 8 docker image
-#
-# To build Oracle Java 8 docker image, kindly refer below link
-# https://github.com/oracle/docker-images/tree/master/OracleJava
+# Base image of this dockerfile is Oracle FMW Infrastructure and Oracle Java 8 docker image.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #  fmw_12.2.1.3.0_edq_generic.zip
 #   Download the production distribution for Oracle Enterprise Data Quality from the Oracle Software Delivery Cloud
-#
-# HOW TO BUILD THIS IMAGE
-# -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
-# Make sure that Oracle Java 8 image is available
-# Run:
-#      $ docker build -t oracle/edq:12.2.1.3.0 .
-#
 #
 # Pull base image
 # ---------------
@@ -34,7 +20,7 @@ FROM oracle/fmw-infrastructure:12.2.1.3
 #
 # Maintainer
 # ----------
-#MAINTAINER 
+#MAINTAINER Subhash Sutrave <subhash.sutrave@oracle.com>
 
 #
 # Environment variables required for this build (do NOT change)
@@ -52,7 +38,6 @@ ENV EDQ_ZIP=fmw_12.2.1.3.0_edq_Disk1_1of1.zip \
 # Proxy needs to be set before running yum 
 # ----------------------------------------
 USER root
-#RUN useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
 RUN  mkdir -p /u01/oracle/container-scripts /u01/oracle/logs && \
      chmod a+xr /u01 
 

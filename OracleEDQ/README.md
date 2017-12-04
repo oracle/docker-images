@@ -22,13 +22,13 @@ Default installs of Oracle Database 12.2 are not supported - please see [Known I
 
 ## Oracle Enterprise Data Quality Docker Image Creation
 
-To build a EDQ image you start by building Oracle JDK and Oracle FMW Infrastructure images.
+To build a EDQ image you start by building Oracle Java 8(Server JRE) and Oracle FMW Infrastructure images.
 
-### Building the Oracle JDK (Server JRE) Image
+### Building the Oracle Java 8(Server JRE) Image
 
-Download the Oracle Server JRE binary into folder `OracleJDK/java-8` and build the image:
+Download the Oracle Server JRE binary into folder `OracleJava/java-8` and build the image:
 
-        $ cd OracleJDK/java-8
+        $ cd OracleJava/java-8
         $ docker build -t oracle/serverjre:8 .
 
 Please refer to README.md under [OracleJava](https://github.com/oracle/docker-images/tree/master/OracleJava) for details on how to build Oracle Java image.
@@ -50,7 +50,6 @@ If a proxy is needed for the host to access yum.oracle.com during build, then fi
 
         $ export http_proxy=myproxy.example.com:80
         $ export https_proxy=myproxy.example.com:80
-        $ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 Build the image:
 
@@ -98,15 +97,15 @@ On success, the following is logged: `The configuration of Oracle Fusion Middlew
 
 ### Starting another container to Start EDQ Managed Server
 
-Start a container to launch the Managed Server from the image created in prior step  The environment variables used to run the Managed Server image are defined in the file EDQServer.env.list.
+Start a container to launch the Managed Server from the image created in prior step  The environment variables used to run the Managed Server image are, 
 
-ADMIN_HOST=<host name> - Admin Server Hostname
+ADMIN_HOST=<host name> - Admin Server Hostname, Ex: localhost
 ADMIN_PORT=7010
 
 To run a Managed Server container call:
 
 e.g.:
-        $ docker run -ti --name EDQMS -p 8001:8001 --volumes-from EDQAS --env-file ./12.2.1.3.0/EDQServer.env.list oracle/edq:12.2.1.3.0 startManagedServer.sh
+        $ docker run -ti --name EDQMS -p 8001:8001 -e ADMIN_HOST=AdminHostName -e ADMIN_PORT=7010 --volumes-from EDQAS oracle/edq:12.2.1.3.0 startManagedServer.sh
 
 
 
