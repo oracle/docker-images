@@ -23,7 +23,22 @@ if [[ "${1:--h}" == "-h" ]]; then
     exit 1
 fi
 
-OGG_DISTFILE="$(readlink -f $1)"
+function getTargetFilename {
+    local Target="$1"
+    if [[ "$(uname)" == "Linux" ]]; then
+        readlink -f "${Target}"
+    else
+        while ( true ); do
+            cd $(dirname "${Target}")
+            Target=$(basename "${Target}")
+            [[ ! -L "${Target}" ]] && break
+            Target=$(readlink "${Target}")
+        done
+        echo $(pwd -P)/${Target}
+    fi
+}
+
+OGG_DISTFILE="$(getTargetFilename $1)"
 if [[ ! -f "${OGG_DISTFILE}" ]]; then
     echo "Oracle GoldenGate distribution ZIP file '$1' not found."
     exit 1
@@ -32,7 +47,7 @@ shift
 pushd "$(dirname $(command -v $0))" &>/dev/null
 
 function cleanupAndExit {
-    [[ "${OGG_DISTFILE}" != $(readlink -f "${OGG_TARFILE}") ]] && \
+    [[ "${OGG_DISTFILE}" != $(getTargetFilename "${OGG_TARFILE}") ]] && \
         rm -f "${OGG_TARFILE}" ggstar
     exit ${1-1}
 }
@@ -54,7 +69,7 @@ if [[ "${OGG_DISTFILE/.tgz/}" != "${OGG_DISTFILE}" ]]; then
 fi
 if [[ "${OGG_DISTFILE/.tar/}" != "${OGG_DISTFILE}" ]]; then
     OGG_TARFILE="$(basename ${OGG_DISTFILE})"
-    if [[ "${OGG_DISTFILE}" != $(readlink -f "${OGG_TARFILE}") ]]; then
+    if [[ "${OGG_DISTFILE}" != $(getTargetFilename "${OGG_TARFILE}") ]]; then
         cp -a "${OGG_DISTFILE}" "${OGG_TARFILE}"
     fi
 fi
