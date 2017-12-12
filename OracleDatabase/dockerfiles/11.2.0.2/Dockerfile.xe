@@ -59,7 +59,11 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl && \
     cd $INSTALL_DIR && \
     unzip $INSTALL_FILE_1 && \
     rm $INSTALL_FILE_1 &&    \
+    cat() { declare -A PROC=(["/proc/sys/kernel/shmmax"]=4294967295 ["/proc/sys/kernel/shmmni"]=4096 ["/proc/sys/kernel/shmall"]=2097152 ["/proc/sys/fs/file-max"]=6815744); [[ ${PROC[$1]} == "" ]] && /usr/bin/cat $* || echo ${PROC[$1]}; } && \
+    free() { echo "Swap: 2048 0 2048"; } && \
+    export -f cat free && \
     rpm -i Disk1/*.rpm &&    \
+    unset -f cat free && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
     ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
