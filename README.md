@@ -36,3 +36,7 @@ You can find them on two locations:
 For support and certification information, please consult the documentation for each product.
 
 For community support, discussions and feedback about the provided Dockerfiles visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers)
+
+## Community Contributions
+
+ - **Oracle Forms & Reports**: see [Issue #212](https://github.com/oracle/docker-images/issues/212) for details
