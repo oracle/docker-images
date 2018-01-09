@@ -167,8 +167,6 @@ BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
-
-if [ $? -eq 0 ]; then
 cat << EOF
   Oracle Database Docker Image for '$EDITION' version $VERSION is ready to be extended: 
     
@@ -177,8 +175,4 @@ cat << EOF
   Build completed in $BUILD_ELAPSED seconds.
   
 EOF
-
-else
-  echo "Oracle Database Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
-fi
 
