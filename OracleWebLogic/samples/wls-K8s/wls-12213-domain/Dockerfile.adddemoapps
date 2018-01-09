@@ -1,0 +1,52 @@
+#
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This Dockerfile extends the Oracle WebLogic 12.2.1.3 domain image by adding app
+# bits to the image and recording it in domain configuration.
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Run the following command for the sample application included in this directory.
+#	$ docker build -t wls-12213-oow-demo-domain -f Dockerfile.adddemoapps .        
+#
+
+# Pull base image
+# ---------------
+FROM wls-12213-domain:latest
+
+# Maintainer
+# ----------
+MAINTAINER Russell Gold <russell.gold@oracle.com>
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+ENV MW_HOME="$ORACLE_HOME" \
+    PATH="$ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/samples/server/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin"
+
+# Copy scripts
+# --------------------------------
+USER oracle
+COPY apps/wls-exporter.war /u01/apps/wls-exporter.war
+COPY apps/opensessionapp.war /u01/apps/opensessionapp.war
+COPY apps/memoryloadapp.war /u01/apps/memoryloadapp.war
+COPY container-scripts/add-app-to-domain.py /u01/oracle/add-app-to-domain.py
+
+# Copy WDLF action script (needs to be done after domain creation)
+# ----------------------------------------------------------------
+RUN mkdir $DOMAINS_DIR/$DOMAIN_NAME/bin/scripts
+COPY wldf-scripts/* $DOMAINS_DIR/$DOMAIN_NAME/bin/scripts/
+
+# WLST offline use to update domain configuration
+# ---------------------------------------------
+RUN . $ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh && \
+    java weblogic.WLST /u01/oracle/add-app-to-domain.py $ORACLE_HOME/wlserver/samples/domains/oow-demo-domain "DockerCluster" $DEFAULT_AS_NAME \
+      wls-exporter /u01/apps/wls-exporter.war OpenSessionApp /u01/apps/opensessionapp.war MemoryLoadApp /u01/apps/memoryloadapp.war
+
+# Copy WLDF Resource configuration
+# ----------------------------------------------------------------
+COPY wldf-config/*.xml $DOMAINS_DIR/$DOMAIN_NAME/config/diagnostics/
+

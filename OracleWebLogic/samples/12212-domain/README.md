@@ -40,7 +40,11 @@ Debug Flag:          DEBUG_FLAG      false          (default)
 
 Production Mode:     PRODUCTION_MODE dev           (default)
 
+Managed Server Name: MS_NAME         Generated      (default)
+
 Managed Server Port: MS_PORT         8001           (default)
+
+NodeManager Name :   NM_NAME         Generated      (default)
 
 To build this sample, run:
 
@@ -52,13 +56,17 @@ To start the containerized Admin Server, run
 
         $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 --env-file ./domain.properties -e ADMIN_PASSWORD=<admin_password> -v <host directory>:/u01/oracle/user_projects 12212-domain
 
-To start a containerized Managed Server to self-register with the Admin Server above, run:
+To start a containerized Managed Server (MS1) to self-register with the Admin Server above, run:
 
-        $ docker run -d --link wlsadmin:wlsadmin -p 8001:8001 --env-file ./domain.properties -e ADMIN_PASSWORD=<admin password>  --volumes-from wlsadmin 12212-domain createServer.sh
+        $ docker run -d --name MS1 --link wlsadmin:wlsadmin -p 8001:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS1 --volumes-from wlsadmin 12213-domain createServer.sh
+
+To start a second Managed Server (MS2), run the following command:
+
+        $ docker run -d --name MS2 --link wlsadmin:wlsadmin -p 8002:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS2 --volumes-from wlsadmin 12213-domain createServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a cluster setup, on a single host environment.
 
 You may create more containerized Managed Servers by calling the `docker` command above for `createServer.sh` as long you link properly with the Admin Server. For an example of multihost enviornment, check the sample `1221-multihost`.
 
 # Copyright
-Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.

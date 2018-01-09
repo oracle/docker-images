@@ -7,9 +7,11 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
 #
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
+
 usage() {
 cat << EOF
 
@@ -17,13 +19,12 @@ Usage: buildDockerImage.sh -v [version] [-s]
 Builds a Docker Image for Oracle Data Integrator.
 
 Parameters:
-   -v: Release version to build. Required. E.g 12.2.1.2.6
+   -v: Release version to build. Required.
+	Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -s: skips the MD5 check of packages
 
-LICENSE CDDL 1.0 + GPL 2.0
-
-Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
-
+Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 EOF
 exit 0
@@ -42,7 +43,7 @@ checksumPackages() {
 }
 
 #Parameters
-VERSION="12.2.1.2.6"
+VERSION="12.2.1.3.0"
 SKIPMD5=0
 while getopts "hsdgiv:" optname; do
   case "$optname" in

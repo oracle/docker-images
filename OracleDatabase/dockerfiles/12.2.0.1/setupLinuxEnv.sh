@@ -1,5 +1,5 @@
 #!/bin/bash
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
 #
@@ -18,7 +18,7 @@ mkdir $ORACLE_BASE/scripts/startup && \
 ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
 mkdir $ORACLE_BASE/oradata && \
 chmod ug+x $ORACLE_BASE/*.sh && \
-yum -y install oracle-database-server-12cR2-preinstall unzip wget tar openssl && \
-yum clean all && \
+yum -y install oracle-database-server-12cR2-preinstall unzip tar openssl && \
+rm -rf /var/cache/yum && \
 echo oracle:oracle | chpasswd && \
 chown -R oracle:dba $ORACLE_BASE

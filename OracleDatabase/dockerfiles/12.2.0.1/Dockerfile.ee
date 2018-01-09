@@ -1,4 +1,4 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
 #
@@ -34,7 +34,6 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
-    PERL_INSTALL_FILE="installPerl.sh" \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
     CREATE_DB_FILE="createDB.sh" \
@@ -52,7 +51,7 @@ ENV INSTALL_DIR=$ORACLE_BASE/install \
 
 # Copy binaries
 # -------------
-COPY $INSTALL_FILE_1 $INSTALL_RSP $PERL_INSTALL_FILE $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
+COPY $INSTALL_FILE_1 $INSTALL_RSP $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
 COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
@@ -74,6 +73,8 @@ WORKDIR /home/oracle
 
 VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 5500
-    
+HEALTHCHECK --interval=1m --start-period=5m \
+   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+
 # Define default command to start Oracle Database. 
 CMD exec $ORACLE_BASE/$RUN_FILE

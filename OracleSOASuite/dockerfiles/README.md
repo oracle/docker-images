@@ -17,4 +17,4 @@ SOA/BPM/OSB domain images
    it and Confirm to proceed. 
 
        # Use BUILD_OPTS to add extra arguments to the docker build command
-       sh buildDockerImage.sh -v 12.2.1.2-soabpm
+       sh buildDockerImage.sh -v 12.2.1.2

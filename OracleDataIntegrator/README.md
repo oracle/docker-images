@@ -1,6 +1,6 @@
 Oracle Data Integrator on Docker
 =============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start [dockerfiles](dockerfiles/) for ODI 12.2.1.2.6 based on Oracle Linux 7, Oracle JRE 8 (Server).
+Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start [dockerfiles](dockerfiles/) for ODI 12.2.1.2.6 and 12.2.1.3.0 based on Oracle Linux 7, Oracle JRE 8 (Server).
 
 At the end of this configuration there will be 2 containers running : 1) DB Container 2) ODI Agent.
 
@@ -40,12 +40,12 @@ Sample data should look similar to:
         
 Sample command to start the Database container:
 
-         $ docker run --name ODI122126Database  -p 1521:1521 -p 5500:5500 -v /scratch/DockerVolume/ODIVolume/DB:/opt/oracle/oradata --env-file ./db.env.list  oracle/database:12.2.0.1-ee
+         $ docker run --name ODIDatabase  -p 1521:1521 -p 5500:5500 -v /scratch/DockerVolume/ODIVolume/DB:/opt/oracle/oradata --env-file ./db.env.list  oracle/database:12.2.0.1-ee
 
 The above command starts a DB container mounting a host directory as /opt/oracle/oradata for persistence. 
 It maps the containers 1521 and 5500 port to respective host port such that the services can be accessible outside of localhost.
 
-## ODI Distributable version 12.2.1.2.6 Docker image Creation and Running
+## ODI Docker image Creation and Running
 
 To build the ODI image, you will need the Oracle JDK (Server JRE) image as a base image. You either need to pull the Oracle JDK (Server JRE) image from the [Docker Store](https://store.docker.com/images/oracle-serverjre-8) or the [Oracle Container Registry](https://container-registry.oracle.com), or build the image manually using below information.
 
@@ -57,23 +57,36 @@ You can build your own Oracle JDK (Server JRE) image using the Dockerfiles and s
 
 ### Building Docker Image for ODI
 
-**IMPORTANT:** you have to download the binary of ODI and put it in place (see `.download` files inside dockerfiles/<version>).
+**IMPORTANT:** you have to download the binary of ODI and put it in dockerfiles/\<version\> (see `.download` files inside dockerfiles/\<version\>).
 
 
 To build the Docker Image for ODI, follow the steps below:
 
   1. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script. 
 
-        $ sh buildDockerImage.sh -v 12.2.1.2.6
+         $ sh buildDockerImage.sh -h
+         
+         Usage: buildDockerImage.sh -v [version] [-s]
+         Builds a Docker Image for Oracle Data Integrator.
+         
+         Parameters:
+            -v: Release version to build. Required.
+                 Choose one of: 12.2.1.2.6  12.2.1.3.0
+            -s: skips the MD5 check of packages
+         
+         Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+         Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
-  2. Verify you now have the image **oracle/odi:12.2.1.2.6** in place with 
+         $ sh buildDockerImage.sh -v 12.2.1.3.0
 
-        $ docker images
+  2. Verify you now have the image **oracle/odi:\<version\>** in place with 
+
+         $ docker images
 
 **IMPORTANT:** The resulting images will NOT have a domain pre-configured. But, it has the scripts to create and configure a ODI domain while creating a container out of the image.
 
 
-### Creating ODI container
+### Running ODI in Docker container
 
 Create an environment file **odi.env.list**
 
@@ -100,7 +113,7 @@ Sample data should look similar to:
 
 To start a container with an ODI domain and agent, run the following command:
 
-         $ docker run -t -i --name ODIContainer --env-file ./odi.env.list -v /scratch/DockerVolume/ODIVolume/ODI:/u01/oracle/user_projects -p 20910:20910 oracle/odi:12.2.1.2.6
+         $ docker run -t -i --name ODIContainer --env-file ./odi.env.list -v /scratch/DockerVolume/ODIVolume/ODI:/u01/oracle/user_projects -p 20910:20910 oracle/odi:12.2.1.3.0
 
 The options "-i -t" in the above command runs the container in interactive mode and you will be able to see the commands running in the container. 
 This includes the command for RCU creation, domain creation and configuration followed by starting ODI Agent. 
@@ -108,7 +121,7 @@ Mapping container port 20910 to host port 20910 enables accessing of the Agent o
 
 Once the ODI container is created logs will be tailed and displayed to keep the container running.
 
-Now you can access the Agent at http://\<host name\>:20910/oraclediagent 
+Now you can access the Agent at http://\< host name \>:20910/oraclediagent 
          
 **NOTES:** 
 
@@ -117,13 +130,13 @@ Now you can access the Agent at http://\<host name\>:20910/oraclediagent
         $ docker logs --details <Container-id>
 
 
-2) 12.2.1.2.6 Studio is required to be used in conjunction with docker image for ODI 12.2.1.2.6
+2) Studio is required to be used in conjunction with docker image for ODI.
 
-3) ODI 12.2.1.2.6 docker image supports only Oracle Database as the repository database. 
+3) ODI docker image supports only Oracle Database as the repository database. 
 
-4) For all other supported matrix information, please refer to ODI 12.2.1.2.6 documentation. The supported database for repository mentioned above supersede the configuration matrix for ODI 12.2.1.2.6
+4) For all other supported matrix information, please refer to ODI documentation. The supported database for repository mentioned above supersede the configuration matrix for ODI.
 
-5) As a prerequisite, "Maximum number of sessions" field needs to be overwritten in Studio UI for the Agent created by the ODI Container. Post docker configuration, "Maximum number of sessions" is set as null in the repository database, but the Studio UI  render 1000 as the default value set. User is required  to explicitly overwrite the "Maximum number of sessions"  value to force an update in the repository. If this step is not performed, all sessions will continue to wait in the queue and will not be processed.
+5) As a prerequisite (Only for ODI 12.2.1.2.6), "Maximum number of sessions" field needs to be overwritten in Studio UI for the Agent created by the ODI Container. Post docker configuration, "Maximum number of sessions" is set as null in the repository database, but the Studio UI  render 1000 as the default value set. User is required  to explicitly overwrite the "Maximum number of sessions"  value to force an update in the repository. If this step is not performed, all sessions will continue to wait in the queue and will not be processed.
 
 	Steps to overwrite the "Maximum number of sessions"  value in Studio UI
 
@@ -133,5 +146,14 @@ Now you can access the Agent at http://\<host name\>:20910/oraclediagent
 	* Right-click and select View
 	* In the Definition tab, for the field “Maximum number of sessions”, overwrite the value again to 5 and click Save button. Then again overwrite the value to 1000 and click Save button.
 
+## License
+To download and run Oracle Data Integrator 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
+
+To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that pge.
+
+All scripts and files hosted in this project and GitHub [docker-images/OracleDataIntegrator](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v1.0.
+
+## Copyright
+Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
 
 

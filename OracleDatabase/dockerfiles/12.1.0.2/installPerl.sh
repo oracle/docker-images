@@ -1,5 +1,5 @@
 #!/bin/bash
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
 # 
@@ -17,9 +17,9 @@ set -e
 
 cd $INSTALL_DIR
 mv $ORACLE_HOME/perl $ORACLE_HOME/perl.old
-wget http://www.cpan.org/src/5.0/perl-5.14.1.tar.gz
-tar -xzf perl-5.14.1.tar.gz
-cd perl-5.14.1
+curl -o perl.tar.gz http://www.cpan.org/src/5.0/perl-5.14.1.tar.gz
+tar -xzf perl.tar.gz
+cd perl-*
 ./Configure -des -Dprefix=$ORACLE_HOME/perl -Doptimize=-O3 -Dusethreads -Duseithreads -Duserelocatableinc
 make clean
 make
@@ -47,4 +47,4 @@ fi
 
 # Cleanup
 rm -rf $ORACLE_HOME/perl.old
-rm -rf $INSTALL_DIR/perl-5.14.1*
+rm -rf $INSTALL_DIR/perl-*

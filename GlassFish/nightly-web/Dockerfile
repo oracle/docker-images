@@ -23,7 +23,7 @@ RUN yum -y install unzip java-1.8.0-openjdk-devel && \
     unzip -o $GLASSFISH_PKG && \
     rm -f $GLASSFISH_PKG && \
     yum -y remove unzip && \
-    yum clean all
+    rm -rf /var/cache/yum
 
 COPY docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]

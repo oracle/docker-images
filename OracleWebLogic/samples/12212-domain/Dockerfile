@@ -1,6 +1,6 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 #
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -41,6 +41,8 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     ADMIN_PORT="${ADMIN_PORT:-7001}"  \
     ADMIN_USERNAME="${ADMIN_USERNAME:-weblogic}" \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
+    MS_NAME="${MS_NAME:-""}" \
+    NM_NAME="${NM_NAME:-""}" \
     ADMIN_PASSWORD="${ADMIN_PASSWORD:-""}" \
     CLUSTER_NAME="${CLUSTER_NAME:-DockerCluster}" \
     DEBUG_FLAG=true \

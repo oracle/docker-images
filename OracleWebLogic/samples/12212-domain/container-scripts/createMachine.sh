@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 
 # If log.nm does not exists, container is starting for 1st time
@@ -15,7 +17,7 @@ fi
 
 # Start Node Manager
 echo "Starting NodeManager in background..."
-nohup startNodeManager.sh > log.nm 2>&1 &
+nohup startNodeManager.sh > log_$MS_NAME.nm 2>&1 &
 echo "NodeManager started."
 
 # Add a Machine to the AdminServer only if 1st execution
