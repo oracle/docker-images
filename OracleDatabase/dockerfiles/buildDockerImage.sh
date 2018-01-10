@@ -170,6 +170,8 @@ echo ""
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
+echo ""
+
 cat << EOF
   Oracle Database Docker Image for '$EDITION' version $VERSION is ready to be extended: 
     
