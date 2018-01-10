@@ -135,7 +135,7 @@ This option lets you mount a directory from your Docker engine’s host to a con
 
 To mount a host directory as a data volume, execute the below commands as **root** user.
 ```
-   $ mkdir -p /scratch/DockerVolume/WCSitesVolume/WCSites /scratch/DockerVolume/WCSitesVolume/WCSitesShared /scratch/DockerVolume/WCSitesVolume/DB
+   $ mkdir -p /scratch/DockerVolume/WCSitesVolume/WCSites /scratch/DockerVolume/WCSitesVolume/WCSitesShared
    $ chmod -R 777 /scratch/DockerVolume/WCSitesVolume
 ```
 All container operations are performed as 'oracle' user. Therefore, the ‘chmod’ command must be run to grant permission to all the non-root users.
