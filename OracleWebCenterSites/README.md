@@ -1,5 +1,4 @@
 # Oracle WebCenter Sites 12c R2 (12.2.1.3.0) on Docker
-*This page is best viewed on Mozilla Firefox and Google Chrome browsers.*
 
 ## Contents
 
@@ -8,8 +7,8 @@
 ### 3. [Prerequisites](#3-prerequisites-1)
 ### 4. [Downloading Docker Images and Oracle WebCenter Sites Binary](#4-downloading-docker-images-and-oracle-webcenter-sites-binary-1)
 ### 5. [Building Oracle WebCenter Sites Docker Images](#5-building-oracle-webcenter-sites-docker-images-1)
-### 6. [Preparing to run Oracle WebCenter Sites Docker Image](#6-preparing-to-run-oracle-webcenter-sites-docker-image-1)
-### 7. [Running Oracle WebCenter Sites Docker Image](#7-running-oracle-webcenter-sites-docker-image-1)
+### 6. [Preparing to run Oracle WebCenter Sites Docker Container](#6-preparing-to-run-oracle-webcenter-sites-docker-container-1)
+### 7. [Running Oracle WebCenter Sites Docker Container](#7-running-oracle-webcenter-sites-docker-container-1)
 ### 8. [FAQs](#8-faqs-1)
 ### 9. [Copyright](#9-copyright-1)
 
@@ -31,18 +30,21 @@ Oracle WebCenter Sites on Docker is certified to run on hardware and software li
 
 ### B. Software Requirements
 
-    |       | Version                                   | Command to verify version |
-    | OS    | Oracle Linux Server release 7.3           | more /etc/oracle-release  |
-    | Docker| Docker version 17.03.1-ce, build 5cda16c  | docker –version           |
+    |       | Version                        | Command to verify version |
+    | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
+    | Docker| Docker version 17.03 or higher | docker –version           |
 
 ## 3. Prerequisites
 Before you begin, ensure to do the following steps:
+
 1. Use Oracle Linux Server. Download from this location: [http://www.oracle.com/technetwork/server-storage/linux/downloads/index.html](http://www.oracle.com/technetwork/server-storage/linux/downloads/index.html).
+
 2. Set the [Proxy](#10-how-to-fix-yumoraclecom-connectivity-error) if required.
-3. Assign Docker permission to your username. To assign, execute the command as **root** user:
+
+3. Assign Docker permission to user. 
 
 ```
-    $ /sbin/usermod -a -G docker <nis unix userid>
+    $ sudo /sbin/usermod -a -G docker <nis unix userid>
 ```
    **Note**: To verify if the user has the Docker permission, see [FAQ](#12-permission-denied-while-connecting-to-the-docker-daemon-socket) section.
 
@@ -51,10 +53,10 @@ Before you begin creating an Oracle WebCenter Sites image on Docker, download th
  
 To download images from Oracle Container Registry (OCR) and Oracle Technology Network (OTN):
 
-Sign in to [OCR](https://container-registry.oracle.com). Click the **Sign in** link that's on the top-right of the Web page.
+Sign in to [Oracle Container Registry](https://container-registry.oracle.com). Click the **Sign in** link that's on the top-right of the Web page.
 
 ### A. To download and set up Oracle Fusion Middleware Infrastructure image.
-1. Click **Home > Middleware** and then click **Continue** for the <i>fmw-infrastructure</i> repository.
+1. Click **Home > Middleware** and then click **Continue** for the _fmw-infrastructure_ repository.
 2. Click **Accept** to accept the license agreement.
 3. To download Oracle Fusion Middleware infrastructure base image:    
     ```
@@ -66,11 +68,11 @@ Sign in to [OCR](https://container-registry.oracle.com). Click the **Sign in** l
         $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.3 oracle/fmw-infrastructure:12.2.1.3
     ```
     **Note**: 
-    - If you want to download image from the Docker store, see [FAQ](#7-alternate-download-location-for-oracle-fusion-middleware-infrastructure-and-oracle-database-images) section.
-    - If you want to build image from the GitHub, see [FAQ](#9-how-do-i-build-an-oracle-fusion-middleware-infrastructure-1221x-base-image) section.
+    - If you want to download image from the Docker Store, see [FAQ](#7-alternate-download-location-for-oracle-fusion-middleware-infrastructure-and-oracle-database-images) section.
+    - If you want to build the image from GitHub, see [FAQ](#9-how-do-i-build-an-oracle-fusion-middleware-infrastructure-1221x-base-image) section.
 
 ### B. To download and set up Oracle Database Enterprise Edition image.
-1. Click **Home > Database** and then click **Continue** for <i>enterprise</i> repository.
+1. Click **Home > Database** and then click **Continue** for _enterprise_ repository.
 2. Click **Accept** to accept the license agreement.
 3. From the terminal, execute the following commands:
        
@@ -83,37 +85,41 @@ Sign in to [OCR](https://container-registry.oracle.com). Click the **Sign in** l
        $ docker tag container-registry.oracle.com/database/enterprise:12.2.0.1 database/enterprise:12.2.0.1
     ```
     **Note**: 
-    - If you want to download image from the Docker store, see [FAQ](#7-alternate-download-location-for-oracle-fusion-middleware-infrastructure-and-oracle-database-images) section.
-    - If you want to build image from the GitHub, see [FAQ](#8-how-do-i-build-an-oracle-database-1221x-base-image) section.
+    - If you want to download image from the Docker Store, see [FAQ](#7-alternate-download-location-for-oracle-fusion-middleware-infrastructure-and-oracle-database-images) section.
+    - If you want to build the image from GitHub, see [FAQ](#8-how-do-i-build-an-oracle-database-1221x-base-image) section.
 	
 	
 ### C. To download Oracle WebCenter Sites Docker files and binary file.
 
-1. Download the [docker-images-master](https://github.com/oracle/docker-images/archive/master.zip) zip file. The zip file contains Docker files and samples to build Docker images for Oracle products and open source projects.
-2. Download Oracle WebCenter Sites 12c R2 12.2.1.3 binary from [OTN](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
+1. Clone the GitHub repository. URLs for cloning: 
+
+ - HTTPS:[ https://github.com/oracle/docker-images.git](https://github.com/oracle/docker-images.git) 
+
+ - SSH: [git@github.com:oracle/docker-images.git](git@github.com:oracle/docker-images.git).
+
+ The repository contains Docker files and samples to build Docker images for Oracle products and open source projects.
+
+2. Download Oracle WebCenter Sites 12c R2 12.2.1.3 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
+
 3. Save the Oracle WebCenter Sites 12.2.1.3 binary at this location: `../docker-images-master/OracleWebCenterSites/dockerfiles/12.2.1.3/`.
 
 ## 5. Building Oracle WebCenter Sites Docker Images
-1. Go to the folder where Docker scripts are located:
-```
-    $ cd ../docker-images-master/OracleWebCenterSites/dockerfiles
-```
 
-2. To build Oracle WCS Docker image, run the following command:
+To build Oracle WebCenter Sites Docker image, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/` and run the following command:
+
 ```
    $ sh buildDockerImage.sh -v 12.2.1.3
 ```
-   For more information on usage of <i>buildDockerImage.sh</i> command, see [FAQ](#1-what-is-the-usage-of-builddockerimagesh-file),
 
-**IMPORTANT**: The resulting image has the automated scripts to:
+   For more information on usage of _buildDockerImage.sh_ command, see [FAQ](#1-what-is-the-usage-of-builddockerimagesh-file),
+
+**IMPORTANT**: The resulting image has automated scripts to:
 -  Run RCU
 -  Create and configure a WebLogic domain
--  Run WebCenter Sites Configuration process while creating an admin container out of the image
+-  Run WebCenter Sites Configuration process while creating an admin container
 
-## 6. Preparing to Run Oracle WebCenter Sites Docker Image
-Before running the Oracle WebCenter Sites Docker image, you need to set up a communication network between containers on the same Docker engine’s host. You also need to set up data volume to enable file sharing between Docker containers and database container.
-
-Configure an environment to run the WebCenter Sites Docker image by following these steps:
+## 6. Preparing to Run Oracle WebCenter Sites Docker Container
+Configure an environment before running the Oracle WebCenter Sites Docker container. You need to set up a communication network between containers on the same host, data volume to store data, and Database container.
 
 ##### A. Creating a user-defined network
 ##### B. Mounting host directory as a data volume 
@@ -129,9 +135,9 @@ Sample command:
    $ docker network create -d bridge WCSitesNet
 ```
 ### B. Mounting host directory as a data volume
-You need to mount volumes, which are directories stored outside a container's file system, to store database data files and WLS domain files. The default location of the volume in the container is "/var/lib/docker/volumes". 
+You need to mount volumes, which are directories stored outside a container's file system, to store database data files and WebLogic domain files. The default location of the volume in the container is `/var/lib/docker/volumes`. 
 
-This option lets you mount a directory from your Docker engine’s host to a container as volume. This volume is used to store database data files and WebLogic server domain files. The volume is created at this location <i>/scratch/DockerVolume/WCSitesVolume/</i>.
+This option lets you mount a directory from your host to a container as volume. This volume is used to store database data files and WebLogic server domain files. The volume is created at this location `/scratch/DockerVolume/WCSitesVolume/`.
 
 To mount a host directory as a data volume, execute the below commands as **root** user.
 ```
@@ -144,19 +150,19 @@ All container operations are performed as 'oracle' user. Therefore, the ‘chmod
 To set up an Oracle Database Docker container, you must first update the environment file which is passed as a parameter in the command that starts the database container.  
 
 ##### 1. Update the Environment File
-Update the environment **db.env.list** file, to define the parameters, which is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/db.env.list`.
+Update the environment `db.env.list` file, to define the parameters, which is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/`.
 
-db.env.list file details:
+`db.env.list` file details:
 ```
    DB_SID=ORCLCDB
    DB_PDB=ORCLPDB1
    DB_DOMAIN=localdomain 
 ```
 ##### 2. Start the Database Container
-To start a database container run these commands:
+
+To run Database container, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/` and run the following command: 
+
 ```
-   $ cd ../docker-images-master/OracleWebCenterSites/dockerfiles
-        
    $ docker run -d --name <container_name> --network=<network_name> -p <database_listener_port>:1521 -p <enterprise_manager_port>:5500 --env-file <environment_file> <repo_name:tag_name>
 ```
 Sample command:
@@ -167,8 +173,8 @@ Database start up command explained:
 ```
    | --name                         | container_name         | Database name; set to ‘WCSites12212Database’                                         |
    | --network                      | network_name           | User-defined network to connect to; use the one created earlier ‘WCSitesNet’         |
-   | -p                             | database_listener_port | Database listener port; set to ‘1521’. Maps the container port to Docker host port.  |
-   | -p                             | enterprise_manager_port| Enterprise Manager port; set to ‘5500’. Maps the container port to Docker host port. |
+   | -p                             | database_listener_port | Database listener port; set to ‘1521’. Maps the container port to host's port.  |
+   | -p                             | enterprise_manager_port| Enterprise Manager port; set to ‘5500’. Maps the container port to host's port. |
    | database/enterprise:12.2.0.1-ee| repo_name:tag_name     | Repository name, Tag name of the image.                                              |
 ```
 Running the above command creates a Container Database (CDB) with one Pluggable Database (PDB).
@@ -179,15 +185,15 @@ This is the Database connection string:
 ```   
    **Note**: Container name can be given only if the container is located on the same host machine. Ensure SERVICE_NAME is a valid PDB service name in your database as given in the $ORACLE_HOME/admin/ORCLCDB/tnsnames.ora file.
    
-Additional information on [running Oracle Database image](https://container-registry.oracle.com)
+For Additional information on [running Oracle Database image](https://container-registry.oracle.com). Click **Home > Database > enterprise**.
 
 For monitoring Docker container Logs:
 ```
     $ docker logs -f --tail 900 WCSites12212Database
 ```
 
-## 7. Running Oracle WebCenter Sites Docker image
-To run the Oracle WebCenter Sites Docker image, you need to create:
+## 7. Running Oracle WebCenter Sites Docker Container
+To run the Oracle WebCenter Sites Docker container, you need to create:
 * Admin container to manage the admin server. The admin container performs RCU, ConfigWizard, and WebCenter Sites Configuration processes. 
 * Managed container to manage the managed server.
 
@@ -195,11 +201,11 @@ To run the Oracle WebCenter Sites Docker image, you need to create:
 This container is used to manage Admin Server.
 
 #### 1. Update the environment file
-**wcsitesadminserver.env.list** is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/wcsitesadminserver.env.list` that contains parameters that are passed to WebLogic admin server. Update this file with the information pertinent to your environment:
+`wcsitesadminserver.env.list` is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/` that contains parameters that are passed to WebLogic admin server. Update this file with the information pertinent to your environment:
 
-wcsitesadminserver.env.list file details:
+`wcsitesadminserver.env.list` file details:
 ```
-    DOCKER_HOST=<Docker Hostname>
+    DOCKER_HOST=<Hostname>
     DB_CONNECTSTRING=<Hostname/ContainerName>:<Database Port>/<DB_PDB>.<DB_DOMAIN>
     DB_USER=<By default: sys>
     DB_PASSWORD=<Database Password>
@@ -212,10 +218,12 @@ wcsitesadminserver.env.list file details:
     ADMIN_PASSWORD=<Admin_Password: if not provided, it gets auto generated>
 ```
 #### 2. Start the Admin Container
-To start WebLogic Admin server container, run the following command and pass the environment file name as a parameter:
-```
-   $ cd ../docker-images-master/OracleWebCenterSites/dockerfiles
 
+a. To run WebLogic Admin server container, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/`. 
+
+b. Run the following command and pass the environment file name as a parameter: 
+
+```
    $ docker run -d --name <container_name> --network=<network_name> -p <weblogic_port>:7001 -p <weblogic_ssl_port>:9001 -v <user_projects_volume_dir>:/u01/oracle/user_projects -v <sites_shared_volume_dir>:/u01/oracle/sites-shared --env-file <environment_file> <repo_name:tag_name>
 ```
 Sample command:
@@ -226,8 +234,8 @@ Admin Container start up command explained:
 ```
    | --name                 | container_name          | Database name; set to ‘WCSitesAdminContainer’                                             |
    | --network              | network_name            | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.             |
-   | -p                     | weblogic_port           | WebLogic port; set to ‘7001’. Maps the container port to Docker host's port.              |
-   | -p                     | weblogic_ssl_port       | WebLogic SSL port; set to ‘9001’. Maps the container port to Docker host's port.          |
+   | -p                     | weblogic_port           | WebLogic port; set to ‘7001’. Maps the container port to host's port.              |
+   | -p                     | weblogic_ssl_port       | WebLogic SSL port; set to ‘9001’. Maps the container port to host's port.          |
    | --v                    | user_projects_volume_dir| ‘/scratch/DockerVolume/WCSitesVolume/WCSites’ mounts the host directory as a Volume.      |
    | --v                    | sites_shared_volume_dir | ‘/scratch/DockerVolume/WCSitesVolume/WCSitesShared’ mounts the host directory as a Volume.|
    | --env-file             | environment_file        | ‘ wcsitesadminserver.env.list’ sets the environment variables.                            |
@@ -253,9 +261,9 @@ Now you can access below WebLogic Console.
 This container is used to manage the Managed Server. 
 
 #### 1. Create the environment file to passed the parameters 
-Update the environment **wcsitesserver.env.list** file which is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/wcsitesserver.env.list`.
+Update the environment `wcsitesserver.env.list` file which is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/`.
 
-wcsitesserver.env.list file details:
+`wcsitesserver.env.list` file details:
 ```
    WCSITES_ADMIN_HOSTNAME=<WCSites Admin Container Name>
    DOMAIN_NAME=<Domain Name>
@@ -263,11 +271,12 @@ wcsitesserver.env.list file details:
    ADMINUSERNAME=<Admin Username>
    ADMINPASSWORD=<Admin Password (use the password that was copied earlier)>
 ```
-#### 2. Start the Managed Container 
-Run the following command to start the Managed Server container. You need to pass the environment file name as a parameter:
+#### 2. Start the Managed Container
+
+a. To run WebLogic Managed Server container, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/`.  
+ 
+b. Run the following command and pass the environment file name as a parameter: 
 ```
-   $ cd ../docker-images-master/OracleWebCenterSites/dockerfiles
-    
    $ docker run -d -t --name <container_name> --network=<network_name> --volumes-from <admin_container_name> -p <sites_port>:7002 -p <sites_ssl_port>:9002 --env-file <environment_file> <repo_name:tag_name> /bin/bash -c "/u01/oracle/sites-container-scripts/startSitesServer.sh; /bin/bash"
 ```
 Sample command:
@@ -278,8 +287,8 @@ Managed Container start up command explained:
 ```
    | --name                 | container_name      | Database name; set to ‘WCSitesManagedContainer’                              |
    | --network              | network_name        | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.|
-   | -p                     | sites_port          | Sites port; set to ‘7002’. Maps the container port to Docker host’s port.    |
-   | -p                     | sites_ssl_port      | Sites SSL port; set to ‘9002’. Maps the container port to Docker host’s port.|
+   | -p                     | sites_port          | Sites port; set to ‘7002’. Maps the container port to host’s port.    |
+   | -p                     | sites_ssl_port      | Sites SSL port; set to ‘9002’. Maps the container port to host’s port.|
    | --volumes-from         | admin_container_name| ‘WCSitesAdminContainer’ mounts the directory from Admin container.           |
    | --env-file             | environment_file    | ‘wcsitesadminserver.env.list’ sets the environment variables.                |
    | oracle/wcsites:12.2.1.3| repo_name:tag_name  | Repository name, Tag name of the image.                                      |
@@ -359,7 +368,7 @@ If you want to build your own Oracle Database image, use the Docker files and sc
 If you want to build your own Oracle Fusion Middleware Infrastructure image, use the Docker files and scripts in the [Oracle FMW Infrastructure](../OracleFMWInfrastructure) GitHub repository.
 
 ##### 10. How to fix yum.oracle.com connectivity error?
-The errors mean that the Docker engine’s host is not able to connect to external registries for update. To access external registries and build a Docker image, set up environment variables for proxy server as below:
+The errors mean that the host is not able to connect to external registries for update. To access external registries and build a Docker image, set up environment variables for proxy server as below:
 ```
    export http_proxy=http://www-yourcompany.com:80 
    export https_proxy=http://www-yourcompany.com:80 
@@ -371,15 +380,14 @@ The errors mean that the Docker engine’s host is not able to connect to extern
 Make sure you have granted the right permission to 'oracle' user as described in section [Mounting a Host Directory as a Data Volume](#b-mounting-host-directory-as-a-data-volume-1).
 
 ##### 12. Permission denied while connecting to the Docker daemon socket?
-Run the below command as **root** user after substituting your id:
+Run the below command after substituting your id:
 ```
-   $ /sbin/usermod -a -G docker <nis unix userid>
+   $ sudo /sbin/usermod -a -G docker <nis unix userid>
 ```
 To confirm that userid is part of docker group run below command and make sure it lists group docker:
 ```
    $ id -Gn <unix userid>
 ```
-* Exit from existing login shell of the non-root user and login again using the same UNIX user account.
 * Run docker ps -a command to confirm user is able to connect to Docker engine.
 
 ##### 13. How do I see all containers? 
@@ -393,7 +401,7 @@ To remove containers:
    $ docker rm –f <container_id>
 ```    
 ##### 15. How do I see all the images? 
-To see all the images on Docker host:
+To see all the images on host:
 ```
    $ docker images 
 ```

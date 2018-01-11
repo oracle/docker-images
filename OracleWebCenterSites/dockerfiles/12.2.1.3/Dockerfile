@@ -52,8 +52,8 @@ COPY $SITES_PKG install.file oraInst.loc /u01/
 # -------------------------------------------------------------
 
 RUN yum install -y hostname && \
-	yum clean all && \
-	mkdir -p /u01 /u01/oracle /u01/oracle/logs && \
+	rm -rf /var/cache/yum/* && \
+	mkdir -p /u01/oracle/logs && \
 	chmod a+xr /u01 && \
 	chown oracle:oracle -R /u01 && \
 	chmod a+xr -R /u01/oracle/*.* && \
