@@ -1,15 +1,16 @@
 # Containerized Terraform for OCI provider
 
-Terraform is a powerful tool for building, changing, and versioning
-infrastructure safely and efficiently. It gives you agility and fine-grained
-control over all your infrastructure resources, you can create configuration
-files to describe your resources in a human-readable format. Terraform can
-manage existing and popular service providers as well as custom in-house
-solutions.
+[Terraform](https://www.terraform.io/) is a powerful tool for building, changing,
+and versioning infrastructure safely and efficiently. It gives you agility and
+fine-grained control over all your infrastructure resources, you can create
+configuration files to describe your resources in a human-readable format.
+Terraform can manage existing and popular service providers as well as custom
+in-house solutions. 
 
-Oracle provides an open source Terraform provider for Oracle Cloud
-Infrastructure which you can use to manage all your Cloud infrastructure
-resources (Network, Compute, Storage, etc).
+Oracle provides an open source [Terraform provider for Oracle Cloud
+Infrastructure](https://github.com/oracle/terraform-provider-oci) which you can
+use to manage all your Cloud infrastructure resources (Network, Compute,
+Storage, etc).
 
 ## Building the image
 
