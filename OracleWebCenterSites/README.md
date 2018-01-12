@@ -25,12 +25,14 @@ Oracle WebCenter Sites has been tested and is known to run on the following hard
 ### A. Hardware Requirements
 
 | Hardware  | Size  |
+| :-------: | :---: |
 | RAM       | 16GB  |
 | Disk Space| 200GB+|
 
 ### B. Software Requirements
 
 |       | Version                        | Command to verify version |
+| :---: | :----------------------------: | :-----------------------: |
 | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
 | Docker| Docker version 17.03 or higher | docker –version           |
 
@@ -41,12 +43,10 @@ Before you begin, ensure to do the following steps:
 
 2. Set the [Proxy](#10-how-to-fix-yumoraclecom-connectivity-error) if required.
 
-3. Create user and assign Docker permission to user.
+3. Assign Docker permission to user.
 
 ```
-	$ sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
 	$ sudo /sbin/usermod -a -G docker <new_userid>
-	$ sudo su <new_userid>    
 ```
    **Note**: To verify if the user has the Docker permission, see [FAQ](#12-permission-denied-while-connecting-to-the-docker-daemon-socket) section.
 
@@ -143,7 +143,9 @@ This option lets you mount a directory from your host to a container as volume. 
 
 To mount a host directory as a data volume, execute the below command.
 ```
-   $ mkdir -p /scratch/DockerVolume/WCSitesVolume/WCSites /scratch/DockerVolume/WCSitesVolume/WCSitesShared
+	$ sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
+	$ mkdir -p /scratch/DockerVolume/WCSitesVolume/WCSites /scratch/DockerVolume/WCSitesVolume/WCSitesShared
+	$ sudo chown <new_userid> /scratch/DockerVolume/WCSitesVolume/WCSites /scratch/DockerVolume/WCSitesVolume/WCSitesShared
 ```
 All container operations are performed as 'oracle' user.
 
@@ -172,6 +174,8 @@ Sample command:
 ```
 Database start up command explained:
 
+| 			Parameter            |     Parameter Name     | 							Description			                                |
+| :----------------------------: | :--------------------: | :-----------------------------------------------------------------------------: |
 | --name                         | container_name         | Database name; set to ‘WCSites12212Database’                                    |
 | --network                      | network_name           | User-defined network to connect to; use the one created earlier ‘WCSitesNet’    |
 | -p                             | database_listener_port | Database listener port; set to ‘1521’. Maps the container port to host's port.  |
@@ -186,7 +190,7 @@ This is the Database connection string:
 ```   
    **Note**: Container name can be given only if the container is located on the same host machine. Ensure SERVICE_NAME is a valid PDB service name in your database as given in the $ORACLE_HOME/admin/ORCLCDB/tnsnames.ora file.
    
-For Additional information on [running Oracle Database image](https://container-registry.oracle.com). Click **Home > Database > enterprise**.
+For Additional information on [running Oracle Database image](https://container-registry.oracle.com), Click **Home > Database > enterprise**.
 
 For monitoring Docker container Logs:
 ```
@@ -233,6 +237,8 @@ Sample command:
 ```
 Admin Container start up command explained:
 
+| 		Parameter    	 |     Parameter Name      | 							     		Description			                               |
+| :--------------------: | :---------------------: | :---------------------------------------------------------------------------------------: |
 | --name                 | container_name          | Database name; set to ‘WCSitesAdminContainer’                                             |
 | --network              | network_name            | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.             |
 | -p                     | weblogic_port           | WebLogic port; set to ‘7001’. Maps the container port to host's port.              	   |
@@ -269,8 +275,6 @@ Update the environment `wcsitesserver.env.list` file which is located at `../doc
    WCSITES_ADMIN_HOSTNAME=<WCSites Admin Container Name>
    DOMAIN_NAME=<Domain Name>
    SITES_SERVER_NAME=<Sites Server Name>
-   ADMINUSERNAME=<Admin Username>
-   ADMINPASSWORD=<Admin Password (use the password that was copied earlier)>
 ```
 #### 2. Start the Managed Container
 
@@ -286,6 +290,8 @@ Sample command:
 ```
 Managed Container start up command explained:
 
+| 		Parameter    	 |     Parameter Name  | 							     		Description			                  |
+| :--------------------: | :-----------------: | :--------------------------------------------------------------------------: |
 | --name                 | container_name      | Database name; set to ‘WCSitesManagedContainer’                              |
 | --network              | network_name        | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.|
 | -p                     | sites_port          | Sites port; set to ‘7002’. Maps the container port to host’s port.    		  |
