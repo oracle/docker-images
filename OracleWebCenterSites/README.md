@@ -20,19 +20,19 @@ This project offers scripts to build an Oracle WebCenter Sites image based on 12
 This project creates Oracle WebCenter Sites Docker image with a single node targeted for development and excludes components such as SatelliteServer, SiteCapture, and VisitorServices. This image is not supported or recommended to use on a production system.
 
 ## 2. Hardware and Software Requirements
-Oracle WebCenter Sites on Docker is certified to run on hardware and software listed below:
+Oracle WebCenter Sites has been tested and is known to run on the following hardware and software:
 
 ### A. Hardware Requirements
 
-    | Hardware  | Size  |
-    | RAM       | 16GB  |
-    | Disk Space| 200GB+|
+| Hardware  | Size  |
+| RAM       | 16GB  |
+| Disk Space| 200GB+|
 
 ### B. Software Requirements
 
-    |       | Version                        | Command to verify version |
-    | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
-    | Docker| Docker version 17.03 or higher | docker –version           |
+|       | Version                        | Command to verify version |
+| OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
+| Docker| Docker version 17.03 or higher | docker –version           |
 
 ## 3. Prerequisites
 Before you begin, ensure to do the following steps:
@@ -41,10 +41,12 @@ Before you begin, ensure to do the following steps:
 
 2. Set the [Proxy](#10-how-to-fix-yumoraclecom-connectivity-error) if required.
 
-3. Assign Docker permission to user. 
+3. Create user and assign Docker permission to user.
 
 ```
-    $ sudo /sbin/usermod -a -G docker <nis unix userid>
+	$ sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
+	$ sudo /sbin/usermod -a -G docker <new_userid>
+	$ sudo su <new_userid>    
 ```
    **Note**: To verify if the user has the Docker permission, see [FAQ](#12-permission-denied-while-connecting-to-the-docker-daemon-socket) section.
 
@@ -139,12 +141,11 @@ You need to mount volumes, which are directories stored outside a container's fi
 
 This option lets you mount a directory from your host to a container as volume. This volume is used to store database data files and WebLogic server domain files. The volume is created at this location `/scratch/DockerVolume/WCSitesVolume/`.
 
-To mount a host directory as a data volume, execute the below commands as **root** user.
+To mount a host directory as a data volume, execute the below command.
 ```
    $ mkdir -p /scratch/DockerVolume/WCSitesVolume/WCSites /scratch/DockerVolume/WCSitesVolume/WCSitesShared
-   $ chmod -R 777 /scratch/DockerVolume/WCSitesVolume
 ```
-All container operations are performed as 'oracle' user. Therefore, the ‘chmod’ command must be run to grant permission to all the non-root users.
+All container operations are performed as 'oracle' user.
 
 ### C. Setting up an Oracle Database Docker container
 To set up an Oracle Database Docker container, you must first update the environment file which is passed as a parameter in the command that starts the database container.  
@@ -170,13 +171,13 @@ Sample command:
    $ docker run -d --name WCSites12212Database --network=WCSitesNet -p 1521:1521 -p 5500:5500 --env-file ./db.env.list database/enterprise:12.2.0.1
 ```
 Database start up command explained:
-```
-   | --name                         | container_name         | Database name; set to ‘WCSites12212Database’                                         |
-   | --network                      | network_name           | User-defined network to connect to; use the one created earlier ‘WCSitesNet’         |
-   | -p                             | database_listener_port | Database listener port; set to ‘1521’. Maps the container port to host's port.  |
-   | -p                             | enterprise_manager_port| Enterprise Manager port; set to ‘5500’. Maps the container port to host's port. |
-   | database/enterprise:12.2.0.1-ee| repo_name:tag_name     | Repository name, Tag name of the image.                                              |
-```
+
+| --name                         | container_name         | Database name; set to ‘WCSites12212Database’                                    |
+| --network                      | network_name           | User-defined network to connect to; use the one created earlier ‘WCSitesNet’    |
+| -p                             | database_listener_port | Database listener port; set to ‘1521’. Maps the container port to host's port.  |
+| -p                             | enterprise_manager_port| Enterprise Manager port; set to ‘5500’. Maps the container port to host's port. |
+| database/enterprise:12.2.0.1-ee| repo_name:tag_name     | Repository name, Tag name of the image.                                         |
+
 Running the above command creates a Container Database (CDB) with one Pluggable Database (PDB).
 
 This is the Database connection string:
@@ -231,16 +232,16 @@ Sample command:
    $ docker run -d -t --name WCSitesAdminContainer --network=WCSitesNet -p 7001:7001 -p 9001:9001 -v /scratch/DockerVolume/WCSitesVolume/WCSites:/u01/oracle/user_projects -v /scratch/DockerVolume/WCSitesVolume/WCSitesShared:/u01/oracle/sites-shared --env-file ./wcsitesadminserver.env.list oracle/wcsites:12.2.1.3
 ```
 Admin Container start up command explained:
-```
-   | --name                 | container_name          | Database name; set to ‘WCSitesAdminContainer’                                             |
-   | --network              | network_name            | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.             |
-   | -p                     | weblogic_port           | WebLogic port; set to ‘7001’. Maps the container port to host's port.              |
-   | -p                     | weblogic_ssl_port       | WebLogic SSL port; set to ‘9001’. Maps the container port to host's port.          |
-   | --v                    | user_projects_volume_dir| ‘/scratch/DockerVolume/WCSitesVolume/WCSites’ mounts the host directory as a Volume.      |
-   | --v                    | sites_shared_volume_dir | ‘/scratch/DockerVolume/WCSitesVolume/WCSitesShared’ mounts the host directory as a Volume.|
-   | --env-file             | environment_file        | ‘ wcsitesadminserver.env.list’ sets the environment variables.                            |
-   | oracle/wcsites:12.2.1.3| repo_name:tag_name      | Repository name, Tag name of the image.                                                   |
-```
+
+| --name                 | container_name          | Database name; set to ‘WCSitesAdminContainer’                                             |
+| --network              | network_name            | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.             |
+| -p                     | weblogic_port           | WebLogic port; set to ‘7001’. Maps the container port to host's port.              	   |
+| -p                     | weblogic_ssl_port       | WebLogic SSL port; set to ‘9001’. Maps the container port to host's port.           	   |
+| --v                    | user_projects_volume_dir| ‘/scratch/DockerVolume/WCSitesVolume/WCSites’ mounts the host directory as a Volume.      |
+| --v                    | sites_shared_volume_dir | ‘/scratch/DockerVolume/WCSitesVolume/WCSitesShared’ mounts the host directory as a Volume.|
+| --env-file             | environment_file        | ‘ wcsitesadminserver.env.list’ sets the environment variables.                            |
+| oracle/wcsites:12.2.1.3| repo_name:tag_name      | Repository name, Tag name of the image.                                                   |
+
 **IMPORTANT**: Monitor the container logs to check if the WebLogic server starts up before logging in to the Console.
 
 For monitoring Docker container Logs:
@@ -284,15 +285,15 @@ Sample command:
    $ docker run -d -t --name WCSitesManagedContainer --network=WCSitesNet --volumes-from WCSitesAdminContainer -p 7002:7002 -p 9002:9002 --env-file ./wcsitesserver.env.list oracle/wcsites:12.2.1.3 /bin/bash -c "/u01/oracle/sites-container-scripts/startSitesServer.sh; /bin/bash"
 ```
 Managed Container start up command explained:
-```
-   | --name                 | container_name      | Database name; set to ‘WCSitesManagedContainer’                              |
-   | --network              | network_name        | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.|
-   | -p                     | sites_port          | Sites port; set to ‘7002’. Maps the container port to host’s port.    |
-   | -p                     | sites_ssl_port      | Sites SSL port; set to ‘9002’. Maps the container port to host’s port.|
-   | --volumes-from         | admin_container_name| ‘WCSitesAdminContainer’ mounts the directory from Admin container.           |
-   | --env-file             | environment_file    | ‘wcsitesadminserver.env.list’ sets the environment variables.                |
-   | oracle/wcsites:12.2.1.3| repo_name:tag_name  | Repository name, Tag name of the image.                                      |
-```   
+
+| --name                 | container_name      | Database name; set to ‘WCSitesManagedContainer’                              |
+| --network              | network_name        | User-defined network to connect to; use the one created earlier ‘WCSitesNet’.|
+| -p                     | sites_port          | Sites port; set to ‘7002’. Maps the container port to host’s port.    		  |
+| -p                     | sites_ssl_port      | Sites SSL port; set to ‘9002’. Maps the container port to host’s port.		  |
+| --volumes-from         | admin_container_name| ‘WCSitesAdminContainer’ mounts the directory from Admin container.           |
+| --env-file             | environment_file    | ‘wcsitesadminserver.env.list’ sets the environment variables.                |
+| oracle/wcsites:12.2.1.3| repo_name:tag_name  | Repository name, Tag name of the image.                                      |
+   
 **IMPORTANT**: Monitor the container logs to check if WebCenter Sites starts up before logging in to the Console.
 
 To monitor Docker Container logs:
@@ -382,11 +383,11 @@ Make sure you have granted the right permission to 'oracle' user as described in
 ##### 12. Permission denied while connecting to the Docker daemon socket?
 Run the below command after substituting your id:
 ```
-   $ sudo /sbin/usermod -a -G docker <nis unix userid>
+   $ sudo /sbin/usermod -a -G docker <userid>
 ```
 To confirm that userid is part of docker group run below command and make sure it lists group docker:
 ```
-   $ id -Gn <unix userid>
+   $ id -Gn <userid>
 ```
 * Run docker ps -a command to confirm user is able to connect to Docker engine.
 
