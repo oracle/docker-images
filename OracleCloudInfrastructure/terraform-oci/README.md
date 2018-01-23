@@ -12,6 +12,8 @@ Infrastructure](https://github.com/oracle/terraform-provider-oci) which you can
 use to manage all your Cloud infrastructure resources (Network, Compute,
 Storage, etc).
 
+This image was inspired by https://medium.com/oracledevs/containerized-terraform-for-oci-provider-2deb917783fa
+
 ## Building the image
 
 This image has no external dependencies. It can be built using the standard
@@ -65,6 +67,9 @@ $ alias terraform-oci="docker run \
    --volume "$PWD":/data \
    oracle/terraform-oci:2.0.6 terraform"
 ```
+## License
 
+All files required to build this Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
-Inspired by https://medium.com/oracledevs/containerized-terraform-for-oci-provider-2deb917783fa
+## Copyright
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
