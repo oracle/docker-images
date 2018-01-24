@@ -194,12 +194,24 @@ if [ "$?" == "0" ]; then
    runUserScripts $ORACLE_BASE/scripts/setup
 fi;
 
-echo "#########################"
-echo "DATABASE IS READY TO USE!"
-echo "#########################"
+# Check whether database is up and running
+$ORACLE_BASE/$CHECK_DB_FILE
+if [ $? -eq 0 ]; then
+  echo "#########################"
+  echo "DATABASE IS READY TO USE!"
+  echo "#########################"
 
-# Execute custom provided startup scripts
-runUserScripts $ORACLE_BASE/scripts/startup
+  # Execute custom provided startup scripts
+  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
+
+else
+  echo "#####################################"
+  echo "########### E R R O R ###############"
+  echo "DATABASE SETUP WAS NOT SUCCESSFUL!"
+  echo "Please check output for further info!"
+  echo "########### E R R O R ###############"
+  echo "#####################################"
+fi;
 
 echo "The following output is now a tail of the alert.log:"
 tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
