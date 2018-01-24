@@ -13,6 +13,7 @@
 # 
 
 ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
+POSITIVE_RETURN="OPEN"
 ORAENV_ASK=NO
 source oraenv
 
@@ -28,10 +29,10 @@ EOF`
 ret=$?
 
 # SQL Plus execution was successful and database is open
-if [ $ret -eq 0 ] && [ "$status" = "OPEN" ]; then
+if [ $ret -eq 0 ] && [ "$status" = "$POSITIVE_RETURN" ]; then
    exit 0;
 # Database is not open
-elif [ "$status" != "OPEN" ]; then
+elif [ "$status" != "$POSITIVE_RETURN" ]; then
    exit 1;
 # SQL Plus execution failed
 else
