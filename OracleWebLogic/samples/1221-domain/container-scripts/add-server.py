@@ -43,7 +43,7 @@ cmo.setCluster(getMBean('/Clusters/%s' % cluster_name))
 
 # Default Channel for ManagedServer
 # ---------------------------------
-cmo.setListenAddress(msinternal)
+cmo.setListenAddress(mshost)
 cmo.setListenPort(int(msport))
 cmo.setListenPortEnabled(true)
 cmo.setExternalDNSName(mshost)

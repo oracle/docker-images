@@ -92,7 +92,7 @@ filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
 - Don't install any interactive/user tools, e.g. things like `vim`, `less` or
 `man`. Debugging should be done prior to the image submission.
 - Don't install `wget` as the base images already include `curl`.
-- Always remember to run `yum clean all` in the same `RUN` directive as a
+- Always remember to run `rm -rf /var/cache/yum` in the same `RUN` directive as a
 `yum install` so that the yum metadata is not stored in the layer.
 - Always document any inputs (via `--build-arg` or `-e`) required by
 `docker build` or `docker run`. This documentation should also clearly state

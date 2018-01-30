@@ -185,7 +185,12 @@ function createDeployment {
 function startReverseProxy {
     [[ -z "${OGG_HTTPS}"           ]] && export OGG_HTTPS="${OGG_SECURE}"
     [[    "${OGG_HTTPS}" == "true" ]] && SCHEME="https" || SCHEME="http"
-    ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx "$SCHEME://127.0.0.1:${Port_ServiceManager}"
+    if [[ "$(${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -v)" == "1.0" ]]; then
+        ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx                 "$SCHEME://127.0.0.1:${Port_ServiceManager}"
+    else
+        echo ${OGG_ADMIN_PWD} | \
+        ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx -u ${OGG_ADMIN} "$SCHEME://127.0.0.1:${Port_ServiceManager}"
+    fi
     scl enable rh-nginx18 -- nginx
 }
 

@@ -45,16 +45,19 @@ ENV         JAVA_HOME=/usr/lib/jvm/jre \
 ADD         ${OGG_TARFILE} ${OGG_HOME}/
 COPY        runOracleGoldenGate.sh /
 
+#
+# Initial setup
+# - This image will be smaller if the oracle:oinstall user has the numeric identifiers 54321:54321
+# - 'vi' is used by the Oracle GoldenGate 'ggsci' utility to edit parameter
+#    files and must be run from inside the container.
+# - Installation of additional software packages depends on the value of ${OGG_EDITION}
+#
 RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFILE}" ]]; then \
                 echo "----------------------------------------------------------------------------------" && \
                 echo "-- Missing build argument for Dockerfile. See README.md for usage instructions. --" && \
                 echo "----------------------------------------------------------------------------------" && \
                 exit 1; \
             fi; \
-#
-# Initial setup
-# - This image will be smaller if the oracle:oinstall user has the numeric identifiers 54321:54321
-#
             groupadd -g 54321    oinstall        || /bin/true; \
             useradd  -u 54321 -g oinstall oracle || /bin/true; \
             chown oracle:oinstall ${OGG_HOME}; \
@@ -65,22 +68,14 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
                 echo "----------------------------------------------------------------------------------" && \
                 chown -R oracle:oinstall ${OGG_HOME}; \
             fi; \
-#
-# Additional installation for Oracle GoldenGate Standard Edition
-# - 'vi' is used by the Oracle GoldenGate 'ggsci' utility to edit parameter
-#    files and must be run from inside the container.
-#
             if [[ "${OGG_EDITION}" == "standard" ]]; then \
                 yum -y install util-linux vi java-1.8.0-openjdk-headless && \
-                yum -y clean  all; \
+                rm -rf /var/cache/yum; \
             fi; \
-#
-# Additional installation for Oracle GoldenGate Microservices Architecture
-#
             if [[ "${OGG_EDITION}" == "microservices" ]]; then \
                 . /etc/os-release && MAJOR_VERSION="${VERSION/.*/}" && \
                 yum -y --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless && \
-                yum -y clean  all && \
+                rm -rf /var/cache/yum && \
                 ln -s /etc/opt/rh/rh-nginx18/nginx /etc/nginx && \
                 sh /etc/ssl/certs/make-dummy-cert  /etc/nginx/ogg.pem && \
                 mkdir -p              ${OGG_DEPLOY_BASE} && \

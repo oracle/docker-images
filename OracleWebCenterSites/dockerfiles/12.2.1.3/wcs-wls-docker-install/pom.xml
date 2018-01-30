@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>wcs-wls-docker-install</artifactId>
+	<groupId>com.oracle.sites</groupId>
+	<version>12.2.1.3.0</version>
+	<name>Sites Install Automation</name>
+	<description>Sites Install Automation</description>
+	<dependencies>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>2.4.5</version>
+		</dependency>
+	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+			<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.gmavenplus</groupId>
+					<artifactId>gmavenplus-plugin</artifactId>
+					<version>1.5</version>
+					<executions>
+						<execution>
+							<id>compile-groovy-automation-script-module</id>
+							<phase>compile</phase>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.4</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>false</addClasspath>
+								<mainClass>com.oracle.wcsites.install.InstallScript</mainClass>
+							</manifest>
+							<manifestEntries>
+								<Class-Path>/u01/oracle/wcsites/common/bin/config-silent-wcsites/config-silent-wcsites.jar /u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar</Class-Path>
+							</manifestEntries>
+						</archive>
+						<appendAssemblyId>false</appendAssemblyId>
+						<finalName>${project.artifactId}</finalName>
+					</configuration>
+				</plugin>
+			</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

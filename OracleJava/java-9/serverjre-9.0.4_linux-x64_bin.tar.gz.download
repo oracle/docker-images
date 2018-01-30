@@ -1,0 +1,5 @@
+# Download the Server JRE (which includes necessary JDK bits for backend Java based solutions)
+#
+#  - http://www.oracle.com/technetwork/java/javase/downloads/server-jre9-downloads-3848530.html
+#
+d29b6b3008c814abd8ab5e4bde9278d6ee7699898333992ee8d080612b5197ca serverjre-9.0.4_linux-x64_bin.tar.gz
