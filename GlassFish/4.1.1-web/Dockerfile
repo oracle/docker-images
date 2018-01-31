@@ -10,7 +10,7 @@ MAINTAINER Arindam Bandyopadhyay<arindam.bandyopadhyay@oracle.com>
 
 # Set environment variables and default password for user 'admin'
 ENV GLASSFISH_PKG=glassfish-4.1.1-web.zip \
-    GLASSFISH_URL=http://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1-web.zip \
+    GLASSFISH_URL=https://download.oracle.com/glassfish/4.1.1/release/glassfish-4.1.1-web.zip \
     GLASSFISH_HOME=/glassfish4 \
     MD5=44baeca38cf33bb655fd3dd09f7d2b78 \
     PATH=$PATH:/glassfish4/bin \
