@@ -23,6 +23,27 @@ This image has no external dependencies. It can be built using the standard
 # docker build -t oracle/terraform-oci:2.0.6 .
 ```
 
+### Manually specifying versions
+
+By default, the image will install the latest available version of Terraform
+and the Terraform provider for OCI. If you want to install a specific version
+of either of these, you can pass a specific `--build-arg` during the build
+process of the image.
+
+Here is an example command that uses a specific version of Terraform and the
+Provider for OCI:
+
+```
+# docker build -t oracle/terraform-oci:2.0.6 \
+  --build-arg TERRAFORM_VERSION="-0.11.2-1.el7" \
+  --build-arg OCI_PROVIDER_VERSION="-2.0.5-1.el7" \
+  .
+```
+
+Note that the argument includes the inital hypen seperator. To find out which versions
+are available, check the [Oracle Linux 7 Developer 
+Channel](http://yum.oracle.com/repo/OracleLinux/OL7/developer/x86_64/index.html)
+on the [Oracle Linux Yum Server](http://yum.oracle.com).
 
 ## Running terraform
 
