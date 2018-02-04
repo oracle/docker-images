@@ -7,6 +7,7 @@ The Dockerfiles for Oracle Tuxedo products can be found in the [`OracleTuxedo`](
 * [Tuxedo Core](./core)                                  `Tuxedo core including server binaries, client libraries`
 * [TSAM Plus](./tsam)                                    `Tuxedo System and Applications Monitor Plus`
 * [Tuxedo Performance Pack](./performance_pack)          `Tuxedo Performance Pack and a sample application`
+* [Tuxedo Message Queue](./tuxedo_message_q)             `Tuxedo Message Queue`
 
 For support and certification information, please consult the documentation for each folder.
 
