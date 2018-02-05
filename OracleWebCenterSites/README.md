@@ -94,16 +94,22 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
 ### C. To download Oracle WebCenter Sites Docker files and binary file.
 
 1. Clone the GitHub repository. URLs for cloning: 
-
  - HTTPS:[ https://github.com/oracle/docker-images.git](https://github.com/oracle/docker-images.git) 
-
  - SSH: [git@github.com:oracle/docker-images.git](git@github.com:oracle/docker-images.git).
-
- The repository contains Docker files and samples to build Docker images for Oracle products and open source projects.
-
+    
+    The repository contains Docker files and samples to build Docker images for Oracle products and open source projects.
 2. Download Oracle WebCenter Sites 12c R2 12.2.1.3 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
-
 3. Save the Oracle WebCenter Sites 12.2.1.3 binary at this location: `../docker-images-master/OracleWebCenterSites/dockerfiles/12.2.1.3/`.
+4. Download WebCenter Sites: Automated Installation Scripts binary from [https://support.oracle.com](https://support.oracle.com).
+
+    To download the binary:
+    
+    a. Click **Sign In > Patches and Updates** and enter patch number as **27491932**, and then click **Search**.
+    
+    b. Click the patch link to download the patch.
+    
+    c. Extract _wcs-wls-docker-install.jar_ from the downloaded zip.
+5. Save the WebCenter Sites: Automated Installation Scripts binary _wcs-wls-docker-install.jar_ at this location: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install/`.
 
 ## 5. Building Oracle WebCenter Sites Docker Images
 
