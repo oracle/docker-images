@@ -6,9 +6,10 @@
 # Since: November, 2016
 # Author: gerald.venzl@oracle.com
 # Description: Creates an Oracle Database based on following parameters:
-#              $ORACLE_SID: The Oracle SID and CDB name
-#              $ORACLE_PDB: The PDB name
-#              $ORACLE_PWD: The Oracle password
+#              $ORACLE_SID:       The Oracle SID and CDB name
+#              $ORACLE_PDB:       The PDB name/prefix (based on ORACLE_PDB_COUNT = 1/2+)
+#              $ORACLE_PDB_COUNT: The PDB count
+#              $ORACLE_PWD:       The Oracle password
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
@@ -18,17 +19,25 @@ set -e
 # Check whether ORACLE_SID is passed on
 export ORACLE_SID=${1:-ORCLCDB}
 
+# Check whether ORACLE_PDB_COUNT is passed on
+export ORACLE_PDB_COUNT=${3:-1}
+
 # Check whether ORACLE_PDB is passed on
-export ORACLE_PDB=${2:-ORCLPDB1}
+if [ $ORACLE_PDB_COUNT -eq 1 ]; then
+	export ORACLE_PDB=${2:-ORCLPDB1}
+else
+	export ORACLE_PDB=${2:-ORCLPDB}
+fi
 
 # Auto generate ORACLE PWD if not passed on
-export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
+export ORACLE_PWD=${4:-"`openssl rand -base64 8`1"}
 echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
 # Replace place holders in response file
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
+sed -i -e "s|###ORACLE_PDB_COUNT###|$ORACLE_PDB_COUNT|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
 
@@ -65,7 +74,8 @@ dbca -silent -createDatabase -responseFile $ORACLE_BASE/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
 
 echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_HOME/network/admin/tnsnames.ora
-echo "$ORACLE_PDB= 
+if [ $ORACLE_PDB_COUNT -eq 1 ]; then
+	echo "$ORACLE_PDB= 
 (DESCRIPTION = 
   (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
   (CONNECT_DATA =
@@ -73,11 +83,23 @@ echo "$ORACLE_PDB=
     (SERVICE_NAME = $ORACLE_PDB)
   )
 )" >> $ORACLE_HOME/network/admin/tnsnames.ora
+else
+	for i in $(seq 1 $ORACLE_PDB_COUNT); do
+		echo "$ORACLE_PDB$i= 
+(DESCRIPTION = 
+  (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+  (CONNECT_DATA =
+    (SERVER = DEDICATED)
+    (SERVICE_NAME = $ORACLE_PDB$i)
+  )
+)" >> $ORACLE_HOME/network/admin/tnsnames.ora
+	done
+fi
 
 # Remove second control file, make PDB auto open
 sqlplus / as sysdba << EOF
    ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
-   ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
+   ALTER PLUGGABLE DATABASE ALL SAVE STATE;
    exit;
 EOF
 
