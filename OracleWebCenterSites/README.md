@@ -94,20 +94,26 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
 ### C. To download Oracle WebCenter Sites Docker files and binary file.
 
 1. Clone the GitHub repository. URLs for cloning: 
-
  - HTTPS:[ https://github.com/oracle/docker-images.git](https://github.com/oracle/docker-images.git) 
-
  - SSH: [git@github.com:oracle/docker-images.git](git@github.com:oracle/docker-images.git).
-
- The repository contains Docker files and samples to build Docker images for Oracle products and open source projects.
-
+    
+    The repository contains Docker files and samples to build Docker images for Oracle products and open source projects.
 2. Download Oracle WebCenter Sites 12c R2 12.2.1.3 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
+3. Save the Oracle WebCenter Sites 12.2.1.3 binary at this location: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/`.
+4. Download WebCenter Sites: Automated Installation Scripts binary from [https://support.oracle.com](https://support.oracle.com).
 
-3. Save the Oracle WebCenter Sites 12.2.1.3 binary at this location: `../docker-images-master/OracleWebCenterSites/dockerfiles/12.2.1.3/`.
+    To download the binary:
+    
+    a. Click **Sign In > Patches and Updates** and enter patch number as **27491932**, and then click **Search**.
+    
+    b. Click the patch link to download the patch.
+    
+    c. Extract _wcs-wls-docker-install.jar_ from the downloaded zip.
+5. Save the WebCenter Sites: Automated Installation Scripts binary _wcs-wls-docker-install.jar_ at this location: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install/`.
 
 ## 5. Building Oracle WebCenter Sites Docker Images
 
-To build Oracle WebCenter Sites Docker image, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/` and run the following command:
+To build Oracle WebCenter Sites Docker image, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/` and run the following command:
 
 ```
    $ sh buildDockerImage.sh -v 12.2.1.3
@@ -153,7 +159,7 @@ All container operations are performed as 'oracle' user.
 To set up an Oracle Database Docker container, you must first update the environment file which is passed as a parameter in the command that starts the database container.  
 
 ##### 1. Update the Environment File
-Update the environment `db.env.list` file, to define the parameters, which is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/`.
+Update the environment `db.env.list` file, to define the parameters, which is located at `../docker-images/OracleWebCenterSites/dockerfiles/`.
 
 `db.env.list` file details:
 ```
@@ -163,7 +169,7 @@ Update the environment `db.env.list` file, to define the parameters, which is lo
 ```
 ##### 2. Start the Database Container
 
-To run Database container, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/` and run the following command: 
+To run Database container, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/` and run the following command: 
 
 ```
    $ docker run -d --name <container_name> --network=<network_name> -p <database_listener_port>:1521 -p <enterprise_manager_port>:5500 --env-file <environment_file> <repo_name:tag_name>
@@ -206,7 +212,7 @@ To run the Oracle WebCenter Sites Docker container, you need to create:
 This container is used to manage Admin Server.
 
 #### 1. Update the environment file
-`wcsitesadminserver.env.list` is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/` that contains parameters that are passed to WebLogic admin server. Update this file with the information pertinent to your environment:
+`wcsitesadminserver.env.list` is located at `../docker-images/OracleWebCenterSites/dockerfiles/` that contains parameters that are passed to WebLogic admin server. Update this file with the information pertinent to your environment:
 
 `wcsitesadminserver.env.list` file details:
 ```
@@ -224,7 +230,7 @@ This container is used to manage Admin Server.
 ```
 #### 2. Start the Admin Container
 
-a. To run WebLogic Admin server container, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/`. 
+a. To run WebLogic Admin server container, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/`. 
 
 b. Run the following command and pass the environment file name as a parameter: 
 
@@ -268,7 +274,7 @@ Now you can access below WebLogic Console.
 This container is used to manage the Managed Server. 
 
 #### 1. Create the environment file to passed the parameters 
-Update the environment `wcsitesserver.env.list` file which is located at `../docker-images-master/OracleWebCenterSites/dockerfiles/`.
+Update the environment `wcsitesserver.env.list` file which is located at `../docker-images/OracleWebCenterSites/dockerfiles/`.
 
 `wcsitesserver.env.list` file details:
 ```
@@ -278,7 +284,7 @@ Update the environment `wcsitesserver.env.list` file which is located at `../doc
 ```
 #### 2. Start the Managed Container
 
-a. To run WebLogic Managed Server container, go to `dockerfiles` folder located at `../docker-images-master/OracleWebCenterSites/`.  
+a. To run WebLogic Managed Server container, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/`.  
  
 b. Run the following command and pass the environment file name as a parameter: 
 ```
@@ -346,13 +352,13 @@ To view the Docker Container logs run:
    $ docker logs --details <Container-id>
 ```
 ##### 3. How to modify start/stop admin/managed server scripts?
-You can find these scripts here: dockerfiles/12.2.1.3/sites-container-scripts) sites-container-scripts are located at `../docker-images-master/OracleWebCenterSites/dockerfiles/12.2.1.3/sites-container-scripts/*` 
+You can find these scripts here: dockerfiles/12.2.1.3/sites-container-scripts) sites-container-scripts are located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/sites-container-scripts/*` 
 
 ##### 4. Why do I get an error message as "... RCU exists already"?
 Most likely, you're not running this command for the first time. The RCU_prefix may be present already. Drop the corresponding schemas or use a different prefix.
 
 ##### 5. Where can I find RCU configuration Wizard and WebCenter Sites configuration scripts?
-See [Readme.md](dockerfiles/12.2.1.3/wcs-wls-docker-install/README.md) located at `../docker-images-master/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install/README.md`
+See [Readme.md](dockerfiles/12.2.1.3/wcs-wls-docker-install/README.md) located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install/README.md`
 
 ##### 6. How do I configure WebCenter Sites with an On-Prem Oracle Database instance? 
 Set DB_CONNECTSTRING connection string parameter as mentioned in section [Update the environment file](#1-update-the-environment-file-1).
