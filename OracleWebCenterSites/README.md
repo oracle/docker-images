@@ -100,16 +100,19 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
     The repository contains Docker files and samples to build Docker images for Oracle products and open source projects.
 2. Download Oracle WebCenter Sites 12c R2 12.2.1.3 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
 3. Save the Oracle WebCenter Sites 12.2.1.3 binary at this location: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/`.
-4. Download WebCenter Sites: Automated Installation Scripts binary from [https://support.oracle.com](https://support.oracle.com).
+4. Download/Build Oracle WebCenter Sites: Automated Installation Scripts.
 
-    To download the binary:
-    
-    a. Click **Sign In > Patches and Updates** and enter patch number as **27491932**, and then click **Search**.
-    
-    b. Click the patch link to download the patch.
-    
-    c. Extract _wcs-wls-docker-install.jar_ from the downloaded zip.
-5. Save the WebCenter Sites: Automated Installation Scripts binary _wcs-wls-docker-install.jar_ at this location: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install/`.
+	For Existing Oracle Customers download binary from [https://support.oracle.com](https://support.oracle.com)
+   
+	a. Click **Sign In > Patches and Updates** and enter patch number as **27491932**, and then click **Search**.
+	
+	b. Click the patch link to download the patch.
+	
+	c. Extract `wcs-wls-docker-install.jar` from the downloaded zip.
+		
+	For Customers who don't have access to Oracle Support can build `wcs-wls-docker-install.jar` by following instructions in [FAQ #5](#5-where-can-i-find-rcu-configuration-wizard-and-webcenter-sites-configuration-scripts)
+	
+5. Save the WebCenter Sites: Automated Installation Scripts binary `wcs-wls-docker-install.jar` at this location: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install/`.
 
 ## 5. Building Oracle WebCenter Sites Docker Images
 
