@@ -67,11 +67,16 @@ while getopts "hcsdgiv:" optname; do
   esac
 done
 
+# Creating wcs-wls-docker-install.jar
+cd $VERSION/wcs-wls-docker-install
+docker run --rm -it -v ${PWD}:/wcs-wls-docker-install groovy:jdk /wcs-wls-docker-install/packagejar.sh
+cd ..
+
 # WebCenterSites Image Name
 IMAGE_NAME="oracle/wcsites:$VERSION"
 
 # Go into version folder
-cd $VERSION
+#cd $VERSION
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
