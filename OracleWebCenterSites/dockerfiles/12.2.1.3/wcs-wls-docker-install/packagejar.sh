@@ -4,29 +4,13 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-# Description: This script is used fir packaging wcs-wls-docker-install.jar.
+# Description: This script is used for packaging wcs-wls-docker-install.jar using the official Groovy Docker image.
 #
 
-echo "Installing Groovy Started"
-
-curl -s get.sdkman.io | bash
-
-source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-sdk install groovy
-
-echo "Installing Groovy Completed"
-
-echo "Compiling Groovy Scripts"
+cd /wcs-wls-docker-install/
 
 groovyc src/main/groovy/com/oracle/wcsites/install/*
 
-echo "Compiling Groovy Scripts Completed"
-
-echo "Packaging jar started"
-
 jar cfm wcs-wls-docker-install.jar Manifest.txt com/oracle/wcsites/install/*.class
-
-echo "Packaging jar completed"
 
 rm -rf com/

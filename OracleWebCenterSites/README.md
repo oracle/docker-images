@@ -96,16 +96,6 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
 1. Download Oracle WebCenter Sites 12c R2 12.2.1.3 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
 2. Save the Oracle WebCenter Sites 12.2.1.3 binary at this location: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/`.
 
-### D. To build Oracle WebCenter Sites: Automated Installation Scripts.
-
-To build `wcs-wls-docker-install.jar`, go to `wcs-wls-docker-install` folder located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/` and run the following command:
-	
-	$ sh packagejar.sh
-	
-Make sure at the end `wcs-wls-docker-install.jar` is generated successfully at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install`. 
-
-For more information see [Readme.md](dockerfiles/12.2.1.3/wcs-wls-docker-install/README.md)
-
 ## 5. Building Oracle WebCenter Sites Docker Images
 
 To build Oracle WebCenter Sites Docker image, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/` and run the following command:
@@ -435,4 +425,4 @@ To stop/start containers:
    $ docker start <container name>
 ```
 ## 9. Copyright
-Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
