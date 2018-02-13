@@ -4,7 +4,7 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-# Description: This script is used to Create Sites Domain, Execute RCU, Configwizard, and Bootstrap process. It will also start and stop managed server during bootstrap process. And finally restart Admin server.
+# Description: This script is used to Create Sites Domain, Execute RCU, Configwizard, and silent SitesConfig process. It will start and stop managed server during SitesConfig process, and finally restart Admin server.
 #
 
 ########### SIGINT handler ############
@@ -87,32 +87,6 @@ if [ $PARAMS == "false" ]; then
     exit;    
 fi
 
-if [ -z ${ADMIN_PASSWORD} ]
-then
-    # Auto generate Oracle WebLogic Server admin password
-    ADMIN_PASSWORD=$(rand_pwd)
-    echo ""
-    echo "    Oracle WebLogic Server Password Auto Generated :"
-    echo ""
-    echo "    ----> $ADMIN_USERNAME admin password: $ADMIN_PASSWORD"
-    echo ""
-fi;
-
-if [ -z ${DB_SCHEMA_PASSWORD} ]
-then
-    # Auto generate Oracle Database Schema password
-    temp_pwd=$(rand_pwd)
-    #Password should not start with a number for database
-    f_str=`echo $temp_pwd|cut -c1|tr [0-9] [A-Z]`
-    s_str=`echo $temp_pwd|cut -c2-`
-    DB_SCHEMA_PASSWORD=${f_str}${s_str}
-    echo ""
-    echo "    Database Schema password Auto Generated :"
-    echo ""
-    echo "    ----> Database schema password: $DB_SCHEMA_PASSWORD"
-    echo ""
-fi
-
 if [ -z ${DOMAIN_NAME} ]
 then
     DOMAIN_NAME=base_domain
@@ -137,6 +111,30 @@ then
     echo ""
 fi
 
+if [ -z ${SITES_ADMIN_USERNAME} ]
+then
+    SITES_ADMIN_USERNAME=ContentServer
+    echo ""
+    echo " Setting SITES_ADMIN_USERNAME to ContentServer"
+    echo ""
+fi
+
+if [ -z ${SITES_APP_USERNAME} ]
+then
+    SITES_APP_USERNAME=fwadmin
+    echo ""
+    echo " Setting SITES_APP_USERNAME to fwadmin"
+    echo ""
+fi
+
+if [ -z ${SITES_SS_USERNAME} ]
+then
+    SITES_SS_USERNAME=SatelliteServer
+    echo ""
+    echo " Setting SITES_SS_USERNAME to SatelliteServer"
+    echo ""
+fi
+
 if [ -z ${SAMPLES} ]
 then
     SAMPLES=false
@@ -144,6 +142,65 @@ then
     echo " Setting samples to false"
     echo ""
 fi
+
+if [ -z ${ADMIN_PASSWORD} ]
+then
+    # Auto generate Oracle WebLogic Server admin password
+    ADMIN_PASSWORD=$(rand_pwd)
+    echo ""
+    echo "    Oracle WebLogic Server Password Auto Generated :"
+    echo ""
+    echo "    ----> Username: $ADMIN_USERNAME ----> Password: $ADMIN_PASSWORD"
+    echo ""
+fi;
+
+if [ -z ${DB_SCHEMA_PASSWORD} ]
+then
+    # Auto generate Oracle Database Schema password
+    temp_pwd=$(rand_pwd)
+    #Password should not start with a number for database
+    f_str=`echo $temp_pwd|cut -c1|tr [0-9] [A-Z]`
+    s_str=`echo $temp_pwd|cut -c2-`
+    DB_SCHEMA_PASSWORD=${f_str}${s_str}
+    echo ""
+    echo "    Database Schema password Auto Generated :"
+    echo ""
+    echo "    ----> Database schema password: $DB_SCHEMA_PASSWORD"
+    echo ""
+fi
+
+if [ -z ${SITES_ADMIN_PASSWORD} ]
+then
+    # Auto generate Oracle WebCenter Sites Administrator password
+    SITES_ADMIN_PASSWORD=$(rand_pwd)
+    echo ""
+    echo "    Oracle WebCenter Sites Administrator Password Auto Generated :"
+    echo ""
+    echo "    ----> Username: $SITES_ADMIN_USERNAME ----> Password: $SITES_ADMIN_PASSWORD"
+    echo ""
+fi;
+
+if [ -z ${SITES_APP_PASSWORD} ]
+then
+    # Auto generate Oracle WebCenter Sites Application password
+    SITES_APP_PASSWORD=$(rand_pwd)
+    echo ""
+    echo "    Oracle WebCenter Sites Application Password Auto Generated :"
+    echo ""
+    echo "    ----> Username: $SITES_APP_USERNAME ----> Password: $SITES_APP_PASSWORD"
+    echo ""
+fi;
+
+if [ -z ${SITES_SS_PASSWORD} ]
+then
+    # Auto generate Oracle WebCenter Sites SatelliteServer password
+    SITES_SS_PASSWORD=$(rand_pwd)
+    echo ""
+    echo "    Oracle WebCenter Sites SatelliteServer Password Auto Generated :"
+    echo ""
+    echo "    ----> Username: $SITES_SS_USERNAME ----> Password: $SITES_SS_PASSWORD"
+    echo ""
+fi;
 
 # These values can be parameterized later on. Hardcoding for now.
 export DOCKER_HOST=$DOCKER_HOST
@@ -198,6 +255,12 @@ sed -i 's,^\(script.admin.server.password=\).*,\1'$ADMIN_PASSWORD',' bootstrap.p
 sed -i 's,^\(script.admin.server.port=\).*,\1'$ADMIN_PORT',' bootstrap.properties
 sed -i 's,^\(script.admin.server.ssl.port=\).*,\1'$ADMIN_SSL_PORT',' bootstrap.properties
 sed -i 's,^\(script.sites.server.ssl.port=\).*,\1'$WCSITES_SSL_PORT',' bootstrap.properties
+sed -i 's,^\(script.oracle.wcsites.system.admin.user=\).*,\1'$SITES_ADMIN_USERNAME',' bootstrap.properties
+sed -i 's,^\(script.oracle.wcsites.system.admin.password=\).*,\1'$SITES_ADMIN_PASSWORD',' bootstrap.properties
+sed -i 's,^\(script.oracle.wcsites.app.user=\).*,\1'$SITES_APP_USERNAME',' bootstrap.properties
+sed -i 's,^\(script.oracle.wcsites.app.password=\).*,\1'$SITES_APP_PASSWORD',' bootstrap.properties
+sed -i 's,^\(script.oracle.wcsites.satellite.user=\).*,\1'$SITES_SS_USERNAME',' bootstrap.properties
+sed -i 's,^\(script.oracle.wcsites.satellite.password=\).*,\1'$SITES_SS_PASSWORD',' bootstrap.properties
 
 #--------------------------------------------------------------------------------------------
 #RCU + ConfigWizard + Sites Configuration
@@ -210,7 +273,7 @@ java -jar wcs-wls-docker-install.jar
 if [ -e $WORK_DIR/WCSites_Config_Setup.suc ] 
 then
 	echo ""	
-	echo "Sites installation is successfully!!!"	
+	echo "Sites installation is successfull!!!"	
 else
 	echo ""	
 	echo "Sites installation has failed. Please check Admin Container log for details"
@@ -244,10 +307,13 @@ echo "Replacement done successfully."
 
 echo ""
 echo ""
-echo "Notedown Auto Generated Oracle WebLogic Server and Database Schema passwords:"
+echo "Notedown Sites, WebLogic Server and Database Schema passwords:"
 echo ""
-echo "    ----> 'weblogic' admin password: $ADMIN_PASSWORD"
-echo "    ----> Database schema password: $DB_SCHEMA_PASSWORD"
+echo "    ----> Oracle Database Schema Credential:													Password: $DB_SCHEMA_PASSWORD"
+echo "    ----> Oracle WebLogic Server Credential:					Username: $ADMIN_USERNAME		Password: $ADMIN_PASSWORD"
+echo "    ----> Oracle WebCenter Sites Administrator Credential:	Username: $SITES_ADMIN_USERNAME	Password: $SITES_ADMIN_PASSWORD"
+echo "    ----> Oracle WebCenter Sites Application Credential: 		Username: $SITES_APP_USERNAME	Password: $SITES_APP_PASSWORD"
+echo "    ----> Oracle WebCenter Sites SatelliteServer Credential: 	Username: $SITES_SS_USERNAME 	Password: $SITES_SS_PASSWORD"
 echo ""
 echo "Admin Server started, ready to start Managed Servers"
 echo "    ----> $SITES_CONTAINER_SCRIPTS/startSitesServer.sh $SITES_SERVER_NAME"
@@ -262,7 +328,7 @@ INSTALL_END=$(date '+%s')
 INSTALL_ELAPSED=`expr $INSTALL_END - $INSTALL_START`
 
 echo "Sites Installation completed in $INSTALL_ELAPSED seconds."
-echo ""
+echo "---------------------------------------------------------"
 echo ""
 
 # Tail Admin Server logs... 
