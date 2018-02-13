@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  * Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
  */
 package com.oracle.wcsites.install
@@ -515,15 +515,15 @@ class Utils {
 		antBuilder.replace(file: rspFile, token: "oracle.wcsites.bootstrap.status=", value: "oracle.wcsites.bootstrap.status=never_done", summary: true)
 
 		// Admin user
-		antBuilder.replace(file: rspFile, token: "oracle.wcsites.system.admin.user=", value: "oracle.wcsites.system.admin.user=ContentServer", summary: true)
-		antBuilder.replace(file: rspFile, token: "oracle.wcsites.system.admin.password=", value: "oracle.wcsites.system.admin.password=password", summary: true)
+		antBuilder.replace(file: rspFile, token: "oracle.wcsites.system.admin.user=", value: "oracle.wcsites.system.admin.user=" + config.script.oracle.wcsites.system.admin.user , summary: true)
+		antBuilder.replace(file: rspFile, token: "oracle.wcsites.system.admin.password=", value: "oracle.wcsites.system.admin.password=" + config.script.oracle.wcsites.system.admin.password , summary: true)
 
 		// Application user
-		antBuilder.replace(file: rspFile, token: "oracle.wcsites.app.user=", value: "oracle.wcsites.app.user=fwadmin", summary: true)
-		antBuilder.replace(file: rspFile, token: "oracle.wcsites.app.password=", value: "oracle.wcsites.app.password=xceladmin", summary: true)
+		antBuilder.replace(file: rspFile, token: "oracle.wcsites.app.user=", value: "oracle.wcsites.app.user=" + config.script.oracle.wcsites.app.user , summary: true)
+		antBuilder.replace(file: rspFile, token: "oracle.wcsites.app.password=", value: "oracle.wcsites.app.password=" + config.script.oracle.wcsites.app.password , summary: true)
 
 		// Satellite user
-		antBuilder.replace(file: rspFile, token: "oracle.wcsites.satellite.user=", value: "oracle.wcsites.satellite.user=SatelliteServer", summary: true)
-		antBuilder.replace(file: rspFile, token: "oracle.wcsites.satellite.password=", value: "oracle.wcsites.satellite.password=password", summary: true)
+		antBuilder.replace(file: rspFile, token: "oracle.wcsites.satellite.user=", value: "oracle.wcsites.satellite.user=" + config.script.oracle.wcsites.satellite.user , summary: true)
+		antBuilder.replace(file: rspFile, token: "oracle.wcsites.satellite.password=", value: "oracle.wcsites.satellite.password=" + config.script.oracle.wcsites.satellite.password, summary: true)
 	}
 }
