@@ -47,7 +47,7 @@ WCSITES_MANAGED_HOSTNAME=`hostname -I`
 replaceWith=$WCSITES_MANAGED_HOSTNAME
 replaceString=$WCSITES_OLD_MANAGED_HOSTNAME
 
-location="/u01/oracle/user_projects/domains/base_domain/wcsites/wcsites/config/"
+location=$DOMAIN_HOME/wcsites/wcsites/config/
 
 echo The following list of files are found in location ${location} that contains ${replaceString}, will be replaced with ${replaceWith}
 grep -l ${replaceString} ${location}"jbossTicketCacheReplicationConfig.xml"

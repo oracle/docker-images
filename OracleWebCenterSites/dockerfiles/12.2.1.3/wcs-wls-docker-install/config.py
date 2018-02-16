@@ -10,7 +10,8 @@ import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
 selectTemplate('Basic WebLogic Server Domain')
 loadTemplates()
-cd('/Security/base_domain/User/<WL_USERNAME>')
+cd('/Security/base_domain/User/weblogic')
+set('Name','<WL_USERNAME>')
 cmo.setPassword('<WL_PASSWORD>') 
 cd('/Server/AdminServer')
 cmo.setName('AdminServer')
@@ -122,7 +123,7 @@ readDomain('<DOMAIN_HOME>')
 selectTemplate('<WCSITES_TEMPLATE_TYPE>') 
 loadTemplates()
 # change to sites server name
-cd('/Server/<SITES_SERVER_NAME>')
+cd('/Server/wcsites_server1')
 set('Name','<SITES_SERVER_NAME>')
 cmo.setListenPort(<SITES_SERVER_PORT>)
 create('<SITES_SERVER_NAME>','SSL')
