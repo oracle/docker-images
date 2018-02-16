@@ -157,6 +157,7 @@ class Weblogic implements AppServer {
 		if (dbSchemaPassword.length() <= 0) {
 			Utils.echo("Setting schema password to database password, as script.db.schema.password is not being set.")
 			dbSchemaPassword = dbPassword
+			config.script.db.schema.password = dbPassword
 		}
 
 		Path pwdFilePath = Files.createTempFile(Paths.get("${config.work}"), "rcuPasswords", ".txt")
@@ -301,6 +302,7 @@ class Weblogic implements AppServer {
 		// Replaces tokens in the Jython file
 		def jythonConfigFile = config.work + "/" + Utils.CONFIG_SCRIPT
 		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_HOME>", value:"${domainHome}")
+		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_NAME>", value:"${config.script.oracle.domain}")
 		antBuilder.replace(file:jythonConfigFile, token:"<WL_USERNAME>", value:"${config.script.admin.server.username}")
 		antBuilder.replace(file:jythonConfigFile, token:"<WL_PASSWORD>", value:"${config.script.admin.server.password}")
 		antBuilder.replace(file:jythonConfigFile, token:"<SERVER_HOST>", value:"${config.script.oracle.wcsites.hostname}")
