@@ -12,4 +12,4 @@ Please make sure that you have enough space available. If you use a storage dive
 The default size for `/dev/shm` is only 64 KB. In order to increase it you have to pass on the `--shm-size` option to the `docker run` command. For example: `docker run ... --shm-size=1g oracle/database:11.2.0.2-xe`
 
 ## Image build: unzip error: invalid compressed data to inflate
-CRC errors by the Unix unzip command during the image build can be caused because of lack of enough memory for your container. On macOS X it has been proven that running Docker with only 2GB of RAM can cause this error. Increasing the RAM for Docker to 4GB remedies the situation.
+CRC errors by the Unix unzip command during image build can be caused by a lack of sufficient memory for your container. On macOS X it has been proven that running Docker with only 2GB of RAM will cause this error. Increasing the RAM for Docker to 4GB remedies the situation.
