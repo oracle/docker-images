@@ -98,7 +98,7 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
 
 ## 5. Building Oracle WebCenter Sites Docker Images
 
-To build Oracle WebCenter Sites Docker image, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/` and run the following command:
+To build Oracle WebCenter Sites Docker image, go to folder located at `../docker-images/OracleWebCenterSites/dockerfiles/` and run the following command:
 
 ```
    $ sh buildDockerImage.sh -v 12.2.1.3
@@ -155,7 +155,7 @@ Update the environment `db.env.list` file, to define the parameters, which is lo
 ```
 ##### 2. Start the Database Container
 
-To run Database container, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/` and run the following command: 
+To run Database container, go to folder where `db.env.list` file is located at `../docker-images/OracleWebCenterSites/dockerfiles/` and run the following command: 
 
 ```
    $ docker run -d --name <container_name> --network=<network_name> -p <database_listener_port>:1521 -p <enterprise_manager_port>:5500 --env-file <environment_file> <repo_name:tag_name>
@@ -222,7 +222,7 @@ This container is used to manage Admin Server.
 ```
 #### 2. Start the Admin Container
 
-a. To run WebLogic Admin server container, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/`. 
+a. To run WebLogic Admin server container, go to folder where `wcsitesadminserver.env.list` file is located at `../docker-images/OracleWebCenterSites/dockerfiles/`. 
 
 b. Run the following command and pass the environment file name as a parameter: 
 
@@ -282,7 +282,7 @@ Update the environment `wcsitesserver.env.list` file which is located at `../doc
 ```
 #### 2. Start the Managed Container
 
-a. To run WebLogic Managed Server container, go to `dockerfiles` folder located at `../docker-images/OracleWebCenterSites/`.  
+a. To run WebLogic Managed Server container, go to folder where `wcsitesserver.env.list` file is located at `../docker-images/OracleWebCenterSites/dockerfiles/`.  
  
 b. Run the following command and pass the environment file name as a parameter: 
 ```
@@ -411,7 +411,7 @@ Connect to the WCSitesManagedContainer container for performing any operations o
 ```
    $ docker exec -it WCSitesManagedContainer /bin/bash
 ```
-Then go to `/u01/oracle/user_projects/domains/base_domain/bin` to start & stop respective server.
+Then go to `/u01/oracle/sites-container-scripts/` to start & stop respective server from respective container.
 
 ##### 15. How do I see all containers? 
 To see all the containers, including the exited ones: 
