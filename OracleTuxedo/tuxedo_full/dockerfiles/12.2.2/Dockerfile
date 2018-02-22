@@ -32,8 +32,9 @@ RUN cd /u01 && \
 ENV ORACLE_HOME=/u01/oracle/tuxHome
 ENV TUXDIR /u01/oracle/tuxHome/tuxedo12.2.2.0.0
 
-USER oracle
 WORKDIR /u01/oracle
+
+EXPOSE 7001 7002
 
 # Define ENTRYPOINT. 
 ENTRYPOINT ["/u01/oracle/init.sh"]
