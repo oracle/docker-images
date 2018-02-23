@@ -9,6 +9,7 @@ The Dockerfiles for Oracle Tuxedo products can be found in the [`OracleTuxedo`](
 * [Tuxedo Performance Pack](./performance_pack)          `Tuxedo Performance Pack and a sample application`
 * [Tuxedo Message Queue](./tuxedo_message_q)             `Tuxedo Message Queue`
 * [Tuxedo Full](./tuxedo_full)                           `Tuxedo Full Set`
+* [Tuxedo Jolt](./jolt)                                  `Tuxedo Jolt Client`
 
 For support and certification information, please consult the documentation for each folder.
 
