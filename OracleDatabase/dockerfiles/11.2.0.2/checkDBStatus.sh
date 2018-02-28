@@ -12,13 +12,11 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
 POSITIVE_RETURN="OPEN"
-ORAENV_ASK=NO
-source oraenv
+ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
 
 # Check Oracle DB status and store it in status
-status=`sqlplus -s / as sysdba << EOF
+status=`su -p oracle -c "sqlplus -s / as sysdba" << EOF
    set heading off;
    set pagesize 0;
    select status from v\\$instance;
