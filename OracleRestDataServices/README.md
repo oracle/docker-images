@@ -62,8 +62,8 @@ To run your ORDS Docker image use the **docker run** command as follows:
     -e ORACLE_SERVICE=<your Oracle DB Service name (default: ORCLPDB1)> \
     -e ORACLE_PWD=<your database SYS password> \
     -e ORDS_PWD=<your ORDS password> \
-    -v [<host mount point>:]/opt/oracle/ords/config/ords
-    oracle/restdataservices:3.0.10
+    -v [<host mount point>:]/opt/oracle/ords/config/ords \
+    oracle/restdataservices:3.0.12
     
     Parameters:
        --name:            The name of the container (default: auto generated)

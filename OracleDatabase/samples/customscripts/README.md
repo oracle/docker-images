@@ -3,7 +3,7 @@ Example of automatically executing custom scripts after database setup/startup
 This example shows how to automatically execute custom scripts after the database is started.
 The this done in both cases, once the database is setup and started, or once the container is restarted
 with an already existing database.  
-The container is aware of the location `/opt/oracle/scritps/setup` and `/opt/oracle/scripts/startup`
+The container is aware of the location `/opt/oracle/scripts/setup` and `/opt/oracle/scripts/startup`
 (`/u01/app/oracle/scripts/setup` and `/u01/app/oracle/scripts/startup` for XE) and will
 automatically search for shell (*.sh) and SQL (*.sql) scripts.
 If found, the container will execute them either after the setup or the startup of the database.

@@ -12,12 +12,11 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
+POSITIVE_RETURN="OPEN"
 ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
-ORAENV_ASK=NO
-source oraenv
 
 # Check Oracle DB status and store it in status
-status=`sqlplus -s / as sysdba << EOF
+status=`su -p oracle -c "sqlplus -s / as sysdba" << EOF
    set heading off;
    set pagesize 0;
    select status from v\\$instance;
@@ -28,10 +27,10 @@ EOF`
 ret=$?
 
 # SQL Plus execution was successful and database is open
-if [ $ret -eq 0 ] && [ "$status" = "OPEN" ]; then
+if [ $ret -eq 0 ] && [ "$status" = "$POSITIVE_RETURN" ]; then
    exit 0;
 # Database is not open
-elif [ "$status" != "OPEN" ]; then
+elif [ "$status" != "$POSITIVE_RETURN" ]; then
    exit 1;
 # SQL Plus execution failed
 else

@@ -1,6 +1,7 @@
 # The last matching pattern has the most precedence.
-*                         @brunoborges @Djelibeybi
+*                         @Djelibeybi
 /OracleDatabase/          @gvenzl
+/OracleRestDataServices/  @gvenzl
 /OracleCoherence/         @thegridman
 /OracleJava/              @aureliogrb
 /OracleWebLogic/          @mriccell
