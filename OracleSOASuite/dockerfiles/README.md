@@ -25,10 +25,19 @@ Sample command:
 
 Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic server domain files.This volume will be created on the host at `/scratch/DockerVolume/SOAVolume/`. Since the volume is created as "root" user, provide read/write/execute permissions to "oracle" user (by providing permissions to "others"), as all operations inside the container happens with "oracle" user login.
 
-    #/sbin/useradd -u 1000 -g 1000 oracledocuser
-    #su oracledocuser
-    $mkdir -p `/scratch/DockerVolume/SOAVolume/`
-    $chmod -R 700 `/scratch/DockerVolume/SOAVolume`
+To determine if a user already exists on your host system with uid:gid of 1000, run:
+
+    # getent passwd 1000
+
+If that returns a username (which is the first field), use that user for the `useradd` command below. If not, create the `oracle` user manually. 
+
+    # useradd -u 1000 -g 1000 oracle 
+
+Run the following commands as root:
+
+    # mkdir -p /scratch/DockerVolume/SOAVolume/
+    # chown 1000:1000 /scratch/DockerVolume/SOAVolume/
+    # chmod 700 /scratch/DockerVolume/SOAVolume/
 
 # Database
 
