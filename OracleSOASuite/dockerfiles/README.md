@@ -25,7 +25,19 @@ Sample command:
 
 Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic server domain files.This volume will be created on the host at `/scratch/DockerVolume/SOAVolume/`. Since the volume is created as "root" user, provide read/write/execute permissions to "oracle" user (by providing permissions to "others"), as all operations inside the container happens with "oracle" user login.
 
-    # chmod -R 777 `/scratch/DockerVolume/SOAVolume`
+To determine if a user already exists on your host system with uid:gid of 1000, run:
+
+    # getent passwd 1000
+
+If that returns a username (which is the first field), use that user for the `useradd` command below. If not, create the `oracle` user manually. 
+
+    # useradd -u 1000 -g 1000 oracle 
+
+Run the following commands as root:
+
+    # mkdir -p /scratch/DockerVolume/SOAVolume/
+    # chown 1000:1000 /scratch/DockerVolume/SOAVolume/
+    # chmod 700 /scratch/DockerVolume/SOAVolume/
 
 # Database
 
@@ -138,6 +150,7 @@ The options `-i -t` in the above command runs the container in interactive mode 
 >The following lines highlight when the Admin server is ready to be used:    
 
 `INFO: Admin server is running`
+
 `INFO: Admin server running, ready to start managed server`
 
 The above line indicate the admin server started successfully with the name `soaas`, mapping container port 7001 to host port 7001 enables accessing of the Weblogic host outside of the local host, connecting to SOANet network enables accessing the DB container by it's name i.e soadb. This includes the command to tail logs to keep the container up and running.
@@ -175,6 +188,7 @@ This includes the command to tail logs to keep the container up and running.
 
 The following lines highlight when the SOA managed server is ready to be used:    
 `INFO: Managed Server is running`
+
 `INFO: Managed server has been started`
 
 Once the SOA container is created logs will be tailed and displayed to keep the container running.
@@ -190,13 +204,13 @@ Now you can access
    * Service Bus Console at http://<hostname>:7001/servicebus with weblogic/Welcome1 credentials.
 
 
-#License
+# License
 
 To download and run SOA 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker images are, unless otherwise noted, released under UPL 1.0 license.
 
 
-#Copyright
+# Copyright
 
 Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
