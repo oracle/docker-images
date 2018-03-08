@@ -13,3 +13,9 @@ The default size for `/dev/shm` is only 64 KB. In order to increase it you have 
 
 ## Image build: unzip error: invalid compressed data to inflate
 CRC errors by the Unix unzip command during image build can be caused by a lack of sufficient memory for your container. On macOS X it has been proven that running Docker with only 2GB of RAM will cause this error. Increasing the RAM for Docker to 4GB remedies the situation.
+
+## "Cannot create directory" error when using volumes
+This is a Unix filesystem permission issue. Docker by default will map the `uid` inside the container to the outside world. The `uid` for the `oracle` user inside the container is `54321` and therefore all files are created with this `uid`. If you happen to have your volume pointed at a location outside there container where this `uid` doesn't have any permissions for, the container can't write to it and therefore the database files creation fails. There are several remedies for this situation:  
+* Use named volumes
+* Change the ownership of your folder to `54321`
+* Change the permissions of your folder so that the `uid 54321` has write permissions
