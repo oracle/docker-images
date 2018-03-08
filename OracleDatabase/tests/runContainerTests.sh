@@ -38,14 +38,15 @@ function runContainerTest {
   
   if [ "$TEST_OK" != "0" ]; then
     echo "Test $TEST_NAME: FAILED!";
+    echo "";
     cleanup;
     exit 1;
   else
     echo "Test $TEST_NAME: OK";
+    echo "";
     return 0;
   fi;
-  
-  echo ""
+
 }
 
 # Function: checkOracle
@@ -83,7 +84,7 @@ function checkOracle {
 ###################### TEST 11.2.0.2 XE default ###########################
 
 # Run 11.2.0.2 XE default container
-runContainerTest "11.2.0.2 XE default database" "11.2.0.2-XE-default" "oracle/database:11.2.0.2-xe"
+runContainerTest "11.2.0.2 XE default database" "11.2.0.2-XE-default" "oracle/database:11.2.0.2-xe" "XE"
 
 ###################### TEST 12.2.0.1 EE default ###########################
 
