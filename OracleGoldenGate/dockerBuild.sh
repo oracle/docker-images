@@ -19,7 +19,7 @@ if [[ "${1:--h}" == "-h" ]]; then
     echo "  docker-build-options    Command line options for Docker build"
     echo ""
     echo "Example:"
-    echo "  $(basename $0) ~/Downloads/fbo_ggs_Linux_x64_shiphome.zip --no-cache"
+    echo "  ./$(basename $0) ~/Downloads/123012_fbo_ggs_Linux_x64_services_shiphome.zip --no-cache"
     exit 1
 fi
 
@@ -59,7 +59,7 @@ if [[ "${OGG_DISTFILE/.zip/}" != "${OGG_DISTFILE}" ]]; then
     [[ "${OGG_JARFILE}" != "" ]] && {
         OGG_TARFILE="$(basename ${OGG_DISTFILE} .zip).tar"
     } || {
-        OGG_TARFILE="$(unzip -o ${OGG_DISTFILE} *.tar | awk '/.*[.]tar/ { print $NF; exit 0 }')"
+        OGG_TARFILE="$(unzip -o ${OGG_DISTFILE} *.tar* 2>/dev/null | awk '/.*[.]tar/ { print $NF; exit 0 }')"
     }
 fi
 if [[ "${OGG_DISTFILE/.tgz/}" != "${OGG_DISTFILE}" ]]; then

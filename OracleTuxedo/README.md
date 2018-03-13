@@ -8,6 +8,12 @@ The Dockerfiles for Oracle Tuxedo products can be found in the [`OracleTuxedo`](
 * [TSAM Plus](./tsam)                                    `Tuxedo System and Applications Monitor Plus`
 * [Tuxedo Performance Pack](./performance_pack)          `Tuxedo Performance Pack and a sample application`
 * [Tuxedo Message Queue](./tuxedo_message_q)             `Tuxedo Message Queue`
+* [Tuxedo Full](./tuxedo_full)                           `Tuxedo Full Set`
+* [Tuxedo Jolt](./jolt)                                  `Tuxedo Jolt Client`
+* [Tuxedo SALT and TMA](./salt_tma)                      `Tuxedo SALT and TMA`
+* [Tuxedo ART Runtime](./art_runtime)                    `Tuxedo Application Rehosting Runtime`
+* [Tuxedo ART WB&Test Manager](./art_workbench_tm)       `Tuxedo Application Rehosting Workbench & TestManager`
+* [Tuxedo ART SALT and TMA](./art_salt_tma)              `Tuxedo ART SALT and TMA`
 
 For support and certification information, please consult the documentation for each folder.
 
