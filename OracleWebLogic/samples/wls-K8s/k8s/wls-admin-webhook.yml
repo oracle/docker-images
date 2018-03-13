@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: webhook
-        image: oow-demo-webhook
+        image: karankapoor/oow-demo-webhook:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 9000
@@ -21,7 +21,7 @@ spec:
         - name: MS_STATEFULSET_NAME
           value: "ms"
       - name: wls-admin-server
-        image: wls-12213-oow-demo-domain
+        image: karankapoor/wls-12213-oow-demo-domain:latest
         imagePullPolicy: Never
         command: ["sh"]
         args: ["/u01/oracle/startadmin.sh"]
