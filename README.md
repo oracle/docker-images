@@ -13,7 +13,7 @@ This repository contains Dockerfiles and samples to build Docker images for Orac
  - [Oracle WebLogic](https://github.com/oracle/docker-images/tree/master/OracleWebLogic)
  - [Oracle BI](https://github.com/oracle/docker-images/tree/master/OracleBI)
 
-And Open Source projects:
+And open source projects:
 
  - [GlassFish](https://github.com/oracle/docker-images/tree/master/GlassFish)
  - [NoSQL](https://github.com/oracle/docker-images/tree/master/NoSQL)
