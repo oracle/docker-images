@@ -4,14 +4,14 @@
 # Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
-# Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
+# Author: paramdeep.saini@oracle.com, sanjay.singh@oracle.com
 # Description: Checks the available space of the system.
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-REQUIRED_SPACE_GB=35
-AVAILABLE_SPACE_GB=`df -B 1G / | tail -n 1 | awk '{print $4}'`
+REQUIRED_SPACE_GB=5
+AVAILABLE_SPACE_GB=`df -PB 1G / | tail -n 1 | awk '{print $4}'`
 
 if [ $AVAILABLE_SPACE_GB -lt $REQUIRED_SPACE_GB ]; then
   script_name=`basename "$0"`

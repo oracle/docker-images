@@ -8,9 +8,10 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) linuxx64_12201_client
+# (1) linuxx64_12201_client.zip (64-bit)
+#     Oracle Database 12c Release 2 Client (12.2.0.1.0) for Linux x86-64
 #     Download Oracle Connection Manager as part of the Oracle Database Client
-#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle12c-linux-12201-3608234.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -59,7 +60,7 @@ COPY $INSTALL_FILE_1 $SETUP_LINUX_FILE $CHECK_SPACE_FILE $CLIENT_RSP $INSTALL_DB
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 
-RUN chmod 777 $INSTALL_DIR/install/*.sh && \
+RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
@@ -73,7 +74,6 @@ USER root
 RUN $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
     rm -rf $INSTALL_DIR/install && \
-    rm -f /etc/security/limits.d/oracle-database-server-12cR2-preinstall.conf && \
     chown -R oracle:oinstall $SCRIPT_DIR && \
     chmod 755 $SCRIPT_DIR/*.sh && \
     chmod 666 $SCRIPT_DIR/*.ora && \

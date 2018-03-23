@@ -43,7 +43,7 @@ COPY $SETUP_LINUX_FILE $SUDO_SETUP_FILE $INSTALL_SCRIPTS/
 # Setup Scripts
 COPY $RUN_FILE $EXPORTFILE $SCRIPT_DIR/
 
-RUN  chmod 777 $INSTALL_DIR/install/*.sh && \
+RUN  chmod 755 $INSTALL_DIR/install/*.sh && \
      $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
      $INSTALL_DIR/install/$SUDO_SETUP_FILE && \
      sync 

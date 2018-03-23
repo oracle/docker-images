@@ -217,7 +217,7 @@ $ORACLE_HOME/root.sh
 generate_response_file ()
 {
 cp $SCRIPT_DIR/$ADDNODE_RSP $logdir/$ADDNODE_RSP
-chmod 777 $logdir/$ADDNODE_RSP
+chmod 666 $logdir/$ADDNODE_RSP
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$ADDNODE_RSP

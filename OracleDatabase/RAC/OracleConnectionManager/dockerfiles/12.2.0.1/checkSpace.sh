@@ -11,7 +11,7 @@
 # 
 
 REQUIRED_SPACE_GB=6
-AVAILABLE_SPACE_GB=`df -B 1G / | tail -n 1 | awk '{print $4}'`
+AVAILABLE_SPACE_GB=`df -PB 1G / | tail -n 1 | awk '{print $4}'`
 
 if [ $AVAILABLE_SPACE_GB -lt $REQUIRED_SPACE_GB ]; then
   script_name=`basename "$0"`

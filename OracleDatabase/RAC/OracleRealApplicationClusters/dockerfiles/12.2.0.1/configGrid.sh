@@ -298,7 +298,7 @@ grid_response_file ()
 
 if [ -z $GRID_RESPONSE_FILE ]; then
 cp $SCRIPT_DIR/$GRID_INSTALL_RSP $logdir/$GRID_INSTALL_RSP
-chmod 777 $logdir
+#chmod 777 $logdir
 
 sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###CLUSTER_NAME###|$CLUSTER_NAME|g" $logdir/$GRID_INSTALL_RSP
@@ -437,7 +437,7 @@ dbca_response_file ()
 
 if [ -z $DBCA_RESPONSE_FILE ]; then
 cp $SCRIPT_DIR/$DBCA_RSP $logdir/$DBCA_RSP
-chmod 777 $logdir/$DBCA_RSP
+chmod 666 $logdir/$DBCA_RSP
 
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $logdir/$DBCA_RSP
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $logdir/$DBCA_RSP
