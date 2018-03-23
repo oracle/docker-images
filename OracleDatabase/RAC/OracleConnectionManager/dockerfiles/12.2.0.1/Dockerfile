@@ -74,6 +74,7 @@ USER root
 RUN $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
     rm -rf $INSTALL_DIR/install && \
+    rm -f /etc/security/limits.d/oracle-database-server-12cR2-preinstall.conf && \
     chown -R oracle:oinstall $SCRIPT_DIR && \
     chmod 755 $SCRIPT_DIR/*.sh && \
     chmod 666 $SCRIPT_DIR/*.ora && \
