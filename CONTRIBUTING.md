@@ -30,6 +30,23 @@ This can be automatically added to pull requests by committing with:
 Only pull requests from committers that can be verified as having
 signed the OCA can be accepted.
 
+## Oracle Product Ownership and Responsibility
+
+The GitHub user who submits the initial pull request will be marked as the
+[code owner](./CODEOWNERS) for that product by default. This means any future 
+pull requests that affect the product will need to be approved by this user.
+
+The code owner will also be assigned to any issues relating to their product.
+
+You must ensure that you check the [issues](https://github.com/oracle/docker-images/issues) 
+on at least a weekly basis, though daily is preferred.
+
+If you wish to nominate additional or alternative users, they must be a visible
+member of the [Oracle GitHub Organisation](https://github.com/orgs/oracle/people/).
+
+Contact [Avi Miller](https://github.com/Djelibeybi) for more information.
+
+
 ### Pull request process
 
 1. Fork this repository
@@ -76,6 +93,9 @@ image to be useful.
 1. Do not hard-code any passwords. If passwords are required, generate them
 on container startup using `openssl rand` or accept a password argument during
 container startup (via `-e`).
+
+
+
 
 
 ### Guidelines and Recommendations

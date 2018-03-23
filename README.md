@@ -1,42 +1,46 @@
 # Docker Images from Oracle
+This repository contains [Dockerfiles](https://docs.docker.com/engine/reference/builder/) and samples to build [Docker](https://www.docker.com/what-docker) images for Oracle commercial products and [Oracle sponsored open source projects](https://oss.oracle.com).
 
-This repository contains Dockerfiles and samples to build Docker images for Oracle products and open source projects.
+## Images on GitHub
+These images will require you to download any required Oracle commercial software before installation. If you want commercial software downloaded for you, view [Pre-built Images with Commercial Software](#pre-built-images-with-commercial-software).
 
- - [Oracle Coherence](https://github.com/oracle/docker-images/tree/master/OracleCoherence)
- - [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase)
- - [Oracle GoldenGate](https://github.com/oracle/docker-images/tree/master/OracleGoldenGate)
- - [Oracle Java](https://github.com/oracle/docker-images/tree/master/OracleJava)
- - [Oracle HTTP Server](https://github.com/oracle/docker-images/tree/master/OracleHTTPServer)
- - [Oracle SOA Suite](https://github.com/oracle/docker-images/tree/master/OracleSOASuite)
- - [Oracle Tuxedo](https://github.com/oracle/docker-images/tree/master/OracleTuxedo)
- - [Oracle TSAM Plus](https://github.com/oracle/docker-images/tree/master/OracleTSAM)
- - [Oracle WebLogic](https://github.com/oracle/docker-images/tree/master/OracleWebLogic)
- - [Oracle BI](https://github.com/oracle/docker-images/tree/master/OracleBI)
+### Oracle Commercial Products
+ - [Oracle BI](/OracleBI)
+ - [Oracle Cloud Infrastructure Tools](/OracleCloudInfrastructure)
+ - [Oracle Coherence](/OracleCoherence)
+ - [Oracle Database](/OracleDatabase)
+ - [Oracle Data Integrator](/OracleDataIntegrator)
+ - [Oracle Enterprise Data Quality](/OracleEDQ)
+ - [Oracle FMW Infrastructure](/OracleFMWInfrastructure)
+ - [Oracle GoldenGate](/OracleGoldenGate)
+ - [Oracle HTTP Server](/OracleHTTPServer)
+ - [Oracle Instant Client](/OracleInstantClient) (Basic, SDK and SQL*Plus)
+ - [Oracle Java](/OracleJava)
+ - [Oracle Rest Data Services](OracleRestDataServices) (ORDS)
+ - [Oracle SOA Suite](/OracleSOASuite)
+ - [Oracle Tuxedo](/OracleTuxedo)
+ - [Oracle TSAM Plus](/OracleTuxedo/tsam)
+ - [Oracle WebLogic Server](/OracleWebLogic)
+ - [Oracle WebCenter Sites](/OracleWebCenterSites)
 
-And open source projects:
-
- - [GlassFish](https://github.com/oracle/docker-images/tree/master/GlassFish)
- - [NoSQL](https://github.com/oracle/docker-images/tree/master/NoSQL)
+### Oracle Sponsored Open Source Projects
+ - [GlassFish](GlassFish)
+ - [GraalVM](GraalVM)
+ - [MySQL](https://github.com/mysql/mysql-docker)
  - [OpenJDK](/OpenJDK)
-
-## Other images
-
- - *Oracle Linux*: check the [ol-container-images](https://github.com/oracle/ol-container-images) repository.
- - *MySQL*: check the [mysql-docker](https://github.com/mysql/mysql-docker/) repository.
+ - [Oracle NoSQL Database](/NoSQL)
+ - [Oracle Linux](https://github.com/oracle/container-images)
  
 ## Pre-built Images with Commercial Software
+These sources will download any Oracle commercial software for you:
 
-You can find them on two locations:
-
- 1. Our own [Oracle Container Registry](https://container-registry.oracle.com) server.
- 2. On the [Docker Store](https://store.docker.com/search?certification_status=certified&q=oracle&source=verified&type=image)
+ - [Oracle Container Registry](https://container-registry.oracle.com)
+ - [Docker Store](https://store.docker.com/search?certification_status=certified&q=oracle&source=verified&type=image)
 
 ## Support
-
 For support and certification information, please consult the documentation for each product.
 
 For community support, discussions and feedback about the provided Dockerfiles visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers)
 
 ## Community Contributions
-
- - **Oracle Forms & Reports**: see [Issue #212](https://github.com/oracle/docker-images/issues/212) for details
+ - [Oracle Forms and Reports](https://github.com/oracle/docker-images/issues/212)

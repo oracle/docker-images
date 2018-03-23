@@ -134,6 +134,10 @@ You need to mount volumes, which are directories stored outside a container's fi
 This option lets you mount a directory from your host to a container as volume. This volume is used to store database data files and WebLogic server domain files. The volume is created at this location `/scratch/WCSitesVolume/`.
 
 To mount a host directory as a data volume, execute the below command.
+
+> The userid can be anything but it must belong to uid:guid as 1000:1000, which is same as 'oracle' user running in the container.
+> This ensures 'oracle' user has access to shared volume.
+
 ```
 	$ sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
 	$ mkdir -p /scratch/WCSitesVolume/WCSites /scratch/WCSitesVolume/WCSitesShared
