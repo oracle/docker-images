@@ -1,0 +1,1 @@
+-ln18 -lncrypt18  -lnbeq18 -lntcp18 -lntcps18  -lnus18 -lntmq18 -lmql1 -lipc1 -lntwss18 -lnldap18 -lldapclnt18  -lnhost18 -lntns18 -lnoname18 -lngsmshd18 --wrap=ksz_exadata_feature_on -lexadata_wrap
