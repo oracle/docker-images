@@ -408,7 +408,7 @@ If you are using physical block devices for shared storage, skip to "4.3 Assigni
         ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /dev######
        OS_PASSWORD=You need to pass this for ssh setup between grid and oracle user. OS_PASSWORD will rest the password of grid and Oracle user based on your env. You need common password on all the containers during Node Addition. Once the Node Addition is done you can change the passwords based on your enviornment policies.
 
-### Support
+### Section 8 : Support
 Oracle RAC Database is supported for Oracle Linux 7.
 
 **IMPORTANT:** Note that the current version of Oracle RAC on Docker is only supported for test and development environments, but not for production environments.
