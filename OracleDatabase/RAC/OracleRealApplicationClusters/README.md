@@ -25,9 +25,11 @@ Section 6   : Env Variables for RAC 1st Node container
 
 Section 7   : Env Variables for RAC 2nd Node container
 
-Section 8   : License
+Section 8   : Support
 
-Section 9   : Copyright
+Section 9   : License
+
+Section 10  : Copyright
 
 
 ### Section 1 : Pre-requsites for RAC on Docker
@@ -406,12 +408,17 @@ If you are using physical block devices for shared storage, skip to "4.3 Assigni
         ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /dev######
        OS_PASSWORD=You need to pass this for ssh setup between grid and oracle user. OS_PASSWORD will rest the password of grid and Oracle user based on your env. You need common password on all the containers during Node Addition. Once the Node Addition is done you can change the passwords based on your enviornment policies.
 
-### Section 8 : License
+### Section 8 : Support
+Oracle RAC Database is supported for Oracle Linux 7.
+
+**IMPORTANT:** Note that the current version of Oracle RAC on Docker is only supported for test and development environments, but not for production environments.
+
+### Section 9 : License
 
 To download and run Oracle Grid and Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker images are, unless otherwise noted, released under UPL 1.0 license.
+All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license. 
 
-### Section 9 : Copyright
+### Section 10 : Copyright
 
 Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
