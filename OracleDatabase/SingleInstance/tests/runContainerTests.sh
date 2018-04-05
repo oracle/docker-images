@@ -22,12 +22,13 @@ function runContainerTest {
   CON_NAME="$2"
   IMAGE="$3"
   ORACLE_SID=${4:-ORCLTEST}
+  ORACLE_PDB=${5:-ORCLPDBTEST}
 
   echo "Test: $TEST_NAME"
   echo ""
   
   # Run and start container
-  docker run -d --shm-size=1g -e ORACLE_SID="$ORACLE_SID" --name "$CON_NAME" "$IMAGE"
+  docker run -d --shm-size=1g -e ORACLE_SID="$ORACLE_SID" -e ORACLE_PDB="$ORACLE_PDB" --name "$CON_NAME" "$IMAGE"
   
   # Check whether Oracle is OK
   checkOracle "$TEST_NAME" "$CON_NAME" "$ORACLE_SID"
@@ -80,6 +81,16 @@ function checkOracle {
     
   done;
 }
+
+###################### TEST 12.2.0.2 EE lowercase PDB name ###########################
+
+# Run 12.2.0.1 EE lowercase PDB name
+runContainerTest "12.2.0.1 EE lowercase PDB name" "12.2.0.1-EE-lowercase-pdb" "oracle/database:12.2.0.1-ee" "ORCLTEST" "mypdb"
+
+###################### TEST 12.1.0.2 EE lowercase PDB name ###########################
+
+# Run 12.1.0.2 EE lowercase PDB name
+runContainerTest "12.1.0.2 EE lowercase PDB name" "12.1.0.2-EE-lowercase-pdb" "oracle/database:12.1.0.2-ee" "ORCLTEST" "mypdb"
 
 ###################### TEST 11.2.0.2 XE default ###########################
 
