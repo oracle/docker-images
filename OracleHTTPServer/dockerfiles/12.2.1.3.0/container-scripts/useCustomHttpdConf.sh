@@ -1,30 +1,30 @@
 #!/bin/bash
-# Author: hemastuti.baruah@oracle.com
+# Author: Rajesh.G.Gupta@oracle.com
 #
 # Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 #*************************************************************************
-#This script will configure Oracle WebLogic Server Proxy Plug-In (mod_wl_ohs),
+#This script will override Oracle Http Server config (httpd.conf),
 #in order to enable the Oracle HTTP Server instances to route applications
 #deployed on the Admin Server, Single Managed Server or the Oracle WebLogic Server clusters
 #Refer to Section 2.4 @ http://docs.oracle.com/middleware/12213/webtier/develop-plugin/oracle.htm#PLGWL553
 #
 #Prerequisite:
 #1.Create a directory which would be mounted to the container
-#2.Create "custom_mod_wl_ohs.conf"  as per your environment by referring to mod_wl_ohs.conf sample file and OHS document above
-#3.Place the "custom_mod_wl_ohs.conf" inside the directory which will be mounted in the container
-#4.During OHS container creation mount the directory  which contains the "custom_mod_wl_ohs.conf"
+#2.Create "custom_httpd.conf"  as per your environment by referring to httpd.conf file included in the OHS Image and OHS document above
+#3.Place the "custom_httpd.conf" inside the directory which will be mounted in the container
+#4.During OHS container creation mount the directory  which contains the "custom_httpd.conf"
 #
 # Note :
-# If custom_mod_wl_ohs.conf is not provided, WebLogic Server Proxy Plug-In will not be configured. But OHS server will be still running.
-# User may login to OHS container and manually configure the WebLogic Server Proxy Plug-In later
+# If custom_httpd.conf is not provided, WebLogic Http Server will use the default configuration
 #
 #MW_HOME    - The root directory of your OHS standalone install
-#DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDOmain"
+#DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDomain"
 #OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs_sa1"
 #*************************************************************************
+
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
 echo "OHS_COMPONENT_NAME=${OHS_COMPONENT_NAME:?"Please set OHS_COMPONENT_NAME"}"
