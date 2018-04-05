@@ -47,7 +47,7 @@ checkError "Build 11.2.0.2 XE image" $?
 # Delete binary file
 rm ./11.2.0.2/oracle-xe-11.2.0-1.0.x86_64.rpm.zip
 
-###################### TEST 12.1.0.1 EE ###########################
+###################### TEST 12.2.0.1 EE ###########################
 
 # Copy binary file
 cp $BIN_DIR/linuxx64_12201_database.zip ./12.2.0.1/
