@@ -129,6 +129,10 @@ if [ -f /config/custom_mod_wl_ohs.conf ]; then
 configureWLSProxyPlugin.sh
 fi
 
+if [ -f /config/custom_httpd.conf ]; then
+useCustomHttpdConf.sh
+fi
+
 #Start OHS component only if Node Manager is up
 if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
 echo "Node manager running, hence starting OHS server"
