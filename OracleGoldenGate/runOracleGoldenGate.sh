@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2017 Oracle and/or its affiliates.  All rights reserved.
+# Copyright (c) 2017-2018 Oracle and/or its affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 #
@@ -16,6 +16,7 @@ OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|repl
 ##
 ## Set some reasonable defaults
 ##
+[[ -z "${HOSTNAME}"   ]] && export HOSTNAME="${$(hostname 2>/dev/null):-localhost}"
 [[ -z "${OGG_SCHEMA}" ]] && export OGG_SCHEMA="oggadmin"
 [[ -z "${OGG_ADMIN}"  ]] && export OGG_ADMIN="oggadmin"
 [[ -z "${PORT_BASE}"  ]] && {
@@ -93,46 +94,52 @@ function createManagerParameters {
 }
 
 function createGlobals {
-    [[ ! -f ${OGG_HOME}/GLOBALS ]] && \
+    if [[ ! -f ${OGG_HOME}/GLOBALS ]]; then
         ${runAsUser} bash -c "echo GGSCHEMA ${OGG_SCHEMA} > ${OGG_HOME}/GLOBALS"
+    else
+        return 0
+    fi
 }
 
 ##
 ## Oracle GoldenGate Microservices Architecture functions
 ##
 function initSSL {
-    local deploymentName="$1"
-    local       hostName="$(hostname)"
-    local       CommonOU="OU=GoldenGate,OU=Enterprise Replication,OU=Server Technology,O=Oracle Corp,L=Redwood Shores,ST=CA,C=US"
-    local         orapki="${runAsUser} orapki -nologo"
-    local OGG_WALLET_PWD="${OGG_ADMIN_PWD}-A1"
-    local      nginxCert="/etc/nginx/ogg.pem"
+    if [[ ! -d "${OGG_DEPLOY_BASE}/ssl" ]]; then
+        local deploymentName="$1"
+        local       CommonOU="OU=GoldenGate,OU=Enterprise Replication,OU=Server Technology,O=Oracle Corp,L=Redwood Shores,ST=CA,C=US"
+        local         orapki="${runAsUser} orapki -nologo"
+        local OGG_WALLET_PWD="${OGG_ADMIN_PWD}-A1"
+        local      nginxCert="/etc/nginx/ogg.pem"
 
-    mkdir -p                         ${OGG_DEPLOY_BASE}/ssl
-    chown     oracle:oinstall        ${OGG_DEPLOY_BASE}/ssl
-    ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${hostName} 2>/dev/null || return 1
-    ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -auto_login
-    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -dn "CN=${hostName},${CommonOU}"       -keysize 2048 -self_signed -validity 7300
-    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
+        mkdir -p                         ${OGG_DEPLOY_BASE}/ssl
+        chown     oracle:oinstall        ${OGG_DEPLOY_BASE}/ssl
+        ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} 2>/dev/null || return 1
+        ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -auto_login
+        ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${HOSTNAME},${CommonOU}"       -keysize 2048 -self_signed -validity 7300
+        ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
 
-    chmod 644               ${nginxCert}
-    ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${hostName} -pwd "${OGG_WALLET_PWD}" -trusted_cert -cert ${nginxCert}
-    chmod 600               ${nginxCert}
+        chmod 644               ${nginxCert}
+        ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -trusted_cert -cert ${nginxCert}
+        chmod 600               ${nginxCert}
+    fi
 }
 
 function initShell {
-    cat<<EOF | ${runAsUser} bash -c 'cat > ${HOME}/.bashrc'
+    if (! grep OGG_ETC_HOME "/home/oracle/.bashrc" 2>/dev/null ); then
+        cat<<EOF | ${runAsUser} bash -c 'cat >> /home/oracle/.bashrc'
 export OGG_ETC_HOME="${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}/etc"
 export OGG_VAR_HOME="${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}/var"
 EOF
+    fi
 }
 
 function createDeployment {
     if [[ "${OGG_SECURE}" == "true" && -z "${OGG_SERVER_WALLET}" ]]; then
-        OGG_SERVER_WALLET="${OGG_DEPLOY_BASE}/ssl/$(hostname)"
+        OGG_SERVER_WALLET="${OGG_DEPLOY_BASE}/ssl/${HOSTNAME}"
     fi
     if [[ -z "${OGG_CLIENT_WALLET}" ]]; then
-        OGG_CLIENT_WALLET="${OGG_DEPLOY_BASE}/ssl/$(hostname)"
+        OGG_CLIENT_WALLET="${OGG_DEPLOY_BASE}/ssl/${HOSTNAME}"
     fi
 
     secureOption=""
@@ -154,42 +161,49 @@ function createDeployment {
     initSSL ${OGG_DEPLOYMENT}
 
     local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*-jar-with-dependencies.jar)
-    mkdir -p                 "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}"
     chown -R oracle:oinstall "${OGG_DEPLOY_BASE}"
 
-    echo "${OGG_ADMIN_PWD}" | \
-    ${runAsUser} java -classpath  ${OGG_JARFILE} ogg/OGGDeployment \
-         --action=Create --silent \
-         --oggHome=${OGG_HOME} \
-         --oggDeployHome=${OGG_DEPLOY_BASE}/ServiceManager \
-         --deploymentName=ServiceManager --authUser=${OGG_ADMIN} \
-         --serviceListeningPort=${Port_ServiceManager} --createNewServiceManager=Yes \
-        ${secureOption}
+    if [[ ! -d "${OGG_DEPLOY_BASE}/ServiceManager" ]]; then
+        echo "${OGG_ADMIN_PWD}" | \
+        ${runAsUser} java -classpath  ${OGG_JARFILE} ogg/OGGDeployment \
+             --action=Create --silent \
+             --oggHome=${OGG_HOME} \
+             --oggDeployHome=${OGG_DEPLOY_BASE}/ServiceManager \
+             --deploymentName=ServiceManager --authUser=${OGG_ADMIN} \
+             --serviceListeningPort=${Port_ServiceManager} --createNewServiceManager=Yes \
+            ${secureOption}
+    fi
 
-    echo "${OGG_ADMIN_PWD}" | \
-    ${runAsUser} java -classpath ${OGG_JARFILE} ogg/OGGDeployment \
-         --action=Create --silent \
-         --oggHome=${OGG_HOME} \
-         --oggDeployHome=${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT} \
-         --deploymentName=${OGG_DEPLOYMENT} --authUser=${OGG_ADMIN} \
-         --serviceListeningPort=${Port_ServiceManager} \
-         --portAdminSrvr=${Port_AdminServer} \
-         --portDistSrvr=${Port_DistributionServer} \
-         --portRcvrSrvr=${Port_ReceiverServer} \
-         --portPmSrvr=${Port_MetricsServer} --enablePmSrvr=Yes \
-         --portPmSrvrUdp=${Port_MetricsServerUDP} \
-         --ggSchema=${OGG_SCHEMA} \
-        ${secureOption}
+    if [[ ! -d "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}" ]]; then
+        echo "${OGG_ADMIN_PWD}" | \
+        ${runAsUser} java -classpath ${OGG_JARFILE} ogg/OGGDeployment \
+             --action=Create --silent \
+             --oggHome=${OGG_HOME} \
+             --oggDeployHome=${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT} \
+             --deploymentName=${OGG_DEPLOYMENT} --authUser=${OGG_ADMIN} \
+             --serviceListeningPort=${Port_ServiceManager} --createNewServiceManager=No \
+             --portAdminSrvr=${Port_AdminServer} \
+             --portDistSrvr=${Port_DistributionServer} \
+             --portRcvrSrvr=${Port_ReceiverServer} \
+             --portPmSrvr=${Port_MetricsServer} --enablePmSrvr=Yes \
+             --portPmSrvrUdp=${Port_MetricsServerUDP} \
+             --ggSchema=${OGG_SCHEMA} \
+            ${secureOption}
+    else
+        return 0
+    fi
 }
 
 function startReverseProxy {
-    [[ -z "${OGG_HTTPS}"           ]] && export OGG_HTTPS="${OGG_SECURE}"
-    [[    "${OGG_HTTPS}" == "true" ]] && SCHEME="https" || SCHEME="http"
-    if [[ "$(${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -v)" == "1.0" ]]; then
-        ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx                 "$SCHEME://127.0.0.1:${Port_ServiceManager}"
-    else
-        echo ${OGG_ADMIN_PWD} | \
-        ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx -u ${OGG_ADMIN} "$SCHEME://127.0.0.1:${Port_ServiceManager}"
+    if [[ ! -f "/etc/nginx/conf.d/ogg.conf" ]]; then
+        [[ -z "${OGG_HTTPS}"           ]] && export OGG_HTTPS="${OGG_SECURE}"
+        [[    "${OGG_HTTPS}" == "true" ]] && SCHEME="https" || SCHEME="http"
+        if [[ "$(${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -v)" == "1.0" ]]; then
+            ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx                 "${SCHEME}://127.0.0.1:${Port_ServiceManager}"
+        else
+            echo ${OGG_ADMIN_PWD} | \
+            ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx -u ${OGG_ADMIN} "${SCHEME}://127.0.0.1:${Port_ServiceManager}"
+        fi
     fi
     scl enable rh-nginx18 -- nginx
 }
@@ -243,7 +257,7 @@ function init_microservices {
 function exec_microservices {
     export OGG_ETC_HOME="${OGG_DEPLOY_BASE}/ServiceManager/etc"
     export OGG_VAR_HOME="${OGG_DEPLOY_BASE}/ServiceManager/var"
-    ${runAsUser} ${OGG_HOME}/bin/ServiceManager '{ "config": { "inventoryLocation": "'${OGG_ETC_HOME}/conf'", "network": { "serviceListeningPort": '${Port_ServiceManager}' }, "authorizationEnabled": true, "security": '${OGG_SECURE}' } }' &>/dev/null &
+    isOGGRunning || ${runAsUser} ${OGG_HOME}/bin/ServiceManager &
     startReverseProxy
     tailReport "${OGG_VAR_HOME}/log/ServiceManager.log"
 }
