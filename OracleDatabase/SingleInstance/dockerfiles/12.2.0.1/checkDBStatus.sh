@@ -22,7 +22,7 @@ source oraenv
 status=`sqlplus -s / as sysdba << EOF
    set heading off;
    set pagesize 0;
-   SELECT open_mode FROM v\\$pdbs WHERE name = '$ORACLE_PDB';
+   SELECT open_mode FROM v\\$pdbs WHERE name COLLATE BINARY_CI = '$ORACLE_PDB';
    exit;
 EOF`
 
