@@ -94,8 +94,11 @@ function createManagerParameters {
 }
 
 function createGlobals {
-    [[ ! -f ${OGG_HOME}/GLOBALS ]] && \
+    if [[ ! -f ${OGG_HOME}/GLOBALS ]]; then
         ${runAsUser} bash -c "echo GGSCHEMA ${OGG_SCHEMA} > ${OGG_HOME}/GLOBALS"
+    else
+        return 0
+    fi
 }
 
 ##
