@@ -77,6 +77,7 @@ echo "$ORACLE_PDB=
 # Remove second control file, make PDB auto open
 sqlplus / as sysdba << EOF
    ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
+   ALTER SYSTEM SET local_listener='(ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))';
    ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
    exit;
 EOF
