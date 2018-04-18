@@ -1,0 +1,5 @@
+# Download the latest GraalVM tarball from the following location:
+#
+# - https://github.com/oracle/graal/releases/download/vm-1.0.0-rc1/graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
+#
+f9296b74dd5decf4b45692171abfddff  graalvm-ce-1.0.0-rc1-linux-amd64.tar.gz
