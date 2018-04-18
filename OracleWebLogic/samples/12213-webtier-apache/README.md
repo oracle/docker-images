@@ -60,7 +60,7 @@ If you want to start the Apache container with some pre-specified mod_weblogic c
 
 This mounting can be done by using the -v option with the 'docker run' command as shown below. 
 
-  $ docker run -v /scratch/DockerVolume/ApacheVolume:/config -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run -v /scratch/DockerVolume/ApacheVolume:/config -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
 
 # Copyright
 Copyright (c) 2016-2018 Oracle and/or its affiliates. All rights reserved.
