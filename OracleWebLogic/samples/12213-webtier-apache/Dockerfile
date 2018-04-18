@@ -6,8 +6,8 @@
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# fmw_12.2.1.3.0_wls_Disk1_1of1.zip 
-# Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html and save it in this same folder.
+# fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip
+# Download the Generic installer from http://www.oracle.com/technetwork/middleware/webtier/downloads/index-jsp-156711.html and save it in this same folder.
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
