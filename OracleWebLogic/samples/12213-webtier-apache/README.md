@@ -10,9 +10,11 @@ You may build this image with:
         $ docker build -t 12213-apache .
 
 or
+
         $ sh build.sh
 
-For Oracle developers, use build_internal.sh, which set up HTTP/HTTPS proxies.
+Oracle developers can use build_internal.sh, which set up HTTP/HTTPS proxies.
+
         $ sh build_internal.sh
 
 # How to run container
@@ -33,9 +35,9 @@ Start the webtier container by calling:
 
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 7001.
 
-TODO (Dongbo): add an exmaple to deploy a webapp and access it 
+TODO (Dongbo): add an exmaple to deploy a webapp and access it.
 
-If you are using multihost network, remove --link and set --net=<your net>
+If you are using multihost network, remove --link and set --net=<your net>.
 
 # Copyright
 Copyright (c) 2016-2018 Oracle and/or its affiliates. All rights reserved.
