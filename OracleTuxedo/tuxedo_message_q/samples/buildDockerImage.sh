@@ -13,7 +13,7 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
 LICENSE UPL 1.0
 
-Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
 
 EOF
 exit 0
