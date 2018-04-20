@@ -18,7 +18,7 @@ Run `buildDockerImage.sh` script.
 
 Run an Apache container to access an admin server that is running on <host> and listening to <port>.
 
-        $ docker run -d -e WEBLOGIC_HOST=i<host> WEBLOGIC_PORT=<port> -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_HOST=<host> WEBLOGIC_PORT=<port> -p 80:80 12213-apache
 
 Run an Apache container to access and load balance to a list of managed servers running standalone 
  
