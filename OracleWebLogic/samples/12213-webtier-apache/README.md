@@ -27,15 +27,16 @@ Run an Apache container to access and load balance to a list of managed servers 
 Run an Apache image to proxy and load balance to a list of managed servers in a cluster
      
         Use a list of hosts and ports.
+
         $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port --net=<some net> -p 80:80 12213-apache
 
-        or use a cluster URL if it is available
+        Or use a cluster URL if it is available
 
         $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> --net=<some net> -p 80:80 12213-apache
 
 The values of **WEBLOGIC_CLUSTER** must be valid, existing containers running WebLogic servers.
 
-If you are using multihost network, remove --link and set `--net=<your net>`.
+If you are using multihost network, remove `--link` and set `--net=<your net>`.
 
 ### Admin Server Only Example
  
@@ -52,7 +53,7 @@ Start an Apache container by calling:
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 7001. You can access the console from a remote machine using the weblgoic admin server's `<admin-host>` instead of `localhost`.
 
 ## Provide Your Own Apache Plugin Configuration
-If you want to start the Apache container with some pre-specified mod_weblogic configuration:
+If you want to start the Apache container with some pre-specified `mod_weblogic` configuration:
 
 * Create a `custom_mod_wl_apache.conf` file by referring to `custom_mod_wl_apache.conf.sample` and Chapter 3 @ Fusion Middleware Using Oracle WebLogic Server Proxy Plug-Ins documentation. [https://docs.oracle.com/middleware/12213/webtier/develop-plugin/apache.htm#GUID-231FB5FD-8D0A-492A-BBFD-DC12A31BF2DE]
 
