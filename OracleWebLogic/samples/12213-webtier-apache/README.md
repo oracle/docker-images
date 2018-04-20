@@ -8,7 +8,7 @@ This project offers a Dockerfile for Apache Web Server with Oraacle WebLogic Ser
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their preferred set of parameters.
 
-IMPORTANT: You have to download the **Oracle WebLogic Server Proxy Plugin 12.2.1.3.0"* package (see .download file) and drop them in this directory.
+IMPORTANT: You have to download the **Oracle WebLogic Server Proxy Plugin 12.2.1.3.0** package (see .download file) and drop them in this directory.
 
 Run `buildDockerImage.sh` script.
 
@@ -35,7 +35,7 @@ Run an Apache image to proxy and load balance to a list of managed servers in a 
 
 The values of **WEBLOGIC_CLUSTER** must be valid, existing containers running WebLogic servers.
 
-If you are using multihost network, remove --link and set "--net=<your net>".
+If you are using multihost network, remove --link and set `--net=<your net>`.
 
 ### Admin Server Only Example
  
