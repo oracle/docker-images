@@ -1,6 +1,6 @@
 Apache Web Server with Oracle WebLogic Server Proxy Plugin on Docker
 ===============
-This project includes a quick start Dockerfile and samples for standalone Apache Web Server with 12.2.1.3.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux and Oracle JDK 7 (Server). The certification of Apache on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
+This project includes a quick start Dockerfile and samples for standalone Apache Web Server with 12.2.1.3.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux. The certification of Apache on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## How to Build Apache With Plugin Docker Image
 
@@ -30,7 +30,7 @@ Run an Apache image to proxy and load balance to a list of managed servers in a 
 
         $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> --net=<some net> -p 80:80 12213-apache
 
-The values of **WEBLOGIC_CLUSTER** must be valid, existing containers running WebLogic servers.
+The values of **WEBLOGIC_CLUSTER** must be valid, and correspond to existing containers running WebLogic servers.
 
 If you are using multihost network, remove `--link` and set `--net=<your net>`.
 
@@ -78,16 +78,16 @@ Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-
 
 To stop the Apache instance, execute the following command:
 
-  docker stop apache (Assuming the name of container is 'apache')
+        $ docker stop apache (Assuming the name of container is 'apache')
 
 To look at the Docker Container logs run:
 
-    $ docker logs --details <Container-id>
+        $ docker logs --details <Container-id>
 
 ## License
 To download and run Oracle WebLogic Server Proxy Plugins 12.2.1.3.0 Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
-To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that p
+To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v1.0.
 
