@@ -24,15 +24,13 @@ Run an Apache image to proxy and load balance to a list of managed servers in a 
      
         Use a list of hosts and ports.
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port --net=<some net> -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 12213-apache
 
         Or use a cluster URL if it is available
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> --net=<some net> -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> -p 80:80 12213-apache
 
 The values of **WEBLOGIC_CLUSTER** must be valid, and correspond to existing containers running WebLogic servers.
-
-If you are using multihost network, remove `--link` and set `--net=<your net>`.
 
 ### Admin Server Only Example
 
