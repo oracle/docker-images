@@ -16,13 +16,9 @@ Run `buildDockerImage.sh` script.
 
 ## How to run container 
 
-Run an Apache container to access an admin server that is running on <host> and listening to <port>.
+Run an Apache container to access an admin server, or a managed server in a non-clustered environment, that is running on `<host>` and listening to `<port>`.
 
         $ docker run -d -e WEBLOGIC_HOST=<host> WEBLOGIC_PORT=<port> -p 80:80 12213-apache
-
-Run an Apache container to access and load balance to a list of managed servers running standalone 
- 
-        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port --net=<some net> -p 80:80 12213-apache
 
 Run an Apache image to proxy and load balance to a list of managed servers in a cluster
      
@@ -39,12 +35,21 @@ The values of **WEBLOGIC_CLUSTER** must be valid, existing containers running We
 If you are using multihost network, remove `--link` and set `--net=<your net>`.
 
 ### Admin Server Only Example
- 
-First make sure you have the WebLogic Server 12.2.1.3 sample and build your own image 12213-domain at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/samples/12213-domain].
 
-To start a containerized Admin Server, run:
+First make sure you have the WebLogic Server 12.2.1.3 install image, pull the WebLogic install image from the DockerStore `store/oracle/weblogic:12.2.1.3`, or build your own image `oracle/weblogic:12.2.1.3-developer` at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3].
 
-        $ docker run -d --name wlsadmin -h wlsadmin -p 7001:7001 12213-domain
+Start a container from the WebLogic install image. You can override the default values of the following parameters during runtime with the -e option:
+
+        ADMIN_NAME (default: AdminServer)
+        ADMIN_PORT (default: 7001)
+        ADMIN_USERNAME (default: weblogic)
+        ADMIN_PASSWORD (default: Auto Generated)
+        DOMAIN_NAME (default: base_domain)
+        DOMAIN_HOME (default: /u01/oracle/user_projects/domains/base_domain)
+
+NOTE: To set the DOMAIN_NAME, you must set both DOMAIN_NAME and DOMAIN_HOME.
+
+        $ docker run -d -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=welcome1 -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain -p 7001:7001 store/oracle/weblogic:12.2.1.3
 
 Start an Apache container by calling:
 
@@ -57,15 +62,15 @@ If you want to start the Apache container with some pre-specified `mod_weblogic`
 
 * Create a `custom_mod_wl_apache.conf` file by referring to `custom_mod_wl_apache.conf.sample` and Chapter 3 @ Fusion Middleware Using Oracle WebLogic Server Proxy Plug-Ins documentation. [https://docs.oracle.com/middleware/12213/webtier/develop-plugin/apache.htm#GUID-231FB5FD-8D0A-492A-BBFD-DC12A31BF2DE]
 
-* Place the `custom_mod_wl_apache.conf` file in a directory on the host machine (for example,`/scratch/apache-config`) and then mount this directory into the container at the location `/config`. By doing so, the contents of host directory `/scratch/apache-config` (and hence `custom_mod_wl_apache.conf`) will become available in the container at the mount point.
+* Place the `custom_mod_wl_apache.conf` file in a directory `<host-config-dir>` on the host machine and then mount this directory into the container at the location `/config`. By doing so, the contents of host directory `<host-config-dir>` (and hence `custom_mod_wl_apache.conf`) will become available in the container at the mount point.
 
 This mounting can be done by using the -v option with the `docker run` command as shown below. 
 
-        $ docker run -v /scratch/apache-config:/config -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run -v <host-config-dir>:/config -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
 
 Note: you can also mount the file directly as follows.
 
-        $ docker run -v /scratch/apache-config/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
 
 Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-in version of the file.
 
