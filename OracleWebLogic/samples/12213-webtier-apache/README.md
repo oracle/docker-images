@@ -84,11 +84,6 @@ To look at the Docker Container logs run:
 
     $ docker logs --details <Container-id>
 
-
-## Support
-Oracle HTTP Server on Docker is supported by Oracle.
-
-
 ## License
 To download and run Oracle WebLogic Server Proxy Plugins 12.2.1.3.0 Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
