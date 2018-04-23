@@ -38,6 +38,8 @@ COPY $FMW_PKG weblogic.conf httpd.conf /tmp/
 COPY custom_mod_wl_apache.conf.sample /config/custom_mod_wl_apache.conf
 COPY container-scripts/* /u01/oracle/container-scripts/
 
+# Use unzip because the base image does not contain a JDK
+# Note that adding unzip does not noticably increase the size of the image
 RUN yum install -y unzip && \
     yum install -y httpd  && \
     unzip /tmp/$FMW_PKG -d /tmp && \
