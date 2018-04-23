@@ -4,7 +4,7 @@ This project includes a quick start Dockerfile and samples for standalone Apache
 
 ## How to Build Apache With Plugin Docker Image
 
-This project offers a Dockerfile for Apache Web Server with Oraacle WebLogic Server Proxy Plugin in standalone mode. To assist in building the images, you can use `buildDockerImage.sh` script. See below for instructions and usage.
+This project offers a Dockerfile for Apache Web Server with Oracle WebLogic Server Proxy Plugin in standalone mode. To assist in building the images, you can use `buildDockerImage.sh` script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their preferred set of parameters.
 

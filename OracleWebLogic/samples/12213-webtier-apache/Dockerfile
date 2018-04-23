@@ -34,7 +34,8 @@ ENV FMW_PKG="fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip" \
 
 # Copy required files to build this image
 # ------------------------------------------------------
-COPY $FMW_PKG weblogic.conf httpd.conf /tmp/
+COPY $FMW_PKG /tmp/
+COPY weblogic.conf /etc/httpd/conf.d/ 
 COPY custom_mod_wl_apache.conf.sample /config/custom_mod_wl_apache.conf
 COPY container-scripts/* /u01/oracle/container-scripts/
 
@@ -45,9 +46,9 @@ RUN yum install -y unzip && \
     unzip /tmp/$FMW_PKG -d /tmp && \
     unzip /tmp/$PLUGINS_PKG -d /tmp && \
     unzip /tmp/$PLUGIN_PKG -d $PLUGIN_HOME && \
-    cat /tmp/httpd.conf > /etc/httpd/conf/httpd.conf  && \
-    cat /tmp/weblogic.conf >> /etc/httpd/conf/httpd.conf  && \
-    rm /tmp/$PLUGINS_PKG /tmp/WLSPlugin12.2.1.3.0-*.zip /tmp/$FMW_PKG /tmp/weblogic.conf /tmp/fmw_12213_readme*
+    sed -i -e "s;logs/error_log;/proc/self/fd/2;" /etc/httpd/conf/httpd.conf && \
+    sed -i -e "s;logs/access_log;/proc/self/fd/1;" /etc/httpd/conf/httpd.conf && \
+    rm /tmp/$PLUGINS_PKG /tmp/WLSPlugin12.2.1.3.0-*.zip /tmp/$FMW_PKG /tmp/fmw_12213_readme*
 
 #Expose ports
 EXPOSE 80

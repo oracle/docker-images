@@ -5,5 +5,3 @@ set -e
 rm -f /run/httpd/httpd.pid
 
 exec httpd -DFOREGROUND
-
-tail -f /var/log/httpd/access_log
