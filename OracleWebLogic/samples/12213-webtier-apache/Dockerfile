@@ -7,7 +7,7 @@
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip
-# Download the Generic installer from http://www.oracle.com/technetwork/middleware/webtier/downloads/index-jsp-156711.html and save it in this same folder.
+# Download the generic installer from http://www.oracle.com/technetwork/middleware/webtier/downloads/index-jsp-156711.html and save it in this same folder.
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -39,7 +39,7 @@ COPY custom_mod_wl_apache.conf.sample /config/custom_mod_wl_apache.conf
 COPY container-scripts/* /u01/oracle/container-scripts/
 
 # Use unzip because the base image does not contain a JDK
-# Note that adding unzip does not noticably increase the size of the image
+# Note that adding unzip does not noticeably increase the size of the image
 RUN yum install -y unzip && \
     yum install -y httpd  && \
     unzip /tmp/$FMW_PKG -d /tmp && \
