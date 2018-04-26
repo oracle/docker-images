@@ -64,11 +64,11 @@ If you want to start the Apache container with some pre-specified `mod_weblogic`
 
 This mounting can be done by using the -v option with the `docker run` command as shown below. 
 
-        $ docker run -v <host-config-dir>:/config -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run -v <host-config-dir>:/config -w /config -d -p 80:80 12213-apache
 
 Note: you can also mount the file directly as follows.
 
-        $ docker run -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf -w /config -d -p 80:80 12213-apache
 
 Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-in version of the file.
 
