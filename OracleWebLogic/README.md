@@ -116,5 +116,8 @@ To download and run Oracle JDK regardless of inside or outside a Docker containe
 
 All scripts and files hosted in this project and GitHub [docker/OracleWebLogic](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
+## Customer Support
+We support WebLogic Server in certified Docker containers, please read our Support statement. For additional details on the most current WebLogic Server supported configurations please refer to [Oracle Fusion Middleware Certification Pages] (http://www.oracle.com/technetwork/middleware/ias/oracleas-supported-virtualization-089265.html)
+
 ## Copyright
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.

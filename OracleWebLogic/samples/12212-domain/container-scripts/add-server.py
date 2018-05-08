@@ -27,10 +27,11 @@ def randomName():
 
 
 # ManagedServer details
-msinternal = socket.gethostbyname(hostname)
+#msinternal = socket.gethostbyname(hostname)
 msname = os.environ.get('MS_NAME', 'ManagedServer-%s@%s' % (randomName(), hostname))
 nmname = os.environ.get('NM_NAME', 'Machine-' + hostname)
-mshost = os.environ.get('MS_HOST', msinternal)
+mshost = os.environ.get('MS_HOST', '')
+#mshost = os.environ.get('MS_HOST', msinternal)
 msport = os.environ.get('MS_PORT', ms_port)
 memargs = os.environ.get('USER_MEM_ARGS', '')
 
