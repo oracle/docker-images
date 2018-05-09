@@ -90,7 +90,7 @@ To try a sample of a WebLogic Server image with a base domain configured, follow
 
 **NOTE** To set the DOMAIN_NAME, you must set both DOMAIN_NAME and DOMAIN_HOME.
 
-        $ docker run -d -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=welcome1 -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12.2.1.3-developer
+        $ docker run -d -p 7001:7001 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=welcome1 -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12.2.1.3-developer
 
   4. Run the administration console
 
@@ -99,7 +99,7 @@ To try a sample of a WebLogic Server image with a base domain configured, follow
         
 
 ## Choose your Oracle WebLogic Server Distribution
-This project hosts two to three configurations (depending on Oracle WebLogic Server version) for building Docker images with WebLogic Server 12c.
+This project hosts two configurations (depending on Oracle WebLogic Server version) for building Docker images with WebLogic Server 12c.
 
  * Quick Install Developer Distribution
 
@@ -109,9 +109,5 @@ This project hosts two to three configurations (depending on Oracle WebLogic Ser
 
    - For more information on the Oracle WebLogic Server 12cR2 Generic Full Distribution, visit [WebLogic Server 12.2.1.3 Documentation](http://docs.oracle.com/middleware/12213/wls/index.html).
 
- * Fusion Middleware Infrastructure Distribution
-
-   - For more information on the Oracle WebLogic Server 12cR2 Infrastructure Full Distribution, visit [WebLogic Server 12.2.1.3 Infrastructure Documentation](https://docs.oracle.com/middleware/12213/core/INFIN/).
-
 ## Copyright
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
