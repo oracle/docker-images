@@ -55,7 +55,7 @@ Start an Apache container by calling:
 
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 7001. You can access the console from a remote machine using the weblgoic admin server's `<admin-host>` instead of `localhost`.
 
-While it is natural to expose web applications outside a container, exposing administrative features like the Administration Console and a T3 channel for WLST should be given more careful consideration. Similaer to running a domain running in a traditional data center, while running a WebLogic domain in a Docker container, the same kinds of considerations should be taken into account, for example:
+While it is natural to expose web applications outside a container, exposing administrative features like the WebLogic Administration Console and a T3 channel for WLST should be given more careful consideration. Similar to running a domain in a traditional data center, the same kind of considerations should be taken into account while running a WebLogic domain in a Docker container, for example:
 
 * Only expose those protocols and ports that need to be exposed.
 * Use secure protocols (HTTPS, T3S, and such).
@@ -65,8 +65,8 @@ While it is natural to expose web applications outside a container, exposing adm
 * How will users authenticate?
 * Is the network channel encrypted?
 
-Oracle recommends careful consideration before deciding to expose any administrative interfaces externally.
- 
+Again, Oracle recommends careful consideration before deciding to expose any administrative interfaces externally.
+
 ## Provide Your Own Apache Plugin Configuration
 If you want to start the Apache container with some pre-specified `mod_weblogic` configuration:
 
