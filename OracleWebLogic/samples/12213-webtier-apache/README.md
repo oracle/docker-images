@@ -1,10 +1,10 @@
-Apache Web Server with Oracle WebLogic Server Proxy Plugin on Docker
+Apache HTTP Server with Oracle WebLogic Server Proxy Plugin on Docker
 ===============
-This project includes a quick start Dockerfile and samples for standalone Apache Web Server with 12.2.1.3.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux. The certification of Apache on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
+This project includes a quick start Dockerfile and samples for standalone Apache HTTP Server with 12.2.1.3.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux. The certification of Apache on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## How to Build Apache With Plugin Docker Image
 
-This project offers a Dockerfile for Apache Web Server with Oracle WebLogic Server Proxy Plugin in standalone mode. To assist in building the images, you can use `buildDockerImage.sh` script. See below for instructions and usage.
+This project offers a Dockerfile for Apache HTTP Server with Oracle WebLogic Server Proxy Plugin in standalone mode. To assist in building the images, you can use `buildDockerImage.sh` script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their preferred set of parameters.
 
@@ -55,18 +55,6 @@ Start an Apache container by calling:
 
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 7001. You can access the console from a remote machine using the weblgoic admin server's `<admin-host>` instead of `localhost`.
 
-While it is natural to expose web applications outside a container, exposing administrative features like the WebLogic Administration Console and a T3 channel for WLST should be given more careful consideration. Similar to running a domain in a traditional data center, the same kind of considerations should be taken into account while running a WebLogic domain in a Docker container, for example:
-
-* Only expose those protocols and ports that need to be exposed.
-* Use secure protocols (HTTPS, T3S, and such).
-* Use custom channels to restrict the protocols that are exposed.
-* Is load balancing required?
-* Is certificate-based integrity needed?
-* How will users authenticate?
-* Is the network channel encrypted?
-
-Again, Oracle recommends careful consideration before deciding to expose any administrative interfaces externally.
-
 ## Provide Your Own Apache Plugin Configuration
 If you want to start the Apache container with some pre-specified `mod_weblogic` configuration:
 
@@ -93,6 +81,19 @@ To stop the Apache instance, execute the following command:
 To look at the Docker Container logs run:
 
         $ docker logs --details <Container-id>
+
+## Considerations When Exposing WebLogic Server Ports
+While it is natural to expose web applications outside a container, exposing administrative features like the WebLogic Administration Console and a T3 channel for WLST should be given more careful consideration. Similar to running a domain in a traditional data center, the same kind of considerations should be taken into account while running a WebLogic domain in a Docker container, for example:
+
+* Only expose those protocols and ports that need to be exposed.
+* Use secure protocols (HTTPS, T3S, and such).
+* Use custom channels to restrict the protocols that are exposed.
+* Is load balancing required?
+* Is certificate-based integrity needed?
+* How will users authenticate?
+* Is the network channel encrypted?
+
+Although,  for demonstration purposes, the examples above expose the default admin port to users outside of the Docker container that the admin server is running in, Oracle recommends careful consideration before deciding to expose any administrative interfaces externally.
 
 ## License
 To download and run Oracle WebLogic Server Proxy Plugins 12.2.1.3.0 Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
