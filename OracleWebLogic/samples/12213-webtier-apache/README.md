@@ -85,15 +85,13 @@ To look at the Docker Container logs run:
 ## Considerations When Exposing WebLogic Server Ports
 IMPORTANT: although, for demonstration purposes, the examples above expose the default admin port to users outside of the Docker container where the admin server is running, Oracle recommends careful consideration before deciding to expose any administrative interfaces externally.
 
-While it is natural to expose web applications outside a container, exposing administrative features like the WebLogic Administration Console and a T3 channel for WLST should be given more careful consideration. Similar to running a domain in a traditional data center, the same kind of considerations should be taken into account while running a WebLogic domain in a Docker container, for example:
+While it is natural to expose web applications outside a container, exposing administrative features like the WebLogic Administration Console and a T3 channel for WLST should be given more careful consideration. Similar to running a domain in a traditional data center, the same kind of considerations should be taken into account while running a WebLogic domain in a Docker container. These include various means to controlling access through T3 protocol, such as:
 
-* Only expose those protocols and ports that need to be exposed.
-* Use secure protocols (HTTPS, T3S, and such).
-* Use custom channels to restrict the protocols that are exposed.
-* Is load balancing required?
-* Is certificate-based integrity needed?
-* How will users authenticate?
-* Is the network channel encrypted?
+* Running HTTP on a separate port from T3 and other protocols.
+* Not exposing T3 ports outside the firewall (i.e., expose only HTTP).
+* Not enabling HTTP tunneling for T3.
+
+If it is necessary to expose T3 outside the firewall, using two-way SSL and connection filters to ensure that only known clients can connect to T3 ports.
 
 ## License
 To download and run Oracle WebLogic Server Proxy Plugins 12.2.1.3.0 Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
