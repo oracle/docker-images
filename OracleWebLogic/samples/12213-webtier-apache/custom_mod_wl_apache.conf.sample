@@ -13,7 +13,7 @@ WebLogicPort ${WEBLOGIC_PORT}
 <Location /console>
 SetHandler weblogic-handler
 WebLogicHost ${WEBLOGIC_HOST}
-WeblogicPort ${WEBLOGIC_PORT}
+WebLogicPort ${WEBLOGIC_PORT}
 </Location>
 
 # Directive for all application deployed on weblogic cluster with a prepath defined by LOCATION variable

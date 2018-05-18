@@ -2,7 +2,7 @@
 #
 # Since: May, 2018
 # Author: dongbo.xiao@oracle.com
-# Description: script to build a Docker image for Oracle HTTP Server. The install mode is "standalone" i.e. Apache is not managed by or registered to an Oracle WebLogic Server domain
+# Description: script to build a Docker image for Apache HTTP Server. The install mode is "standalone" i.e. Apache is not managed by or registered to an Oracle WebLogic Server domain
 #
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -16,7 +16,7 @@ usage() {
 cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-s]
-Builds a Docker Image for Oracle HTTP Server (standalone) .
+Builds a Docker Image for Apache HTTP Server (standalone) .
 
 Parameters:
    -v: Release version to build. Required. E.g 12.2.1.3.0
