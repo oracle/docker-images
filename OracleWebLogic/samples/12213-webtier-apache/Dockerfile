@@ -1,4 +1,4 @@
-# Example of Apache Web Server with WebLogic plugin for load balancing WebLogic on Docker Containers
+# Example of Apache HTTP Server with WebLogic plugin for load balancing WebLogic on Docker Containers
 #
 # Copyright (c) 2016-2018 Oracle and/or its affiliates. All rights reserved.
 #
@@ -41,8 +41,7 @@ COPY container-scripts/* /u01/oracle/container-scripts/
 
 # Use unzip because the base image does not contain a JDK
 # Note that adding unzip does not noticeably increase the size of the image
-RUN yum install -y unzip && \
-    yum install -y httpd  && \
+RUN yum install -y unzip httpd libaio && \
     unzip /tmp/$FMW_PKG -d /tmp && \
     unzip /tmp/$PLUGINS_PKG -d /tmp && \
     unzip /tmp/$PLUGIN_PKG -d $PLUGIN_HOME && \
