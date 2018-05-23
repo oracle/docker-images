@@ -1,8 +1,8 @@
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 ##
-# WLST Online for deploying a Data Source 
+# WLST Online for deploying a Data Source
 # It will read the domain under DOMAIN_HOME by default
 #
 # author: Monica Riccelli <monica.riccelli@oracle.com>
@@ -43,7 +43,7 @@ connect(username, password, "t3://localhost:7001")
 edit()
 startEdit()
 
-# Create Datasource 
+# Create Datasource
 # ==================
 print 'Create Data Source'
 cd('/')
@@ -75,7 +75,7 @@ cmo.setGlobalTransactionsProtocol('TwoPhaseCommit')
 
 activate()
 
-print 'Targeting DS to the AdminServer' 
+print 'Targeting DS to the AdminServer'
 
 startEdit()
 cd ('/JDBCSystemResources/'+ dsname)

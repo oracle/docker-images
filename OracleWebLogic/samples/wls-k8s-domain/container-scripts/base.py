@@ -1,11 +1,11 @@
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Author Lily He
 
 import requests
-from requests.auth import HTTPBasicAuth 
+from requests.auth import HTTPBasicAuth
 import json
 import shutil
 import sys
@@ -23,8 +23,8 @@ jdbcFileName="ds1-jdbc.xml"
 
 print (prefix, domainDir)
 
-user = os.environ["WLUSER"] 
-pwd = os.environ["WLPASSWORD"] 
+user = os.environ["WLUSER"]
+pwd = os.environ["WLPASSWORD"]
 auth = HTTPBasicAuth(user, pwd)
 header1 = {'X-Requested-By': 'pythonclient','Accept':'application/json','Content-Type':'application/json'}
 header2 = {'X-Requested-By': 'pythonclient','Accept':'application/json'}
@@ -55,7 +55,7 @@ def waitAdmin():
     fail = True
     while(fail):
         sleep(2)
-        try: 
+        try:
             res = requests.get(prefix+tail, auth=auth, headers=header2, verify=True)
             print res.status_code
             if(res.ok):

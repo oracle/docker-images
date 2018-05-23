@@ -35,7 +35,7 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 
         LICENSE UPL 1.0
 
-        Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+        Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will have a domain with an Administration Server and one Managed Server by default. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
@@ -144,4 +144,4 @@ The database is created with the default password `Oradoc_db1`. To change the da
 	`$ docker run -d -p 9801:8001 --network=InfraNET --volumes-from InfraAdminContainer --name InfraManagedContainer --env-file ./infraServer.env.list oracle/fmw-infrastructure:12.2.1.x startManagedServer.sh`
 
 ## Copyright
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.

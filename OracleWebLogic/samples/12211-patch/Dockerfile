@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -14,7 +14,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
+# Run:
 #      $ sudo docker build -t 12211-psu24286152 .
 #
 
@@ -28,18 +28,18 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV PSU_PKG="p24286152_122110_Generic.zip" 
+ENV PSU_PKG="p24286152_122110_Generic.zip"
 
 # Copy supplemental package and scripts
 # --------------------------------
 COPY $PSU_PKG /u01/
 
-# Installation of Supplemental Quick Installer 
+# Installation of Supplemental Quick Installer
 # --------------------------------------------
 USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PSU_PKG && cd - && \
     cd /u01/24286152 && $ORACLE_HOME/OPatch/opatch apply -silent - oracle && \
-    rm /u01/$PSU_PKG 
+    rm /u01/$PSU_PKG
 
 WORKDIR ${ORACLE_HOME}
 

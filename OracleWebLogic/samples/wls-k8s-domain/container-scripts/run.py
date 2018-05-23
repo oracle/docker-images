@@ -1,11 +1,11 @@
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Author Lily He
 
 import requests
-from requests.auth import HTTPBasicAuth 
+from requests.auth import HTTPBasicAuth
 import json
 import shutil
 import sys
@@ -23,7 +23,7 @@ def createDomainWithLeasing():
     base.waitAdmin()
     base.cpJDBCResource(defaultDSModule);
     base.createAll(clusterWithLeasing)
- 
+
 def createDomainNoLeasing():
     base.waitAdmin()
     base.createAll(clusterNoLeasing)
@@ -31,7 +31,7 @@ def createDomainNoLeasing():
 def createRes(jsonFile):
     base.createAll(jsonFile)
 
-print 'url:', base.prefix 
+print 'url:', base.prefix
 start=time()
 option=sys.argv[1]
 if(option == 'createDomainNoLeasing'):
