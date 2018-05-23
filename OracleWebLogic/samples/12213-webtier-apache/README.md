@@ -8,19 +8,19 @@ This project offers a Dockerfile for the Apache HTTP Server with the Oracle WebL
 
 The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
 
-IMPORTANT: You have to download the `Oracle WebLogic Server Proxy Plugin 12.2.1.3.0` package (see `.download` file) and place them in this directory.
+IMPORTANT: You have to download the `Oracle WebLogic Server Proxy Plugin 12.2.1.3.0` package (see the `.download` file) and place it in this directory.
 
-Run `buildDockerImage.sh` script.
+Run the `buildDockerImage.sh` script.
 
         $ sh buildDockerImage.sh
 
 ## Run the Apache HTTP Server in a Container
 
-Run an Apache container to access an Administration Server, or a Managed Server in a non-clustered environment that is running on `<host>` and listening to `<port>`.
+Run an Apache container to access an Administration Server, or a Managed Server, in a non-clustered environment that is running on `<host>` and listening to `<port>`.
 
         $ docker run -d -e WEBLOGIC_HOST=<host> WEBLOGIC_PORT=<port> -p 80:80 12213-apache
 
-Run an Apache image to proxy to and load balance a list of Managed Servers in a cluster.
+Run an Apache image to proxy and load balance a list of Managed Servers in a cluster.
 
         Use a list of hosts and ports.
 
@@ -34,7 +34,7 @@ The values of `WEBLOGIC_CLUSTER` must be valid and correspond to existing contai
 
 ### Administration Server Only Example
 
-First, make sure you have the WebLogic Server 12.2.1.3 install image. Pull the WebLogic install image from the DockerStore, `store/oracle/weblogic:12.2.1.3`, or build your own image, `oracle/weblogic:12.2.1.3-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3].
+First, make sure that you have the WebLogic Server 12.2.1.3 install image. Pull the WebLogic install image from the DockerStore, `store/oracle/weblogic:12.2.1.3`, or build your own image, `oracle/weblogic:12.2.1.3-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3).
 
 Start a container from the WebLogic install image. During runtime, you can override the default values of the following parameters with the `-e` option:
 
@@ -58,7 +58,7 @@ Now you can access the WebLogic Administration Console under `http://localhost/c
 ## Provide Your Own Apache Plugin Configuration
 If you want to start the Apache container with some pre-specified `mod_weblogic` configuration:
 
-* Create a `custom_mod_wl_apache.conf` file by referring to `custom_mod_wl_apache.conf.sample` and Chapter 3 @ Fusion Middleware Using Oracle WebLogic Server Proxy Plug-Ins documentation. [https://docs.oracle.com/middleware/12213/webtier/develop-plugin/apache.htm#GUID-231FB5FD-8D0A-492A-BBFD-DC12A31BF2DE]
+* Create a `custom_mod_wl_apache.conf` file by referring to `custom_mod_wl_apache.conf.sample` and Chapter 3 of the [Fusion Middleware Using Oracle WebLogic Server Proxy Plug-Ins](https://docs.oracle.com/middleware/12213/webtier/develop-plugin/apache.htm#GUID-231FB5FD-8D0A-492A-BBFD-DC12A31BF2DE) documentation.
 
 * Place the `custom_mod_wl_apache.conf` file in a directory `<host-config-dir>` on the host machine and then mount this directory into the container at the location `/config`. By doing so, the contents of the host directory `<host-config-dir>` (and hence `custom_mod_wl_apache.conf`) will become available in the container at the mount point.
 
@@ -66,11 +66,9 @@ This mounting can be done by using the `-v` option with the `docker run` command
 
         $ docker run -v <host-config-dir>:/config -w /config -d -p 80:80 12213-apache
 
-Note: you can also mount the file directly as follows.
+**Note**: You can also mount the file directly as follows:
 
-        $ docker run -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf -w /config -d -p 80:80 12213-apache
-
-Once the mounting is done, the `custom_mod_wl_apache.conf` file will replace the built-in version of the file.
+After the mounting is done, the `custom_mod_wl_apache.conf` file will replace the built-in version of the file.
 
 ## Stop an Apache Instance
 
@@ -83,7 +81,7 @@ To look at the Docker container logs, run:
         $ docker logs --details <Container-id>
 
 ## Considerations When Exposing WebLogic Server Ports
-IMPORTANT: Although, for demonstration purposes, the examples above expose the default admin port to users outside of the Docker container where the Administration Server is running, Oracle recommends careful consideration before deciding to expose any administrative interfaces externally.
+**IMPORTANT**: Although, for demonstration purposes, the examples above expose the default admin port to users outside of the Docker container where the Administration Server is running, Oracle recommends careful consideration before deciding to expose any administrative interfaces externally.
 
 While it is natural to expose web applications outside a container, exposing administrative features, like the WebLogic Administration Console and a T3 channel for WLST, should be given more careful consideration. Similar to running a domain in a traditional data center, the same kind of considerations should be taken into account while running a WebLogic domain in a Docker container. These include various means of controlling access through T3 protocol, such as:
 
