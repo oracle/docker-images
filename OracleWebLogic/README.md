@@ -20,7 +20,7 @@ You must first download the Oracle Server JRE binary to the folder `../OracleJav
         $ sh build.sh
 
 ### Building the WebLogic Docker install images
-**IMPORTANT:** You must download the WebLogic binary and put it in place (see `.download` files inside dockerfiles/<version>).
+**IMPORTANT**: You must download the WebLogic binary and put it in its correct location (see `.download` files inside `dockerfiles/<version>`).
 
 Before you build, select the version and distribution for which you want to build an image, then download the required packages (see `.download` files) and place them in the folder of your distribution version of choice. Then, from the `dockerfiles` folder, run the `buildDockerImage.sh` script as root.
 
@@ -43,7 +43,7 @@ Before you build, select the version and distribution for which you want to buil
 
         Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
-**IMPORTANT:** The resulting images will NOT have a domain pre-configured. You must extend the image with your own Dockerfile, and create your domain using WLST. You might want to take a look at the use case samples below.
+**IMPORTANT**: The resulting images will NOT have a domain pre-configured. You must extend the image with your own Dockerfile, and create your domain using WLST. You might want to take a look at the use case samples below.
 
 ## Samples for WebLogic domain creation
 To give users an idea of how to create a domain from a custom Dockerfile that extends the WebLogic image, we provide a few samples for the 12c versions of the developer distribution. There are two types of domain samples:
@@ -76,9 +76,9 @@ By using the sample, [`samples/1221-multihost`](samples/1221-multihost), which c
 The basic idea behind this setup is that you must have all the containers across different hosts assigned to a specific [Docker Overlay Network](https://docs.docker.com/engine/userguide/networking/dockernetworks/#an-overlay-network), a feature of Docker 1.9 and later, that allows containers to join the same network even though they are running in different host environments.
 
 ### Create a WebLogic Server 12cR2 MedRec sample domain
-The Supplemental Quick Installer is a lightweight installer that contains all of the necessary artifacts to develop and test applications on Oracle WebLogic Server 12.2.1.3. You can extend the WebLogic developer install image, `oracle/weblogic:12.2.1.3-developer`. to create a domain image with the MedRec application deployed.
+The Supplemental Quick Installer is a lightweight installer that contains all of the necessary artifacts to develop and test applications on Oracle WebLogic Server 12.2.1.3. You can extend the WebLogic developer install image, `oracle/weblogic:12.2.1.3-developer`, to create a domain image with the MedRec application deployed.
 
-  1. Make sure you have the `oracle/weblogic:12.2.1.3-developer` image built. If not, go into the [`dockerfiles`](dockerfiles/) and call:
+  1. Make sure you have the `oracle/weblogic:12.2.1.3-developer` image built. If not, go into [`dockerfiles`](dockerfiles/) and call:
 
         `$ sh buildDockerImage.sh -v 12.2.1.3 -d`
 
@@ -90,11 +90,11 @@ The Supplemental Quick Installer is a lightweight installer that contains all of
 
         `$ docker build -t 12213-medrec .`
 
-  5. Now run a container from this new sample domain image:
+  6. Now run a container from this new sample domain image:
 
         `$ docker run -ti -p 7002:7002 12213-medrec`
 
-  6. Access the Administration Server Console at:
+  7. Access the Administration Server Console at:
 
         `http://localhost:7002/medrec`
 
@@ -103,22 +103,22 @@ This project hosts two configurations (depending on the WebLogic version) for bu
 
  * Quick Install Developer Distribution
 
-   - For more information on the WebLogic 12cR2 Quick Install Developer Distribution, visit [WLS Quick Install Distribution for Oracle WebLogic Server 12.2.1.3](http://download.oracle.com/otn/nt/middleware/12c/12213/README_12213.txt).
+   - For more information on the WebLogic 12cR2 Quick Install Developer Distribution, see [WLS Quick Install Distribution for Oracle WebLogic Server 12.2.1.3](http://download.oracle.com/otn/nt/middleware/12c/12213/README_12213.txt).
 
  * Generic Distribution
 
-   - For more information on the WebLogic 12cR2 Generic Full Distribution, visit [WebLogic 12.2.1.3 Documentation](http://docs.oracle.com/middleware/12213/lcm/WLSIG/GUID-E4241C14-42D3-4053-8F83-C748E059607A.htm#WLSIG197)
+   - For more information on the WebLogic 12cR2 Generic Full Distribution, see [WebLogic 12.2.1.3 Documentation](http://docs.oracle.com/middleware/12213/lcm/WLSIG/GUID-E4241C14-42D3-4053-8F83-C748E059607A.htm#WLSIG197)
 
 
 ## License
-To download and run WebLogic 12c distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
+To download and run the WebLogic 12c distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
 To download and run the Oracle JDK, regardless of inside or outside a Docker container, you must download the binary from the Oracle website and accept the license indicated on that page.
 
 All scripts and files hosted in this project and GitHub [`docker/OracleWebLogic`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Customer Support
-We support WebLogic Server in certified Docker containers, please read our Support statement. For additional details on the most current WebLogic Server supported configurations, please refer to the [Oracle Fusion Middleware Certification Pages] (http://www.oracle.com/technetwork/middleware/ias/oracleas-supported-virtualization-089265.html)
+We support WebLogic Server in certified Docker containers, please read our Support statement. For additional details on the most current WebLogic Server supported configurations, please refer to the [Oracle Fusion Middleware Certification Pages](http://www.oracle.com/technetwork/middleware/ias/oracleas-supported-virtualization-089265.html).
 
 ## Copyright
 Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
