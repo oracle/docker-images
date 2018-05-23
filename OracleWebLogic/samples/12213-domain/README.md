@@ -6,11 +6,11 @@ Utility scripts are copied into the image, enabling users to plug Node Manager a
 
 ### Admin Password
 
-On the first startup of the container, a random password will be generated for the Administration of the domain. You can find this password in the output line:
+On the first startup of the container, a random password will be generated for the administration of the domain. You can find this password in the output line:
 
 `Oracle WebLogic Server auto generated Admin password:`
 
-If you need to find the password at a later time, grep for `password` in the Docker logs generated during the startup of the container. To look at the Docker container logs run:
+If you need to find the password at a later time, grep for `password` in the Docker logs generated during the startup of the container. To look at the Docker container logs, run:
 
     $ docker logs --details <Container-id>
 
@@ -20,29 +20,27 @@ If you need to find the password at a later time, grep for `password` in the Doc
 
 **NOTE:** First make sure you have built `oracle/weblogic:12.2.1.3-developer`.
 
-You can define the following environment variables at Docker runtime using the `-e` option  on the command line or defining them in the `domain.properties` file. These environmental variables need to be set for the Administration Server as well as for the Managed Servers.
+You can define the following environment variables at Docker runtime using the `-e` option  on the command line or in the `domain.properties` file. These environmental variables need to be set for the Administration Server as well as for the Managed Servers.
 
-|Name	| Variable | Default
-| --- | --- |
-| Admin Password  |    `ADMIN_PASSWORD` | Auto Generated
-| Admin Username   |   `ADMIN_USERNAME` | `weblogic`       
-| Admin Name    |     `ADMIN_NAME`   |   `AdminServer`   
-| Domain Name    |     `DOMAIN_NAME`   |  `base_domain`    
-| Admin Port   |      `ADMIN_PORT`   |   `7001`           
-| Admin Host    |      `ADMIN_HOST`   |   `wlsadmin`      
-| Cluster Name  |      `CLUSTER_NAME` |   `DockerCluster`  
-| Debug Flag   |       `DEBUG_FLAG`  |    `false`          
-| Production Mode  |   `PRODUCTION_MODE`| `dev`            
-| Managed Server Name | `MS_NAME`     |    Generated      
-| Managed Server Port |`MS_PORT`    |     `8001`           
-| Node Manager Name  |  `NM_NAME`  |      Generated      
+* Admin Password:  `ADMIN_PASSWORD`  Auto Generated
+* Admin Username:  `ADMIN_USERNAME`  `weblogic`      
+* Admin Name:      `ADMIN_NAME`       `AdminServer`  
+* Domain Name:     `DOMAIN_NAME`      `base_domain`  
+* Admin Port:      `ADMIN_PORT`       `7001`          
+* Admin Host:      `ADMIN_HOST`       `wlsadmin`    
+* Cluster Name:    `CLUSTER_NAME`   `DockerCluster`
+* Debug Flag:       `DEBUG_FLAG`      `false`         
+* Production Mode:  `PRODUCTION_MODE` `dev`            
+* Managed Server Name:  `MS_NAME`      Generated    
+* Managed Server Port: `MS_PORT`       `8001`          
+* Node Manager Name:  `NM_NAME`        Generated      
 
 
 To build this sample, run:
 
         $ docker build -t 12213-domain .
 
-**Important**: The domain directory needs to be externalized by using Data Volumes (`-v` option). The Administration Server as well as the Managed Servers need to read/write to the same `DOMAIN_HOME`.
+**Important**: The domain directory needs to be externalized by using data volumes (`-v` option). The Administration Server as well as the Managed Servers need to read/write to the same `DOMAIN_HOME`.
 
 To start the containerized Administration Server, run:
 
@@ -56,9 +54,9 @@ To start a second Managed Server (MS2), run:
 
  	$ docker run -d --name MS2 --link wlsadmin:wlsadmin -p 8002:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS2 --volumes-from wlsadmin 12213-domain createServer.sh
 
-The above scenario from this sample will give you a WebLogic domain with a cluster setup, on a single host environment.
+The above scenario from this sample will give you a WebLogic domain with a cluster set up on a single host environment.
 
 You may create more containerized Managed Servers by calling the `docker` command above for `createServer.sh` as long you link properly with the Administration Server. For an example of a multihost environment, see the sample `1221-multihost`.
 
 # Copyright
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
