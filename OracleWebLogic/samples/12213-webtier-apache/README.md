@@ -53,7 +53,7 @@ Start an Apache container by calling:
 
         $ docker run -d --name apache -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
 
-Now you can access the WebLogic Administration Console under `http://localhost/console` (default to port 80) instead of using port 7001. You can access the Console from a remote machine using the WebLgoic Administration Server's `<admin-host>` instead of `localhost`.
+Now you can access the WebLogic Administration Console under `http://localhost/console` (default to port 80) instead of using port 7001. You can access the Console from a remote machine using the WebLogic Administration Server's `<admin-host>` instead of `localhost`.
 
 ## Provide Your Own Apache Plugin Configuration
 If you want to start the Apache container with some pre-specified `mod_weblogic` configuration:

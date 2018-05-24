@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -32,10 +32,10 @@ MAINTAINER Aseem Bajaj <aseem.bajaj@oracle.com>
 ARG name=summercamps
 ARG source=apps/summercamps.ear
 ARG simple_filename=summercamps.ear
-	
+
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV MW_HOME="$ORACLE_HOME" \ 
+ENV MW_HOME="$ORACLE_HOME" \
     PATH="$ORACLE_HOME/wlserver/server/bin:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.ant_1.9.2/bin:$JAVA_HOME/jre/bin:$JAVA_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/wlserver/common/bin:$ORACLE_HOME/user_projects/domains/medrec/bin:$ORACLE_HOME/wlserver/samples/server/medrec/:$ORACLE_HOME/wlserver/samples/server/:$ORACLE_HOME/wlserver/../oracle_common/modules/org.apache.maven_3.2.5/bin"
 
 # Copy scripts

@@ -16,4 +16,4 @@ This sample demonstrates how to create a cluster of WebLogic on a multihost netw
 Enjoy multihost WebLogic on Docker.
 
 # Copyright
-Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.

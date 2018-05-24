@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -15,7 +15,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
+# Run:
 #      $ sudo docker build -t fmw-infrastructure-12212-psu25871788 .
 #
 
@@ -35,14 +35,14 @@ ENV PSU_PKG="p25871788_122120_Generic.zip"
 # --------------------------------
 USER root
 COPY $PSU_PKG /u01/
-RUN chmod 777 /u01/$PSU_PKG 
+RUN chmod 777 /u01/$PSU_PKG
 
-# Installation of Supplemental Quick Installer 
+# Installation of Supplemental Quick Installer
 # --------------------------------------------
 USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PSU_PKG && cd - && \
     cd /u01/25871788 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PSU_PKG 
+    rm /u01/$PSU_PKG
 
 WORKDIR ${ORACLE_HOME}
 

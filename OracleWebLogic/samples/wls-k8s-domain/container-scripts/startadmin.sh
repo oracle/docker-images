@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -29,10 +29,10 @@ function setupDomain {
           echo "create domain with database leasing..."
           python run.py createDomainWithLeasing
         else
-          echo "create domain with no leasing..." 
+          echo "create domain with no leasing..."
 	  python run.py createDomainNoLeasing
         fi
-} 
+}
 
 # domain provision
 configDir="$SAMPLE_DOMAIN_HOME/config"
@@ -45,4 +45,3 @@ else
 fi
 
 tail -f /u01/wlsdomain/admin.out
-
