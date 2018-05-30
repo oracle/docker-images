@@ -19,7 +19,7 @@ if [[ "${1:--h}" == "-h" ]]; then
     echo "  docker-build-options    Command line options for Docker build"
     echo ""
     echo "Example:"
-    echo "  ./$(basename $0) ~/Downloads/123012_fbo_ggs_Linux_x64_services_shiphome.zip --no-cache"
+    echo "  ./$(basename $0) ~/Downloads/123014_fbo_ggs_Linux_x64_services_shiphome.zip --no-cache"
     exit 1
 fi
 
