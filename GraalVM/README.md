@@ -8,5 +8,5 @@ Further details can be found on [www.graalvm.org](https://www.graalvm.org).
 
 ## Building the Docker image
 
-Execute `build.sh` or `docker build` in graalvm-ce-1.0 directory.
+Execute `docker build -t oracle/graalvm-ce:latest .` in graalvm-ce-1.0 directory.
 
