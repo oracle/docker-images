@@ -18,7 +18,7 @@ Run the `buildDockerImage.sh` script.
 
 Run an Apache container to access an Administration Server, or a Managed Server, in a non-clustered environment that is running on `<host>` and listening to `<port>`.
 
-        $ docker run -d -e WEBLOGIC_HOST=<host> WEBLOGIC_PORT=<port> -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -p 80:80 12213-apache
 
 Run an Apache image to proxy and load balance a list of Managed Servers in a cluster.
 
