@@ -59,6 +59,7 @@ COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE 
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
+    mkdir -p $ORACLE_BASE/scripts/setup && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/$SETUP_LINUX_FILE
 
@@ -73,6 +74,11 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 
 USER oracle
 WORKDIR /home/oracle
+
+VOLUME ["$ORACLE_BASE/scripts/startup"]
+VOLUME ["/docker-entrypoint-initdb.d/startup"]
+VOLUME ["$ORACLE_BASE/scripts/setup"]
+VOLUME ["/docker-entrypoint-initdb.d/setup"]
 
 VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 5500
