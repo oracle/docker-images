@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+	id="CGI_Sample_App" version="3.0">
+ <display-name>Hello, CGI</display-name>
+ <description>
+  Simplest web application for debugging weblogic.servlet.CGIServlet
+  See: https://docs.oracle.com/middleware/1213/wls/WBAPP/configureresources.htm#WBAPP220
+ </description>
+
+ <servlet>
+  <servlet-name>CGIServlet</servlet-name>
+  <servlet-class>weblogic.servlet.CGIServlet</servlet-class>
+  <init-param>
+   <param-name>cgiDir</param-name>
+   <param-value>CGI_DIR_VALUE</param-value>
+  </init-param>
+  <init-param>
+   <param-name>CGI_EXTENSION_MAPPING</param-name>
+   <param-value>CGI_INTERPRETER</param-value>
+  </init-param>
+ </servlet>
+
+ <servlet-mapping>
+  <servlet-name>CGIServlet</servlet-name>
+  <url-pattern>CGI_SERVLET_URL_PATTERN</url-pattern>
+ </servlet-mapping>
+</web-app>
