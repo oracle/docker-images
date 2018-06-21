@@ -1,9 +1,58 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  verbs: ["get", "list", "watch"]
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs: ["get", "list", "watch"]
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
+---
+
+
+  kind: Namespace,
+  apiVersion: v1,
+  metadata: {
+    name: monitoring,
+    labels: {
+      name: monitoring
+    }
+  }
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: monitoring
+---
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: prometheus
   labels:
     app: prometheus
+  namespace: monitoring
 spec:
   replicas: 1
   strategy:
@@ -13,6 +62,7 @@ spec:
       labels:
         app: prometheus
     spec:
+      serviceAccountName: default
       containers:
       - name: prometheus
         image: prom/prometheus:v1.7.1
@@ -38,6 +88,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-configuration
+  namespace: monitoring
 data:
   prometheus.yml: |-
     global:
@@ -74,7 +125,7 @@ data:
         target_label: webapp
       basic_auth:
        username: weblogic
-       password: weblogic1
+       password: welcome1
 
 ---
 apiVersion: v1
@@ -93,6 +144,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
+  namespace: monitoring
 spec:
   type: NodePort
   ports:
