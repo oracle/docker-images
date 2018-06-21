@@ -160,7 +160,7 @@ function createDeployment {
 
     initSSL ${OGG_DEPLOYMENT}
 
-    local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*-jar-with-dependencies.jar)
+    local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*.jar)
     chown -R oracle:oinstall "${OGG_DEPLOY_BASE}"
 
     if [[ ! -d "${OGG_DEPLOY_BASE}/ServiceManager" ]]; then
