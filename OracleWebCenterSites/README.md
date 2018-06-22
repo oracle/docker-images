@@ -58,8 +58,8 @@ To download images from Oracle Container Registry (OCR) and Oracle Technology Ne
 
 Sign in to [Oracle Container Registry](https://container-registry.oracle.com). Click the **Sign in** link that's on the top-right of the Web page.
 
-### A. To download and set up Oracle Fusion Middleware Infrastructure image.
-1. Click **Home > Middleware** and then click **Continue** for the _fmw-infrastructure_ repository.
+### A. To download and Oracle Fusion Middleware Infrastructure image.
+1. Click **Middleware** and then click **Continue** for the _fmw-infrastructure_ repository.
 2. Click **Accept** to accept the license agreement.
 3. To download Oracle Fusion Middleware infrastructure base image:    
     ```
@@ -75,7 +75,7 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
     - If you want to build the image from GitHub, see [FAQ](#10-how-do-i-build-an-oracle-fusion-middleware-infrastructure-1221x-base-image) section.
 
 ### B. To download and set up Oracle Database Enterprise Edition image.
-1. Click **Home > Database** and then click **Continue** for _enterprise_ repository.
+1. Click **Database** and then click **Continue** for _enterprise_ repository.
 2. Click **Accept** to accept the license agreement.
 3. From the terminal, execute the following commands:
        
