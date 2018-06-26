@@ -45,6 +45,7 @@ export PWD_FILE=${PWD_FILE:-${OUD_INSTANCE_ADMIN}/etc/${OUD_INSTANCE}_pwd.txt}
 export BASEDN=${BASEDN:-'dc=example,dc=com'}          # Default directory base DN
 export SAMPLE_DATA=${SAMPLE_DATA:-'TRUE'}               # Flag to load sample data
 export OUD_PROXY=${OUD_PROXY:-'FALSE'}                  # Flag to create proxy instance
+export OUD_CUSTOM=${OUD_CUSTOM:-'FALSE'}                # Flag to create custom instance
 
 # default folder for OUD instance init scripts
 export OUD_INSTANCE_INIT=${OUD_INSTANCE_INIT:-$ORACLE_DATA/scripts}
@@ -53,6 +54,10 @@ export OUD_INSTANCE_INIT=${OUD_INSTANCE_INIT:-$ORACLE_DATA/scripts}
 # Normalize CREATE_INSTANCE
 export OUD_PROXY=$(echo $OUD_PROXY| sed 's/^false$/0/gi')
 export OUD_PROXY=$(echo $OUD_PROXY| sed 's/^true$/1/gi')
+
+# Normalize CREATE_INSTANCE
+export OUD_CUSTOM=$(echo $OUD_CUSTOM| sed 's/^false$/0/gi')
+export OUD_CUSTOM=$(echo $OUD_CUSTOM| sed 's/^true$/1/gi')
 
 # Normalize SAMPLE_DATA and DIRECTORY_DATA
 DIRECTORY_DATA="--addBaseEntry"
@@ -82,6 +87,11 @@ mkdir -v -p ${OUD_INSTANCE_ADMIN}/etc
 OUDTAB=${ORACLE_DATA}/etc/oudtab
 echo "${OUD_INSTANCE}:${PORT}:${PORT_SSL}:${PORT_ADMIN}:${PORT_REP}:OUD" >>${OUDTAB}
 
+# reuse existing password file
+if [ -f "$PWD_FILE" ]; then
+    echo "    found password file $PWD_FILE"
+    export ADMIN_PASSWORD=$(cat $PWD_FILE)
+fi
 # generate a password
 if [ -z ${ADMIN_PASSWORD} ]; then
     # Auto generate Oracle WebLogic Server admin password
@@ -110,6 +120,7 @@ else
 fi
 
 # write password file
+mkdir -p "${OUD_INSTANCE_ADMIN}/etc/"
 echo "$s" > ${PWD_FILE}
 
 # set instant init location create folder if it does exists
@@ -135,7 +146,10 @@ echo "  SAMPLE_DATA        = ${SAMPLE_DATA}"
 echo "  OUD_PROXY          = ${OUD_PROXY}"
 echo ""
 
-if [ ${OUD_PROXY} -eq 0 ]; then
+if  [ ${OUD_CUSTOM} -eq 1 ]; then
+    echo "--- Create OUD instance (${OUD_INSTANCE}) using custom scripts ---------"
+    ${DOCKER_SCRIPTS}/config_oud_instance.sh ${OUD_INSTANCE_INIT}
+elif [ ${OUD_PROXY} -eq 0 ]; then
 # Create an directory
     echo "--- Create regular OUD instance (${OUD_INSTANCE}) ----------------------"
     ${ORACLE_BASE}/product/${ORACLE_HOME_NAME}/oud/oud-setup \

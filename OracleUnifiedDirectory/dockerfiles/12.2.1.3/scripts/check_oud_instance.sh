@@ -31,6 +31,7 @@ export OUD_INSTANCE_BASE=${OUD_INSTANCE_BASE:-"$ORACLE_DATA/instances"}
 
 # Default values for the instance home and admin directory
 export OUD_INSTANCE_HOME=${OUD_INSTANCE_HOME:-"${OUD_INSTANCE_BASE}/${OUD_INSTANCE}"}
+export OUD_INSTANCE_ADMIN=${OUD_INSTANCE_ADMIN:-${ORACLE_DATA}/admin/${OUD_INSTANCE}}
 
 # Default value for the directory
 export ADMIN_USER=${ADMIN_USER:-'cn=Directory Manager'} # Default directory admin user
