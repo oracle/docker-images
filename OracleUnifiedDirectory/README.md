@@ -1,7 +1,7 @@
 # Oracle Unified Directory on Docker
 Docker build files to facilitate installation, configuration, and environment setup for Docker DevOps users. For more information about Oracle Unified Directory please see the [Oracle Unified Directory 12.2.1.3.0 Online Documentation](https://docs.oracle.com/middleware/12213/oud/).
 
-Just to clarify these Docker build scripts are **unofficial** Oracle Build scripts. See [Oracle Docker images](https://github.com/oracle/docker-images) on GitHub for the official Oracle Docker build scripts.
+Just to clarify these Docker build scripts are **unofficial Oracle Build scripts**. 
 
 ### Docker Images Content
 The resulting Docker images are based on the official Oracle Java image for Java 8 u172 (_oracle/serverjre:8_). It has either be build manually using the [official](https://github.com/oracle/docker-images/tree/master/OracleJava) or [my unofficial](https://github.com/oehrlis/docker/tree/master/OracleJava) Oracle Docker build scripts or pulled from [Docker Store](https://store.docker.com/images/oracle-serverjre-8). See [Building the Oracle JDK base image](#building-the-oracle-jdk-base-image)
@@ -258,9 +258,9 @@ The OUD Docker image can be configured to run scripts after setup. Currently `sh
 
 After the OUD instance is created by `create_oud_instance.sh` the scripts in those folders will be executed against the instance in the container. LDIF files (`ldif`) will be loaded using `ldapmodify` as *cn=Directory Manager* (ADMIN_USER). CONF files ( `conf` ) are interpreted as `dsconfig` batch files and will be executed accordingly. Shell scripts will be executed as the current user (oracle). To ensure proper order it is recommended to prefix your scripts with a number. For example `01_instance.conf`, `02_schema_extention.ldif`, etc. If files with the same name do exits eg. `02_schema_extention.ldif` and `02_schema_extention.sh` just the .sh file will be executed.
 
-**Note:** The config scripts will only be executed when an instance is created on first startup or when using `create_oud_instance.sh`.
-**Note:** If files with the same name do exits eg. `02_schema_extention.ldif` and `02_schema_extention.sh` just the .sh file will be executed.
-**Note:** If `/u01/admin/$OUD_INSTANCE/create` folder exists, it is used instead of `/u01/scripts/setup`.
+* **Note:** The config scripts will only be executed when an instance is created on first startup or when using `create_oud_instance.sh`.
+* **Note:** If files with the same name do exits eg. `02_schema_extention.ldif` and `02_schema_extention.sh` just the .sh file will be executed.
+* **Note:** If `/u01/admin/$OUD_INSTANCE/create` folder exists, it is used instead of `/u01/scripts/setup`.
 
 ## Frequently asked questions
 Please see [FAQ.md](./FAQ.md) for frequently asked questions.
