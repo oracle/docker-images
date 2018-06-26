@@ -76,11 +76,20 @@ Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-
 ### Start Apache HTTP Server in a Container with SSL Support
 You can enable SSL support from user to Apache HTTP server when start **Apache HTTP Server with PlugIn** in a container using the following docker run command.
 
-	$ docker run -d --name apache -e VIRTUAL_HOST_NAME=<virtual_host_name> -e SSL_CERT_FILE=<ssl-certificate-file> -e SSL_CERT_KEY_FILE=<ssl-certificate-key-file> -e WEBLOGIC_HOST=<admin_host> -e WEBLOGIC_PORT=7001 -p 4433:4433 --volume-driver local -v <host-config-dir>:/config -w /config store/oracle/apache:12.2.1.3
+	$ docker run -d --name apache \
+          -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
+          -e SSL_CERT_FILE=<ssl-certificate-file> \ 
+          -e SSL_CERT_KEY_FILE=<ssl-certificate-key-file> \
+          -e WEBLOGIC_HOST=<admin_host> \
+          -e WEBLOGIC_PORT=7001 \
+          -p 4433:4433 \
+          --volume-driver local \
+          -v <host-config-dir>:/config \
+          -w /config store/oracle/apache:12.2.1.3
 
-Where `VIRTUAL_HOST_NAME` specifies the VirtualHostName of Apache HTTP server, `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` specifies the name with full path of the SSL certificate and key file respectively.  
+Where `VIRTUAL_HOST_NAME` specifies the VirtualHostName of Apache HTTP server, `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` specifies the name with full path of the SSL certificate and key file respectively. Note that here we use host machine's local file system as the `volume-driver`. 
 
-Now you can access the WebLogic Admin Console under **https://<virtual-host-name>:4433/console**. The <virtual-host-name> needs to be the same as what is set to `VIRTUAL_HOST_NAME" environment variable. Note that if SSL is not enabled between Apache HTTP server and WebLogic Domain, you need to access the console under **https://<virtual-host-name>:4433/console/login/LoginForm.jsp**.
+Now you can access the WebLogic Admin Console under **`https://<virtual-host-name>:4433/console`**. The <virtual-host-name> needs to be the same as what is set to `VIRTUAL_HOST_NAME` environment variable. Note that if SSL is not enabled between Apache HTTP server and WebLogic Domain, you need to access the console under **`https://<virtual-host-name>:4433/console/login/LoginForm.jsp`**.
 
 ### Environment Variables and Corresponding Behaviors
 * if `VIRTUAL_HOST_NAME` is not set, SSL from the user to Apache is disabled.
