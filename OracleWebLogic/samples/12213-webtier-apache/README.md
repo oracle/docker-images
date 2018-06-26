@@ -72,6 +72,25 @@ Note: you can also mount the file directly as follows.
 
 Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-in version of the file.
 
+## Enable SSL Access From User to Apache HTTP Server
+### Start Apache HTTP Server in a Container with SSL Support
+You can enable SSL support from user to Apache HTTP server when start **Apache HTTP Server with PlugIn** in a container using the following docker run command.
+
+	$ docker run -d --name apache -e VIRTUAL_HOST_NAME=<virtual_host_name> -e SSL_CERT_FILE=<ssl-certificate-file> -e SSL_CERT_KEY_FILE=<ssl-certificate-key-file> -e WEBLOGIC_HOST=<admin_host> -e WEBLOGIC_PORT=7001 -p 4433:4433 --volume-driver local -v <host-config-dir>:/config -w /config store/oracle/apache:12.2.1.3
+
+Where `VIRTUAL_HOST_NAME` specifies the VirtualHostName of Apache HTTP server, `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` specifies the name with full path of the SSL certificate and key file respectively.  
+
+Now you can access the WebLogic Admin Console under **https://<virtual-host-name>:4433/console**. The <virtual-host-name> needs to be the same as what is set to `VIRTUAL_HOST_NAME" environment variable. Note that if SSL is not enabled between Apache HTTP server and WebLogic Domain, you need to access the console under **https://<virtual-host-name>:4433/console/login/LoginForm.jsp**.
+
+### Environment Variables and Corresponding Behaviors
+* if `VIRTUAL_HOST_NAME` is not set, SSL from the user to Apache is disabled.
+* if `SSL_CERT_FILE` or `SSL_CERT_KEY_FILE` is not set, the built-in demo certificate and key will be used. 
+* if `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` are set, but the files do not exist, the startup of the Apache container will fail. If desired, you could turn on auto-generation of the certificate and key by adding `-e GENERATE_CERT_IF_ABSENT=true`. This option will generate a demo certificate and key if the specified files are absent. In this case it is strongly recommanded that one specifies `--volume-driver` and `-v` to ensure that the certificate is only created on the first start of the container, instead of every time the Apache container is started.
+* The usual procedure of applying the certificate on the client side needs to be taken. For example, the certificate needs to be imported into a web browser in order for a web client to access the Apache endpoint via https.
+
+### Notes about Built-in Example SSL Certificate
+The built-in example SSL certificate and key (`example.cert` and `example.key`) are for demo and quick testing purposes. They don't offer the level security that is usually required in production. 
+
 ## Stop an Apache Instance
 
 To stop the Apache instance, execute the following command:
