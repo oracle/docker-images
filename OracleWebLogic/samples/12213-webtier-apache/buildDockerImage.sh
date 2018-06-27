@@ -4,13 +4,11 @@
 # Author: dongbo.xiao@oracle.com
 # Description: script to build a Docker image for Apache HTTP Server. The install mode is "standalone" i.e. Apache is not managed by or registered to an Oracle WebLogic Server domain
 #
-#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # Copyright (c) 2016-2018 Oracle and/or its affiliates. All rights reserved.
 #
-#
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 usage() {
 cat << EOF
