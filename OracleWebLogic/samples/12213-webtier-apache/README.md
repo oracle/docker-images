@@ -73,7 +73,7 @@ Note: you can also mount the file directly as follows.
 Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-in version of the file.
 
 ## Enable SSL Access From User to Apache HTTP Server
-You can enable SSL support from user to Apache HTTP server when start **Apache HTTP Server with Plugin** in a container using the following `docker run` commands.
+You can enable SSL support from user to Apache HTTP server when starting the **Apache HTTP Server with Plugin** in a container using the following `docker run` commands.
 
 Note that the Apache HTTP Server is configured to listen to port 4433 for SSL traffic.
 
