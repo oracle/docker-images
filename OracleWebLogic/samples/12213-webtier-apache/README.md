@@ -89,7 +89,7 @@ The minimum requirement of turning on SSL support is to set the VIRTUAL_HOST_NAM
 
 Where `VIRTUAL_HOST_NAME` specifies the VirtualHostName of Apache HTTP server. If `VIRTUAL_HOST_NAME` is not set, SSL from the user to Apache is disabled.
 
-This approach uses the built-in example certificate (`example.cert` and `example.key`), which is only for demo and quick testing purposes. It does not offer the level of security that is usually required in production. 
+This approach uses the built-in example certificate (`example.cert` and `example.key`), which is only for demo and quick testing purposes. It does not offer the level of security that is usually required in production.  See `container-scripts/certgen.sh` for details of the built-in certficate.
 
 ### Provide Your Own Certificate
 In production, Oracle strongly recommend that you provide your own certificate using the following `docker run` command.
