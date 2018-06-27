@@ -59,7 +59,7 @@ fi
 # Execute custom provided files (only if directory exists and has files in it)
 if [ -d "${SCRIPTS_ROOT}" ] && [ -n "$(ls -A ${SCRIPTS_ROOT})" ]; then
     echo "";
-    echo "--- Executing user defined scripts --------------------------------------"
+    echo "--- Executing user defined scripts -------------------------------------"
 
 # Loop over the files in the current directory
     for f in $(find ${SCRIPTS_ROOT} -maxdepth 1 -type f|sort); do
@@ -75,17 +75,18 @@ if [ -d "${SCRIPTS_ROOT}" ] && [ -n "$(ls -A ${SCRIPTS_ROOT})" ]; then
         else
             echo "INFO: no bash script for file $f."
         fi
+        echo "--- --------------------------------------------------------------------"
         case "$f" in
             *.sh)     echo "INFO: running $f"; "$f" ;;
             *.ldif)   echo "INFO: running $f"; echo "exit" | ${OUD_INSTANCE_HOME}/OUD/bin/ldapmodify --defaultAdd --hostname ${HOST} --port ${PORT} --bindDN "${ADMIN_USER}" --bindPasswordFile ${PWD_FILE} --filename "$f"; echo ;;
             *.conf)   echo "INFO: running $f"; echo "exit" | ${OUD_INSTANCE_HOME}/OUD/bin/dsconfig --hostname ${HOST}  --port ${PORT_ADMIN} --bindDN "${ADMIN_USER}" --bindPasswordFile ${PWD_FILE} --trustAll --no-prompt -F "$f"; echo ;;
-            *)        echo "INFO: running $f" ;;
+            *)        echo "INFO: skip file $f" ;;
         esac
         echo "";
     done
-    echo "--- Successfully executed user defined ----------------------------------"
+    echo "--- Successfully executed user defined ---------------------------------"
   echo ""
 else
-    echo "--- no user defined scripts to execute ----------------------------------"
+    echo "--- no user defined scripts to execute ---------------------------------"
 fi
 # --- EOF -------------------------------------------------------------------
