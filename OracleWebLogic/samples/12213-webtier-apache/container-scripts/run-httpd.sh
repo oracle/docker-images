@@ -1,5 +1,16 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+#
+# Since: May, 2018
+# Author: dongbo.xiao@oracle.com
+# Description: script to start Apache HTTP Server 
+#
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+#
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 # Apache gets grumpy about PID files pre-existing
 rm -f /run/httpd/httpd.pid
