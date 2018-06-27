@@ -4,14 +4,6 @@
 # 
 LoadModule ssl_module modules/mod_ssl.so
 
-# Listen 4433
-# <VirtualHost *:4433>
-#   ServerName slc16ffk.us.oracle.com
-#   SSLEngine on
-#   SSLCertificateFile "/config/ssl/example.crt"
-#   SSLCertificateKeyFile "/config/ssl/example.key"
-# </VirtualHost>
-
 Listen 4433
 <VirtualHost *:4433>
   ServerName ${VIRTUAL_HOST_NAME}
