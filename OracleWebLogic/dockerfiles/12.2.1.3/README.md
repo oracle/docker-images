@@ -52,6 +52,7 @@ The WebLogic Server install image (built above) allows you to run a container wi
 The username and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker run time with a -v option. The properties file enables the scripts to configure the correct authentication for the WebLogic Admin server.
 
 The format of the domain.properties file is key value pair:
+
 	`username=myudminsername`
 	`password=myadminpassword`
 
@@ -60,6 +61,7 @@ The format of the domain.properties file is key value pair:
 #### Start the Container
 Start a container from the image created in step 1.
 You can override the default values of the following parameters during runtime with the `-e` option:
+
       * `ADMIN_NAME`                  (default: `AdminServer`)
       * `ADMIN_LISTEN_PORT`           (default: `7001`)
       * `DOMAIN_NAME`                 (default: `base_domain`)
@@ -75,8 +77,7 @@ Run the Administration Console:
 
         `$ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>`
 
-	`Go to your browser and enter` https://xxx.xx.x.x:9002/console `your browser will request for you to accept Security Exception. To avoid the Security Exception you must update the WebLogic server SSL configuration with a custom identity certificate.`
-        This returns the IP address of the container (for example, `xxx.xx.x.x`). Go to your browser and enter `https://xxx.xx.x.x:9002/console` your browser will request for you to accept Security Exception.
+Go to your browser and enter `https://xxx.xx.x.x:9002/console` your browser will request for you to accept Security Exception. To avoid the Security Exception you must update the WebLogic server SSL configuration with a custom identity certificate.
 
 ## Choose your Oracle WebLogic Server distribution
 
