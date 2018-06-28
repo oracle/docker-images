@@ -53,8 +53,8 @@ The username and password must be supplied in a domain.properties file located i
 
 The format of the domain.properties file is key value pair:
 
-	`username=myudminsername`
-	`password=myadminpassword`
+	username=myudminsername
+	password=myadminpassword
 
 **Note**: Oracle recommends that the domain.properties file be deleted or secured after the container and the WebLogic server are started so the username and password are not inadvertently exposed.
 
@@ -75,7 +75,7 @@ You can override the default values of the following parameters during runtime w
 
 Run the Administration Console:
 
-        `$ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>`
+        $ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>
 
 Go to your browser and enter `https://xxx.xx.x.x:9002/console` your browser will request for you to accept Security Exception. To avoid the Security Exception you must update the WebLogic server SSL configuration with a custom identity certificate.
 
