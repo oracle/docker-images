@@ -1,4 +1,4 @@
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -6,13 +6,13 @@
 # --------------------------
 # This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
 #
-# Util scripts are copied into the image enabling users to plug NodeManager 
+# Util scripts are copied into the image enabling users to plug NodeManager
 # automatically into the AdminServer running on another container.
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
+# Run:
 # docker build --build-arg ADMIN_PASSWORD=<Admin Password> --build-arg ADMIN_USER=<Admin Username> -t wls-12213-domain .
 #      $ sudo docker build -t 12213-domain
 #
@@ -25,9 +25,9 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # Build time arguments
 # --------------------
-ARG number_of_ms=5 
-ARG ADMIN_PASS 
-ARG ADMIN_USER 
+ARG number_of_ms=5
+ARG ADMIN_PASS
+ARG ADMIN_USER
 
 
 # Environment variables required for this build (do NOT change)
@@ -41,7 +41,7 @@ ENV MW_HOME="$ORACLE_HOME" \
     DEFAULT_MS_NAME=ms-0 \
     MSNAME_PREFIX=ms- \
     DNS_DOMAIN_NAME=wls-subdomain \
-    WLST="$ORACLE_HOME/oracle_common/common/bin/wlst.sh" 
+    WLST="$ORACLE_HOME/oracle_common/common/bin/wlst.sh"
 
 # Copy scripts
 # --------------------------------

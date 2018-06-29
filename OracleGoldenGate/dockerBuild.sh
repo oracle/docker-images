@@ -19,7 +19,7 @@ if [[ "${1:--h}" == "-h" ]]; then
     echo "  docker-build-options    Command line options for Docker build"
     echo ""
     echo "Example:"
-    echo "  ./$(basename $0) ~/Downloads/123012_fbo_ggs_Linux_x64_services_shiphome.zip --no-cache"
+    echo "  ./$(basename $0) ~/Downloads/123014_fbo_ggs_Linux_x64_services_shiphome.zip --no-cache"
     exit 1
 fi
 
@@ -102,11 +102,12 @@ find    ggstar -type f \( -name '*.so*' -o -not -name '*.*' \) -exec chmod +x {}
 tar Ccf ggstar ${OGG_TARFILE} --owner=54321 --group=54321 .
 rm -fr  ggstar
 
-[[ ! -z "${BASE_IMAGE}" ]] && BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${BASE_IMAGE}"
-[[ ! -z "${http_proxy}" ]] && HTTP_PROXY_ARG="--build-arg http_proxy=${http_proxy}"
+[[ ! -z "${BASE_IMAGE}"  ]] && BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${BASE_IMAGE}"
+[[ ! -z "${http_proxy}"  ]] && HTTP_PROXY_ARG="--build-arg http_proxy=${http_proxy}"
+[[ ! -z "${https_proxy}" ]] && HTTPS_PROXY_ARG="--build-arg https_proxy=${https_proxy}"
 
 docker build ${BASE_IMAGE_ARG} \
-             ${HTTP_PROXY_ARG} \
+             ${HTTP_PROXY_ARG} ${HTTPS_PROXY_ARG} \
              --build-arg OGG_VERSION=${OGG_VERSION} \
              --build-arg OGG_EDITION=${OGG_EDITION} \
              --build-arg OGG_TARFILE=${OGG_TARFILE} \

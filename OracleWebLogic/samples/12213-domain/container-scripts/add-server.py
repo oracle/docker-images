@@ -1,4 +1,4 @@
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -27,7 +27,8 @@ def randomName():
 
 
 # ManagedServer details
-msinternal = socket.gethostbyname(hostname)
+# msinternal = socket.gethostbyname(hostname)
+msinternal = ''
 msname = os.environ.get('MS_NAME', 'ManagedServer-%s@%s' % (randomName(), hostname))
 nmname = os.environ.get('NM_NAME', 'Machine-' + hostname)
 mshost = os.environ.get('MS_HOST', msinternal)

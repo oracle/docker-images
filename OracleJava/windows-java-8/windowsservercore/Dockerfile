@@ -1,7 +1,7 @@
 FROM microsoft/windowsservercore:latest
 
-ENV JAVA_PKG=server-jre-8u161-windows-x64.tar.gz \
-    JAVA_HOME=C:\\jdk1.8.0_161
+ENV JAVA_PKG=server-jre-8u171-windows-x64.tar.gz \
+    JAVA_HOME=C:\\jdk1.8.0_171
 
 ADD $JAVA_PKG /
 

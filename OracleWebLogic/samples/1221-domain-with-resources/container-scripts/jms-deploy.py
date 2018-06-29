@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # WLST Offline for deploying an application under APP_NAME packaged in APP_PKG_FILE located in APP_PKG_LOCATION
 # It will read the domain under DOMAIN_HOME by default
@@ -8,7 +8,7 @@
 #
 import os
 
-# Deployment Information 
+# Deployment Information
 domainname = os.environ.get('DOMAIN_NAME', 'base_domain')
 admin_name = os.environ.get('ADMIN_NAME', 'AdminServer')
 domainhome = os.environ.get('DOMAIN_HOME', '/u01/oracle/user_projects/domains/' + domainname)
@@ -40,7 +40,7 @@ print('Create JMSServer : [%s]' % 'DockerJMSServer')
 
 cd('/JMSServers/DockerJMSServer')
 set('PersistentStore', 'DockerFileStore')
-print('FileStore_name     : [%s]' % getMBean('/FileStores/DockerFileStore')) 
+print('FileStore_name     : [%s]' % getMBean('/FileStores/DockerFileStore'))
 
 cd('/')
 assign('JMSServer', 'DockerJMSServer', 'Target', admin_name)
@@ -60,7 +60,7 @@ myq.setSubDeploymentName('DockerQueueSubDeployment')
 cd('/JMSSystemResource/DockerJMSSystemResource')
 create('DockerQueueSubDeployment', 'SubDeployment')
 
-# Target resources to the servers 
+# Target resources to the servers
 # ===============================
 cd('/')
 assign('JMSSystemResource.SubDeployment', 'DockerJMSSystemResource.DockerQueueSubDeployment', 'Target', 'DockerJMSServer')

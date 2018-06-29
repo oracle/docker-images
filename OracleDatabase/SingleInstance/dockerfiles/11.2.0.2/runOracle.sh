@@ -44,6 +44,8 @@ function moveFiles {
    su -p oracle -c "mv $ORACLE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    su -p oracle -c "mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    mv /etc/sysconfig/oracle-xe $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+
+   cp /etc/oratab $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
       
    symLinkFiles;
 }
@@ -70,6 +72,8 @@ function symLinkFiles {
    if [ ! -L /etc/sysconfig/oracle-xe ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oracle-xe /etc/sysconfig/oracle-xe
    fi;
+
+   cp $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab /etc/oratab
 }
 
 ########### SIGTERM handler ############

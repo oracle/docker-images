@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -13,7 +13,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
+# Run:
 #      $ sudo docker build -t 12212-domain-resources-online -f Dockerfile .
 #
 
@@ -36,12 +36,11 @@ COPY container-scripts/* /u01/oracle/
 
 RUN chmod +xr /u01/oracle/jms-wlst-online-config.sh && \
     chown oracle:oracle -R /u01/oracle
-    
+
 
 # Default directory creation, Admin Server boot
 # ---------------------------------------------
 USER oracle
 RUN . $ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh && \
     cd /u01/oracle && \
-    ./jms-wlst-online-config.sh 
-
+    ./jms-wlst-online-config.sh

@@ -1,4 +1,4 @@
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -6,13 +6,13 @@
 # --------------------------
 # This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
 #
-# Util scripts are copied into the image enabling users to plug NodeManager 
+# Util scripts are copied into the image enabling users to plug NodeManager
 # automatically into the AdminServer running on another container.
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
+# Run:
 #      $ sudo docker build -t 12212-domain
 #
 # Pull base image
@@ -23,7 +23,7 @@ FROM oracle/weblogic:12.2.1.2-developer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
-# WLS Configuration 
+# WLS Configuration
 # ---------------------------
 ENV ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
@@ -46,21 +46,21 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     ADMIN_PASSWORD="${ADMIN_PASSWORD:-""}" \
     CLUSTER_NAME="${CLUSTER_NAME:-DockerCluster}" \
     DEBUG_FLAG=true \
-    PRODUCTION_MODE=dev 
+    PRODUCTION_MODE=dev
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
 
 #Create directory where domain will be written to
-RUN mkdir -p $PRE_DOMAIN_HOME && \ 
+RUN mkdir -p $PRE_DOMAIN_HOME && \
     chmod a+xr $PRE_DOMAIN_HOME && \
     chown oracle:oracle -R $PRE_DOMAIN_HOME
 
-# Expose Node Manager default port, and also default for admin and managed server 
+# Expose Node Manager default port, and also default for admin and managed server
 EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT $DEBUG_PORT
 
 USER oracle
 WORKDIR $ORACLE_HOME
 
-# Define default command to start bash. 
+# Define default command to start bash.
 CMD ["/u01/oracle/createAndStartWLSDomain.sh"]

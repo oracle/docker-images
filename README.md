@@ -2,7 +2,7 @@
 This repository contains [Dockerfiles](https://docs.docker.com/engine/reference/builder/) and samples to build [Docker](https://www.docker.com/what-docker) images for Oracle commercial products and [Oracle sponsored open source projects](https://oss.oracle.com).
 
 ## Images on GitHub
-These images will require you to download any required Oracle commercial software before installation. If you want commercial software downloaded for you, view [Pre-built Images with Commercial Software](#pre-built-images-with-commercial-software).
+These images will require you to download any required Oracle commercial software before installation. If you want commercial software downloaded for you, view [Pre-Built Images with Commercial Software](#pre-built-images-with-commercial-software).
 
 ### Oracle Commercial Products
  - [Oracle BI](/OracleBI)
@@ -25,13 +25,12 @@ These images will require you to download any required Oracle commercial softwar
 
 ### Oracle Sponsored Open Source Projects
  - [GlassFish](GlassFish)
- - [GraalVM](GraalVM)
  - [MySQL](https://github.com/mysql/mysql-docker)
  - [OpenJDK](/OpenJDK)
  - [Oracle NoSQL Database](/NoSQL)
  - [Oracle Linux](https://github.com/oracle/container-images)
- 
-## Pre-built Images with Commercial Software
+
+## Pre-Built Images with Commercial Software
 These sources will download any Oracle commercial software for you:
 
  - [Oracle Container Registry](https://container-registry.oracle.com)
@@ -40,7 +39,7 @@ These sources will download any Oracle commercial software for you:
 ## Support
 For support and certification information, please consult the documentation for each product.
 
-For community support, discussions and feedback about the provided Dockerfiles visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers)
+For community support, discussions, and feedback about the provided Dockerfiles, visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers)
 
 ## Community Contributions
  - [Oracle Forms and Reports](https://github.com/oracle/docker-images/issues/212)

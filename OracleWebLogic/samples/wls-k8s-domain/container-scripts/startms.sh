@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -13,7 +13,7 @@ ok=0
 
 # wait until domain provision finished or exit after max retry
 while [ $ok -lt 1 -a $count -lt $maxRetry ] ; do
-  sleep 5 
+  sleep 5
   ok=`curl -I -v \
   --user $WLUSER:$WLPASSWORD \
   -H X-Requested-By:MyClient \

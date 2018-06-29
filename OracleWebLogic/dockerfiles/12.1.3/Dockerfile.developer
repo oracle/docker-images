@@ -1,24 +1,24 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for WebLogic 12.1.3 ZIP Distro
-# 
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) wls1213_dev_update3.zip 
-#     Download the Developer ZIP Update 3 installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
+# (1) wls1213_dev_update3.zip
+#     Download the Developer ZIP Update 3 installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 #
 # (2) server-jre-8uXX-linux-x64.tar.gz
-#     Download from http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html 
+#     Download from http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/weblogic:12.1.3-developer . 
+# Run:
+#      $ docker build -t oracle/weblogic:12.1.3-developer .
 #
 # IMPORTANT
 # ---------
@@ -28,13 +28,13 @@
 #
 # You can go into 'samples/1213-domain' after building the developer install image
 # and build the domain image, for example:
-# 
+#
 #   $ cd samples/1213-domain
 #   $ docker build -t mywls .
 #
 # Pull base image
 # ---------------
-FROM oracle/serverjre:8 
+FROM oracle/serverjre:8
 
 # Maintainer
 # ----------
@@ -53,12 +53,12 @@ ENV ORACLE_HOME=/u01/oracle \
 RUN mkdir -p /u01 && \
     chmod a+xr /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
-    
+
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV FMW_PKG=wls1213_dev_update3.zip \
-    MW_HOME=/u01/oracle 
-    
+    MW_HOME=/u01/oracle
+
 # Copy packages
 # -------------
 COPY $FMW_PKG /u01/
@@ -76,8 +76,8 @@ RUN $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && \
     find $ORACLE_HOME -name "*.sh" -exec chmod a+x {} \; && \
     rm /u01/$FMW_PKG
 
-WORKDIR $ORACLE_HOME 
+WORKDIR $ORACLE_HOME
 USER oracle
 
-# Define default command to start bash. 
+# Define default command to start bash.
 CMD ["bash"]
