@@ -128,7 +128,7 @@ In production, Oracle strongly recommend that you provide your own certificates 
 
 Use `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` to specify the name of the certificate and key files, including the path in the container's file system. Both of the environment variables need to be set.
 
-Note that if the certificate or/and key file do not exist, the startup of the Apache container will fail. 
+Note that if the certificate or/and key file does not exist, the startup of the Apache container will fail. 
 
 
 Once Apache is running in a container, you can access the WebLogic Admin Console under **`https://<virtual-host-name>:4433/console`**. The <virtual-host-name> needs to be the same as what is set to `VIRTUAL_HOST_NAME` environment variable. Note that if SSL is not enabled between Apache HTTP server and WebLogic Domain, you need to access the console under **`https://<virtual-host-name>:4433/console/login/LoginForm.jsp`**.
