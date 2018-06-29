@@ -39,11 +39,8 @@ ENV FMW_PKG="fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip" \
 COPY $FMW_PKG /tmp/
 COPY weblogic.conf /etc/httpd/conf.d/ 
 COPY custom_mod_wl_apache.conf.sample /config/custom_mod_wl_apache.conf
-COPY custom_mod_ssl_apache.conf.sample /config/
-COPY example.crt example.key /config/ssl/
 COPY custom_mod_wl_apache.conf.sample /configtmp/custom_mod_wl_apache.conf
-COPY custom_mod_ssl_apache.conf.sample /configtmp/
-COPY example.crt example.key /configtmp/ssl/
+COPY custom_mod_ssl_apache.conf.sample /configtmp/custom_mod_ssl_apache.conf
 COPY container-scripts/* /u01/oracle/container-scripts/
 
 # Use unzip because the base image does not contain a JDK

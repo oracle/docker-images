@@ -33,8 +33,10 @@ CN = $VIRTUAL_HOST_NAME
 [v3_req]
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = *.$VIRTUAL_HOST_NAME
-DNS.2 = localhost
+DNS.1 = $VIRTUAL_HOST_NAME.us.oracle.com
+DNS.2 = $VIRTUAL_HOST_NAME.cloud.oracle.com
+DNS.3 = *.$VIRTUAL_HOST_NAME
+DNS.4 = localhost
 EOF
 
 echo "Generating certs for $VIRTUAL_HOST_NAME"
@@ -48,3 +50,4 @@ openssl req -x509 -newkey rsa:2048 -sha256 -nodes -keyout "$SSL_CERT_KEY_FILE"  
 openssl x509 -noout -fingerprint -text < "$SSL_CERT_FILE" > "$SSL_CERT_FILE.info"
 # Protect the key
 chmod 400 "$SSL_CERT_KEY_FILE"
+chmod 400 "$SSL_CERT_FILE.info"
