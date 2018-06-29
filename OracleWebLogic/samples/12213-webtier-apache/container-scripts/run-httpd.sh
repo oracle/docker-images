@@ -13,7 +13,7 @@
 # Apache gets grumpy about PID files pre-existing
 rm -f /run/httpd/httpd.pid
 
-echo $SSL_CERT_PATH $SSL_CERT_NAME $VIRTUAL_HOST_NAME $GENERATE_CERT_IF_ABSENT
+echo $SSL_CERT_FILE $SSL_CERT_KEY_FILE $VIRTUAL_HOST_NAME 
 
 if [ ! -f /config/custom_mod_wl_apache.conf ]; then
   cp /configtmp/custom_mod_wl_apache.conf /config/
@@ -26,37 +26,26 @@ if [ -z ${VIRTUAL_HOST_NAME} ]; then
 else 
   # Set up SSL
   use_example=false
-  if [ -z ${SSL_CERT_PATH} ]; then
-    export SSL_CERT_PATH=/config/ssl
-    if [ -z ${SSL_CERT_NAME} ]; then
-      export SSL_CERT_NAME=example
-      use_example=true
-    fi 
-  else 
-    if [ -z ${SSL_CERT_NAME} ]; then
-      export SSL_CERT_NAME=example
-    fi
+  if [ -z ${SSL_CERT_FILE} ] && [ -z ${SSL_CERT_KEY_FILE} ]; then
+    export SSL_CERT_FILE=/config/ssl/example.crt
+    export SSL_CERT_KEY_FILE=/config/ssl/example.key
+    use_example=true
   fi
 
-  export SSL_CERT_FILE=$SSL_CERT_PATH/$SSL_CERT_NAME.crt
-  export SSL_CERT_KEY_FILE=$SSL_CERT_PATH/$SSL_CERT_NAME.key
+  # We only copy this file when SSL is enabled
+  cp /configtmp/custom_mod_ssl_apache.conf /etc/httpd/conf.d/
 
-  if [ ${use_example} = "false" ] ||
-     [ ${GENERATE_CERT_IF_ABSENT} = "true" ]; then
-
-    # We only copy this file when SSL is enabled
-    cp /configtmp/custom_mod_ssl_apache.conf /etc/httpd/conf.d/
-  fi
-
-  if [ ! -f ${SSL_CERT_FILE} ] || [ ! -f ${SSL_CERT_KEY_FILE} ]; then
-    if [ ${GENERATE_CERT_IF_ABSENT} = "true" ]; then
-      echo Generating self-signed certificates
-      if [ ! -d $SSL_CERT_PATH ]; then
-        mkdir -p 777 ${SSL_CERT_PATH} 
+  if [ -z ${SSL_CERT_FILE} ] || [ -z ${SSL_CERT_KEY_FILE} ]; then
+    echo Warning: both SSL_CERT_FILE and SSL_CERT_KEY_FILE need to be specified.
+  elif [ ! -f ${SSL_CERT_FILE} ] || [ ! -f ${SSL_CERT_KEY_FILE} ]; then
+    if [ ${use_example} = "true" ]; then
+      echo Generating self-signed certificates on the first startup
+      if [ ! -d "/config/ssl" ]; then
+        mkdir -p 777 /config/ssl
       fi
       sh /u01/oracle/container-scripts/certgen.sh
     else 
-      echo The certificate and key files do not exist, and GENERATE_CERT_IF_ABSENT is set to false. No certificate is generated. 
+      echo Warning: $SSL_CERT_FILE or/and $SSL_CERT_KEY_FILE is missing.
     fi
   else
     echo Found required SSL certificate and key

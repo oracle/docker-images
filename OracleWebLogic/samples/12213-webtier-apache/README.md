@@ -90,16 +90,14 @@ Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-
 ## Enable SSL Access From User to Apache HTTP Server
 You can enable SSL support from user to Apache HTTP server when starting the **Apache HTTP Server with Plugin** in a container using the following `docker run` commands.
 
-Note that the Apache HTTP Server is configured to listen to port 4433 for SSL traffic.
+Use `VIRTUAL_HOST_NAME` environment variable to enable SSL. Once enabled, the Apache HTTP Server is configured to listen to port 4433 for SSL traffic.
 
 ### Auto-generate Certificates On First Startup
-You can enable SSL support from user to Apache HTTP server by specify `VIRTUAL_HOST_NAME` environment variable.
 
-For demo and quick testing purposes, you could turn on auto-generation of the certificate and key using `-e GENERATE_CERT_IF_ABSENT=true`. This option will generate a demo certificate and key. It is strongly recommended that you specify `--volume-driver` and `-v` to ensure that the certificate is only generated on the first startup of the container, instead of every time the Apache container is started.
+For demo and quick testing purposes, you could use auto-generation of the certificate and key. This option generates demo certificate and key. It is strongly recommended that you specify `--volume-driver` and `-v` to ensure that the certificates are only generated on the first startup of the container, instead of every time the Apache container is started.
 
         $ docker run -d --name apache \
                      -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
-                     -e GENERATE_CERT_IF_ABSENT=true \
                      -e WEBLOGIC_HOST=<admin_host> \
                      -e WEBLOGIC_PORT=7001 \
                      -p 4433:4433 \
@@ -108,44 +106,30 @@ For demo and quick testing purposes, you could turn on auto-generation of the ce
                      -w /config \
                      12213-apache
 
-Where `VIRTUAL_HOST_NAME` specifies the VirtualHostName of Apache HTTP server. If `VIRTUAL_HOST_NAME` or `GENERATE_CERT_IF_ABSENT` is not set, SSL is not enabled.
+Use `VIRTUAL_HOST_NAME` to specify the VirtualHostName of Apache HTTP server. If `VIRTUAL_HOST_NAME` is not set, SSL is not enabled.
 
-The generated certificate and key are `/config/ssl/example.crt` and `/config/ssl/example.key`.
+This `docker run` command generates demo quality certificate and key, and put them in `/config/ssl/example.crt` and `/config/ssl/example.key` respectively.
 
-Note that here we use host machine's local file system as the `volume-driver`. For details of Volume and Volume Driver, please refer to Docker documentation. 
+Note that here we use host machine's `local` file system as the `volume-driver`. For details of volume and volume-driver, please refer to Docker documentation. 
 
-Automatically generated certificates are only for demo and quick testing purposes. They do not offer the level of security that is usually required in production.  See `container-scripts/certgen.sh` for details of the auto-generated certificate.
+Automatically generated certificates are only for demo and quick testing purposes. They do not offer the level of security that is usually required in production.  See `container-scripts/certgen.sh` for details of the auto-generated certificates.
 
 ### Provide Your Own Certificates
-In production, Oracle strongly recommend that you provide your own certificate using the following `docker run` command.
+In production, Oracle strongly recommend that you provide your own certificates using the following `docker run` command.
 
         $ docker run -d --name apache \
                      -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
-                     -e SSL_CERT_PATH=<ssl-certificate-path> \ 
-                     -e SSL_CERT_NAME=<ssl-certificate-name> \ 
+                     -e SSL_CERT_FILE=<ssl-certificate-file> \ 
+                     -e SSL_CERT_KEY_FILE=<ssl-certificate-key-file> \ 
                      -e WEBLOGIC_HOST=<admin_host> \
                      -e WEBLOGIC_PORT=7001 \
                      -p 4433:4433 \
                      12213-apache
 
-Where `SSL_CERT_PATH` specifies the path in the container's file system where the certificate and key files are going to be located. `SSL_CERT_NAME` specifies the base name of the SSL certificate and key. The certificate file name is `SSL_CERT_NAME.crt` and the key file name is `SSL_CERT_NAME.key`.
+Use `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` to specify the name of the certificate and key files, including the path in the container's file system. Both of the environment variables need to be set.
 
-If `VIRTUAL_HOST_NAME` is not set, SSL from the user to Apache is not enabled. If the certificate and key files do not exist, the startup of the Apache container will fail. Optionally you can turn on auto-generation as described above. 
+Note that if the certificate or/and key file do not exist, the startup of the Apache container will fail. 
 
-        $ docker run -d --name apache \
-                     -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
-                     -e SSL_CERT_PATH=<ssl-certificate-path> \ 
-                     -e SSL_CERT_NAME=<ssl-certificate-name> \ 
-                     -e GENERATE_CERT_IF_ABSENT=true \
-                     -e WEBLOGIC_HOST=<admin_host> \
-                     -e WEBLOGIC_PORT=7001 \
-                     -p 4433:4433 \
-                     --volume-driver local \
-                     -v <host-config-dir>:/config \
-                     -w /config \
-                     12213-apache
-
-The name and location of the auto-generated certificate files will be based on the value of `SSL_CERT_PATH` and `SSL_CERT_NAME`; the default value (`config/ssl` or `example`) will be used respectively if any of them is not set.
 
 Once Apache is running in a container, you can access the WebLogic Admin Console under **`https://<virtual-host-name>:4433/console`**. The <virtual-host-name> needs to be the same as what is set to `VIRTUAL_HOST_NAME` environment variable. Note that if SSL is not enabled between Apache HTTP server and WebLogic Domain, you need to access the console under **`https://<virtual-host-name>:4433/console/login/LoginForm.jsp`**.
 
