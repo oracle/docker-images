@@ -18,14 +18,12 @@ Run `buildDockerImage.sh` script.
 
 Run an Apache container to access an admin server, or a managed server in a non-clustered environment, that is running on `<host>` and listening to `<port>`.
 
-        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> \
-                     -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -p 80:80 12213-apache
 
 Run an Apache image to proxy and load balance to a list of managed servers in a cluster.
         Use a list of hosts and ports
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port \
-                     -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 12213-apache
 
         Or use a cluster URL if it is available
 
@@ -99,7 +97,7 @@ You can enable SSL support from user to Apache HTTP server by specify `VIRTUAL_H
 
 For demo and quick testing purposes, you could turn on auto-generation of the certificate and key using `-e GENERATE_CERT_IF_ABSENT=true`. This option will generate a demo certificate and key. It is strongly recommended that you specify `--volume-driver` and `-v` to ensure that the certificate is only generated on the first startup of the container, instead of every time the Apache container is started.
 
-	$ docker run -d --name apache \
+        $ docker run -d --name apache \
                      -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
                      -e GENERATE_CERT_IF_ABSENT=true \
                      -e WEBLOGIC_HOST=<admin_host> \
@@ -121,7 +119,7 @@ Automatically generated certificates are only for demo and quick testing purpose
 ### Provide Your Own Certificates
 In production, Oracle strongly recommend that you provide your own certificate using the following `docker run` command.
 
-	$ docker run -d --name apache \
+        $ docker run -d --name apache \
                      -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
                      -e SSL_CERT_PATH=<ssl-certificate-path> \ 
                      -e SSL_CERT_NAME=<ssl-certificate-name> \ 
@@ -134,7 +132,7 @@ Where `SSL_CERT_PATH` specifies the path in the container's file system where th
 
 If `VIRTUAL_HOST_NAME` is not set, SSL from the user to Apache is not enabled. If the certificate and key files do not exist, the startup of the Apache container will fail. Optionally you can turn on auto-generation as described above. 
 
-	$ docker run -d --name apache \
+        $ docker run -d --name apache \
                      -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
                      -e SSL_CERT_PATH=<ssl-certificate-path> \ 
                      -e SSL_CERT_NAME=<ssl-certificate-name> \ 
