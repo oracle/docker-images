@@ -21,6 +21,7 @@ Run an Apache container to access an Administration Server, or a Managed Server,
         $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -p 80:80 oracle/apache:12.2.1.3
 
 Run an Apache image to proxy and load balance to a list of managed servers in a cluster.
+
         Use a list of hosts and ports.
 
         $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 oracle/apache:12.2.1.3
@@ -83,6 +84,7 @@ This mounting can be done by using the `-v` option with the `docker run` command
                      -p 80:80 oracle/apache:12.2.1.3
 
 **Note**: You can also mount the file directly as follows:
+
         $ docker run \
             -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf  \
             -w /config -d -e WEBLOGIC_HOST=<admin-host> \
