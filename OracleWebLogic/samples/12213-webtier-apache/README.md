@@ -18,16 +18,16 @@ Run `buildDockerImage.sh` script.
 
 Run an Apache container to access an admin server, or a managed server in a non-clustered environment, that is running on `<host>` and listening to `<port>`.
 
-        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -p 80:80 oracle/apache:12.2.1.3
 
 Run an Apache image to proxy and load balance to a list of managed servers in a cluster.
         Use a list of hosts and ports
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 oracle/apache:12.2.1.3
 
         Or use a cluster URL if it is available
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> -p 80:80 oracle/apache:12.2.1.3
 
 The values of **WEBLOGIC_CLUSTER** must be valid, and correspond to existing containers running WebLogic servers.
 
@@ -59,7 +59,7 @@ Start an Apache container by calling:
                      -e WEBLOGIC_HOST=<admin-host> \
                      -e WEBLOGIC_PORT=7001 \
                      -p 80:80 \
-                     12213-apache
+                     oracle/apache:12.2.1.3
 
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 7001. You can access the console from a remote machine using the weblgoic admin server's `<admin-host>` instead of `localhost`.
 
@@ -75,7 +75,7 @@ This mounting can be done by using the -v option with the `docker run` command a
         $ docker run -v <host-config-dir>:/config -w /config \
                      -d -e WEBLOGIC_HOST=<admin-host> \
                      -e WEBLOGIC_PORT=7001 \
-                     -p 80:80 12213-apache
+                     -p 80:80 oracle/apache:12.2.1.3
 
 Note: you can also mount the file directly as follows.
 
@@ -83,14 +83,16 @@ Note: you can also mount the file directly as follows.
             -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf  \
             -w /config -d -e WEBLOGIC_HOST=<admin-host> \
             -e WEBLOGIC_PORT=7001 \
-            -p 80:80 12213-apache
+            -p 80:80 oracle/apache:12.2.1.3
 
 Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-in version of the file.
 
 ## Enable SSL Access From User to Apache HTTP Server
-You can enable SSL support from user to Apache HTTP server when starting the **Apache HTTP Server with Plugin** in a container using the following `docker run` commands.
+You can enable SSL support from user to Apache HTTP server when starting the **Apache HTTP Server with WebLogic Server Proxy Plugin** in a container using the following `docker run` commands.
 
 Use `VIRTUAL_HOST_NAME` environment variable to enable SSL. Once enabled, the Apache HTTP Server is configured to listen to port 4433 for SSL traffic.
+
+Note: this section only demonstrates how to enable SSL from user to Apache HTTP server. In order for SSL to work from user to containerized Apache HTTP Server, and then to WebLogic domain in a container, you need to enable SSL on the WebLogic Server as well as on Apache HTTP Server with WebLogic Server Proxy Plugin.
 
 ### Auto-generate Certificates On First Startup
 
@@ -104,7 +106,7 @@ For demo and quick testing purposes, you could use auto-generation of the certif
                      --volume-driver local \
                      -v <host-config-dir>:/config \
                      -w /config \
-                     12213-apache
+                     oracle/apache:12.2.1.3
 
 Use `VIRTUAL_HOST_NAME` to specify the VirtualHostName of Apache HTTP server. If `VIRTUAL_HOST_NAME` is not set, SSL is not enabled.
 
@@ -124,14 +126,13 @@ In production, Oracle strongly recommend that you provide your own certificates 
                      -e WEBLOGIC_HOST=<admin_host> \
                      -e WEBLOGIC_PORT=7001 \
                      -p 4433:4433 \
-                     12213-apache
+                     oracle/apache:12.2.1.3
 
 Use `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` to specify the name of the certificate and key files, including the path in the container's file system. Both of the environment variables need to be set.
 
 Note that if the certificate or/and key file does not exist, the startup of the Apache container will fail. 
 
-
-Once Apache is running in a container, you can access the WebLogic Admin Console under **`https://<virtual-host-name>:4433/console`**. The <virtual-host-name> needs to be the same as what is set to `VIRTUAL_HOST_NAME` environment variable. Note that if SSL is not enabled between Apache HTTP server and WebLogic Domain, you need to access the console under **`https://<virtual-host-name>:4433/console/login/LoginForm.jsp`**.
+Once Apache is running in a container, you can access the WebLogic Admin Console under **`https://<virtual-host-name>:4433/console/console.portal`**. 
 
 **Note:** the usual procedure of applying the certificate on the client side needs to be followed. For example, the certificate needs to be imported into a web browser in order for a web client to access the Apache endpoint via https protocol. Follow the instructions in the vendor's documentation about importing a SSL certificate into a specific web browser. You may need to combine the certificate and key into a single file with `.pem` extension.
 

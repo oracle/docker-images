@@ -64,7 +64,7 @@ while getopts "hsdgiv:" optname; do
 done
 
 # Apache Image Name
-IMAGE_NAME="12213-apache"
+IMAGE_NAME="oracle/apache:12.2.1.3"
 
 # cd $VERSION
 

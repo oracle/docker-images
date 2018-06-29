@@ -33,10 +33,11 @@ CN = $VIRTUAL_HOST_NAME
 [v3_req]
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = $VIRTUAL_HOST_NAME.us.oracle.com
-DNS.2 = $VIRTUAL_HOST_NAME.cloud.oracle.com
-DNS.3 = *.$VIRTUAL_HOST_NAME
-DNS.4 = localhost
+DNS.1 = $VIRTUAL_HOST_NAME
+DNS.2 = $VIRTUAL_HOST_NAME.us.oracle.com
+DNS.3 = $VIRTUAL_HOST_NAME.cloud.oracle.com
+DNS.4 = *.$VIRTUAL_HOST_NAME
+DNS.5 = localhost
 EOF
 
 echo "Generating certs for $VIRTUAL_HOST_NAME"

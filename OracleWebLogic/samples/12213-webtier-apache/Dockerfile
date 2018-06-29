@@ -30,8 +30,7 @@ ENV FMW_PKG="fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip" \
     WEBLOGIC_CLUSTER="server0:7002,server1:7002" \
     LOCATION="/weblogic" \
     WEBLOGIC_HOST="wlsadmin" \
-    WEBLOGIC_PORT="7001" \
-    GENERATE_CERT_IF_ABSENT="false" 
+    WEBLOGIC_PORT="7001" 
 
 
 # Copy required files to build this image
