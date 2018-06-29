@@ -71,11 +71,6 @@ If you want to start the Apache container with some pre-specified `mod_weblogic`
 
 * Place the `custom_mod_wl_apache.conf` file in a directory `<host-config-dir>` on the host machine and then mount this directory into the container at the location `/config`. By doing so, the contents of the host directory `<host-config-dir>` (and hence `custom_mod_wl_apache.conf`) will become available in the container at the mount point.
 
-        $ docker run -v <host-config-dir>:/config -w /config \
-                     -d -e WEBLOGIC_HOST=<admin-host> \
-                     -e WEBLOGIC_PORT=7001 \
-                     -p 80:80 oracle/apache:12.2.1.3
-
 This mounting can be done by using the `-v` option with the `docker run` command as shown below.
 
         $ docker run -v <host-config-dir>:/config -w /config \
