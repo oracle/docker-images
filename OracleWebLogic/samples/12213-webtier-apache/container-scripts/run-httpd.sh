@@ -41,7 +41,7 @@ else
     if [ ${use_example} = "true" ]; then
       echo Generating self-signed certificates on the first startup
       if [ ! -d "/config/ssl" ]; then
-        mkdir -p 777 /config/ssl
+        mkdir -p -m 777 /config/ssl
       fi
       sh /u01/oracle/container-scripts/certgen.sh
     else 
