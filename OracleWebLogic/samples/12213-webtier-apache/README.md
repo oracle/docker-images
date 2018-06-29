@@ -18,13 +18,14 @@ Run `buildDockerImage.sh` script.
 
 Run an Apache container to access an admin server, or a managed server in a non-clustered environment, that is running on `<host>` and listening to `<port>`.
 
-        $ docker run -d -e WEBLOGIC_HOST=<host> WEBLOGIC_PORT=<port> -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> \
+                     -p 80:80 12213-apache
 
-Run an Apache image to proxy and load balance to a list of managed servers in a cluster
-     
-        Use a list of hosts and ports.
+Run an Apache image to proxy and load balance to a list of managed servers in a cluster.
+        Use a list of hosts and ports
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 12213-apache
+        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port \
+                     -p 80:80 12213-apache
 
         Or use a cluster URL if it is available
 
@@ -47,11 +48,20 @@ Start a container from the WebLogic install image. You can override the default 
 
 NOTE: To set the DOMAIN_NAME, you must set both DOMAIN_NAME and DOMAIN_HOME.
 
-        $ docker run -d -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=welcome1 -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain -p 7001:7001 store/oracle/weblogic:12.2.1.3
+        $ docker run -d -e ADMIN_USERNAME=weblogic \
+                     -e ADMIN_PASSWORD=welcome1 \
+                     -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain \
+                     -e DOMAIN_NAME=abc_domain \
+                     -p 7001:7001 \
+                     store/oracle/weblogic:12.2.1.3
 
 Start an Apache container by calling:
 
-        $ docker run -d --name apache -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run -d --name apache \
+                     -e WEBLOGIC_HOST=<admin-host> \
+                     -e WEBLOGIC_PORT=7001 \
+                     -p 80:80 \
+                     12213-apache
 
 Now you can access the WebLogic Admin Console under **http://localhost/console** (default to port 80) instead of using port 7001. You can access the console from a remote machine using the weblgoic admin server's `<admin-host>` instead of `localhost`.
 
@@ -64,11 +74,18 @@ If you want to start the Apache container with some pre-specified `mod_weblogic`
 
 This mounting can be done by using the -v option with the `docker run` command as shown below. 
 
-        $ docker run -v <host-config-dir>:/config -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run -v <host-config-dir>:/config -w /config \
+                     -d -e WEBLOGIC_HOST=<admin-host> \
+                     -e WEBLOGIC_PORT=7001 \
+                     -p 80:80 12213-apache
 
 Note: you can also mount the file directly as follows.
 
-        $ docker run -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf -w /config -d -e WEBLOGIC_HOST=<admin-host> -e WEBLOGIC_PORT=7001 -p 80:80 12213-apache
+        $ docker run \
+            -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf  \
+            -w /config -d -e WEBLOGIC_HOST=<admin-host> \
+            -e WEBLOGIC_PORT=7001 \
+            -p 80:80 12213-apache
 
 Once the mounting is done, the custom_mod_wl_apache.conf will replace the built-in version of the file.
 
@@ -78,24 +95,24 @@ You can enable SSL support from user to Apache HTTP server when starting the **A
 Note that the Apache HTTP Server is configured to listen to port 4433 for SSL traffic.
 
 ### Auto-generate Certificates On First Startup
-You can enable SSL support from user to Apache HTTP server by specify VIRTUAL_HOST_NAME environment variable.
+You can enable SSL support from user to Apache HTTP server by specify `VIRTUAL_HOST_NAME` environment variable.
 
 For demo and quick testing purposes, you could turn on auto-generation of the certificate and key using `-e GENERATE_CERT_IF_ABSENT=true`. This option will generate a demo certificate and key. It is strongly recommended that you specify `--volume-driver` and `-v` to ensure that the certificate is only generated on the first startup of the container, instead of every time the Apache container is started.
 
 	$ docker run -d --name apache \
-          -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
-          -e GENERATE_CERT_IF_ABSENT=true \
-          -e WEBLOGIC_HOST=<admin_host> \
-          -e WEBLOGIC_PORT=7001 \
-          -p 4433:4433 \
-          --volume-driver local \
-          -v <host-config-dir>:/config \
-          -w /config \
-          12213-apache
+                     -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
+                     -e GENERATE_CERT_IF_ABSENT=true \
+                     -e WEBLOGIC_HOST=<admin_host> \
+                     -e WEBLOGIC_PORT=7001 \
+                     -p 4433:4433 \
+                     --volume-driver local \
+                     -v <host-config-dir>:/config \
+                     -w /config \
+                     12213-apache
 
 Where `VIRTUAL_HOST_NAME` specifies the VirtualHostName of Apache HTTP server. If `VIRTUAL_HOST_NAME` or `GENERATE_CERT_IF_ABSENT` is not set, SSL is not enabled.
 
-The generated certificate and key are `/config/ssl/example.crt` and `/config/ssl/example/key`.
+The generated certificate and key are `/config/ssl/example.crt` and `/config/ssl/example.key`.
 
 Note that here we use host machine's local file system as the `volume-driver`. For details of Volume and Volume Driver, please refer to Docker documentation. 
 
@@ -105,30 +122,30 @@ Automatically generated certificates are only for demo and quick testing purpose
 In production, Oracle strongly recommend that you provide your own certificate using the following `docker run` command.
 
 	$ docker run -d --name apache \
-          -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
-          -e SSL_CERT_PATH=<ssl-certificate-path> \ 
-          -e SSL_CERT_NAME=<ssl-certificate-name> \ 
-          -e WEBLOGIC_HOST=<admin_host> \
-          -e WEBLOGIC_PORT=7001 \
-          -p 4433:4433 \
-          12213-apache
+                     -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
+                     -e SSL_CERT_PATH=<ssl-certificate-path> \ 
+                     -e SSL_CERT_NAME=<ssl-certificate-name> \ 
+                     -e WEBLOGIC_HOST=<admin_host> \
+                     -e WEBLOGIC_PORT=7001 \
+                     -p 4433:4433 \
+                     12213-apache
 
 Where `SSL_CERT_PATH` specifies the path in the container's file system where the certificate and key files are going to be located. `SSL_CERT_NAME` specifies the base name of the SSL certificate and key. The certificate file name is `SSL_CERT_NAME.crt` and the key file name is `SSL_CERT_NAME.key`.
 
 If `VIRTUAL_HOST_NAME` is not set, SSL from the user to Apache is not enabled. If the certificate and key files do not exist, the startup of the Apache container will fail. Optionally you can turn on auto-generation as described above. 
 
 	$ docker run -d --name apache \
-          -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
-          -e SSL_CERT_PATH=<ssl-certificate-path> \ 
-          -e SSL_CERT_NAME=<ssl-certificate-name> \ 
-          -e GENERATE_CERT_IF_ABSENT=true \
-          -e WEBLOGIC_HOST=<admin_host> \
-          -e WEBLOGIC_PORT=7001 \
-          -p 4433:4433 \
-          --volume-driver local \
-          -v <host-config-dir>:/config \
-          -w /config \
-          12213-apache
+                     -e VIRTUAL_HOST_NAME=<virtual_host_name> \ 
+                     -e SSL_CERT_PATH=<ssl-certificate-path> \ 
+                     -e SSL_CERT_NAME=<ssl-certificate-name> \ 
+                     -e GENERATE_CERT_IF_ABSENT=true \
+                     -e WEBLOGIC_HOST=<admin_host> \
+                     -e WEBLOGIC_PORT=7001 \
+                     -p 4433:4433 \
+                     --volume-driver local \
+                     -v <host-config-dir>:/config \
+                     -w /config \
+                     12213-apache
 
 The name and location of the auto-generated certificate files will be based on the value of `SSL_CERT_PATH` and `SSL_CERT_NAME`; the default value (`config/ssl` or `example`) will be used respectively if any of them is not set.
 
