@@ -32,16 +32,19 @@ ENV FMW_PKG="fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip" \
     WEBLOGIC_HOST="wlsadmin" \
     WEBLOGIC_PORT="7001" 
 
+
 # Copy required files to build this image
 # ------------------------------------------------------
 COPY $FMW_PKG /tmp/
 COPY weblogic.conf /etc/httpd/conf.d/ 
 COPY custom_mod_wl_apache.conf.sample /config/custom_mod_wl_apache.conf
+COPY custom_mod_wl_apache.conf.sample /configtmp/custom_mod_wl_apache.conf
+COPY custom_mod_ssl_apache.conf.sample /configtmp/custom_mod_ssl_apache.conf
 COPY container-scripts/* /u01/oracle/container-scripts/
 
 # Use unzip because the base image does not contain a JDK
 # Note that adding unzip does not noticeably increase the size of the image
-RUN yum install -y unzip httpd libaio && \
+RUN yum install -y unzip httpd libaio mod_ssl.x86_64 && \
     unzip /tmp/$FMW_PKG -d /tmp && \
     unzip /tmp/$PLUGINS_PKG -d /tmp && \
     unzip /tmp/$PLUGIN_PKG -d $PLUGIN_HOME && \
@@ -50,7 +53,7 @@ RUN yum install -y unzip httpd libaio && \
     rm /tmp/$PLUGINS_PKG /tmp/WLSPlugin12.2.1.3.0-*.zip /tmp/$FMW_PKG /tmp/fmw_12213_readme*
 
 #Expose ports
-EXPOSE 80
+EXPOSE 80 4433
 
 # Provision Apache instance
 CMD ["/u01/oracle/container-scripts/run-httpd.sh"]
