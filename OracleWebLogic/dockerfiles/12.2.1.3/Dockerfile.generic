@@ -55,11 +55,10 @@ COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls
 # ------------------------------------------------------------
 ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
     DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain} \
-    ADMIN_PORT="${ADMIN_PORT:-7001}" \
-    ADMIN_USERNAME="${ADMIN_USERNAME:-weblogic}" \
+    ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}" \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
-    ADMIN_PASSWORD="${ADMIN_PASSWORD:-""}"
-
+    ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-true}" \
+    ADMINISTRATION_PORT="${ADMINISTRATION_PORT:-9002}"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
