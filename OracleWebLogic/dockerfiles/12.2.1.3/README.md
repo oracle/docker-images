@@ -46,10 +46,10 @@ Before you build, select the version and distribution for which you want to buil
         `$ docker images`
 
 ### Running a Single Server Domain from the image
-The WebLogic Server install image (built above) allows you to run a container with a single WebLogic server domain.  This makes it extreemly simple to deploy applications and any resource the application might need.
+The WebLogic Server install image (built above) allows you to run a container with a single WebLogic server domain.  This makes it extremely simple to deploy applications and any resource the application might need.
 
 #### Providing Admin server Usernasme and Password 
-The username and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker run time with a -v option. The properties file enables the scripts to configure the correct authentication for the WebLogic Admin server.
+The username and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker run time with a -v option. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
 
 The format of the domain.properties file is key value pair:
 
@@ -77,7 +77,7 @@ Run the Administration Console:
 
         $ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>
 
-Go to your browser and enter `https://xxx.xx.x.x:9002/console` your browser will request for you to accept Security Exception. To avoid the Security Exception you must update the WebLogic server SSL configuration with a custom identity certificate.
+Go to your browser and enter `https://xxx.xx.x.x:9002/console`. Your browser will request for you to accept Security Exception. To avoid the Security Exception you must update the WebLogic server SSL configuration with a custom identity certificate.
 
 ## Choose your Oracle WebLogic Server distribution
 
