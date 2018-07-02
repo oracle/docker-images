@@ -49,11 +49,11 @@ Before you build, select the version and distribution for which you want to buil
 The WebLogic Server install image (built above) allows you to run a container with a single WebLogic server domain.  This makes it extremely simple to deploy applications and any resource the application might need.
 
 #### Providing Admin server Usernasme and Password 
-The username and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker run time with a -v option. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
+The username and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker run time with -v option to the image directory /u01/oracle/properties. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
 
 The format of the domain.properties file is key value pair:
 
-	username=myudminsername
+	username=myadminusername
 	password=myadminpassword
 
 **Note**: Oracle recommends that the domain.properties file be deleted or secured after the container and the WebLogic server are started so the username and password are not inadvertently exposed.
