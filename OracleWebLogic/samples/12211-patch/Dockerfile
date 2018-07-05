@@ -38,7 +38,7 @@ COPY $PSU_PKG /u01/
 # --------------------------------------------
 USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PSU_PKG && cd - && \
-    cd /u01/24286152 && $ORACLE_HOME/OPatch/opatch apply -silent - oracle && \
+    cd /u01/24286152 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     rm /u01/$PSU_PKG
 
 WORKDIR ${ORACLE_HOME}
