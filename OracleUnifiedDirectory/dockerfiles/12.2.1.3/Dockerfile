@@ -46,8 +46,11 @@ ENV ORAREPO=${ORAREPO:-orarepo} \
     OUD_INSTANCE=${OUD_INSTANCE:-oud_docker} \
     PORT="${PORT:-1389}" \
     PORT_SSL="${PORT_SSL:-1636}" \
+    PORT_HTTP="${PORT_HTTP:-8080}" \
+    PORT_HTTPS="${PORT_HTTPS:-10443}" \
     PORT_REP="${PORT_REP:-8989}" \
     PORT_ADMIN="${PORT_ADMIN:-4444}" \
+    PORT_ADMIN_HTTP="${PORT_ADMIN_HTTP:-8444}" \
     FMW_OUD_PKG="p26270957_122130_Generic.zip"
 
 # Use second ENV so that variable get substituted
@@ -111,8 +114,12 @@ RUN "${DOCKER_SCRIPTS}/setup_oudbase.sh"
 
 # Finalize image
 # ----------------------------------------------------------------------
-# expose the OUD admin, replication and ldap ports
-EXPOSE ${PORT} ${PORT_SSL} ${PORT_REP} ${PORT_ADMIN}
+# expose the OUD ports for ldap, ldaps, http, https, replication, 
+# administration and http administration
+EXPOSE  ${PORT} ${PORT_SSL} \
+        ${PORT_HTTP} ${PORT_HTTPS} \
+        ${PORT_REP} \
+        ${PORT_ADMIN} ${PORT_ADMIN_HTTP}
 
 # run container health check
 HEALTHCHECK --interval=1m --start-period=5m \
