@@ -35,8 +35,11 @@ export OUD_INSTANCE_HOME=${OUD_INSTANCE_HOME:-"${OUD_INSTANCE_BASE}/${OUD_INSTAN
 export HOST=$(hostname 2>/dev/null ||cat /etc/hostname ||echo $HOSTNAME)   # Hostname
 export PORT=${PORT:-1389}                               # Default LDAP port
 export PORT_SSL=${PORT_SSL:-1636}                       # Default LDAPS port
+export PORT_HTTP=${PORT_HTTP:-8080}                     # Default LDAPS port
+export PORT_HTTPS=${PORT_HTTPS:-10443}                  # Default LDAPS port
 export PORT_REP=${PORT_REP:-8989}                       # Default replication port
 export PORT_ADMIN=${PORT_ADMIN:-4444}                   # Default admin port
+export PORT_ADMIN_HTTP=${PORT_ADMIN_HTTP:-8444}         # Default admin port
 
 # Default value for the directory
 export ADMIN_USER=${ADMIN_USER:-'cn=Directory Manager'} # Default directory admin user
@@ -146,8 +149,11 @@ echo "  OUD_INSTANCE_INIT  = ${OUD_INSTANCE_INIT}"
 echo "  OUD_INSTANCE_HOME  = ${OUD_INSTANCE_HOME}"
 echo "  PORT               = ${PORT}"
 echo "  PORT_SSL           = ${PORT_SSL}"
+echo "  PORT_HTTP          = ${PORT_HTTP}"
+echo "  PORT_HTTPS         = ${PORT_HTTPS}"
 echo "  PORT_REP           = ${PORT_REP}"
 echo "  PORT_ADMIN         = ${PORT_ADMIN}"
+echo "  PORT_ADMIN_HTTP    = ${PORT_ADMIN_HTTP}"
 echo "  ADMIN_USER         = ${ADMIN_USER}"
 echo "  BASEDN             = ${BASEDN}"
 echo "  SAMPLE_DATA        = ${SAMPLE_DATA}"
@@ -166,8 +172,11 @@ elif [ ${OUD_PROXY} -eq 0 ]; then
         --rootUserDN "${ADMIN_USER}" \
         --rootUserPasswordFile "${OUD_INSTANCE_ADMIN}/etc/${OUD_INSTANCE}_pwd.txt" \
         --adminConnectorPort ${PORT_ADMIN} \
+        --httpAdminConnectorPort ${PORT_ADMIN_HTTP} \
         --ldapPort ${PORT} \
+        --httpPort ${PORT_HTTP} \
         --ldapsPort ${PORT_SSL} \
+        --httpsPort ${PORT_HTTPS} \
         --generateSelfSignedCertificate \
         --enableStartTLS \
         --hostname ${HOST} \
@@ -194,8 +203,11 @@ elif [ ${OUD_PROXY} -eq 1 ]; then
         --rootUserDN "${ADMIN_USER}" \
         --rootUserPasswordFile "${OUD_INSTANCE_ADMIN}/etc/${OUD_INSTANCE}_pwd.txt" \
         --adminConnectorPort ${PORT_ADMIN} \
+        --httpAdminConnectorPort ${PORT_ADMIN_HTTP} \
         --ldapPort ${PORT} \
+        --httpPort ${PORT_HTTP} \
         --ldapsPort ${PORT_SSL} \
+        --httpsPort ${PORT_HTTPS} \
         --generateSelfSignedCertificate \
         --enableStartTLS \
         --hostname ${HOST} \
