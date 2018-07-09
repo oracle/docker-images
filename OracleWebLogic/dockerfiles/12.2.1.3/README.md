@@ -45,20 +45,20 @@ Before you build, select the version and distribution for which you want to buil
 
         `$ docker images`
 
-### Running a Single Server Domain from the image
-The WebLogic Server install image (built above) allows you to run a container with a single WebLogic server domain.  This makes it extremely simple to deploy applications and any resource the application might need.
+### Running a single server domain from the image
+The WebLogic Server install image (built above) allows you to run a container with a single WebLogic Server domain.  This makes it extremely simple to deploy applications and any resource the application might need.
 
-#### Providing Admin server Usernasme and Password 
-The username and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker run time with the -v option to the image directory /u01/oracle/properties. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
+#### Providing the Administration Server user name and password
+The user name and password must be supplied in a `domain.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
 
-The format of the domain.properties file is key value pair:
+The format of the `domain.properties` file is key=value pair:
 
 	username=myadminusername
 	password=myadminpassword
 
-**Note**: Oracle recommends that the domain.properties file be deleted or secured after the container and the WebLogic server are started so the username and password are not inadvertently exposed.
+**Note**: Oracle recommends that the `domain.properties` file be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
-#### Start the Container
+#### Start the container
 Start a container from the image created in step 1.
 You can override the default values of the following parameters during runtime with the `-e` option:
 
@@ -69,15 +69,15 @@ You can override the default values of the following parameters during runtime w
       * `ADMINISTRATION_PORT_ENABLED` (default: `true`)
       * `ADMINISTRATION_PORT`         (default: `9002`)
 
-**NOTE**: To set the `DOMAIN_NAME`, you must set both `DOMAIN_NAME` and `DOMAIN_HOME`. For security the Administration port 9002 is enabled by default, if you would like to disable it set 'ADMINISTRTATION_PORT_ENABLED' to false. If you intend to run these images in production, you must change the Production Mode to `production`.
+**NOTE**: To set the `DOMAIN_NAME`, you must set both `DOMAIN_NAME` and `DOMAIN_HOME`. For security, the Administration port 9002 is enabled by default. If you would like to disable it, then set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`.
 
 	$docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12.2.1.3-developer
 
-Run the Administration Console:
+Run the WLS Administration Console:
 
         $ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>
 
-Go to your browser and enter `https://xxx.xx.x.x:9002/console`. Your browser will request for you to accept Security Exception. To avoid the Security Exception you must update the WebLogic server SSL configuration with a custom identity certificate.
+In your browser, enter `https://xxx.xx.x.x:9002/console`. Your browser will request that you accept the Security Exception. To avoid the Security Exception, you must update the WebLogic Server SSL configuration with a custom identity certificate.
 
 ## Choose your Oracle WebLogic Server distribution
 
@@ -93,7 +93,7 @@ This project hosts two configurations (depending on the Oracle WebLogic Server v
    - For more information on the Oracle WebLogic Server 12cR2 Generic Full Distribution, see [WebLogic Server 12.2.1.3 Documentation](http://docs.oracle.com/middleware/12213/wls/index.html).
 
 ## Samples for Oracle WebLogic Server domain creation
-To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, please take a look at the `12213-domain` sample.
+To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the `12213-domain` sample.
 
 ## Copyright
 Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
