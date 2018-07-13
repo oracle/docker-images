@@ -133,7 +133,7 @@ In production, Oracle strongly recommends that you provide your own certificates
 
 Use `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` to specify the name of the certificate and key files, including the path in the container's file system. Both of the environment variables need to be set.
 
-The example above assumes that your SSL certificate and key files are located in `<host-config-dir>`. It demonstrates how to mount the files into `/config` dir in the container's file system. You can mount `<host-config-dir>` into any directory in the container's file system, for example, `/myconfig`. 
+The example above assumes that your SSL certificate and key files are located in `<host-config-dir>`. It demonstrates how to mount the files into the `/config` directory in the container's file system. You can mount `<host-config-dir>` into any directory in the container's file system, for example, `/myconfig`. 
 
 Note that if the certificate or key file does not exist, the startup of the Apache container will fail.
 
