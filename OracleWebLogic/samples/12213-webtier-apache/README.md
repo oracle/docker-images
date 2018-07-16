@@ -89,7 +89,7 @@ This mounting can be done by using the `-v` option with the `docker run` command
 After the mounting is done, the `custom_mod_wl_apache.conf` file will replace the built-in version of the file.
 
 ## Enable SSL Access From User to Apache HTTP Server
-You can enable SSL support from the user to the Apache HTTP server when starting the **Apache HTTP Server with WebLogic Server Proxy Plugin** in a container using the following `docker run` commands.
+The following example `docker run` commands demonstrate how to enable SSL support from the user to the Apache HTTP server when starting the **Apache HTTP Server with WebLogic Server Proxy Plugin** in a container. Customers and users are welcome to use them as starters, and customize them to meet their own SSL requirements.
 
 Use the  `VIRTUAL_HOST_NAME` environment variable to enable SSL. Once enabled, the Apache HTTP Server is configured to listen to port 4433 for SSL traffic.
 
@@ -122,14 +122,18 @@ In production, Oracle strongly recommends that you provide your own certificates
 
         $ docker run -d --name apache \
                      -e VIRTUAL_HOST_NAME=<virtual_host_name> \
-                     -e SSL_CERT_FILE=<ssl-certificate-file> \
-                     -e SSL_CERT_KEY_FILE=<ssl-certificate-key-file> \
+                     -e SSL_CERT_FILE=/config/<ssl-certificate-file> \
+                     -e SSL_CERT_KEY_FILE=/config/<ssl-certificate-key-file> \
                      -e WEBLOGIC_HOST=<admin_host> \
                      -e WEBLOGIC_PORT=7001 \
                      -p 4433:4433 \
+                     -v <host-config-dir>:/config \
+                     -w /config \
                      oracle/apache:12.2.1.3
 
 Use `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` to specify the name of the certificate and key files, including the path in the container's file system. Both of the environment variables need to be set.
+
+The example above assumes that your SSL certificate and key files are located in `<host-config-dir>`. It demonstrates how to mount the files into the `/config` directory in the container's file system. You can mount `<host-config-dir>` into any directory in the container's file system, for example, `/myconfig`. 
 
 Note that if the certificate or key file does not exist, the startup of the Apache container will fail.
 
