@@ -51,6 +51,7 @@ function runContainerTest {
   fi;
 
 }
+export -f runContainerTest
 
 # Function: checkOracle
 # Checks whether Oracle DB is up and running
@@ -83,43 +84,9 @@ function checkOracle {
     
   done;
 }
+export -f checkOracle
 
-###################### TEST 12.2.0.2 EE lowercase PDB name ###########################
-
-# Run 12.2.0.1 EE lowercase PDB name
-runContainerTest "12.2.0.1 EE lowercase PDB name" "12.2.0.1-EE-lowercase-pdb" "oracle/database:12.2.0.1-ee" "ORCLTEST" "mypdb"
-
-###################### TEST 12.1.0.2 EE lowercase PDB name ###########################
-
-# Run 12.1.0.2 EE lowercase PDB name
-runContainerTest "12.1.0.2 EE lowercase PDB name" "12.1.0.2-EE-lowercase-pdb" "oracle/database:12.1.0.2-ee" "ORCLTEST" "mypdb"
-
-###################### TEST 11.2.0.2 XE default ###########################
-
-# Run 11.2.0.2 XE default container
-runContainerTest "11.2.0.2 XE default database" "11.2.0.2-XE-default" "oracle/database:11.2.0.2-xe" "XE"
-
-###################### TEST 12.2.0.1 EE default ###########################
-
-# Run 12.2.0.1 EE default container
-runContainerTest "12.2.0.1 EE default database" "12.2.0.1-EE-default" "oracle/database:12.2.0.1-ee"
-
-###################### TEST 12.2.0.1 EE custom DB ###########################
-
-# Run 12.2.0.1 EE custom container
-runContainerTest "12.2.0.1-EE-custom database" "12.2.0.1-EE-custom" "oracle/database:12.2.0.1-ee" "TEST"
-
-###################### TEST 12.2.0.1 SE2 default ###########################
-
-# Run 12.2.0.1 SE2 default container
-runContainerTest "12.2.0.1 SE2 default database" "12.2.0.1-SE2-default" "oracle/database:12.2.0.1-se2"
-
-###################### TEST 12.1.0.2 EE default ###########################
-
-# Run 12.1.0.2 EE default container
-runContainerTest "12.1.0.2 EE default database" "12.1.0.2-EE-default" "oracle/database:12.1.0.2-ee"
-
-###################### TEST 12.1.0.2 SE2 default ###########################
-
-# Run 12.1.0.2 SE2 default container
-runContainerTest "12.1.0.2 SE2 default database" "12.1.0.2-SE2-default" "oracle/database:12.1.0.2-se2"
+./runContainerTests183.sh
+./runContainerTests122.sh
+./runContainerTests121.sh
+./runContainerTests112.sh
