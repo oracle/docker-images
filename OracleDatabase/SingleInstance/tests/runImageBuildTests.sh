@@ -35,17 +35,28 @@ function checkError {
 
 cd "../dockerfiles"
 
-###################### TEST 11.2.0.2 XE ###########################
+###################### TESTS 18.3.0 images ###########################
 
 # Copy binary file
-cp $BIN_DIR/oracle-xe-11.2.0-1.0.x86_64.rpm.zip ./11.2.0.2/
+cp $BIN_DIR/db_home.zip ./18.3.0/
 
-# Build 11.2.0.2 XE images
-./buildDockerImage.sh -x -v 11.2.0.2
-checkError "Build 11.2.0.2 XE image" $?
+###################### TEST 18.3.0 EE ###########################
+
+# Build 18.3.0 EE images
+./buildDockerImage.sh -e -v 18.3.0
+checkError "Build 18.3.0 EE image" $?
+
+###################### TEST 18.3.0 SE2 ###########################
+
+# Build 18.3.0 SE2 images
+./buildDockerImage.sh -s -v 18.3.0
+checkError "Build 18.3.0 SE2 image" $?
 
 # Delete binary file
-rm ./11.2.0.2/oracle-xe-11.2.0-1.0.x86_64.rpm.zip
+rm ./18.3.0/db_home.zip
+
+###################### END TESTS 18.3.0 images ###########################
+
 
 ###################### TEST 12.2.0.1 EE ###########################
 
@@ -88,6 +99,18 @@ checkError "Build 12.1.0.2 SE2 image" $?
 
 # Delete binary file
 rm ./12.1.0.2/*.zip
+
+###################### TEST 11.2.0.2 XE ###########################
+
+# Copy binary file
+cp $BIN_DIR/oracle-xe-11.2.0-1.0.x86_64.rpm.zip ./11.2.0.2/
+
+# Build 11.2.0.2 XE images
+./buildDockerImage.sh -x -v 11.2.0.2
+checkError "Build 11.2.0.2 XE image" $?
+
+# Delete binary file
+rm ./11.2.0.2/oracle-xe-11.2.0-1.0.x86_64.rpm.zip
 
 ######################### END OF TESTS ############################
 
