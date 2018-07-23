@@ -38,7 +38,7 @@ cd "../dockerfiles"
 ###################### TESTS 18.3.0 images ###########################
 
 # Copy binary file
-cp $BIN_DIR/db_home.zip ./18.3.0/
+cp $BIN_DIR/LINUX.X64_180000_db_home.zip ./18.3.0/
 
 ###################### TEST 18.3.0 EE ###########################
 
