@@ -4,7 +4,11 @@
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-rm -Rf archive
+ARCHIVE_FILE=archive/wlsdeploy/applications/simple-app.war
+if [ -e $ARCHIVE_FILE ]; then
+    echo "Removing archive directory"
+    rm -Rf archive
+fi
 mkdir -p archive/wlsdeploy/applications
 cd simple-app
 jar cvf ../archive/wlsdeploy/applications/simple-app.war *
