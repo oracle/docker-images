@@ -28,7 +28,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 
 EOF
   exit 0
@@ -61,7 +61,7 @@ fi
 ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
-VERSION="12.2.0.1"
+VERSION="18.3.0"
 SKIPMD5=0
 DOCKEROPS=""
 
@@ -106,12 +106,16 @@ elif [ $ENTERPRISE -eq 1 ]; then
   EDITION="ee"
 elif [ $STANDARD -eq 1 ]; then
   EDITION="se2"
-elif [ $EXPRESS -eq 1 ] && [ "$VERSION" != "11.2.0.2" ]; then
-  echo "Version $VERSION does not have Express Edition available.";
-  exit 1;
-else
-  EDITION="xe";
-  DOCKEROPS="--shm-size=1G $DOCKEROPS";
+elif [ $EXPRESS -eq 1 ]; then
+  if [ "$VERSION" == "18.3.0" ]; then
+    EDITION="xe"
+  elif [ "$VERSION" == "11.2.0.2" ]; then
+    EDITION="xe"
+    DOCKEROPS="--shm-size=1G $DOCKEROPS";
+  else
+    echo "Version $VERSION does not have Express Edition available.";
+    exit 1;
+  fi;
 fi
 
 # Oracle Database Image Name
