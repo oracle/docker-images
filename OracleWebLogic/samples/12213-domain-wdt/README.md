@@ -20,11 +20,8 @@ When the WDT `discoverDomain` tool is used on an existing domain, a ZIP archive 
 
 ### How to Build and Run
 
-**NOTE:** The image is based on a WebLogic Server image in the docker-images project: `oracle/weblogic:12.2.1.3-developer`. Build that image to your local repository before building this sample.
+**NOTE:** The image is based on a WebLogic Server image in the docker-images project: `oracle/weblogic:12.2.1.3-developer`. Build that image to your local repository before building this sample.  The WebLogic Deploy Tool installer is used to build this image.
 
-The WebLogic Deploy Tool installer is required to build this image. Add `weblogic-deploy.zip` to the sample directory.
-
-    $ wget https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.11/weblogic-deploy.zip
 
 This sample deploys a simple, one-page web application contained in a ZIP archive. This archive needs to be built (one time only) before building the Docker image.
 
@@ -40,6 +37,7 @@ To build this sample, run:
 
 This will use the model file and archive in the sample directory.
 
+### How to Run 
 In this sample each of the managed servers in the WebLogic domain have a Data Source deployed to them. We want to connect the Data Source to an Oracle Database running in a container. Pull the Oracle Database image from the Docker Store or the Oracle Container Registry.
 
         $ docker pull container-registry.oracle.com/database/enterprise:12.2.0.1
@@ -50,7 +48,7 @@ Create the docker network for the WLS and Database containers to run
 
         $ docker network create -d bridge SampleNET
 
-### Run the Database container
+#### Run the Database container
 
 To create a database container, use the environment file below to set the database name, domain and feature bundle.  The example environment file properties/env.txt is:
 
@@ -76,7 +74,7 @@ Make sure you add the new Database password 'MYDBPassword' in the properties fil
 
         SQL> select * from Dual;
 
-### Run WebLoigic Domain
+#### Run WebLoigic Domain
 
 To start the containerized Administration Server, run:
 

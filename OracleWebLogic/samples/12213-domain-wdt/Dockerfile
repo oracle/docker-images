@@ -24,7 +24,6 @@
 #
 # Pull base image
 # ---------------
-# FROM store/oracle/weblogic:12.2.1.3
 FROM oracle/weblogic:12.2.1.3-developer
 
 # Maintainer
@@ -55,8 +54,8 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
-COPY weblogic-deploy.zip /u01
 COPY ${WDT_MODEL} ${ARCHIVE_FILE} /u01/
+
 
 # this file contains credentials.
 # be sure to build with --force-rm to eliminate this container layer
@@ -71,6 +70,7 @@ RUN chmod +xw /u01/oracle/*.sh && \
     chmod a+xr $PRE_DOMAIN_HOME && \
     chown -R oracle:oracle $PRE_DOMAIN_HOME && \
     cd /u01 && \
+    curl -OL https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.11/weblogic-deploy.zip && \
     $JAVA_HOME/bin/jar xf /u01/weblogic-deploy.zip && \
     chmod +xw /u01/weblogic-deploy/bin/*.sh && \
     chmod -R +xw /u01/weblogic-deploy/lib/python && \
