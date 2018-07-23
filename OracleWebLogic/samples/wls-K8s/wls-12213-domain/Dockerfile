@@ -45,8 +45,11 @@ ENV MW_HOME="$ORACLE_HOME" \
 
 # Copy scripts
 # --------------------------------
-USER oracle
+USER root
 COPY container-scripts/* /u01/oracle/
+RUN chown oracle:oracle /u01/oracle/*.sh
+RUN chown oracle:oracle /u01/oracle/*.py
+USER oracle
 RUN chmod +x /u01/oracle/*.sh /u01/oracle/*.py
 
 # Default directory creation, Admin Server boot
