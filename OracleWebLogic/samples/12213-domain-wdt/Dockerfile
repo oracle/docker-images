@@ -54,7 +54,7 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
-COPY ${WDT_MODEL} ${ARCHIVE_FILE} /u01/
+COPY ${WDT_MODEL} ${WDT_ARCHIVE} /u01/
 
 
 # this file contains credentials.
