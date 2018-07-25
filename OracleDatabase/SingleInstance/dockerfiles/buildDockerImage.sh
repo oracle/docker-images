@@ -23,6 +23,7 @@ Parameters:
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
    -o: passes on Docker build option
+   -m: Minimize image size by using multistage build (Requires Docker 17.05 to build)
 
 * select one edition only: -e, -s, or -x
 
@@ -64,8 +65,9 @@ EXPRESS=0
 VERSION="18.3.0"
 SKIPMD5=0
 DOCKEROPS=""
+MULTISTAGE=""
 
-while getopts "hesxiv:o:" optname; do
+while getopts "hesximv:o:" optname; do
   case "$optname" in
     "h")
       usage
@@ -87,6 +89,9 @@ while getopts "hesxiv:o:" optname; do
       ;;
     "o")
       DOCKEROPS="$OPTARG"
+      ;;
+    "m")
+      MULTISTAGE="-multistage"
       ;;
     "?")
       usage;
@@ -163,7 +168,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION . || {
+docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$EDITION$MULTISTAGE . || {
   echo ""
   echo "ERROR: Oracle Database Docker Image was NOT successfully created."
   echo "ERROR: Check the output and correct any reported problems with the docker build operation."
