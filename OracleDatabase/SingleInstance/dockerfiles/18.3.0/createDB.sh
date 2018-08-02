@@ -74,9 +74,10 @@ echo "$ORACLE_PDB=
   )
 )" >> $ORACLE_HOME/network/admin/tnsnames.ora
 
-# Remove second control file, make PDB auto open
+# Remove second control file, fix local_listener, make PDB auto open
 sqlplus / as sysdba << EOF
    ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
+   ALTER SYSTEM SET local_listener='';
    ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
    exit;
 EOF
