@@ -14,16 +14,28 @@ source ./helperFunctions.sh
 
 ###################### TEST 18.3.0 EE default ###########################
 
-# Run 18.3.0 EE default container
 runContainerTest "18.3.0 EE default database" "18.3.0-EE-default" "oracle/database:18.3.0-ee"
 
 ###################### TEST 18.3.0 SE2 default ###########################
 
-# Run 18.3.0 SE2 default container
 runContainerTest "18.3.0 SE2 default database" "18.3.0-SE2-default" "oracle/database:18.3.0-se2"
 
 ###################### TEST 18.3.0 EE lowercase PDB name ###########################
 
-# Run 18.3.0 EE lowercase PDB name
 runContainerTest "18.3.0 EE lowercase PDB name" "18.3.0-EE-lowercase-pdb" "oracle/database:18.3.0-ee" "ORCLTEST" "mypdb"
 
+###################### TEST 18.3.0 EE WE8ISO8859P1 character set ###########################
+
+runContainerTest "18.3.0 EE WE8ISO8859P1 character set" "18.3.0-EE-WE8ISO8859P1-character-set" "oracle/database:18.3.0-ee" "ORCLTEST" "PDB1" "WE8ISO8859P1"
+
+###################### TEST 18.3.0 EE WE8MSWIN1252 character set ###########################
+
+runContainerTest "18.3.0 EE WE8MSWIN1252 character set" "18.3.0-EE-WE8MSWIN1252-character-set" "oracle/database:18.3.0-ee" "ORCLTEST" "PDB1" "WE8MSWIN1252"
+
+###################### TEST 18.3.0 EE JA16SJISTILDE character set ###########################
+
+runContainerTest "18.3.0 EE JA16SJISTILDE character set" "18.3.0-EE-JA16SJISTILDE-character-set" "oracle/database:18.3.0-ee" "ORCLTEST" "PDB1" "JA16SJISTILDE"
+
+###################### TEST 18.3.0 EE KO16KSC5601 character set ###########################
+
+runContainerTest "18.3.0 EE KO16KSC5601 character set" "18.3.0-EE-KO16KSC5601-character-set" "oracle/database:18.3.0-ee" "ORCLTEST" "PDB1" "KO16KSC5601"

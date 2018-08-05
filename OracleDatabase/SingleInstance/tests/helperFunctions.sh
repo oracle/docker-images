@@ -17,18 +17,24 @@
 # CON_NAME: The container name
 # IMAGE: The image to use
 # ORACLE_SID: The Oracle SID
+# ORACLE_PDB: The Oracle PDB
+# ORACLE_CHARACTERSET: The character set
 function runContainerTest {
   TEST_NAME="$1"
   CON_NAME="$2"
   IMAGE="$3"
   ORACLE_SID=${4:-ORCLTEST}
   ORACLE_PDB=${5:-ORCLPDBTEST}
+  ORACLE_CHARACTERSET=${6:-AL32UTF8}
 
   echo "Test: $TEST_NAME"
   echo ""
   
   # Run and start container
-  docker run -d --shm-size=1g -e ORACLE_SID="$ORACLE_SID" -e ORACLE_PDB="$ORACLE_PDB" --name "$CON_NAME" "$IMAGE"
+  docker run -d --shm-size=1g -e ORACLE_SID="$ORACLE_SID" \
+                              -e ORACLE_PDB="$ORACLE_PDB" \
+                              -e ORACLE_CHARACTERSET="$ORACLE_CHARACTERSET" \
+                              --name "$CON_NAME" "$IMAGE"
   
   # Check whether Oracle is OK
   checkOracle "$TEST_NAME" "$CON_NAME" "$ORACLE_SID"
