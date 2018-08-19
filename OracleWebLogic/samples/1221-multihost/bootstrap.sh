@@ -1,9 +1,9 @@
 #!/bin/sh
-# 
-# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+#
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Author: Bruno Borges <bruno.borges@oracle.com>
-# 
+#
 echo "Bootstraping the required elements for Docker Machine and Swarm ..."
 echo ""
 
@@ -11,7 +11,7 @@ echo ""
 
 # Booting up a Docker Machine instance to orchestrate Multihost Network (with Consul and Registry)
 echo "Creating Multihost Orchestrator Machine ..."
-docker-machine create -d virtualbox --engine-insecure-registry 127.0.0.1:5000 $orchestrator 
+docker-machine create -d virtualbox --engine-insecure-registry 127.0.0.1:5000 $orchestrator
 eval "$(docker-machine env $orchestrator)"
 
 # update variables
@@ -42,7 +42,7 @@ docker network create --driver overlay $network
 
 # Save existing defined image to a file to be loaded later into the registry created above
 eval "$(docker-machine env -u)"
-docker save $image > _tmp_docker.img 
+docker save $image > _tmp_docker.img
 
 # Load, tag, and publish the image set in setenv.sh
 eval "$(docker-machine env $orchestrator)"

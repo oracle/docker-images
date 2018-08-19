@@ -1,7 +1,7 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
-# 
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+#
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This Dockerfile extends the Oracle WebLogic sample 1221-domain
@@ -11,13 +11,13 @@
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Run: 
+# Run:
 #      $ docker build -t 1221-domain-with-resources .
 #
 
 # Pull base image
 # ---------------
-FROM 1221-domain 
+FROM 1221-domain
 
 # Maintainer
 # ----------

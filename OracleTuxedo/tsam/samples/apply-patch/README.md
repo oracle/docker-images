@@ -22,5 +22,5 @@ docker build -t oracle/tsam:12.2.2.1 .
 Nothing has changed to use this image from running the base image. Please refer to the [README](../../README.md) file in the root directory for detail.
 
 ## Copyright
-Copyright (c) 1996-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
 

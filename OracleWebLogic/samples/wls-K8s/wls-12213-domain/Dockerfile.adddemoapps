@@ -1,5 +1,5 @@
 #
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -11,7 +11,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run the following command for the sample application included in this directory.
-#	$ docker build -t wls-12213-oow-demo-domain -f Dockerfile.adddemoapps .        
+#	$ docker build -t wls-12213-oow-demo-domain -f Dockerfile.adddemoapps .
 #
 
 # Pull base image
@@ -49,4 +49,3 @@ RUN . $ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh && \
 # Copy WLDF Resource configuration
 # ----------------------------------------------------------------
 COPY wldf-config/*.xml $DOMAINS_DIR/$DOMAIN_NAME/config/diagnostics/
-

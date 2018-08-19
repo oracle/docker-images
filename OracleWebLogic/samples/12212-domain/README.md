@@ -18,7 +18,7 @@ If you need to find the password at a later time, grep for "password" in the Doc
 
 ### How to Build and Run
 
-**NOTE:** First make sure you have built **oracle/weblogic:12.2.1.2-developer**. 
+**NOTE:** First make sure you have built **oracle/weblogic:12.2.1.2-developer**.
 
 You can define the following environment variables at docker runtime using the -e option  in the command line or defining them in the domain.properties file. These enviromental variables need to be set for the Admin Server as well as for the Managed Servers.
 
@@ -50,7 +50,7 @@ To build this sample, run:
 
         $ docker build -t 12212-domain .
 
-**Important** The domain directory needs to be externalized by using Data Volumes (-v option). The Admin Server as well as the Managed Servers need to read/write to the same DOMAIN_HOME. 
+**Important** The domain directory needs to be externalized by using Data Volumes (-v option). The Admin Server as well as the Managed Servers need to read/write to the same DOMAIN_HOME.
 
 To start the containerized Admin Server, run
 
@@ -58,15 +58,15 @@ To start the containerized Admin Server, run
 
 To start a containerized Managed Server (MS1) to self-register with the Admin Server above, run:
 
-        $ docker run -d --name MS1 --link wlsadmin:wlsadmin -p 8001:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS1 --volumes-from wlsadmin 12213-domain createServer.sh
+        $ docker run -d --name MS1 --link wlsadmin:wlsadmin -p 8001:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS1 --volumes-from wlsadmin 12212-domain createServer.sh
 
 To start a second Managed Server (MS2), run the following command:
 
-        $ docker run -d --name MS2 --link wlsadmin:wlsadmin -p 8002:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS2 --volumes-from wlsadmin 12213-domain createServer.sh
+        $ docker run -d --name MS2 --link wlsadmin:wlsadmin -p 8002:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS2 --volumes-from wlsadmin 12212-domain createServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a cluster setup, on a single host environment.
 
 You may create more containerized Managed Servers by calling the `docker` command above for `createServer.sh` as long you link properly with the Admin Server. For an example of multihost enviornment, check the sample `1221-multihost`.
 
 # Copyright
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.

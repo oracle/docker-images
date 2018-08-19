@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -13,10 +13,10 @@ ms_name_from_image=${DEFAULT_MS_NAME}
 sed -i 's/${OPERATOR_ENDPOINT}/'${OPERATOR_ENDPOINT}'/' $domain_home/config/diagnostics/Module-0-3905.xml
 chmod +w $domain_home/config/diagnostics/Module-0-3905.xml
 
-# Cluster Info 
+# Cluster Info
 export CLUSTER_NAME=DockerCluster
 export KEY_CLUSTER_PREFIX=${CLUSTER_NAME}/
-# Concurrency Lock Info 
+# Concurrency Lock Info
 export LOCK_NAME=Lock-${CLUSTER_NAME}
 # Stores Managed Server Name
 #export LOCAL_MS_NAME_PIPE=/tmp/MSName.fifo
@@ -56,7 +56,7 @@ function relay_SIGTERM {
 
 trap relay_SIGTERM SIGTERM
 
-# Start server 
+# Start server
 (bin/startManagedWebLogic.sh $LOCAL_MS_NAME t3://wls-admin-server:8001 ) &
 
 while [ ! -f $MS_DONE_FILE ]

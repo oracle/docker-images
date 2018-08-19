@@ -1,0 +1,11 @@
+PUBLIC DOMAIN DEDIDCATION
+
+This Dockerfile was created by Oracle and has been dedicated to the public 
+domain by Oracle.  The scope of Oracle's public domain dedication is limited to
+the content of the Dockerfile itself and does not extend to any other content
+in Docker images that may be created using the Dockerfile. Such Docker images,
+including any automated builds that are created and made available by Oracle,
+may contain material that is subject to copyright and other intellectual
+property rights of Oracle and/or third parties, which is licensed under terms
+specified in the applicable material and/or in the source code for that
+material.

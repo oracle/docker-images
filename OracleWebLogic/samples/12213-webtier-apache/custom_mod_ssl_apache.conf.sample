@@ -1,0 +1,15 @@
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+LoadModule ssl_module modules/mod_ssl.so
+
+Listen 4433
+<VirtualHost *:4433>
+  ServerName ${VIRTUAL_HOST_NAME}
+  SSLEngine on
+  SSLCertificateFile ${SSL_CERT_FILE}
+  SSLCertificateKeyFile ${SSL_CERT_KEY_FILE}
+</VirtualHost>
+
+

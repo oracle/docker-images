@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -34,15 +34,15 @@ if [ -z $ADMIN_PASSWORD ]; then
 else
    s=${ADMIN_PASSWORD}
    echo "      ----> 'weblogic' admin password: $s"
-fi 
+fi
 sed -i -e "s|ADMIN_PASSWORD|$s|g" /u01/oracle/create-wls-domain.py
 
 # Create an empty domain
 wlst.sh -skipWLSModuleScanning /u01/oracle/create-wls-domain.py
-mkdir -p ${DOMAIN_HOME}/servers/AdminServer/security/ 
-echo "username=${ADMIN_USERNAME}" > /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties 
-echo "password=$s" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties 
-${DOMAIN_HOME}/bin/setDomainEnv.sh 
+mkdir -p ${DOMAIN_HOME}/servers/AdminServer/security/
+echo "username=${ADMIN_USERNAME}" > /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties
+echo "password=$s" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties
+${DOMAIN_HOME}/bin/setDomainEnv.sh
 fi
 
 
@@ -53,5 +53,3 @@ tail -f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log &
 
 childPID=$!
 wait $childPID
-
-

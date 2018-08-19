@@ -4,7 +4,7 @@
 #
 FROM oraclelinux:7-slim
 
-MAINTAINER Bruno Borges <bruno.borges@oracle.com>
+MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     JAVA_HOME=/usr/java/default

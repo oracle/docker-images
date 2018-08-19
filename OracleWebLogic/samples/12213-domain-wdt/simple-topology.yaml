@@ -1,0 +1,73 @@
+domainInfo:
+    AdminUserName: '@@PROP:username@@'
+    AdminPassword: '@@PROP:password@@'
+    ServerStartMode: prod
+topology:
+    Name: '@@PROP:DOMAIN_NAME@@'
+    AdminServerName: AdminServer
+    Cluster:
+        mycluster:
+            ClientCertProxyEnabled: true
+            ClusterMessagingMode: unicast
+            DynamicServers:
+                ServerTemplate: template1
+                CalculatedListenPorts: false
+                ServerNamePrefix: 'ms-'
+                DynamicClusterSize: 4
+                MaxDynamicClusterSize: 4
+    Server:
+        AdminServer:
+            Machine: machine1
+            ListenPort: '@@PROP:ADMIN_PORT@@'
+    ServerTemplate:
+        template1:
+            Machine: machine1
+            ListenPort: 9001
+    Machine:
+        machine1:
+            Notes: The only machine
+            NodeManager:
+                NMType: SSL
+                ListenPort: 5556
+                Notes: The only node manager
+    SecurityConfiguration:
+        NodeManagerUsername: '@@PROP:NM_USER@@'
+        NodeManagerPasswordEncrypted: '@@PROP:NM_PASSWORD@@'
+    JMX:
+        InvocationTimeoutSeconds: 40
+        Notes: JMX notes
+        ManagedServerNotificationsEnabled: true
+    JTA:
+        MaxTransactions: 4
+        Notes: JTA notes
+resources:
+    JDBCSystemResource:
+        Generic1:
+            Target: mycluster
+            JdbcResource:
+                JDBCDataSourceParams:
+                    JNDIName: [ jdbc/generic1, jdbc/special1 ]
+                    GlobalTransactionsProtocol: TwoPhaseCommit
+                JDBCDriverParams:
+                    DriverName: oracle.jdbc.xa.client.OracleXADataSource
+                    URL: '@@PROP:DB_URL@@'
+                    PasswordEncrypted: '@@PROP:DB_PASSWORD@@'
+                    Properties:
+                        user:
+                            Value: '@@PROP:DB_USER@@'
+                        oracle.net.CONNECT_TIMEOUT:
+                            Value: 5000
+                        oracle.jdbc.ReadTimeout:
+                            Value: 30000
+                JDBCConnectionPoolParams:
+                    InitialCapacity: 0
+                    MaxCapacity: 15
+appDeployments:
+    Application:
+        # Quote needed because of hyphen in string
+        'simple-app':
+            SourcePath: 'wlsdeploy/applications/simple-app.war'
+            Target: mycluster
+            ModuleType: war
+            StagingMode: nostage
+            PlanStagingMode: nostage
