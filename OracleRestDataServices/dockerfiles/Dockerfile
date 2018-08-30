@@ -43,8 +43,8 @@ COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $ORDS_HOME/
 # ------------------------------------------------------------
 RUN mkdir -p  $ORDS_HOME/doc_root && \
     chmod ug+x $ORDS_HOME/*.sh && \
-    groupadd dba && \
-    useradd -d /home/oracle -g dba -m -s /bin/bash oracle && \
+    groupadd -g 54322 dba && \
+    useradd -u 54321 -d /home/oracle -g dba -m -s /bin/bash oracle && \
     cd $ORDS_HOME && \
     jar -xf $INSTALL_FILE && \
     rm $INSTALL_FILE && \

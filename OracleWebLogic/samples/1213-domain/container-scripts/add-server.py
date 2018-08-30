@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Script to create and add a Managed Server automatically to the domain's AdminServer running on 'wlsadmin'.
 #

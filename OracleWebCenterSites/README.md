@@ -17,7 +17,7 @@ To create web content management solutions, developers need a lightweight enviro
 
 This project offers scripts to build an Oracle WebCenter Sites image based on 12c R2 (12.2.1.3). Use this Docker configuration to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle WebCenter Sites, see the [Oracle WebCenter Sites Online Documentation](https://docs.oracle.com/middleware/12213/wcs/index.html).
 
-This project creates Oracle WebCenter Sites Docker image with a single node targeted for development and excludes components such as SatelliteServer, SiteCapture, and VisitorServices. This image is not supported or recommended to use on a production system.
+This project creates Oracle WebCenter Sites Docker image with a single node targeted for development and testing, and excludes components such as SatelliteServer, SiteCapture, and VisitorServices. This image is supported as per Oracle Support Note 2017945.1.
 
 ## 2. Hardware and Software Requirements
 Oracle WebCenter Sites has been tested and is known to run on the following hardware and software:
@@ -58,8 +58,8 @@ To download images from Oracle Container Registry (OCR) and Oracle Technology Ne
 
 Sign in to [Oracle Container Registry](https://container-registry.oracle.com). Click the **Sign in** link that's on the top-right of the Web page.
 
-### A. To download and set up Oracle Fusion Middleware Infrastructure image.
-1. Click **Home > Middleware** and then click **Continue** for the _fmw-infrastructure_ repository.
+### A. To download and Oracle Fusion Middleware Infrastructure image.
+1. Click **Middleware** and then click **Continue** for the _fmw-infrastructure_ repository.
 2. Click **Accept** to accept the license agreement.
 3. To download Oracle Fusion Middleware infrastructure base image:    
     ```
@@ -75,7 +75,7 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
     - If you want to build the image from GitHub, see [FAQ](#10-how-do-i-build-an-oracle-fusion-middleware-infrastructure-1221x-base-image) section.
 
 ### B. To download and set up Oracle Database Enterprise Edition image.
-1. Click **Home > Database** and then click **Continue** for _enterprise_ repository.
+1. Click **Database** and then click **Continue** for _enterprise_ repository.
 2. Click **Accept** to accept the license agreement.
 3. From the terminal, execute the following commands:
        
@@ -207,14 +207,14 @@ This container is used to manage Admin Server.
 
 `wcsitesadminserver.env.list` file details:
 ```
-    DOCKER_HOST=<Hostname>
+    DOCKER_HOST=<IP or Hostname of Docker Host. Should not use 'localhost' as IP or hostname of docker host.>
     DB_CONNECTSTRING=<Hostname/ContainerName>:<Database Port>/<DB_PDB>.<DB_DOMAIN>
     DB_USER=<By default: sys>
     DB_PASSWORD=<Database Password>
     RCU_PREFIX=<RCU_PREFIX>
     DB_SCHEMA_PASSWORD=<database_schema_password: if not provided, it gets auto generated>
     SAMPLES=<To install sample Sites, set samples as true, else set as false>
-    DOMAIN_NAME=<Domain Name optional>
+    DOMAIN_NAME=<Weblogic Domain Name optional>
     SITES_SERVER_NAME=<Sites Server Name optional>
     ADMIN_USERNAME=<Weblogic Admin UserName, default: weblogic>
     ADMIN_PASSWORD=<Weblogic Admin Password: if not provided, it gets auto generated>
@@ -282,7 +282,7 @@ Update the environment `wcsitesserver.env.list` file which is located at `../doc
 `wcsitesserver.env.list` file details:
 ```
    WCSITES_ADMIN_HOSTNAME=<WCSites Admin Container Name>
-   DOMAIN_NAME=<Domain Name>
+   DOMAIN_NAME=<Weblogic_Domain Name>
    SITES_SERVER_NAME=<Sites Server Name>
 ```
 #### 2. Start the Managed Container

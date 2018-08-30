@@ -1,5 +1,8 @@
 Examples of how to extend the Oracle Database Docker Image
 ================================
+# 1830-docker-compose
+Provides a Docker Compose example file for Oracle Database 18c 18.3.0
+
 # 12102-docker-compose
 Provides a Docker Compose example file for Oracle Database 12.1.0.2
 

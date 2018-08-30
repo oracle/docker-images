@@ -14,7 +14,7 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
 
 ##How to Build and Run
 
-**NOTE:** Our instructions are based on running this sample in Minikube but it will run on any Kubernetes environment. Make sure you have minikube installed, and have built **oracle/weblogic:12.2.1.3-developer**. 
+**NOTE:** Our instructions are based on running this sample in Minikube but it will run on any Kubernetes environment. Make sure you have minikube installed, and have built **oracle/weblogic:12.2.1.3-developer**.
 
 1. Build the WebLogic 12.2.1.3 domain image in this sample:
 
@@ -41,7 +41,7 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
 
 5.  Start minikube and set
     ```
-    $ minikube start 
+    $ minikube start
     $ eval $(minikube docker-env)
     ```
 
@@ -56,7 +56,7 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
     $ cd ..
     ```
 
-8.  Start the WLS Admin Server and Managed Servers. 
+8.  Start the WLS Admin Server and Managed Servers.
     ```
     $ kubectl create -f k8s/wls-admin-webhook.yml
     $ kubectl create -f k8s/wls-stateful.yml
@@ -66,7 +66,7 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
     ```
     $ kubectl get pods
     ```
-    
+
     You should see one Admin Server and two Managed Servers, looking something like:
     ```
     NAME                                   READY     STATUS    RESTARTS   AGE
@@ -80,21 +80,21 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
 10. Verify that you can reach the managed servers
 
     The servers are accessible on the minikube IP address, usually 168.192.99.100. To verify that address:
-    
+
      ```
      $ minikube ip
      192.168.99.100
      ```
-   
+
     Then use your browser to view one of the managed servers at `http://192.168.99.100:30011/memoryloadapp/`
     If you refresh it, its instance name should vary between `ms-0` and `ms-1`.
-    
+
 11. Log into the admin console
 
-    0. Browse to `http://192.168.99.100:30001/console/` and log in using the credentials passed in as build arguments when building the wls-12213-domain 
+    0. Browse to `http://192.168.99.100:30001/console/` and log in using the credentials passed in as build arguments when building the wls-12213-domain
     1. Under **Domain Structure** click *Environment* and then *Servers*
-    2. You should see 2 managed servers RUNNING, and 3 more SHUTDOWN 
-    
+    2. You should see 2 managed servers RUNNING, and 3 more SHUTDOWN
+
 12. Start Prometheus to monitor the managed servers:
      ```
      $ kubectl create -f prometheus/prometheus-kubernetes.yml
@@ -129,7 +129,7 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
 
 15. Observe the response to scaling up
      ```
-     $ kubectl scale statefulset ms --replicas=3 
+     $ kubectl scale statefulset ms --replicas=3
      ```
 
    `kubectl get pods` should now show ms-0, ms-1, ms-2 and wls-admin-server-0.  Also,
@@ -150,15 +150,15 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
 
     1. Browse to `http://192.168.99.100:30011/opensessionapp`
     2. Within a minute or two, a new ms-1 instance will be created, and show up in all of the above ways to view it.
-        
-        **Note**: The WLDF smart rule configured for this demo monitors the OpenSessionsCurrentCount of the 
+
+        **Note**: The WLDF smart rule configured for this demo monitors the OpenSessionsCurrentCount of the
         WebAppComponentRuntimeMBean for ApplicationRuntime called "OpenSessionApp". It will trigger
         a REST action when the average number of opened sessions >= 0.01 on 5% or more of the servers in a WebLogic cluster called
-        "DockerCluster", computed over the last ten seconds, sampled every second. The REST action invokes a webhook 
+        "DockerCluster", computed over the last ten seconds, sampled every second. The REST action invokes a webhook
         that scales up the statefulset named "ms" by one.
         The WLDF rule is configured with a 1 minute alarm, so it will not trigger another action within 1 minute.  
         After that same step can repeat again and again to continue scaling up.
-    3. Connect to Grafana to check the collected metrics for OpenSessionCount in the 
+    3. Connect to Grafana to check the collected metrics for OpenSessionCount in the
        graph "Open Sessions Current Count"
 
 18. Clean up by shutting down the services. Shutting down the WLS instances can take some time.
@@ -170,16 +170,16 @@ As part of this sample we have developed a WLS Exporter which formats the WLS Ru
      ```
 
 *Troubleshooting*
-  - if something is not working as expected, sometimes just shutting down minikube and 
+  - if something is not working as expected, sometimes just shutting down minikube and
     starting it back up again will fix the problem:
     ```
       minikube stop
       minikube start
     ```
-    
+
   - it might be helpful to check the log(s) to see if everything is starting up successfully, *e.g.*,
     ```
     $ kubectl logs -f wls-admin-server-0 -c wls-admin-server
     ```
 ##COPYRIGHT
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.

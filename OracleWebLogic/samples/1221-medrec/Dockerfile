@@ -1,21 +1,21 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This Dockerfile extends the Oracle WebLogic image by installing the Supplemental package of WebLogic which 
-# includes extra samples of Java EE, Coherence applications, and Multitenant domains. 
+# This Dockerfile extends the Oracle WebLogic image by installing the Supplemental package of WebLogic which
+# includes extra samples of Java EE, Coherence applications, and Multitenant domains.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) fmw_12.2.1.0.0_wls_supplemental_quick_Disk1_1of1.zip
-#     Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html 
+#     Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
+# Run:
 #      $ sudo docker build -t 1221-medrec .
 #
 
@@ -40,12 +40,12 @@ ENV FMW_PKG="fmw_12.2.1.0.0_wls_supplemental_quick_Disk1_1of1.zip" \
 # --------------------------------
 COPY $FMW_PKG weblogic.properties startSample.sh ./
 
-# Installation of Supplemental Quick Installer 
+# Installation of Supplemental Quick Installer
 # --------------------------------------------
 RUN jar xvf $FMW_PKG && \
     java -jar $(ls -1 *.jar) ORACLE_HOME=$ORACLE_HOME && \
     mkdir -p /u01/oracle/wlserver/samples/server/medrec/ && \
-    mv weblogic.properties startSample.sh /u01/oracle/wlserver/samples/server/medrec/ && \ 
+    mv weblogic.properties startSample.sh /u01/oracle/wlserver/samples/server/medrec/ && \
     rm $FMW_PKG $(ls -1 *.jar)
 
 WORKDIR $ORACLE_HOME/wlserver/samples/server/medrec

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -39,12 +39,12 @@ trap _term SIGTERM
 
 # Set SIGKILL handler
 trap _kill SIGKILL
-	
+
 echo "Configuring Domain for first time "
 echo "If Domain has already been Configured"
 echo "Start the Admin and Managed Servers  "
 echo "====================================="
-    
+
 # Check that the User has passed on all the details needed to configure this image
 # Settings to call RCU....
 echo "CONNECTION_STRING=${CONNECTION_STRING:?"Please set CONNECTION_STRING for connecting to the Database"}"
@@ -98,9 +98,9 @@ if [ ! -f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log ]; then
 fi
 
 # Create Domain only if 1st execution
-if [ $ADD_DOMAIN -eq 0 ]; 
+if [ $ADD_DOMAIN -eq 0 ];
 then
-	
+
     # Auto generate Oracle WebLogic Server admin password
     if [ -z ${ADMIN_PASSWORD} ]
     then
@@ -112,7 +112,7 @@ then
         echo "    ----> 'weblogic' admin password: $ADMIN_PASSWORD"
         echo ""
     fi;
-     
+
     if [ -z ${DB_SCHEMA_PASSWORD} ]
     then
         # Auto generate Oracle Database Schema password
@@ -144,8 +144,8 @@ then
        # Run the RCU to load the schemas into the database
        /u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser $DB_USERNAME -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component MDS -component MDS -component IAU -component IAU_APPEND -component IAU_VIEWER -component OPSS  -component WLS  -component STB -f < /u01/oracle/pwd.txt >> /u01/oracle/RCU.out
        retval=$?
-        
-       if [ $retval -ne 0 ]; 
+
+       if [ $retval -ne 0 ];
        then
            echo  "RCU has some error "
            #RCU was already called once and schemas are in the database
@@ -153,41 +153,41 @@ then
            grep -q "RCU-6016 The specified prefix already exists" "/u01/oracle/RCU.out"
            if [ $? -eq 0 ] ; then
              echo  "RCU has already loaded schemas into the Database"
-             echo  "RCU Ignore error" 
-           else 
+             echo  "RCU Ignore error"
+           else
                echo "RCU Loading Failed.. Please check the RCU logs"
                exit
            fi
        fi
 
        # cleanup : remove the password file for security
-       rm -f "/u01/oracle/pwd.txt" 
+       rm -f "/u01/oracle/pwd.txt"
    fi
 
         echo "Domain Configuration Phase"
         echo "=========================="
-    
+
         wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/createInfraDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -user $ADMIN_USER -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD
         retval=$?
 
         echo  "RetVal from Domain creation $retval"
-      
-        if [ $retval -ne 0 ]; 
+
+        if [ $retval -ne 0 ];
         then
             echo "Domain Creation Failed.. Please check the Domain Logs"
             exit
         fi
 
         # Create the security file to start the server(s) without the password prompt
-        mkdir -p ${DOMAIN_HOME}/servers/AdminServer/security/ 
-        echo "username=weblogic" > ${DOMAIN_HOME}/servers/AdminServer/security/boot.properties 
-        echo "password=$ADMIN_PASSWORD" >> ${DOMAIN_HOME}/servers/AdminServer/security/boot.properties 
+        mkdir -p ${DOMAIN_HOME}/servers/AdminServer/security/
+        echo "username=weblogic" > ${DOMAIN_HOME}/servers/AdminServer/security/boot.properties
+        echo "password=$ADMIN_PASSWORD" >> ${DOMAIN_HOME}/servers/AdminServer/security/boot.properties
 
-        mkdir -p ${DOMAIN_HOME}/servers/infra_server1/security/ 
+        mkdir -p ${DOMAIN_HOME}/servers/infra_server1/security/
         echo "username=weblogic" > ${DOMAIN_HOME}/servers/infra_server1/security/boot.properties
         echo "password="$ADMIN_PASSWORD >> ${DOMAIN_HOME}/servers/infra_server1/security/boot.properties
 
-        ${DOMAIN_HOME}/bin/setDomainEnv.sh 
+        ${DOMAIN_HOME}/bin/setDomainEnv.sh
    fi
 
 echo "Starting the Admin Server"

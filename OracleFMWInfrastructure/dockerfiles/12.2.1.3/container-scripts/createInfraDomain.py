@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -143,7 +143,7 @@ class Infra12213Provisioner:
         cd('/')
         for server in self.SERVERS:
             if not server == 'AdminServer':
-                setServerGroups(server, serverGroupsToTarget)         
+                setServerGroups(server, serverGroupsToTarget)
 		print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + server
                 cd('/Servers/' + server)
                 set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
@@ -152,7 +152,7 @@ class Infra12213Provisioner:
             print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + cluster
             cd('/Cluster/' + cluster)
             set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
-        
+
         print "Set WLS clusters as target of defaultCoherenceCluster:[" + ",".join(self.CLUSTERS) + "]"
         cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
         set('Target', ",".join(self.CLUSTERS))

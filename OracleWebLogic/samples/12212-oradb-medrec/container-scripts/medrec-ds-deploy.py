@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # WLST Offline for deploying an application under APP_NAME packaged in APP_PKG_FILE located in APP_PKG_LOCATION
 # It will read the domain under DOMAIN_HOME by default
@@ -13,18 +13,18 @@ import os
 # ===========================
 readDomain(domainhome)
 
-# Create Datasource 
+# Create Datasource
 # ==================
 cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
 cmo.setName(dsname)
- 
+
 cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
 cd('JDBCDriverParams/NO_NAME_0')
 set('DriverName', dsdriver)
 set('URL', dsurl)
 set('PasswordEncrypted', dspassword)
 set('UseXADataSourceInterface', 'false')
- 
+
 print 'create JDBCDriverParams User Properties'
 cd('Properties/NO_NAME_0')
 cd('Property/user')

@@ -1,7 +1,7 @@
 
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1996-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------

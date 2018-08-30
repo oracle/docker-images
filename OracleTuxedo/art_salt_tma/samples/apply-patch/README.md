@@ -23,4 +23,4 @@ Running Oracle Tuxedo in a Docker container
 Nothing has changed to use this image from running the base image. Please refer to the README file in the root directory for detail.
 Copyright
 
-Copyright (c) 1996-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
