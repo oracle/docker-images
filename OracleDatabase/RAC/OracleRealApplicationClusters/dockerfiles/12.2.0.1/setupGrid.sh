@@ -38,4 +38,5 @@ echo "export PATH=$GRID_PATH" >> /home/grid/.bashrc
 echo "export LD_LIBRARY_PATH=$GRID_LD_LIBRARY_PATH" >> /home/grid/.bashrc
 echo "export SCRIPT_DIR=$SCRIPT_DIR" >> /home/grid/.bashrc
 echo "export GRID_HOME=$GRID_HOME" >> /home/grid/.bashrc
+echo "export GRID_BASE=$GRID_BASE" >> /home/grid/.bashrc
 echo "export DB_HOME=$DB_HOME" >> /home/grid/.bashrc

@@ -14,9 +14,24 @@ if [ -f /etc/rac_env_vars ]; then
 source /etc/rac_env_vars
 fi
 
-source $SCRIPT_DIR/functions.sh
+###################Capture Process id and source functions.sh###############
+source "$SCRIPT_DIR/functions.sh"
+###########################sourcing of functions.sh ends here##############
+
+####error_exit function sends a TERM signal, which is caught by trap command and returns exit status 15"####
+trap '{ exit 15; }' TERM
+###########################trap code ends here##########################
+
+###########################
+
+if [ -f $logfile ]; then
+mv $logfile  $logfile."$(date +%Y%m%d-%H%M%S)"
 touch $logfile
-chmod 666 /tmp/orod.log
+else
+touch $logfile
+fi
+
+chmod 666 $logfile
 progname="$(basename $0)"
 grid_install_status="FALSE"
 
@@ -32,6 +47,7 @@ declare -r TRUE=0
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ###################################
 
+print_message "Process id of the program : $TOP_ID"
 # Check whether container has enough memory
 # Github issue #219: Prevent integer overflow,
 # only check if memory digits are less than 11 (single GB range and below)
@@ -50,6 +66,11 @@ print_message "#################################################"
 
 print_message "Pre-Grid Setup steps are in process"
 $SCRIPT_DIR/$SETUPGRIDENV
+stat=$?
+if [ $stat -ne 0 ]; then
+error_exit "Error has occurred in Grid Setup, Please verify!"
+fi
+
 print_message "###################################################"
 print_message "Pre-Grid Setup steps completed"
 print_message "###################################################"
@@ -77,7 +98,7 @@ if [ "${OP_TYPE}" == "INSTALL" ]; then
 $SCRIPT_DIR/$CONFIGGRID
 stat=$?
 
-if [ $stat -eq 15 ];then
+if [ $stat -ne 0 ];then
 error_exit "Error has occurred in Grid Setup, Please verify!"
 fi
 
@@ -87,7 +108,7 @@ print_message "####################################"
 elif [ "${OP_TYPE}" == "ADDNODE" ]; then
 $SCRIPT_DIR/$ADDNODE
 stat=$?
-if [ $stat -eq 15 ];then
+if [ $stat -ne 0 ];then
 error_exit "Error has occurred in Grid Setup, Please verify!"
 fi
 
