@@ -100,7 +100,7 @@ if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
         	print_message "Changing Disk permission and ownership $device"
-              if [ -b $device ]; then
+              if [ -e $device ]; then
         	chown $GRID_USER:$ASMADMIN_GROUP $device
 	        chmod 660 $device
               else
