@@ -14,13 +14,15 @@ export logfile=/tmp/orod.log
 export logdir=/tmp
 export STD_OUT_FILE="/proc/1/fd/1"
 export STD_ERR_FILE="/proc/1/fd/2"
+export TOP_PID=$$
+
 ###### Function Related to printing messages and exit the script if error occurred ##################
 error_exit() {
 local NOW=$(date +"%m-%d-%Y %T %Z")
         # Display error message and exit
 #       echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
         echo "${NOW} : ${PROGNAME}: ${1:-"Unknown Error"}" | tee -a $logfile > $STD_OUT_FILE 
-        exit 15
+        kill -s TERM $TOP_PID
 }
 
 print_message ()

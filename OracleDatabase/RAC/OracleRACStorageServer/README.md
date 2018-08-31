@@ -29,6 +29,11 @@ To assist in building the images, you can use the [buildDockerImage.sh](dockerfi
 ### Disable SELINUX
 SELINUX must be disabled or in permissive mode.
 
+### NFS Server installation on Docker Host
+* You must install NFS server rpms on docker host to utilize NFS volumes in containers.
+
+	yum -y install nfs-utils
+
 ### Running RACStorageServer Docker container
 * Execute following command to create the container:
 

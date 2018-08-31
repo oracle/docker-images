@@ -47,21 +47,21 @@ Section 10  : Copyright
 
          docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
 
-**Note:** You must run RAC on Docker on multi-host using MACVLAN Docker driver. 
+**Note:** You must run RAC on Docker on multi-host using MACVLAN Docker driver.
 
 * If you are running RAC on Docker on multi-host, you can create network bridge using MACVLAN docker driver using following commands:
 
-		docker network create -d macvlan --subnet=172.15.1.0/24 --gateway=172.15.1.1 -o parent=eth0 rac_pub1_nw
+                docker network create -d macvlan --subnet=172.15.1.0/24 --gateway=172.15.1.1 -o parent=eth0 rac_pub1_nw
 
-		docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
+                docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
 
 **Note:** To create a Macvlan network which bridges with a given physical network interface, use --driver macvlan with the docker network create command. You also need to specify the parent, which is the interface the traffic will physically go through on the Docker host. You can change --subnet and --gateway based on your environment.
 
-* If the docker bridge network is not available outside your host, you can use the Oracle Connection Manager (CMAN) image to access the RAC Database from outside the host. 
+* If the docker bridge network is not available outside your host, you can use the Oracle Connection Manager (CMAN) image to access the RAC Database from outside the host.
 
 * RAC needs to run certain processes in real time mode. To run processes inside a container in real time mode, you need to make changes in your docker configuration files. Please update OPTIONS value in `/etc/sysconfig/docker` to following:
 
-        OPTIONS='--selinux-enabled --cpu-rt-runtime=950000 --cpu-rt-period=1000000         --exec-opt native.cgroupdriver=systemd'
+        OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
 
 * Once you have editied the /etc/sysconfig/docker, execute following commands:
 
@@ -87,6 +87,8 @@ Section 10  : Copyright
 
           net.core.rmem_default = 262144
 
+	      fs.aio-max-nr=1048576
+
 * Execute following once the file is modified.
 
           sysctl -a
@@ -106,9 +108,9 @@ Download following patch from OTN and stage it on your machine.
 You can download this patch from [Oracle Technology Network](http://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under `dockerfiles/<version>` folder.
 
 ### Building Oracle RAC Database Docker Install Images
-**IMPORTANT:** This section assumes that you have gone through the all the pre-requisites in Section 1 and executed all the steps based on your environment. Do not uncompress the binaries and patches. 
+**IMPORTANT:** This section assumes that you have gone through the all the pre-requisites in Section 1 and executed all the steps based on your environment. Do not uncompress the binaries and patches.
 
-**Note:** If you are behind a proxy, you need to set the http_proxy environment variable based on your environment before building the image.
+**Note:** If you are behind a proxy, you need to set the http_proxy or https_proxy environment variable based on your environment before building the image.
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
@@ -157,8 +159,7 @@ If you are using the RAC Storage Container, skip to the section below "3.2 Deplo
                 --volume /opt/containers/rac_host_file:/etc/hosts  \
                 --dns-search=example.com \
                 --device=/dev/xvde:/dev/asm_disk1  --device=/dev/xvdf:/dev/asm_disk2 \
-                --privileged=false  \
-                --cap-add=SYS_ADMIN --cap-add=SYS_NICE \
+                --privileged=false --cap-add=SYS_NICE \
                 --cap-add=SYS_RESOURCE --cap-add=NET_ADMIN \
                 -e NODE_VIP=172.15.1.160  -e VIP_HOSTNAME=racnode1-vip  \
                 -e PRIV_IP=192.168.17.150  -e PRIV_HOSTNAME=racnode1-priv \
@@ -191,7 +192,7 @@ If you are using physical block devices for shared storage, skip to "3.3 Assigni
                 --volume /opt/containers/rac_host_file:/etc/hosts  \
                 --dns-search=example.com \
                 --privileged=false --volume racstorage:/oradata \
-                --cap-add=SYS_ADMIN --cap-add=SYS_NICE \
+                --cap-add=SYS_NICE \
                 --cap-add=SYS_RESOURCE --cap-add=NET_ADMIN \
                 -e NODE_VIP=172.15.1.160  -e VIP_HOSTNAME=racnode1-vip  \
                 -e PRIV_IP=192.168.17.150  -e PRIV_HOSTNAME=racnode1-priv \
@@ -248,7 +249,7 @@ check /tmp/orod.log. Go to grid logs i.e. $GRID_BASE/diag/crs and check the fail
 
 
 ### Section 4: Adding a RAC Node using a Docker container
-Check DB and cluster is up and running. Otherwise, Node addition will fail or error out.
+Check DB and cluster is up and running on existing node of the cluster. Otherwise, Node addition will fail or error out.
 
 #### 4.1 Deploying with Block Devices:
 If you are using the RAC Storage Container, skip to the section below "4.2 Deploying with the RAC Storage Container".
@@ -261,8 +262,7 @@ If you are using the RAC Storage Container, skip to the section below "4.2 Deplo
                 --dns-search=example.com  \
                 --volume /opt/containers/rac_host_file:/etc/hosts \
                 --device=/dev/xvde:/dev/asm_disk1 --device=/dev/zvdf:/dev/asm_disk2 \
-                --privileged=false \
-                --cap-add=SYS_ADMIN --cap-add=SYS_NICE \
+                --privileged=false --cap-add=SYS_NICE \
                 --cap-add=SYS_RESOURCE --cap-add=NET_ADMIN \
                 -e EXISTING_CLS_NODES=racnode1 -e OS_PASSWORD=Oracle_12c \
                 -e NODE_VIP=172.15.1.161  -e VIP_HOSTNAME=racnode2-vip  \
@@ -278,7 +278,7 @@ If you are using the RAC Storage Container, skip to the section below "4.2 Deplo
 
 For the details of Parameters, please refer to Section 7.
 
-**Note:** You can change env variable such as IPs and ORACLE_PWD based on your env. For details about the env variables, please refer the section 7.
+**Note:** You can change env variable such as IPs based on your env. If you have more than one node in the cluster, you must set EXISTING_CLS_NODES environment variable with comma separated nodes of the cluster.Also, OS_PASSWORD must be same on all the nodes for grid and oracle user in cluster during node addition. For details about the env variables, please refer the section 7.
 
 * Continue at the section "4.3 Assigning Network to RAC Containers"
 
@@ -294,7 +294,7 @@ If you are using physical block devices for shared storage, skip to "4.3 Assigni
                 --dns-search=example.com  \
                 --volume /opt/containers/rac_host_file:/etc/hosts \
                 --privileged=false --volume racstorage:/oradata \
-                --cap-add=SYS_ADMIN --cap-add=SYS_NICE \
+                --cap-add=SYS_NICE \
                 --cap-add=SYS_RESOURCE --cap-add=NET_ADMIN \
                 -e EXISTING_CLS_NODES=racnode1 -e OS_PASSWORD=Oracle_12c \
                 -e NODE_VIP=172.15.1.161  -e VIP_HOSTNAME=racnode2-vip  \
@@ -308,7 +308,7 @@ If you are using physical block devices for shared storage, skip to "4.3 Assigni
                 --cpu-rt-runtime=95000 --ulimit rtprio=99  --restart=always \
                 --name racnode2 oracle/database-rac:12.2.0.1
 
-**Note:** You must have created **racstorage** volume during the creation of RAC Storage Container. You can change env variable such as IPs and ORACLE_PWD based on your env. For details about the env variables, please refer the section 7.
+**Note:** You must have created **racstorage** volume during the creation of RAC Storage Container. You can change env variable such as IPs based on your env. If you have more than one node in the cluster, you must set EXISTING_CLS_NODES environment variable with comma separated nodes of the cluster.Also, OS_PASSWORD must be same on all the nodes for grid and oracle user in cluster during node addition. For details about the env variables, please refer the section 7.
 
 #### 4.3 Assign Network to additional RAC container
 * Execute following command to assign the network to new RAC container:
@@ -383,7 +383,7 @@ If you are using physical block devices for shared storage, skip to "4.3 Assigni
         CMAN_HOSTNAME=###Connection Manager Host Name###
         CMAN_IP=###Connection manager Host IP###
         ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /dev######
-        OS_PASSWORD=You need to pass this for ssh setup between grid and oracle user. OS_PASSWORD will rest the password of grid and Oracle user based on your env. You need common password on all the containers during Node Addition. Once the Node Addition is done you can change the passwords based on your enviornment policies.
+        OS_PASSWORD=You need to pass this for ssh setup between grid and oracle user. OS_PASSWORD will rest the password of grid and Oracle user based on your env. You need common password on all the containers during Node Addition. Once the Node Addition is done you can change the passwords based on your environment policies. 
 
 ### Section 7: ENV Variables for RAC 2nd Node Container (ADDNode)
 * This section provides the details about env variables which can be used for an additional node added to the cluster.
@@ -406,7 +406,7 @@ If you are using physical block devices for shared storage, skip to "4.3 Assigni
         CMAN_HOSTNAME=###Connection Manager Host Name###
         CMAN_IP=###Connection manager Host IP###
         ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /dev######
-       OS_PASSWORD=You need to pass this for ssh setup between grid and oracle user. OS_PASSWORD will rest the password of grid and Oracle user based on your env. You need common password on all the containers during Node Addition. Once the Node Addition is done you can change the passwords based on your enviornment policies.
+       OS_PASSWORD=You need to pass this for ssh setup between grid and oracle user. OS_PASSWORD will rest the password of grid and Oracle user based on your enviornment. You need common password on all the containers during Node Addition. You need to manually set grid and oracle user password on existing cluster nodes before node addition. Once the Node Addition is done you can change the passwords based on your environment policies.
 
 ### Section 8 : Support
 Oracle RAC Database is supported for Oracle Linux 7.
@@ -417,7 +417,7 @@ Oracle RAC Database is supported for Oracle Linux 7.
 
 To download and run Oracle Grid and Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license. 
+All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ### Section 10 : Copyright
 

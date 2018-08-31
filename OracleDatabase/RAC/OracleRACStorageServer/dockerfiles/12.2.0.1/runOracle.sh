@@ -24,6 +24,8 @@ declare -r FALSE=1
 declare -r TRUE=0
 export REQUIRED_SPACE_GB=55
 export ORADATA=/oradata
+export INSTALL_COMPLETED_FILE="/home/oracle/installcomplete"
+export FILE_COUNT=0
 ##################################################
 
 check_space ()
@@ -31,7 +33,7 @@ check_space ()
 local REQUIRED_SPACE_GB=$1
 
 AVAILABLE_SPACE_GB=`df -B 1G $ORADATA | tail -n 1 | awk '{print $4}'`
-
+if [ ! -f ${INSTALL_COMPLETED_FILE} ] ;then
 if [ $AVAILABLE_SPACE_GB -lt $REQUIRED_SPACE_GB ]; then
   script_name=`basename "$0"`
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -41,6 +43,7 @@ if [ $AVAILABLE_SPACE_GB -lt $REQUIRED_SPACE_GB ]; then
   exit 1;
 else
  echo " Space check passed : $ORADATA has avilable space $AVAILABLE_SPACE_GB and ASM storage set to $REQUIRED_SPACE_GB"
+fi;
 fi;
 }
 
@@ -130,6 +133,13 @@ fi
 
 count=$(($count+1))
 done
+
+FILE_COUNT=$(ls $ORADATA/asm_disk0* | wc -l)
+
+if [ ${FILE_COUNT} -ge 5 ];then
+echo "Touching ${INSTALL_COMPLETED_FILE}"
+touch ${INSTALL_COMPLETED_FILE}
+fi
 
 echo "#################################################"
 echo " Starting NFS Server Setup                       "

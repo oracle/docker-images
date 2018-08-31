@@ -26,4 +26,5 @@ echo "export PATH=$DB_PATH" >> /home/oracle/.bashrc
 echo "export LD_LIBRARY_PATH=$DB_LD_LIBRARY_PATH" >> /home/oracle/.bashrc
 echo "export SCRIPT_DIR=$SCRIPT_DIR" >> /home/oracle/.bashrc
 echo "export GRID_HOME=$GRID_HOME" >> /home/oracle/.bashrc
+echo "export DB_BASE=$DB_BASE" >> /home/oracle/.bashrc
 echo "export DB_HOME=$DB_HOME" >> /home/oracle/.bashrc
