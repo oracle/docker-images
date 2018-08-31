@@ -749,8 +749,7 @@ local stat=3
 local cmd
 
 if [ "${SINGLENIC}" == 'true' ];then
-cmd='su - $GRID_USER -c "$GRID_HOME/gridSetup.sh -J-Doracle.install.crs.allowSingleNIC=true -waitforcompletion -ignorePrereq  -silent -responseFile $responsefile"'
-eval $cmd
+ error_exit  "SINGLE NIC is not supported";
 else
 cmd='su - $GRID_USER -c "$GRID_HOME/gridSetup.sh -waitforcompletion -ignorePrereq  -silent -responseFile $responsefile"'
 eval $cmd
