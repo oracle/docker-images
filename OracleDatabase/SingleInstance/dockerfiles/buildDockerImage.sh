@@ -31,7 +31,7 @@ LICENSE UPL 1.0
 Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 
 EOF
-  exit 0
+  exit 0;
 }
 
 # Validate packages
@@ -42,20 +42,30 @@ checksumPackages() {
     if [ "$?" -ne 0 ]; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
-      exit $?
+      exit 1;
     fi
   else
     echo "Ignored MD5 sum, 'md5sum' command not available.";
   fi
 }
 
+# Check Docker version
+checkDockerVersion() {
+  # Get Docker Server version
+  DOCKER_VERSION=$(docker version --format '{{.Server.Version | printf "%.5s" }}')
+  # Remove dot in Docker version
+  DOCKER_VERSION=${DOCKER_VERSION//./}
+
+  if [ $DOCKER_VERSION -lt ${MIN_DOCKER_VERSION//./} ]; then
+    echo "Docker version is below the minimum required version $MIN_DOCKER_VERSION"
+    echo "Please upgrade your Docker installation to proceed."
+    exit 1;
+  fi;
+}
+
 ##############
 #### MAIN ####
 ##############
-
-if [ "$#" -eq 0 ]; then
-  usage;
-fi
 
 # Parameters
 ENTERPRISE=0
@@ -64,6 +74,13 @@ EXPRESS=0
 VERSION="18.3.0"
 SKIPMD5=0
 DOCKEROPS=""
+MIN_DOCKER_VERSION="17.09"
+
+if [ "$#" -eq 0 ]; then
+  usage;
+fi
+
+checkDockerVersion
 
 while getopts "hesxiv:o:" optname; do
   case "$optname" in
