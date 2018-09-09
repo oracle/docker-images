@@ -39,7 +39,9 @@ These sources will download any Oracle commercial software for you:
 ## Support
 For support and certification information, please consult the documentation for each product.
 
-For community support, discussions, and feedback about the provided Dockerfiles, visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers)
+For support, bug reporting and feedback about the provided Dockerfiles, please open an [issue on GitHub](https://github.com/oracle/docker-images/issues).
+
+If you need general support with running containers on Oracle Linux, please visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers).
 
 ## Community Contributions
  - [Oracle Forms and Reports](https://github.com/oracle/docker-images/issues/212)
