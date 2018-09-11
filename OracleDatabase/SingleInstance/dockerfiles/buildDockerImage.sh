@@ -136,7 +136,7 @@ elif [ $EXPRESS -eq 1 ]; then
 fi;
 
 # Which Dockerfile should be used?
-if [ "$VERSION" == "12.1.0.2" ]; then
+if [ "$VERSION" == "12.1.0.2" ]; || [ "$VERSION" == "11.2.0.2" ]; then
   DOCKERFILE="$DOCKERFILE.$EDITION"
 fi;
 

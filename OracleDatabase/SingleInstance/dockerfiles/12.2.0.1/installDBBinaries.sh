@@ -10,7 +10,8 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-EDITION=$1
+# Convert $1 into upper case via "^^" (bash version 4 onwards)
+EDITION=${1^^}
 
 # Check whether edition has been passed on
 if [ "$EDITION" == "" ]; then
@@ -81,6 +82,3 @@ rm -rf $ORACLE_HOME/suptools && \
 rm -rf /tmp/* && \
 # Database files directory
 rm -rf $INSTALL_DIR/database
-
-# Link password reset file to home directory
-ln -s $ORACLE_BASE/$PWD_FILE $HOME/
