@@ -4,19 +4,19 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 12c Release 2 Enterprise Edition
+# This is the Dockerfile for Oracle Database 18c
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) db_home.zip
-#     Download Oracle Database 18c Enterprise Edition for Linux x64
+#     Download Oracle Database 18c Enterprise Edition or Standard Edition 2 for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/database:18.3.0-ee . 
+#      $ docker build -t oracle/database:18.3.0-${EDITION} . 
 #
 # Pull base image
 # ---------------
@@ -70,11 +70,13 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
 
 FROM base AS builder
 
+ARG DB_EDITION
+
 COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_RSP $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
 
 # Install DB software binaries
 USER oracle
-RUN $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE EE
+RUN $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE $DB_EDITION
 
 # Immediately delete installation zipfile and directory again
 USER root
