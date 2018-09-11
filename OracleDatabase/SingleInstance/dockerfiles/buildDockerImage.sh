@@ -37,9 +37,8 @@ EOF
 # Validate packages
 checksumPackages() {
   if hash md5sum 2>/dev/null; then
-    echo "Checking if required packages are present and valid..."
-    md5sum -c Checksum.$EDITION
-    if [ "$?" -ne 0 ]; then
+    echo "Checking if required packages are present and valid..."   
+    if ! md5sum -c "Checksum.$EDITION"; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
       exit 1;
@@ -56,7 +55,7 @@ checkDockerVersion() {
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
-  if [ $DOCKER_VERSION -lt ${MIN_DOCKER_VERSION//./} ]; then
+  if [ "$DOCKER_VERSION" -lt "${MIN_DOCKER_VERSION//./}" ]; then
     echo "Docker version is below the minimum required version $MIN_DOCKER_VERSION"
     echo "Please upgrade your Docker installation to proceed."
     exit 1;
@@ -75,6 +74,7 @@ VERSION="18.3.0"
 SKIPMD5=0
 DOCKEROPS=""
 MIN_DOCKER_VERSION="17.09"
+DOCKERFILE="Dockerfile"
 
 if [ "$#" -eq 0 ]; then
   usage;
@@ -133,13 +133,21 @@ elif [ $EXPRESS -eq 1 ]; then
     echo "Version $VERSION does not have Express Edition available.";
     exit 1;
   fi;
-fi
+fi;
+
+# Which Dockerfile should be used?
+if [ "$VERSION" == "12.1.0.2" ]; then
+  DOCKERFILE="$DOCKERFILE.$EDITION"
+fi;
 
 # Oracle Database Image Name
 IMAGE_NAME="oracle/database:$VERSION-$EDITION"
 
 # Go into version folder
-cd $VERSION
+cd "$VERSION" || {
+  echo "Could not find version directory '$VERSION'";
+  exit 1;
+}
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
@@ -182,7 +190,7 @@ echo "Building image '$IMAGE_NAME' ..."
 BUILD_START=$(date '+%s')
 docker build --force-rm=true --no-cache=true \
        $DOCKEROPS $PROXY_SETTINGS --build-arg DB_EDITION=$EDITION \
-       -t $IMAGE_NAME -f Dockerfile . || {
+       -t $IMAGE_NAME -f $DOCKERFILE . || {
   echo ""
   echo "ERROR: Oracle Database Docker Image was NOT successfully created."
   echo "ERROR: Check the output and correct any reported problems with the docker build operation."
