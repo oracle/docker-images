@@ -30,6 +30,7 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/18c/dbhome_1 \
+    INSTALL_DIR=/opt/install \
     INSTALL_FILE_1="LINUX.X64_180000_db_home.zip" \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
@@ -44,8 +45,7 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
 
 # Use second ENV so that variable get substituted
-ENV INSTALL_DIR=$ORACLE_BASE/install \
-    PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
+ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
     LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib \
     CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
 
@@ -72,15 +72,15 @@ FROM base AS builder
 
 ARG DB_EDITION
 
+# Install unzip for unzip operation
+RUN yum -y install unzip
+
+# Copy DB install file
 COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_RSP $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
 
 # Install DB software binaries
 USER oracle
 RUN $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE $DB_EDITION
-
-# Immediately delete installation zipfile and directory again
-USER root
-RUN rm -rf $INSTALL_DIR
 
 
 
