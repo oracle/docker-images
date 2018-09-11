@@ -10,7 +10,8 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-EDITION=$1
+# Convert $1 into upper case via "^^" (bash version 4 onwards)
+EDITION=${1^^}
 
 # Check whether edition has been passed on
 if [ "$EDITION" == "" ]; then
