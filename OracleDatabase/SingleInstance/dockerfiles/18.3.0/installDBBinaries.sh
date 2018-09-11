@@ -82,6 +82,3 @@ rm -rf $ORACLE_HOME/suptools && \
 rm -rf /tmp/* && \
 # Database files directory
 rm -rf $INSTALL_DIR/database
-
-# Link password reset file to home directory
-ln -s $ORACLE_BASE/$PWD_FILE $HOME/
