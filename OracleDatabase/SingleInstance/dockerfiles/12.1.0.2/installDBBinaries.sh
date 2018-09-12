@@ -84,10 +84,7 @@ rm -rf /tmp/* && \
 # Database files directory
 rm -rf $INSTALL_DIR/database
 
-# Link password reset file to home directory
-ln -s $ORACLE_BASE/$PWD_FILE $HOME/
-
 # Check whether Perl is working
-chmod ug+x $INSTALL_DIR/installPerl.sh && \
+chmod ug+x $INSTALL_DIR/$PERL_INSTALL_FILE && \
 $ORACLE_HOME/perl/bin/perl -v || \
-$INSTALL_DIR/installPerl.sh
+$INSTALL_DIR/$PERL_INSTALL_FILE

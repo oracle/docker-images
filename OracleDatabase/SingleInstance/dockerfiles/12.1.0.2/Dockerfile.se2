@@ -21,7 +21,7 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim
+FROM oraclelinux:7-slim as base
 
 # Maintainer
 # ----------
@@ -31,6 +31,7 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/12.1.0.2/dbhome_1 \
+    INSTALL_DIR=/opt/install \
     INSTALL_FILE_1="linuxamd64_12102_database_se2_1of2.zip" \
     INSTALL_FILE_2="linuxamd64_12102_database_se2_2of2.zip" \
     INSTALL_RSP="db_inst.rsp" \
@@ -47,29 +48,59 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
 
 # Use second ENV so that variable get substituted
-ENV INSTALL_DIR=$ORACLE_BASE/install \
-    PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
+ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
     LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib \
     CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
 
-# Copy binaries
+# Copy files needed during both installation and runtime
 # -------------
-COPY $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $PERL_INSTALL_FILE $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
+COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
 COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
-    $INSTALL_DIR/$SETUP_LINUX_FILE
+    $INSTALL_DIR/$SETUP_LINUX_FILE && \
+    rm -rf $INSTALL_DIR
+
+
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the database
+# -------------------------------------------
+#############################################
+
+FROM base AS builder
+
+ARG DB_EDITION
+
+# Install unzip for unzip operation
+RUN yum -y install unzip
+
+# Copy DB install file
+COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $PERL_INSTALL_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
 
 # Install DB software binaries
 USER oracle
 RUN $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE SE2
 
+
+
+#############################################
+# -------------------------------------------
+# Start new layer for database runtime
+# -------------------------------------------
+#############################################
+
+FROM base
+
+USER oracle
+COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
+
 USER root
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh && \
-    rm -rf $INSTALL_DIR
+    $ORACLE_HOME/root.sh
 
 USER oracle
 WORKDIR /home/oracle
