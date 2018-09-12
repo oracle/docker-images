@@ -196,11 +196,14 @@ docker build --force-rm=true --no-cache=true \
   echo "ERROR: Check the output and correct any reported problems with the docker build operation."
   exit 1
 }
-echo ""
+
+# Remove dangling images (intermitten images with tag <none>)
+yes | docker image prune > /dev/null
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
+echo ""
 echo ""
 
 cat << EOF
