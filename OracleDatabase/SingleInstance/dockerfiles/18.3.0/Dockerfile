@@ -4,23 +4,23 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 12c Release 2 Enterprise Edition
+# This is the Dockerfile for Oracle Database 18c
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) db_home.zip
-#     Download Oracle Database 18c Enterprise Edition for Linux x64
+#     Download Oracle Database 18c Enterprise Edition or Standard Edition 2 for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/database:18.3.0-ee . 
+#      $ docker build -t oracle/database:18.3.0-${EDITION} . 
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim
+FROM oraclelinux:7-slim as base
 
 # Maintainer
 # ----------
@@ -30,6 +30,7 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/18c/dbhome_1 \
+    INSTALL_DIR=/opt/install \
     INSTALL_FILE_1="LINUX.X64_180000_db_home.zip" \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
@@ -44,29 +45,59 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
 
 # Use second ENV so that variable get substituted
-ENV INSTALL_DIR=$ORACLE_BASE/install \
-    PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
+ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
     LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib \
     CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
 
-# Copy binaries
+# Copy files needed during both installation and runtime
 # -------------
-COPY $INSTALL_FILE_1 $INSTALL_RSP $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
+COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
 COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
-    $INSTALL_DIR/$SETUP_LINUX_FILE
+    $INSTALL_DIR/$SETUP_LINUX_FILE && \
+    rm -rf $INSTALL_DIR
+
+
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the database
+# -------------------------------------------
+#############################################
+
+FROM base AS builder
+
+ARG DB_EDITION
+
+# Install unzip for unzip operation
+RUN yum -y install unzip
+
+# Copy DB install file
+COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_RSP $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
 
 # Install DB software binaries
 USER oracle
-RUN $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE EE
+RUN $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE $DB_EDITION
+
+
+
+#############################################
+# -------------------------------------------
+# Start new layer for database runtime
+# -------------------------------------------
+#############################################
+
+FROM base
+
+USER oracle
+COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
 
 USER root
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh && \
-    rm -rf $INSTALL_DIR
+    $ORACLE_HOME/root.sh
 
 USER oracle
 WORKDIR /home/oracle
