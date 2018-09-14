@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-d | -g | -i] [-s] [-c]
+Usage: buildDockerImage.sh -v [version] [-d | -g ] [-s] [-c]
 Builds a Docker Image for Oracle WebLogic.
 
 Parameters:
@@ -20,11 +20,10 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
-   -i: creates image based on 'infrastructure' distribution
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
 
-* select one distribution only: -d, -g, or -i
+* select one distribution only: -d or -g
 
 LICENSE UPL 1.0
 
@@ -50,8 +49,7 @@ if [ "$#" -eq 0 ]; then usage; fi
 # Parameters
 DEVELOPER=0
 GENERIC=0
-INFRASTRUCTURE=0
-VERSION="12.2.1"
+VERSION="12.2.1.3"
 SKIPMD5=0
 NOCACHE=true
 while getopts "hcsdgiv:" optname; do
@@ -68,9 +66,6 @@ while getopts "hcsdgiv:" optname; do
     "g")
       GENERIC=1
       ;;
-    "i")
-      INFRASTRUCTURE=1
-      ;;
     "v")
       VERSION="$OPTARG"
       ;;
@@ -85,17 +80,15 @@ while getopts "hcsdgiv:" optname; do
 done
 
 # Which distribution to use?
-if [ $((DEVELOPER + GENERIC + INFRASTRUCTURE)) -gt 1 ]; then
+if [ $((DEVELOPER + GENERIC)) -gt 1 ]; then
   usage
 elif [ $DEVELOPER -eq 1 ]; then
   DISTRIBUTION="developer"
 elif [ $GENERIC -eq 1 ]; then
   DISTRIBUTION="generic"
-elif [ $INFRASTRUCTURE -eq 1 ] && [ "$VERSION" = "12.1.3" ]; then
-  echo "Version 12.1.3 does not have infrastructure distribution available."
-  exit 1
 else
-  DISTRIBUTION="infrastructure"
+  echo "Invalid distribution, select one distribution only: -d or -g"
+  exit 1
 fi
 
 # WebLogic Image Name
