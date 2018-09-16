@@ -26,3 +26,7 @@ runContainerTest "12.1.0.2 EE default database" "12.1.0.2-EE-default" "oracle/da
 
 # Run 12.1.0.2 SE2 default container
 runContainerTest "12.1.0.2 SE2 default database" "12.1.0.2-SE2-default" "oracle/database:12.1.0.2-se2"
+
+###################### TEST 12.1.0.2 EE lowercase ORACLE_SID ###########################
+
+runContainerTest "12.1.0.2 EE lowercase ORACLE_SID" "12.1.0.2-EE-lowercase_ORACLE_SID" "oracle/database:12.1.0.2-ee" "orcltest" "PDB1"
