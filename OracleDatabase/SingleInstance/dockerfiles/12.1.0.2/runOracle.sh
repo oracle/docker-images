@@ -120,13 +120,17 @@ trap _kill SIGKILL
 if [ "$ORACLE_SID" == "" ]; then
    export ORACLE_SID=ORCLCDB
 else
+  # Make ORACLE_SID upper case
+  # Github issue # 984
+  export ORACLE_SID=${ORACLE_SID^^}
+
   # Check whether SID is no longer than 12 bytes
   # Github issue #246: Cannot start OracleDB image
   if [ "${#ORACLE_SID}" -gt 12 ]; then
      echo "Error: The ORACLE_SID must only be up to 12 characters long."
      exit 1;
   fi;
-  
+
   # Check whether SID is alphanumeric
   # Github issue #246: Cannot start OracleDB image
   if [[ "$ORACLE_SID" =~ [^a-zA-Z0-9] ]]; then
@@ -137,6 +141,10 @@ fi;
 
 # Default for ORACLE PDB
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+
+# Make ORACLE_PDB upper case
+# Github issue # 984
+export ORACLE_PDB=${ORACLE_PDB^^}
 
 # Default for ORACLE CHARACTERSET
 export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}

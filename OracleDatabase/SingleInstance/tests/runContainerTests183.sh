@@ -39,3 +39,11 @@ runContainerTest "18.3.0 EE JA16SJISTILDE character set" "18.3.0-EE-JA16SJISTILD
 ###################### TEST 18.3.0 EE KO16KSC5601 character set ###########################
 
 runContainerTest "18.3.0 EE KO16KSC5601 character set" "18.3.0-EE-KO16KSC5601-character-set" "oracle/database:18.3.0-ee" "ORCLTEST" "PDB1" "KO16KSC5601"
+
+###################### TEST 18.3.0 EE lowercase ORACLE_SID ###########################
+
+runContainerTest "18.3.0 EE lowercase ORACLE_SID" "18.3.0-EE-lowercase_ORACLE_SID" "oracle/database:18.3.0-ee" "orcltest" "PDB1"
+
+###################### TEST 18.3.0 EE lowercase ORACLE_PDB ###########################
+
+runContainerTest "18.3.0 EE lowercase ORACLE_PDB" "18.3.0-EE-lowercase_ORACLE_PDB" "oracle/database:18.3.0-ee" "ORCLTEST" "pdb1"
