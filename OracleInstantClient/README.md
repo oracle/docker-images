@@ -29,7 +29,7 @@ same directory as the `Dockerfile` and run:
 docker build -t oracle/instantclient:<version> .
 ```
 
-For example, to build an 18.3 Instance Client Docker Image, run:
+For example, to build an 18.3 Instant Client Docker Image, run:
 
 ```
 docker build -t oracle/instantclient:18.3.0 .
