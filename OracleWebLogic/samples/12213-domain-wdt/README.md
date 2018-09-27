@@ -74,7 +74,7 @@ Make sure you add the new Database password 'MYDBPassword' in the properties fil
 
         SQL> select * from Dual;
 
-#### Run WebLoigic Domain
+#### Run WebLogic Domain
 
 To start the containerized Administration Server, run:
 
