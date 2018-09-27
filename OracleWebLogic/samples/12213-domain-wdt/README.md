@@ -74,7 +74,7 @@ To create a database container, use the environment file below to set the databa
 
     $ docker run -ti \
           --network=SampleNET \
-          --rm store/oracle/database-instantclient:12.2.0.1 \
+          --rm container-registry.oracle.com/database/instantclient:12.2.0.1 \
           sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA
 
     SQL> alter user system identified by MYDBPasswd container=all;
