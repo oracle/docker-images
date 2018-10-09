@@ -31,11 +31,25 @@ OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|repl
 }
 
 ##
+## Generate a random password with:
+##  - at least one uppercase character
+##  - at least one lowercase character
+##  - at least one digit character
+##
+function generatePassword {
+    local password="$(openssl rand -base64 9)-$(openssl rand -base64 3)"
+    [[ "${password}"  == "${password/[A-Z]/_}" ]] && { generatePassword; return }
+    [[ "${password}"  == "${password/[a-z]/_}" ]] && { generatePassword; return }
+    [[ "${password}"  == "${password/[0-9]/_}" ]] && { generatePassword; return }
+    export OGG_ADMIN_PWD="${password}"
+}
+
+##
 ## Set up administrator password for Microservices Architecture
 ##
 if [[ "${OGG_EDITION}" == "microservices" ]]; then
     if [[ -z "${OGG_ADMIN_PWD}" ]]; then
-         export OGG_ADMIN_PWD="$(openssl rand -base64 9)"
+         generatePassword
          echo "----------------------------------------------------------------------------------"
          echo "--  Password for administrative user '${OGG_ADMIN}' is '${OGG_ADMIN_PWD}'"
          echo "----------------------------------------------------------------------------------"
