@@ -38,10 +38,13 @@ OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|repl
 ##
 function generatePassword {
     local password="$(openssl rand -base64 9)-$(openssl rand -base64 3)"
-    [[ "${password}"  == "${password/[A-Z]/_}" ]] && { generatePassword; return }
-    [[ "${password}"  == "${password/[a-z]/_}" ]] && { generatePassword; return }
-    [[ "${password}"  == "${password/[0-9]/_}" ]] && { generatePassword; return }
-    export OGG_ADMIN_PWD="${password}"
+    if [[ "${password}" != "${password/[A-Z]/_}" && \
+          "${password}" != "${password/[a-z]/_}" && \
+          "${password}" != "${password/[0-9]/_}" ]]; then
+        export OGG_ADMIN_PWD="${password}"
+        return
+    fi
+    generatePassword
 }
 
 ##
