@@ -13,7 +13,7 @@ ENV LANG=en_US.UTF-8
 
 ENV GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-$GRAAL_VERSION/graalvm-ce-$GRAAL_VERSION-linux-amd64.tar.gz \
     JAVA_HOME=/opt/graalvm-ce-$GRAAL_VERSION/ \
-    PATH=/opt/graalvm-ce-$GRAAL_VERSION/bin:$PATH:/opt/rh/llvm-toolset-7/root/usr/bin \
+    PATH=$PATH:/opt/rh/llvm-toolset-7/root/usr/bin \
     LD_LIBRARY_PATH=/opt/rh/llvm-toolset-7/root/usr/lib64 \
     MANPATH=/opt/rh/llvm-toolset-7/root/usr/share/man \
     PKG_CONFIG_PATH=/opt/rh/llvm-toolset-7/root/usr/lib64/pkgconfig \
@@ -28,12 +28,18 @@ RUN curl -o /etc/yum.repos.d/public-yum-ol7.repo http://yum.oracle.com/public-yu
     && yum install -y libcxx libcxx-devel llvm-toolset-7 \
     && rm -rf /var/cache/yum
 
-RUN set -x \
+RUN set -eux \
     && curl --fail --silent --location --retry 3 ${GRAALVM_PKG} \
-    | gunzip | tar x -C /opt/
+    | gunzip | tar x -C /opt/ \
 
-RUN alternatives --install /usr/bin/java  java  $JAVA_HOME/bin/java  20000 \
-    && alternatives --install /usr/bin/javac javac $JAVA_HOME/bin/javac 20000 \
-    && alternatives --install /usr/bin/jar   jar   $JAVA_HOME/bin/jar   20000
+    # Set alternative links
+    && mkdir -p "/usr/java" \
+    && ln -sfT "$JAVA_HOME" /usr/java/default \
+    && ln -sfT "$JAVA_HOME" /usr/java/latest \
+    && for bin in "$JAVA_HOME/bin/"*; do \
+        base="$(basename "$bin")"; \
+        [ ! -e "/usr/bin/$base" ]; \
+        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+    done;
 
 CMD java -version
