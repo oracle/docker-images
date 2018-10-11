@@ -24,7 +24,7 @@ These images will require you to download any required Oracle commercial softwar
  - [Oracle WebCenter Sites](/OracleWebCenterSites)
 
 ### Oracle Sponsored Open Source Projects
- - [GlassFish](GlassFish)
+ - [GraalVM CE](/GraalVM)
  - [MySQL](https://github.com/mysql/mysql-docker)
  - [OpenJDK](/OpenJDK)
  - [Oracle NoSQL Database](/NoSQL)
