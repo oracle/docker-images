@@ -1,7 +1,4 @@
 
-# Supported tags and respective Dockerfile links
-* 1.0.0-rc7 (1.0.0-rc7/Dockerfile)
-
 # GraalVM
 
 GraalVM is a universal virtual machine for running applications written in JavaScript, Python, Ruby, R, JVM-based languages like Java, Scala, Kotlin, and LLVM-based languages such as C and C++.
