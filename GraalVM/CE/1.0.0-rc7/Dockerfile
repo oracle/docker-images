@@ -28,6 +28,8 @@ RUN curl -o /etc/yum.repos.d/public-yum-ol7.repo http://yum.oracle.com/public-yu
     && yum install -y libcxx libcxx-devel llvm-toolset-7 \
     && rm -rf /var/cache/yum
 
+ADD gu-wrapper.sh /usr/local/bin/gu
+
 RUN set -eux \
     && curl --fail --silent --location --retry 3 ${GRAALVM_PKG} \
     | gunzip | tar x -C /opt/ \
@@ -40,6 +42,8 @@ RUN set -eux \
         base="$(basename "$bin")"; \
         [ ! -e "/usr/bin/$base" ]; \
         alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-    done;
+    done \
+
+    && chmod +x /usr/local/bin/gu
 
 CMD java -version
