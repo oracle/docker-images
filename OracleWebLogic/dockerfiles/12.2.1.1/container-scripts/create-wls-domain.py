@@ -53,9 +53,10 @@ if administration_port_enabled != "false":
    cd('SSL/AdminServer')
    set('Enabled', 'True')
 
-# Define the user password for weblogic
-# =====================================
-cd('/Security/%s/User/weblogic' % domain_name)
+# Define the username and  password
+# ==============================================
+cd(('/Security/%s/User/weblogic') % domain_name)
+cmo.setName(username)
 cmo.setPassword(password)
 
 # Write the domain and close the domain template
