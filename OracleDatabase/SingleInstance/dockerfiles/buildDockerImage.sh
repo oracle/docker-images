@@ -20,6 +20,7 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
+   -p: creates prebuilt image
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
    -o: passes on Docker build option
@@ -69,6 +70,7 @@ checkDockerVersion() {
 # Parameters
 ENTERPRISE=0
 STANDARD=0
+PREBUILT=0
 EXPRESS=0
 VERSION="18.3.0"
 SKIPMD5=0
@@ -82,7 +84,7 @@ fi
 
 checkDockerVersion
 
-while getopts "hesxiv:o:" optname; do
+while getopts "hespxiv:o:" optname; do
   case "$optname" in
     "h")
       usage
@@ -95,6 +97,9 @@ while getopts "hesxiv:o:" optname; do
       ;;
     "s")
       STANDARD=1
+      ;;
+    "p")
+      PREBUILT=1
       ;;
     "x")
       EXPRESS=1
@@ -119,15 +124,29 @@ done
 # Which Edition should be used?
 if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
   usage
-elif [ $ENTERPRISE -eq 1 ]; then
+elif [ $ENTERPRISE -eq 1 ] && [ $PREBUILT -eq 0 ]; then
   EDITION="ee"
-elif [ $STANDARD -eq 1 ]; then
+elif [ $ENTERPRISE -eq 1 ] && [ $PREBUILT -eq 1 ]; then
+  EDITION="ee-prebuilt"
+elif [ $STANDARD -eq 1 ] && [ $PREBUILT -eq 0 ]; then
   EDITION="se2"
-elif [ $EXPRESS -eq 1 ]; then
+elif [ $STANDARD -eq 1 ] && [ $PREBUILT -eq 1 ]; then
+  EDITION="se2-prebuilt"
+elif [ $EXPRESS -eq 1 ] && [ $PREBUILT -eq 0 ]; then
   if [ "$VERSION" == "18.3.0" ]; then
     EDITION="xe"
   elif [ "$VERSION" == "11.2.0.2" ]; then
     EDITION="xe"
+    DOCKEROPS="--shm-size=1G $DOCKEROPS";
+  else
+    echo "Version $VERSION does not have Express Edition available.";
+    exit 1;
+  fi;
+elif [ $EXPRESS -eq 1 ] && [ $PREBUILT -eq 1 ]; then
+  if [ "$VERSION" == "18.3.0" ]; then
+    EDITION="xe-prebuilt"
+  elif [ "$VERSION" == "11.2.0.2" ]; then
+    EDITION="xe-prebuilt"
     DOCKEROPS="--shm-size=1G $DOCKEROPS";
   else
     echo "Version $VERSION does not have Express Edition available.";
@@ -140,8 +159,16 @@ if [ "$VERSION" == "12.1.0.2" ] || [ "$VERSION" == "11.2.0.2" ]; then
   DOCKERFILE="$DOCKERFILE.$EDITION"
 fi;
 
+if ([ "$VERSION" == "12.2.0.1" ] || [ "$VERSION" == "18.3.0" ]) && [ $PREBUILT -eq 1 ]; then
+  DOCKERFILE="$DOCKERFILE.prebuilt"
+fi;
+
 # Oracle Database Image Name
-IMAGE_NAME="oracle/database:$VERSION-$EDITION"
+if [ $PREBUILT -eq 1 ]; then
+  IMAGE_NAME="oracle/database:$VERSION-$EDITION-prebuilt"
+else
+  IMAGE_NAME="oracle/database:$VERSION-$EDITION"
+fi;
 
 # Go into version folder
 cd "$VERSION" || {
