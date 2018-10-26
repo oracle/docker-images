@@ -8,13 +8,13 @@ The SQL*Plus command-line query tool is also included, allowing quick ad-hoc SQL
 
 The [Oracle Instant Client](http://www.oracle.com/technetwork/database/features/instant-client/) is a repackaging of Oracle Database libraries, tools and header files usable to create and run applications that connect to a remote (or local) Oracle Database.
 
-Oracle client-server version interopability is detailed in [Doc ID 207303.1](https://support.oracle.com/epmos/faces/DocumentDisplay?id=207303.1).  Applications using Oracle Call Interface (OCI) 18.3 and 12.2 can connect to Oracle Database 11.2 or later.  Some tools may have other restrictions.
+Oracle client-server version interoperability is detailed in [Doc ID 207303.1](https://support.oracle.com/epmos/faces/DocumentDisplay?id=207303.1).  Applications using Oracle Call Interface (OCI) 18.3 and 12.2 can connect to Oracle Database 11.2 or later.  Some tools may have other restrictions.
 
 From release 18.3, the Oracle Instant Client RPMs for Oracle Linux are available for direct download from the [Oracle Linux yum server](https://yum.oracle.com) without requiring manual license acceptance.
 
 ## Building the Oracle Instant Client 18.3 Image
 
-Change directory to [`dockerfiles/18.3.0`](dockerfiles/18.3.0) and simply run:
+Change directory to [`dockerfiles/18.3.0`](dockerfiles/18.3.0) and run:
 
 ```
 docker build -t oracle/instantclient:18.3.0
