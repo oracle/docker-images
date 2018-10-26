@@ -54,7 +54,7 @@ COPY $INSTALL_FILE_1 $CONFIG_RSP $RUN_FILE $PWD_FILE $CHECK_DB_FILE $INSTALL_DIR
 # Install Oracle Express Edition
 # ------------------------------
 
-RUN yum -y install unzip libaio bc initscripts net-tools openssl && \
+RUN yum -y install unzip libaio bc initscripts net-tools openssl glibc-static glibc compat-libstdc++-33 && \
     rm -rf /var/cache/yum && \
     cd $INSTALL_DIR && \
     unzip $INSTALL_FILE_1 && \
