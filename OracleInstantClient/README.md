@@ -17,7 +17,7 @@ From release 18.3, the Oracle Instant Client RPMs for Oracle Linux are available
 Change directory to [`dockerfiles/18.3.0`](dockerfiles/18.3.0) and run:
 
 ```
-docker build -t oracle/instantclient:18.3.0
+docker build -t oracle/instantclient:18.3.0 .
 ```
 
 The build process will automatically install the Instant Client using RPMs sourced directly from the [Oracle Instant Client repository](http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html) on the [Oracle Linux yum server](https://yum.oracle.com).
