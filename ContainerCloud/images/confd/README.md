@@ -1,3 +1,4 @@
+
 # Confd Image
 
 ## Overview
@@ -15,7 +16,7 @@ The following environment variables are required to run this image:
 
 ## Example
 
-Confd is configured in `/etc/confd/conf.d`. Add a template resource by creating a file with the `.toml` extention. For example, create the `hello-world.toml` (below) and add it to the image in `/etc/confd/conf.d/hello-world.toml`:
+Confd is configured in `/etc/confd/conf.d`. Add a template resource by creating a file with the `.toml` extension. For example, create the `hello-world.toml` (below) and add it to the image in `/etc/confd/conf.d/hello-world.toml`:
 
 ```
 [template]
