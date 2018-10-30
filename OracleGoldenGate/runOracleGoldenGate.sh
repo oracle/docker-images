@@ -133,7 +133,6 @@ function initSSL {
         chown     oracle:oinstall        ${OGG_DEPLOY_BASE}/ssl
         ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} 2>/dev/null || return 1
         ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -auto_login
-        ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${HOSTNAME},${CommonOU}"       -keysize 2048 -self_signed -validity 7300
         ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
 
         chmod 644               ${nginxCert}
