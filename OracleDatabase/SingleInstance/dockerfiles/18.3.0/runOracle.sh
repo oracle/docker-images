@@ -107,6 +107,13 @@ if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes | wc -c` -lt 11 ]; then
    fi;
 fi;
 
+# Check that hostname doesn't container any "_"
+# Github issue #711
+if hostname | grep -q "_"; then
+   echo "Error: The hostname must not container any '_'".
+   echo "Your current hostname is '$(hostname)'"
+fi;
+
 # Set SIGINT handler
 trap _int SIGINT
 
