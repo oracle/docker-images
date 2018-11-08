@@ -95,7 +95,7 @@ function createDB {
    export ORACLE_PWD=${ORACLE_PWD:-"`openssl rand -hex 8`"}
    echo "ORACLE PASSWORD FOR SYS AND SYSTEM: $ORACLE_PWD";
 
-   (echo "$ORACLE_PWD"; echo "$ORACLE_PWD";) | /etc/init.d/oracle-xe-18c configure
+   (echo "$ORACLE_PWD"; echo "$ORACLE_PWD";) | /etc/init.d/oracle-xe-18c configure > /tmp/XE_DatabaseCreation.log
 
    # Listener 
    echo "# listener.ora Network Configuration File:
