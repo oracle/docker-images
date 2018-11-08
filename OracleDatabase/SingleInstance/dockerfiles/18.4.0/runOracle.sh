@@ -43,7 +43,6 @@ function moveFiles {
    su -p oracle -c "mv $ORACLE_HOME/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    su -p oracle -c "mv $ORACLE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    su -p oracle -c "mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
-   mv /etc/sysconfig/oracle-xe-18c.conf $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
 
    cp /etc/oratab $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
       
@@ -69,10 +68,6 @@ function symLinkFiles {
       ln -sf $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
    fi;
    
-   if [ ! -L /etc/sysconfig/oracle-xe-18c.conf ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oracle-xe-18c.conf /etc/sysconfig/oracle-xe-18c.conf
-   fi;
-
    cp $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab /etc/oratab
 }
 
