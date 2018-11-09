@@ -45,5 +45,5 @@ temp_var1=`hostname`
 mkdir -p /home/grid/.ssh && \
 chmod 700 /home/grid/.ssh && \
 unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $GRID_HOME    && \
-rm -f $INSTALL_SCRIPTS/$INSTALL_FILE_1 && \
+#rm -f $INSTALL_SCRIPTS/$INSTALL_FILE_1 && \
 $GRID_HOME/perl/bin/perl $GRID_HOME/clone/bin/clone.pl -silent ORACLE_BASE=$GRID_BASE ORACLE_HOME=$GRID_HOME OSDBA_GROUP=asmdba OSASM_GROUP=asmadmin  ORACLE_HOME_NAME="grid122_home1" INVENTORY_LOCATION=$INVENTORY  LOCAL_NODE="$temp_var1" CRS=TRUE

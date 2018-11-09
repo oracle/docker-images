@@ -2,6 +2,7 @@
 *                         @Djelibeybi
 /ContainerCloud/          @mikeraab
 /GlassFish/               @arindam-bandyopadhyay
+/GraalVM/                 @mzachh
 /NoSQL/                   @anandchandak
 /OpenJDK/                 @aureliogrb
 /OracleBI/                @sjvp
@@ -13,10 +14,9 @@
 /OracleFMWInfrastructure/ @mriccell
 /OracleGoldenGate/        @sbalousek
 /OracleHTTPServer/        @Prabhat-Kishore
-/OracleInstantClient/     @gvenzl
+/OracleInstantClient/     @cjbj
 /OracleJava/              @aureliogrb
 /OracleRestDataServices/  @gvenzl
-/OracleSOASuite/          @prashanthnagaraja
 /OracleTuxedo/            @toddinpal
 /OracleWebCenterSites/    @ashishchalak
 /OracleWebLogic/          @mriccell

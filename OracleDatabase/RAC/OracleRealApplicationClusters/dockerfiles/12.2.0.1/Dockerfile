@@ -45,6 +45,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INVENTORY=/u01/app/oraInventory \
     CONFIGGRID="configGrid.sh"  \
     ADDNODE="AddNode.sh"   \
+    DELNODE="DelNode.sh" \
     ADDNODE_RSP="grid_addnode.rsp"  \
     SETUPSSH="setupSSH.expect"  \
     GRID_PATCH="p27383741_122010_Linux-x86-64.zip" \
@@ -91,40 +92,27 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 COPY $INSTALL_FILE_1 $SETUPDOCKERORACLEINIT $INSTALL_GRID_PATCH $SETUP_LINUX_FILE $GRID_PATCH $GRID_SETUP_FILE $INSTALL_GRID_BINARIES_FILE $FIXUP_PREQ_FILE $INSTALL_FILE_2 $DB_SETUP_FILE $CHECK_SPACE_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $INSTALL_SCRIPTS/
 
 # Setup Scripts
-COPY $RUN_FILE $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $GRID_INSTALL_RSP $DBCA_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $STOP_FILE $CHECK_DB_FILE $REMOTE_LISTENER_FILE $SETUPGRIDENV $SCRIPT_DIR/ 
+COPY $RUN_FILE $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $GRID_INSTALL_RSP $DBCA_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $STOP_FILE $CHECK_DB_FILE $REMOTE_LISTENER_FILE $SETUPGRIDENV $DELNODE $SCRIPT_DIR/ 
 
-
-RUN chmod 755 $INSTALL_DIR/install/*.sh && \
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$GRID_SETUP_FILE && \
-    $INSTALL_DIR/install/$DB_SETUP_FILE 
-
-# Install grid
-USER grid
-RUN $INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE
-
-USER root
-RUN $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-server-12cR2-preinstall.conf && \
+    su  grid -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE" && \
     $INVENTORY/orainstRoot.sh && \
-    $GRID_HOME/root.sh
-
-# Apply Patch#
-USER grid
-RUN $INSTALL_DIR/install/$INSTALL_GRID_PATCH $GRID_PATCH && \
-    $INSTALL_DIR/install/$SETUPDOCKERORACLEINIT 
-
-
-# Install DB software binaries
-USER oracle
-RUN $INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE && \
-    $INSTALL_DIR/install/$ENABLE_RAC_FILE
-
-USER root
-RUN $INVENTORY/orainstRoot.sh && \
+    $GRID_HOME/root.sh && \
+    su  grid    -c  "$INSTALL_DIR/install/$INSTALL_GRID_PATCH $GRID_PATCH" && \
+    su  oracle  -c  "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
+    su  grid    -c  "$INSTALL_DIR/install/$SETUPDOCKERORACLEINIT" && \
+    su  oracle  -c  "$INSTALL_DIR/install/$ENABLE_RAC_FILE" && \
+    $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
+    $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
     rm -rf $INSTALL_DIR/install && \
+    sync && \
     chmod 755 $SCRIPT_DIR/*.sh && \
     chmod 755 $SCRIPT_DIR/*.expect && \
     chmod 666 $SCRIPT_DIR/*.rsp && \
@@ -132,16 +120,17 @@ RUN $INVENTORY/orainstRoot.sh && \
     chmod 4755 $GRID_HOME/bin/$DOCKERORACLEINIT && \
     echo "nohup $SCRIPT_DIR/runOracle.sh &" >> /etc/rc.local && \
     echo "/u01/app/12.2.0/grid/dockeroracleinit/lib" > /etc/ld.so.conf.d/dockeroracleinit.conf && \
-    ldconfig && \ 
+    ldconfig && \
     rm -f /etc/rc.d/init.d/oracle-database-server-12cR2-preinstall-firstboot && \
     ln -s $GRID_HOME/bin/$DOCKERORACLEINIT /usr/sbin/oracleinit && \
     chmod +x /etc/rc.d/rc.local  && \
-    sync 
+    sync
 
 VOLUME ["/common_scripts"]
 
-USER grid 
+USER grid
 WORKDIR /home/grid
 
-# Define default command to start Oracle Grid and RAC Database setup. 
+# Define default command to start Oracle Grid and RAC Database setup.
+
 CMD ["/usr/sbin/oracleinit"]

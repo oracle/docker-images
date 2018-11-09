@@ -6,17 +6,17 @@ Sample Docker build files to facilitate installation, configuration, and environ
 ## How to build and run
 You need to make sure that you have atleast 60GB space available for container to create the files for RAC storage.
 
-**IMPORTANT:** If you are behind the proxy, you need to set http_proxy env variable based on your enviornment before building the image.
+**IMPORTANT:** If you are behind the proxy, you need to set http_proxy env variable based on your environment before building the image.
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
-* The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
+* The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
 
          ./buildDockerImage.sh -v (Software Version)
 
          ./buildDockerImage.sh -v 12.2.0.1
 
-         For detailed usage of command, please execute folowing command:
+         For detailed usage of command, please execute following command:
          ./buildDockerImage.sh -h
 
 ### Create Bridge
@@ -28,6 +28,11 @@ To assist in building the images, you can use the [buildDockerImage.sh](dockerfi
 
 ### Disable SELINUX
 SELINUX must be disabled or in permissive mode.
+
+### NFS Server installation on Docker Host
+* You must install NFS server rpms on docker host to utilize NFS volumes in containers.
+
+	yum -y install nfs-utils
 
 ### Running RACStorageServer Docker container
 * Execute following command to create the container:

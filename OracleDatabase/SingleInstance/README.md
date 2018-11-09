@@ -4,8 +4,8 @@ Sample Docker build files to facilitate installation, configuration, and environ
 ## How to build and run
 This project offers sample Dockerfiles for:
  * Oracle Database 18c (18.3.0) Enterprise Edition and Standard Edition 2
- * Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition and Standard Edition 2
- * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition 2
+ * Oracle Database 12c Release 2 (12.2.0.2) Enterprise Edition and Standard Edition 2
+ * Oracle Database 12c Release 1 (12.1.0.1) Enterprise Edition and Standard Edition 2
  * Oracle Database 11g Release 2 (11.2.0.2) Express Edition.
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
@@ -124,11 +124,11 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 	                  The data volume to use for the database.
 	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
 	                  If omitted the database will not be persisted over container recreation.
-	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d
+	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
 	                  Optional: A volume with custom scripts to be run after database startup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
-	   -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d
-	                  Optional: A volume with custom scripts to be run after database startup.
+	   -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
+	                  Optional: A volume with custom scripts to be run after database setup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
 
 There are two ports that are exposed in this image:

@@ -70,7 +70,11 @@ echo "Image name: " $IMAGE_NAME
 # Validate packages
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
-  md5sum -c Checksum
+  MD5CMD="md5sum -c Checksum"
+  if ! [ -x "$(command -v md5sum)" ]; then
+    MD5CMD="docker run -it --rm -v$(pwd):/md5dir oracle/serverjre:8 sh -c cd /md5dir; ${MD5CMD}"
+  fi
+  $MD5CMD
   if [ "$?" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"

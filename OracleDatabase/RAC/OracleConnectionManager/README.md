@@ -9,17 +9,17 @@ To assist in building the images, you can use the [buildDockerImage.sh](dockerfi
 
 **IMPORTANT:** Oracle Connection Manager container is useful when you want to bind single port to host and serve many container on different ports. Oracle Connection manager provide proxy conections. If you are running Oracle RAC Database on docker/container and network is not available for users, you can use Oracle Connection Manager image to proxy the connections.
 
-For complete Oracle Connection Manager setup, please go though following steps and execute them as per your enviornment:
+For complete Oracle Connection Manager setup, please go though following steps and execute them as per your environment:
 
 ### Create Oracle Connection Manager Image
 **IMPORTANT:** You will have to provide the installation binaries of Oracle ADMIN Client Oracle Database 12c Release 2 Client (12.2.0.1.0) for Linux x86-64 and put them into the `dockerfiles/<version>` folder. You  only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html). You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. 
 
-* The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with sudo privileges:
+* The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with sudo privileges:
 
          ./buildDockerImage.sh -v (Software Version)
 
          ./buildDockerImage.sh -v 12.2.0.1
-        For detailed usage of command, please execute folowing command:   
+        For detailed usage of command, please execute following command:   
          ./buildDockerImage.sh -h
 
 ### Create Network Bridge
