@@ -65,13 +65,12 @@ You can override the default values of the following parameters during runtime w
       * `ADMIN_NAME`                  (default: `AdminServer`)
       * `ADMIN_LISTEN_PORT`           (default: `7001`)
       * `DOMAIN_NAME`                 (default: `base_domain`)
-      * `DOMAIN_HOME`                 (default: `/u01/oracle/user_projects/domains/base_domain`)
       * `ADMINISTRATION_PORT_ENABLED` (default: `true`)
       * `ADMINISTRATION_PORT`         (default: `9002`)
 
 **NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in WebLogic 12.2.1.3 the patch 27117282 must be applied. Please download the patch and apply it after you have built the 12.2.1.3 image. You can follow the sample https://github.com/oracle/docker-images/tree/master/OracleWebLogic/samples/12213-patch to see how to patch. An alternative is to not enable Administration port when you issue the docker run command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
-	$docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12.2.1.3-developer
+	$docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_NAME=abc_domain oracle/weblogic:12.2.1.3-developer
 
 Run the WLS Administration Console:
 
