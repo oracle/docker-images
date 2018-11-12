@@ -23,22 +23,25 @@ FROM oracle/weblogic:12.2.1.3-developer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
+ARG PRE_DOMAIN_HOME="${PRE_DOMAIN_HOME:-/u01/oracle/user_projects/domains}" 
+ARG PRE_DOMAIN_NAME="${PRE_DOMAIN_NAME:-base_domain}" 
+
 # WLS Configuration
 # ---------------------------
-ENV ADMIN_HOST="wlsadmin" \
+ENV DOMAIN_NAME="${PRE_DOMAIN_NAME}" \
+    DOMAIN_HOME="${PRE_DOMAIN_HOME}/${PRE_DOMAIN_NAME}" \ 
+    ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
     MS_PORT="8001" \
     DEBUG_PORT="8453" \
     ORACLE_HOME=/u01/oracle \
     SCRIPT_FILE=/u01/oracle/createAndStartWLSDomain.sh \
     CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true"  \
-    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain}/bin:/u01/oracle
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}/bin:/u01/oracle
 
 # Domain and Server environment variables
 # ------------------------------------------------------------
-ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
-    PRE_DOMAIN_HOME=/u01/oracle/user_projects \
-    ADMIN_PORT="${ADMIN_PORT:-7001}"  \
+ENV ADMIN_PORT="${ADMIN_PORT:-7001}"  \
     ADMIN_USERNAME="${ADMIN_USERNAME:-weblogic}" \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
     MS_NAME="${MS_NAME:-""}" \

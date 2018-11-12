@@ -3,7 +3,11 @@
 #Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
-#
+
+#Define DOMAIN_HOME
+export DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME
+echo "Domain Home is: " $DOMAIN_HOME
+
 # If AdminServer.log does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer
 # Otherwise, only start NM (container restarted)
@@ -56,8 +60,8 @@ if [ $ADD_DOMAIN -eq 0 ]; then
    # Create an empty domain
    wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE  /u01/oracle/create-wls-domain.py
    mkdir -p ${DOMAIN_HOME}/servers/AdminServer/security/
-   echo "username=${USER}" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties
-   echo "password=${PASS}" >> /u01/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security/boot.properties
+   echo "username=${USER}" >> $DOMAIN_HOME/servers/AdminServer/security/boot.properties
+   echo "password=${PASS}" >> $DOMAIN_HOME/servers/AdminServer/security/boot.properties
    ${DOMAIN_HOME}/bin/setDomainEnv.sh
 fi
 
