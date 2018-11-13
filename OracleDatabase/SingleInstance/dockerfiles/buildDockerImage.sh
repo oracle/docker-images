@@ -131,7 +131,6 @@ elif [ $EXPRESS -eq 1 ]; then
     DOCKEROPS="--shm-size=1G $DOCKEROPS";
   elif [ "$VERSION" == "18.4.0" ]; then
     EDITION="xe"
-    DOCKEROPS="--shm-size=1G $DOCKEROPS";
   else
     echo "Version $VERSION does not have Express Edition available.";
     exit 1;
