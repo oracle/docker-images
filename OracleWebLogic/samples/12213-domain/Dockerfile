@@ -23,13 +23,13 @@ FROM oracle/weblogic:12.2.1.3-developer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
-ARG PRE_DOMAIN_HOME="${PRE_DOMAIN_HOME:-/u01/oracle/user_projects/domains}" 
 ARG PRE_DOMAIN_NAME="${PRE_DOMAIN_NAME:-base_domain}" 
+ARG PRE_DOMAIN_HOME="${PRE_DOMAIN_HOME:-/u01/oracle/user_projects/domains/${PRE_DOMAIN_NAME}}" 
 
 # WLS Configuration
 # ---------------------------
 ENV DOMAIN_NAME="${PRE_DOMAIN_NAME}" \
-    DOMAIN_HOME="${PRE_DOMAIN_HOME}/${PRE_DOMAIN_NAME}" \ 
+    DOMAIN_HOME="${PRE_DOMAIN_HOME}" \ 
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
     MS_PORT="8001" \
