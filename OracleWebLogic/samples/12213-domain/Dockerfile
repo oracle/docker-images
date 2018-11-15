@@ -23,13 +23,13 @@ FROM oracle/weblogic:12.2.1.3-developer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
-ARG PRE_DOMAIN_NAME="${PRE_DOMAIN_NAME:-base_domain}" 
-ARG PRE_DOMAIN_HOME="${PRE_DOMAIN_HOME:-/u01/oracle/user_projects/domains/${PRE_DOMAIN_NAME}}" 
+ARG CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" 
+ARG CUSTOM_DOMAIN_HOME="${CUSTOM_DOMAIN_HOME:-/u01/oracle/user_projects/domains/${CUSTOM_DOMAIN_NAME}}" 
 
 # WLS Configuration
 # ---------------------------
-ENV DOMAIN_NAME="${PRE_DOMAIN_NAME}" \
-    DOMAIN_HOME="${PRE_DOMAIN_HOME}" \ 
+ENV DOMAIN_NAME="${CUSTOM_DOMAIN_NAME}" \
+    DOMAIN_HOME="${CUSTOM_DOMAIN_HOME}" \ 
     ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
     MS_PORT="8001" \
@@ -37,7 +37,7 @@ ENV DOMAIN_NAME="${PRE_DOMAIN_NAME}" \
     ORACLE_HOME=/u01/oracle \
     SCRIPT_FILE=/u01/oracle/createAndStartWLSDomain.sh \
     CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true"  \
-    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}/bin:/u01/oracle
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
 
 # Domain and Server environment variables
 # ------------------------------------------------------------
@@ -58,11 +58,11 @@ COPY container-scripts/* /u01/oracle/
 USER root
 RUN chmod +xw /u01/oracle/*.sh && \
     chmod +xw /u01/oracle/*.py && \
-    mkdir -p $PRE_DOMAIN_HOME && \
-    chmod a+xr $PRE_DOMAIN_HOME && \
-    chown -R oracle:oracle $PRE_DOMAIN_HOME
+    mkdir -p $DOMAIN_HOME && \
+    chmod a+xr $DOMAIN_HOME && \
+    chown -R oracle:oracle $DOMAIN_HOME
 
-VOLUME $PRE_DOMAIN_HOME
+VOLUME $DOMAIN_HOME
 # Expose Node Manager default port, and also default for admin and managed server
 EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT $DEBUG_PORT
 

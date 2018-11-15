@@ -62,6 +62,7 @@ set('NativeVersionEnabled', 'true')
 set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
 set('LogLevel', 'FINEST')
+set('DomainsDirRemoteSharingEnabled','true')
 
 # Set the Node Manager user name and password (domain name will change after writeDomain)
 cd('/SecurityConfiguration/base_domain')
