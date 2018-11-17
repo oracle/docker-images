@@ -17,7 +17,7 @@
 #
 # Pull base image
 # ---------------
-FROM  container-registry.oracle.com/middleware/weblogic:12.2.1.3-dev
+FROM  oracle/weblogic:12.2.1.3-developer
 
 # Maintainer
 # ----------
