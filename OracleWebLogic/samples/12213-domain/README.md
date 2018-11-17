@@ -18,10 +18,9 @@ If you need to find the password at a later time, grep for `password` in the Doc
 
 ### How to Build and Run
 
-**NOTE:** First make sure you have built `oracle/weblogic:12.2.1.3-developer`.  If you want to set your own Domain Home and Domain Name they are ARG and must be set at build time. 
+**NOTE:** First make sure you have built `oracle/weblogic:12.2.1.3-developer`.  If you want to set your own Domain Home pass in a build argument ARG for  Domain name, the Domain home will be '/u01/oracle/user_projects/$DOMAIN_NAME'. 
 
-* Domain Name:     `PRE_DOMAIN_NAME`      (default: `base_domain`)  
-* Domain Home:     `PRE_DOMAIN_HOME`      (default: `/u01/oracle/user_projects/domains/$PRE_DOMAIN_NAME`)  
+* Domain Name:     `CUSTOM_DOMAIN_NAME`      (default: `base_domain`)  
  
 To build this sample, run:
 
