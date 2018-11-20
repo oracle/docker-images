@@ -36,7 +36,7 @@ ENV DOMAIN_NAME="${CUSTOM_DOMAIN_NAME}" \
     ORACLE_HOME=/u01/oracle \
     SCRIPT_FILE=/u01/oracle/createAndStartWLSDomain.sh \
     CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true"  \
-    DOMAIN_HOME="/u01/oracle/user_projects/${DOMAIN_NAME}" \ 
+    DOMAIN_HOME="/u01/oracle/user_projects/domains/${DOMAIN_NAME}" \ 
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
 
 # Domain and Server environment variables
@@ -65,7 +65,7 @@ RUN chmod +xw /u01/oracle/*.sh && \
     chmod -R a+xwr $DOMAIN_HOME
 
 
-VOLUME $DOMAIN_HOME
+VOLUME $PRE_DOMAIN_HOME
 # Expose Node Manager default port, and also default for admin and managed server
 EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT $DEBUG_PORT
 

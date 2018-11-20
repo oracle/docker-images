@@ -5,6 +5,22 @@
 # If log.nm does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer, as well Managed Server
 # Otherwise, only start NM (container is being restarted)o
+RUNTIME_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain.properties
+
+ADMIN_HOST=`awk '{print $1}' ${RUNTIME_PROPERTIES_FILE} | grep ^ADMIN_HOST= | cut -d "=" -f2`
+if [ -z "${ADMIN_SERVER_NAME}" ]; then
+   ADMIN_HOST="wlsadmin"
+fi
+echo "Admin Server Host: ${ADMIN_HOST}"
+export ADMIN_HOST=${ADMIN_HOST}
+
+JAVA_OPTIONS=`awk '{print $1}' ${RUNTIME_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
+if [ -z "${JAVA_OPTIONS}" ]; then 
+   JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
+fi
+export JAVA_OPTIONS=${JAVA_OPTIONS}
+echo "Java Options: ${JAVA_OPTIONS}"
+
 export MS_HOME="${DOMAIN_HOME}/servers/${MANAGE_S_NAME}"
 export MS_SECURITY="${MS_HOME}/security"
 
@@ -19,19 +35,19 @@ echo "Managed Server Name: ${MANAGE_S_NAME}"
 echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
-PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
-if [ ! -e "${PROPERTIES_FILE}" ]; then
+SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
+if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
    echo "A properties file with the username and password needs to be supplied."
    exit
 fi
 # Get Username
-USER=`awk '{print $1}' ${PROPERTIES_FILE} | grep username | cut -d "=" -f2`
+USER=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep username | cut -d "=" -f2`
 if [ -z "${USER}" ]; then
    echo "The domain username is blank.  The Admin username must be set in the properties file."
    exit
 fi
 # Get Password
-PASS=`awk '{print $1}' ${PROPERTIES_FILE} | grep password | cut -d "=" -f2`
+PASS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep password | cut -d "=" -f2`
 if [ -z "${PASS}" ]; then
    echo "The domain password is blank.  The Admin password must be set in the properties file."
    exit

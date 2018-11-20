@@ -22,24 +22,24 @@ def getEnvVar(var):
 
 # This python script is used to create a WebLogic domain
 
-#domain_uid                   = os.environ.get("DOMAIN_UID")
-hostname                      = socket.gethostname()
+#domain_uid                   = DOMAIN_UID
 server_port                   = int(os.environ.get("MANAGED_SERVER_PORT"))
 domain_path                   = os.environ.get("DOMAIN_HOME")
-cluster_name                  = os.environ.get("CLUSTER_NAME")
-admin_server_name             = os.environ.get("ADMIN_SERVER_NAME")
+cluster_name                  = CLUSTER_NAME
+print('cluster_name             : [%s]' % cluster_name);
+admin_server_name             = ADMIN_NAME
 #admin_server_name_svc        = os.environ.get("ADMIN_SERVER_NAME_SVC")
 admin_port                    = int(os.environ.get("ADMIN_PORT"))
 domain_name                   = os.environ.get("DOMAIN_NAME")
-#t3_channel_port              = int(os.environ.get("T3_CHANNEL_PORT"))
-#t3_public_address            = os.environ.get("T3_PUBLIC_ADDRESS")
-number_of_ms                  = int(os.environ.get("CONFIGURED_MANAGED_SERVER_COUNT"))
-cluster_type                  = os.environ.get("CLUSTER_TYPE")
-managed_server_name_base      = os.environ.get("MANAGED_SERVER_NAME_BASE")
-#managed_server_name_base_svc = os.environ.get("MANAGED_SERVER_NAME_BASE_SVC")
-#domain_logs                   = os.environ.get("DOMAIN_LOGS_DIR")
-#script_dir                    = os.environ.get("CREATE_DOMAIN_SCRIPT_DIR")
-production_mode_enabled       = os.environ.get("PRODUCTION_MODE_ENABLED")
+#t3_channel_port              = T3_CHANNEL_PORT
+#t3_public_address            = T3_PUBLIC_ADDRESS
+number_of_ms                  = int(CONFIGURED_MANAGED_SERVER_COUNT)
+cluster_type                  = CLUSTER_TYPE
+managed_server_name_base      = MANAGED_SERVER_NAME_BASE
+#managed_server_name_base_svc = MANAGED_SERVER_NAME_BASE_SVC
+#domain_logs                  = DOMAIN_LOGS_DIR
+#script_dir                   = CREATE_DOMAIN_SCRIPT_DIR
+production_mode_enabled       = PRODUCTION_MODE_ENABLED
 
 # Read the domain secrets from the common python file
 #execfile('%s/read-domain-secret.py' % script_dir)
@@ -50,7 +50,6 @@ print('admin_server_name        : [%s]' % admin_server_name);
 print('admin_port               : [%s]' % admin_port);
 print('cluster_name             : [%s]' % cluster_name);
 print('server_port              : [%s]' % server_port);
-print('hostname                 : [%s]' % hostname);
 print('number_of_ms             : [%s]' % number_of_ms);
 print('cluster_type             : [%s]' % cluster_type);
 print('managed_server_name_base : [%s]' % managed_server_name_base);
