@@ -11,12 +11,12 @@
 # ==============================================
 #Env Vars
 # ------------------------------
-domain_name      = os.environ.get("DOMAIN_NAME", "base_domain")
+domain_name      = os.environ.get("DOMAIN_NAME")
 admin_name       = os.environ.get("ADMIN_NAME", "AdminServer")
 admin_port       = int(os.environ.get("ADMIN_PORT", "7001"))
 admin_pass       = "ADMIN_PASSWORD"
 cluster_name     = os.environ.get("CLUSTER_NAME", "DockerCluster")
-domain_path      = '/u01/oracle/user_projects/domains/%s' % domain_name
+domain_path      = os.environ.get("DOMAIN_HOME")
 production_mode  = os.environ.get("PRODUCTION_MODE", "prod")
 
 print('domain_name     : [%s]' % domain_name);
@@ -62,6 +62,7 @@ set('NativeVersionEnabled', 'true')
 set('StartScriptEnabled', 'false')
 set('SecureListener', 'false')
 set('LogLevel', 'FINEST')
+set('DomainsDirRemoteSharingEnabled','true')
 
 # Set the Node Manager user name and password (domain name will change after writeDomain)
 cd('/SecurityConfiguration/base_domain')

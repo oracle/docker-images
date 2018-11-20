@@ -54,7 +54,6 @@ COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls
 # Domain and Server environment variables
 # ------------------------------------------------------------
 ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
-    DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-base_domain} \
     ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}"  \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
     DEBUG_FLAG=true \
