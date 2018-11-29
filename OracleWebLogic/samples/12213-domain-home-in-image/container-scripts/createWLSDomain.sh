@@ -58,21 +58,14 @@ function check_wls {
     echo -e "WebLogic Server has $action"
 }
 
-DOMAIN_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain.properties
-echo ${DOMAIN_PROPERTIES_FILE}
-
-ADMIN_SERVER_NAME=`awk '{print $1}' ${DOMAIN_PROPERTIES_FILE} | grep ^ADMIN_SERVER_NAME= | cut -d "=" -f2`
-if [ -z "${ADMIN_SERVER_NAME}" ]; then
-   ADMIN_SERVER_NAME="admin-server"
-fi
-echo "Admin Server Name: ${ADMIN_SERVER_NAME}"
 
 ADD_DOMAIN=1
-if [  -f ${DOMAIN_HOME}/servers/${ADMIN_SERVER_NAME}/logs/${ADMIN_SERVER_NAME}.log ]; then
+if [  -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log ]; then
     exit
 fi
 
 # Create Domain only if 1st execution
+DOMAIN_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain.properties
 SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain_security.properties
 if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
    echo "A properties file with the username and password needs to be supplied."

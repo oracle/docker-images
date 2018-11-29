@@ -27,6 +27,8 @@ ARG CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-domain1}"
 ARG CUSTOM_ADMIN_PORT="${CUSTOM__ADMIN_PORT:-7001}"  
 ARG CUSTOM_MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT:-8001}"
 ARG CUSTOM_DEBUG_PORT="${CUSTOM_DEBUG_PORT:-8453}"
+ARG CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-admin-server}"
+ARG CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-wlsadmin}"
 
 # WLS Configuration
 # ---------------------------
@@ -35,8 +37,10 @@ ENV ORACLE_HOME=/u01/oracle \
     DOMAIN_NAME="${CUSTOM_DOMAIN_NAME}" \
     DOMAIN_HOME="/u01/oracle/user_projects/domains/${CUSTOM_DOMAIN_NAME}" \
     ADMIN_PORT="${CUSTOM_ADMIN_PORT}" \
+    ADMIN_NAME="${CUSTOM_ADMIN_NAME}" \
+    ADMIN_HOST="${CUSTOM_ADMIN_HOST}" \
     MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT}" \
-    MANAGE_S_NAME="${MANAGE_S_NAME}" \
+    MANAGED_SERV_NAME="${MANAGED_SERV_NAME}" \
     DEBUG_PORT="8453" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
 
@@ -53,8 +57,7 @@ RUN chmod +xw /u01/oracle/*.sh && \
     chown -R oracle:oracle $DOMAIN_HOME && \
     chmod -R a+xwr $DOMAIN_HOME
 
-COPY properties/domain.properties ${PROPERTIES_FILE_DIR}/
-COPY properties/domain_security.properties ${PROPERTIES_FILE_DIR}/
+COPY properties/docker_build/domain*.properties ${PROPERTIES_FILE_DIR}/
 
 # Configuration of WLS Domain
 RUN /u01/oracle/createWLSDomain.sh && \

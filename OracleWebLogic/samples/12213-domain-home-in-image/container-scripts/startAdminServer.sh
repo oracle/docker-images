@@ -59,32 +59,19 @@ function check_wls {
 }
 
 
-RUNTIME_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/runtime.properties
 
-ADMIN_SERVER_NAME=`awk '{print $1}' ${RUNTIME_PROPERTIES_FILE} | grep ^ADMIN_SERVER_NAME= | cut -d "=" -f2`
-if [ -z "${ADMIN_SERVER_NAME}" ]; then
-   ADMIN_SERVER_NAME="admin-server"
-fi
-echo "Admin Server Name: ${ADMIN_SERVER_NAME}"
 
-JAVA_OPTIONS=`awk '{print $1}' ${RUNTIME_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
-if [ -z "${JAVA_OPTIONS}" ]; then
-   JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
-fi
-export ${JAVA_OPTIONS}
-echo "Java Options: ${JAVA_OPTIONS}"
-
-export AS_HOME="${DOMAIN_HOME}/servers/${ADMIN_SERVER_NAME}"
+export AS_HOME="${DOMAIN_HOME}/servers/${ADMIN_NAME}"
 export AS_SECURITY="${AS_HOME}/security"
 
-if [  -f ${AS_HOME}/logs/${ADMIN_SERVER_NAME}.log ]; then
+if [  -f ${AS_HOME}/logs/${ADMIN_NAME}.log ]; then
     exit
 fi
 
 echo "Admin Server Home: ${AS_HOME}"
 echo "Admin Server Security: ${AS_SECURITY}"
 
-SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
+SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/docker_run/security.properties
 if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
    echo "A security.properties file with the username and password needs to be supplied."
    exit
@@ -103,6 +90,22 @@ if [ -z "${PASS}" ]; then
    exit
 fi
 
+#Define Java Options
+JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
+if [ -z "${JAVA_OPTIONS}" ]; then
+   JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
+fi
+export ${JAVA_OPTIONS}
+
+#Define start of Derby Database
+echo "Java Options: ${JAVA_OPTIONS}"
+DERBY_FLAG=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^DERBY_FLAG= | cut -d "=" -f2`
+if [ -z "${DERBY_FLAG}" ]; then
+   DERBY_FLAG="true"
+fi
+export ${DERBY_FLAG}
+echo "Start Derby: ${DERBY_FLAG}"
+
 # Create domain
 mkdir -p ${AS_SECURITY}
 echo "username=${USER}" >> ${AS_SECURITY}/boot.properties
@@ -116,7 +119,7 @@ ${DOMAIN_HOME}/bin/startWebLogic.sh &
 check_wls "started" localhost ${ADMIN_PORT} 2
 
 # tail the Admin Server Logs
-tail -f ${AS_HOME}/logs/${ADMIN_SERVER_NAME}.log &
+tail -f ${AS_HOME}/logs/${ADMIN_NAME}.log &
 
 childPID=$!
 wait $childPID
