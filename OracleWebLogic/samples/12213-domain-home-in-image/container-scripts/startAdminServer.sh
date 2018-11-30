@@ -58,9 +58,6 @@ function check_wls {
     echo -e "WebLogic Server has $action"
 }
 
-
-
-
 export AS_HOME="${DOMAIN_HOME}/servers/${ADMIN_NAME}"
 export AS_SECURITY="${AS_HOME}/security"
 
@@ -71,7 +68,7 @@ fi
 echo "Admin Server Home: ${AS_HOME}"
 echo "Admin Server Security: ${AS_SECURITY}"
 
-SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/docker_run/security.properties
+SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
 if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
    echo "A security.properties file with the username and password needs to be supplied."
    exit
@@ -95,16 +92,16 @@ JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cu
 if [ -z "${JAVA_OPTIONS}" ]; then
    JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
 fi
-export ${JAVA_OPTIONS}
+export JAVA_OPTIONS=${JAVA_OPTIONS}
 
 #Define start of Derby Database
-echo "Java Options: ${JAVA_OPTIONS}"
-DERBY_FLAG=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^DERBY_FLAG= | cut -d "=" -f2`
-if [ -z "${DERBY_FLAG}" ]; then
-   DERBY_FLAG="true"
-fi
-export ${DERBY_FLAG}
-echo "Start Derby: ${DERBY_FLAG}"
+#echo "Java Options: ${JAVA_OPTIONS}"
+#DERBY_FLAG=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^DERBY_FLAG= | cut -d "=" -f2`
+#if [ -z "${DERBY_FLAG}" ]; then
+#   DERBY_FLAG="true"
+#fi
+#export DERBY_FLAG=${DERBY_FLAG}
+#echo "Start Derby: ${DERBY_FLAG}"
 
 # Create domain
 mkdir -p ${AS_SECURITY}

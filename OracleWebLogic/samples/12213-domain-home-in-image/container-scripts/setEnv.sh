@@ -1,12 +1,8 @@
-#!/bin/bash ex
-
-# Copyright (c) 2017, 2018, Oracle and/or its affiliates. All rights reserved.
-# The Universal Permissive License (UPL), Version 1.0
+#!/bin/bash
 #
-# This example creates the BUILD_ARG environment variable as a string of --build-arg for 
-# the arguments passed on the docker build command. The variable file that is used for the WDT
-# create domain step is the input to this script. This insures that the values persisted
-# as environment variables in the docker image match the configured domain home.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 BUILD_ARG=''
 if [ $# > 1 ]; then
