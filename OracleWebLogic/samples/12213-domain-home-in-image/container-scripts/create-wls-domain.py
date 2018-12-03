@@ -31,8 +31,8 @@ admin_server_name             = ADMIN_NAME
 #admin_server_name_svc        = os.environ.get("ADMIN_SERVER_NAME_SVC")
 admin_port                    = int(os.environ.get("ADMIN_PORT"))
 domain_name                   = os.environ.get("DOMAIN_NAME")
-#t3_channel_port              = T3_CHANNEL_PORT
-#t3_public_address            = T3_PUBLIC_ADDRESS
+t3_channel_port               = int(T3_CHANNEL_PORT)
+t3_public_address             = T3_PUBLIC_ADDRESS
 number_of_ms                  = int(CONFIGURED_MANAGED_SERVER_COUNT)
 cluster_type                  = CLUSTER_TYPE
 managed_server_name_base      = MANAGED_SERVER_NAME_BASE
@@ -55,6 +55,8 @@ print('cluster_type             : [%s]' % cluster_type);
 print('managed_server_name_base : [%s]' % managed_server_name_base);
 print('production_mode_enabled  : [%s]' % production_mode_enabled);
 print('dsname                   : [%s]' % dsname);
+print('t3_channel_port          : [%s]' % t3_channel_port);
+print('t3_public_address        : [%s]' % t3_public_address);
 
 # Open default domain template
 # ============================
@@ -74,12 +76,12 @@ set('ListenPort', admin_port)
 set('Name', admin_server_name)
 
 
-#create('T3Channel', 'NetworkAccessPoint')
-#cd('/Servers/%s/NetworkAccessPoints/T3Channel' % admin_server_name)
-#set('PublicPort', t3_channel_port)
-#set('PublicAddress', t3_public_address)
+create('T3Channel', 'NetworkAccessPoint')
+cd('/Servers/%s/NetworkAccessPoints/T3Channel' % admin_server_name)
+set('PublicPort', t3_channel_port)
+set('PublicAddress', t3_public_address)
 #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
-#set('ListenPort', t3_channel_port)
+set('ListenPort', t3_channel_port)
 
 #cd('/Servers/%s' % admin_server_name)
 #create(admin_server_name, 'Log')
