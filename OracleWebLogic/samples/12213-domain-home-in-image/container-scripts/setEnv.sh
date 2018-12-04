@@ -5,15 +5,15 @@
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 BUILD_ARG=''
-if [ $# > 1 ]; then
-  PROPERTIES_FILE=$1
-fi
-
-if [ ! -e "${PROPERTIES_FILE}" ]; then
+if [ "$#" -eq  "0" ]
+   then
     echo "A properties file with variable definitions should be supplied."
-fi
+    exit 1
+ else
+    PROPERTIES_FILE=$1
+    echo Export environment variables from the ${PROPERTIES_FILE} properties file
+ fi
 
-echo Export environment variables from the ${PROPERTIES_FILE} properties file
 
 CUSTOM_DOMAIN_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^DOMAIN_NAME= | cut -d "=" -f2`
 if [ -n "$CUSTOM_DOMAIN_NAME" ]; then
@@ -43,11 +43,11 @@ if [ -n "$CUSTOM_ADMIN_PORT" ]; then
     BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_ADMIN_PORT=$CUSTOM_ADMIN_PORT"
 fi
 
-CUSTOM_MS_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^MANAGED_SERVER_PORT= | cut -d "=" -f2`
-if [ -n "$CUSTOM_MS_PORT" ]; then
-    export CUSTOM_MS_PORT=$CUSTOM_MS_PORT 
-    echo CUSTOM_MS_PORT=$CUSTOM_MS_PORT
-    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_MS_PORT=$CUSTOM_MS_PORT"
+CUSTOM_MANAGED_SERVER_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^MANAGED_SERVER_PORT= | cut -d "=" -f2`
+if [ -n "$CUSTOM_MANAGED_SERVER_PORT" ]; then
+    export CUSTOM_MANAGED_SERVER_PORT=$CUSTOM_MANAGED_SERVER_PORT 
+    echo CUSTOM_MANAGED_SERVER_PORT=$CUSTOM_MANAGED_SERVER_PORT
+    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_MANAGED_SERVER_PORT=$CUSTOM_MANAGED_SERVER_PORT"
 fi
 
 CUSTOM_DEBUG_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^DEBUG_PORT= | cut -d "=" -f2`
@@ -57,4 +57,5 @@ if [ -n "$CUSTOM_DEBUG_PORT" ]; then
     BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_DEBUG_PORT=$CUSTOM_DEBUG_PORT"
 fi
 
+export BUILD_ARG=$BUILD_ARG
 echo BUILD_ARG=$BUILD_ARG
