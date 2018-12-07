@@ -2,19 +2,19 @@ Example of Image with WLS Domain
 ================================
 This Dockerfile extends the Oracle WebLogic image by updating OPatch and applying a patch. Before applaying the WebLogic 12.2.1.3 October PSU PATCH 12.2.1.3.181016WLSPSU Opatch needs to be updated with PATCH 28186730: OPATCH 13.9.4.0.0 FOR FMW/WLS 12.2.1.3.
 		
-**Notes:** Historically, OPatch was updated by unzipping and replacing ORACLE_HOME/OPatch directory. For versions greater than or equal to 13.6, it now uses the OUI installation tooling. This ensures that installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasions led to upgrade related issues.
+**Notes:** Historically, OPatch was updated by unzipping and replacing ORACLE_HOME/OPatch directory. For versions greater than or equal to 13.6, it now uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasions led to upgrade related issues.
 
 # How to build and run
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
 
-Then download file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it next to this README.
-Then download file [p27117282_122130_Generic.zip](http://support.oracle.com) and place it next to this README.
+Then download file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
+Then download file [p27117282_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 
 To build, run:
 
         $ docker build -t oracle/weblogic:12213-opatch-update .
 
-## Run Single Server Domain
+# Run Single Server Domain
 #### Providing the Administration Server user name and password
 The user name and password must be supplied in a `domain.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
 
