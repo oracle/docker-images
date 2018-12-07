@@ -109,26 +109,25 @@ To run your Oracle Database 18c Express Edition Docker image use the **docker ru
 	docker run --name <container name> \
 	-p <host port>:1521 -p <host port>:5500 \
 	-e ORACLE_PWD=<your database passwords> \
-	-e ORACLE_CHARACTERSET=<your character set> \
+    -e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
 	oracle/database:18.4.0-xe
 	
 	Parameters:
 	   --name:        The name of the container (default: auto generated)
-	   --shm-size:    Amount of Linux shared memory
 	   -p:            The port mapping of the host port to the container port.
 	                  Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
-       -e ORACLE_CHARACTERSET:
+	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
-	   -v /u01/app/oracle/oradata
+	   -v /opt/oracle/oradata
 	                  The data volume to use for the database.
 	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
 	                  If omitted the database will not be persisted over container recreation.
-	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
+	   -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
 	                  Optional: A volume with custom scripts to be run after database startup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
-	   -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
+	   -v /opt/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
 	                  Optional: A volume with custom scripts to be run after database setup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
 
@@ -150,7 +149,6 @@ On the first startup of the container a random password will be generated for th
 
 The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
 	docker exec <container name> /opt/oracle/setPassword.sh <your password>
-
 
 #### Running Oracle Database 11gR2 Express Edition in a Docker container
 To run your Oracle Database Express Edition Docker image use the **docker run** command as follows:
