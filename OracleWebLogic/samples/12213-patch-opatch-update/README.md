@@ -4,7 +4,7 @@ This Dockerfile extends the Oracle WebLogic image by updating OPatch and applyin
 		
 **Notes:** Historically, OPatch was updated by unzipping and replacing ORACLE_HOME/OPatch directory. For versions greater than or equal to 13.6, it now uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasions led to upgrade related issues.
 
-# How to build and run
+# How to build 
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
 
 Then download file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
@@ -14,8 +14,22 @@ To build, run:
 
         $ docker build -t oracle/weblogic:12213-opatch-update .
 
+# Verify that the Patch has been applied correctly
+Run a container from the image
+
+        $ docker run --name verify_patch oracle/weblogic:12213-opatch-update /bin/bash
+
+cd OPatch and run:
+
+        ./opatch version
+        ./opatch lspatches 
+
+You will see the OPatch version being 13.9.4.0.0 and the one-off patch 27117282 applied applied
+
 # Run Single Server Domain
-#### Providing the Administration Server user name and password
+The WebLogic Server install image (patched in this sample) allows you to run a container with a single WebLogic Server domain. This makes it extremely simple to deploy applications and any resource the application might need. The steps bellow describe how to run the single server domain container.
+
+## Providing the Administration Server user name and password
 The user name and password must be supplied in a `domain.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
 
 The format of the `domain.properties` file is key=value pair:
@@ -25,7 +39,7 @@ The format of the `domain.properties` file is key=value pair:
 
 **Note**: Oracle recommends that the `domain.properties` file be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
-#### Start the container
+## Start the container
 Start a container from the image created in step 1.
 You can override the default values of the following parameters during runtime with the `-e` option:
 
@@ -45,18 +59,6 @@ Run the WLS Administration Console:
         $ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>
 
 In your browser, enter `https://xxx.xx.x.x:9002/console`. Your browser will request that you accept the Security Exception. To avoid the Security Exception, you must update the WebLogic Server SSL configuration with a custom identity certificate.
-
-## Verify that the Patch has been applied correctly
-Run a container from the image
-
-        $ docker run --name verify_patch oracle/weblogic:12213-opatch-update /bin/bash
-
-cd OPatch and run:
-
-        ./opatch version
-        ./opatch lspatches 
-
-You will see the OPatch version being 13.9.4.0.0 and the one-off patch 27117282 applied applied
 
 # Copyright
 Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
