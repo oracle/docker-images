@@ -1,10 +1,10 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 11g Release 2 Express Edition
+# This is the Dockerfile for Oracle Database 18c Express Edition
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -18,11 +18,6 @@
 # Run: 
 #      $ docker build -t oracle/database:18.4.0-xe -f Dockerfile.xe .
 #
-# IMPORTANT
-# ---------
-# Oracle XE requires Docker 1.10.0 and above:
-# Oracle XE uses shared memory for MEMORY_TARGET and needs at least 1 GB.
-# Docker only supports --shm-size since Docker 1.10.0
 #
 # Pull base image
 # ---------------
@@ -51,7 +46,7 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 # Copy binaries
 # -------------
 COPY $INSTALL_FILE_1 $RUN_FILE $PWD_FILE $CHECK_DB_FILE $INSTALL_DIR/
-COPY $CONF_FILE /etc/sysconfig/
+COPY $CONF_FILE $INSTALL_DIR/
 
 RUN cd $INSTALL_DIR && \
     yum -y install oracle-database-preinstall-18c file openssl $INSTALL_FILE_1 && \
@@ -64,6 +59,7 @@ RUN cd $INSTALL_DIR && \
     mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$CHECK_DB_FILE $ORACLE_BASE/ && \
+    mv $INSTALL_DIR/$CONF_FILE /etc/sysconfig/ && \
     ln -s $ORACLE_BASE/$PWD_FILE / && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
