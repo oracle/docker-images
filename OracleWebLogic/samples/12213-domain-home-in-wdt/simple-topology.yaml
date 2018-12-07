@@ -1,0 +1,38 @@
+domainInfo:
+    AdminUserName: '@@FILE:/u01/oracle/properties/adminuser.properties@@'
+    AdminPassword: '@@FILE:/u01/oracle/properties/adminpass.properties@@'
+    ServerStartMode: '@@PROP:SERVER_START_MODE@@'
+topology:
+    Name: '@@PROP:DOMAIN_NAME@@'
+    AdminServerName: '@@PROP:ADMIN_NAME@@'
+    ProductionModeEnabled: '@@PROP:PRODUCTION_MODE_ENABLED@@'
+    Cluster:
+        '@@PROP:CLUSTER_NAME@@':
+            ClientCertProxyEnabled: true
+            DynamicServers:
+                ServerTemplate: template1
+                CalculatedListenPorts: false
+                ServerNamePrefix: '@@PROP:MANAGED_SERVER_NAME_BASE@@'
+                DynamicClusterSize: '@@PROP:CONFIGURED_MANAGED_SERVER_COUNT@@'
+                MaxDynamicClusterSize: '@@PROP:CONFIGURED_MANAGED_SERVER_COUNT@@'
+    Server:
+        '@@PROP:ADMIN_NAME@@':
+            ListenPort: '@@PROP:ADMIN_PORT@@'
+            NetworkAccessPoint:
+                T3Channel:
+                    ListenAddress: None
+                    ListenPort: '@@PROP:T3_CHANNEL_PORT@@'
+                    PublicAddress: '@@PROP:T3_PUBLIC_ADDRESS@@'
+                    PublicPort: '@@PROP:T3_CHANNEL_PORT@@'
+    ServerTemplate:
+        template1:
+            ListenPort: '@@PROP:MANAGED_SERVER_PORT@@'
+appDeployments:
+    Application:
+        # Quote needed because of hyphen in string
+        'simple-app':
+            SourcePath: 'wlsdeploy/applications/simple-app.war'
+            Target: '@@PROP:CLUSTER_NAME@@'
+            ModuleType: war
+            StagingMode: nostage
+            PlanStagingMode: nostage
