@@ -4,7 +4,7 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 11g Release 2 Express Edition
+# This is the Dockerfile for Oracle Database 18c Express Edition
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -18,11 +18,6 @@
 # Run: 
 #      $ docker build -t oracle/database:18.4.0-xe -f Dockerfile.xe .
 #
-# IMPORTANT
-# ---------
-# Oracle XE requires Docker 1.10.0 and above:
-# Oracle XE uses shared memory for MEMORY_TARGET and needs at least 1 GB.
-# Docker only supports --shm-size since Docker 1.10.0
 #
 # Pull base image
 # ---------------
