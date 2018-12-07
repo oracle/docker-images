@@ -2,7 +2,7 @@ Example Image with a  WebLogic Server Domain
 =============================================
 This Dockerfile extends the Oracle WebLogic image by creating a sample WebLogic Server  12.2.1.3 domain and cluster into a Docker image.
 
-A domain is created inside the image and utility scripts are copied into the image, enabling users to start an Administration Server and a Managed Servers each running in separate containers. As part of the domain configuration there is a data source that connectsd to a Derby database started in the Admin Server container.  The data source in the Managed servers connect to the Derby database in the Admin server container.   
+A domain is created inside the image and utility scripts are copied into the image, enabling users to start an Administration Server and a Managed Servers each running in separate containers. As part of the domain configuration there is a data source that connects to a Derby database started in the Admin Server container.  The data source in the Managed servers connect to the Derby database in the Admin server container.   
 
 **Note:** In this sample the WebLogic servers are configured with a blank listen address, when running JTA transactions you must use a DNS server to configure the listen addresses to use DNS names. 
 
@@ -14,8 +14,8 @@ A domain is created inside the image and utility scripts are copied into the ima
 
 The security property files enables the scripts to configure the correct authentication for the WebLogic Administration Server and Managed Servers. The format of the security.properties and domain_security.properties files are key=value pairs, for example:
 
-username=myadminusername
-password=myadminpassword
+	username=myadminusername
+	password=myadminpassword
 
 **Note:** Oracle recommends that the domain_security.properties and security.properties files be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
@@ -26,14 +26,14 @@ At build time the domain.properties file is used to pass in the Docker arguments
 
 The domain property file enables you to customize the parameter to configure the WebLogic domain. The format of the domain.properties are key=value pairs, for example:
 
-ADMIN_NAME=admin-server
-ADMIN_HOST=wlsadmin
-MANAGED_SERVER_NAME_BASE=managed-server
-CONFIGURED_MANAGED_SERVER_COUNT=2
-CLUSTER_NAME=cluster-1
-DEBUG_FLAG=true
-PRODUCTION_MODE_ENABLED=true
-CLUSTER_TYPE=DYNAMIC
+	ADMIN_NAME=admin-server
+	ADMIN_HOST=wlsadmin
+	MANAGED_SERVER_NAME_BASE=managed-server
+	CONFIGURED_MANAGED_SERVER_COUNT=2
+	CLUSTER_NAME=cluster-1
+	DEBUG_FLAG=true
+	PRODUCTION_MODE_ENABLED=true
+	CLUSTER_TYPE=DYNAMIC
 
 **NOTE:** Before invoking the build make sure you have built `oracle/weblogic:12.2.1.3-developer`. 
 
@@ -52,7 +52,7 @@ Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-i
 To build this sample, run:
 
         $ . container-scripts/setEnv.sh ./properties/docker_build/domain.properties
-	$ docker build $BUILD_ARG -t 12213-domain-home-in-image .
+	$ docker build $BUILD_ARG  --force-rm=true -t 12213-domain-home-in-image .
 
 
 **During Docker Run:** of the admin and managed servers, the user name and password need to be passed in as well as some optional parameters. The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_run` in the HOST. In the Docker run command line add the -v option which maps the property file into the image directory /u01/oracle/properties.
