@@ -4,8 +4,9 @@
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-docker build \
-    --build-arg WDT_MODEL=simple-topology.yaml \
-    --build-arg WDT_ARCHIVE=archive.zip \
-    -t 12213-domain-wdt .
-
+rm -Rf archive
+mkdir -p archive/wlsdeploy/applications
+cd simple-app
+jar cvf ../archive/wlsdeploy/applications/simple-app.war *
+cd ../archive
+jar cvf ../archive.zip *
