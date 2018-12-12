@@ -169,7 +169,7 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 
 	   -v /u01/app/oracle/oradata
 	                  The data volume to use for the database.
-	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+	                  Has to be writable by the Unix "oracle" (uid: 1000) user inside the container!
 	                  If omitted the database will not be persisted over container recreation.
 	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
 	                  Optional: A volume with custom scripts to be run after database startup.
