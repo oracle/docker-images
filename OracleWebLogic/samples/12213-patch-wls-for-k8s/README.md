@@ -4,27 +4,30 @@ This Dockerfile extends the Oracle WebLogic install image by updating OPatch and
 		
 **Notes:** Historically, OPatch was updated by unzipping and replacing ORACLE_HOME/OPatch directory. For versions greater than or equal to 13.6, it now uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasions led to upgrade related issues.
 
+We are applying patch 'p28076014_12213_Generic.zip' which is required for the WebLogic Kubernetes Operator to work.
+
 ## How to build 
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
 
-Then download file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
-Then download file [p27117282_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
+	Then download file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
+	Then download file [p27117282_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
+	Then download file [p28076014_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 
 To build, run:
 
-        $ docker build -t oracle/weblogic:12213-opatch-update .
+        $ docker build -t oracle/weblogic:12213-patch-wls-for-k8s .
 
 ## Verify that the Patch has been applied correctly
 Run a container from the image
 
-        $ docker run --name verify_patch -it oracle/weblogic:12213-opatch-update /bin/bash
+        $ docker run --name verify_patch -it oracle/weblogic:12213-patch-wls-for-k8s /bin/bash
 
 cd OPatch and run:
 
         ./opatch version
         ./opatch lspatches 
 
-You will see the OPatch version being 13.9.4.0.0 and the one-off patch 27117282 applied applied
+You will see the OPatch version being 13.9.4.0.0 and the one-off patches 27117282 and 28076014 applied applied
 
 ## Run Single Server Domain
 The WebLogic Server install image (patched in this sample) allows you to run a container with a single WebLogic Server domain. This makes it extremely simple to deploy applications and any resource the application might need. The steps bellow describe how to run the single server domain container.
@@ -61,7 +64,7 @@ Run the WLS Administration Console:
 In your browser, enter `https://xxx.xx.x.x:9002/console`. Your browser will request that you accept the Security Exception. To avoid the Security Exception, you must update the WebLogic Server SSL configuration with a custom identity certificate.
 
 ##  Samples for WebLogic multi server domains and cluster
-To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the 12213-domain sample.
+To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the 12213-domain-home-in-image sample.
 
 # Copyright
 Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
