@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: May, 2017
 # Author: gerald.venzl@oracle.com
@@ -13,16 +13,15 @@
 # 
 
 ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
-ORACLE_PDB="`ls -dl $ORACLE_BASE/oradata/$ORACLE_SID/*/ | grep -v pdbseed | awk '{print $9}' | cut -d/ -f6`"
-POSITIVE_RETURN="READ WRITE"
+OPEN_MODE="READ WRITE"
 ORAENV_ASK=NO
 source oraenv
 
-# Check Oracle DB status and store it in status
+# Check Oracle at least one PDB has open_mode "READ WRITE" and store it in status
 status=`sqlplus -s / as sysdba << EOF
    set heading off;
    set pagesize 0;
-   SELECT open_mode FROM v\\$pdbs WHERE name COLLATE BINARY_CI = '$ORACLE_PDB';
+   SELECT DISTINCT open_mode FROM v\\$pdbs WHERE open_mode = '$OPEN_MODE';
    exit;
 EOF`
 
@@ -30,10 +29,10 @@ EOF`
 ret=$?
 
 # SQL Plus execution was successful and PDB is open
-if [ $ret -eq 0 ] && [ "$status" = "$POSITIVE_RETURN" ]; then
+if [ $ret -eq 0 ] && [ "$status" = "$OPEN_MODE" ]; then
    exit 0;
 # PDB is not open
-elif [ "$status" != "$POSITIVE_RETURN" ]; then
+elif [ "$status" != "$OPEN_MODE" ]; then
    exit 1;
 # SQL Plus execution failed
 else
