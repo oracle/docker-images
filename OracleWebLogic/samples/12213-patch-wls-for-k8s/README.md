@@ -10,7 +10,7 @@ We are applying patch 'p28076014_12213_Generic.zip' which is required for the We
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
 
 	Then download file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
-	Then download file [p27117282_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
+	Then download file [p28298734_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 	Then download file [p28076014_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 
 To build, run:
