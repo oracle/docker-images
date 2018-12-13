@@ -11,6 +11,7 @@
 # (1) p28186730_139400_Generic.zip
 # (2) p27117282_122130_Generic.zip
 # (3) p28076014_122130_Generic.zip
+# (4) p28298734_122130_Generic.zip
 #     Download the patches from http://support.oracle.com
 #
 # HOW TO BUILD THIS IMAGE
@@ -22,7 +23,7 @@
 
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.2.1.3-developer
+FROM oracle/weblogic:12.2.1.3-generic
 
 # Maintainer
 # ----------
@@ -33,10 +34,11 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 ENV PATCH_PKG0="p28186730_139400_Generic.zip"
 ENV PATCH_PKG1="p27117282_122130_Generic.zip"
 ENV PATCH_PKG2="p28076014_122130_Generic.zip"
+ENV PATCH_PKG3="p28298734_122130_Generic.zip"
 
 # Copy supplemental package and scripts
 # --------------------------------
-COPY $PATCH_PKG0 $PATCH_PKG1 $PATCH_PKG2 /u01/
+COPY $PATCH_PKG0 $PATCH_PKG1 $PATCH_PKG2 $PATCH_PKG3 /u01/
 
 # Installation of Supplemental Quick Installer
 # --------------------------------------------
@@ -48,12 +50,14 @@ RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG0 && \
     echo "opatch updated" && sleep 5 && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG1 && \
     cd /u01/27117282 && $ORACLE_HOME/OPatch/opatch apply -silent && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG3 && \
+    cd /u01/28298734 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG2 && \
     cd /u01/28076014 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     $ORACLE_HOME/OPatch/opatch util cleanup -silent && \
     rm /u01/$PATCH_PKG0 && rm /u01/$PATCH_PKG1 && rm /u01/$PATCH_PKG2 && \
     rm -rf /u01/6880880 && rm -rf /u01/27117282 && rm -rf /u01/28076014 && \
-    rm -rf /u01/oracle/cfgtoollogs/opatch/* 
+    rm -rf /u01/28298734 && rm -rf /u01/oracle/cfgtoollogs/opatch/* 
 
 WORKDIR ${ORACLE_HOME}
 
