@@ -67,7 +67,7 @@ To build this sample taking the defaults, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
-          -t 12213-domain-wdt .
+          -t 12213-domain-home-in-image-wdt .
 
 This will use the model, variable and archive files in the sample directory.
 
@@ -86,7 +86,7 @@ To parse the sample variable file and build the sample, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
-          -t 12213-domain-wdt .
+          -t 12213-domain-home-in-image-wdt .
 
 This sample provides a Derby Data Source that is targeted to the Managed Server cluster. The Derby database is created
   in the Admin Server container when the container is run. To turn off the database create, set DERBY_FLAG="false" in the 
