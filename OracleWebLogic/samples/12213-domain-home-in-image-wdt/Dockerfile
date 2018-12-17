@@ -41,7 +41,7 @@
 # Pull base image
 # ---------------
 # FROM store/oracle/weblogic:12.2.1.3
-FROM wlsldi-v2.docker.oraclecorp.com/weblogic:19.1.0.0 
+FROM store/oracle/weblogic:12.2.1.3-dev
 
 # Maintainer
 # ----------
