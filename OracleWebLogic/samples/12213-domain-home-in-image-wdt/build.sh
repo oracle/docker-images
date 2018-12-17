@@ -18,6 +18,15 @@ scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 # provide additional arguments on the build command, such as those values needed to perform the curl against the 
 # github.com weblogic-deploy-tooling repository, in the environment variable ADDITIONAL_BUILD_ARGS
 
+if [ ! -e ${scriptDir}/weblogic-deploy.zip ]; then
+   curl -Lo ${scriptDir}/weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.14/weblogic-deploy.zip
+fi
+
+if [ ! -e ${scriptDir}/weblogic-deploy.zip ]; then
+   echo 'Unable to download the weblogic-deploy-tooling release archive'
+   exit
+fi 
+
 echo "docker build \
     $BUILD_ARG \
     --build-arg WDT_MODEL=simple-topology.yaml \
