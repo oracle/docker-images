@@ -7,6 +7,6 @@
 script="${BASH_SOURCE[0]}"
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 
-. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/docker_build/domain.properties
+. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/docker-build/domain.properties
 
 docker build $BUILD_ARG -t 12213-domain-home-in-image ${scriptDir}
