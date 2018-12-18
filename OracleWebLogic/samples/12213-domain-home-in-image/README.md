@@ -51,8 +51,8 @@ Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-i
 
 To build this sample, run:
 
-  $ . container-scripts/setEnv.sh ./properties/docker_build/domain.properties
-	$ docker build $BUILD_ARG  --force-rm=true -t 12213-domain-home-in-image .
+ 	$ . container-scripts/setEnv.sh ./properties/docker-build/domain.properties
+ 	$ docker build $BUILD_ARG  --force-rm=true -t 12213-domain-home-in-image .
 
 
 
