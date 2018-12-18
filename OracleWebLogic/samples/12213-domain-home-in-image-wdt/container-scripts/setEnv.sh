@@ -9,12 +9,12 @@
 # as environment variables in the docker image match the configured domain home.
 
 BUILD_ARG=''
-if [ $# > 1 ]; then
-  PROPERTIES_FILE=$1
-fi
-
-if [ ! -e "${PROPERTIES_FILE}" ]; then
+if [ "$#" -eq  "0" ]; then
     echo "A properties file with variable definitions should be supplied."
+    exit 1
+ else
+    PROPERTIES_FILE=$1
+    echo Export environment variables from the ${PROPERTIES_FILE} properties file
 fi
 
 echo Export environment variables from the ${PROPERTIES_FILE} properties file

@@ -28,11 +28,13 @@ When the WDT `discoverDomain` tool is used on an existing domain, a ZIP archive 
 
 ### How to Build and Run
 
-**NOTE:** The image is based on a WebLogic Server image in the docker-images project: `oracle/weblogic:12.2.1.3-developer`. Build that image to your local repository before building this sample.
-
 The WebLogic Deploy Tool installer is required to build this image. Add `weblogic-deploy.zip` to the sample directory. The docker sample requires a minimum release of weblogic-deploy-tooling-0.14. This release uses the new command argument -domain_home on the createDomain step.  This argument allows a Domain Home path with a domain folder name that can be different from the Domain name in the model file.
 
     $ wget https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.14/weblogic-deploy.zip
+    
+ The sample build.sh demonstrates how to use a curl to download the weblogic-deploy.zip before running the docker build:
+ 
+     curl -Lo ${scriptDir}/weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.14/weblogic-deploy.zip   
 
 This sample deploys a simple, one-page web application contained in a ZIP archive. This archive needs to be built (one time only) before building the Docker image.
 
@@ -67,7 +69,7 @@ To build this sample taking the defaults, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
-          -t 12213-domain-wdt .
+          -t 12213-domain-home-in-image-wdt .
 
 This will use the model, variable and archive files in the sample directory.
 
@@ -86,7 +88,7 @@ To parse the sample variable file and build the sample, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
-          -t 12213-domain-wdt .
+          -t 12213-domain-home-in-image-wdt .
 
 This sample provides a Derby Data Source that is targeted to the Managed Server cluster. The Derby database is created
   in the Admin Server container when the container is run. To turn off the database create, set DERBY_FLAG="false" in the 
@@ -99,19 +101,19 @@ The Admin Server and each Managed Server are run in containers from this build i
 
 To start the containerized Administration Server, run:
 
-    $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <sample-directory>/properties/docker_run:/u01/oracle/properties 12213-domain-wdt
+    $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties/docker-run 12213-domain-home-in-image-wdt
 
 To start a containerized Managed Server (managed-server-1) to self-register with the Administration Server above, run:
 
-    $ docker run -d --name managed-server-1 --link wlsadmin:wlsadmin -p 9001:9001 -v <sample-directory>/properties/docker_run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 12213-domain-wdt startManagedServer.sh
+    $ docker run -d --name managed-server-1 --link wlsadmin:wlsadmin -p 9001:9001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 12213-domain-home-in-image-wdt startManagedServer.sh
 
 To start an additional Managed Server (in this example managed-server-2), run:
 
-    $ docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 9002:9001 -v <sample-directory>/properties/docker_run/:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 12213-domain-wdt startManagedServer.sh
+    $ docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 9002:9001 -v <sample-directory>/properties/docker-run/:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 12213-domain-home-in-image-wdt startManagedServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a dynamic cluster set up on a single host environment.
 
-You may create more containerized Managed Servers by calling the `docker` command above for `startManagedServer.sh` as long you link properly with the Administration Server. For an example of a multihost environment, see the sample `1221-multihost`.
+You may create more containerized Managed Servers by calling the `docker` command above for `startManagedServer.sh` as long you change the dynamic server count attributes in the sample variable properties file before you build, and you link properly with the Administration Server. For an example of a multihost environment, see the sample `1221-multihost`.
 
 # Copyright
 Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.

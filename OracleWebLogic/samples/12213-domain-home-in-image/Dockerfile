@@ -57,7 +57,7 @@ RUN chmod +xw /u01/oracle/*.sh && \
     chown -R oracle:oracle $DOMAIN_HOME && \
     chmod -R a+xwr $DOMAIN_HOME
 
-COPY properties/docker_build/domain*.properties ${PROPERTIES_FILE_DIR}/
+COPY properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
 
 # Configuration of WLS Domain
 RUN /u01/oracle/createWLSDomain.sh && \

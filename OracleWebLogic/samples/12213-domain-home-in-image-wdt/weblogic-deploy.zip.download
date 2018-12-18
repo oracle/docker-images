@@ -1,5 +1,0 @@
-# Download the WebLogic Deploy Tool installer to the sample directory.
-#
-#  - wget https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.11/weblogic-deploy.zip
-#
-d35e83d969dd6a485409da6e9eca250f  weblogic-deploy.zip

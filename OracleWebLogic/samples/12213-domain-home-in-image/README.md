@@ -8,9 +8,9 @@ A domain is created inside the image and utility scripts are copied into the ima
 
 ### Providing the Administration Server user name and password
 
-**During Docker Build:** The user name, password must be supplied in domain_security.properties file.  The property file is located in the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_build` in the HOST. This property file gets copied into the image directory `/u01/oracle/properties`.
+**During Docker Build:** The user name, password must be supplied in domain_security.properties file.  The property file is located in the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker-build` in the HOST. This property file gets copied into the image directory `/u01/oracle/properties`.
 
-**During Docker Run:** The user name and password must be supplied in a security.properties file.  The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_run` in the HOST. In the Docker run command line add the -v option maps the property file into the image directory /u01/oracle/properties. 
+**During Docker Run:** The user name and password must be supplied in a security.properties file.  The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker-run` in the HOST. In the Docker run command line add the -v option maps the property file into the image directory /u01/oracle/properties. 
 
 The security property files enables the scripts to configure the correct authentication for the WebLogic Administration Server and Managed Servers. The format of the security.properties and domain_security.properties files are key=value pairs, for example:
 
@@ -22,7 +22,7 @@ The security property files enables the scripts to configure the correct authent
 ### How to Build and Run
 At build time the domain.properties file is used to pass in the Docker arguments and configuration parameters for the Weblogic domain. 
 
-**During Docker Build:** The domain configuration parameters must be supplied in the domain.properties file.  This file is located in the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_build` in the HOST. This property file gets copied into the image directory `/u01/oracle/properties`.
+**During Docker Build:** The domain configuration parameters must be supplied in the domain.properties file.  This file is located in the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker-build` in the HOST. This property file gets copied into the image directory `/u01/oracle/properties`.
 
 The domain property file enables you to customize the parameter to configure the WebLogic domain. The format of the domain.properties are key=value pairs, for example:
 
@@ -37,7 +37,7 @@ The domain property file enables you to customize the parameter to configure the
 
 **NOTE:** Before invoking the build make sure you have built `oracle/weblogic:12.2.1.3-developer`. 
 
-Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/container_scripts` find the script setEnv.sh. This script extracts the following Docker arguments and passes them as a --build-arg to the Dockerfile.
+Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/container-scripts` find the script setEnv.sh. This script extracts the following Docker arguments and passes them as a --build-arg to the Dockerfile.
 
 * Domain Name:           `DOMAIN_NAME`         (default: `base_domain`)  
 * Admin Port:            `ADMIN_PORT`          (default: `7001`)          
@@ -51,30 +51,30 @@ Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-i
 
 To build this sample, run:
 
-        $ . container-scripts/setEnv.sh ./properties/docker_build/domain.properties
-	$ docker build $BUILD_ARG  --force-rm=true -t 12213-domain-home-in-image .
+ 	$ . container-scripts/setEnv.sh ./properties/docker-build/domain.properties
+ 	$ docker build $BUILD_ARG  --force-rm=true -t 12213-domain-home-in-image .
 
 
-**During Docker Run:** of the admin and managed servers, the user name and password need to be passed in as well as some optional parameters. The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_run` in the HOST. In the Docker run command line add the -v option which maps the property file into the image directory /u01/oracle/properties.
+
+**During Docker Run:** of the admin and managed servers, the user name and password need to be passed in as well as some optional parameters. The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker-run` in the HOST. In the Docker run command line add the -v option which maps the property file into the image directory /u01/oracle/properties.
 
 
 To start the containerized Administration Server, run:
 
 	$ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 \
-          -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker_run:/u01/oracle/properties \
+          -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker-run:/u01/oracle/properties \
           12213-domain-home-in-image
 
 To start a containerized Managed Server (MS1) to self-register with the Administration Server above, run:
 
 	$ docker run -d --name MS1 --link wlsadmin:wlsadmin -p 8001:8001 \
-          -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker_run:/u01/oracle/properties \
+          -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker-run:/u01/oracle/properties \
           -e MANAGED_SERV_NAME=managed-server1 12213-domain-home-in-image startManagedServer.sh
-
 
 To start a second Managed Server (MS2), run:
 
 	$ docker run -d --name MS2 --link wlsadmin:wlsadmin -p 8002:8001 \
-          -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker_run:/u01/oracle/properties \
+          -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker-run:/u01/oracle/properties \
           -e MANAGED_SERV_NAME=managed-server2 12213-domain-home-in-image startManagedServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a cluster set up on a single host environment.
