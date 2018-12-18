@@ -124,13 +124,11 @@ elif [ $ENTERPRISE -eq 1 ]; then
 elif [ $STANDARD -eq 1 ]; then
   EDITION="se2"
 elif [ $EXPRESS -eq 1 ]; then
-  if [ "$VERSION" == "18.3.0" ]; then
+  if [ "$VERSION" == "18.4.0" ]; then
     EDITION="xe"
   elif [ "$VERSION" == "11.2.0.2" ]; then
     EDITION="xe"
     DOCKEROPS="--shm-size=1G $DOCKEROPS";
-  elif [ "$VERSION" == "18.4.0" ]; then
-    EDITION="xe"
   else
     echo "Version $VERSION does not have Express Edition available.";
     exit 1;
