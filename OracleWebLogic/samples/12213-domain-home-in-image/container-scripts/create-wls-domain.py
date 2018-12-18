@@ -202,7 +202,8 @@ print('Done setting attributes for Data Source: %s' % dsname);
 
 # Assign
 # ======
-assign('JDBCSystemResource', dsname, 'Target', cluster_name)
+# Uncomment to target and enable the data source for the cluster
+# assign('JDBCSystemResource', dsname, 'Target', cluster_name)
 
 # Write Domain
 # ============

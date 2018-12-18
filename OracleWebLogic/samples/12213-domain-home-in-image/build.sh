@@ -4,6 +4,9 @@
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-. ./container-scripts/setEnv.sh ./properties/docker_build/domain.properties
+script="${BASH_SOURCE[0]}"
+scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 
-docker build $BUILD_ARG -t 12213-domain-home-in-image .
+. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/docker-build/domain.properties
+
+docker build $BUILD_ARG -t 12213-domain-home-in-image ${scriptDir}
