@@ -19,7 +19,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ sudo docker build -t oracle/weblogic:12213-update-k8s .
+#      $ sudo docker build -t oracle/weblogic:12213-update-k8s Dockerfile.patching-ontop-12213-psu .
 #
 
 # Pull base image

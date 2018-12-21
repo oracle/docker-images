@@ -1,6 +1,6 @@
 Example of Image with WLS Domain
 ================================
-There are two  Dockerfiles which extend the Oracle WebLogic install image and apply ia necesary patch for the WebLogic Kubernetes Operator 2.0. 
+There are two  Dockerfiles which extend the Oracle WebLogic binary image and apply a necessary patch for the WebLogic Kubernetes Operator 2.0. 
 
 1)Dockerfile.patching-ontop-12213: applies two patches `p28076014` (on top of WLS 12.2.1.3) and `p27117282` (this patch is needed only if the WebLogic binary image is created manually from this Github project).
 
