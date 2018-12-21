@@ -4,7 +4,9 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This Dockerfile extends the Oracle WebLogic install image, upgrades OPatch, and applies necesary patch for the WebLogic Kubernetes Operator 2.0.  The patch 28076014 is applied on top of the Oct 2018 PSU and requires an upgrade of OPatch to 13.9.4.0.
+# This Dockerfile extends the Oracle WebLogic install image, upgrades OPatch, and applies necesary patch for 
+# the WebLogic Kubernetes Operator 2.0.  The patch 28076014 is applied on top of the Oct 2018 PSU and requires i
+# an upgrade of OPatch to 13.9.4.0.
 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -17,7 +19,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ sudo docker build -t oracle/weblogic:12213-update-k8s .
+#      $ sudo docker build -t oracle/weblogic:12213-update-k8s Dockerfile.patching-ontop-12213-psu .
 #
 
 # Pull base image
