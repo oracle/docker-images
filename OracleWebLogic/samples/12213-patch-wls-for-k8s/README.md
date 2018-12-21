@@ -37,7 +37,8 @@ cd OPatch and run:
         ./opatch version
         ./opatch lspatches
 
-You will see the OPatch version being 13.9.4.0.0 and the one-off patches 27117282 and 28076014 applied.
+	1) You will see one-off patches 28076014, and 27117282.
+	2) You will see one-off patches 28076014, 28298734 WLS PATCH SET UPDATE 12.2.1.3.181016, and the OPatch version being 13.9.4.0.0.
 
 ## Run a single server domain
 The WebLogic Server install image (patched in this sample) allows you to run a container with a single WebLogic Server domain. This makes it extremely simple to deploy applications and any resources the applications might need. The steps below describe how to run the single server domain container.

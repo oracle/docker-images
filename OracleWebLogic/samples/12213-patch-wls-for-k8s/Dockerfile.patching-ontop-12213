@@ -38,11 +38,9 @@ COPY $PATCH_PKG1 $PATCH_PKG2 /u01/
 
 # Installation of Supplemental Quick Installer
 # --------------------------------------------
-USER root
-RUN yum -y install psmisc
 USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG1 && \
-    cd /u01/28298734 && $ORACLE_HOME/OPatch/opatch apply -silent && \
+    cd /u01/27117282 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG2 && \
     cd /u01/28076014 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     $ORACLE_HOME/OPatch/opatch util cleanup -silent && \
