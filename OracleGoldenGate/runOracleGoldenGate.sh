@@ -31,11 +31,28 @@ OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|repl
 }
 
 ##
+## Generate a random password with:
+##  - at least one uppercase character
+##  - at least one lowercase character
+##  - at least one digit character
+##
+function generatePassword {
+    local password="$(openssl rand -base64 9)-$(openssl rand -base64 3)"
+    if [[ "${password}" != "${password/[A-Z]/_}" && \
+          "${password}" != "${password/[a-z]/_}" && \
+          "${password}" != "${password/[0-9]/_}" ]]; then
+        export OGG_ADMIN_PWD="${password}"
+        return
+    fi
+    generatePassword
+}
+
+##
 ## Set up administrator password for Microservices Architecture
 ##
 if [[ "${OGG_EDITION}" == "microservices" ]]; then
     if [[ -z "${OGG_ADMIN_PWD}" ]]; then
-         export OGG_ADMIN_PWD="$(openssl rand -base64 9)"
+         generatePassword
          echo "----------------------------------------------------------------------------------"
          echo "--  Password for administrative user '${OGG_ADMIN}' is '${OGG_ADMIN_PWD}'"
          echo "----------------------------------------------------------------------------------"
@@ -116,7 +133,6 @@ function initSSL {
         chown     oracle:oinstall        ${OGG_DEPLOY_BASE}/ssl
         ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} 2>/dev/null || return 1
         ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -auto_login
-        ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${HOSTNAME},${CommonOU}"       -keysize 2048 -self_signed -validity 7300
         ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
 
         chmod 644               ${nginxCert}

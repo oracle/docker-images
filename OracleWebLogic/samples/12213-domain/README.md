@@ -18,14 +18,19 @@ If you need to find the password at a later time, grep for `password` in the Doc
 
 ### How to Build and Run
 
-**NOTE:** First make sure you have built `oracle/weblogic:12.2.1.3-developer`.
+**NOTE:** First make sure you have built `oracle/weblogic:12.2.1.3-developer`.  If you want to set your own Domain Home pass in a build argument ARG for  Domain name, the Domain home will be '/u01/oracle/user_projects/$DOMAIN_NAME'. 
+
+* Domain Name:     `CUSTOM_DOMAIN_NAME`      (default: `base_domain`)  
+ 
+To build this sample, run:
+
+        $ docker build --build-arg PRE_DOMAIN_NAME=myDomain --build-arg PRE_DOMAIN_HOME= `/u01/oracle/myDomHome` -t 12213-domain .
 
 You can define the following environment variables at Docker runtime using the `-e` option  on the command line or in the `domain.properties` file. These environmental variables need to be set for the Administration Server as well as for the Managed Servers.
 
 * Admin Password:  `ADMIN_PASSWORD`  Auto Generated
 * Admin Username:  `ADMIN_USERNAME`  `weblogic`      
 * Admin Name:      `ADMIN_NAME`       `AdminServer`  
-* Domain Name:     `DOMAIN_NAME`      `base_domain`  
 * Admin Port:      `ADMIN_PORT`       `7001`          
 * Admin Host:      `ADMIN_HOST`       `wlsadmin`    
 * Cluster Name:    `CLUSTER_NAME`   `DockerCluster`
@@ -36,9 +41,6 @@ You can define the following environment variables at Docker runtime using the `
 * Node Manager Name:  `NM_NAME`        Generated      
 
 
-To build this sample, run:
-
-        $ docker build -t 12213-domain .
 
 **Important**: The domain directory needs to be externalized by using data volumes (`-v` option). The Administration Server as well as the Managed Servers need to read/write to the same `DOMAIN_HOME`.
 

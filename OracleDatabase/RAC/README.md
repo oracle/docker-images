@@ -1,14 +1,14 @@
 # Oracle Database on Docker
 Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Database Online Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/index.html).
 
-## How to build Oracle RAC docker image and access in your enviornment
+## How to build Oracle RAC docker image and access in your environment
 Please review README of following sections in a given order. After reviewing the README of each section, you can skip the image/container creation if you do not meet the requirement.
 
 * Please review following points before you proceed to next sections:
   * For better performance, it is good to use BTRFS file system for Docker storage on the Docker host. Please refer to [Oracle Container Runtime for Docker Documentation](https://docs.oracle.com/cd/E52668_01/E87205/html/index.html)
   * Install and configure Docker Engine on Oracle Linux 7 to run RAC on Docker.
   * For Oracle RAC setup in this document, we have used public network on 172.15.1.0/24 and the private network on 192.168.17.0/24.
-  * If you plan to use different public and private network in your enviornment, please gather details for following IPs:
+  * If you plan to use different public and private network in your environment, please gather details for following IPs:
     * Public IP address for each OracleRealApplicationClusters container.
     * Private IP address for each OracleRealApplicationClusters container.
     * Virtual IP address for each OracleRealApplicationClusters container.

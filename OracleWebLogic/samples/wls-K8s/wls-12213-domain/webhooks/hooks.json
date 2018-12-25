@@ -1,8 +1,0 @@
-[
-  {
-    "id": "scale-up",
-    "execute-command": "/var/scripts/scaleUpAction.sh",
-    "command-working-directory": "/var/scripts",
-    "response-message": "scale-up call ok\n"
-  }
-]

@@ -27,7 +27,7 @@ Here is an example command that uses a specific version of Terraform and the Pro
   .
 ```
 
-Note that the argument includes the inital hypen seperator. To find out which versions are available, check the [Oracle Linux 7 Developer Channel](http://yum.oracle.com/repo/OracleLinux/OL7/developer/x86_64/index.html) on the [Oracle Linux Yum Server](http://yum.oracle.com).
+Note that the argument includes the initial hypen separator. To find out which versions are available, check the [Oracle Linux 7 Developer Channel](http://yum.oracle.com/repo/OracleLinux/OL7/developer/x86_64/index.html) on the [Oracle Linux Yum Server](http://yum.oracle.com).
 
 ## Running Terraform
 

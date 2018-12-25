@@ -53,9 +53,26 @@ checkError "Build 18.3.0 EE image" $?
 checkError "Build 18.3.0 SE2 image" $?
 
 # Delete binary file
-rm ./18.3.0/db_home.zip
+rm ./18.3.0/LINUX.X64_180000_db_home.zip
 
 ###################### END TESTS 18.3.0 images ###########################
+
+
+###################### TESTS 18.4.0 images ###########################
+
+# Copy binary file
+cp $BIN_DIR/oracle-database-xe-18c-1.0-1.x86_64.rpm ./18.4.0/
+
+###################### TEST 18.4.0 XE ###########################
+
+# Build 18.4.0 XE images
+./buildDockerImage.sh -x -v 18.4.0
+checkError "Build 18.4.0 XE image" $?
+
+# Delete binary file
+rm ./18.4.0/oracle-database-xe-18c-1.0-1.x86_64.rpm
+
+###################### END TESTS 18.4.0 images ###########################
 
 
 ###################### TEST 12.2.0.1 EE ###########################
