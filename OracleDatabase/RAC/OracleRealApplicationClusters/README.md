@@ -1,3 +1,5 @@
+# Oracle RAC Database on Docker
+
 Oracle Real Application Clusters (RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (ASM) to provide simplified storage management that is consistent across all server and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
 For more information on Oracle RAC Database 18c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
@@ -543,7 +545,7 @@ ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /
 COMMON_OS_PWD_FILE=###You need to pass this for ssh setup between grid and oracle user.###
 ```
 
-## Section 6: Environment Variables for the second and subsequent nodes
+## Section 7: Environment Variables for the second and subsequent nodes
 
 **IMPORTANT:** This section provides the details about the environment variables which can be used for all additional nodes added to an existing cluster.
 
@@ -585,18 +587,18 @@ ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /
 COMMON_OS_PWD_FILE=###You need to pass this for ssh setup between grid and oracle user.###
 ```
 
-Section 8 : Support
+## Section 8 : Support
 
 Oracle RAC Database is supported for Oracle Linux 7.
 
 IMPORTANT: Note that the current version of Oracle RAC on Docker is only supported for test and development environments, but not for production environments.
 
-Section 9 : License
+## Section 9 : License
 
 To download and run Oracle Grid and Database, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker images are, unless otherwise noted, released under UPL 1.0 license.
 
-Section 10 : Copyright
+## Section 10 : Copyright
 
 Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
