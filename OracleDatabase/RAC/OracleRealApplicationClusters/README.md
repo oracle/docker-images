@@ -9,9 +9,9 @@ For more information on Oracle RAC Database 18c refer to the [Oracle Database do
 This project offers sample Docker files for Oracle Grid Infrastructure and Real Application Cluster Database:
 
     
-	Oracle Database 18c Grid Infrastructure (18.3) for Linux x86-64
+    Oracle Database 18c Grid Infrastructure (18.3) for Linux x86-64
     Oracle Database 18c (18.3) for Linux x86-64
-	Oracle Database 12c Release 2 Grid Infrastructure (12.2.0.1.0) for Linux x86-64
+    Oracle Database 12c Release 2 Grid Infrastructure (12.2.0.1.0) for Linux x86-64
     Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
 
 
@@ -108,7 +108,7 @@ The Oracle RAC dockerfiles, does not contain any Oracle Software Binaries. Downl
 
 FOLLOWING FREELY AVAILABLE PATCH IS REQUIRED FOR THIS IMAGE TO WORK. Download following patch from OTN and stage it on your machine.
 
-    Patch# p28322130_183000OCWRU_Linux-x86-64.zip You can download this patch from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/<version> folder.
+Patch# p28322130_183000OCWRU_Linux-x86-64.zip You can download this patch from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/<version> folder.
 
 ### Notes
 
@@ -124,7 +124,7 @@ To assist in building the images, you can use the [buildDockerImage.sh](https://
 
 ```
 ./buildDockerImage.sh -v (Software Version)
-#  e.g., ./buildDockerImage.sh -v 12.2.0.1
+#  e.g., ./buildDockerImage.sh -v 18.3.0
 ```
 
 For detailed usage of command, please execute following command:
@@ -427,7 +427,7 @@ For example:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  container-registry.oracle.com/database/rac:12.2.0.1
+  container-registry.oracle.com/database/rac:18.3.0
 ```
 
 **Notes:**
