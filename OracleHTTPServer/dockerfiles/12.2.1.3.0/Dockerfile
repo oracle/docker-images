@@ -34,7 +34,7 @@
 #
 # Pull serverjre:8 base image
 # -----------------------------------
-FROM oracle/serverjre151:8
+FROM oracle/serverjre:8
 
 # Maintainer
 # ------------------------------------
