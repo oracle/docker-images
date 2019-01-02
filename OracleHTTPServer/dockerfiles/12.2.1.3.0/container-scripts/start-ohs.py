@@ -3,12 +3,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Author: hemastuti.baruah@oracle.com
-# Starts the ohs_sa1 component server inside the ohsDomain
+# Starts the ohs1 component server inside the ohsDomain
 # ==============================================
 import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
 nm_pass   = os.environ.get("NM_PASSWORD", "welcome1")
-ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs_sa1")
+ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs1")
 domain_name  = os.environ.get("DOMAIN_NAME", "ohsDomain")
 domain_path  = '/u01/oracle/ohssa/user_projects/domains/' + domain_name
 oracle_home = os.environ.get("ORACLE_HOME", "/u01/oracle/ohssa")

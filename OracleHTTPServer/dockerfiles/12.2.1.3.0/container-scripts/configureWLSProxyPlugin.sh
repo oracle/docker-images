@@ -23,7 +23,7 @@
 #
 #MW_HOME    - The root directory of your OHS standalone install
 #DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDOmain"
-#OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs_sa1"
+#OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs1"
 #*************************************************************************
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"

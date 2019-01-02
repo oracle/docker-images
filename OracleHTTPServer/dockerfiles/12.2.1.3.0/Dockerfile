@@ -34,7 +34,7 @@
 #
 # Pull serverjre:8 base image
 # -----------------------------------
-FROM oracle/serverjre:8
+FROM oracle/serverjre151:8
 
 # Maintainer
 # ------------------------------------
@@ -52,7 +52,7 @@ ENV OHS_PKG=fmw_12.2.1.3.0_ohs_linux64_Disk1_1of1.zip \
     JAVA_HOME=/usr/java/default \
     MW_HOME=/u01/oracle/ohssa \
     DOMAIN_NAME=ohsDomain \
-    OHS_COMPONENT_NAME=ohs_sa1 \
+    OHS_COMPONENT_NAME=ohs1 \
     PATH=$PATH:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts \
     WLST_HOME=/u01/oracle/ohssa/oracle_common/common/bin
 

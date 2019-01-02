@@ -7,7 +7,7 @@
 # Create OHS Domain and OHS System component
 #
 # OHS Domain 'ohsDomain' (or anything defined under DOMAIN_NAME) to be created inside the Docker image for OHS
-# OHS System Component "ohs_sa1" (Or anything defined under OHS_COMPONENT_NAME)to be created inside the Docker image for OHS
+# OHS System Component "ohs1" (Or anything defined under OHS_COMPONENT_NAME)to be created inside the Docker image for OHS
 #
 # Author: hemastuti.baruah@oracle.com
 # ==============================================
@@ -16,7 +16,7 @@ import os, sys
 ohs_http_port   = (os.environ.get("OHS_LISTEN_PORT", "7777"))
 ohs_ssl_port   = (os.environ.get("OHS_SSL_PORT", "3333"))
 nm_pass   = os.environ.get("NM_PASSWORD", "welcome1")
-ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs_sa1")
+ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs1")
 domain_name  = os.environ.get("DOMAIN_NAME", "ohsDomain")
 domain_path  = '/u01/oracle/ohssa/user_projects/domains/' + domain_name
 # Select OHS standalone template
@@ -25,10 +25,9 @@ setTopologyProfile('Compact')
 selectTemplate('Oracle HTTP Server (Standalone)')
 loadTemplates()
 showTemplates()
-# Create OHS System Component by the name ohs_sa1, Configure OHS Listen Port and SSL Port
+# Create OHS System Component by the name ohs1, Configure OHS Listen Port and SSL Port
 # ======================================================================
 cd('/')
-create(ohs_comp_name, 'SystemComponent')
 cd('SystemComponent/' + ohs_comp_name)
 set('ComponentType','OHS')
 cd('/')
