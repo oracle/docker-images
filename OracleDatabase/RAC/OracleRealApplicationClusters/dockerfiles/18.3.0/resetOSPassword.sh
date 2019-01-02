@@ -16,6 +16,7 @@ ORACLE_USER='oracle'
 PROGNAME=$(basename $0)
 PWD_KEY='pwd.key'
 SECRET_VOLUME='/run/secrets'
+declare -x REMOVE_OS_PWD_FILES='false'
 
 ###################Capture Process id and source functions.sh###############
 source "$SCRIPT_DIR/functions.sh"
@@ -41,6 +42,12 @@ fi
 
 read PASSWORD < /tmp/${PWD_FILE}
 rm -f /tmp/${PWD_FILE}
+rm -f /tmp/${PWD_KEY}
+
+if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
+rm -f  ${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}
+rm -f ${SECRET_VOLUME}/${PWD_KEY}
+fi
 
 else
  print_message "Password file or password key file is empty string! generating random password"
@@ -85,8 +92,9 @@ usage() {
 cat << EOF
 Usage: -o|--op_type              Specify the value  reset_grid_oracle|reset_grid|reset_oracle
        -p|--pwd_file             Specify the encrypted password file name 
-       -k|--pwd_key              Specify password key fle
+       -k|--pwd_key_fil          Specify password key fle
        -s|--secret_volume        Specify the secret volume
+       -r|--remove_os_pwd_files  Remove the passwordfiles after resetting the password
        -h|--help                 Show help
 EOF
 error_exit "Please specify correct parameters"
@@ -96,8 +104,8 @@ error_exit "Please specify correct parameters"
 ###                       MAIN                                      # 
 #####################################################################
 
-SHORTOPTS="o:p:k:s:h"
-LONGOPTS="help,op_type:,pwd_key_file:,pwd_file:,secret_volume:"
+SHORTOPTS="o:p:k:s:r:h"
+LONGOPTS="help,op_type:,pwd_key_file:,pwd_file:,secret_volume:,remove_os_pwd_files:"
 
 ARGS=$(getopt -o $SHORTOPTS --long $LONGOPTS --name $PROGNAME -- "$@" )
 
@@ -132,7 +140,7 @@ case "$1" in
    print_message "PWD_FILE: $PWD_FILE"
    shift 2
 ;;
--k | --pwd_key)
+-k | --pwd_key_file)
  if [ "$2" ];then
    PWD_KEY=$2
  else
@@ -150,7 +158,15 @@ case "$1" in
   SECRET_VOLUME='/run/secrets'
   print_message  "--secret_volume is set to empty string. It will be set to default value ${SECRET_VOLUME}"
  fi
- echo "SECRET_VOLUME : $SECRET_VOLUME"
+  shift 2
+;;
+-r| --remove_os_pwd_files)
+ echo "Remove OS PWD files after resetting password"
+ if [ "${2}" == 'true' ]; then
+    REMOVE_OS_PWD_FILES='true'
+ else
+    REMOVE_OS_PWD_FILES='false'
+ fi
   shift 2
 ;;
  --)

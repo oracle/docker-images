@@ -58,7 +58,10 @@ declare -x EXECUTE_ROOT_SCRIPT_METHOD='ROOT'
 declare -x IGNORE_CVU_CHECKS='true'           ## Ignore CVU Checks
 declare -x SECRET_VOLUME='/run/secrets/'      ## Secret Volume
 declare -x PWD_KEY='pwd.key'                  ## PWD Key File
-
+declare -x ORACLE_PWD_FILE
+declare -x GRID_PWD_FILE
+declare -x REMOVE_OS_PWD_FILES='false'
+declare -x COMMON_OS_PWD_FILE
 
 progname=$(basename "$0")
 ###################### Variabes and Constants declaration ends here  ####################
@@ -281,6 +284,11 @@ rm -f /tmp/${GRID_PWD_FILE}
 else
   ORACLE_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for  Oracle user"
+fi
+
+if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
+rm -f  ${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}
+rm -f ${SECRET_VOLUME}/${PWD_KEY}
 fi
 
 }

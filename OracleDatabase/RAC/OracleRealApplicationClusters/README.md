@@ -159,6 +159,8 @@ If you are using the Oracle Connection Manager for accessing the Oracle RAC Data
 
 **Note:** You need to replace `CMAN_HOSTNAME` and `CMAN_IP` with the correct values based on your environment settings.
 
+### Password management
+
 Specify the secret volume for resetting grid/oracle and database password during node creation or node addition. It can be shared volume among all the containers
 
 ```
@@ -166,14 +168,17 @@ mkdir /opt/.secrets/
 openssl rand -hex 64 -out /opt/.secrets/pwd.key
 ```
 
-Edit the /opt/.secrets/common_os_pwdfile and seed the password for grid/oracle and database. It will be a common password for grid/oracle and database user. Execute following command:
+Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle and database. It will be a common password for grid/oracle and database user. Execute following command:
 
 ```
 openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
 rm -f /opt/.secrets/common_os_pwdfile
 ```
 
-**Note:** If you want to specify different password for all the accounts, create 3 different files and encrypt them under /opt/.secrets and pass the file name to the container using env variable. File name can be based on your enviornment policies.
+### Notes
+
+* If you want to specify different password for all the accounts, create 3 different files and encrypt them under /opt/.secrets and pass the file name to the container using env variable. Env variables can be ORACLE_PWD_FILE for oracle user, GRID_PWD_FILE for grid user and DB_PWD_FILE for database password.
+* if you want common password oracle, grid and db user, you can assign password file name to COMMON_OS_PWD_FILE env variable.
 
 ### Deploying RAC on Docker With Block Devices:
 
@@ -222,7 +227,7 @@ Now create the Docker container using the image. For the details of environment 
   -e PWD_KEY=pwd.key \
   --restart=always --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cpu-rt-runtime=95000 --ulimit rtprio=99  \
-  --name racnode1 
+  --name racnode1 \
   oracle/database-rac:18.3.0
 ```
 
@@ -318,6 +323,7 @@ If the install fails for any reason, log in to container using the above command
 
 Before proceeding to the next step, please ensure Oracle Grid Infrastructure is running and the Oracle RAC Database is open as per instructions in section 3. Otherwise, the node addition process will fail.
 
+### Password management
 Specify the secret volume for resetting grid/oracle and database password during node creation or node addition. It can be shared volume among all the containers
 
 ```
@@ -325,19 +331,24 @@ mkdir /opt/.secrets/
 openssl rand -hex 64 -out /opt/.secrets/pwd.key
 ```
 
-Edit the /opt/.secrets/common_os_pwdfile and seed the password for grid/oracle and database. It will be a common password for grid/oracle and database user. Execute following command:
+Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle and database. It will be a common password for grid/oracle and database user. Execute following command:
 
 ```
 openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
 rm -f /opt/.secrets/common_os_pwdfile
 ```
 
-**Note:** If you want to specify different password for all the accounts, create 3 different files and encrypt them under /opt/.secrets and pass the file name to the container using env variable. File name can be based on your enviornment policies.
+### Notes
+
+* If you want to specify different password for all the accounts, create 3 different files and encrypt them under /opt/.secrets and pass the file name to the container using env variable. Env variables can be ORACLE_PWD_FILE for oracle user, GRID_PWD_FILE for grid user and DB_PWD_FILE for database password.
+* if you want common password oracle, grid and db user, you can assign password file name to COMMON_OS_PWD_FILE env variable.
 
 Reset the password on existing RAC node for SSH setup between existing node in the cluster and new node. Password must be same on all the nodes for grid and oracle user. Execute following command on an exiting node of the cluster.
 
 ```
-docker exec racnode1 /opt/scripts/startup/resetOSPassword.sh 
+docker exec -i -t -u root racnode1 /bin/bash
+sh  /opt/scripts/startup/resetOSPassword.sh --help
+sh /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_file common_os_pwdfile.enc --secret_volume /run/secrets --pwd_key_file pwd.key
 ```
 **Note:** If you do not have common secret volume among RAC containers, populate the password file with the same password what you have used on new node, ecrypt the file and execute resetOSPassword.sh on the exiting node of the cluster.
 
@@ -348,7 +359,7 @@ If you are using an NFS volume, skip to the section below "Deploying with the RA
 To create additional nodes, use following command:
 
 ```
-# docker create -t -i 
+# docker create -t -i \
   --hostname racnode2 \
   --volume /dev/shm \
   --tmpfs /dev/shm:rw,exec,size=4G  \
@@ -376,6 +387,8 @@ To create additional nodes, use following command:
   -e ASM_DEVICE_LIST=/dev/asm_disk1,/dev/asm_disk2 \
   -e ORACLE_SID=ORCLCDB \
   -e OP_TYPE=ADDNODE \
+  -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
+  -e PWD_KEY=pwd.key \
   --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
@@ -422,6 +435,8 @@ For example:
   -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img  ,/oradata/asm_disk04.img,/oradata/asm_disk05.img \
   -e ORACLE_SID=ORCLCDB \
   -e OP_TYPE=ADDNODE \
+  -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
+  -e PWD_KEY=pwd.key \
   --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
@@ -542,7 +557,17 @@ CMAN_IP=###Connection manager Host IP###
 
 ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /dev######
 
-COMMON_OS_PWD_FILE=###You need to pass this for ssh setup between grid and oracle user.###
+COMMON_OS_PWD_FILE=###Pass the file name to setup grid and oracle user password. If you specify ORACLE_PWD_FILE, GRID_PWD_FILE and DB_PWD_FILE then you do not need to specify this env variable###
+
+ORACLE_PWD_FILE=###Pass the file name to set the password for oracle user.###
+
+GRID_PWD_FILE=###Pass the file name to set the password for grid user.###
+
+DB_PWD_FILE=###Pass the file name to set the password for DB user i.e. sys.###
+
+REMOVE_OS_PWD_FILES=###Set this env variable to true to remove pwd key file and password file after resetting password.###
+
+CONTAINER_DB_FLAG=###Default value is set to true to create container database. Set this to false if you do not want to create container database.###
 ```
 
 ## Section 7: Environment Variables for the second and subsequent nodes
@@ -584,7 +609,15 @@ CMAN_IP=###Connection manager Host IP###
 
 ASM_DISCOVERY_DIR=####ASM disk location insdie the container. By default it is /dev######
 
-COMMON_OS_PWD_FILE=###You need to pass this for ssh setup between grid and oracle user.###
+COMMON_OS_PWD_FILE=###You need to pass the file name to setup grid and oracle user password. If you specify ORACLE_PWD_FILE, GRID_PWD_FILE and DB_PWD_FILE then you do not need to specify this env variable###
+
+ORACLE_PWD_FILE=###You need to pass the file name to set the password for oracle user.###
+
+GRID_PWD_FILE=###You need to pass the file name to set the password for grid user.###
+
+DB_PWD_FILE=###You need to pass the file name to set the password for DB user i.e. sys.###
+
+REMOVE_OS_PWD_FILES=###You need to set this to true to remove pwd key file and password file after resetting password.###
 ```
 
 ## Section 8 : Support
