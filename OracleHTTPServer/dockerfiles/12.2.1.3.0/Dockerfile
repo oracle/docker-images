@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -9,7 +9,7 @@
 #
 # IMPORTANT
 # -------------------------------------------
-# The resulting image of this Dockerfile would have Oracle Linux 7.3 and Oracle HTTP Server 12.2.1.3.0 installed in standalone mode.
+# The resulting image of this Dockerfile would have Oracle Linux 7 and Oracle HTTP Server 12.2.1.3.0 installed in standalone mode.
 # A standalone domain will be configured in this image
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
@@ -68,7 +68,7 @@ RUN yum install -y unzip libaio sysstat make psmisc gcc && \
     yum clean all && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
-    mkdir /u01/oracle/.inventory && \
+    mkdir /u01/oracle/.inventory /u01/oracle/bootdir && \
     chown oracle:oracle -R /u01 
 
 # Go to /u01 as user 'oracle' to proceed with OHS installation
