@@ -46,14 +46,6 @@ fi
 export JAVA_OPTIONS=${JAVA_OPTIONS}
 echo "Java Options: ${JAVA_OPTIONS}"
 
-#Set env to Start Derby DB
-#DERBY_FLAG=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^DERBY_FLAG= | cut -d "=" -f2`
-#if [ -z "${DERBY_FLAG}" ]; then 
-#   DERBY_FLAG="true"
-#fi
-#export DERBY_FLAG=${DERBY_FLAG}
-#echo "Start Derby: ${DERBY_FLAG}"
-
 # Create Managed Server
 mkdir -p ${MS_SECURITY}
 echo "username=${USER}" >> ${MS_SECURITY}/boot.properties

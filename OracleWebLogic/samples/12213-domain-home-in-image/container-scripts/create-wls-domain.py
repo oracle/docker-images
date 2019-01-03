@@ -54,7 +54,7 @@ print('number_of_ms             : [%s]' % number_of_ms);
 print('cluster_type             : [%s]' % cluster_type);
 print('managed_server_name_base : [%s]' % managed_server_name_base);
 print('production_mode_enabled  : [%s]' % production_mode_enabled);
-print('dsname                   : [%s]' % dsname);
+#print('dsname                   : [%s]' % dsname);
 print('t3_channel_port          : [%s]' % t3_channel_port);
 print('t3_public_address        : [%s]' % t3_public_address);
 
@@ -159,46 +159,46 @@ else:
 
 # Create a Data Source
 # ======================
-cd('/')
-print('Configuring a Data Source: %s' % dsname);
-create(dsname, 'JDBCSystemResource')
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-cmo.setName(dsname)
+#cd('/')
+#print('Configuring a Data Source: %s' % dsname);
+#create(dsname, 'JDBCSystemResource')
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#cmo.setName(dsname)
 
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-create('myJdbcDataSourceParams','JDBCDataSourceParams')
-cd('JDBCDataSourceParams/NO_NAME_0')
-set('JNDIName', java.lang.String(dsjndiname))
-set('GlobalTransactionsProtocol', java.lang.String('None'))
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#create('myJdbcDataSourceParams','JDBCDataSourceParams')
+#cd('JDBCDataSourceParams/NO_NAME_0')
+#set('JNDIName', java.lang.String(dsjndiname))
+#set('GlobalTransactionsProtocol', java.lang.String('None'))
 
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-create('myJdbcDriverParams','JDBCDriverParams')
-cd('JDBCDriverParams/NO_NAME_0')
-set('DriverName', dsdriver)
-set('URL', dsurl)
-set('PasswordEncrypted', dspassword)
-set('UseXADataSourceInterface', 'false')
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#create('myJdbcDriverParams','JDBCDriverParams')
+#cd('JDBCDriverParams/NO_NAME_0')
+#set('DriverName', dsdriver)
+#set('URL', dsurl)
+#set('PasswordEncrypted', dspassword)
+#set('UseXADataSourceInterface', 'false')
 
-print 'create JDBCDriverParams Properties'
-create('myProperties','Properties')
-cd('Properties/NO_NAME_0')
-create('user','Property')
-cd('Property/user')
-set('Value', dsusername)
+#print 'create JDBCDriverParams Properties'
+#create('myProperties','Properties')
+#cd('Properties/NO_NAME_0')
+#create('user','Property')
+#cd('Property/user')
+#set('Value', dsusername)
 
-cd('../../')
-create('databaseName','Property')
-cd('Property/databaseName')
-set('Value', dsdbname)
+#cd('../../')
+#create('databaseName','Property')
+#cd('Property/databaseName')
+#set('Value', dsdbname)
 
-print 'create JDBCConnectionPoolParams'
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
-cd('JDBCConnectionPoolParams/NO_NAME_0')
-set('TestTableName','SQL SELECT 1 FROM DUAL')
-set('InitialCapacity',int(dsinitalcapacity))
+#print 'create JDBCConnectionPoolParams'
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
+#cd('JDBCConnectionPoolParams/NO_NAME_0')
+#set('TestTableName','SQL SELECT 1 FROM DUAL')
+#set('InitialCapacity',int(dsinitalcapacity))
 
-print('Done setting attributes for Data Source: %s' % dsname);
+#print('Done setting attributes for Data Source: %s' % dsname);
 
 # Assign
 # ======
