@@ -9,6 +9,13 @@
 # Util scripts are copied into the image enabling users to plug NodeManager
 # automatically into the AdminServer running on another container.
 #
+# PREREQUISITES:
+# --------------
+# This sample requires that a Java JDK 1.8 or greater version must be installed on the machine
+# running the docker build command, and that the JAVA_HOME environment variable is set to the java home
+# location. The sample downloads the Weblogic Deploy Tooling installation  using a curl command. The
+# curl command must be enabled, and if a proxy is used, the proxy environment settings present.
+#
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 
