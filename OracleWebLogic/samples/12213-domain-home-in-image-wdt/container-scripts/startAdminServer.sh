@@ -21,14 +21,8 @@ fi
 export ${JAVA_OPTIONS}
 echo "Java Options: ${JAVA_OPTIONS}"
 
-# Define start of Derby Database
-CUSTOM_DERBY_FLAG=`awk '{print $1}' $PROPERTIES_FILE | grep ^DERBY_FLAG= | cut -d "=" -f2`
-if [ -n "${CUSTOM_DERBY_FLAG}" ]; then
-    DERBY_FLAG="${CUSTOM_DERBY_FLAG}"
-fi
- 
+DERBY_FLAG=false
 export ${DERBY_FLAG}
-echo "Start Derby: ${DERBY_FLAG}"
 
 export AS_HOME="${DOMAIN_HOME}/servers/${ADMIN_NAME}"
 export AS_SECURITY="${AS_HOME}/security"

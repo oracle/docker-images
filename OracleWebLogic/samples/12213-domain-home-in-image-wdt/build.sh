@@ -4,7 +4,12 @@
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-script="${BASH_SOURCE[0]}" 
+if [ ! -d ${JAVA_HOME} ]; then 
+   echo "JAVA_HOME must be set to version of a java JDK 1.8 or greater"
+   exit 1
+fi
+
+script=${0}
 scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 
 # Build the application and the archive file with the application
@@ -48,4 +53,3 @@ docker build \
     -f ${scriptDir}/Dockerfile \
     -t 12213-domain-home-in-image-wdt \
     ${scriptDir}
-

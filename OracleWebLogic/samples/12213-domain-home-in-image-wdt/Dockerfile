@@ -9,6 +9,13 @@
 # Util scripts are copied into the image enabling users to plug NodeManager
 # automatically into the AdminServer running on another container.
 #
+# PREREQUISITES:
+# --------------
+# This sample requires that a Java JDK 1.8 or greater version must be installed on the machine
+# running the docker build command, and that the JAVA_HOME environment variable is set to the java home
+# location. The sample downloads the Weblogic Deploy Tooling installation  using a curl command. The
+# curl command must be enabled, and if a proxy is used, the proxy environment settings present.
+#
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 
@@ -60,7 +67,6 @@ ARG CUSTOM_DEBUG_PORT=8453
 # Persist arguments - for ports to expose and container to use
 # Create a placeholder for the manager server name. This will be provided when run the container
 # Weblogic and Domain locations
-# Set the start derby in admin server flag to true. Override this in the runtime properties
 # The boot.properties will be created under the DOMAIN_HOME when the admin server container is run 
 # WDT installation
 # ---------------------------
@@ -70,7 +76,6 @@ ENV ADMIN_NAME=${CUSTOM_ADMIN_NAME} \
     MANAGED_SERVER_NAME=${MANAGED_SERVER_NAME} \
     MANAGED_SERVER_PORT=${CUSTOM_MANAGED_SERVER_PORT} \
     DEBUG_PORT=${CUSTOM_DEBUG_PORT} \
-    DERBY_FLAG="true" \
     ORACLE_HOME=/u01/oracle \
     DOMAIN_NAME=${CUSTOM_DOMAIN_NAME} \
     DOMAIN_PARENT=${ORACLE_HOME}/user_projects/domains 
