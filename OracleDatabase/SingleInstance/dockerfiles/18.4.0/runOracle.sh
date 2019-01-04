@@ -89,8 +89,12 @@ function createDB {
    # Auto generate ORACLE PWD if not passed on
    export ORACLE_PWD=${ORACLE_PWD:-"`openssl rand -hex 8`"}
    echo "ORACLE PASSWORD FOR SYS AND SYSTEM: $ORACLE_PWD";
+   
+   # Set character set
+   export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
+   sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" /etc/sysconfig/$CONF_FILE
 
-   (echo "$ORACLE_PWD"; echo "$ORACLE_PWD";) | /etc/init.d/oracle-xe-18c configure > /tmp/XE_DatabaseCreation.log
+   (echo "$ORACLE_PWD"; echo "$ORACLE_PWD";) | /etc/init.d/oracle-xe-18c configure
 
    # Listener 
    echo "# listener.ora Network Configuration File:
