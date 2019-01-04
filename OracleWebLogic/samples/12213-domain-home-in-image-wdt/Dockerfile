@@ -67,7 +67,6 @@ ARG CUSTOM_DEBUG_PORT=8453
 # Persist arguments - for ports to expose and container to use
 # Create a placeholder for the manager server name. This will be provided when run the container
 # Weblogic and Domain locations
-# Set the start derby in admin server flag to true. Override this in the runtime properties
 # The boot.properties will be created under the DOMAIN_HOME when the admin server container is run 
 # WDT installation
 # ---------------------------
@@ -77,7 +76,6 @@ ENV ADMIN_NAME=${CUSTOM_ADMIN_NAME} \
     MANAGED_SERVER_NAME=${MANAGED_SERVER_NAME} \
     MANAGED_SERVER_PORT=${CUSTOM_MANAGED_SERVER_PORT} \
     DEBUG_PORT=${CUSTOM_DEBUG_PORT} \
-    DERBY_FLAG="true" \
     ORACLE_HOME=/u01/oracle \
     DOMAIN_NAME=${CUSTOM_DOMAIN_NAME} \
     DOMAIN_PARENT=${ORACLE_HOME}/user_projects/domains 

@@ -9,7 +9,8 @@ if [ ! -d ${JAVA_HOME} ]; then
    exit 1
 fi
 
-scriptDir="$( cd "$( dirname $0 )" && pwd )"
+script=${0}
+scriptDir="$( cd "$( dirname "${script}" )" && pwd )"
 
 # Build the application and the archive file with the application
 . ${scriptDir}/build-archive.sh
