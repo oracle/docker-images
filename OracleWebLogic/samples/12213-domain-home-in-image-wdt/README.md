@@ -8,27 +8,31 @@ The Dockerfile uses the `createDomain` script from the Oracle WebLogic Deploy To
 
 ### WDT Model File and Archive
 
-This sample includes a basic WDT model, `simple-topology.yaml`, that describes the intended configuration of the domain within the Docker image. WDT models can be created and modified using a text editor, following the format and rule described in the README file for the WDT project in GitHub.
+This sample includes a basic WDT model, `simple-topology.yaml`, that describes the intended configuration of the domain within the Docker image. WDT models can be created and modified using a text editor, following the format and rules described in the README file for the WDT project in GitHub.
 
-Another option is to use the WDT `discoverDomain` tool to create a model. This process is also described in the WDT project's README file. A user can use the tool to analyze an existing domain, and create a model based on its configuration. The user may choose to customize the model before using it to create a new Docker image.
+Another option is to use the WDT `discoverDomain` tool to create a model. This process is also described in the WDT project README file. A user can use the tool to analyze an existing domain, and create a model based on its configuration. The user may choose to customize the model before using it to create a new Docker image.
 
-The sample model is accompanied by a properties file whose values can be changed to customize a domain. The model's variable tokens are replaced with values from 'simple-topology.properties' when building the docker image. The properties files can be created and modified using a text editor. Select variables in the properties file are used by the Dockerfile during the build to persist ENV variables and expose ports in the image.
- 
-Care should be taken to secure the credentials that are present in the model. The ADMIN credential attributes in the sample model have a file token referencing a special property file. Each special property file must only contain a single property and can be created and modified using a text editor. The sample includes the files adminuser.properties and the adminpass.properties in the properties/docker_build directory.
+The sample model is accompanied by a properties file whose values can be changed to customize a domain. The model's variable tokens are replaced with values from 'simple-topology.properties' when building the Docker image. The properties files can be created and modified using a text editor. Select variables in the properties file are used by the Dockerfile during the build to persist ENV variables and expose ports in the image.
+
+Care should be taken to secure the credentials that are present in the model. The ADMIN credential attributes in the sample model have a file token referencing a special property file. Each special property file must only contain a single property and can be created and modified using a text editor. The sample includes the files `adminuser.properties` and the `adminpass.properties` in the `properties/docker_build` directory.
 
 See the README file for more information on using property and file tokens in the WDT model.
 
-The ADMIN credentials are necessary to start the Admin or Managed Server in a docker container. The sample provides security.properties in the properties/docker-run directory. This file contains the admin credentials and additional properties used to customize the Weblogic Server start.
+The ADMIN credentials are necessary to start the Administration or Managed Server in a Docker container. The sample provides `security.properties` in the `properties/docker-run` directory. This file contains the admin credentials and additional properties used to customize the WebLogic Server start.
 
-Note: Oracle recommends that the adminpass.properties, adminuser.properties and security.properties files be deleted or secured after the image is built and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
+**Note**: Oracle recommends that the `adminpass.properties`, `adminuser.properties`, and `security.properties` files be deleted or secured after the image is built and the WebLogic Server is started so that the user name and password are not inadvertently exposed.
 
 Domain creation may require the deployment of applications and libraries. This is accomplished by creating a ZIP archive with a specific structure, then referencing those items in the model. This sample creates and deploys a simple ZIP archive containing a small application WAR. That archive is built in the sample directory prior to creating the Docker image.
 
 When the WDT `discoverDomain` tool is used on an existing domain, a ZIP archive is created containing any necessary applications and libraries. The corresponding configuration for those applications and libraries is added to the model.
 
-### How to Build and Run
+## How to Build and Run
 
-The WebLogic Deploy Tool installer is required to build this image. Add `weblogic-deploy.zip` to the sample directory. The docker sample requires a minimum release of weblogic-deploy-tooling-0.14. This release uses the new command argument -domain_home on the createDomain step.  This argument allows a Domain Home path with a domain folder name that can be different from the Domain name in the model file.
+
+**NOTE:** The image is based on a WebLogic Server image in the docker-images project: `oracle/weblogic:12.2.1.3-developer`. Build that image to your local repository before building this sample.
+
+The WebLogic Deploy Tool installer is required to build this image. Add `weblogic-deploy.zip` to the sample directory. The Docker sample requires a minimum release of weblogic-deploy-tooling-0.14. This release uses the new command argument `-domain_home` on the `createDomain` step.  This argument allows a domain home path with a domain folder name that can be different from the domain name in the model file.
+
 
     $ wget https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.14/weblogic-deploy.zip
     
@@ -40,10 +44,9 @@ This sample deploys a simple, one-page web application contained in a ZIP archiv
 
     $ ./build-archive.sh
 
-The sample requires the Admin Host, Admin Port and Admin Name. It also requires the Managed Server port and the domain Debug 
-  Port. The ports will be EXPOSED through Docker. The other arguments are persisted in the image to be used when running a
-  container. If an attribute is not provided as a --build-arg on the build command, the following defaults are set.
+The sample requires the Admin Host, Admin Port and Admin Name. It also requires the Managed Server port and the domain debug port. The ports will be EXPOSED through Docker. The other arguments are persisted in the image to be used when running a container. If an attribute is not provided as a `--build-arg` on the `build` command, the following defaults are set.
 
+```
 CUSTOM_ADMIN_NAME = admin-server
  The value is persisted to the image as ADMIN_NAME
 
@@ -61,8 +64,9 @@ CUSTOM_DEBUG_PORT = 8453
 
 CUSTOM_DOMAIN_NAME = base_domain
  The value is persisted to the image as DOMAIN_NAME
+```
 
-To build this sample taking the defaults, run:
+To build this sample keeping the defaults, run:
 
     $ docker build \
           --build-arg WDT_MODEL=simple-topology.yaml \
@@ -71,16 +75,16 @@ To build this sample taking the defaults, run:
           --force-rm=true \
           -t 12213-domain-home-in-image-wdt .
 
-This will use the model, variable and archive files in the sample directory.
+This will use the model, variable, and archive files in the sample directory.
 
-This sample provides a script which will read the model variable file and parse the domain, admin and managed server information
-  into a string of --build-arg statements. This build arg string is exported as environment variable BUILD_ARG.
-  The sample script specifically parses the sample variable file. Use it as an example to parse a custom variable file. 
-  This will insure that the values docker exposes and persists in the image are the same values configured in the domain.
+This sample provides a script which will read the model variable file and parse the domain, Administration and Managed Server information
+  into a string of `--build-arg` statements. This build `arg` string is exported as the environment variable `BUILD_ARG`.
+  The sample script specifically parses the sample variable file. Use it as an example to parse a custom variable file.
+  This will insure that the values Docker exposes and persists in the image are the same values configured in the domain.
 
 To parse the sample variable file and build the sample, run:
 
-     $ container-scripts/setEnv.sh properties/docker-build/domain.properties 
+     $ container-scripts/setEnv.sh properties/docker-build/domain.properties
 
      $ docker build \
           $BUILD_ARG \
