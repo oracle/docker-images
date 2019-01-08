@@ -30,6 +30,23 @@ This can be automatically added to pull requests by committing with:
 Only pull requests from committers that can be verified as having
 signed the OCA can be accepted.
 
+## Oracle Product Ownership and Responsibility
+
+The GitHub user who submits the initial pull request will be marked as the
+[code owner](./CODEOWNERS) for that product by default. This means any future 
+pull requests that affect the product will need to be approved by this user.
+
+The code owner will also be assigned to any issues relating to their product.
+
+You must ensure that you check the [issues](https://github.com/oracle/docker-images/issues) 
+on at least a weekly basis, though daily is preferred.
+
+If you wish to nominate additional or alternative users, they must be a visible
+member of the [Oracle GitHub Organisation](https://github.com/orgs/oracle/people/).
+
+Contact [Avi Miller](https://github.com/Djelibeybi) for more information.
+
+
 ### Pull request process
 
 1. Fork this repository
@@ -54,14 +71,16 @@ a pull request.
 
 ### Base Image Rules
 
-1. All Oracle product images must use an Oracle Linux base image.
 1. Extend an existing product image wherever possible. For example, if your
 product requires WebLogic, then extend the WebLogic image instead of creating
 your own WebLogic installation.
+1. If you can't extend an existing image, your image must use the
+`oraclelinux:7-slim` base image as this image provides the smallest
+attack surface and is updated whenever a CVE errata is published.
 1. Re-use existing scripts wherever possible. If a particular base image or
 script doesn't have the functionality you need, open an issue and work with
 the image owner to implement it.
-1. Specify a fixed version in the `FROM` directive, i.e. use
+1. Specify a version in the `FROM` directive, i.e. use
 `FROM oraclelinux:7-slim` or `FROM java/serverjre:8`.
 1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
 to be extended, then this should output documentation on how to extend the
@@ -78,6 +97,9 @@ on container startup using `openssl rand` or accept a password argument during
 container startup (via `-e`).
 
 
+
+
+
 ### Guidelines and Recommendations
 
 The following are some guidelines that will not prevent an image from being
@@ -92,7 +114,7 @@ filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
 - Don't install any interactive/user tools, e.g. things like `vim`, `less` or
 `man`. Debugging should be done prior to the image submission.
 - Don't install `wget` as the base images already include `curl`.
-- Always remember to run `yum clean all` in the same `RUN` directive as a
+- Always remember to run `rm -rf /var/cache/yum` in the same `RUN` directive as a
 `yum install` so that the yum metadata is not stored in the layer.
 - Always document any inputs (via `--build-arg` or `-e`) required by
 `docker build` or `docker run`. This documentation should also clearly state

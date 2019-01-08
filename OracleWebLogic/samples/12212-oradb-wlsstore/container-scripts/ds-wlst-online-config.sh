@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
@@ -62,4 +62,4 @@ check_wls "started" localhost $ADMIN_PORT 2
 #WLST online to configure DataSource
 echo 'Doing WLST Online'
 cd /u01/oracle
-wlst -loadProperties /u01/oracle/oradatasource.properties /u01/oracle/ds-deploy.py 
+wlst -loadProperties /u01/oracle/oradatasource.properties /u01/oracle/ds-deploy.py

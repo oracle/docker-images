@@ -1,5 +1,7 @@
 #
 # Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
+
+
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -10,6 +12,7 @@
 # IMPORTANT
 # -------------------------------------------
 # The resulting image of this Dockerfile would have Oracle Linux 7 and Oracle HTTP Server 12.2.1.3.0 installed in standalone mode.
+
 # A standalone domain will be configured in this image
 #
 # REQUIRED FILES TO BUILD THIS IMAGE

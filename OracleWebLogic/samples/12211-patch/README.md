@@ -3,7 +3,7 @@ Example of Image with WLS Domain
 This Dockerfile extends the Oracle WebLogic image by applying a PSU patch.
 
 # How to build and run
-First make sure you have built **oracle/weblogic:12.2.1.1-developer**. 
+First make sure you have built **oracle/weblogic:12.2.1.1-developer**.
 
 Then download file [p24286152_122110_Generic.zip](http://support.oracle.com) and place it next to this README.
 
@@ -23,5 +23,21 @@ Go to your browser and start the Adminsitration console by running:
         http://localhost:7001/console
 
 Extend this patched image to create a domain image and start WebLogic Servers running in containers.
+
+## Verify that the Patch has been applied correctly
+Run a container from the image
+
+        $ docker run --name verify_patch 12211-psu24286152
+
+Go into the image
+
+        $ docker exec -it verify_patch /bin/bash
+
+cd OPatch and run:
+
+        ./opatch lsinventory 
+
+The patch will show in the inventory of applied patches.
+
 # Copyright
-Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.

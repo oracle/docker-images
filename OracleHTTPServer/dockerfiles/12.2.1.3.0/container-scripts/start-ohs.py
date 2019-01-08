@@ -1,10 +1,12 @@
+
 # Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Author: hemastuti.baruah@oracle.com
 # Starts the ohs1 component server inside the ohsDomain
-# ==============================================
+
+# 
 import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
 nm_pass   = os.environ.get("NM_PASSWORD", "welcome1")

@@ -4,7 +4,7 @@
 #
 # Author: hemastuti.baruah@oracle.com
 # Stops the ohs1 component server inside the ohsDomain
-# ==============================================
+# 
 import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
 nm_pass   = os.environ.get("NM_PASSWORD", "welcome1")

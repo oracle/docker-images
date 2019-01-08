@@ -14,9 +14,9 @@ export DC_REGISTRY_SOA="localhost"
 export DC_REGISTRY_DB="localhost"
 
 # Proxy Environment
-export http_proxy=""
-export https_proxy=""
-export no_proxy=""
+#export http_proxy=""
+#export https_proxy=""
+#export no_proxy=""
 
 #===============================================
 exportComposeEnv() {
@@ -54,7 +54,7 @@ exportComposeEnv() {
   #
   # Default version to use for compose images
   #
-  export DC_SOA_VERSION=12.2.1.2
+  export DC_SOA_VERSION=12.2.1.3
 }
 
 #===============================================

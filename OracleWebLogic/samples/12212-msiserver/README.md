@@ -9,7 +9,7 @@ not need to be updated for configuration or deployments, this image can be used 
 running a admin server or node manager
 
 ## How to build and run the base image
-First make sure you have built **oracle/weblogic:12.2.1.2-developer**. 
+First make sure you have built **oracle/weblogic:12.2.1.2-developer**.
 
 Next, to build the base msi image, run:
 
@@ -57,7 +57,7 @@ can be built with configurable number of managed servers using NUMBER_OF_MS argu
 domain_name may be used to identify the name of generated domain that gets packed into MSI image. Default value msi-sample
 
 #### domains_dir
-domains_dir may be used identify the directory under $ORACLE_HOME where the domain home directory is created. Default value wlserver/samples/domains 
+domains_dir may be used identify the directory under $ORACLE_HOME where the domain home directory is created. Default value wlserver/samples/domains
 
 #### ms_port
 ms_port may be used to configure port of the managed server, default is 8011
@@ -205,4 +205,4 @@ $ curl http://localhost:8011/
 
 Note, the docker version used for this example is 17.03, and the rolling back in Docker 17.04 and higher should be automatic.
 
-Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.

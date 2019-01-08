@@ -1,0 +1,6 @@
+[ENGINE]
+Response File Version=1.0.0.0.0
+[GENERIC]
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+INSTALL_TYPE="Standalone Oracle Unified Directory Server (Managed independently of WebLogic server)"

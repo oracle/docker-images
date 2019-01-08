@@ -8,7 +8,7 @@ FROM oraclelinux:7-slim
 
 MAINTAINER Bruno Borges <bruno.borges@oracle.com>
 
-RUN yum -y install java-1.7.0-openjdk-devel && yum clean all
+RUN yum -y install java-1.7.0-openjdk-devel && rm -rf /var/cache/yum
 
 ENV JAVA_HOME /usr/lib/jvm/java-openjdk
 

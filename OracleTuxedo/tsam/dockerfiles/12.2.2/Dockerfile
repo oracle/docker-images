@@ -1,6 +1,6 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
-# Copyright (c) 1996-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2017, Oracle and/or its affiliates. All rights reserved.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -51,7 +51,7 @@ RUN mkdir -p /u01/oracle && \
     yum install -y vim tar net-tools && \
     yum localinstall -y /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
     rm -f /u01/$ORACLT_PKG1 /u01/$ORACLT_PKG2 && \
-    yum clean all
+    rm -rf /var/cache/yum
 
 # Copy files
 # ----------
