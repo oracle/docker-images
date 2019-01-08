@@ -35,8 +35,10 @@ password=mynodemanagerpassword
 ### How to run container
 
 
+
 If you want to start the OHS container without specifying any configuration for mod_weblogic:
 1. To start the OHS container with oracle/ohs:12.2.1.3.0 image, run the following command:
+
 
          docker run -v `HOST PATH where the domain.properties file is`:/u01/oracle/bootdir -it --name ohs -p 7777:7777 oracle/ohs:12.2.1.3.0
 

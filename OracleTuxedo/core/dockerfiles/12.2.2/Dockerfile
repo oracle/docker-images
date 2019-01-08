@@ -21,7 +21,7 @@ ENV ORACLE_HOME=/u01/oracle \
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN yum -y install unzip gcc file hostname which util-linux && yum -y clean all && \
+RUN yum -y install unzip gcc file hostname which util-linux && rm -rf /var/cache/yum && \
     mkdir -p /u01 && chmod a+xr /u01 && \
     groupadd -g 1000 oracle && useradd -b /u01 -m -g oracle -u 1000 -s /bin/bash oracle 
 

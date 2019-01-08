@@ -1,10 +1,10 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
 # Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
 #
 FROM oraclelinux:7-slim
 
-MAINTAINER Bruno Borges <bruno.borges@oracle.com>
+MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
     JAVA_HOME=/usr/java/default

@@ -1,7 +1,7 @@
-# Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Example of using Docker Compose to deploy a WebLogic Cluster from image '1221-domain'
-# 
+#
 # This Docker Compose file will only work with Docker 1.10+ and Compose 1.6+
 #
 # To run, call:
@@ -13,7 +13,7 @@
 # To scale Node Managers only instead, call:
 #   $ docker-compose scale nodemanager=2
 #
-# Author: Bruno Borges <bruno.borges@oracle.com> 
+# Author: Bruno Borges <bruno.borges@oracle.com>
 #
 # Note: If scaling dozens of instances of managed server at once, you may face a StuckThreadMaxTime
 #
@@ -36,14 +36,14 @@ services:
     image: &image 1221-appdeploy
     container_name: wlsadmin
     networks:
-      - *network 
+      - *network
 
   # Deploys a container running a Managed Server and a Node Manager to control MS from AdminServer
   managedserver:
     image: *image
     command: createServer.sh
     networks:
-      - *network 
+      - *network
     depends_on:
       - *admin
 
@@ -52,7 +52,7 @@ services:
     image: *image
     command: createMachine.sh
     networks:
-      - *network 
+      - *network
     depends_on:
       - *admin
 
@@ -60,9 +60,8 @@ services:
   webtier:
     image: 1221-webtier-apache
     networks:
-      - *network 
+      - *network
     environment:
       - WEBLOGIC_CLUSTER="managedserver:7002"
     links:
       - managedserver
-

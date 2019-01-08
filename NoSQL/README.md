@@ -67,9 +67,9 @@ Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https
 
 OpenJDK is licensed under the [GNU General Public License v2.0 with the Classpath Exception](http://openjdk.java.net/legal/gplv2+ce.html)
 
-# Commercial Support on Docker Containers
-Oracle NoSQL Enterprise Edition is **not** certified on Docker.
+The files in this repository folder are licensed under the [Universal Permissive License 1.0](http://oss.oracle.com/licenses/upl)
 
+# Commercial Support on Docker Containers
 Oracle NoSQL Community Edition has **no** commercial support.
 
 # Copyright

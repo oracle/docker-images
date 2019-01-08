@@ -4,7 +4,7 @@
 #
 # Author: hemastuti.baruah@oracle.com
 # Stops the ohs1 component server inside the ohsDomain
-# ==============================================
+# 
 import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
 ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs1")

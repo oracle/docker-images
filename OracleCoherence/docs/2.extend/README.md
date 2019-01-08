@@ -16,7 +16,7 @@ If both the cluster members and the Extend client are inside Docker containers a
 ```
 $ docker $(docker-machine config coh-demo0) run -d \
 --name=coh1 --hostname=coh1 --net=coh-net \
-oracle/coherence:12.2.1.0.0-standalone \
+oracle/coherence:12.2.1.3.0-standalone \
 /usr/java/default/bin/java \
 -cp /u01/oracle/oracle_home/coherence/lib/coherence.jar \
 -Dcoherence.localhost=coh1 -Dcoherence.wka=coh1 \
@@ -28,7 +28,7 @@ com.tangosol.net.DefaultCacheServer
 ```
 $ docker $(docker-machine config coh-demo1) run -i -t \
 --name=coh2 --hostname=coh2 --net=coh-net \
-oracle/coherence:12.2.1.0.0-standalone \
+oracle/coherence:12.2.1.3.0-standalone \
 /usr/java/default/bin/java \
 -cp /u01/oracle/oracle_home/coherence/lib/coherence.jar \
 -Dcoherence.client=remote -Dcoherence.wka=coh1 \

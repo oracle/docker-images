@@ -96,6 +96,7 @@ wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/cont
 echo "username=$NM_USER" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 echo "password=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs1/htdocs/helloWorld.html
+
 fi
 
 # Start node manager

@@ -56,7 +56,7 @@ The examples in the `/docs` section show different aspects of Oracle Coherence f
     
     `$ sh build.sh`
     
-8. Build the Coherence image. Change directory to the `OracleCoherence/dockerfiles/12.2.1` directory, make sure that the Coherence 12.2.1 Standalone installer has been downloaded to the directory and run these commands:
+8. Build the Coherence image. Change directory to the `OracleCoherence/dockerfiles/12.2.1.3` directory, make sure that the Coherence 12.2.1 Standalone installer has been downloaded to the directory and run these commands:
     
     `$ eval $(docker-machine env coh-demo0)`
     
@@ -74,4 +74,4 @@ The examples in the `/docs` section show different aspects of Oracle Coherence f
  
     `docker-machine ssh coh-demo1 'route add -net 224.0.0.0 netmask 224.0.0.0 dev eth1`
         
-There should now be three Docker Machine VMs running, one running the Consul key store and two with the `oracle/coherence:12.2.1.0.0-standalone` image installed.
+There should now be three Docker Machine VMs running, one running the Consul key store and two with the `oracle/coherence:12.2.1.3.0-standalone` image installed.

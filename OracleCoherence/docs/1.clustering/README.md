@@ -12,7 +12,7 @@ The easiest way to make Coherence work inside Docker containers is to run the co
 
     ```
     $ docker $(docker-machine config coh-demo0) run -d --net=host \
-    --name=coh1 oracle/coherence:12.2.1.0.0-standalone \
+    --name=coh1 oracle/coherence:12.2.1.3.0-standalone \
     /usr/java/default/bin/java \
     -cp /u01/oracle/oracle_home/coherence/lib/coherence.jar \
     com.tangosol.net.DefaultCacheServer
@@ -54,7 +54,7 @@ The easiest way to make Coherence work inside Docker containers is to run the co
 
     ```
     $ docker $(docker-machine config coh-demo1) run -d  --net=host \
-    --name=coh2 oracle/coherence:12.2.1.0.0-standalone \
+    --name=coh2 oracle/coherence:12.2.1.3.0-standalone \
     /usr/java/default/bin/java \
     -cp /u01/oracle/oracle_home/coherence/lib/coherence.jar \
     com.tangosol.net.DefaultCacheServer
@@ -130,7 +130,7 @@ If host networking mode is not available, then it is possible to make Coherence 
     ```
     $ docker $(docker-machine config coh-demo0) run -d \
     --name=coh1 --hostname=coh1 --net=coh-net \
-    oracle/coherence:12.2.1.0.0-standalone \
+    oracle/coherence:12.2.1.3.0-standalone \
     /usr/java/default/bin/java \
     -cp /u01/oracle/oracle_home/coherence/lib/coherence.jar \
     -Dcoherence.localhost=coh1 -Dcoherence.wka=coh1 \
@@ -189,7 +189,7 @@ Coherence is using both of the containers' IP addresses for its WKA list. More i
     ```
     $ docker $(docker-machine config coh-demo1) run -d \
     --name=coh2 --hostname=coh2 --net=coh-net \
-    oracle/coherence:12.2.1.0.0-standalone \
+    oracle/coherence:12.2.1.3.0-standalone \
     /usr/java/default/bin/java \
     -cp /u01/oracle/oracle_home/coherence/lib/coherence.jar \
     -Dcoherence.localhost=coh2 -Dcoherence.wka=coh1 \
@@ -257,4 +257,3 @@ Coherence is using both of the containers' IP addresses for its WKA list. More i
     `$ docker $(docker-machine config coh-demo1) stop coh2`
     
     `$ docker $(docker-machine config coh-demo1) rm coh2`
-

@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # WebLogic on Docker Default Domain
 #
@@ -12,7 +12,7 @@ admin_port   = int(os.environ.get("ADMIN_PORT", "7001"))
 admin_pass   = os.environ.get("ADMIN_PASSWORD")
 cluster_name = os.environ.get("CLUSTER_NAME", "DockerCluster")
 domain_path  = '/u01/oracle/user_projects/domains/%s' % domain_name
-production_mode         = os.environ.get("PRODUCTION_MODE", "prod")
+production_mode = 'dev'
 
 print('domain_name : [%s]' % domain_name);
 print('admin_port  : [%s]' % admin_port);

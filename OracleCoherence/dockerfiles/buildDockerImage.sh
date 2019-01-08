@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
 # 
 
 usage() {
@@ -23,9 +23,9 @@ Parameters:
 
 * select one distribution only: -q or -s
 
-LICENSE CDDL 1.0 + GPL 2.0
+LICENSE UPL 1.0
 
-Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
 
 EOF
 exit 0
@@ -34,7 +34,7 @@ exit 0
 # Parameters
 QUICKINSTALL=0
 STANDALONE=0
-VERSION="12.2.1.0.0"
+VERSION="12.2.1.3.0"
 while getopts "hmv:qs" optname; do
   case "$optname" in
     "h")

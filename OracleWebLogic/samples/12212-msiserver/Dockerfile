@@ -1,6 +1,6 @@
-# LICENSE CDDL 1.0 + GPL 2.0
+# LICENSE UPL 1.0
 #
-# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -12,7 +12,7 @@
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Run: 
+# Run:
 #      $ sudo docker build -t 12212-msiserver .
 #
 
