@@ -116,4 +116,4 @@ The above scenario from this sample will give you a WebLogic domain with a dynam
 You may create more containerized Managed Servers by calling the `docker` command above for `startManagedServer.sh` as long you change the dynamic server count attributes in the sample variable properties file before you build, and you link properly with the Administration Server. For an example of a multihost environment, see the sample `1221-multihost`.
 
 # Copyright
-Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
