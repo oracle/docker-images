@@ -7,7 +7,6 @@
 # ==============================================
 import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
-nm_pass   = os.environ.get("NM_PASSWORD", "welcome1")
 ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs1")
 domain_name  = os.environ.get("DOMAIN_NAME", "ohsDomain")
 domain_path  = '/u01/oracle/ohssa/user_projects/domains/' + domain_name
@@ -25,7 +24,7 @@ try:
         sys.exit("Error: Please set the environment variable ORACLE_HOME")
 except (KeyError), why:
     sys.exit("Error: Missing Environment Variables " + str(why))
-nmConnect(username='weblogic',password=nm_pass,domainName=domain_name)
+nmConnect(username=username,password=password,domainName=domain_name)
 nmServerStatus(serverName=ohs_comp_name,serverType='OHS')
 nmStart(serverName=ohs_comp_name,serverType='OHS')
 nmServerStatus(serverName=ohs_comp_name,serverType='OHS')

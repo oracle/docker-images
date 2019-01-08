@@ -77,6 +77,13 @@ NMSTATUS[0]="NOT RUNNING"
 
 if [ !  -f /u01/oracle/logs/nodemanager$$.log ]; then
 
+# Get Username
+NM_USER=`awk '{print $1}' $PROPERTIES_FILE | grep username | cut -d "=" -f2`
+if [ -z "$NM_USER" ]; then
+   echo "The Node Manager username is blank. It must be set in the properties file."
+   exit
+fi
+
 # Get Password
 NM_PASSWORD=`awk '{print $1}' $PROPERTIES_FILE | grep password | cut -d "=" -f2`
 if [ -z "$NM_PASSWORD" ]; then
@@ -84,9 +91,9 @@ if [ -z "$NM_PASSWORD" ]; then
    exit
 fi
     
-wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/create-sa-ohs-domain.py
+wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/container-scripts/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
-echo "username=weblogic" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
+echo "username=$NM_USER" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 echo "password=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
 mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs1/htdocs/helloWorld.html
 fi
@@ -125,7 +132,7 @@ fi
 #Start OHS component only if Node Manager is up
 if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
 echo "Node manager running, hence starting OHS server"
-${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/start-ohs.py
+${WLST_HOME}/wlst.sh -loadProperties $PROPERTIES_FILE /u01/oracle/container-scripts/start-ohs.py
 echo "OHS server has been started "
 fi
 

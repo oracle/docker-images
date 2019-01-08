@@ -30,7 +30,7 @@
 #
 # For example
 # 
-#     $ docker build --force-rm=true --no-cache=true --rm=true -t oracle/ohs:12.2.1.3.0-sa .
+#     $ docker build --force-rm=true --no-cache=true --rm=true -t oracle/ohs:12.2.1.3.0 .
 #
 # Pull serverjre:8 base image
 # -----------------------------------
@@ -75,7 +75,7 @@ RUN yum install -y unzip libaio sysstat make psmisc gcc && \
 #--------------------------------------------------------
 USER oracle
 RUN cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
-    /u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=$ORACLE_HOME && \ 
+    /u01/$OHS_BIN -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=$ORACLE_HOME && \ 
     rm /u01/$OHS_BIN  /u01/oraInst.loc /u01/install.file && \
     mkdir /u01/oracle/container-scripts/ /u01/oracle/logs 
 
