@@ -17,8 +17,6 @@ if [ "$#" -eq  "0" ]; then
     echo Export environment variables from the ${PROPERTIES_FILE} properties file
 fi
 
-echo Export environment variables from the ${PROPERTIES_FILE} properties file
-
 DOMAIN_DIR=`awk '{print $1}' $PROPERTIES_FILE | grep ^DOMAIN_NAME= | cut -d "=" -f2`
 if [ ! -n "$DOMAIN_DIR" ]; then  
    if [ -n "$DOMAIN_NAME" ]; then

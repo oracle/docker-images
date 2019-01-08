@@ -10,6 +10,7 @@
 PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
 if [ ! -e "$PROPERTIES_FILE" ]; then
     echo "A security.properties file with the username and password needs to be supplied."
+    echo "The file was not found in the properties directory ${PROPERTIES_FILE_DIR}"
     exit
 fi
 
