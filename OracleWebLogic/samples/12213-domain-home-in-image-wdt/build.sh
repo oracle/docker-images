@@ -88,7 +88,7 @@
 #                         CUSTOM_BUILD_ARG.
 #
 
-if [ -z "${JAVA_HOME}" ]; then 
+if [ -z "${JAVA_HOME}" ] || [ ! -e "${JAVA_HOME}/bin/jar" ]; then 
    echo "JAVA_HOME must be set to version of a java JDK 1.8 or greater"
    exit 1
 fi
@@ -239,14 +239,16 @@ build_archive() {
 # If the weblogic deploy tool install archive file is not found in the Context directory
 # download the archive using the CURL command fromthe github.com weblogic-deploy-tooling repository.
 download_tool() {
-   if [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then
-      echo "Downloading the weblogic deploy tool archive weblogic-deploy.zip from the github repository"
+    if [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then
 
       # Find the curl command or use the command from the CURL variable
       if [ -z "$CURL" ]; then CURL=`which curl`; fi 
-	    if [ -z "$CURL" ]; then curl_failed; fi 
-
-      ${CURL} -Lo ${scriptDir}/weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.15/weblogic-deploy.zip
+	    if [ -z "$CURL" ] || [ ! -e ${CURL} ]; then curl_failed; fi 
+      
+      set_wdt_url
+      echo "Downloading the weblogic deploy tool archive weblogic-deploy.zip from ${download_url}"
+      
+      ${CURL} -Lo ${scriptDir}/weblogic-deploy.zip ${download_url}/weblogic-deploy.zip
       rc=$?
       if [ $rc != 0 ] || [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then
          echo "${CURL} RC=${rc}"
@@ -254,7 +256,7 @@ download_tool() {
       fi
    fi    
 }
- 
+
 # This calls the setEnv.sh in container-scripts to parse the ADMIN_HOST, ADMIN_PORT,
 # MS_PORT, and DOMAIN_NAME from the sample properties file and pass
 # as a string of --build-arg in the variable BUILD_ARG
@@ -296,8 +298,23 @@ tag_name() {
 curl_failed() {
       echo "Unable to download the weblogic deploy install using curl"
       echo "Manually download the install image weblogic.deploy.zip into location ${scriptDir} and re-run"
-      echo "The weblogic deploy tool archive weblogic-deploy.zip is available at https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.15/weblogic-deploy.zip"
+      echo "The weblogic deploy tool archive weblogic-deploy.zip is available at ${download_url}"
       clean_and_exit
+}
+
+set_wdt_url() {
+  githubRepo=oracle/weblogic-deploy-tooling  
+  download_url=$(get_download_url)
+}
+
+get_download_url() {
+  echo https://github.com/${githubRepo}/releases/download/$(get_latest_release)
+}
+
+get_latest_release() {
+  ${CURL} --silent "https://api.github.com/repos/${githubRepo}/releases/latest" | # Get latest release from GitHub api
+    grep '"tag_name":' |                                            # Get tag line
+    sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
 }
 
 set_up
