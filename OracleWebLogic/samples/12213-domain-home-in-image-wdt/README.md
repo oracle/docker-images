@@ -101,19 +101,19 @@ The Admin Server and each Managed Server are run in containers from this build i
 
 To start the containerized Administration Server, run:
 
-    $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties/docker-run 12213-domain-home-in-image-wdt
+    $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties 12213-domain-home-in-image-wdt
 
 To start a containerized Managed Server (managed-server-1) to self-register with the Administration Server above, run:
 
-    $ docker run -d --name managed-server-1 --link wlsadmin:wlsadmin -p 9001:9001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 12213-domain-home-in-image-wdt startManagedServer.sh
+    $ docker run -d --name managed-server-1 --link wlsadmin:wlsadmin -p 8001:8001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 12213-domain-home-in-image-wdt startManagedServer.sh
 
-To start an additional Managed Server (in this example managed-server-2), run:
+To start a/n additional Managed Server (in this example managed-server-2), run:
 
-    $ docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 9002:9001 -v <sample-directory>/properties/docker-run/:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 12213-domain-home-in-image-wdt startManagedServer.sh
+    $ docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 8002:8001 -v <sample-directory>/properties/docker-run/:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 12213-domain-home-in-image-wdt startManagedServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a dynamic cluster set up on a single host environment.
 
 You may create more containerized Managed Servers by calling the `docker` command above for `startManagedServer.sh` as long you change the dynamic server count attributes in the sample variable properties file before you build, and you link properly with the Administration Server. For an example of a multihost environment, see the sample `1221-multihost`.
 
 # Copyright
-Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.

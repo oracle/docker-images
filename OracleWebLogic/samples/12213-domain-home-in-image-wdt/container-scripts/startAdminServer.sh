@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -10,6 +10,7 @@
 PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
 if [ ! -e "$PROPERTIES_FILE" ]; then
     echo "A security.properties file with the username and password needs to be supplied."
+    echo "The file was not found in the properties directory ${PROPERTIES_FILE_DIR}"
     exit
 fi
 
