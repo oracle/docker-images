@@ -1,6 +1,7 @@
 Applying patch on Oracle HTTP Server 
 ===============
-This Dockerfile extends the Oracle HTTP Server image by applying a patch.
+This Dockerfile extends the Oracle HTTP Server image by applying a patch. This is a sample which shows how to patch an OHS image.
+The name of patch file will need to be modified accordingly in the Dockerfile before using it for actual cases.
 
 ## How to Build and Run
 

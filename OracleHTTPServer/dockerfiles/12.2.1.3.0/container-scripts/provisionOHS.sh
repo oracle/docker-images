@@ -72,6 +72,11 @@ export PROPERTIES_FILE
 declare -a NMSTATUS
 NMSTATUS[0]="NOT RUNNING"
 
+if [ ! -e "$PROPERTIES_FILE" ]; then
+   echo "A properties file with the username and password needs to be supplied."
+   exit
+fi
+
 # If nodemanager$$.log does not exists,this is the first time configuring the NM 
 # generate the NM password 
 
