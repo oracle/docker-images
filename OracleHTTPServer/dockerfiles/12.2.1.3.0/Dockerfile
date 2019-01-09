@@ -1,5 +1,7 @@
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
+
+
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -9,7 +11,8 @@
 #
 # IMPORTANT
 # -------------------------------------------
-# The resulting image of this Dockerfile would have Oracle Linux 7.3 and Oracle HTTP Server 12.2.1.3.0 installed in standalone mode.
+# The resulting image of this Dockerfile would have Oracle Linux 7 and Oracle HTTP Server 12.2.1.3.0 installed in standalone mode.
+
 # A standalone domain will be configured in this image
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
@@ -30,7 +33,7 @@
 #
 # For example
 # 
-#     $ docker build --force-rm=true --no-cache=true --rm=true -t oracle/ohs:12.2.1.3.0-sa .
+#     $ docker build --force-rm=true --no-cache=true --rm=true -t oracle/ohs:12.2.1.3.0 .
 #
 # Pull serverjre:8 base image
 # -----------------------------------
@@ -52,7 +55,7 @@ ENV OHS_PKG=fmw_12.2.1.3.0_ohs_linux64_Disk1_1of1.zip \
     JAVA_HOME=/usr/java/default \
     MW_HOME=/u01/oracle/ohssa \
     DOMAIN_NAME=ohsDomain \
-    OHS_COMPONENT_NAME=ohs_sa1 \
+    OHS_COMPONENT_NAME=ohs1 \
     PATH=$PATH:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts \
     WLST_HOME=/u01/oracle/ohssa/oracle_common/common/bin
 
@@ -65,17 +68,17 @@ COPY $OHS_PKG install.file oraInst.loc /u01/
 # Setup filesystem and oracle user
 #---------------------------------------------------------------------------------------------------------
 RUN yum install -y unzip libaio sysstat make psmisc gcc && \
-    rm -rf /var/cache/yum && \
+    yum clean all && \
     chmod a+xr /u01 && \
     useradd -b /u01 -m -s /bin/bash oracle && \
-    mkdir /u01/oracle/.inventory && \
+    mkdir /u01/oracle/.inventory /u01/oracle/bootdir && \
     chown oracle:oracle -R /u01 
 
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
 USER oracle
 RUN cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
-    /u01/$OHS_BIN -ignoreSysPrereqs -novalidation -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=$ORACLE_HOME && \ 
+    /u01/$OHS_BIN -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=$ORACLE_HOME && \ 
     rm /u01/$OHS_BIN  /u01/oraInst.loc /u01/install.file && \
     mkdir /u01/oracle/container-scripts/ /u01/oracle/logs 
 
