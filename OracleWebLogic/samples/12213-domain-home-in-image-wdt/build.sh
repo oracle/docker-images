@@ -12,24 +12,27 @@
 #   with a few minor adjustments. Use the provided environment variables and comment out any
 #   unnecessary steps to customize for your domain home. 
 #
+#   Please refer to the README before customizing the build.
+#
 #  The steps run by this script are as follows:
 #
 #   set_up                - prepare the script for the build. This includes copying the 
-#                           model, variable and archive file to the temporary location.
-#                           If using the sample files, build the sample archive file.
+#                           model, variable and archive file to a temporary directory in
+#                           the sample directory. The sample directory is used as the docker
+#                           build context. This step builds the sample archive file if the 
+#                           sample files are used.
 #
-#   download_tool         - download tool install weblogic-deploy.zip if it does not exist in the
-#                           context location 
+#   download_tool         - download the latest weblogic-deploy.zip install if the archive
+#                           does not exist in the current location. 
 #
 #   prepare_build_args    - call container-scripts/setEnv.sh to create a string of build arguments
 #                           from the properties in the variable file. These arguments are required
-#                           for exposing ports and container ENV variables. The variable file can
-#                           also contain the tag name for the domain home image. 
+#                           for exposing ports and container ENV variables in the sample Dockerfile.
 #
-#   build_domain_image    - run the docker build with the Dockerfile from the context location
+#   build_domain_image    - run the docker build with the sample Dockerfile in the context location.
 #
-#   clean_and_exit        - perform clean up, such as removing the temporary location, and exit with
-#                           the value in the variable rc 
+#   clean_and_exit        - perform clean up, such as removing the temporary directory, and exit with
+#                           the value stored in $return_code. 
 #   
 #
 # This script will return exit code 1 if a step fails or it will return the exit code from
@@ -44,9 +47,9 @@
 # This script will use the following environment variables to customize the domain image with your own
 #  components. In order for this build.sh and Dockerfile to successfully execute with your customizations,
 #  you should continue to run the build.sh from the sample location. The build.sh will copy your custom
-#  components - model, variable, archive and Dockerfile - to a temporary directory so the files are accessible
-#  in the build context. If your model uses file tokens, copy your files to properties/docker-build and change 
-#  your model to reference the files in /u01/oracle/properties.
+#  components - model, variable, archive and Dockerfile - to a temporary directory in the sample location
+#  so that the files are accessible in the build context. If your model uses file tokens, copy the files 
+#  to the properties/docker-build directory and change the model to reference the files in /u01/oracle/properties.
 #
 # CURL                  - If the "curl" command is not on the shell PATH, use this argument
 #                         as <location>/curl. The curl is performed if the weblogic-deploy.zip install
@@ -64,14 +67,13 @@
 #                           . Set the ADDITIONAL_BUILD_ARGS to include a tag argument 
 #                             (i.e. -t sample-tag). Adds an additional tag to the image.
 #
-# ADDITIONAL_BUILD_ARGS - Additional arguments to include on the docker build statement, such as an 
+# ADDITIONAL_BUILD_ARGS - Additional arguments to include on the docker build statement, for instance an 
 #                         additional tag name or proxy variable build args.
 #
-# CUSTOM_BUILD_ARG      - Use this string of build arguments instead of running the setEnv.sh to
-#                         build the string of build arguments.
-# 
-# CUSTOM_DOCKERFILE     - Override the sample Dockerfile for the docker build. A custom Dockerfile should
-#                         only extend the sample Dockerfile.
+# CUSTOM_BUILD_ARG      - Use this variable's value to add build arguments to the image build. If this
+#                         variable is set, its value is used to set the BUILD_ARG variable instead
+#                         of calling the setEnv.sh script. The BUILD_ARG is used on the docker build  
+#                         command in the build_domain_image step. 
 #
 # CUSTOM_WDT_MODEL      - Override the default model simple-topology.yaml in the build_domain_image step.
 #
@@ -81,7 +83,7 @@
 #                         string, the file will not be used on the build.
 # 
 # CUSTOM_WDT_ARCHIVE    - Override the default archive file archive.zip.  
-                      
+#                      
 # CUSTOM_WDT_VARIABLE   - Override the default variable file properties/docker-build/domain.properties.
 #                         Be sure the variable file has the properties that setEnv.sh needs to build
 #                         the build args needed by this Dockerfile, or provide the build args in the 
@@ -125,7 +127,7 @@ set_up() {
       WDT_ARCHIVE=${scriptDir}/archive.zip
       build_archive
 	    rc=$?
-	    if [ $rc -ne 0 ]; then clean_and_exit; fi
+	    if [ $rc -ne 0 ]; then return_code=$rc; clean_and_exit; fi
    fi
    
    # prime the model and variable file variables. Then copy the files to the temporary 
@@ -140,20 +142,20 @@ set_up() {
       echo "The model file ${WDT_MODEL} does not exist"
       clean_and_exit
    fi
-   echo "Copy the model file ${WDT_MODEL} to wdt-the temporary location"
+   echo "Copy the model file ${WDT_MODEL} to ${tempLocation}"
    cp ${WDT_MODEL} ${tempLocation}
    WDT_MODEL=${tempDir}/${WDT_MODEL##*/}
    
    # if variable file exists, copy it to the temp location
    if [ -n "${WDT_VARIABLE}" ] && [ -f ${WDT_VARIABLE} ]; then
-      echo "Copy the variable file ${WDT_VARIABLE} to the temporary location"
+      echo "Copy the variable file ${WDT_VARIABLE} to ${tempLocation}"
       cp ${WDT_VARIABLE} ${tempLocation}
       WDT_VARIABLE=${tempDir}/${WDT_VARIABLE##*/}
    fi
 
    # if archive file exists, copy it to the temp location
    if [ -n "${WDT_ARCHIVE}" ] && [ -f ${WDT_ARCHIVE} ]; then
-      echo "Copy the archive file ${WDT_ARCHIVE} to the temporary location"
+      echo "Copy the archive file ${WDT_ARCHIVE} to ${tempLocation}"
       cp ${WDT_ARCHIVE} ${tempLocation}
       WDT_ARCHIVE=${tempDir}/${WDT_ARCHIVE##*/}
    fi   
@@ -161,11 +163,11 @@ set_up() {
    dockerFile=${CUSTOM_DOCKERFILE-"${scriptDir}/Dockerfile"}
    if [ -z "${dockerFile}" ] || [ ! -f $dockerFile ]; then
       echo "Invalid Dockerfile (${dockerFile}). Dockerfile required"
-	  clean_and_exit
+	    clean_and_exit
    fi
    cp ${dockerFile} ${tempLocation}
-   dockerFile=${tempDir}/${dockerFile##*/}
-   
+   dockerFile=${tempLocation}/${dockerFile##*/}
+ 
 }
 
 # Run the docker build using the arguments from both the BUILD_ARG (created by the setEnv.sh) and
@@ -198,10 +200,10 @@ build_domain_image() {
    rc=$?
    if [ $rc == 0 ]; then 
       imageId=$(docker inspect ${tagName} -f={{.Id}} 2>/dev/null)
-      echo "The docker build for image ${tagName} completed successfully with rc=${rc}."
+      echo "The docker build for image ${tagName} completed successfully with return_code=${rc}."
       echo "The id for image ${tagName} is ${imageId}"
    else
-      echo "The docker build for image ${tagName} failed with rc=${rc}"
+      echo "The docker build for image ${tagName} failed with return_code=${rc}"
    fi
    return $rc
 }
@@ -223,15 +225,16 @@ set_context() {
 # The build will only warn and not fail if cannot build the war and archive file
 build_archive() {
    if [ ! -e "${WDT_ARCHIVE}" ]; then 
-      if [ -r "${scriptDir}/build-archive.sh" ]; then
+      if [ -f "${scriptDir}/build-archive.sh" ]; then
          . "${scriptDir}/build-archive.sh"
          rc=$?
       else
-         rc=127
+         rc=1
       fi
       if [ $rc != 0 ]; then
+         return_code=$rc
          echo "Unable to build the application and archive file required for the sample domain"
-         echo "   build-archive.sh RC=${rc}"
+         echo "   build-archive.sh return_code=${return_code}"
       fi
    fi
 }
@@ -250,10 +253,9 @@ download_tool() {
       
       ${CURL} -Lo ${scriptDir}/weblogic-deploy.zip ${download_url}/weblogic-deploy.zip
       rc=$?
-      if [ $rc != 0 ] || [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then
-         echo "${CURL} RC=${rc}"
-         curl_failed
-      fi
+      if [ $rc != 0 ]; then echo "${CURL} failed with return code=${rc}"; return_code=$rc; curl_failed; fi
+      if [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then curl_failed; fi
+
    fi    
 }
 
@@ -268,17 +270,18 @@ prepare_build_args() {
       BUILD_ARG=${CUSTOM_BUILD_ARG}
    else
       echo "Create the BUILD_ARG string from the variable file ${WDT_VARIABLE}"
-      if [ ! -r ${WDT_VARIABLE} ] || \
-          [ ! -r ${scriptDir}/container-scripts/setEnv.sh ]; then
+       if [ ! -f ${scriptDir}/${WDT_VARIABLE} ] || \
+          [ ! -f ${scriptDir}/container-scripts/setEnv.sh ]; then
           echo "Cannot set the docker build argument string from the variable file ${WDT_VARIABLE}"
           clean_and_exit
       fi
-      . ${scriptDir}/container-scripts/setEnv.sh ${WDT_VARIABLE}
+      . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/${WDT_VARIABLE}
       rc=$?
       if [ $rc != 0 ]; then
          echo "Failure deriving the docker build-argument string from the variable file ${WDT_VARIABLE}"
          echo "   BUILD_ARG=${BUILD_ARG}"
-         echo "   setEnv.sh RC=${rc}"
+         echo "   setEnv.sh return_code=${rc}"
+         return_code=${rc}
          clean_and_exit
       fi 
    fi
@@ -322,5 +325,5 @@ download_tool
 prepare_build_args
 tag_name
 build_domain_image
-rc=$?
+return_code=$?
 clean_and_exit
