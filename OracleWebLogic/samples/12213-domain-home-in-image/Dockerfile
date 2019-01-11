@@ -65,7 +65,6 @@ RUN /u01/oracle/createWLSDomain.sh && \
     chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \
     rm ${PROPERTIES_FILE_DIR}/*.properties
 
-USER oracle
 # Expose ports for admin, managed server, and debug
 EXPOSE $ADMIN_PORT $MANAGED_SERVER_PORT $DEBUG_PORT
 
