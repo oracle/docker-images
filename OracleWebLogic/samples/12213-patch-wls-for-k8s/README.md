@@ -2,32 +2,32 @@ Example of Image with WLS Domain
 ================================
 There are two  Dockerfiles which extend the Oracle WebLogic binary image and apply a necessary patch for the WebLogic Kubernetes Operator 2.0.
 
-1.) `Dockerfile.patching-ontop-12213`: applies two patches `p28076014` (on top of WLS 12.2.1.3) and `p27117282` (this patch is needed only if the WebLogic binary image is created manually from this GitHub project).
+1.) `Dockerfile.patch-ontop-12213`: applies two patches `p29135930` (on top of WLS 12.2.1.3) and `p27117282` (this patch is needed only if the WebLogic binary image is created manually from this GitHub project).
 
-2.) `Dockerfile.patching-ontop-12213-psu`: applies patch `p28298734` (WLS PATCH SET UPDATE 12.2.1.3.181016), patch `p28076014` (on top of WLS 12.2.1.3 October PSU), and `p28186730` (Opatch update). Before applying the WebLogic 12.2.1.3 October PSU PATCH 12.2.1.3.181016WLSPSU, Opatch needs to be updated with PATCH 28186730: OPATCH 13.9.4.0.0 FOR FMW/WLS 12.2.1.3.
+2.) `Dockerfile.patch-ontop-12213-psu`: applies patch `p28298734` (WLS PATCH SET UPDATE 12.2.1.3.181016), patch `p29135930` (on top of WLS 12.2.1.3 October PSU), and `p28186730` (Opatch update). Before applying the WebLogic 12.2.1.3 October PSU PATCH 12.2.1.3.181016WLSPSU, Opatch needs to be updated with PATCH 28186730: OPATCH 13.9.4.0.0 FOR FMW/WLS 12.2.1.3.
 
 **Note**: Historically, OPatch was updated by unzipping and replacing the `ORACLE_HOME/OPatch` directory. For versions greater than or equal to 13.6, now it uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasion, led to upgrade-related issues.
 
-We are applying patch `p28076014` which is required for the WebLogic Kubernetes Operator to work.
+We are applying patch `p29135930` which is required for the WebLogic Kubernetes Operator to work.
 
 ## How to build
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
 If you want to patch on top of WebLogic Server 12.2.1.3 download:
 
-	file [p28076014_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
+	file [p29135930_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 	file [p27117282_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 
 If you want to patch on top of WebLogic Server 12.2.1.3 October PSU download:
 
 	file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 	file [p28298734_122130_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
-	file [p28076014_12213181016_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
+	file [p29135930_12213181016_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
 
 To build, run:
 
-        $ docker build -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patching-ontop-12213 .
+        $ docker build -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patch-ontop-12213 .
         or
-        $ docker build -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patching-ontop-12213-psu .
+        $ docker build -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patch-ontop-12213-psu .
 
 ## Verify that the patch has been applied correctly
 Run a container from the image:
@@ -39,8 +39,8 @@ cd OPatch and run:
         ./opatch version
         ./opatch lspatches
 
-	1) You will see one-off patches 28076014, and 27117282.
-	2) You will see one-off patches 28076014, 28298734 WLS PATCH SET UPDATE 12.2.1.3.181016, and the OPatch version being 13.9.4.0.0.
+	1) You will see one-off patches 29135930, and 27117282.
+	2) You will see one-off patches 29135930, 28298734 WLS PATCH SET UPDATE 12.2.1.3.181016, and the OPatch version being 13.9.4.0.0.
 
 ## Run a single server domain
 The WebLogic Server install image (patched in this sample) allows you to run a container with a single WebLogic Server domain. This makes it extremely simple to deploy applications and any resources the applications might need. The steps below describe how to run the single server domain container.

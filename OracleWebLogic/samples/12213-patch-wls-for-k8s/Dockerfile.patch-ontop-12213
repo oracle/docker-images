@@ -12,18 +12,22 @@
 # ----------------------------------
 # (1) p27117282_122130_Generic.zip (This patch is needed only if the WebLogic binary image
 #     is created manually from this Github project)
-# (2) p28076014_122130_Generic.zip (On top of WebLogic Server 12.2.1.3)
+# (2) p29135930_122130_Generic.zip (On top of WebLogic Server 12.2.1.3)
 #     Download the patches from http://support.oracle.com
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ sudo docker build -t oracle/weblogic:12213-update-k8s -f Dockerfile.patching-ontop-12213 .
+#      $ sudo docker build -t oracle/weblogic:12213-update-k8s -f Dockerfile.patch-ontop-12213 .
 #
 
 # Pull base image
 # ---------------
+# If pulling the WebLogic 12.2.1.3 image from the Docker Store please use:
+# FROM store/oracle/weblogic:12.2.1.3-dev
+# If pulling the WebLogic 12.2.1.3 image from the Oracle Container Registry please use:
+# FROM container-registry.oracle.com/middleware/weblogic:12.2.1.3-dev
 FROM oracle/weblogic:12.2.1.3-developer
 
 # Maintainer
@@ -32,8 +36,10 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
+# NOTE: This patch (p27117282 is needed only if the WebLogic binary image
+# is created manually from this Github project
 ENV PATCH_PKG1="p27117282_122130_Generic.zip"
-ENV PATCH_PKG2="p28076014_122130_Generic.zip"
+ENV PATCH_PKG2="p29135930_122130_Generic.zip"
 
 # Copy supplemental package and scripts
 # --------------------------------
@@ -45,10 +51,10 @@ USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG1 && \
     cd /u01/27117282 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG2 && \
-    cd /u01/28076014 && $ORACLE_HOME/OPatch/opatch apply -silent && \
+    cd /u01/29135930 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     $ORACLE_HOME/OPatch/opatch util cleanup -silent && \
     rm /u01/$PATCH_PKG1 && rm /u01/$PATCH_PKG2 && \
-    rm -rf /u01/28076014 && rm -rf /u01/27117282 && \
+    rm -rf /u01/29135930 && rm -rf /u01/27117282 && \
     rm -rf /u01/oracle/cfgtoollogs/opatch/* 
 
 WORKDIR ${ORACLE_HOME}
