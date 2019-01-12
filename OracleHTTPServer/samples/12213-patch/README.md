@@ -24,20 +24,10 @@ password=mynodemanagerpassword
 ### How to run container
 
 
-If you want to start the OHS container without specifying any configuration for mod_weblogic:
-1. To start the OHS container with oracle/ohs:12.2.1.3.0 image, run the following command:
+To start the OHS container with the patched image, run the following command:
 
-         docker run -v `HOST PATH where the domain.properties file is`:/u01/oracle/bootdir -it --name ohs -p 7777:7777 oracle/ohs:12.2.1.3.0
+         docker run -v `HOST PATH where the domain.properties file is`:/u01/oracle/bootdir -it --name ohs -p 7777:7777 oracle/ohs:12213-patch
 
-
-If you want to start the OHS container with some pre-specified mod_weblogic configuration:
-1. Depending on your weblogic environment , create a **custom_mod_wl_ohs.conf** file by referring to container-scripts/mod_wl_ohs.conf.sample and section 2.4 @ [OHS 12c Documentation](http://docs.oracle.com/middleware/12213/webtier/develop-plugin/oracle.htm#PLGWL553)
-
-2. Place the custom_mod_wl_ohs.conf file in a directory in the host say,"/scratch/DockerVolume/OHSVolume" and then mount this directory into the container at the location "/config".
-   By doing so, the contents of host directory /scratch/DockerVolume/OHSVolume(and hence custom_mod_wl_ohs.conf) will become available in the container at the mount point.  
-   This mounting can be done by using the -v option with the 'docker run' command as shown below. The following command will start the OHS container with oracle/ohs:12.2.1.2.0-sa image and the host   directory "/scratch/DockerVolume/OHSVolume" will get mounted at the location "/config" in the container:
-
-         $ docker run -v `HOST PATH where the domain.properties file is`:/u01/oracle/bootdir -v /scratch/DockerVolume/OHSVolume:/config -w /config -d --name ohs -p 7777:7777  oracle/ohs:12.2.1.3.0
 
 ### Stopping the  OHS instance
 To stop the OHS instance, execute the following command:

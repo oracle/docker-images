@@ -27,7 +27,6 @@ showTemplates()
 # Create OHS System Component by the name ohs1, Configure OHS Listen Port and SSL Port
 # ======================================================================
 cd('/')
-create(ohs_comp_name, 'SystemComponent')
 cd('SystemComponent/' + ohs_comp_name)
 set('ComponentType','OHS')
 cd('/')
