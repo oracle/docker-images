@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -28,7 +28,7 @@
 # FROM store/oracle/weblogic:12.2.1.3-dev
 # If pulling the WebLogic 12.2.1.3 image from the Oracle Container Registry please use:
 # FROM container-registry.oracle.com/middleware/weblogic:12.2.1.3-dev
-FROM oracle/weblogic:12.2.1.3-developer
+FROM oracle/weblogic:12.2.1.3-generic
 
 # Maintainer
 # ----------
@@ -44,7 +44,7 @@ ENV PATCH_PKG2="p29135930_122130_Generic.zip"
 
 # PATCH_PKG1 (27117282) is only needed if the WebLogic binary image
 # is created manually from this Github project under dockerfiles/12.2.1.3.
-# Uncomment the command to `Copy Patch 29135930` and comment the command 
+# Otherwise uncomment the command to `Copy Patch 29135930` and comment the command 
 # to `Copy both Patches 27117282 & 29135930`
 # ------------------------------------------------------------------------
 # Copy patch 29135930 
@@ -57,7 +57,7 @@ COPY $PATCH_PKG1 $PATCH_PKG2 /u01/
 
 # PATCH_PKG1 (27117282) is only needed if the WebLogic binary image
 # is created manually from this Github project under dockerfiles/12.2.1.3.
-# Uncomment the statements to `Apply Patch 29135930` and comment the commands 
+# Otherwise uncomment the statements to `Apply Patch 29135930` and comment the commands 
 # to `Apply Patches 27117282 & 29135930`
 # --------------------------------------------
 # Apply Patch 29135930
