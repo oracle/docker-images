@@ -17,7 +17,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12213-dev-patch-wls-for-k8s
+FROM oracle/weblogic:12213-developer
 
 # Maintainer
 # ----------
