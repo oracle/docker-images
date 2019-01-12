@@ -34,18 +34,43 @@ FROM oracle/weblogic:12.2.1.3-developer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
-# Environment variables required for this build (do NOT change)
+# Environment variables required for this build.
 # -------------------------------------------------------------
-# NOTE: This patch (p27117282 is needed only if the WebLogic binary image
-# is created manually from this Github project
+# NOTE: That patch (p27117282) is needed only if the WebLogic binary image
+# is created manually from this Github project under `dockerfiles/12.2.1.3`.
+# Comment out the ENV command if not needed.
 ENV PATCH_PKG1="p27117282_122130_Generic.zip"
 ENV PATCH_PKG2="p29135930_122130_Generic.zip"
 
-# Copy supplemental package and scripts
+# PATCH_PKG1 (27117282) is only needed if the WebLogic binary image
+# is created manually from this Github project under dockerfiles/12.2.1.3.
+# Uncomment the command to `Copy Patch 29135930` and comment the command 
+# to `Copy both Patches 27117282 & 29135930`
+# ------------------------------------------------------------------------
+# Copy patch 29135930 
+# --------------------------------
+# COPY $PATCH_PKG2 /u01/
+# --------------------------------
+# Copy patches 27117282 & 29135930 
 # --------------------------------
 COPY $PATCH_PKG1 $PATCH_PKG2 /u01/
 
-# Installation of Supplemental Quick Installer
+# PATCH_PKG1 (27117282) is only needed if the WebLogic binary image
+# is created manually from this Github project under dockerfiles/12.2.1.3.
+# Uncomment the statements to `Apply Patch 29135930` and comment the commands 
+# to `Apply Patches 27117282 & 29135930`
+# --------------------------------------------
+# Apply Patch 29135930
+# --------------------------------------------
+#USER oracle
+#RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG2 && \
+#    cd /u01/29135930 && $ORACLE_HOME/OPatch/opatch apply -silent && \
+#    $ORACLE_HOME/OPatch/opatch util cleanup -silent && \
+#    rm /u01/$PATCH_PKG2 && \
+#    rm -rf /u01/29135930 && \
+#    rm -rf /u01/oracle/cfgtoollogs/opatch/* 
+# --------------------------------------------
+# Apply Patches 27117282 & 29135930
 # --------------------------------------------
 USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG1 && \
@@ -56,6 +81,7 @@ RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG1 && \
     rm /u01/$PATCH_PKG1 && rm /u01/$PATCH_PKG2 && \
     rm -rf /u01/29135930 && rm -rf /u01/27117282 && \
     rm -rf /u01/oracle/cfgtoollogs/opatch/* 
+
 
 WORKDIR ${ORACLE_HOME}
 

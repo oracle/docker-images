@@ -1,8 +1,10 @@
 Example of Image with WLS Domain
 ================================
-There are two  Dockerfiles which extend the Oracle WebLogic binary image and apply a necessary patch for the WebLogic Kubernetes Operator 2.0.
+There are two  Dockerfiles which extend the Oracle WebLogic binary image and apply a necessary patch for the WebLogic Kubernetes Operator 2.0. `Dockerfile.patch-ontop-12213` patches the WebLogic binary image 12.2.1.3 with the patch necesary for WebLogic on the Kubernetes project. `Dockerfile.patch-ontop-12213-psu` applies the 2018 October PSU to WebLogic binary image 12.2.1.3, a required update to Opatch, and the patch necesary for WebLogic on the Kubernetes project.
 
 1.) `Dockerfile.patch-ontop-12213`: applies two patches `p29135930` (on top of WLS 12.2.1.3) and `p27117282` (this patch is needed only if the WebLogic binary image is created manually from this GitHub project).
+
+**Note**: Patch 27117282 only needs to be applied if the WebLogic 12.2.1.3 install image has been built locally from this GitHub project using the Dockerfile and scripts under `dockerfiles/12.2.1.3`.
 
 2.) `Dockerfile.patch-ontop-12213-psu`: applies patch `p28298734` (WLS PATCH SET UPDATE 12.2.1.3.181016), patch `p29135930` (on top of WLS 12.2.1.3 October PSU), and `p28186730` (Opatch update). Before applying the WebLogic 12.2.1.3 October PSU PATCH 12.2.1.3.181016WLSPSU, Opatch needs to be updated with PATCH 28186730: OPATCH 13.9.4.0.0 FOR FMW/WLS 12.2.1.3.
 
@@ -34,10 +36,11 @@ Run a container from the image:
 
         $ docker run --name verify_patch -it oracle/weblogic:12213-patch-wls-for-k8s /bin/bash
 
-cd OPatch and run:
+and run:
 
-        ./opatch version
-        ./opatch lspatches
+        $ cd OPatch
+        $ ./opatch version
+        $ ./opatch lspatches
 
 	1) You will see one-off patches 29135930, and 27117282.
 	2) You will see one-off patches 29135930, 28298734 WLS PATCH SET UPDATE 12.2.1.3.181016, and the OPatch version being 13.9.4.0.0.
