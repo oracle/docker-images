@@ -17,7 +17,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.2.1.3-developer
+FROM oracle/weblogic:12213-dev-patch-wls-for-k8s
 
 # Maintainer
 # ----------
@@ -51,7 +51,7 @@ COPY container-scripts/* /u01/oracle/
 USER root
 RUN chmod +xw /u01/oracle/*.sh && \
     chmod +xw /u01/oracle/*.py && \
-    mkdir +xwr ${PROPERTIES_FILE_DIR} && \
+    mkdir -p ${PROPERTIES_FILE_DIR} && \
     chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
     chown -R oracle:oracle $DOMAIN_HOME && \
