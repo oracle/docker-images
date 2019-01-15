@@ -10,11 +10,9 @@
 #                         There are four ways to tag the domain home image using this build script.
 #
 #                           . Do nothing and the image will be tagged with the default name. 
-#                           . Add an IMAGE_TAG variable to the variable file and allow the
+#                           . Add an IMAGE_TAG variable to the properties file and allow the
 #                             setEnv.sh to manage the tag. Overrides the default tag.
 #                           . Set the TAG_NAME environment variable. Overrides the default tag.
-#                           . Set the ADDITIONAL_BUILD_ARGS to include a tag argument 
-#                             (i.e. -t sample-tag). Adds an additional tag to the image.
 #
 
 
