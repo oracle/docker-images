@@ -7,7 +7,7 @@
 # TAG_NAME              - Tag the docker image with this name. This overrides the default of 
 #                         12213-domain-home-in-imag:latest. 
 #
-#                         There are four ways to tag the domain home image using this build script.
+#                         There are three ways to tag the domain home image using this build script.
 #
 #                           . Do nothing and the image will be tagged with the default name. 
 #                           . Add an IMAGE_TAG variable to the properties file and allow the
