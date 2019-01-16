@@ -57,5 +57,12 @@ if [ -n "$CUSTOM_DEBUG_PORT" ]; then
     BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_DEBUG_PORT=$CUSTOM_DEBUG_PORT"
 fi
 
+CUSTOM_TAG_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^IMAGE_TAG= | cut -d "=" -f2`
+if [ -n "$CUSTOM_TAG_NAME" ]; then
+    TAG_NAME=${CUSTOM_TAG_NAME}
+    export TAG_NAME
+    echo "Set the image tag name to $TAG_NAME"
+fi
+
 export BUILD_ARG=$BUILD_ARG
 echo BUILD_ARG=$BUILD_ARG
