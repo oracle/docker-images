@@ -80,7 +80,8 @@ RUN mkdir -p /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
     mkdir -p $VOLUME_DIR
 
-COPY --from=builder --chown=oracle:oracle /u01 /u01
+COPY --from=builder /u01 /u01
+RUN chown oracle:oracle -R /u01
 
 VOLUME  $VOLUME_DIR
 
