@@ -179,7 +179,7 @@ function createDeployment {
     local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*.jar)
     chown -R oracle:oinstall "${OGG_DEPLOY_BASE}"
 
-    if [[ ! -d "${OGG_DEPLOY_BASE}/ServiceManager" ]]; then
+    if [[ ! -e "${OGG_DEPLOY_BASE}/ServiceManager/etc/conf/deploymentRegistry.dat" ]]; then
         echo "${OGG_ADMIN_PWD}" | \
         ${runAsUser} java -classpath  ${OGG_JARFILE} ogg/OGGDeployment \
              --action=Create --silent \
@@ -190,7 +190,7 @@ function createDeployment {
             ${secureOption}
     fi
 
-    if [[ ! -d "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}" ]]; then
+    if [[ ! -e "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}/etc/conf/deploymentConfiguration.dat" ]]; then
         echo "${OGG_ADMIN_PWD}" | \
         ${runAsUser} java -classpath ${OGG_JARFILE} ogg/OGGDeployment \
              --action=Create --silent \
