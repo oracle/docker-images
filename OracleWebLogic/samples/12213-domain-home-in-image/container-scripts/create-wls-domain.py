@@ -153,7 +153,6 @@ else:
   set('DynamicClusterSize', number_of_ms)
   set('MaxDynamicClusterSize', number_of_ms)
   set('CalculatedListenPorts', false)
-  set('Id', 1)
 
   print('Done setting attributes for Dynamic Cluster: %s' % cluster_name);
 
