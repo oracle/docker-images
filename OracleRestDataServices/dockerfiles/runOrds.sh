@@ -24,6 +24,7 @@ function setupOrds() {
   ORACLE_PORT=${ORACLE_PORT:-"1521"}
   ORDS_PWD=${ORDS_PWD:-"oracle"}
   APEXI=${APEXI:-"$ORDS_HOME/doc_root/i"}
+  PORT=${PORT:-"8888"}
   
   # Make standalone dir
   mkdir -p $ORDS_HOME/config/ords/standalone
@@ -38,9 +39,10 @@ function setupOrds() {
   sed -i -e "s|###ORACLE_PORT###|$ORACLE_PORT|g" $ORDS_HOME/params/ords_params.properties
   sed -i -e "s|###ORDS_PWD###|$ORDS_PWD|g" $ORDS_HOME/params/ords_params.properties
   sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORDS_HOME/params/ords_params.properties
+  sed -i -e "s|###PORT###|$PORT|g" $ORDS_HOME/params/ords_params.properties
   
   # Replace standalone runtime variables (standalone.properties)
-  sed -i -e "s|###PORT###|8888|g" $ORDS_HOME/config/ords/standalone/standalone.properties
+  sed -i -e "s|###PORT###|$PORT|g" $ORDS_HOME/config/ords/standalone/standalone.properties
   sed -i -e "s|###DOC_ROOT###|$ORDS_HOME/doc_root|g" $ORDS_HOME/config/ords/standalone/standalone.properties
   sed -i -e "s|###APEXI###|$APEXI|g" $ORDS_HOME/config/ords/standalone/standalone.properties
    
