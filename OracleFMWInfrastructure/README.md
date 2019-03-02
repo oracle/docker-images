@@ -116,7 +116,7 @@ You can override the default values of the following parameters during runtime w
 
         Because the container ports are mapped to the host port, you can access it using the `hostname` as well.
 
-**NOTE**: To have access to the RCU.out map volume, inside the container /u01/oracle/. 
+**NOTE**: To have access to the RCU.out map volume in the container /u01/oracle/. 
 
 ## Copyright
 Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
