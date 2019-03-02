@@ -8,7 +8,7 @@
 
 
 export adminhostname=$adminhostname
-export adminport=$adminport
+export adminport=$ADMIN_LISTEN_PORT
 export DOMAIN_NAME=$DOMAIN_NAME
 
 # First Update the server in the domain
