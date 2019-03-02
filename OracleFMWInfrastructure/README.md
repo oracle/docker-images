@@ -24,7 +24,7 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 **IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.x binary and locate it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.x`.
 
         $ sh buildDockerImage.sh
-        Usage: buildDockerImage.sh -v [version]
+        Usage: buildDockerImage.sh -v [version] 
         Builds a Docker Image for Oracle FMW Infrastructure.
 
         Parameters:
@@ -35,41 +35,22 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 
         LICENSE UPL 1.0
 
-        Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+        Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will have a domain with an Administration Server and one Managed Server by default. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
+#### Providing the Administration Server user name and password and Database username and password
+The user name and password must be supplied in a `domain.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server and Database.
 
-### A sample FMW Infrastructure domain
-The image `oracle/fmw-infrastructure:12.2.1.x` will configure a `base_domain` with the following settings:
+The format of the `domain.properties` file is key=value pair:
 
- * Admin Username: `weblogic`
- * Admin Password: Auto-generated
- * DB Schema Password: Auto-generated
- * DB Username: `sys`
- * DB Password: Auto-generated at runtime by the DB container
- * RCU Prefix: `INFRA6`
- * Oracle Linux Username: `oracle`
- * Oracle Linux Password: `welcome1`
- * Domain Name: `InfraDomain`
- * Admin Server on port: `7001`
- * Managed Server on port: `8001`
- * Production Mode: `production`
+        username=myadminusername
+        password=myadminpassword
+        db_username=mydbusername
+        db_password=mydbpassword
+        db_schema_password=mydbschemapassword
 
-
-### Admin password and database schema password
-
-On the first startup of the container, a random password will be generated for the Administration of the domain. You can find this password in the output line:
-
-`Oracle WebLogic Server auto generated Admin password:`
-
-An Oracle database schema password will be generated randomly. You can find this password in the output line:
-
-`Database Schema password Auto Generated :`
-
-If you need to find the passwords at a later time, grep for `password` in the Docker logs generated during the startup of the  container.  To look at the Docker container logs, run:
-
-	$ docker logs --details <Container-id>
+**Note**: Oracle recommends that the `domain.properties` file be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
 ### Write your own Oracle Fusion Middleware Infrastructure domain with WLST
 The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [`createInfraDomain.py`](dockerfiles/12.2.1.x/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create datasources and connection pools, security realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
@@ -105,43 +86,37 @@ The database is created with the default password `Oradoc_db1`. To change the da
 
 	SQL> alter user sys identified by MYDBPasswd container=all;
 
+#### Start the container
+Start a container from the image created in step 1.
+You can override the default values of the following parameters during runtime with the `-e` option:
 
-  3. To build the `12.2.1.x` FMW Infrastructure image, run:
+      * `ADMIN_NAME`                  (default: `AdminServer`)
+      * `ADMIN_LISTEN_PORT`           (default: `7001`)
+      * `DOMAIN_NAME`                 (default: `infra_domain`)
+      * `ADMINISTRATION_PORT_ENABLED` (default: `true`)
+      * `ADMINISTRATION_PORT`         (default: `9002`)
+      * `MANAGEDSERVER_PORT`          (default: `8001`)
 
-	`$ sh buildDockerImage.sh -v 12.2.1.x`
 
-  4. Verify you now have this image in place with:
 
-	`$ docker images`
+  The environment variables used to configure the `InfraDomain` are defined in the `infraDomain.env.list` file. In `infraDomain.env.list`, replace the values.  Make sure you have created the domain.properties file as described above with the credentials to the Admin server and the database.  Call `docker run` from the `dockerfiles/12.2.1.x` directory where the `infraDomain.env.list` file is located and pass in the file name at runtime.
 
-  5. Start a container to launch the Administration Server from the image created in step 3.
+  To run an Administration Server container, call:
 
-  The environment variables used to configure the `InfraDomain` are defined in the `infraDomain.env.list` file. In `infraDomain.env.list`, replace the values for the database and WebLogic passwords.
+	`$ docker run -d -p 9001:7001 --network=InfraNET -v `HOST PATH where thedomain.properties file is`:/u01/oracle/properties -v `HOST PATH where you map domain configuration`:/u01/oracle/user_projects/domains --name InfraAdminContainer --env-file ./infraDomain.env.list -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_NAME=infra_domain oracle/fmw-infrastructure:12.2.1.X`
 
-  6. Call `docker run` from the `dockerfiles/12.2.1.x` directory where the `infraDomain.env.list` file is located and pass in the file name at runtime.
+  To run a Managed Server container, call:
 
-  7. To run an Administration Server container, call:
+	`$ docker run -d -p 9801:8001 --network=InfraNET --volumes-from InfraAdminContainer --name InfraManagedContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.x startManagedServer.sh`
 
-	`$ docker run -d -p 9001:7001 --network=InfraNET -v $HOST_VOLUME:/u01/oracle/user_projects --name InfraAdminContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.X`
-
-  Where `$HOST_VOLUME` stands for a directory on the host where you map your domain directory and both the Administration Server and Managed Server containers can read/write to.
-
-  8. Access the Administration Console:
+  Access the Administration Console:
 
 	`$ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>`
         This returns the IP address of the container (for example, `xxx.xx.x.x`).  Go to your browser and enter `http://xxx.xx.x.x:9001/console`
 
         Because the container ports are mapped to the host port, you can access it using the `hostname` as well.
 
-  9. Start a container to launch the Managed Server from the image created in step 3.
-
-  The environment variables used to run the Managed Server image are defined in the file, `infraserver.env.list`.
-
-  10. Call `docker run` from the `dockerfiles/12.2.1.x` directory where the `infraserver.env.list` file is located and pass in the file name at runtime.
-
-  11. To run a Managed Server container, call:
-
-	`$ docker run -d -p 9801:8001 --network=InfraNET --volumes-from InfraAdminContainer --name InfraManagedContainer --env-file ./infraServer.env.list oracle/fmw-infrastructure:12.2.1.x startManagedServer.sh`
+**NOTE**: To have access to the RCU.out map volume, inside the container /u01/oracle/. 
 
 ## Copyright
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.

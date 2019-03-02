@@ -10,7 +10,7 @@
 # -----------------------
 # The Oracle FMW Infrastructure image extends the Oracle WebLogic Infrastructure 12.2.1.3 image, you must first build the Oracle WebLogic Infrastructure image.
 # Run:
-#      $ docker build -f Dockerfile -t oracle/fmw-infrastructure:12.2.1.3
+#      $ docker build -f Dockerfile -t oracle/fmw-infrastructure:12.2.1.3 .
 #
 # IMPORTANT
 # ---------
@@ -30,8 +30,6 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 ENV ORACLE_HOME=/u01/oracle \
     SCRIPT_FILE=/u01/oracle/container-scripts/* \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    DOMAIN_NAME="${DOMAIN_NAME:-InfraDomain}" \
-    DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-InfraDomain} \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 
@@ -73,6 +71,12 @@ RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
 FROM store/oracle/serverjre:8
 ENV ORACLE_HOME=/u01/oracle \
     VOLUME_DIR=/u01/oracle/user_projects \
+    DOMAIN_NAME="${DOMAIN_NAME:-infra_domain}" \
+    ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}" \
+    ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
+    ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-true}" \
+    ADMINISTRATION_PORT="${ADMINISTRATION_PORT:-9002}" \
+    MANAGEDSERVER_PORT="${MANAGEDSERVER_PORT:-8001}" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 RUN mkdir -p /u01 && \
