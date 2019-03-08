@@ -52,10 +52,9 @@
 #  to the properties/docker-build directory and change the model to reference the files in /u01/oracle/properties.
 #
 # WDT_VERSION           - If the weblogic deploy install image does not exist in the script location, 
-#                         the WDT install image is downloaded from the github repository. The downloaded release
-#                         is the current supported version for WebLogic Operator. (see the script constaant 
-#                         WDT_SUPPORTED_RELEASE) To select a different release, set this environment variable to 
-#                         the desired release tag or to 'LATEST' to get the lastest release.
+#                         the latest release of the WDT install image is downloaded from the github 
+#                         repository. To select a different release, set this environment variable to 
+#                         the desired release tag (i.e. 0.20).
 #
 # CURL                  - If the "curl" command is not on the shell PATH, use this argument
 #                         as <location>/curl. The curl is performed if the weblogic-deploy.zip install
@@ -95,8 +94,6 @@
 #                         the build args needed by this Dockerfile, or provide the build args in the 
 #                         CUSTOM_BUILD_ARG.
 #
-
-WDT_SUPPORTED_RELEASE=0.17
 
 if [ -z "${JAVA_HOME}" ] || [ ! -e "${JAVA_HOME}/bin/jar" ]; then 
    echo "JAVA_HOME must be set to version of a java JDK 1.8 or greater"
@@ -322,7 +319,7 @@ curl_failed() {
 
 function wdturl {
   githubRepo=oracle/weblogic-deploy-tooling
-  githubRelease=$(if [ -n "$WDT_VERSION" ]; then echo ${WDT_VERSION}; else echo ${WDT_SUPPORTED_RELEASE}; fi)
+  githubRelease=$(if [ -n "$WDT_VERSION" ]; then echo ${WDT_VERSION}; else echo LATEST; fi)
   if [ "LATEST" != "${githubRelease}" ]; then githubRelease=weblogic-deploy-tooling-${githubRelease#weblogic-deploy-tooling-}; fi
   url=$(github_url $githubRepo $githubRelease)
   rc=$?
