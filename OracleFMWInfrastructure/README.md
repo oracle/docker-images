@@ -24,12 +24,14 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 **IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.x binary and locate it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.x`.
 
         $ sh buildDockerImage.sh
-        Usage: buildDockerImage.sh -v [version] 
+        Usage: buildDockerImage.sh -v [version] -d [in-volume/in-image]
         Builds a Docker Image for Oracle FMW Infrastructure.
 
         Parameters:
            -v: version to build. Required.
            Choose : 12.2.1.x
+           -d: Choose where the domain should be poersisted 
+           to a volume or to the image
            -c: enables Docker image layer cache during build
            -s: skips the MD5 check of packages
 
@@ -86,28 +88,48 @@ The database is created with the default password `Oradoc_db1`. To change the da
 
 	SQL> alter user sys identified by MYDBPasswd container=all;
 
+### Build the FMW Infrastructure Image
+There are two Dockerfiles to build the FMW Infrastructure Image, one creates the domain in a volume in the host and one persists a domain inside of a Docker image.
+
+  1. To build the `12.2.1.x` FMW Infrastructure image, run:
+er ps
+
+
+  2. Verify you now have this image in place with:
+
+	`$ docker images`
+
 #### Start the container
 Start a container from the image created in step 1.
-You can override the default values of the following parameters during runtime with the `-e` option:
+You can override the default values of the following parameters during runtime with the `-e` option.  For your convinience you can set the environment variables by running 'setEnv.sh`  before running the admin server or managed server containers.  The default values of the environment variables are:
 
       * `ADMIN_NAME`                  (default: `AdminServer`)
       * `ADMIN_LISTEN_PORT`           (default: `7001`)
+      * `ADMIN_HOST`                  (default: `InfraAdminContainer`)
       * `DOMAIN_NAME`                 (default: `infra_domain`)
       * `ADMINISTRATION_PORT_ENABLED` (default: `true`)
       * `ADMINISTRATION_PORT`         (default: `9002`)
+      * `MANAGED_NAME`                (default: `infraServer1`)
       * `MANAGEDSERVER_PORT`          (default: `8001`)
+      * `RCUPREFIX`                   (default: `INFRA01`)
 
+**NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in WebLogic 12.2.1.3 the patch 27117282 must be applied. Please download the patch and apply it after you have built the 12.2.1.3 image. You can follow the sample https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure/samples/12213-patch to see how to patch. An alternative is to not enable Administration port when you issue the docker run command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
+  Start a container to launch the Administration and Managed Servers from the image created in step 1.
 
-  The environment variables used to configure the `InfraDomain` are defined in the `infraDomain.env.list` file. In `infraDomain.env.list`, replace the values.  Make sure you have created the domain.properties file as described above with the credentials to the Admin server and the database.  Call `docker run` from the `dockerfiles/12.2.1.x` directory where the `infraDomain.env.list` file is located and pass in the file name at runtime.
+  The environment variables used to configure and run the `infra_domain` are defined and set in the `./dockerfiles/12.2.1.x/properties/setEnv.sh` file. Replace environment variables in `setEnv.sh` and run the script, it will set `${ENV_ARG}`.  Call `docker run`, for you convinience we provide two scripts to run containers `./dockerfiles/12.2.1.x/run_admin_server.sh' and `./dockerfiles/12.2.1.x/run_managed_server.sh'.
+
+  Set the environment variables:
+
+        `$ ./setEnv.sh`
 
   To run an Administration Server container, call:
 
-	`$ docker run -d -p 9001:7001 --network=InfraNET -v `HOST PATH where thedomain.properties file is`:/u01/oracle/properties -v `HOST PATH where you map domain configuration`:/u01/oracle/user_projects/domains --name InfraAdminContainer --env-file ./infraDomain.env.list -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_NAME=infra_domain oracle/fmw-infrastructure:12.2.1.X`
+        `docker run -d -p 9001:7001 --name InfraAdminContainer  --network=InfraNET -v `HOST PATH where you put domain.properties`:/u01/oracle/properties -v `HOST volume where you persist the domain configuration`:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.x`
 
   To run a Managed Server container, call:
 
-	`$ docker run -d -p 9801:8001 --network=InfraNET --volumes-from InfraAdminContainer --name InfraManagedContainer --env-file ./infraDomain.env.list oracle/fmw-infrastructure:12.2.1.x startManagedServer.sh`
+	`$ docker run -d -p 9801:8001 --name InfraManagedContainer --network=InfraNET --volumes-from InfraAdminContainer -v `HOST PATH where you put domain.properties`:/u01/oracle/properties ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.x startManagedServer.sh`
 
   Access the Administration Console:
 
@@ -116,7 +138,7 @@ You can override the default values of the following parameters during runtime w
 
         Because the container ports are mapped to the host port, you can access it using the `hostname` as well.
 
-**NOTE**: To have access to the RCU.out map volume in the container /u01/oracle/. 
+**NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container. 
 
 ## Copyright
 Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
