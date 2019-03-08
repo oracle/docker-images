@@ -51,6 +51,12 @@
 #  so that the files are accessible in the build context. If your model uses file tokens, copy the files 
 #  to the properties/docker-build directory and change the model to reference the files in /u01/oracle/properties.
 #
+# WDT_VERSION           - If the weblogic deploy install image does not exist in the script location, 
+#                         the WDT install image is downloaded from the github repository. The downloaded release
+#                         is the current supported version for WebLogic Operator. (see the script constaant 
+#                         WDT_SUPPORTED_RELEASE) To select a different release, set this environment variable to 
+#                         the desired release tag or to 'LATEST' to get the lastest release.
+#
 # CURL                  - If the "curl" command is not on the shell PATH, use this argument
 #                         as <location>/curl. The curl is performed if the weblogic-deploy.zip install
 #                         has not been downloaded into the sample directory.
@@ -90,6 +96,8 @@
 #                         CUSTOM_BUILD_ARG.
 #
 
+WDT_SUPPORTED_RELEASE=0.17
+
 if [ -z "${JAVA_HOME}" ] || [ ! -e "${JAVA_HOME}/bin/jar" ]; then 
    echo "JAVA_HOME must be set to version of a java JDK 1.8 or greater"
    exit 1
@@ -117,7 +125,7 @@ set_up() {
    tempDir=wdt-files
    tempLocation=${scriptDir}/${tempDir}
    if [ ! -d ${tempLocation} ]; then 
-      mkdir ${tempLocation}
+    mkdir ${tempLocation}
 	  chmod -R u+rwx ${tempLocation}
    fi
    
@@ -242,21 +250,29 @@ build_archive() {
 # If the weblogic deploy tool install archive file is not found in the Context directory
 # download the archive using the CURL command fromthe github.com weblogic-deploy-tooling repository.
 download_tool() {
-    if [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then
+    if [ ! -s "${scriptDir}/weblogic-deploy.zip" ]; then
 
       # Find the curl command or use the command from the CURL variable
       if [ -z "$CURL" ]; then CURL=`which curl`; fi 
 	    if [ -z "$CURL" ] || [ ! -e ${CURL} ]; then curl_failed; fi 
       
-      set_wdt_url
-      echo "Downloading the weblogic deploy tool archive weblogic-deploy.zip from ${download_url}"
+      download_url=$(wdturl)
+      if [ -z "${download_url}" ]; then curl_failed; fi
       
-      ${CURL} -Lo ${scriptDir}/weblogic-deploy.zip ${download_url}/weblogic-deploy.zip
+      echo "Downloading the weblogic deploy tool install: ${download_url}/weblogic-deploy.zip"      
+      ${CURL} -m 60 -Lo ${scriptDir}/weblogic-deploy.zip ${download_url}/weblogic-deploy.zip
       rc=$?
       if [ $rc != 0 ]; then echo "${CURL} failed with return code=${rc}"; return_code=$rc; curl_failed; fi
-      if [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then curl_failed; fi
-
-   fi    
+      ${JAVA_HOME}/bin/jar tf ${scriptDir}/weblogic-deploy.zip &> /dev/null
+      rc=$?
+      if [ $rc != 0 ]; then 
+         if [ -f ${scriptDir}/weblogic-deploy.zip ]; then rm ${scriptDir}/weblogic-deploy.zip; fi
+         curl_failed
+      fi
+    else
+      echo 'Weblogic deploy tool already in the script directory. Bypass download'	
+    fi  
+    echo WDT Tool: `ls -l ${scriptDir}/weblogic-deploy.zip`	
 }
 
 # This calls the setEnv.sh in container-scripts to parse the ADMIN_HOST, ADMIN_PORT,
@@ -299,23 +315,34 @@ tag_name() {
 }
 
 curl_failed() {
-      echo "Unable to download the weblogic deploy install using curl"
+      echo "Unable to download the weblogic deploy install using curl from location ${download_url}"
       echo "Manually download the install image weblogic.deploy.zip into location ${scriptDir} and re-run"
-      echo "The weblogic deploy tool archive weblogic-deploy.zip is available at ${download_url}"
       clean_and_exit
 }
 
-set_wdt_url() {
-  githubRepo=oracle/weblogic-deploy-tooling  
-  download_url=$(get_download_url)
+function wdturl {
+  githubRepo=oracle/weblogic-deploy-tooling
+  githubRelease=$(if [ -n "$WDT_VERSION" ]; then echo ${WDT_VERSION}; else echo ${WDT_SUPPORTED_RELEASE}; fi)
+  if [ "LATEST" != "${githubRelease}" ]; then githubRelease=weblogic-deploy-tooling-${githubRelease#weblogic-deploy-tooling-}; fi
+  url=$(github_url $githubRepo $githubRelease)
+  rc=$?
+  echo $url
+  return $rc
 }
 
-get_download_url() {
-  echo https://github.com/${githubRepo}/releases/download/$(get_latest_release)
+function github_url {
+  if [ $# -eq 2 ]; then 
+    var1=$1
+    var2=$2
+    if [ "$var2" == "LATEST" ]; then release=$(latest_release $var1); else release=$var2; fi
+    if [ -n "${release}" ]; then echo "https://github.com/${var1}/releases/download/${release}"; return 0; fi
+  fi
+  echo ""
+  return 1
 }
-
-get_latest_release() {
-  ${CURL} --silent "https://api.github.com/repos/${githubRepo}/releases/latest" | # Get latest release from GitHub api
+  
+function latest_release {
+    ${CURL} -m 20 --silent "https://api.github.com/repos/${1}/releases/latest" | # Get latest release from GitHub api
     grep '"tag_name":' |                                            # Get tag line
     sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
 }
