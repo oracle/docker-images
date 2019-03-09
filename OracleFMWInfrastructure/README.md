@@ -112,8 +112,9 @@ You can override the default values of the following parameters during runtime w
       * `MANAGED_NAME`                (default: `infraServer1`)
       * `MANAGEDSERVER_PORT`          (default: `8001`)
       * `RCUPREFIX`                   (default: `INFRA01`)
+      * `PRODUCTION_MODE`             (default: `prod`)
 
-**NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in FMW Infrastructure  12.2.1.3. Please download the patch and apply it after you have built the 12.2.1.3 image. You can follow the sample https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure/samples/12213-patch to see how to patch. An alternative is to not enable Administration port when you issue the docker run command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
+**NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in FMW Infrastructure  12.2.1.3. An alternative is to not enable Administration port when you issue the docker run command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
   Start a container to launch the Administration and Managed Servers from the image created in step 1.
 
