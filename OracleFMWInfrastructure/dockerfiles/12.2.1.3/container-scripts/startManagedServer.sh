@@ -63,7 +63,14 @@ ${DOMAIN_HOME}/bin/setDomainEnv.sh
 
 # Start 'ManagedServer'
 echo "Start Managed Server"
-${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_NAME} "http://${ADMIN_HOST}:${ADMIN_LISTEN_PORT}"
+if [ ${ADMINISTRATION_PORT_ENABLED} == "true" ]
+then
+   echo "Connecting to Admin Server at https://${ADMIN_HOST}:${ADMINISTRATION_PORT}"
+   ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_NAME} "https://${ADMIN_HOST}:${ADMINISTRATION_PORT}"
+else
+   echo "Connecting to Admin Server at http://${ADMIN_HOST}:${ADMIN_LISTEN_PORT}"
+   ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_NAME} "http://${ADMIN_HOST}:${ADMIN_LISTEN_PORT}"
+fi 
 
 # tail Managed Server log
 tail -f ${MS_HOME}/logs/${MANAGED_NAME}.log &

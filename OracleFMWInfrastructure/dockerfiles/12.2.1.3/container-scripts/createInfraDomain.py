@@ -36,23 +36,23 @@ class Infra12213Provisioner:
         'serverGroupsToTarget' : [ 'JRF-MAN-SVR', 'WSMPM-MAN-SVR' ]
     }
 
-    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort):
+    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createInfraDomain(self, name, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort):
-        domainHome = self.createBaseDomain(name, user, password, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort)
+    def createInfraDomain(self, name, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode):
+        domainHome = self.createBaseDomain(name, user, password, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode)
         self.extendDomain(domainHome, db, dbPrefix, dbPassword)
 
-    def createBaseDomain(self, name, user, password, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort):
+    def createBaseDomain(self, name, user, password, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode):
         baseTemplate = self.replaceTokens(self.JRF_12213_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
         setOption('DomainName', name)
         setOption('JavaHome', self.javaHome)
-        setOption('ServerStartMode', 'dev')
+        setOption('ServerStartMode', prodMode)
         set('Name', domainName)
 
         # Set Administration Port
@@ -300,10 +300,13 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-managedServerPort':
         managedServerPort = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-prodMode':
+        prodMode = sys.argv[i + 1]
+        i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
-provisioner = Infra12213Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort)
-provisioner.createInfraDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort)
+provisioner = Infra12213Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode)
+provisioner.createInfraDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode)

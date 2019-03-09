@@ -80,6 +80,7 @@ ENV ORACLE_HOME=/u01/oracle \
     MANAGEDSERVER_PORT="${MANAGEDSERVER_PORT:-8001}" \
     MANAGED_NAME="${MANAGED_NAME:-infraServer1}" \
     RCUPREFIX="${RCUPREFIX:-INFRA01}" \
+    PRODUCTION_MODE="${PRODUCTION_MODE:-prod}" \
     CONNECTION_STRING="InfraDB:1521/InfraPDB1.us.oracle.com" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 

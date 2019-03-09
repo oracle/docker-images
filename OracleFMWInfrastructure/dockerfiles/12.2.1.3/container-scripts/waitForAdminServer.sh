@@ -7,10 +7,17 @@
 # This script will wait until Admin Server is available.
 # There is no timeout!
 #
-echo "Waiting for WebLogic Admin Server on $ADMIN_HOST:$ADMIN_LISTEN_PORT to become available..."
+if [ ${ADMINISTRATION_PORT_ENABLED} == "true" ]
+then
+ connectString="${ADMIN_HOST}/${ADMINISTRATION_PORT}"
+else
+ connectString="${ADMIN_HOST}/${ADMIN_LISTEN_PORT}"
+fi 
+
+echo "Waiting for WebLogic Admin Server on ${connectString} to become available..."
 while :
 do
-  (echo > /dev/tcp/$ADMIN_HOST/$ADMIN_LISTEN_PORT) >/dev/null 2>&1
+  (echo > /dev/tcp/${connectString}) >/dev/null 2>&1
   available=$?
   if [[ $available -eq 0 ]]; then
     echo "WebLogic Admin Server is now available. Proceeding..."
