@@ -43,11 +43,8 @@ if [ ! -f "${MS_SECURITY}/boot.properties" ]; then
   fi
   # echo "Password: $PASS"
 
-  #Set Java Options
-  #JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
-  #if [ -z "${JAVA_OPTIONS}" ]; then 
-  #   JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
-  #fi
+  #Set Java options
+  #JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
   #export JAVA_OPTIONS=${JAVA_OPTIONS}
   #echo "Java Options: ${JAVA_OPTIONS}"
 
@@ -65,6 +62,7 @@ ${DOMAIN_HOME}/bin/setDomainEnv.sh
 echo "Start Managed Server"
 if [ ${ADMINISTRATION_PORT_ENABLED} == "true" ]
 then
+   JAVA_OPTIONS="-Dweblogic.security.SSL.ignoreHostnameVerification=true"
    echo "Connecting to Admin Server at https://${ADMIN_HOST}:${ADMINISTRATION_PORT}"
    ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_NAME} "https://${ADMIN_HOST}:${ADMINISTRATION_PORT}"
 else
