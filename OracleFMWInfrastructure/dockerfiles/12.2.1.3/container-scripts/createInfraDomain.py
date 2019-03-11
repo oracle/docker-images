@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -58,8 +58,8 @@ class Infra12213Provisioner:
         # Set Administration Port
         # =======================
         if adminPortEnabled != "false":
-         set('AdministrationPort', int(administrationPort))
-         set('AdministrationPortEnabled', 'true')
+           set('AdministrationPort', int(administrationPort))
+           set('AdministrationPortEnabled', 'true')
 
         # Create Admin Server
         # =======================
@@ -69,9 +69,9 @@ class Infra12213Provisioner:
         set('ListenPort', int(adminListenPort))
         set('Name', adminName)
         if adminPortEnabled != "false":
-          create('AdminServer','SSL')
-          cd('SSL/AdminServer')
-          set('Enabled', 'True')
+           create('AdminServer','SSL')
+           cd('SSL/AdminServer')
+           set('Enabled', 'True')
 
         # Define the user password for weblogic
         # =====================================
@@ -101,14 +101,6 @@ class Infra12213Provisioner:
             for param in self.MACHINES[machine]:
                 set(param, self.MACHINES[machine][param])
 
-        # T3 Channel configuration
-        # =======================
-        #create('T3Channel', 'NetworkAccessPoint')
-        #cd('/Servers/%s/NetworkAccessPoints/T3Channel' % admin_server_name)
-        #set('PublicPort', t3_channel_port)
-        #set('PublicAddress', t3_public_address)
-        #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
-        #set('ListenPort', t3_channel_port)
 
         # Create Managed Server
         # =======================
@@ -120,6 +112,10 @@ class Infra12213Provisioner:
         #   set('ListenAddress', '%s-%s' % (domain_uid, name_svc))
         set('ListenPort', int(managedServerPort))
         set('Cluster', 'infra_cluster')
+        if adminPortEnabled != "false":
+           create(managedName,'SSL')
+           cd('SSL/%s' % managedName)
+           set('Enabled', 'True')
 
         setOption('OverwriteDomain', 'true')
         domainHome = self.domainParentDir + '/' + name

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #
-# Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -107,7 +107,7 @@ then
    # Get databasse Schema Password
    DB_SCHEMA_PASS=`awk '{print $1}' $PROPERTIES_FILE | grep db_schema | cut -d "=" -f2`
    if [ -z "$DB_SCHEMA_PASS" ]; then
-      echo "The databse schema password is blank.  The cwdatabase schema password must be set in the properties file."
+      echo "The databse schema password is blank.  The database schema password must be set in the properties file."
       exit
    fi
    # echo "Database Schema Password: $DB_SCHEMA_PASS"

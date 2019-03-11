@@ -37,7 +37,7 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 
         LICENSE UPL 1.0
 
-        Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+        Copyright (c) 2014,2019 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will have a domain with an Administration Server and one Managed Server by default. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
@@ -92,8 +92,6 @@ The database is created with the default password `Oradoc_db1`. To change the da
 There are two Dockerfiles to build the FMW Infrastructure Image, one creates the domain in a volume in the host and one persists a domain inside of a Docker image.
 
   1. To build the `12.2.1.x` FMW Infrastructure image, run:
-er ps
-
 
   2. Verify you now have this image in place with:
 
@@ -142,4 +140,4 @@ You can override the default values of the following parameters during runtime w
 **NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container. 
 
 ## Copyright
-Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
