@@ -68,13 +68,14 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
                 echo "----------------------------------------------------------------------------------" && \
                 chown -R oracle:oinstall ${OGG_HOME}; \
             fi; \
+            yum-config-manager --enable ol${MAJOR_VERSION}_optional_latest; \
             if [[ "${OGG_EDITION}" == "standard" ]]; then \
-                yum -y --enablerepo ol${MAJOR_VERSION}_optional_latest install util-linux vi java-1.8.0-openjdk-headless && \
+                yum -y install util-linux vi java-1.8.0-openjdk-headless && \
                 rm -rf /var/cache/yum; \
             fi; \
             if [[ "${OGG_EDITION}" == "microservices" ]]; then \
                 . /etc/os-release && MAJOR_VERSION="${VERSION/.*/}" && \
-                yum -y --enablerepo ol${MAJOR_VERSION}_optional_latest --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless && \
+                yum -y --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless && \
                 rm -rf /var/cache/yum && \
                 ln -s /etc/opt/rh/rh-nginx18/nginx /etc/nginx && \
                 sh /etc/ssl/certs/make-dummy-cert  /etc/nginx/ogg.pem && \
