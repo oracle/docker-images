@@ -16,18 +16,18 @@
 #
 #  The steps run by this script are as follows:
 #
-#   set_up                - prepare the script for the build. This includes copying the 
-#                           model, variable and archive file to a temporary directory in
+#   set_up                - prepare the script for the build. call container-scripts/setEnv.sh to create a 
+#                           string of build arguments and source variables into the build.sh environment.
+#                           The values in the build args string are required for exposing ports and container
+#                           ENV variables in the sample Dockerfile.
+#
+#                           Copy the model, variable and archive file to a temporary directory in
 #                           the sample directory. The sample directory is used as the docker
 #                           build context. This step builds the sample archive file if the 
 #                           sample files are used.
 #
 #   download_tool         - download the latest weblogic-deploy.zip install if the archive
 #                           does not exist in the current location. 
-#
-#   prepare_build_args    - call container-scripts/setEnv.sh to create a string of build arguments
-#                           from the properties in the variable file. These arguments are required
-#                           for exposing ports and container ENV variables in the sample Dockerfile.
 #
 #   build_domain_image    - run the docker build with the sample Dockerfile in the context location.
 #
@@ -51,19 +51,39 @@
 #  so that the files are accessible in the build context. If your model uses file tokens, copy the files 
 #  to the properties/docker-build directory and change the model to reference the files in /u01/oracle/properties.
 #
+# There are three ways that you can set the environment variables before running build.sh to build the docker image.
+#
+#  1. Manually set the environment variable:
+#     WDT_VERSION=LATEST
+#     export WDT_VERSION  
+#
+#  2. Add the variable directly to the build.sh script. It is suggested you put them under the SCRIPT ENVIRONMENT VARIABLES
+#     section below so they are highly visible.
+#
+#  3. Add the environment variable to the domain.properties or the file in the CUSTOM_WDT_VARIABLE (set by method 1 or 2). 
+#     The setEnv.sh will inspect the properties file for known variables and export each one to the environment.
+#
+# Variables set by method 2 will override variables set by method 1. Variables set by method 3 will override variables set
+#  by methods 1 and 2. 
+# 
+# WDT_VERSION           - If the weblogic deploy install image does not exist in the script location, 
+#                         the latest release of the WDT install image is downloaded from the github 
+#                         repository. To select a specific release instead, set this environment variable to 
+#                         the desired release tag (i.e. 0.20 or weblogic-deploy-tooling-0.20).
+#
 # CURL                  - If the "curl" command is not on the shell PATH, use this argument
 #                         as <location>/curl. The curl is performed if the weblogic-deploy.zip install
 #                         has not been downloaded into the sample directory.
 #
-# TAG_NAME              - Tag the docker image with this name. This overrides the default of 
+# CUSTOM_TAG_NAME       - Tag the docker image with this name. This overrides the default of 
 #                         12213-domain-home-in-image-wdt:latest. 
 #
 #                         There are four ways to tag the domain home image using this build script.
 #
-#                           . Do nothing and the image will be tagged with the default name. 
-#                           . Add an IMAGE_TAG variable to the variable file and allow the
-#                             setEnv.sh to manage the tag. Overrides the default tag.
-#                           . Set the TAG_NAME environment variable. Overrides the default tag.
+#                           . Do nothing and the image will be tagged with the default name.
+#                           . Add an IMAGE_TAG variable to the properties file (maintains backward compatibility). Overrides 
+#                             the default tag.
+#                           . Set the CUSTOM_TAG_NAME environment variable. Overrides both the default tag and IMAGE_TAG.        
 #                           . Set the ADDITIONAL_BUILD_ARGS to include a tag argument 
 #                             (i.e. -t sample-tag). Adds an additional tag to the image.
 #
@@ -72,7 +92,7 @@
 #
 # CUSTOM_BUILD_ARG      - Use this variable's value to add build arguments to the image build. If this
 #                         variable is set, its value is used to set the BUILD_ARG variable instead
-#                         of calling the setEnv.sh script. The BUILD_ARG is used on the docker build  
+#                         overriding the setEnv.sh script. The BUILD_ARG is used on the docker build  
 #                         command in the build_domain_image step. 
 #
 # CUSTOM_WDT_MODEL      - Override the default model simple-topology.yaml in the build_domain_image step.
@@ -89,19 +109,44 @@
 #                         the build args needed by this Dockerfile, or provide the build args in the 
 #                         CUSTOM_BUILD_ARG.
 #
+# CUSTOM_DOCKERFILE     - Alternative Dockerfile
+#
 
-if [ -z "${JAVA_HOME}" ] || [ ! -e "${JAVA_HOME}/bin/jar" ]; then 
-   echo "JAVA_HOME must be set to version of a java JDK 1.8 or greater"
-   exit 1
-fi
-echo "JAVA_HOME=${JAVA_HOME}"
+# SCRIPT ENVIRONMENT VARIABLES
+###################
 
-# Perform any clean up and exit with the return code in variable rc.
+
+###################
+
+
+# DEFAULTS
+WDT_SUPPORTED_RELEASE=LATEST
+WDT_GITHUB_REPO=oracle/weblogic-deploy-tooling
+
+  
+# Perform any clean up and exit with the return code 
 clean_and_exit() {
-   return_code=${rc:-1}
+   if [ $#  -eq 0 ]; then return_code=1; else return_code=$1; fi
    rm -rf ${tempLocation}
-   echo "Build exiting with return code $return_code"
+   echo "*** build.sh exiting with return code $return_code"
    exit $return_code
+}
+
+# Call the setEnv.sh to create the BUILD_ARG from the properties file and source any variables into the 
+# script run environment
+set_args() {  
+   if [ ! -f ${WDT_VARIABLE} ] ; then
+	  echo "Cannot set the docker build argument string from the variable file ${WDT_VARIABLE} using the script ${scriptDir}/container-scripts/setEnv.sh"
+	  clean_and_exit
+  fi
+  . ${scriptDir}/container-scripts/setEnv.sh ${WDT_VARIABLE}
+  rc=$?
+  if [ $rc != 0 ]; then
+	 echo "Failure deriving the docker build-argument string from the variable file ${WDT_VARIABLE}"
+	 echo "   BUILD_ARG=${BUILD_ARG}"
+	 echo "   setEnv.sh return_code=${rc}"
+	 clean_and_exit $rc
+  fi 
 }
 
 # Perform some simple setup to prime the rest of the build shell. This includes setting the model,
@@ -117,25 +162,56 @@ set_up() {
    tempDir=wdt-files
    tempLocation=${scriptDir}/${tempDir}
    if [ ! -d ${tempLocation} ]; then 
-      mkdir ${tempLocation}
+    mkdir ${tempLocation}
 	  chmod -R u+rwx ${tempLocation}
    fi
    
-   # if the custom wdt archive is NOT set (file or empty string) then build the sample archive
-   if [ "${CUSTOM_WDT_ARCHIVE+true}" != "true" ]; then  
+    # Source the environment variables from the environment file and properties file.
+    # If the CUSTOM_WDT_VARIABLE is sourced in the environment, use this value to locate the properties files.
+	# If the properties file contains the 
+    WDT_VARIABLE=${CUSTOM_WDT_VARIABLE:-${scriptDir}/properties/docker-build/domain.properties}
+	set_args
+	WDT_VARIABLE=${CUSTOM_WDT_VARIABLE:-$WDT_VARIABLE}
+
+	if [ -n "${JAVA_HOME}" ]; then
+	    if [ -d ${JAVA_HOME} ]; then 
+	      if [ -f ${JAVA_HOME}/bin/java ]; then 
+		     JAVA=${JAVA_HOME}/bin/java
+		  elif	[ -f ${JAVA_HOME}/java ]; then
+		     JAVA=${JAVA_HOME}/java
+		  fi
+		elif [ -f ${JAVA_HOME} ]; then 
+           JAVA=${JAVA_HOME} 		
+	    fi 
+	else
+	  JAVA=`which java`
+	fi
+    JAVA_BIN=${JAVA%/*}
+	
+	if [ ! -f $JAVA ] || [[ "`${JAVA} -version 2>&1 | grep ' version ' | sed -E 's/.*"([^"]+)".*/\1/'`" < "1.8" ]] || [ ! -f ${JAVA_BIN}/jar ]; then
+	   echo "JAVA_HOME must be set to valid location of a java JDK version 1.8 or greater"
+	   if [ -n "$JAVA" ]; then echo "$JAVA is version \"`$JAVA -version`\" and jdk jar must exist at location ${JAVA_BIN}"; fi
+	   clean_and_exit
+    fi
+
+	# if the custom wdt archive is NOT set (file or empty string) then build the sample archive
+    if [ "${CUSTOM_WDT_ARCHIVE+true}" != "true" ]; then  
       echo "Build the sample archive file"
       WDT_ARCHIVE=${scriptDir}/archive.zip
       build_archive
-	    rc=$?
-	    if [ $rc -ne 0 ]; then return_code=$rc; clean_and_exit; fi
+	  rc=$?
+	  if [ $rc -ne 0 ]; then clean_and_exit $rc; fi
    fi
    
    # prime the model and variable file variables. Then copy the files to the temporary 
    # location to ensure the files are within the context
-   WDT_MODEL=${CUSTOM_WDT_MODEL-"${scriptDir}/simple-topology.yaml"}
-   WDT_VARIABLE=${CUSTOM_WDT_VARIABLE-"${scriptDir}/properties/docker-build/domain.properties"}
-   WDT_ARCHIVE=${CUSTOM_WDT_ARCHIVE-"${scriptDir}/archive.zip"}
-   echo "WDT_MODEL=[${WDT_MODEL}] WDT_VARIABLE=[$WDT_VARIABLE] WDT_ARCHIVE=[$WDT_ARCHIVE]"
+   WDT_MODEL=${CUSTOM_WDT_MODEL:-${scriptDir}/simple-topology.yaml}
+   WDT_ARCHIVE=${CUSTOM_WDT_ARCHIVE:-${scriptDir}/archive.zip}
+   
+   WDT_MODEL=`eval echo $WDT_MODEL`
+   WDT_ARCHIVE=`eval echo $WDT_ARCHIVE`
+   WDT_VARIABLE=`eval echo $WDT_VARIABLE`
+
 
    # model is required. If it does not exist then exit
    if [ ! -f ${WDT_MODEL} ]; then
@@ -160,14 +236,24 @@ set_up() {
       WDT_ARCHIVE=${tempDir}/${WDT_ARCHIVE##*/}
    fi   
    
-   dockerFile=${CUSTOM_DOCKERFILE-"${scriptDir}/Dockerfile"}
+   if [ -n "${CUSTOM_BUILD_ARG}" ]; then
+     echo "Using custom build argument string instead of the properties file build arg string"
+     BUILD_ARG=${CUSTOM_BUILD_ARG}
+   fi    		
+		
+   MODEL_ARGS="--build-arg WDT_MODEL=${WDT_MODEL}"
+   if [ -n "${WDT_VARIABLE}" ]; then MODEL_ARGS="${MODEL_ARGS} --build-arg WDT_VARIABLE=${WDT_VARIABLE}"; fi
+   if [ -n "${WDT_ARCHIVE}" ]; then MODEL_ARGS="${MODEL_ARGS} --build-arg WDT_ARCHIVE=${WDT_ARCHIVE}"; fi
+   
+   dockerFile=${CUSTOM_DOCKERFILE:-${scriptDir}/Dockerfile}
    if [ -z "${dockerFile}" ] || [ ! -f $dockerFile ]; then
-      echo "Invalid Dockerfile (${dockerFile}). Dockerfile required"
-	    clean_and_exit
+      echo "Invalid Dockerfile ${dockerFile}. Dockerfile required"
+      clean_and_exit
    fi
    cp ${dockerFile} ${tempLocation}
    dockerFile=${tempLocation}/${dockerFile##*/}
- 
+     
+   tag_name	 
 }
 
 # Run the docker build using the arguments from both the BUILD_ARG (created by the setEnv.sh) and
@@ -186,7 +272,7 @@ build_domain_image() {
        -t ${tagName} \
        ${scriptDir}"
    echo " "
-    
+ 
    # Expand the tagName variable before exec the docker build.
    eval docker build \
        $BUILD_ARG \
@@ -242,79 +328,69 @@ build_archive() {
 # If the weblogic deploy tool install archive file is not found in the Context directory
 # download the archive using the CURL command fromthe github.com weblogic-deploy-tooling repository.
 download_tool() {
-    if [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then
+    if [ ! -s "${scriptDir}/weblogic-deploy.zip" ]; then
 
       # Find the curl command or use the command from the CURL variable
-      if [ -z "$CURL" ]; then CURL=`which curl`; fi 
-	    if [ -z "$CURL" ] || [ ! -e ${CURL} ]; then curl_failed; fi 
-      
-      set_wdt_url
-      echo "Downloading the weblogic deploy tool archive weblogic-deploy.zip from ${download_url}"
-      
-      ${CURL} -Lo ${scriptDir}/weblogic-deploy.zip ${download_url}/weblogic-deploy.zip
+      if [ -n "$CURL" ]; then CURL=`eval echo ${CURL}`; else CURL=`which curl`; fi
+	  if [ -x $CURL ]; then 
+	     download_url=$(wdturl)
+	  else 
+	     echo '$CURL is not a valid curl executable'
+		 curl_failed
+      fi
+	  if [ -z "$download_url" ]; then 
+	    echo 'Unable to determine the weblogic-deploy download url'
+	    curl_failed
+	  fi
+  
+      echo "Downloading the weblogic deploy tool install: ${download_url}/weblogic-deploy.zip"      
+      ${CURL} -m 120 -Lo ${scriptDir}/weblogic-deploy.zip ${download_url}/weblogic-deploy.zip
       rc=$?
       if [ $rc != 0 ]; then echo "${CURL} failed with return code=${rc}"; return_code=$rc; curl_failed; fi
-      if [ ! -e "${scriptDir}/weblogic-deploy.zip" ]; then curl_failed; fi
-
-   fi    
-}
-
-# This calls the setEnv.sh in container-scripts to parse the ADMIN_HOST, ADMIN_PORT,
-# MS_PORT, and DOMAIN_NAME from the sample properties file and pass
-# as a string of --build-arg in the variable BUILD_ARG
-# If the CUSTOM_BUILD_ARG variable is set, use its value in place of the setEnv.sh
-prepare_build_args() {
-   BUILD_ARG=
-   if [ -n "${CUSTOM_BUILD_ARG}" ]; then
-      echo "Using custom build argument string instead of parsing the sample properties file"
-      BUILD_ARG=${CUSTOM_BUILD_ARG}
-   else
-      echo "Create the BUILD_ARG string from the variable file ${WDT_VARIABLE}"
-       if [ ! -f ${scriptDir}/${WDT_VARIABLE} ] || \
-          [ ! -f ${scriptDir}/container-scripts/setEnv.sh ]; then
-          echo "Cannot set the docker build argument string from the variable file ${WDT_VARIABLE}"
-          clean_and_exit
-      fi
-      . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/${WDT_VARIABLE}
+      ${JAVA_BIN}/jar tf ${scriptDir}/weblogic-deploy.zip &> /dev/null
       rc=$?
-      if [ $rc != 0 ]; then
-         echo "Failure deriving the docker build-argument string from the variable file ${WDT_VARIABLE}"
-         echo "   BUILD_ARG=${BUILD_ARG}"
-         echo "   setEnv.sh return_code=${rc}"
-         return_code=${rc}
-         clean_and_exit
-      fi 
-   fi
-   MODEL_ARGS="--build-arg WDT_MODEL=${WDT_MODEL}"
-   if [ -n "${WDT_VARIABLE}" ]; then MODEL_ARGS="${MODEL_ARGS} --build-arg WDT_VARIABLE=${WDT_VARIABLE}"; fi
-   if [ -n "${WDT_ARCHIVE}" ]; then MODEL_ARGS="${MODEL_ARGS} --build-arg WDT_ARCHIVE=${WDT_ARCHIVE}"; fi
+      if [ $rc != 0 ]; then 
+	     echo "Downloaded an invalid or corrupted WDT install image : `ls -l ${scriptDir}/weblogic-deploy.zip`"
+         if [ -f ${scriptDir}/weblogic-deploy.zip ]; then rm ${scriptDir}/weblogic-deploy.zip; fi
+         curl_failed
+      fi
+    else
+      echo 'Weblogic deploy tool already in the script directory. Bypass download'	
+    fi  
+    echo WDT Tool: `ls -l ${scriptDir}/weblogic-deploy.zip`	
 }
-
+ 
 # Determine the tag name for the resulting image using the value in the TAG_NAME.
 # The setEnv.sh will set the TAG_NAME variable if the property is found in the
 # properties file. This function should be called after the setEnv.sh is run
 tag_name() {
-   tagName=${TAG_NAME:-"12213-domain-home-in-image-wdt:latest"}
-   #echo ${TAG_NAME} and ${tagName}
+   tagName=${CUSTOM_TAG_NAME:-12213-domain-home-in-image-wdt}
+   #echo ${CUSTOM_TAG_NAME} and ${tagName}
 }
 
 curl_failed() {
-      echo "Unable to download the weblogic deploy install using curl"
+      echo "Unable to download the weblogic deploy install using curl from location ${download_url}"
       echo "Manually download the install image weblogic.deploy.zip into location ${scriptDir} and re-run"
-      echo "The weblogic deploy tool archive weblogic-deploy.zip is available at ${download_url}"
       clean_and_exit
 }
 
-set_wdt_url() {
-  githubRepo=oracle/weblogic-deploy-tooling  
-  download_url=$(get_download_url)
+wdturl() {
+  githubRepo=${WDT_GITHUB_REPO}
+  githubRelease=${WDT_VERSION:-$WDT_SUPPORTED_RELEASE}
+  if [ "LATEST" != "${githubRelease}" ]; then githubRelease=weblogic-deploy-tooling-${githubRelease#weblogic-deploy-tooling-}; fi
+  echo $(github_url)
 }
 
-get_download_url() {
-  echo https://github.com/${githubRepo}/releases/download/$(get_latest_release)
+github_url() {
+    if [ "$githubRelease" == "LATEST" ]; then 
+	   githubRelease=$(latest_release)
+	   if [ "$?" -ne "0"]; then return $?; fi
+	fi
+	if [ -z "$githubRelease" ]; then return 1; fi
+	echo https://github.com/${githubRepo}/releases/download/${githubRelease}
 }
 
-get_latest_release() {
+latest_release() {
   ${CURL} --silent "https://api.github.com/repos/${githubRepo}/releases/latest" | # Get latest release from GitHub api
     grep '"tag_name":' |                                            # Get tag line
     sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
@@ -322,8 +398,6 @@ get_latest_release() {
 
 set_up
 download_tool
-prepare_build_args
-tag_name
 build_domain_image
-return_code=$?
-clean_and_exit
+rc=$?
+clean_and_exit $rc
