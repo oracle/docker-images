@@ -20,7 +20,8 @@ ENV GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-$GRAAL_VERS
     PYTHONPATH=/opt/rh/llvm-toolset-7/root/usr/lib/python2.7/site-packages \
     X_SCLS=llvm-toolset-7
 
-RUN curl -o /etc/yum.repos.d/public-yum-ol7.repo http://yum.oracle.com/public-yum-ol7.repo \
+RUN yum update -y oraclelinux-release-el7 \
+    && yum install -y oraclelinux-developer-release-el7 oracle-softwarecollection-release-el7 \
     && yum-config-manager --enable ol7_developer \
     && yum-config-manager --enable ol7_developer_EPEL \
     && yum-config-manager --enable ol7_optional_latest \
