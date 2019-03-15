@@ -30,8 +30,6 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
         Parameters:
            -v: version to build. Required.
            Choose : 12.2.1.x
-           -d: Choose where the domain should be poersisted 
-           to a volume or to the image
            -c: enables Docker image layer cache during build
            -s: skips the MD5 check of packages
 
@@ -48,9 +46,9 @@ The format of the `domain.properties` file is key=value pair:
 
         username=myadminusername
         password=myadminpassword
-        db_username=mydbusername
-        db_password=mydbpassword
-        db_schema_password=mydbschemapassword
+        db_user=sys
+        db_pass=Oradoc_db1
+        db_schema=Oradoc_db1
 
 **Note**: Oracle recommends that the `domain.properties` file be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
