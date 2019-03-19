@@ -21,10 +21,9 @@ set_context
 hostvolume=$HOST_VOLUME
 
 admin_host() {
-   adminhost=${ADMIN_HOST:-"InfraAdminContainer"}
+   adminhost=${CUSTOM_ADMIN_HOST:-"InfraAdminContainer"}
 }
 
-echo "Admin Host is: ${ADMIN_HOST}" 
 echo "ENV_ARG is: ${ENV_ARG}"
 
 admin_host

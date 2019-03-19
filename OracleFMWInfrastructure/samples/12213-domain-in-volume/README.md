@@ -1,14 +1,14 @@
 Oracle Fusion Middleware Infrastructure domain on Docker
 ========================================================
-This project creates a Docker image iwhich contains an Oracle Fusion Middleware Infrastructure domain image. The image  extends the FMW Infrastructure binary image and builds an FMW Infrastructure domain persisted to a host volume.
+This project creates a Docker image which contains an Oracle Fusion Middleware Infrastructure domain image. The image extends the FMW Infrastructure binary image and builds an FMW Infrastructure domain persisted to a host volume.
 
 ## How to build and run
 This project offers a sample Dockerfile and scripts to build an Oracle Fusion Middleware Infrastructue 12.2.1.3 domain image. 
 
 ### Building the Oracle Fusion Middleware Infrastructure 12.2.1.3 base image
-You must first build the Oracle Fusion Middleware Infrastructure, locate it in the folder, `../../OracleFMWInfrastructure/dockerfile/12.2.1.3`, and build that image. For more information, see the [README](../../OracleFMWInfrastructure/README.md) file.
+A prerequisite to building the 12213-domain-in-volume image is having an Oracle Fusion Middleware Infrastructure 12.2.1.3 binary image. The Dockerfile and scripts to build the image are under the folder, `../../OracleFMWInfrastructure/dockerfile/12.2.1.3`. For more information, see the [README](../../OracleFMWInfrastructure/README.md) file.
 
-**IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.3 binary and locate it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.3`.
+**IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.3 binary and place it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.3`.
 
         $ cd ../../OracleFMWInfrastructure/dockerfiles
         $ sh buildDockerImage.sh
@@ -42,7 +42,7 @@ The format of the `domain_security.properties` file is key=value pair:
 The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [`createFMWDomain.py`](samples/12213-domain-in-volume/container-scripts/createFMWDomain.py). You may want to tune this script with your own setup to create datasources and connection pools, security realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Running the Oracle FMW Infrastructure domain Docker image
-To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and an Oracle database. The Oracle database could be remote or running in a container. If you want to run the Oracle database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com), or build your own image using the Dockerfiles and scripts in this Git repository.
+To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and an Oracle database. The Oracle database could be remote or running in a container. If you want to run the Oracle database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com), or build your own image using the Dockerfiles and scripts in this Git repository. There is a slim version of the Oracle database image at [Oracle Container Registry](https://container-registry.oracle.com) that you can pull and run.
 
 Follow the steps below:
 
@@ -87,19 +87,19 @@ There are two Dockerfiles to build the FMW Infrastructure Image, one creates the
 Start a container from the image created in step 1.
 You can override the default values of the following parameters during runtime in the `./properties/domain.properties` file. The script `./container-scripts/setEnv.sh` sets the environment variables to configure the domain. The default values of the environment variables are:
 
-      * `CUSTOM_DOMAIN_NAME`          default(infradomain)
-      * `CUSTOM_ADMIN_LISTEN_PORT`    default(7001)
-      * `CUSTOM_ADMIN_NAME`           default(AdminServer)
-      * `CUSTOM_ADMIN_HOST`           default(InfraAdminContainer)
-      * `CUSTOM_MANAGEDSERVER_PORT`   default(8001)
-      * `CUSTOM_MANAGED_BASE_NAME`    default(infraMS)
-      * `CUSTOM_MANAGED_NAME`         default(infraMS1)
-      * `CUSTOM_MANAGED_SERVER_COUNT` default(2)
-      * `CUSTOM_CLUSTER_NAME`         default(infraCluster)
-      * `CUSTOM_RCUPREFIX`            default(INFRA01)
-      * `CUSTOM_PRODUCTION_MODE`      default(prod)
-      * `CUSTOM_DEBUG_PORT`           default(8453)
-      * `CUSTOM_DEBUG_FLAG`           default(false)
+      * `CUSTOM_DOMAIN_NAME`
+      * `CUSTOM_ADMIN_LISTEN_PORT`
+      * `CUSTOM_ADMIN_NAME`
+      * `CUSTOM_ADMIN_HOST`
+      * `CUSTOM_MANAGEDSERVER_PORT`
+      * `CUSTOM_MANAGED_BASE_NAME`
+      * `CUSTOM_MANAGED_NAME`
+      * `CUSTOM_MANAGED_SERVER_COUNT`
+      * `CUSTOM_CLUSTER_NAME`
+      * `CUSTOM_RCUPREFIX`
+      * `CUSTOM_PRODUCTION_MODE`
+      * `CUSTOM_DEBUG_PORT`
+      * `CUSTOM_DEBUG_FLAG`
 
 **NOTE**: When you set the `CUSTOM_DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
@@ -111,11 +111,11 @@ You can override the default values of the following parameters during runtime i
 
 **NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container. 
 
-  To run Managed Server with base name `infraMS` pass in to the scrtipt `run_managed_server.sh` the name of the managed server you want to run and the host port that will be mapped to the managed server port 8001. To run managed server one with name 'infraMS1` and mapped to host port 98001 call:
+  To run Managed Server with base name `infraMS` pass in to the scrtipt `run_managed_server.sh` the name of the managed server you want to run and the host port that will be mapped to the managed server port 8001. To run managed server one with name `infraMS1` and mapped to host port 98001 call:
 
         `$ sh run_managed_server.sh infraMS1 98001`
 
- To run managed server two with name 'infraMS2` and mapped to host port 98002 call:
+ To run managed server two with name `infraMS2` and mapped to host port 98002 call:
 
         `$ sh run_managed_server.sh infraMS2 98002`
 
