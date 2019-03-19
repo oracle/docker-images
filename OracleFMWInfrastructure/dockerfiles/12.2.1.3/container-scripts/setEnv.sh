@@ -15,75 +15,45 @@ if [ "$#" -eq  "0" ]
     echo Export environment variables from the ${PROPERTIES_FILE} properties file
  fi
 
-DOMAIN_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^DOMAIN_NAME= | cut -d "=" -f2`
-if [ -n "$DOMAIN_NAME" ]; then
-     export DOMAIN_NAME=$DOMAIN_NAME
-     echo DOMAIN_NAME=$DOMAIN_NAME
-     ENV_ARG="$ENV_ARG -e DOMAIN_NAME=$DOMAIN_NAME"
-fi
+extract_env() {
+   env_value=`awk '{print $1}' $PROPERTIES_FILE | grep ^$1= | cut -d "=" -f2`
+   if [ -n "$env_value" ]; then
+      env_arg=`echo "$1=$env_value"`
+      export $env_arg
+      echo $env_arg
+      ENV_ARG="$ENV_ARG -e $env_arg"
+   fi
+}
 
-ADMIN_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_NAME= | cut -d "=" -f2`
-if [ -n "$ADMIN_NAME" ]; then
-     export ADMIN_NAME=$ADMIN_NAME
-     echo ADMIN_NAME=$ADMIN_NAME
-     ENV_ARG="$ENV_ARG -e ADMIN_NAME=$ADMIN_NAME"
-fi
+# Set DOMAIN_NAME
+extract_env DOMAIN_NAME
 
-ADMIN_HOST=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_HOST= | cut -d "=" -f2`
-if [ -n "$ADMIN_HOST" ]; then
-    export ADMIN_HOST=$ADMIN_HOST
-    echo ADMIN_HOST=$ADMIN_HOST
-    ENV_ARG="$ENV_ARG -e ADMIN_HOST=$ADMIN_HOST"
-fi
+# Set ADMIN_NAME
+extract_env ADMIN_NAME
 
-ADMIN_LISTEN_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_LISTEN_PORT= | cut -d "=" -f2`
-if [ -n "$ADMIN_LISTEN_PORT" ]; then
-    export ADMIN_LISTEN_PORT=$ADMIN_LISTEN_PORT
-    echo ADMIN_LISTEN_PORT=$ADMIN_LISTEN_PORT
-    ENV_ARG="$ENV_ARG -e ADMIN_LISTEN_PORT=$ADMIN_LISTEN_PORT"
-fi
+# Set ADMIN_HOST
+extract_env ADMIN_HOST
 
-MANAGEDSERVER_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^MANAGEDSERVER_PORT= | cut -d "=" -f2`
-if [ -n "$MANAGEDSERVER_PORT" ]; then
-    export MANAGEDSERVER_PORT=$MANAGEDSERVER_PORT
-    echo MANAGEDSERVER_PORT=$MANAGEDSERVER_PORT
-    ENV_ARG="$ENV_ARG -e MANAGEDSERVER_PORT=$MANAGEDSERVER_PORT"
-fi
+# Set ADMIN_LISTEN_PORT
+extract_env ADMIN_LISTEN_PORT
 
-MANAGED_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^MANAGED_NAME= | cut -d "=" -f2`
-if [ -n "$MANAGED_NAME" ]; then
-    export MANAGED_NAME=$MANAGED_NAME
-    echo MANAGED_NAME=$MANAGED_NAME
-    ENV_ARG="$ENV_ARG -e MANAGED_NAME=$MANAGED_NAME"
-fi
+# Set MANAGEDSERVER_PORT
+extract_env MANAGEDSERVER_PORT
 
-ADMINISTRATION_PORT_ENABLED=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMINISTRATION_PORT_ENABLED= | cut -d "=" -f2`
-if [ -n "$ADMINISTRATION_PORT_ENABLED" ]; then
-    export ADMINISTRATION_PORT_ENABLED=$ADMINISTRATION_PORT_ENABLED
-    echo ADMINISTRATION_PORT_ENABLED=$ADMINISTRATION_PORT_ENABLED
-    ENV_ARG="$ENV_ARG -e ADMINISTRATION_PORT_ENABLED=$ADMINISTRATION_PORT_ENABLED"
-fi
+# Set MANAGED_NAME
+extract_env MANAGED_NAME
+ 
+# Set ADMINISTRATION_PORT_ENABLED
+extract_env ADMINISTRATION_PORT_ENABLED
 
-ADMINISTRATION_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMINISTRATION_PORT= | cut -d "=" -f2`
-if [ -n "$ADMINISTRATION_PORT" ]; then
-    export ADMINISTRATION_PORT=$ADMINISTRATION_PORT
-    echo ADMINISTRATION_PORT=$ADMINISTRATION_PORT
-    ENV_ARG="$ENV_ARG -e ADMINISTRATION_PORT=$ADMINISTRATION_PORT"
-fi
+# Set ADMINISTRATION_PORT
+extract_env ADMINISTRATION_PORT
 
-RCUPREFIX=`awk '{print $1}' $PROPERTIES_FILE | grep ^RCUPREFIX= | cut -d "=" -f2`
-if [ -n "$RCUPREFIX" ]; then
-    export RCUPREFIX=$RCUPREFIX
-    echo RCUPREFIX=$RCUPREFIX
-    ENV_ARG="$ENV_ARG -e RCUPREFIX=$RCUPREFIX"
-fi
+# Set RCUPREFIX
+extract_env RCUPREFIX
 
-PRODUCTION_MODE=`awk '{print $1}' $PROPERTIES_FILE | grep ^PRODUCTION_MODE= | cut -d "=" -f2`
-if [ -n "$PRODUCTION_MODE" ]; then
-    export PRODUCTION_MODE=$PRODUCTION_MODE
-    echo PRODUCTION_MODE=$PRODUCTION_MODE
-    ENV_ARG="$ENV_ARG -e PRODUCTION_MODE=$PRODUCTION_MODE"
-fi
+# Set PRODUCTION_MODE
+extract_env PRODUCTION_MODE
 
 export ENV_ARG=$ENV_ARG
 echo ENV_ARG=$ENV_ARG
