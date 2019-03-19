@@ -40,17 +40,17 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 **IMPORTANT:** The resulting images will have a domain with an Administration Server and one Managed Server by default. You must extend the image with your own Dockerfile, and create your domain using WLST.
 
 #### Providing the Administration Server user name and password and Database username and password
-The user name and password must be supplied in a `domain.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server and Database.
+The user name and password must be supplied in a `./dockerfiles/12.2.1.3/properties/domain_security.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server and Database.
 
 The format of the `domain.properties` file is key=value pair:
 
-        username=myadminusername
-        password=myadminpassword
+        username=myusername
+        password=welcome1
         db_user=sys
         db_pass=Oradoc_db1
         db_schema=Oradoc_db1
 
-**Note**: Oracle recommends that the `domain.properties` file be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
+**Note**: Oracle recommends that the `domain_security.properties` file be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
 ### Write your own Oracle Fusion Middleware Infrastructure domain with WLST
 The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [`createInfraDomain.py`](dockerfiles/12.2.1.x/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create datasources and connection pools, security realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
@@ -112,30 +112,27 @@ You can override the default values of the following parameters during runtime w
 
 **NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in FMW Infrastructure  12.2.1.3. An alternative is to not enable Administration port when you issue the docker run command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
+
   Start a container to launch the Administration and Managed Servers from the image created in step 1.
-
-  The environment variables used to configure and run the `infra_domain` are defined and set in the `./dockerfiles/12.2.1.x/properties/setEnv.sh` file. Replace environment variables in `setEnv.sh` and run the script, it will set `${ENV_ARG}`.  Call `docker run`, for you convinience we provide two scripts to run containers `./dockerfiles/12.2.1.x/run_admin_server.sh' and `./dockerfiles/12.2.1.x/run_managed_server.sh'.
-
-  Set the environment variables:
-
-        `$ ./setEnv.sh`
 
   To run an Administration Server container, call:
 
-        `docker run -d -p 9001:7001 -p 9002:9002 --name InfraAdminContainer  --network=InfraNET -v `HOST PATH where you put domain.properties`:/u01/oracle/properties -v `HOST volume where you persist the domain configuration`:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.x`
+        `$ sh run_admin_server.sh`
 
-  To run a Managed Server container, call:
+**NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container.
 
-	`$ docker run -d -p 9801:8001 --name InfraManagedContainer --network=InfraNET --volumes-from InfraAdminContainer -v `HOST PATH where you put domain.properties`:/u01/oracle/properties ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.x startManagedServer.sh`
+  To run Managed Server  call:
+
+        `$ sh run_managed_server.sh`
+
 
   Access the Administration Console:
 
-	`$ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>`
+        `$ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>`
         This returns the IP address of the container (for example, `xxx.xx.x.x`).  Go to your browser and enter `http://xxx.xx.x.x:9001/console`
 
         Because the container ports are mapped to the host port, you can access it using the `hostname` as well.
 
-**NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container. 
 
 ## Copyright
 Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.

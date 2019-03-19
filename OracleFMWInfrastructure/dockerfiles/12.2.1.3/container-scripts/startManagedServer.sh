@@ -23,22 +23,22 @@ echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
 #  Create Domain only if 1st execution
-PROPERTIES_FILE=/u01/oracle/properties/domain.properties
-if [ ! -e "$PROPERTIES_FILE" ]; then
+SEC_PROPERTIES_FILE=/u01/oracle/properties/domain_security.properties
+if [ ! -e "$SEC_PROPERTIES_FILE" ]; then
     echo "A properties file with the username and password needs to be supplied."
     exit
 fi
 
 if [ ! -f "${MS_SECURITY}/boot.properties" ]; then
   # Get Username
-  USER=`awk '{print $1}' $PROPERTIES_FILE | grep username | cut -d "=" -f2`
+  USER=`awk '{print $1}' $SEC_PROPERTIES_FILE | grep username | cut -d "=" -f2`
   if [ -z "$USER" ]; then
      echo "The domain username is blank.  The Admin username must be set in the properties file."
      exit
   fi
   # echo "Username: $USER"
   # Get Password
-  PASS=`awk '{print $1}' $PROPERTIES_FILE | grep password | cut -d "=" -f2`
+  PASS=`awk '{print $1}' $SEC_PROPERTIES_FILE | grep password | cut -d "=" -f2`
   if [ -z "$PASS" ]; then
      echo "The domain password is blank.  The Admin password must be set in the properties file."
      exit

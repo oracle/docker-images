@@ -1,13 +1,10 @@
 #! /bin/bash
 #
-#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
-
-
-admin_host() {
-   adminhost=${ADMIN_HOST:-"InfraAdfminContainer"}
-}
+#
+# Pass in the managed server name to run and the mapped port
 
 set_context() {
    scriptDir="$( cd "$( dirname "$0" )" && pwd )"
@@ -20,9 +17,23 @@ set_context() {
 }
 
 set_context
-. ${scriptDir}/properties/setEnv.sh
-echo "Admin Host is: ${ADMIN_HOST}"
-echo "ENV_ARG is: ${ENV_ARG}"
+. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties
+
+hostvolume=$HOST_VOLUME
+
+admin_host() {
+   adminhost=${ADMIN_HOST:-"InfraAdminContainer"}
+}
+
+managed_name() {
+   managedname=${MANAGED_NAME:-"infraServer1"}
+   echo ${managed_name}
+}
+
 
 admin_host
-docker run -d -p 9802:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name InfraManagedContainer oracle/fmw-infrastructure:12.2.1.3 startManagedServer.sh 
+managed_name
+echo "Admin Host is: ${adminhost}"
+echo "ENV_ARG is: ${ENV_ARG}"
+
+docker run -d -p 9802:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname}  oracle/fmw-infrastructure:12.2.1.3 startManagedServer.sh
