@@ -51,7 +51,7 @@ COPY container-scripts/* /u01/oracle/
 USER root
 RUN chmod +xw /u01/oracle/*.sh && \
     chmod +xw /u01/oracle/*.py && \
-    mkdir +xwr ${PROPERTIES_FILE_DIR} && \
+    mkdir -p ${PROPERTIES_FILE_DIR} && \
     chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
     chown -R oracle:oracle $DOMAIN_HOME && \

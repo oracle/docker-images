@@ -2,7 +2,7 @@ Example Image with a  WebLogic Server Domain
 =============================================
 This Dockerfile extends the Oracle WebLogic image by creating a sample WebLogic Server  12.2.1.3 domain and cluster into a Docker image.
 
-A domain is created inside the image and utility scripts are copied into the image, enabling users to start an Administration Server and a Managed Server, each running in separate containers. As part of the domain configuration, there is a data source that connects to a Derby database started in the Admin Server container.  The data source in the Managed servers connect to the Derby database in the Administration Server container.   
+A domain is created inside the image and utility scripts are copied into the image, enabling users to start an Administration Server and a Managed Server, each running in separate containers. 
 
 **Note:** In this sample, the WebLogic Servers are configured with a blank listen address; when running JTA transactions, you must use a DNS server to configure the listen addresses to use DNS names.
 

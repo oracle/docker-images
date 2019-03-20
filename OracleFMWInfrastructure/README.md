@@ -128,7 +128,7 @@ The database is created with the default password `Oradoc_db1`. To change the da
 
   8. Access the Administration Console:
 
-	`$ docker inspect --format '{{.NewworkSettings.IPAddress}}' <container-name>`
+	`$ docker inspect --format '{{.NetworkSettings.IPAddress}}' <container-name>`
         This returns the IP address of the container (for example, `xxx.xx.x.x`).  Go to your browser and enter `http://xxx.xx.x.x:9001/console`
 
         Because the container ports are mapped to the host port, you can access it using the `hostname` as well.

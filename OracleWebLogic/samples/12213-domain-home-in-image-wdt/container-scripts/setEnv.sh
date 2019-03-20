@@ -1,6 +1,6 @@
 #!/bin/bash ex
 
-# Copyright (c) 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 # The Universal Permissive License (UPL), Version 1.0
 #
 # This example creates the BUILD_ARG environment variable as a string of --build-arg for 
@@ -16,8 +16,6 @@ if [ "$#" -eq  "0" ]; then
     PROPERTIES_FILE=$1
     echo Export environment variables from the ${PROPERTIES_FILE} properties file
 fi
-
-echo Export environment variables from the ${PROPERTIES_FILE} properties file
 
 DOMAIN_DIR=`awk '{print $1}' $PROPERTIES_FILE | grep ^DOMAIN_NAME= | cut -d "=" -f2`
 if [ ! -n "$DOMAIN_DIR" ]; then  
@@ -65,6 +63,13 @@ if [ -n "$DEBUG_PORT" ]; then
     export DEBUG_PORT
     echo DEBUG_PORT=$DEBUG_PORT
     BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_DEBUG_PORT=$DEBUG_PORT"
+fi
+
+CUSTOM_TAG_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^IMAGE_TAG= | cut -d "=" -f2`
+if [ -n "$CUSTOM_TAG_NAME" ]; then
+    TAG_NAME=${CUSTOM_TAG_NAME}
+    export TAG_NAME
+    echo "Set the image tag name to $TAG_NAME"
 fi
 
 echo BUILD_ARG=$BUILD_ARG

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: hemastuti.baruah@oracle.com
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -23,7 +23,7 @@
 #
 #MW_HOME    - The root directory of your OHS standalone install
 #DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDOmain"
-#OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs_sa1"
+#OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs1"
 #*************************************************************************
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"

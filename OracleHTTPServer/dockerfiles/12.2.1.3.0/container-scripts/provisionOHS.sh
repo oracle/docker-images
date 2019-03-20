@@ -1,6 +1,6 @@
 #!/bin/bash
 # Author: prabhat.kishore@oracle.com
-# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -64,38 +64,44 @@ export JAVA_OPTIONS
 
 JAVA_HOME=${ORACLE_HOME}/oracle_common/jdk/jre
 export JAVA_HOME
+ 
+PROPERTIES_FILE=/u01/oracle/bootdir/domain.properties
+export PROPERTIES_FILE
 
 #Declare and initializing NMSTATUS
 declare -a NMSTATUS
 NMSTATUS[0]="NOT RUNNING"
 
+if [ ! -e "$PROPERTIES_FILE" ]; then
+   echo "A properties file with the username and password needs to be supplied."
+   exit
+fi
+
 # If nodemanager$$.log does not exists,this is the first time configuring the NM 
 # generate the NM password 
 
 if [ !  -f /u01/oracle/logs/nodemanager$$.log ]; then
+
+# Get Username
+NM_USER=`awk '{print $1}' $PROPERTIES_FILE | grep username | cut -d "=" -f2`
+if [ -z "$NM_USER" ]; then
+   echo "The Node Manager username is blank. It must be set in the properties file."
+   exit
+fi
+
+# Get Password
+NM_PASSWORD=`awk '{print $1}' $PROPERTIES_FILE | grep password | cut -d "=" -f2`
+if [ -z "$NM_PASSWORD" ]; then
+   echo "The Node Manager password is blank. It must be set in the properties file."
+   exit
+fi
     
-# Auto generate Node Manager  password
-while true; do
-     NM_PASSWORD=$(cat /dev/urandom | tr -dc "A-Za-z0-9" | fold -w 8 | head -n 1)
-     if [[ ${#NM_PASSWORD} -ge 8 && "$NM_PASSWORD" == *[A-Z]* && "$NM_PASSWORD" == *[a-z]* && "$NM_PASSWORD" == *[0-9]*  ]]; then
-         break
-     else
-         echo "Password does not Match the criteria, re-generating..."
-     fi
-   done
-
-echo ""
-echo "    NodeManager Password Auto Generated:"
-echo ""
-echo "      ----> 'OHS' Node Manager password: $NM_PASSWORD"
-echo ""
-
-# Create an OHS domain
-wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/create-sa-ohs-domain.py
+wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/container-scripts/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
-echo "username=weblogic" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
-echo "username=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
-mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs_sa1/htdocs/helloWorld.html
+echo "username=$NM_USER" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
+echo "password=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
+mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs1/htdocs/helloWorld.html
+
 fi
 
 # Start node manager
@@ -132,7 +138,7 @@ fi
 #Start OHS component only if Node Manager is up
 if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
 echo "Node manager running, hence starting OHS server"
-${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/start-ohs.py
+${WLST_HOME}/wlst.sh -loadProperties $PROPERTIES_FILE /u01/oracle/container-scripts/start-ohs.py
 echo "OHS server has been started "
 fi
 

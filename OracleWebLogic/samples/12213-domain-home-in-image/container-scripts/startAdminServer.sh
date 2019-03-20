@@ -94,15 +94,6 @@ if [ -z "${JAVA_OPTIONS}" ]; then
 fi
 export JAVA_OPTIONS=${JAVA_OPTIONS}
 
-#Define start of Derby Database
-#echo "Java Options: ${JAVA_OPTIONS}"
-#DERBY_FLAG=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^DERBY_FLAG= | cut -d "=" -f2`
-#if [ -z "${DERBY_FLAG}" ]; then
-#   DERBY_FLAG="true"
-#fi
-#export DERBY_FLAG=${DERBY_FLAG}
-#echo "Start Derby: ${DERBY_FLAG}"
-
 # Create domain
 mkdir -p ${AS_SECURITY}
 echo "username=${USER}" >> ${AS_SECURITY}/boot.properties
