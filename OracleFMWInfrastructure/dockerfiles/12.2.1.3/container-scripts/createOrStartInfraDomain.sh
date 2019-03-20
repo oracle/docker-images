@@ -173,13 +173,17 @@ then
         ${DOMAIN_HOME}/bin/setDomainEnv.sh
    fi
 
-echo "Starting the Admin Server"
-echo "=========================="
+  #Set Java options
+  export JAVA_OPTIONS=${JAVA_OPTIONS}
+  echo "Java Options: ${JAVA_OPTIONS}"
 
-# Start Admin Server and tail the logs
-${DOMAIN_HOME}/startWebLogic.sh
-touch ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
-tail -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log &
+  echo "Starting the Admin Server"
+  echo "=========================="
 
-childPID=$!
+  # Start Admin Server and tail the logs
+  ${DOMAIN_HOME}/startWebLogic.sh
+  touch ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
+  tail -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log &
+
+  childPID=$!
 wait $childPID

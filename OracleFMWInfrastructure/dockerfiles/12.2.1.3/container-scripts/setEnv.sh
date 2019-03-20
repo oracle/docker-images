@@ -55,6 +55,12 @@ extract_env RCUPREFIX
 # Set PRODUCTION_MODE
 extract_env PRODUCTION_MODE
 
+# Set JAVA_OPTIONS
+extract_env JAVA_OPTIONS
+
+# Set CONNECTION_STRING
+extract_env CONNECTION_STRING
+
 export ENV_ARG=$ENV_ARG
 echo ENV_ARG=$ENV_ARG
 

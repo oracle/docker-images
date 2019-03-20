@@ -70,6 +70,10 @@ extract_env DEBUG_FLAG
 # Set JAVA_OPTIONS
 extract_env JAVA_OPTIONS
 
+# Set CONNECTION_STRING
+extract_env CONNECTION_STRING
+
 export ENV_ARG=$ENV_ARG
 echo ENV_ARG=$ENV_ARG
+
 

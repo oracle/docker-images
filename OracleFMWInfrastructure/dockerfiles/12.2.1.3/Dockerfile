@@ -82,6 +82,8 @@ ENV ORACLE_HOME=/u01/oracle \
     RCUPREFIX="${RCUPREFIX:-INFRA01}" \
     PRODUCTION_MODE="${PRODUCTION_MODE:-prod}" \
     CONNECTION_STRING="InfraDB:1521/InfraPDB1.us.oracle.com" \
+    JAVA_OPTIONS="${CUSTOM_JAVA_OPTION:-"-Dweblogic.StdoutDebugEnabled=false"} \
+    CONNECTION_STRING="${CUSTOM_CONNECTION_STRING:-"InfraDB:1521/InfraPDB1.us.oracle.com"} \`
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 RUN mkdir -p /u01 && \

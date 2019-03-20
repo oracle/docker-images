@@ -57,6 +57,10 @@ if [ ! -f "${MS_SECURITY}/boot.properties" ]; then
   echo "password=${PASS}" >> ${MS_SECURITY}/boot.properties
 fi
 
+#Set Java options
+export JAVA_OPTIONS=${JAVA_OPTIONS}
+echo "Java Options: ${JAVA_OPTIONS}"
+
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
 
 echo "Connecting to Admin Server at http://${CUSTOM_ADMIN_HOST}:${CUSTOM_ADMIN_LISTEN_PORT}"
