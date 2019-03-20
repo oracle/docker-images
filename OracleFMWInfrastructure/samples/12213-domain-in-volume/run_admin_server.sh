@@ -18,7 +18,8 @@ set_context() {
 set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties
 
-hostvolume=$HOST_VOLUME
+hostvolume=/Users/mydir/temp
+echo "Host volume is $hostvolume"
 
 admin_host() {
    adminhost=${CUSTOM_ADMIN_HOST:-"InfraAdminContainer"}
