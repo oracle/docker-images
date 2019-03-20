@@ -18,6 +18,8 @@ PWD_KEY='pwd.key'
 SECRET_VOLUME='/run/secrets'
 declare -x REMOVE_OS_PWD_FILES='false'
 
+source /etc/rac_env_vars
+
 ###################Capture Process id and source functions.sh###############
 source "$SCRIPT_DIR/functions.sh"
 ###########################sourcing of functions.sh ends here##############
@@ -58,8 +60,12 @@ echo  $PASSWORD
 }
 
 setNode () {
+if [ ! -f $GRID_HOME/bin/olsnodes ]; then
+cluster_nodes=( $(hostname) )
+else
 cluster_nodes=( $($GRID_HOME/bin/olsnodes | awk '{ print $1 }') )
 node_count=$($GRID_HOME/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
+fi
 }
 
 reset_passwd ()
@@ -77,9 +83,16 @@ fi
 
 for node in "${cluster_nodes[@]}"
 do
+if [ ! -f $GRID_HOME/bin/olsnodes ]; then
+print_message "Resetting password for ${user} on the ${node}"
+cmd='su - $user -c "echo $password | sudo passwd $user  --stdin"'
+else
 print_message "Resetting password for ${user} on all the ${node}"
 cmd='su - $user -c "ssh ${node} \"echo $password | sudo passwd $user  --stdin\""'
-eval $cmd  
+fi
+
+eval $cmd
+
 if [ $? -eq 0 ]; then
 print_message "Password reset seucessfuly on ${node} for $user"
 else
@@ -92,7 +105,7 @@ usage() {
 cat << EOF
 Usage: -o|--op_type              Specify the value  reset_grid_oracle|reset_grid|reset_oracle
        -p|--pwd_file             Specify the encrypted password file name 
-       -k|--pwd_key_fil          Specify password key fle
+       -k|--pwd_key_file          Specify password key fle
        -s|--secret_volume        Specify the secret volume
        -r|--remove_os_pwd_files  Remove the passwordfiles after resetting the password
        -h|--help                 Show help

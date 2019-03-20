@@ -54,7 +54,7 @@ declare -x SINGLENIC='false'         ## Default value is false as we should use 
 declare -x PRIV_IP                   ## Pass PRIV_IP is not using SINGLE NIC   
 declare -x CONFIGURE_GNS             ## Default value set to false. However, under DSC checks, it is reverted to true.
 declare -x GNS_OPTIONS               ## By Default value will be CREATE_NEW_GNS
-declare -x GNSVIP_ADDRESS            ## If you are using DSC or DHCP for grid.
+declare -x GNSVIP_HOSTNAME            ## If you are using DSC or DHCP for grid.
 declare -x GNS_SUBDOMAIN             ## If you are using DHCP. 
 declare -x COMMON_SCRIPTS            ## COMMON SCRIPT Locations. Pass this env variable if you have custom responsefile for grid and other scripts for DB.
 declare -x PRIV_HOSTNAME             ## if SINGLENIC=true then PRIV and PUB hostname will be same. Otherise pass it as env variable.
@@ -101,8 +101,10 @@ declare -x ORACLE_PWD_FILE
 declare -x GRID_PWD_FILE
 declare -x REMOVE_OS_PWD_FILES='false'
 declare -x DB_PWD_FILE
-declare -x COMMON_OS_PWD_FILE
-
+declare -x COMMON_OS_PWD_FILE='common_os_pwdfile.enc'
+declare -x CRS_NODES
+declare -x CRS_CONFIG_NODES
+declare -x ANSIBLE_INSTALL='false'
 
 progname=$(basename "$0")
 ###################### Variabes and Constants declaration ends here  ####################
@@ -183,6 +185,8 @@ local domain_name
 if [ "${DHCP_CONF}" != 'true' ]; then
   print_message "Default setting of AUTO GNS VIP set to false. If you want to use AUTO GNS VIP, please pass DHCP_CONF as an env parameter set to true"
   DHCP_CONF=false
+if [ ${ANSIBLE_INSTALL} == 'false' ]; then
+
 if [ -z "${NODE_VIP}" ]; then
    error_exit "RAC Node ViP is set to empty string"
 else
@@ -194,6 +198,8 @@ if [ -z "${VIP_HOSTNAME}" ]; then
 else
    print_message "RAC Node VIP hostname is set to ${VIP_HOSTNAME} "
 fi
+fi
+
 
 if [ -z "${SCAN_NAME}" ]; then
   error_exit "SCAN_NAME set to the empty string"
@@ -227,6 +233,8 @@ PRIV_IP=${PUBLIC_IP}
 PRIV_HOSTNAME=${PUBLIC_HOSTNAME}
 fi
 
+if [ ${ANSIBLE_INSTALL} == 'false' ]; then
+
 if [ -z "${PRIV_IP}" ]; then
    error_exit "RAC Node private ip is  set to empty string"
 else
@@ -237,6 +245,8 @@ if [ -z "${PRIV_HOSTNAME}" ]; then
    error_exit "RAC Node private hostname set  to empty string"
 else
   print_message "RAC Node private hostname is set to ${PRIV_HOSTNAME}"
+fi
+
 fi
 
 if [ -z "${CMAN_HOSTNAME}" ]; then
@@ -250,6 +260,15 @@ if [ -z "${CMAN_IP}" ]; then
 else
   print_message "CMAN_IP name is ${CMAN_IP}"
 fi
+
+if [ -z "${CLUSTER_NAME}" ]; then
+   print_message "Cluster Name is not defined"
+   print_message "Cluster name is set to 'racnode-c'"
+   CLUSTER_NAME="$(hostname)-c"
+else
+  print_message "Cluset name is set to $CLUSTER_NAME"
+fi
+
 }
 
 ############## IP Related Checks end here ##############
@@ -300,6 +319,7 @@ cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${ORACLE_PWD_FILE}" -out 
 
 eval $cmd
 
+
 if [ $? -eq 0 ]; then
 print_message "Password file generated"
 else
@@ -336,14 +356,6 @@ if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
 rm -f  ${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}
 rm -f ${SECRET_VOLUME}/${PWD_KEY}
 fi
-
-if [ -z "${CLUSTER_NAME}" ]; then
-   print_message "Cluster Name is not defined"
-   print_message "Cluster name is set to 'racnode-c'"
-   CLUSTER_NAME="$(hostname)-c"
-else
-  print_message "Cluset name is set to $CLUSTER_NAME"
-fi
 }
 
 ############ Checks for password ends here################
@@ -360,10 +372,10 @@ if [ "${CLUSTER_TYPE}" == "DOMAIN" ]; then
            GIMR_DG_REDUNDANCY="EXTERNAL"
          print_message "Setting Configure GNS options to true"
            CONFIGURE_GNS=true
-        if [ -z "${GNSVIP_ADDRESS}" ]; then
+        if [ -z "${GNSVIP_HOSTNAME}" ]; then
            error_exit "GNS IP is not set or set to empty string"
         else
-           print_message "GNS IP is set to ${GNSVIP_ADDRESS} "
+           print_message "GNS IP is set to ${GNSVIP_HOSTNAME} "
         fi
 
         if [ -z "${GNS_OPTIONS}" ]; then
@@ -390,10 +402,10 @@ if [ "${DHCP_CONF}" == 'true' ];then
            print_message "GNS SUBDOMAIN is set to ${GNS_SUBDOMAIN} "
         fi
 
-        if [ -z "${GNSVIP_ADDRESS}" ]; then
+        if [ -z "${GNSVIP_HOSTNAME}" ]; then
            error_exit "GNS IP is not set or set to empty string"
         else
-           print_message "GNS IP is set to ${GNSVIP_ADDRESS} "
+           print_message "GNS IP is set to ${GNSVIP_HOSTNAME} "
         fi
 
         if [ -z "${GNS_OPTIONS}" ]; then
@@ -499,7 +511,14 @@ fi
 ########################################### SSH Function begin here ########################
 setupSSH()
 {
-local CLUSTER_NODES=$PUBLIC_HOSTNAME
+local CLUSTER_NODES
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  CLUSTER_NODES=$( echo $CRS_NODES | tr ',' ' ' ) 
+fi
+
+print_message "SSh will be setup among $CLUSTER_NODES nodes"
 
 print_message "Running SSH setup for $GRID_USER user between nodes $CLUSTER_NODES"
 cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$GRID_PASSWORD\""'
@@ -517,8 +536,13 @@ local password
 local ssh_pid
 local stat
 local status
+local CLUSTER_NODES
 
-local CLUSTER_NODES=$PUBLIC_HOSTNAME
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  CLUSTER_NODES=$( echo $CRS_NODES | tr ',' ' ' )
+fi
 
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
 echo $cmd
@@ -670,6 +694,74 @@ fi
 
 ######################################### GIMR Block Device List Computation ends here ############
 
+######################################## Set Device Permissions on all the nodes #######################
+setDevicePermissions ()
+{
+
+local cmd
+local state=3
+
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
+fi
+
+print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+for node in "${CLUSTER_NODES[@]}"; do
+print_message "Setting Device permissions for RAC Install  on $node"
+
+if [ ! -z "${GIMR_DEVICE_LIST}" ];then
+
+print_message "Preapring GIMR Device list"
+IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
+        local arr_device=${#devices[@]}
+if [ $arr_device -ne 0 ]; then
+        for device in "${devices[@]}"
+        do
+        print_message "Changing Disk permission and ownership"
+        cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        print_message "Populate Rac Env Vars on Remote Hosts"
+        cmd='su - $GRID_USER -c "ssh $node sudo echo export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST} >> $RAC_ENV_FILE"' 
+       done
+fi
+
+if [ ! -z "${ASM_DEVICE_LIST}" ];then
+
+print_message "Preapring ASM Device list"
+IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
+        local arr_device=${#devices[@]}
+if [ $arr_device -ne 0 ]; then
+        for device in "${devices[@]}"
+        do
+        print_message "Changing Disk permission and ownership"
+        cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        print_message "Populate Rac Env Vars on Remote Hosts"
+        cmd='su - $GRID_USER -c "ssh $node sudo echo export ASM_DEVICE_LIST=${ASM_DEVICE_LIST} >> $RAC_ENV_FILE"'
+       done
+fi
+
+
+done
+
+}
+
+######################################## Set Device Permission Ends Here ################################
+
 ####################################### Network Function Begin here #############################
 build_network ()
 {
@@ -727,6 +819,10 @@ if [ -z $GRID_RESPONSE_FILE ]; then
 cp $SCRIPT_DIR/$GRID_INSTALL_RSP $logdir/$GRID_INSTALL_RSP
 #chmod 777 $logdir
 
+if [ -z CRS_CONFIG_NODES ]; then
+   CRS_CONFIG_NODES="$PUBLIC_HOSTNAME:$VIP_HOSTNAME:HUB"
+fi
+
 sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###CLUSTER_NAME###|$CLUSTER_NAME|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $logdir/$GRID_INSTALL_RSP
@@ -748,7 +844,7 @@ sed -i -e "s|###GIMR_DG_FLAG###|$GIMR_DG_FLAG|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###NETWORK_STRING###|$NETWORK_STRING|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###GIMR_DG_NAME###|$GIMR_DG_NAME|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###GNS_SUBDOMAIN###|$GNS_SUBDOMAIN|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GNSVIP_ADDRESS###|$GNSVIP_ADDRESS|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###GNSVIP_HOSTNAME###|$GNSVIP_HOSTNAME|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###GNS_OPTIONS###|$GNS_OPTIONS|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###DHCP_CONF###|$DHCP_CONF|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###CONFIGURE_GNS###|$CONFIGURE_GNS|g" $logdir/$GRID_INSTALL_RSP
@@ -779,6 +875,7 @@ sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" $logdir/$GRID_INSTA
 sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" $logdir/$GRID_INSTALL_RSP
 fi
 
 }
@@ -842,9 +939,18 @@ runrootsh ()
 local cmd
 local state=3
 
-print_message "Running root.sh"
-cmd='$GRID_HOME/root.sh'
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
+fi
+
+print_message "Nodes in the cluster ${CLUSTER_NODES[@]}" 
+for node in "${CLUSTER_NODES[@]}"; do
+print_message "Running root.sh on $node"
+cmd='su - $GRID_USER -c "ssh $node sudo $GRID_HOME/root.sh"'
 eval $cmd
+done
 }
 
 runpostrootsetps ()
@@ -868,9 +974,16 @@ local cmd;
 local stat;
 local oracle_home=$GRID_HOME
 
-print_message "Checking Cluster"
+IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check crs"'
+print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+
+
+for node in "${CLUSTER_NODES[@]}"; do
+
+print_message "Checking Cluster on $node"
+
+cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check crs"'
 eval $cmd
 
 if [ $?  -eq 0 ];then
@@ -879,7 +992,7 @@ else
 error_exit "Cluster Check failed"
 fi
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check cluster"'
+cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check cluster"'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -889,7 +1002,7 @@ error_exit "Cluster  Check failed!"
 fi
 
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
+cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/srvctl status mgmtdb"'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -898,7 +1011,7 @@ else
 error_exit "MGMTDB Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check crsd"'
+cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check crsd"'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -907,7 +1020,7 @@ else
 error_exit "CRSD Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check cssd"'
+cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check cssd"'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -916,7 +1029,7 @@ else
 error_exit "CSSD Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check evmd"'
+cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check evmd"'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -924,6 +1037,8 @@ print_message "EVMD Check went fine"
 else
 error_exit "EVMD Check failed"
 fi
+
+done
 
 print_message "Removing $logdir/cluvfy_check.txt as cluster check has passed"
 rm -f $logdir/cluvfy_check.txt
@@ -939,11 +1054,15 @@ if [ -z $DBCA_RESPONSE_FILE ]; then
 cp $SCRIPT_DIR/$DBCA_RSP $logdir/$DBCA_RSP
 chmod 666 $logdir/$DBCA_RSP
 
+if [ -z $CRS_NODES ]; then
+  CRS_NODES=$PUBLIC_HOSTNAME
+fi
+
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $logdir/$DBCA_RSP
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $logdir/$DBCA_RSP
 sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $logdir/$DBCA_RSP
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $logdir/$DBCA_RSP
-sed -i -e "s|###PUBLIC_HOSTNAME###|$PUBLIC_HOSTNAME|g" $logdir/$DBCA_RSP
+sed -i -e "s|###PUBLIC_HOSTNAME###|$CRS_NODES|g" $logdir/$DBCA_RSP
 sed -i -e "s|###DB_BASE###|$DB_BASE|g" $logdir/$DBCA_RSP
 sed -i -e "s|###DB_HOME###|$DB_HOME|g" $logdir/$DBCA_RSP
 sed -i -e "s|###CONTAINER_DB_FLAG###|$CONTAINER_DB_FLAG|g" $logdir/$DBCA_RSP
@@ -1020,6 +1139,7 @@ print_message "Setting random password for $GRID_USER user"
 setpasswd $GRID_USER  $GRID_PASSWORD
 print_message "Setting random password for $ORACLE_USER user"
 setpasswd $ORACLE_USER $ORACLE_PASSWORD
+
 print_message "Calling setupSSH function"
 setupSSH
 checkSSH
@@ -1028,6 +1148,7 @@ checkSSH
 if [ "${CLUSTER_TYPE}" == 'DOMAIN' ] || [ "${CLUSTER_TYPE}" == 'STANDALONE' ]; then
 build_block_device_list
 build_gimr_block_device_list
+setDevicePermissions
 fi
 
 ####### Grid Setup ##########

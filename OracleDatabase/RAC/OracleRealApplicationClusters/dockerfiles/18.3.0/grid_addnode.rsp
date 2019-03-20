@@ -252,7 +252,8 @@ oracle.install.crs.config.sites=
 # hostnameprefix:lowerbound-upperbound:hostnamesuffix:vipsuffix:role of node
 #
 #-------------------------------------------------------------------------------
-oracle.install.crs.config.clusterNodes=###PUBLIC_HOSTNAME###:###HOSTNAME_VIP###:HUB
+#oracle.install.crs.config.clusterNodes=###PUBLIC_HOSTNAME###:###HOSTNAME_VIP###:HUB
+oracle.install.crs.config.clusterNodes=###CRS_CONFIG_NODES###
 
 #-------------------------------------------------------------------------------
 # The value should be a comma separated strings where each string is as shown below
