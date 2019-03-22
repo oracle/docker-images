@@ -100,6 +100,7 @@ You can override the default values of the following parameters during runtime i
       * `CUSTOM_PRODUCTION_MODE`
       * `CUSTOM_DEBUG_PORT`
       * `CUSTOM_DEBUG_FLAG`
+      * `CUSTOM_CONNECTION_STRING`
 
 **NOTE**: When you set the `CUSTOM_DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 

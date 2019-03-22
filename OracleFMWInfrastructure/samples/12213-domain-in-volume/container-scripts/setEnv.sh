@@ -67,9 +67,6 @@ extract_env DEBUG_PORT
 # Set CUSTOM_DEBUG_FLAG
 extract_env DEBUG_FLAG
 
-# Set JAVA_OPTIONS
-extract_env JAVA_OPTIONS
-
 # Set CONNECTION_STRING
 extract_env CONNECTION_STRING
 

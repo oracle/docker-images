@@ -18,7 +18,7 @@ set_context() {
 set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties
 
-hostvolume=/Users/myhost/temp
+hostvolume=/Users/mriccell/temp
 echo "Host volume to write the domain is: $hostvolume"
 
 admin_host() {
@@ -29,5 +29,8 @@ echo "Admin Host is: ${ADMIN_HOST}"
 echo "ENV_ARG is: ${ENV_ARG}"
 
 admin_host
+
+echo " docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${hostvolume}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.3"
+
 docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${hostvolume}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.3
 

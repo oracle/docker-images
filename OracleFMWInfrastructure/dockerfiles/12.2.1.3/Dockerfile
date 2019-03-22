@@ -76,14 +76,13 @@ ENV ORACLE_HOME=/u01/oracle \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
     ADMIN_HOST="${ADMIN_HOST:-InfraAdminContainer}" \
     ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-true}" \
-    ADMINISTRATION_PORT="${ADMINISTRATION_PORT:-9002}" \
+    ADMINISTRATION_PRT="${ADMINISTRATION_PRT:-9002}" \
     MANAGEDSERVER_PORT="${MANAGEDSERVER_PORT:-8001}" \
     MANAGED_NAME="${MANAGED_NAME:-infraServer1}" \
     RCUPREFIX="${RCUPREFIX:-INFRA01}" \
     PRODUCTION_MODE="${PRODUCTION_MODE:-prod}" \
-    CONNECTION_STRING="InfraDB:1521/InfraPDB1.us.oracle.com" \
-    JAVA_OPTIONS="${CUSTOM_JAVA_OPTION:-"-Dweblogic.StdoutDebugEnabled=false"} \
-    CONNECTION_STRING="${CUSTOM_CONNECTION_STRING:-"InfraDB:1521/InfraPDB1.us.oracle.com"} \
+    CONNECTION_STRING=${CONNECTION_STRING:-InfraDB:1521/InfraPDB1.us.oracle.com} \
+    JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 RUN mkdir -p /u01 && \

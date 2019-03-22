@@ -43,4 +43,6 @@ echo "Admin Host is: ${adminhost}"
 ENV_ARG="${ENV_ARG} -e CUSTOM_MANAGED_NAME=$managedname"
 echo "ENV_ARG is: ${ENV_ARG}"
 
+echo "docker run -d -p ${mapedport}:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname} 12213-fmw-domain-in-volume startFMWManagedServer.sh" 
+
 docker run -d -p ${mapedport}:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname} 12213-fmw-domain-in-volume startFMWManagedServer.sh 

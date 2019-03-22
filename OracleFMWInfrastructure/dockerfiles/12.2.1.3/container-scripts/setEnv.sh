@@ -16,11 +16,11 @@ if [ "$#" -eq  "0" ]
  fi
 
 extract_env() {
-   env_value=`awk '{print $1}' $PROPERTIES_FILE | grep ^$1= | cut -d "=" -f2`
+   env_value=`awk '{print}' $PROPERTIES_FILE | grep ^$1= | cut -d "=" -f2`
    if [ -n "$env_value" ]; then
-      env_arg=`echo "$1=$env_value"`
+      env_arg=`echo $1=$env_value`
+      echo " env_arg: $env_arg"
       export $env_arg
-      echo $env_arg
       ENV_ARG="$ENV_ARG -e $env_arg"
    fi
 }
@@ -46,8 +46,8 @@ extract_env MANAGED_NAME
 # Set ADMINISTRATION_PORT_ENABLED
 extract_env ADMINISTRATION_PORT_ENABLED
 
-# Set ADMINISTRATION_PORT
-extract_env ADMINISTRATION_PORT
+# Set ADMINISTRATION_PRT
+extract_env ADMINISTRATION_PRT
 
 # Set RCUPREFIX
 extract_env RCUPREFIX
@@ -55,8 +55,6 @@ extract_env RCUPREFIX
 # Set PRODUCTION_MODE
 extract_env PRODUCTION_MODE
 
-# Set JAVA_OPTIONS
-extract_env JAVA_OPTIONS
 
 # Set CONNECTION_STRING
 extract_env CONNECTION_STRING
