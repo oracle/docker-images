@@ -202,7 +202,7 @@ def Setup_Operation(op_type):
 
     output,retcode=Execute_Single_Command(cmd,'None','')
     if retcode != 0:
-       return "error occuurred in setting up env"
+       return "Error occuurred in setting up env"
     else:
        return "setup operation completed sucessfully!"
  
