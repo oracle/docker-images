@@ -12,9 +12,9 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [Docker build option]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] -n [gi_name] [-o] [Docker build option]
 Builds a Docker Image for Oracle Database.
-  
+
 Parameters:
    -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
@@ -22,6 +22,7 @@ Parameters:
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
+   -n: goldimage_name (for 18c and higher releases)
    -o: passes on Docker build option
 
 * select one edition only: -e, -s, or -x
@@ -37,7 +38,7 @@ EOF
 # Validate packages
 checksumPackages() {
   if hash md5sum 2>/dev/null; then
-    echo "Checking if required packages are present and valid..."   
+    echo "Checking if required packages are present and valid..."
     if ! md5sum -c "Checksum.$EDITION"; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
@@ -75,6 +76,7 @@ SKIPMD5=0
 DOCKEROPS=""
 MIN_DOCKER_VERSION="17.09"
 DOCKERFILE="Dockerfile"
+GOLDIMAGE_NAME=""
 
 if [ "$#" -eq 0 ]; then
   usage;
@@ -82,7 +84,7 @@ fi
 
 checkDockerVersion
 
-while getopts "hesxiv:o:" optname; do
+while getopts "hesxiv:n:o:" optname; do
   case "$optname" in
     "h")
       usage
@@ -101,6 +103,9 @@ while getopts "hesxiv:o:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "n")
+      GOLDIMAGE_NAME="$OPTARG"
       ;;
     "o")
       DOCKEROPS="$OPTARG"
@@ -144,8 +149,19 @@ fi;
 IMAGE_NAME="oracle/database:$VERSION-$EDITION"
 
 # Go into version folder
-cd "$VERSION" || {
-  echo "Could not find version directory '$VERSION'";
+MAJOR_VERSION="$(cut -d'.' -f1 <<<"$VERSION")"
+
+DOCKER_BUILD_ARGS=""
+if [ $MAJOR_VERSION -ge 18 ]; then
+  VERSION_DIR="goldimage_based_docker"
+  DOCKER_BUILD_ARGS="--build-arg MAJOR_VERSION=${MAJOR_VERSION}"
+  DOCKER_BUILD_ARGS="$DOCKER_BUILD_ARGS --build-arg GOLDIMAGE_NAME=${GOLDIMAGE_NAME}"
+else
+  VERSION_DIR=$VERSION
+fi
+
+cd "$VERSION_DIR" || {
+  echo "Could not find version directory '$VERSION_DIR'";
   exit 1;
 }
 
@@ -189,7 +205,7 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 docker build --force-rm=true --no-cache=true \
-       $DOCKEROPS $PROXY_SETTINGS --build-arg DB_EDITION=$EDITION \
+       $DOCKEROPS $PROXY_SETTINGS $DOCKER_BUILD_ARGS --build-arg DB_EDITION=$EDITION \
        -t $IMAGE_NAME -f $DOCKERFILE . || {
   echo ""
   echo "ERROR: Oracle Database Docker Image was NOT successfully created."
