@@ -8,15 +8,15 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) db_home.zip
-#     Download Oracle Database 18c Enterprise Edition or Standard Edition 2 for Linux x64
+# (1) goldimage of particular base release
+#     Download Oracle Database 18c (or higher edition) Enterprise Edition or Standard Edition 2 for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/database:18.3.0-${EDITION} . 
+# Run:
+#      $ docker build -t oracle/database:${VERSION}-${EDITION} .
 #
 # Pull base image
 # ---------------
@@ -26,12 +26,15 @@ FROM oraclelinux:7-slim as base
 # ----------
 MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 
+ARG MAJOR_VERSION
+ARG GOLDIMAGE_NAME
+
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/18c/dbhome_1 \
+    ORACLE_HOME=/opt/oracle/product/$MAJOR_VERSION.0.0/dbhome_1 \
     INSTALL_DIR=/opt/install \
-    INSTALL_FILE_1="LINUX.X64_180000_db_home.zip" \
+    INSTALL_FILE_1=$GOLDIMAGE_NAME \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
