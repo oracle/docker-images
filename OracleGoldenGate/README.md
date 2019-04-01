@@ -18,6 +18,7 @@ Sample Docker build files to provide an installation of Oracle GoldenGate for De
   * [Administrative Account Password for Microservices Architecture](#administrative-account-password-for-microservices-architecture)
   * [Running GGSCI in an OGG Standard Edition Docker container](#running-ggsci-in-an-ogg-standard-edition-docker-container)
   * [Running Admin Client in an OGG Microservices Architecture Docker container](#running-admin-client-in-an-ogg-microservices-architecture-docker-container)
+* [Additional Utilities](#additional-utilities)
 * [Known issues](#known-issues)
 * [License](#license)
 * [Copyright](#copyright)
@@ -250,6 +251,9 @@ The **Admin Client** utility can be run in the OGG container with this command:
     $ docker exec -ti --user oracle <container name> adminclient
 
 **Admin Client** is only available in containers created with the Microservices Architecture.
+
+## Additional Utilities
+Additional utilities, installed to the Docker Image at `/usr/local/bin`, can be found in the [bin](bin) directory.
 
 ## Known issues
 None
