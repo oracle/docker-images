@@ -24,7 +24,7 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 **IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.x binary and locate it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.x`.
 
         $ sh buildDockerImage.sh
-        Usage: buildDockerImage.sh -v [version] -d [in-volume/in-image]
+        Usage: buildDockerImage.sh -v [version]
         Builds a Docker Image for Oracle FMW Infrastructure.
 
         Parameters:
