@@ -44,11 +44,6 @@ if [ ! -f "${MS_SECURITY}/boot.properties" ]; then
   fi
   # echo "Password: $PASS"
 
-  #Set Java options
-  #JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
-  export JAVA_OPTIONS=${CUSTOM_JAVA_OPTIONS}
-  echo "Java Options: ${JAVA_OPTIONS}"
-
   # Create Managed Server
   mkdir -p ${MS_SECURITY}
   chmod +w ${MS_SECURITY}
@@ -57,6 +52,11 @@ if [ ! -f "${MS_SECURITY}/boot.properties" ]; then
   echo "password=${PASS}" >> ${MS_SECURITY}/boot.properties
 fi
 
+
+#Set Java options
+#JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
+export JAVA_OPTIONS=${CUSTOM_JAVA_OPTIONS}
+echo "Java Options: ${JAVA_OPTIONS}"
 
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
 

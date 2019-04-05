@@ -19,10 +19,10 @@ set_context() {
 }
 
 set_context
-. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties
+. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties ${scriptDir}/properties/rcu.properties
 
-hostvolume=$HOST_VOLUME
 
+echo "Admin Host is: ${adminhost}"
 admin_host() {
    adminhost=${CUSTOM_ADMIN_HOST:-"InfraAdminContainer"}
 }
@@ -31,6 +31,7 @@ managed_name() {
    managedname=${CUSTOM_MANAGED_NAME:-"infraMS1"}
    echo ${managed_name}
 }
+
 maped_port() {
    mapedport=${PORT:-9802}
    echo ${mapedport}
@@ -41,7 +42,7 @@ managed_name
 maped_port
 echo "Admin Host is: ${adminhost}"
 ENV_ARG="${ENV_ARG} -e CUSTOM_MANAGED_NAME=$managedname"
-echo "ENV_ARG is: ${ENV_ARG}"
+#echo "ENV_ARG is: ${ENV_ARG}"
 
 echo "docker run -d -p ${mapedport}:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname} 12213-fmw-domain-in-volume startFMWManagedServer.sh" 
 

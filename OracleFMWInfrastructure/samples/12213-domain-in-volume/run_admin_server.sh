@@ -16,7 +16,7 @@ set_context() {
 }
 
 set_context
-. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties
+. ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties  ${scriptDir}/properties/rcu.properties
 
 hostvolume=/Users/mydir/temp
 echo "Host volume is $hostvolume"
@@ -25,7 +25,7 @@ admin_host() {
    adminhost=${CUSTOM_ADMIN_HOST:-"InfraAdminContainer"}
 }
 
-echo "ENV_ARG is: ${ENV_ARG}"
+#echo "ENV_ARG is: ${ENV_ARG}"
 
 admin_host
 

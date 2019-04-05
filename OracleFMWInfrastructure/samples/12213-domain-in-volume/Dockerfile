@@ -44,7 +44,7 @@ ENV ORACLE_HOME="/u01/oracle" \
     CUSTOM_DEBUG_PORT="${CUSTOM_DEBUG_PORT:-8453}" \
     CUSTOM_DEBUG_FLAG="${CUSTOM_DEBUG_FLAG:-false}" \
     CUSTOM_JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
-    CUSTOM_CONNECTION_STRING="${CUSTOM_CONNECTION_STRING:-"InfraDB:1521/InfraPDB1.us.oracle.com"} \
+    CUSTOM_CONNECTION_STRING="${CUSTOM_CONNECTION_STRING:-"InfraDB:1521/InfraPDB1.us.oracle.com"}" \
     CUSTOM_PATH="$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
 
 
@@ -58,6 +58,8 @@ RUN mkdir -p $CUSTOM_DOMAIN_ROOT && \
     chmod -R a+xwr $CUSTOM_DOMAIN_ROOT && \
     mkdir -p $CUSTOM_DOMAIN_HOME && \
     chmod -R a+xwr $CUSTOM_DOMAIN_HOME && \
+    mkdir -p $ORACLE_HOME/properties && \
+    chmod -R a+r $ORACLE_HOME/properties && \ 
     chmod +x /u01/oracle/container-scripts/*
 
 VOLUME  $CUSTOM_DOMAIN_ROOT

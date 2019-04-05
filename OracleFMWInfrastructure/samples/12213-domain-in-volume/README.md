@@ -12,7 +12,7 @@ A prerequisite to building the 12213-domain-in-volume image is having an Oracle 
 
         $ cd ../../OracleFMWInfrastructure/dockerfiles
         $ sh buildDockerImage.sh
-        Usage: buildDockerImage.sh -v [version] -d [in-volume/in-image]
+        Usage: buildDockerImage.sh -v [version] 
         Builds a Docker Image for Oracle FMW Infrastructure.
 
         Parameters:
@@ -26,23 +26,25 @@ A prerequisite to building the 12213-domain-in-volume image is having an Oracle 
         Copyright (c) 2014,2019 Oracle and/or its affiliates. All rights reserved.
 
 #### Providing the Administration Server user name and password and Database username and password
-The user name and password must be supplied in a `domain_security.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server and Database.
+The administration server user name and password must be supplied in a `domain_security.properties` file and the databse username and password must be supplied in a `rcu_security.properties` file. Both these files should be located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server and Database.
 
 The format of the `domain_security.properties` file is key=value pair:
 
         username=myadminusername
         password=myadminpassword
+
+The format of the `rcu_security.properties` file is key=value pair:
         db_user=sys
         db_pass=Oradoc_db1
         db_schema=Oradoc_db1
 
-**Note**: Oracle recommends that the `domain_securtity.properties` file be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
+**Note**: Oracle recommends that the `domain_securtity.properties` and the `rcu_security.properties` files be deleted or secured after the container and the WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
 ### Write your own Oracle Fusion Middleware Infrastructure domain with WLST
 The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/middleware/1221/cross/wlsttasks.htm). You can find an example of a WLST script to create domains at [`createFMWDomain.py`](samples/12213-domain-in-volume/container-scripts/createFMWDomain.py). You may want to tune this script with your own setup to create datasources and connection pools, security realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Running the Oracle FMW Infrastructure domain Docker image
-To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and an Oracle database. The Oracle database could be remote or running in a container. If you want to run the Oracle database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com), or build your own image using the Dockerfiles and scripts in this Git repository. There is a slim version of the Oracle database image at [Oracle Container Registry](https://container-registry.oracle.com) that you can pull and run.
+To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and a database. The database could be remote or running in a container. If you want to run the Oracle database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com), or build your own image using the Dockerfiles and scripts in this Git repository. There is a slim version of the Oracle database image at [Oracle Container Registry](https://container-registry.oracle.com) that you can pull and run.
 
 Follow the steps below:
 
@@ -71,6 +73,16 @@ The database is created with the default password `Oradoc_db1`. To change the da
 	$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA
 
 	SQL> alter user sys identified by MYDBPasswd container=all;
+
+### Build and Run RCU 
+Many of the Oracle Fusion Middleware components require the existence of schemas in a database prior to installation. These schemas are created and loaded in your database using the Repository Creation Utility (RCU). To facilitate running RCU you can build an image using the Dockerfile.rcu. 
+      `$ docker build -f Dockerfile -t 12213-fmw-rcu .` 
+
+To run RCU start a container from the image created 
+
+      `$ docker run -d --name RCU --network=InfraNET -v HOSTPATH/OracleFMWInfrastructure/samples/12213-domain-in-volume/properties:/u01/oracle/properties 12213-fmw-rcu`
+
+**NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container. 
 
 ### Build the FMW Infrastructure Domain Image
 There are two Dockerfiles to build the FMW Infrastructure Image, one creates the domain in a volume in the host and one persists a domain inside of a Docker image.
@@ -103,6 +115,7 @@ You can override the default values of the following parameters during runtime i
       * `CUSTOM_CONNECTION_STRING`
 
 **NOTE**: When you set the `CUSTOM_DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
+We are supplying scripts `run_admin_server.sh` and `run_managed_server.sh` to facilitate setting the environment variables defined in the property files and running the admin server and managed server containers.
 
   Start a container to launch the Administration and Managed Servers from the image created in step 1.
 
@@ -110,7 +123,6 @@ You can override the default values of the following parameters during runtime i
 
         `$ sh run_admin_server.sh`
 
-**NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container. 
 
   To run Managed Server with base name `infraMS` pass in to the scrtipt `run_managed_server.sh` the name of the managed server you want to run and the host port that will be mapped to the managed server port 8001. To run managed server one with name `infraMS1` and mapped to host port 98001 call:
 
