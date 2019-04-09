@@ -26,12 +26,10 @@ chown -R grid:oinstall $GRID_HOME
 mkdir -p $INVENTORY
 chown -R grid:oinstall $INVENTORY
 
-############# Disabled sudo Access ######
-#### However, if user need the sudo access for his env, he can remove the comments from following lines and end rebuild the image ###############
-#chmod 666 /etc/sudoers
-#echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-#chmod 440 /etc/sudoers
-########## sudo code end here ###########
+chmod 666 /etc/sudoers
+echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+echo "grid       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+chmod 440 /etc/sudoers
 
 echo "export ORACLE_HOME=$GRID_HOME" >> /home/grid/.bashrc
 echo "export PATH=$GRID_PATH" >> /home/grid/.bashrc

@@ -18,6 +18,7 @@ declare -r TRUE=0
 declare -r GRID_USER='grid'          ## Default gris user is grid.
 declare -r ORACLE_USER='oracle'      ## default oracle user is oracle.
 declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
+declare -r RAC_ENV_FILE="/etc/rac_env_vars"   ## RACENV FILE NAME
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
 declare -x PUBLIC_HOSTNAME           ## PUBLIC HOSTNAME set based on hostname
@@ -475,8 +476,9 @@ chmod 666 $logdir/$ADDNODE_RSP
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 
-if [ -z CRS_CONFIG_NODES ]; then
+if [ -z ${CRS_CONFIG_NODES} ]; then
    CRS_CONFIG_NODES="$PUBLIC_HOSTNAME:$VIP_HOSTNAME:HUB"
+   print_message "Clustered Nodes are set to $CRS_CONFIG_NODES"
 fi
 
 sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$ADDNODE_RSP
@@ -601,7 +603,8 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST} >> $RAC_ENV_FILE"'
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> $RAC_ENV_FILE"'
+        print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
        done
@@ -627,7 +630,8 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo export ASM_DEVICE_LIST=${ASM_DEVICE_LIST} >> $RAC_ENV_FILE"'
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> $RAC_ENV_FILE"'
+        print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
        done
@@ -792,7 +796,7 @@ eval $cmd
 print_message "Node Addition performed. removing Responsefile"
 rm -f $responsefile
 cmd='su - $GRID_USER -c "ssh $node \"rm -f $responsefile\""'
-eval $cmd
+#eval $cmd
 
 }
 
@@ -912,7 +916,7 @@ setupSSH
 checkSSH
 
 #### Grid Node Addition #####
-print_message :Setting Device permission to grid and asmadmin on all the cluster nodes"
+print_message "Setting Device permission to grid and asmadmin on all the cluster nodes"
 setDevicePermissions
 print_message "Checking Cluster Status on $EXISTING_CLS_NODE"
 CheckRemoteCluster

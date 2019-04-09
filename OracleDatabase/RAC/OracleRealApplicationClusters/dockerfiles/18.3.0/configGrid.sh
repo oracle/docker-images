@@ -17,6 +17,7 @@
 ####################### Variables and Constants #################
 declare -r FALSE=1
 declare -r TRUE=0
+declare -r RAC_ENV_FILE="/etc/rac_env_vars" 
 declare -r GRID_USER='grid'          ## Default gris user is grid.
 declare -r ORACLE_USER='oracle'      ## default oracle user is oracle.
 declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
@@ -85,6 +86,7 @@ declare -x SHARED_SCAN               ## SHARED_SCAN. define file for SHARED SCAN
 declare -x EXTENDED_CLUSTER=false    ## EXTENDED CLUSTER DEFAULT set to false
 declare -x SHARED_GNS_FILE           ## Specify SHARED GNS
 declare -x EXTENDED_CLUSTER_SITES    ## Specify Extended Cluster Sites   
+declare -x ASM_DG_FAILURE_GROUP      ## ASM DG Failure groups
 declare -x ASM_ON_NAS                ## Specify ASM on NAS
 declare -x ASM_ON_NAS_LOCATION       ## Specify ASM on NAS Location
 declare -x FAILURE_GROUP_SITE_NAME   ## Specify Failure Group Site Name
@@ -97,6 +99,9 @@ declare -x EXECUTE_ROOT_SCRIPT_METHOD='ROOT'  ## Specify Execute Root Script met
 declare -x IGNORE_CVU_CHECKS='true'           ## Ignore CVU Checks
 declare -x SECRET_VOLUME='/run/secrets/'      ## Secret Volume
 declare -x PWD_KEY='pwd.key'                  ## PWD Key File
+declare -x TOTAL_MEMORY=5000                  ## Total Memory need to be allocated to SGA Instance
+declare -x DATABASE_CONFIG_TYPE='RAC'         ## DB COnfig TYPE
+declare -x PDB_COUNT=1                          ## PDB COUNTS
 declare -x ORACLE_PWD_FILE
 declare -x GRID_PWD_FILE
 declare -x REMOVE_OS_PWD_FILES='false'
@@ -105,6 +110,7 @@ declare -x COMMON_OS_PWD_FILE='common_os_pwdfile.enc'
 declare -x CRS_NODES
 declare -x CRS_CONFIG_NODES
 declare -x ANSIBLE_INSTALL='false'
+declare -x GIMR_FLAG='false'
 
 progname=$(basename "$0")
 ###################### Variabes and Constants declaration ends here  ####################
@@ -729,7 +735,8 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST} >> $RAC_ENV_FILE"' 
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> $RAC_ENV_FILE"' 
+        print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
        done
@@ -755,7 +762,8 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo export ASM_DEVICE_LIST=${ASM_DEVICE_LIST} >> $RAC_ENV_FILE"'
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> $RAC_ENV_FILE"'
+        print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
        done
@@ -826,7 +834,7 @@ if [ -z $GRID_RESPONSE_FILE ]; then
 cp $SCRIPT_DIR/$GRID_INSTALL_RSP $logdir/$GRID_INSTALL_RSP
 #chmod 777 $logdir
 
-if [ -z CRS_CONFIG_NODES ]; then
+if [ -z $CRS_CONFIG_NODES ]; then
    CRS_CONFIG_NODES="$PUBLIC_HOSTNAME:$VIP_HOSTNAME:HUB"
 fi
 
@@ -873,7 +881,7 @@ sed -i -e "s|###ASM_STORAGE_OPTION###|$ASM_STORAGE_OPTION|g" $logdir/$GRID_INSTA
 sed -i -e "s|###ASM_ON_NAS###|$ASM_ON_NAS|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###GIMR_ON_NAS###|$GIMR_ON_NAS|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###ASM_ON_NAS_LOCATION###|$ASM_ON_NAS_LOCATION|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_REDUNDACNY###|$ASM_REDUNDANCY|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###ASM_REDUNDANCY###|$ASM_REDUNDANCY|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###AU_SIZE###|$AU_SIZE|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###FAILURE_GROUP_SITE_NAME###|$FAILURE_GROUP_SITE_NAME|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###QUORUM_FAILURE_GROUP###|$QUORUM_FAILURE_GROUP|g" $logdir/$GRID_INSTALL_RSP
@@ -883,6 +891,8 @@ sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" $logdir/$GRID_INS
 sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###ASM_DG_FAILURE_GROUP###|$ASM_DG_FAILURE_GROUP|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###GIMR_FLAG###|$GIMR_FLAG|g" $logdir/$GRID_INSTALL_RSP
 fi
 
 }
@@ -1069,10 +1079,13 @@ sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $logdir/$DBCA_RSP
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $logdir/$DBCA_RSP
 sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $logdir/$DBCA_RSP
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $logdir/$DBCA_RSP
-sed -i -e "s|###PUBLIC_HOSTNAME###|$CRS_NODES|g" $logdir/$DBCA_RSP
+sed -i -e "s|###DB_NODES###|$CRS_NODES|g" $logdir/$DBCA_RSP
 sed -i -e "s|###DB_BASE###|$DB_BASE|g" $logdir/$DBCA_RSP
 sed -i -e "s|###DB_HOME###|$DB_HOME|g" $logdir/$DBCA_RSP
 sed -i -e "s|###CONTAINER_DB_FLAG###|$CONTAINER_DB_FLAG|g" $logdir/$DBCA_RSP
+sed -i -e "s|###PDB_COUNT###|$PDB_COUNT|g" $logdir/$DBCA_RSP
+sed -i -e "s|###DATABASE_CONFIG_TYPE###|$DATABASE_CONFIG_TYPE|g" $logdir/$DBCA_RSP
+sed -i -e "s|###TOTAL_MEMORY###|$TOTAL_MEMORY|g" $logdir/$DBCA_RSP
 else
 
 if [ -f $COMMON_SCRIPTS/$DBCA_RESPONSE_FILE ];then

@@ -15,6 +15,7 @@ declare -r FALSE=1
 declare -r TRUE=0
 DNS_SERVER_FLAG='false'   # set this variable to true if you have DNS server. Then , it is not required to populate the /etc/hosts.
 declare -r ETCHOSTS="/etc/hosts"  #
+declare -r ETCFSTAB="/etc/fstab"
 declare -r GRID_USER='grid'               ## Default user for grid installation
 declare -r ASMADMIN_GROUP='asmadmin'      ## Default group for Grid.
 declare -x PUBLIC_IP                      ## Computed based on Node name.
@@ -51,6 +52,18 @@ fi
 # Adding blank ntp.conf
 touch /etc/ntp.conf
 
+# Adding blank /etc/fstab
+if [ ! -f ${ETCFSTAB} ]; then
+ touch /etc/fstab
+fi
+
+# Changing permission for /common_scripts
+if [ -d $COMMON_SCRIPTS ];
+then
+chown -R grid:oinstall ${COMMON_SCRIPTS}
+chmod 775 ${COMMON_SCRIPTS}
+fi
+
 # Removing failed service as we systemd status 'running'
 
 for systemd_svc in $(systemctl | grep failed | awk '{ print $2}')
@@ -60,6 +73,9 @@ do
    print_message "Resetting Failed Services"
    systemctl reset-failed
 done
+
+print_message "Sleeping for 60 seconds"
+sleep 60
 
 systemctl_state=$(systemctl status | awk '/State:/{ print $0 }' | grep -v 'awk /State:/' | awk '{ print $2 }')
 
@@ -188,7 +204,7 @@ if [ $stat -eq 1 ]; then
 echo -e "127.0.0.1\tlocalhost.localdomain\tlocalhost" > /etc/hosts
 fi
 
-for HOSTNAME  in $PUBLIC_HOSTNAME $PRIV_HOSTNAME $VIP_HOSTNAME $SCAN_NAME $EXISTING_CLS_NODE $CMAN_HOSTNAME;
+for HOSTNAME  in $PUBLIC_HOSTNAME $PRIV_HOSTNAME $VIP_HOSTNAME $SCAN_NAME $EXISTING_CLS_NODE $CMAN_HOSTNAME $GNSVIP_HOSTNAME;
 do
 if [ -n "$(grep $HOSTNAME $ETCHOSTS)" ]; then
 print_message "$HOSTNAME already exists : $(grep $HOSTNAME $ETCHOSTS), no $ETCHOST update required"
@@ -196,35 +212,42 @@ else
  print_message  "Preparing host line for $HOSTNAME";
  if [ "${HOSTNAME}" == "${PUBLIC_HOSTNAME}" ]; then
            unset HOST_LINE
-           HOST_LINE="${PUBLIC_IP}\t${PUBLIC_HOSTNAME}.${DOMAIN}\t${PUBLIC_HOSTNAME}"
+           HOST_LINE="\n${PUBLIC_IP}\t${PUBLIC_HOSTNAME}.${DOMAIN}\t${PUBLIC_HOSTNAME}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
            echo -e $HOST_LINE >> $ETCHOSTS
  elif [ "${HOSTNAME}" == "${PRIV_HOSTNAME}" ];then
            unset HOST_LINE
-           HOST_LINE="${PRIV_IP}\t${PRIV_HOSTNAME}.${DOMAIN}\t${PRIV_HOSTNAME}"
+           HOST_LINE="\n${PRIV_IP}\t${PRIV_HOSTNAME}.${DOMAIN}\t${PRIV_HOSTNAME}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
            echo -e $HOST_LINE >> $ETCHOSTS
  elif [ "${HOSTNAME}" == "${VIP_HOSTNAME}" ];then
            unset HOST_LINE
-           HOST_LINE="${NODE_VIP}\t${VIP_HOSTNAME}.${DOMAIN}\t${VIP_HOSTNAME}"
+           HOST_LINE="\n${NODE_VIP}\t${VIP_HOSTNAME}.${DOMAIN}\t${VIP_HOSTNAME}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
            echo -e $HOST_LINE >> $ETCHOSTS
  elif [ "${HOSTNAME}" == "${EXISTING_CLS_NODE}" ]; then
           unset HOST_LINE
-           HOST_LINE="${EXISTING_CLS_NODE_IP}\t${EXISTING_CLS_NODE}.${DOMAIN}\t${EXISTING_CLS_NODE}"
+           HOST_LINE="\n${EXISTING_CLS_NODE_IP}\t${EXISTING_CLS_NODE}.${DOMAIN}\t${EXISTING_CLS_NODE}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
            echo -e $HOST_LINE >> $ETCHOSTS
 elif [ "${HOSTNAME}" == "${SCAN_NAME}" ]; then
         unset HOST_LINE
 	if [ ! -z "$SCAN_IP" ];then
-	  HOST_LINE="${SCAN_IP}\t${SCAN_NAME}.${DOMAIN}\t${SCAN_NAME}" 
+	  HOST_LINE="\n${SCAN_IP}\t${SCAN_NAME}.${DOMAIN}\t${SCAN_NAME}" 
           print_message "Adding $HOST_LINE to $ETCHOSTS"
           echo -e $HOST_LINE >> $ETCHOSTS
 	fi
 elif [ "${HOSTNAME}" == "${CMAN_HOSTNAME}" ]; then
         unset HOST_LINE
         if [ ! -z "$CMAN_IP" ];then
-          HOST_LINE="${CMAN_IP}\t${CMAN_HOSTNAME}.${DOMAIN}\t${CMAN_HOSTNAME}"
+          HOST_LINE="\n${CMAN_IP}\t${CMAN_HOSTNAME}.${DOMAIN}\t${CMAN_HOSTNAME}"
+          print_message "Adding $HOST_LINE to $ETCHOSTS"
+          echo -e $HOST_LINE >> $ETCHOSTS
+        fi
+elif [ "${HOSTNAME}" == "${GNSVIP_HOSTNAME}" ]; then
+        unset HOST_LINE
+        if [ ! -z "$GNS_VIP" ];then
+          HOST_LINE="\n${GNS_VIP}\t${GNSVIP_HOSTNAME}.${DOMAIN}\t${GNSVIP_HOSTNAME}"
           print_message "Adding $HOST_LINE to $ETCHOSTS"
           echo -e $HOST_LINE >> $ETCHOSTS
         fi

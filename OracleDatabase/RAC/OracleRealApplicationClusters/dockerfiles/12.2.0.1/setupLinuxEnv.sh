@@ -16,5 +16,5 @@
 mkdir /asmdisks && \
 mkdir /responsefiles  && \
 chmod ug+x /opt/scripts/startup/*.sh && \
-yum -y install systemd oracle-database-server-12cR2-preinstall net-tools which zip unzip tar openssl expect e2fsprogs openssh-server openssh-client vim-minimal passwd which sudo && \
+yum -y install systemd  oracle-database-server-12cR2-preinstall  net-tools which zip unzip tar openssl expect e2fsprogs openssh-server openssh-client vim-minimal passwd which sudo xorg-x11-server-Xorg xorg-x11-xauth xorg-x11-apps && \
 yum clean all 
