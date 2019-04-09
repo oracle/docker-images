@@ -27,7 +27,7 @@
 
 # Pull base image
 # ---------------
-FROM store/oracle/serverjre:8
+FROM oracle/serverjre:8
 
 # Maintainer
 # ----------

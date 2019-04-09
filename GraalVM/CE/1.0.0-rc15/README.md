@@ -10,7 +10,7 @@ Further details can be found on [www.graalvm.org](https://www.graalvm.org).
 
 # How to use these images
 
-The images are intended for use in the **FROM** field of a downstream Dockerfile. For example, specify `FROM oracle/graalvm-ce:1.0.0-rc9`.
+The images are intended for use in the **FROM** field of a downstream Dockerfile. For example, specify `FROM oracle/graalvm-ce:1.0.0-rc15`.
 
 
 # Building the Docker image yourself
@@ -18,7 +18,7 @@ The images are intended for use in the **FROM** field of a downstream Dockerfile
 Execute the following build command:
 
 ```
-docker build -t oracle/graalvm-ce:1.0.0-rc9 .
+docker build -t oracle/graalvm-ce:1.0.0-rc15 .
 ```
 
 # License
