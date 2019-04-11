@@ -1,5 +1,5 @@
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
+# Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -9,7 +9,7 @@ import sys
 
 import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
-class Infra12212Provisioner:
+class Infra12213Provisioner:
 
     MACHINES = {
         'machine1' : {
@@ -19,25 +19,7 @@ class Infra12212Provisioner:
         }
     }
 
-    CLUSTERS = {
-        'infra_cluster' : {}
-    }
-
-    SERVERS = {
-        'AdminServer' : {
-            'ListenAddress': '',
-            'ListenPort': 7001,
-            'Machine': 'machine1'
-        },
-        'infra_server1' : {
-            'ListenAddress': '',
-            'ListenPort': 8001,
-            'Machine': 'machine1',
-            'Cluster': 'infra_cluster'
-        }
-    }
-
-    JRF_12212_TEMPLATES = {
+    JRF_12213_TEMPLATES = {
         'baseTemplate' : '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar',
         'extensionTemplates' : [
             '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.jrf_template.jar',
@@ -49,36 +31,65 @@ class Infra12212Provisioner:
         'serverGroupsToTarget' : [ 'JRF-MAN-SVR', 'WSMPM-MAN-SVR' ]
     }
 
-    def __init__(self, oracleHome, javaHome, domainParentDir):
+    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createInfraDomain(self, name, user, password, db, dbPrefix, dbPassword):
-        domainHome = self.createBaseDomain(name, user, password)
+    def createInfraDomain(self, domainName, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName):
+        domainHome = self.createBaseDomain(domainName, user, password, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName)
         self.extendDomain(domainHome, db, dbPrefix, dbPassword)
 
-    def createBaseDomain(self, name, user, password):
-        baseTemplate = self.replaceTokens(self.JRF_12212_TEMPLATES['baseTemplate'])
+    def createBaseDomain(self, domainName, user, password, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName):
+        baseTemplate = self.replaceTokens(self.JRF_12213_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
-        setOption('DomainName', name)
+        setOption('DomainName', domainName)
         setOption('JavaHome', self.javaHome)
-        setOption('ServerStartMode', 'prod')
+        setOption('ServerStartMode', prodMode)
         set('Name', domainName)
+
+        admin_port = int(adminListenPort)
+        ms_port    = int(managedServerPort)
+        ms_count   = int(managedCount)
+
+        # Create Admin Server
+        # =======================
+        print 'Creating Admin Server...'
+        cd('/Servers/AdminServer')
+        #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
+        set('ListenPort', admin_port)
+        set('Name', adminName)
+
+        # Define the user password for weblogic
+        # =====================================
         cd('/Security/' + domainName + '/User/weblogic')
         set('Name', user)
         set('Password', password)
 
+        # Create a cluster
+        # ======================
         print 'Creating cluster...'
-        for cluster in self.CLUSTERS:
-            cd('/')
-            create(cluster, 'Cluster')
-            cd('Cluster/' + cluster)
-            for param in  self.CLUSTERS[cluster]:
-                set(param, self.CLUSTERS[cluster][param])
+        cd('/')
+        cl=create(clusterName, 'Cluster')
 
+        # Create managed servers
+        for index in range(0, ms_count):
+            cd('/')
+            msIndex = index+1
+            cd('/')
+            name = '%s%s' % (managedNameBase, msIndex)
+            create(name, 'Server')
+            cd('/Servers/%s/' % name )
+            print('managed server name is %s' % name);
+            set('ListenPort', ms_port)
+            set('NumOfRetriesBeforeMSIMode', 0)
+            set('RetryIntervalBeforeMSIMode', 1)
+            set('Cluster', clusterName)
+
+        # Create Node Manager
+        # =======================
         print 'Creating Node Managers...'
         for machine in self.MACHINES:
             cd('/')
@@ -89,21 +100,10 @@ class Infra12212Provisioner:
             for param in self.MACHINES[machine]:
                 set(param, self.MACHINES[machine][param])
 
-        print 'Creating Servers...'
-        for server in self.SERVERS:
-            cd('/')
-            if server == 'AdminServer':
-                cd('Server/' + server)
-                for param in self.SERVERS[server]:
-                    set(param, self.SERVERS[server][param])
-                continue
-            create(server, 'Server')
-            cd('Server/' + server)
-            for param in self.SERVERS[server]:
-                set(param, self.SERVERS[server][param])
 
         setOption('OverwriteDomain', 'true')
-        domainHome = self.domainParentDir + '/' + name
+        domainHome = self.domainParentDir + '/' + domainName
+        print 'Will create Base domain at ' + domainHome
 
         print 'Writing base domain...'
         writeDomain(domainHome)
@@ -114,17 +114,19 @@ class Infra12212Provisioner:
 
     def extendDomain(self, domainHome, db, dbPrefix, dbPassword):
         print 'Extending domain at ' + domainHome
+        print 'Database  ' + db 
         readDomain(domainHome)
         setOption('AppDir', self.domainParentDir + '/applications')
 
         print 'Applying JRF templates...'
-        for extensionTemplate in self.JRF_12212_TEMPLATES['extensionTemplates']:
+        for extensionTemplate in self.JRF_12213_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
 
         print 'Extension Templates added'
 
         print 'Configuring the Service Table DataSource...'
         fmwDb = 'jdbc:oracle:thin:@' + db
+        print 'fmwDatabase  ' + fmwDb 
         cd('/JDBCSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource')
         cd('JDBCDriverParams/NO_NAME_0')
         set('DriverName', 'oracle.jdbc.OracleDriver')
@@ -139,23 +141,23 @@ class Infra12212Provisioner:
         getDatabaseDefaults()
 
         print 'Targeting Server Groups...'
-        serverGroupsToTarget = list(self.JRF_12212_TEMPLATES['serverGroupsToTarget'])
+        managedName= '%s%s' % (managedNameBase, 1)
+	print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
+        serverGroupsToTarget = list(self.JRF_12213_TEMPLATES['serverGroupsToTarget'])
         cd('/')
-        for server in self.SERVERS:
-            if not server == 'AdminServer':
-                setServerGroups(server, serverGroupsToTarget)
-		print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + server
-                cd('/Servers/' + server)
-                set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
-        cd('/')
-        for cluster in self.CLUSTERS:
-            print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + cluster
-            cd('/Cluster/' + cluster)
-            set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+        setServerGroups(managedName, serverGroupsToTarget)
+	print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
+        cd('/Servers/' + managedName)
+        set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
 
-        print "Set WLS clusters as target of defaultCoherenceCluster:[" + ",".join(self.CLUSTERS) + "]"
+        print 'Targeting Cluster ...'
+        cd('/')
+        print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + clusterName
+        cd('/Cluster/' + clusterName)
+        set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+        print "Set WLS clusters as target of defaultCoherenceCluster:" + clusterName
         cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
-        set('Target', ",".join(self.CLUSTERS))
+        set('Target', clusterName)
 
         print 'Preparing to update domain...'
         updateDomain()
@@ -201,17 +203,20 @@ class Infra12212Provisioner:
 #############################
 
 def usage():
-    print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> [-name <domain-name>] ' + \
-          '[-user <domain-user>] [-password <domain-password>] ' + \
-          '-rcuDb <rcu-database> [-rcuPrefix <rcu-prefix>] [-rcuSchemaPwd <rcu-schema-password>]'
+    print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> -name <domain-name> ' + \
+          '-user <domain-user> -password <domain-password> ' + \
+          '-rcuDb <rcu-database> -rcuPrefix <rcu-prefix> -rcuSchemaPwd <rcu-schema-password> ' \
+          '-adminListenPort <adminListenPort> -adminName <adminName> ' \
+          '-managedNameBase <managedNameBase> -managedServerPort <managedServerPort> -prodMode <prodMode> ' \
+          '-managedCount <managedCount> -clusterName <clusterName>'
     sys.exit(0)
 
-
+# Uncomment for Debug only
 print str(sys.argv[0]) + " called with the following sys.argv array:"
 for index, arg in enumerate(sys.argv):
     print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
 
-if len(sys.argv) < 6:
+if len(sys.argv) < 16:
     usage()
 
 #oracleHome will be passed by command line parameter -oh.
@@ -262,10 +267,31 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-rcuSchemaPwd':
         rcuSchemaPassword = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-adminListenPort':
+        adminListenPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-adminName':
+        adminName = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-managedNameBase':
+        managedNameBase = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-managedServerPort':
+        managedServerPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-prodMode':
+        prodMode = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-managedServerCount':
+        managedCount = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-clusterName':
+        clusterName = sys.argv[i + 1]
+        i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
-provisioner = Infra12212Provisioner(oracleHome, javaHome, domainParentDir)
-provisioner.createInfraDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword)
+provisioner = Infra12213Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName) 
+provisioner.createInfraDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, managedNameBase, managedServerPort, prodMode, managedCount, clusterName)
