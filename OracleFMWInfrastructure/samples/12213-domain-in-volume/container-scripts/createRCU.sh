@@ -46,7 +46,7 @@ if [ ! -e "$PROPERTIES_FILE" ]; then
    exit
 fi
 # Get RCUPREFIX
-RCU_PREFIX=`awk '{print $1}' $PROPERTIES_FILE | grep RCUPREFIX | cut -d "=" -f2`
+RCUPREFIX=`awk '{print $1}' $PROPERTIES_FILE | grep RCUPREFIX | cut -d "=" -f2`
 if [ -z "$RCUPREFIX" ]; then
    echo "The RCUPREFIX is blank.  The RCUPREFIX must be set in the properties file."
    exit
