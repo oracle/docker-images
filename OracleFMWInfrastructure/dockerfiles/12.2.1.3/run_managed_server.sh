@@ -9,7 +9,7 @@
 set_context() {
    scriptDir="$( cd "$( dirname "$0" )" && pwd )"
    if [ ! -d "${scriptDir}" ]; then
-       echo "Unable to determine the working directory for the domain home in image sample"
+       echo "Unable to determine the working directory for the OracleFMWInfrastructure image"
        echo "Using shell /bin/sh to determine and found ${scriptDir}"
        clean_and_exit
    fi

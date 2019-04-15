@@ -8,7 +8,7 @@
 set_context() {
    scriptDir="$( cd "$( dirname "$0" )" && pwd )"
    if [ ! -d "${scriptDir}" ]; then
-       echo "Unable to determine the working directory for the domain home in image sample"
+       echo "Unable to determine the working directory for the domain in volume sample"
        echo "Using shell /bin/sh to determine and found ${scriptDir}"
        clean_and_exit
    fi
@@ -18,6 +18,7 @@ set_context() {
 set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties  ${scriptDir}/properties/rcu.properties
 
+# Host volume where the domain home will be persisted
 hostvolume=/Users/mydir/temp
 echo "Host volume is $hostvolume"
 
