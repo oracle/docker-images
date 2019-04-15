@@ -29,7 +29,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # ---------------------------
 ENV ORACLE_HOME="/u01/oracle" \
     DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-infradomain}" \
-    CUSTOM_DOMAIN_ROOT="/u01/oracle/user-projects/domains" \
+    CUSTOM_DOMAIN_ROOT="/u01/oracle/user_projects/domains" \
     CUSTOM_DOMAIN_HOME="/u01/oracle/user_projects/domains/${DOMAIN_NAME}" \
     CUSTOM_ADMIN_LISTEN_PORT="${CUSTOM_ADMIN_LISTEN_PORT:-7001}" \
     CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-AdminServer}" \
@@ -45,7 +45,7 @@ ENV ORACLE_HOME="/u01/oracle" \
     CUSTOM_DEBUG_FLAG="${CUSTOM_DEBUG_FLAG:-false}" \
     CUSTOM_JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
     CUSTOM_CONNECTION_STRING="${CUSTOM_CONNECTION_STRING:-"InfraDB:1521/InfraPDB1.us.oracle.com"}" \
-    CUSTOM_PATH="$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
+    CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
 
 
 # Add files required to build this image

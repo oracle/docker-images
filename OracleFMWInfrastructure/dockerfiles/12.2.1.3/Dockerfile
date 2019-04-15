@@ -30,7 +30,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 ENV ORACLE_HOME=/u01/oracle \
     SCRIPT_FILE=/u01/oracle/container-scripts/* \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+    PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 
 #USER root

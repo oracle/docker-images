@@ -4,9 +4,7 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-# If log.nm does not exists, container is starting for 1st time
-# So it should start NM and also associate with AdminServer, as well Managed Server
-# Otherwise, only start NM (container is being restarted)o
+#Start a WebLogic Managed Server in the cluster
 export DOMAIN_HOME=$CUSTOM_DOMAIN_ROOT/$CUSTOM_DOMAIN_NAME
 echo "Domain Home is:  $DOMAIN_HOME"
 echo "Domain Root is:  $CUSTOM_DOMAIN_ROOT"
@@ -21,7 +19,7 @@ echo "Managed Server Name: ${CUSTOM_MANAGED_NAME}"
 echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
-#  Create Domain only if 1st execution
+# Get Admin Server credentials
 SEC_PROPERTIES_FILE=/u01/oracle/properties/domain_security.properties
 if [ ! -e "$SEC_PROPERTIES_FILE" ]; then
     echo "A properties file with the username and password needs to be supplied."
@@ -60,6 +58,7 @@ echo "Java Options: ${JAVA_OPTIONS}"
 
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
 
+# Start Managed Server
 echo "Connecting to Admin Server at http://${CUSTOM_ADMIN_HOST}:${CUSTOM_ADMIN_LISTEN_PORT}"
 ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${CUSTOM_MANAGED_NAME} "http://${CUSTOM_ADMIN_HOST}:${CUSTOM_ADMIN_LISTEN_PORT}"
 
