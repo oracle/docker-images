@@ -19,7 +19,7 @@ echo "Managed Server Name: ${CUSTOM_MANAGED_NAME}"
 echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
-# Get Amin Server credentials
+# Get Admin Server credentials
 SEC_PROPERTIES_FILE=/u01/oracle/properties/domain_security.properties
 if [ ! -e "$SEC_PROPERTIES_FILE" ]; then
     echo "A properties file with the username and password needs to be supplied."
