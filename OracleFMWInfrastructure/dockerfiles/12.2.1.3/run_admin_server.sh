@@ -19,7 +19,7 @@ set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties
 
 # HOST volume where the domain home will be persisted
-hostvolume=/Users/mydirectory/temp
+hostvolume=/home/username/domain_home
 echo "Host volume to write the domain is: $hostvolume"
 
 admin_host() {

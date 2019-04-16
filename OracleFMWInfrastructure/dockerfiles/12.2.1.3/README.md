@@ -87,7 +87,6 @@ The database is created with the default password `Oradoc_db1`. To change the da
 	SQL> alter user sys identified by MYDBPasswd container=all;
 
 ### Build the FMW Infrastructure Image
-There are two Dockerfiles to build the FMW Infrastructure Image, one creates the domain in a volume in the host and one persists a domain inside of a Docker image.
 
   1. To build the `12.2.1.x` FMW Infrastructure image, run:
 
@@ -98,8 +97,9 @@ There are two Dockerfiles to build the FMW Infrastructure Image, one creates the
 	`$ docker images`
 
 #### Start the container
-Start a container from the image created in step 1.
-You can override the default values of the following parameters during runtime with the `-e` option.  For your convinience you can set the environment variables by running 'setEnv.sh`  before running the admin server or managed server containers.  The default values of the environment variables are:
+The domain home will be persisted to a volume in the host, before running the admin server container make sure you have created the external volume with the correct permissions. In order to properly secure data in external volumes, it is an administrator's responsibility to set the appropriate permissions on those directories. To allow the WebLogic Server process to access data in a volume, the user running the container needs to have the proper permission to the volume folder. Please refer to blog [Docker Volumes in WebLogic] (https://blogs.oracle.com/weblogicserver/docker-volumes-in-weblogic] for more information).
+
+You can override the default values of the following parameters during runtime in the `./properties/domain.properties` file. The script `./container-scripts/setEnv.sh` sets the environment variables to configure the domain. The default values of the environment variables are:
 
       * `ADMIN_NAME`                  (default: `AdminServer`)
       * `ADMIN_LISTEN_PORT`           (default: `7001`)
@@ -121,7 +121,6 @@ You can override the default values of the following parameters during runtime w
 
         `$ sh run_admin_server.sh`
 
-**NOTE**: To have access to the `RCU.out` map volume `/u01/oracle/` in the admin server container.
 
   To run Managed Server  call:
 
