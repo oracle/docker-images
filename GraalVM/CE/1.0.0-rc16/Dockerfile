@@ -8,7 +8,7 @@ FROM oraclelinux:7-slim
 # Note: If you are behind a web proxy, set the build variables for the build:
 #       E.g.:  docker build --build-arg "https_proxy=..." --build-arg "http_proxy=..." --build-arg "no_proxy=..." ...
 
-ARG GRAAL_VERSION=1.0.0-rc14
+ARG GRAAL_VERSION=1.0.0-rc16
 ENV LANG=en_US.UTF-8
 
 ENV GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-$GRAAL_VERSION/graalvm-ce-$GRAAL_VERSION-linux-amd64.tar.gz \
