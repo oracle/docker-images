@@ -10,10 +10,10 @@ if [ "$#" -eq  "0" ]
    then
     echo "A properties file with variable definitions should be supplied."
     exit 1
- else
+else
     PROPERTIES_FILE=$1
     echo Export environment variables from the ${PROPERTIES_FILE} properties file
- fi
+fi
 
 extract_env() {
    env_value=`awk '{print}' $PROPERTIES_FILE | grep ^$1= | cut -d "=" -f2`
@@ -21,43 +21,52 @@ extract_env() {
       env_arg=`echo $1=$env_value`
       echo " env_arg: $env_arg"
       export $env_arg
-      ENV_ARG="$ENV_ARG -e $env_arg"
    fi
 }
 
+set_env_arg(){
+  extract_env $1
+  if [ -n "$env_arg" ]; then
+      ENV_ARG="$ENV_ARG -e $env_arg"
+  fi
+}
+   
+
 # Set DOMAIN_NAME
-extract_env DOMAIN_NAME
+set_env_arg DOMAIN_NAME
 
 # Set ADMIN_NAME
-extract_env ADMIN_NAME
+set_env_arg ADMIN_NAME
 
 # Set ADMIN_HOST
-extract_env ADMIN_HOST
+set_env_arg ADMIN_HOST
 
 # Set ADMIN_LISTEN_PORT
-extract_env ADMIN_LISTEN_PORT
+set_env_arg ADMIN_LISTEN_PORT
 
 # Set MANAGEDSERVER_PORT
-extract_env MANAGEDSERVER_PORT
+set_env_arg MANAGEDSERVER_PORT
 
 # Set MANAGED_NAME
-extract_env MANAGED_NAME
+set_env_arg MANAGED_NAME
  
 # Set ADMINISTRATION_PORT_ENABLED
-extract_env ADMINISTRATION_PORT_ENABLED
+set_env_arg ADMINISTRATION_PORT_ENABLED
 
-# Set ADMINISTRATION_PRT
-extract_env ADMINISTRATION_PRT
+# Set ADMINISTRATION_PORT
+set_env_arg ADMINISTRATION_PORT
 
 # Set RCUPREFIX
-extract_env RCUPREFIX
+set_env_arg RCUPREFIX
 
 # Set PRODUCTION_MODE
-extract_env PRODUCTION_MODE
-
+set_env_arg PRODUCTION_MODE
 
 # Set CONNECTION_STRING
-extract_env CONNECTION_STRING
+set_env_arg CONNECTION_STRING
+
+# Set DOMAIN_HOST_VOLUME
+extract_env DOMAIN_HOST_VOLUME
 
 export ENV_ARG=$ENV_ARG
 echo ENV_ARG=$ENV_ARG
