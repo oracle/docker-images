@@ -19,22 +19,18 @@ set_context() {
 set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties
 
-hostvolume=$HOST_VOLUME
-
 admin_host() {
    adminhost=${ADMIN_HOST:-"InfraAdminContainer"}
+   echo "adminhost= ${adminhost}"
 }
 
 managed_name() {
    managedname=${MANAGED_NAME:-"infraServer1"}
-   echo ${managed_name}
+   echo "managedname= ${managedname}"
 }
-
 
 admin_host
 managed_name
-echo "Admin Host is: ${adminhost}"
-echo "ENV_ARG is: ${ENV_ARG}"
 
 echo "docker run -d -p 9802:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname}  oracle/fmw-infrastructure:12.2.1.3 startManagedServer.sh"
 
