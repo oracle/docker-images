@@ -19,9 +19,17 @@ set_context
 
 # HOST volume where the domain home will be persisted
 domain_host_volume() {
-
-   domainhostvol=${DOMAIN_HOST_VOLUME:-"/home/username/domain_home"}
-   echo "Host volume to write the domain is: $domainhostvol"
+   domainhostvol=${DOMAIN_HOST_VOLUME}
+   if [ -z "$domainhostvol" ]; then
+      echo "The parameter DOMAIN_HOST_VOLUME must be set in ${scriptDir}/properties/domain.properties."
+      exit
+   else
+      if [ ! -d "$domainhostvol" ]; then
+         echo "Host volume $domainhostvol is an invalid directory, set DOMAIN_HOST_VOLUME in ${scriptDir}/properties/domain.properties to a valid host directory"
+         exit
+      fi
+   fi
+   echo "The domain configuration will get persisted in the host volume: $domainhostvol"
 }
 
 admin_host() {
