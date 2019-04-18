@@ -1,20 +1,15 @@
 #!/usr/bin/python
-#!/usr/bin/env python
-
-###########################################################################################################
-
-
-# stig.py
+# LICENSE UPL 1.0
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
-# NAME
-#      buildImage.py - <Build the Image>
+# Since: January, 2019
+# Author: paramdeep.saini@oracle.com
+# Name: 
+# Description: python script to install Multinode RAC. This script can install multiple nodes on multiple containers.
 #
-# DESCRIPTION
-#      <This  script will build the Image>
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.      
 #
-# NOTES
 
 
 # Global Variables
