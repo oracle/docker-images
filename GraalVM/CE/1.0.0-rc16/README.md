@@ -10,16 +10,8 @@ Further details can be found on [www.graalvm.org](https://www.graalvm.org).
 
 # How to use these images
 
-The images are intended for use in the **FROM** field of a downstream Dockerfile. For example, specify `FROM oracle/graalvm-ce:1.0.0-rc12`.
+The images are intended for use in the **FROM** field of a downstream Dockerfile. For example, specify `FROM oracle/graalvm-ce:1.0.0-rc16` or a newer tag.
 
-
-# Building the Docker image yourself
-
-Execute the following build command:
-
-```
-docker build -t oracle/graalvm-ce:1.0.0-rc12 .
-```
 
 # License
 The GraalVM CE Dockerfile is licensed under the [Universal Permissive License (UPL), Version 1](https://opensource.org/licenses/UPL).  This license applies to the Dockerfile only, and not to any resulting Docker image.

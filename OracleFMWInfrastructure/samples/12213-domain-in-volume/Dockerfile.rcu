@@ -28,7 +28,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # WLS Configuration
 # ---------------------------
 ENV ORACLE_HOME="/u01/oracle" \
-    CUSTOM_PATH="$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
+    CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
 
 
 # Add files required to build this image

@@ -153,7 +153,7 @@ then
         echo "Domain Configuration Phase"
         echo "=========================="
 
-        wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/createInfraDomain.py -oh ${ORACLE_HOME} -jh ${JAVA_HOME} -parent ${DOMAIN_ROOT} -name ${DOMAIN_NAME} -user ${USER} -password ${PASS} -rcuDb ${CONNECTION_STRING} -rcuPrefix ${RCUPREFIX} -rcuSchemaPwd ${DB_SCHEMA_PASS} -adminListenPort ${ADMIN_LISTEN_PORT} -adminName ${ADMIN_NAME} -adminPortEnabled ${ADMINISTRATION_PORT_ENABLED} -administrationPort ${ADMINISTRATION_PRT} -managedName ${MANAGED_NAME} -managedServerPort ${MANAGEDSERVER_PORT} -prodMode ${PRODUCTION_MODE}
+        wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/createInfraDomain.py -oh ${ORACLE_HOME} -jh ${JAVA_HOME} -parent ${DOMAIN_ROOT} -name ${DOMAIN_NAME} -user ${USER} -password ${PASS} -rcuDb ${CONNECTION_STRING} -rcuPrefix ${RCUPREFIX} -rcuSchemaPwd ${DB_SCHEMA_PASS} -adminListenPort ${ADMIN_LISTEN_PORT} -adminName ${ADMIN_NAME} -adminPortEnabled ${ADMINISTRATION_PORT_ENABLED} -administrationPort ${ADMINISTRATION_PORT} -managedName ${MANAGED_NAME} -managedServerPort ${MANAGEDSERVER_PORT} -prodMode ${PRODUCTION_MODE}
 
         retval=$?
 

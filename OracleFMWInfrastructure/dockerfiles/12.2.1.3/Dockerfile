@@ -30,7 +30,7 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 ENV ORACLE_HOME=/u01/oracle \
     SCRIPT_FILE=/u01/oracle/container-scripts/* \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+    PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
 
 #USER root
@@ -76,7 +76,7 @@ ENV ORACLE_HOME=/u01/oracle \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
     ADMIN_HOST="${ADMIN_HOST:-InfraAdminContainer}" \
     ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-true}" \
-    ADMINISTRATION_PRT="${ADMINISTRATION_PRT:-9002}" \
+    ADMINISTRATION_PORT="${ADMINISTRATION_PORT:-9002}" \
     MANAGEDSERVER_PORT="${MANAGEDSERVER_PORT:-8001}" \
     MANAGED_NAME="${MANAGED_NAME:-infraServer1}" \
     RCUPREFIX="${RCUPREFIX:-INFRA01}" \
