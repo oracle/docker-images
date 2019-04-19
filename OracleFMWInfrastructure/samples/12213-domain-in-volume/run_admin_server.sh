@@ -18,9 +18,20 @@ set_context() {
 set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties  ${scriptDir}/properties/rcu.properties
 
-# Host volume where the domain home will be persisted
-hostvolume=home/username/domain_home
-echo "Host volume is $hostvolume"
+# HOST volume where the domain home will be persisted
+domain_host_volume() {
+   domainhostvol=${CUSTOM_DOMAIN_HOST_VOLUME}
+   if [ -z "$domainhostvol" ]; then
+      echo "The parameter DOMAIN_HOST_VOLUME must be set in ${scriptDir}/properties/domain.properties."
+      exit
+   else
+      if [ ! -d "$domainhostvol" ]; then
+         echo "Host volume $domainhostvol is an invalid directory, set DOMAIN_HOST_VOLUME in ${scriptDir}/properties/domain.properties to a valid host directory"
+         exit
+      fi
+   fi
+   echo "The domain configuration will get persisted in the host volume: $domainhostvol"
+}
 
 admin_host() {
    adminhost=${CUSTOM_ADMIN_HOST:-"InfraAdminContainer"}
@@ -29,7 +40,8 @@ admin_host() {
 #echo "ENV_ARG is: ${ENV_ARG}"
 
 admin_host
+domain_host_volume
 
-echo "docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${hostvolume}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-fmw-domain-in-volume"
+echo "docker run -d -p 9001:7001 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-fmw-domain-in-volume"
 
-docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${hostvolume}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-fmw-domain-in-volume
+docker run -d -p 9001:7001 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-fmw-domain-in-volume

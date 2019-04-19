@@ -124,13 +124,13 @@ We are supplying scripts `run_admin_server.sh` and `run_managed_server.sh` to fa
         `$ sh run_admin_server.sh`
 
 
-  To run Managed Server with base name `infraMS` pass in to the scrtipt `run_managed_server.sh` the name of the managed server you want to run and the host port that will be mapped to the managed server port 8001. To run managed server one with name `infraMS1` and mapped to host port 98001 call:
+  To run Managed Server with base name `infraMS` pass in to the scrtipt `run_managed_server.sh` the name of the managed server you want to run and the host port that will be mapped to the managed server port 8001. To run managed server one with name `infraMS1` and mapped to host port 98004 call:
 
-        `$ sh run_managed_server.sh infraMS1 98001`
+        `$ sh run_managed_server.sh infraMS1 98004`
 
- To run managed server two with name `infraMS2` and mapped to host port 98002 call:
+ To run managed server two with name `infraMS2` and mapped to host port 98006 call:
 
-        `$ sh run_managed_server.sh infraMS2 98002`
+        `$ sh run_managed_server.sh infraMS2 98006`
 
   Access the Administration Console:
 
