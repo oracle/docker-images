@@ -36,7 +36,7 @@ ENV ORACLE_HOME="/u01/oracle" \
     CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-InfraAdminContainer}" \
     CUSTOM_MANAGEDSERVER_PORT="${CUSTOM_MANAGEDSERVER_PORT:-8001}" \
     CUSTOM_MANAGED_BASE_NAME="${CUSTOM_MANAGED_BASE_NAME:-infraServer}" \
-    CUSTOM_MANAGED_NAME="${CUSTOM_MANAGED_NAME:-infraMS1}" \
+    CUSTOM_MANAGED_NAME="${CUSTOM_MANAGED_NAME}" \
     CUSTOM_MANAGED_SERVER_COUNT="${CUSTOM_MANAGED_SERVER_COUNT:-2}" \
     CUSTOM_CLUSTER_NAME="${CUSTOM_CLUSTER_NAME:-infraCluster}" \
     CUSTOM_RCUPREFIX="${CUSTOM_RCUPREFIX:-INFRA01}" \
@@ -46,7 +46,6 @@ ENV ORACLE_HOME="/u01/oracle" \
     CUSTOM_JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
     CUSTOM_CONNECTION_STRING="${CUSTOM_CONNECTION_STRING:-"InfraDB:1521/InfraPDB1.us.oracle.com"}" \
     CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
-
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/container-scripts/

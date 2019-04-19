@@ -5,8 +5,16 @@
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Pass in the managed server name to run and the mapped port
-export CUSTOM_MANAGED_NAME=$1
-export PORT=$2
+   
+if [ "$#" -eq  "0" ]
+   then
+    echo "The managed server name to be started and the docker port to map to the server ports must be passed in"
+    exit 1
+ else
+    managedname=$1
+    mapedport=$2
+    echo Export environment variables from the ${PROPERTIES_FILE} and ${RCU_PROPERTIES_FILE} properties file
+ fi
 
 set_context() {
    scriptDir="$( cd "$( dirname "$0" )" && pwd )"
@@ -28,13 +36,23 @@ admin_host() {
 }
 
 managed_name() {
-   managedname=${CUSTOM_MANAGED_NAME:-"infraMS1"}
-   echo ${managed_name}
+  if [ -z "$managedname" ]; then
+     echo "You must pass in the name of the managed server that you want to start"
+     exit
+  else
+     export managedname=$managedname
+     echo "Name of managed server to be started is $managedname"
+  fi
 }
 
 maped_port() {
-   mapedport=${PORT:-9802}
-   echo ${mapedport}
+  if [ -z "$mapedport" ]; then
+     echo "You must pass in the docker port that will be mapped to the managed server port $CUSTOM_MANAGED_PORT"
+     exit
+  else
+     export mapedport=$mapedport
+     echo "docker port $mapedport will be mapped to managed server port $CUSTOM_MANAGEDSERVER_PORT"
+  fi
 }
 
 admin_host
@@ -42,8 +60,7 @@ managed_name
 maped_port
 echo "Admin Host is: ${adminhost}"
 ENV_ARG="${ENV_ARG} -e CUSTOM_MANAGED_NAME=$managedname"
-#echo "ENV_ARG is: ${ENV_ARG}"
 
-echo "docker run -d -p ${mapedport}:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname} 12213-fmw-domain-in-volume startFMWManagedServer.sh" 
+echo "docker run -d -p ${mapedport}:${CUSTOM_MANAGEDSERVER_PORT} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname} 12213-fmw-domain-in-volume startFMWManagedServer.sh" 
 
-docker run -d -p ${mapedport}:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname} 12213-fmw-domain-in-volume startFMWManagedServer.sh 
+docker run -d -p ${mapedport}:${CUSTOM_MANAGEDSERVER_PORT} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname} 12213-fmw-domain-in-volume startFMWManagedServer.sh 

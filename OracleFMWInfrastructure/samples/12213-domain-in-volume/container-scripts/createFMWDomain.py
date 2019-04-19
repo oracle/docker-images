@@ -212,9 +212,9 @@ def usage():
     sys.exit(0)
 
 # Uncomment for Debug only
-print str(sys.argv[0]) + " called with the following sys.argv array:"
-for index, arg in enumerate(sys.argv):
-    print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
+#print str(sys.argv[0]) + " called with the following sys.argv array:"
+#for index, arg in enumerate(sys.argv):
+#    print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
 
 if len(sys.argv) < 16:
     usage()
