@@ -21,8 +21,9 @@ Go into the image
 
         $ docker exec -it verify_patch /bin/bash
 
-cd OPatch and run:
+Use the OPatch utility, located in `/u01/oracle/oracle_home/OPatch`, to verify that the patch has been installed.
 
+        cd OPatch
         ./opatch lsinventory 
 
 The patch will show in the inventory of applied patches.
