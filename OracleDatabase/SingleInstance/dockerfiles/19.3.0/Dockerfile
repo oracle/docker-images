@@ -31,7 +31,7 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/19c/dbhome_1 \
     INSTALL_DIR=/opt/install \
-    INSTALL_FILE_1="db_home.19.3.zip" \
+    INSTALL_FILE_1="LINUX.X64_193000_db_home.zip" \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
