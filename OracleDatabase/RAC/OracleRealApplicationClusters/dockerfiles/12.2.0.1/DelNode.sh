@@ -12,6 +12,7 @@
 declare -a cluster_nodes
 DEL_NODE=${1}
 NODE_HOSTNAME=$(hostname)
+node_count=0
 
 check_env_vars ()
 {
@@ -54,7 +55,7 @@ fi
   echo "Stopping the Grid and deconfigure the cluster."
   $GRID_HOME/bin/crsctl stop cluster
   $GRID_HOME/crs/install/rootcrs.sh -deconfig -force
- fi
+else
 
 echo "Stopping Grid on deleting node"
 cmd='su - grid -c "ssh ${DEL_NODE} \"sudo ${GRID_HOME}/bin/crsctl stop cluster\""'
@@ -62,6 +63,9 @@ eval $cmd
 
 echo "Deleting the node from the cluster"
 $GRID_HOME/bin/crsctl delete node -n ${DEL_NODE}
+
+echo "getting updated cluster node info from the cluster"
+setNode
 
 echo "Checking if node exist in the cluster or not!"
 containsNode "${DEL_NODE}"  "${cluster_nodes[@]}"
@@ -73,6 +77,8 @@ exit 0 ;
 else
 echo "Node ${DEL_NODE} is still a part of cluster."
 exit 1;
+fi
+
 fi
 }
 
