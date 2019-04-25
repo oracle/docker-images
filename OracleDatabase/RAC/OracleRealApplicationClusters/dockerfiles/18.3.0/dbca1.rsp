@@ -29,7 +29,7 @@ responseFileVersion=/oracle/assistants/rspfmt_dbca_response_schema_v18.0.0
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-gdbName=###ORACLE_SID###
+gdbName=ORCLCDB
 
 #-----------------------------------------------------------------------------
 # Name          : sid
@@ -39,7 +39,7 @@ gdbName=###ORACLE_SID###
 # Default value : <db_name> specified in GDBNAME
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-sid=###ORACLE_SID###
+sid=ORCLCDB
 
 #-----------------------------------------------------------------------------
 # Name          : databaseConfigType
@@ -49,7 +49,8 @@ sid=###ORACLE_SID###
 # Default value : SI
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-databaseConfigType=###DATABASE_CONFIG_TYPE###
+databaseConfigType=RAC
+
 #-----------------------------------------------------------------------------
 # Name          : RACOneNodeServiceName
 # Datatype      : String
@@ -158,7 +159,7 @@ pqCardinality=
 # Default value : false
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-createAsContainerDatabase=###CONTAINER_DB_FLAG###
+createAsContainerDatabase=true
 
 #-----------------------------------------------------------------------------
 # Name          : numberOfPDBs
@@ -168,7 +169,7 @@ createAsContainerDatabase=###CONTAINER_DB_FLAG###
 # Default value : 0
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-numberOfPDBs=###PDB_COUNT###
+numberOfPDBs=1
 
 #-----------------------------------------------------------------------------
 # Name          : pdbName 
@@ -178,7 +179,7 @@ numberOfPDBs=###PDB_COUNT###
 # Default value : None
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-pdbName=###ORACLE_PDB###
+pdbName=ORCLPDB
 
 #-----------------------------------------------------------------------------
 # Name          : useLocalUndoForPDBs 
@@ -199,7 +200,7 @@ useLocalUndoForPDBs=true
 # Mandatory     : No
 #-----------------------------------------------------------------------------
 
-pdbAdminPassword=###ORACLE_PWD###
+pdbAdminPassword=Oracle_12c
 
 #-----------------------------------------------------------------------------
 # Name          : nodelist
@@ -209,7 +210,7 @@ pdbAdminPassword=###ORACLE_PWD###
 # Default value : None
 # Mandatory     : No (Yes for RAC database-centric database )
 #-----------------------------------------------------------------------------
-nodelist=###DB_NODES###
+nodelist=racnode1
 
 #-----------------------------------------------------------------------------
 # Name          : templateName
@@ -219,7 +220,7 @@ nodelist=###DB_NODES###
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-templateName={ORACLE_HOME}/assistants/dbca/templates/General_Purpose.dbc
+templateName=/u01/app/oracle/product/18.3.0/dbhome_1/assistants/dbca/templates/General_Purpose.dbc
 
 #-----------------------------------------------------------------------------
 # Name          : sysPassword
@@ -229,7 +230,7 @@ templateName={ORACLE_HOME}/assistants/dbca/templates/General_Purpose.dbc
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-sysPassword=###ORACLE_PWD###
+sysPassword=Oracle_12c
 
 #-----------------------------------------------------------------------------
 # Name          : systemPassword
@@ -239,7 +240,7 @@ sysPassword=###ORACLE_PWD###
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-systemPassword=###ORACLE_PWD###
+systemPassword=Oracle_12c
 
 #-----------------------------------------------------------------------------
 # Name          : serviceUserPassword
@@ -291,7 +292,7 @@ runCVUChecks=true
 # Mandatory     : Yes, if emConfiguration is specified or
 #                 the value of runCVUChecks is TRUE
 #-----------------------------------------------------------------------------
-dbsnmpPassword=###ORACLE_PWD###
+dbsnmpPassword=Oracle_12c
 
 #-----------------------------------------------------------------------------
 # Name          : omsHost
@@ -542,7 +543,7 @@ variablesFile=
 # Default value : None
 # Mandatory     : NO
 #-----------------------------------------------------------------------------
-variables=DB_UNIQUE_NAME=###ORACLE_SID###,ORACLE_BASE=###DB_BASE###,PDB_NAME=###ORACLE_PDB###,DB_NAME=###ORACLE_SID###,ORACLE_HOME=###DB_HOME###,SID=###ORACLE_SID###
+variables=DB_UNIQUE_NAME=ORCLCDB,ORACLE_BASE=/u01/app/oracle,PDB_NAME=ORCLPDB,DB_NAME=ORCLCDB,ORACLE_HOME=/u01/app/oracle/product/18.3.0/dbhome_1,SID=ORCLCDB
 
 #-----------------------------------------------------------------------------
 # Name          : initParams
@@ -601,4 +602,4 @@ automaticMemoryManagement=false
 # Default value : 
 # Mandatory     : NO
 #-----------------------------------------------------------------------------
-totalMemory=###TOTAL_MEMORY###
+totalMemory=5000

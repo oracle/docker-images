@@ -43,7 +43,7 @@
 #------------------------------------------------------------------------------
 # Do not change the following system generated value. 
 #------------------------------------------------------------------------------
-oracle.install.responseFileVersion=/oracle/install/rspfmt_crsinstall_response_schema_v12.2.0
+oracle.install.responseFileVersion=/oracle/install/rspfmt_crsinstall_response_schema_v18.0.0
 
 ###############################################################################
 #                                                                             #
@@ -70,8 +70,9 @@ INVENTORY_LOCATION=###INVENTORY###
 #   - HA_SWONLY   : To register Grid Infrastructure Software home (can be configured for stand 
 #                   alone server later. This is only supported on Windows.)
 #   - CRS_ADDNODE : To add more nodes to the cluster
+#   - CRS_DELETE_NODE : To delete nodes to the cluster
 #-------------------------------------------------------------------------------
-oracle.install.option=CRS_ADDNODE
+oracle.install.option=###INSTALL_TYPE###
 
 #-------------------------------------------------------------------------------
 # Specify the complete path of the Oracle Base.
@@ -87,6 +88,8 @@ ORACLE_BASE=###GRID_BASE###
 #   than the other two.                                                        #
 #   The value to be specified for OSDBA, OSOPER and OSASM group is only for    #
 #   Unix based Operating System.                                               #
+#   These groups are not required for upgrades, as they will be determined     #
+#   from the Oracle home to upgrade.                                           #
 #                                                                              #
 ################################################################################
 #-------------------------------------------------------------------------------
@@ -96,7 +99,7 @@ oracle.install.asm.OSDBA=asmdba
 
 #-------------------------------------------------------------------------------
 # The OSOPER_GROUP is the OS group which is to be granted SYSOPER privileges.
-# The value to be specified for OSOPER 	group is optional.
+# The value to be specified for OSOPER group is optional.
 # Value should not be provided if configuring Client Cluster - i.e. storageOption=CLIENT_ASM_STORAGE.
 #-------------------------------------------------------------------------------
 oracle.install.asm.OSOPER=asmoper
@@ -113,7 +116,21 @@ oracle.install.asm.OSASM=asmadmin
 #                                                                              #
 ################################################################################
 #-------------------------------------------------------------------------------
+# Specify the type of SCAN configuration for the cluster
+# Allowed values : LOCAL_SCAN and SHARED_SCAN
+#-------------------------------------------------------------------------------
+oracle.install.crs.config.scanType=LOCAL_SCAN
+
+#-------------------------------------------------------------------------------
+# Applicable only if SHARED_SCAN is being configured for cluster
+# Specify the path to the SCAN client data file
+#-------------------------------------------------------------------------------
+oracle.install.crs.config.SCANClientDataFile=
+
+#-------------------------------------------------------------------------------
 # Specify a name for SCAN
+# Applicable if LOCAL_SCAN is being configured for the cluster
+# If you choose to configure the cluster with GNS with Auto assigned Node VIPs(DHCP),then the scanName should be specified in the format of 'SCAN name.Cluster name.GNS sub-domain'
 #-------------------------------------------------------------------------------
 oracle.install.crs.config.gpnp.scanName=
 
@@ -133,7 +150,7 @@ oracle.install.crs.config.gpnp.scanPort=
 # Specify the required cluster configuration
 # Allowed values: STANDALONE, DOMAIN, MEMBERDB, MEMBERAPP
 #-------------------------------------------------------------------------------
-oracle.install.crs.config.ClusterConfiguration=STANDALONE
+oracle.install.crs.config.ClusterConfiguration=
 
 #-------------------------------------------------------------------------------
 # Specify 'true' if you would like to configure the cluster as Extended, else
@@ -141,7 +158,7 @@ oracle.install.crs.config.ClusterConfiguration=STANDALONE
 #
 # Applicable only for STANDALONE and DOMAIN cluster configuration
 #-------------------------------------------------------------------------------
-oracle.install.crs.config.configureAsExtendedCluster=false
+oracle.install.crs.config.configureAsExtendedCluster=
 
 
 #-------------------------------------------------------------------------------
@@ -236,8 +253,7 @@ oracle.install.crs.config.sites=
 # hostnameprefix:lowerbound-upperbound:hostnamesuffix:vipsuffix:role of node
 #
 #-------------------------------------------------------------------------------
-#oracle.install.crs.config.clusterNodes=###PUBLIC_HOSTNAME###:###HOSTNAME_VIP###:HUB
-oracle.install.crs.config.clusterNodes=###CRS_CONFIG_NODES###
+oracle.install.crs.config.clusterNodes=###HOSTNAME###
 
 #-------------------------------------------------------------------------------
 # The value should be a comma separated strings where each string is as shown below
@@ -347,7 +363,7 @@ oracle.install.asm.SYSASMPassword=
 # Example: oracle.install.asm.diskGroup.name=data
 #
 #-------------------------------------------------------------------------------
-oracle.install.asm.diskGroup.name=DATA
+oracle.install.asm.diskGroup.name=
 
 #-------------------------------------------------------------------------------
 # Redundancy level to be used by ASM.
@@ -639,3 +655,14 @@ oracle.install.crs.config.batchinfo=
 # The value to be specified for Virtual hostname is optional.
 #-------------------------------------------------------------------------------
 oracle.install.crs.app.applicationAddress=
+#################################################################################
+#										#
+#			    DELETE NODE OPTIONS					#
+#										#
+#################################################################################
+
+#--------------------------------------------------------------------------------
+# Specify the node names to delete nodes from cluster. 
+# Delete node will be performed only for the remote nodes from the cluster.
+#--------------------------------------------------------------------------------
+oracle.install.crs.deleteNode.nodes=

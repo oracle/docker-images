@@ -212,7 +212,7 @@ oracle.install.crs.config.gpnp.gnsClientDataFile=
 # Specify the GNS subdomain and an unused virtual hostname for GNS service
 #-------------------------------------------------------------------------------
 oracle.install.crs.config.gpnp.gnsSubDomain=###GNS_SUBDOMAIN###
-oracle.install.crs.config.gpnp.gnsVIPAddress=###GNSVIP_ADDRESS###
+oracle.install.crs.config.gpnp.gnsVIPAddress=###GNSVIP_HOSTNAME###
 
 #-------------------------------------------------------------------------------
 # Specify the list of sites - only if configuring an Extended Cluster
@@ -252,7 +252,8 @@ oracle.install.crs.config.sites=
 # hostnameprefix:lowerbound-upperbound:hostnamesuffix:vipsuffix:role of node
 #
 #-------------------------------------------------------------------------------
-oracle.install.crs.config.clusterNodes=###HOSTNAME###:###HOSTNAME_VIP###:HUB
+#oracle.install.crs.config.clusterNodes=###HOSTNAME###:###HOSTNAME_VIP###:HUB
+oracle.install.crs.config.clusterNodes=###CRS_CONFIG_NODES###
 
 #-------------------------------------------------------------------------------
 # The value should be a comma separated strings where each string is as shown below
@@ -374,7 +375,7 @@ oracle.install.asm.diskGroup.name=###DB_ASM_DISKGROUP###
 # Example: oracle.install.asm.diskGroup.redundancy=NORMAL
 #
 #-------------------------------------------------------------------------------
-oracle.install.asm.diskGroup.redundancy=EXTERNAL
+oracle.install.asm.diskGroup.redundancy=###ASM_REDUNDANCY###
 
 #-------------------------------------------------------------------------------
 # Allocation unit size to be used by ASM.
@@ -396,7 +397,7 @@ oracle.install.asm.diskGroup.AUSize=4
 # tuples.
 # Else just specify as list of failure group names
 #-------------------------------------------------------------------------------
-oracle.install.asm.diskGroup.FailureGroups=
+oracle.install.asm.diskGroup.FailureGroups=###ASM_DG_FAILURE_GROUP###
 
 #-------------------------------------------------------------------------------
 # List of disks and their failure groups to create a ASM DiskGroup

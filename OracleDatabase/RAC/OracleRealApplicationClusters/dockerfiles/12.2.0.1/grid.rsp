@@ -235,7 +235,8 @@ oracle.install.crs.config.sites=
 # hostnameprefix:lowerbound-upperbound:hostnamesuffix:vipsuffix:role of node
 #
 #-------------------------------------------------------------------------------
-oracle.install.crs.config.clusterNodes=###HOSTNAME###:###HOSTNAME_VIP###:HUB
+#oracle.install.crs.config.clusterNodes=###HOSTNAME###:###HOSTNAME_VIP###:HUB
+oracle.install.crs.config.clusterNodes=###CRS_CONFIG_NODES###
 
 #-------------------------------------------------------------------------------
 # The value should be a comma separated strings where each string is as shown below
@@ -357,7 +358,7 @@ oracle.install.asm.diskGroup.name=###DB_ASM_DISKGROUP###
 # Example: oracle.install.asm.diskGroup.redundancy=NORMAL
 #
 #-------------------------------------------------------------------------------
-oracle.install.asm.diskGroup.redundancy=EXTERNAL
+oracle.install.asm.diskGroup.redundancy=###ASM_REDUNDANCY###
 
 #-------------------------------------------------------------------------------
 # Allocation unit size to be used by ASM.
@@ -379,7 +380,7 @@ oracle.install.asm.diskGroup.AUSize=4
 # tuples.
 # Else just specify as list of failure group names
 #-------------------------------------------------------------------------------
-oracle.install.asm.diskGroup.FailureGroups=
+oracle.install.asm.diskGroup.FailureGroups=###ASM_DG_FAILURE_GROUP###
 
 #-------------------------------------------------------------------------------
 # List of disks and their failure groups to create a ASM DiskGroup
@@ -474,7 +475,7 @@ oracle.install.asm.gimrDG.AUSize=1
 # tuples.
 # Else just specify as list of failure group names
 #-------------------------------------------------------------------------------
-oracle.install.asm.gimrDG.FailureGroups=
+oracle.install.asm.gimrDG.FailureGroups=###GIMR_DG_FAILURE_GROUP###
 
 #-------------------------------------------------------------------------------
 # List of disks and their failure groups to create GIMR data ASM DiskGroup

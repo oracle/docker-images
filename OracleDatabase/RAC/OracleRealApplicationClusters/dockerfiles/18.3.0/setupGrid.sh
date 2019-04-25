@@ -27,7 +27,7 @@ mkdir -p $INVENTORY
 chown -R grid:oinstall $INVENTORY
 
 chmod 666 /etc/sudoers
-echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+echo "oracle       ALL=(ALL)       NOPASSWD: /usr/bin/passwd" >> /etc/sudoers
 echo "grid       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
