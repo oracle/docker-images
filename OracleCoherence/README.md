@@ -8,7 +8,7 @@ The certification of Coherence on Docker does not require the use of any file pr
 For more information and documentation, read the [Docker Images from Oracle Linux](https://registry.hub.docker.com/_/oraclelinux/) page.
 
 ### Standalone Distribution
-For more information on the Coherence Standalone Distribution, visit [Coherence 12.2.1 Documentation](http://docs.oracle.com/middleware/1221/coherence/index.html).
+For more information on the Coherence Standalone Distribution, visit [Coherence 12.2.1 Documentation](http://docs.oracle.com/middleware/12213/coherence/index.html).
 
 ## Building Oracle JDK (Server JRE) base image
 Before you can build these Oracle Coherence images you must have built the required Oracle Java 8 base image (see [Oracle Java images](../OracleJava/))
@@ -21,11 +21,11 @@ Follow this procedure:
 
 	`$ git clone git@github.com:oracle/docker-images.git`
 
-2. Go to the **OracleCoherence/dockerfiles/12.2.1** folder
+2. Go to the **OracleCoherence/dockerfiles/12.2.1.3** folder
 
-        $ cd OracleCoherence/dockerfiles/12.2.1
+        $ cd OracleCoherence/dockerfiles/12.2.1.3
 
-3. [Download](http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html) and drop the Coherence distribution file of your choice into this folder. The build script supports either building an image from either the Standalone Installer, **fmw_12.2.1.0.0_coherence_Disk1_1of1.zip** or the Quick Installer **fmw_12.2.1.0.0_coherence_quick_Disk1_1of1.zip**
+3. [Download](http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html) and drop the Coherence distribution file of your choice into this folder. The build script supports either building an image from either the Standalone Installer, **fmw_12.2.1.3.0_coherence_Disk1_1of1.zip** or the Quick Installer **fmw_12.2.1.3.0_coherence_quick_Disk1_1of1.zip**
 
 4. Execute the build script `buildDockerImage.sh`.
 
@@ -43,11 +43,11 @@ Follow this procedure:
 
         $ sh buildDockerImage.sh -q
 
-    If you are using a later version of Coherence than 12.2.1.0.0 then you can use the `-v` parameter to specify a version. For example if you are using `12.2.1.1.0` you would run:
+    If you are using a different version of Coherence than 12.2.1.3.0 then you can use the `-v` parameter to specify a version. For example if you are using `12.2.1.2.0` you would run:
 
-        $ sh buildDockerImage.sh -v 12.2.1.1.0
+        $ sh buildDockerImage.sh -v 12.2.1.2.0
 
-5. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example if the Standalone installer is used the image will be `oracle/coherence:12.2.1.0.0-standalone`
+5. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example if the Standalone installer is used the image will be `oracle/coherence:12.2.1.3.0-standalone`
 
 6. The image is built with a shell script as its ENTRYPOINT that allows the image to be run using the normal Docker run command. See the [Image Usage](00.imageusage) documentation.
 

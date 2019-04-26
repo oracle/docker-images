@@ -58,30 +58,32 @@ function check_wls {
     echo -e "WebLogic Server has $action"
 }
 
+
 ADD_DOMAIN=1
-if [  -f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log ]; then
+if [  -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log ]; then
     exit
 fi
 
 # Create Domain only if 1st execution
-PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain.properties
-if [ ! -e "${PROPERTIES_FILE}" ]; then
+DOMAIN_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain.properties
+SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain_security.properties
+if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
    echo "A properties file with the username and password needs to be supplied."
    exit
 fi
 
 # Get Username
-USER=`awk '{print $1}' ${PROPERTIES_FILE} | grep username | cut -d "=" -f2`
+USER=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep username | cut -d "=" -f2`
 if [ -z "${USER}" ]; then
    echo "The domain username is blank.  The Admin username must be set in the properties file."
    exit
 fi
 # Get Password
-PASS=`awk '{print $1}' ${PROPERTIES_FILE} | grep password | cut -d "=" -f2`
+PASS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep password | cut -d "=" -f2`
 if [ -z "${PASS}" ]; then
    echo "The domain password is blank.  The Admin password must be set in the properties file."
    exit
 fi
 
 # Create domain
-wlst.sh -skipWLSModuleScanning -loadProperties ${PROPERTIES_FILE}  /u01/oracle/create-wls-domain.py
+wlst.sh -skipWLSModuleScanning -loadProperties ${DOMAIN_PROPERTIES_FILE} -loadProperties ${SEC_PROPERTIES_FILE}  /u01/oracle/create-wls-domain.py

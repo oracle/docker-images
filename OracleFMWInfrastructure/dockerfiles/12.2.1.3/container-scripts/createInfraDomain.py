@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -23,19 +23,6 @@ class Infra12213Provisioner:
         'infra_cluster' : {}
     }
 
-    SERVERS = {
-        'AdminServer' : {
-            'ListenAddress': '',
-            'ListenPort': 7001,
-            'Machine': 'machine1'
-        },
-        'infra_server1' : {
-            'ListenAddress': '',
-            'ListenPort': 8001,
-            'Machine': 'machine1',
-            'Cluster': 'infra_cluster'
-        }
-    }
 
     JRF_12213_TEMPLATES = {
         'baseTemplate' : '@@ORACLE_HOME@@/wlserver/common/templates/wls/wls.jar',
@@ -49,28 +36,51 @@ class Infra12213Provisioner:
         'serverGroupsToTarget' : [ 'JRF-MAN-SVR', 'WSMPM-MAN-SVR' ]
     }
 
-    def __init__(self, oracleHome, javaHome, domainParentDir):
+    def __init__(self, oracleHome, javaHome, domainParentDir, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         return
 
-    def createInfraDomain(self, name, user, password, db, dbPrefix, dbPassword):
-        domainHome = self.createBaseDomain(name, user, password)
+    def createInfraDomain(self, name, user, password, db, dbPrefix, dbPassword, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode):
+        domainHome = self.createBaseDomain(name, user, password, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode)
         self.extendDomain(domainHome, db, dbPrefix, dbPassword)
 
-    def createBaseDomain(self, name, user, password):
+    def createBaseDomain(self, name, user, password, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode):
         baseTemplate = self.replaceTokens(self.JRF_12213_TEMPLATES['baseTemplate'])
 
         readTemplate(baseTemplate)
         setOption('DomainName', name)
         setOption('JavaHome', self.javaHome)
-        setOption('ServerStartMode', 'prod')
+        setOption('ServerStartMode', prodMode)
         set('Name', domainName)
+
+        # Set Administration Port
+        # =======================
+        if adminPortEnabled != "false":
+           set('AdministrationPort', int(administrationPort))
+           set('AdministrationPortEnabled', 'true')
+
+        # Create Admin Server
+        # =======================
+        print 'Creating Admin Server...'
+        cd('/Servers/AdminServer')
+        #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
+        set('ListenPort', int(adminListenPort))
+        set('Name', adminName)
+        if adminPortEnabled != "false":
+           create('AdminServer','SSL')
+           cd('SSL/AdminServer')
+           set('Enabled', 'True')
+
+        # Define the user password for weblogic
+        # =====================================
         cd('/Security/' + domainName + '/User/weblogic')
         set('Name', user)
         set('Password', password)
 
+        # Create  Cluster
+        # =======================
         print 'Creating cluster...'
         for cluster in self.CLUSTERS:
             cd('/')
@@ -79,6 +89,8 @@ class Infra12213Provisioner:
             for param in  self.CLUSTERS[cluster]:
                 set(param, self.CLUSTERS[cluster][param])
 
+        # Create Node Manager
+        # =======================
         print 'Creating Node Managers...'
         for machine in self.MACHINES:
             cd('/')
@@ -89,18 +101,21 @@ class Infra12213Provisioner:
             for param in self.MACHINES[machine]:
                 set(param, self.MACHINES[machine][param])
 
-        print 'Creating Servers...'
-        for server in self.SERVERS:
-            cd('/')
-            if server == 'AdminServer':
-                cd('Server/' + server)
-                for param in self.SERVERS[server]:
-                    set(param, self.SERVERS[server][param])
-                continue
-            create(server, 'Server')
-            cd('Server/' + server)
-            for param in self.SERVERS[server]:
-                set(param, self.SERVERS[server][param])
+
+        # Create Managed Server
+        # =======================
+        print 'Creating Managed Server...'
+        cd('/')  
+        create(managedName, 'Server')
+        cd('/Servers/%s/' % managedName )
+        print('managed server name is %s' % managedName);
+        #   set('ListenAddress', '%s-%s' % (domain_uid, name_svc))
+        set('ListenPort', int(managedServerPort))
+        set('Cluster', 'infra_cluster')
+        if adminPortEnabled != "false":
+           create(managedName,'SSL')
+           cd('SSL/%s' % managedName)
+           set('Enabled', 'True')
 
         setOption('OverwriteDomain', 'true')
         domainHome = self.domainParentDir + '/' + name
@@ -114,6 +129,7 @@ class Infra12213Provisioner:
 
     def extendDomain(self, domainHome, db, dbPrefix, dbPassword):
         print 'Extending domain at ' + domainHome
+        print 'Database  ' + db 
         readDomain(domainHome)
         setOption('AppDir', self.domainParentDir + '/applications')
 
@@ -125,6 +141,7 @@ class Infra12213Provisioner:
 
         print 'Configuring the Service Table DataSource...'
         fmwDb = 'jdbc:oracle:thin:@' + db
+        print 'fmwDatabase  ' + fmwDb 
         cd('/JDBCSystemResource/LocalSvcTblDataSource/JdbcResource/LocalSvcTblDataSource')
         cd('JDBCDriverParams/NO_NAME_0')
         set('DriverName', 'oracle.jdbc.OracleDriver')
@@ -141,12 +158,11 @@ class Infra12213Provisioner:
         print 'Targeting Server Groups...'
         serverGroupsToTarget = list(self.JRF_12213_TEMPLATES['serverGroupsToTarget'])
         cd('/')
-        for server in self.SERVERS:
-            if not server == 'AdminServer':
-                setServerGroups(server, serverGroupsToTarget)
-		print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + server
-                cd('/Servers/' + server)
-                set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+        setServerGroups(managedName, serverGroupsToTarget)
+	print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + managedName
+        cd('/Servers/' + managedName)
+        set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+
         cd('/')
         for cluster in self.CLUSTERS:
             print "Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + cluster
@@ -206,10 +222,10 @@ def usage():
           '-rcuDb <rcu-database> [-rcuPrefix <rcu-prefix>] [-rcuSchemaPwd <rcu-schema-password>]'
     sys.exit(0)
 
-
-print str(sys.argv[0]) + " called with the following sys.argv array:"
-for index, arg in enumerate(sys.argv):
-    print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
+# Uncomment for Debug only
+#print str(sys.argv[0]) + " called with the following sys.argv array:"
+#for index, arg in enumerate(sys.argv):
+#    print "sys.argv[" + str(index) + "] = " + str(sys.argv[index])
 
 if len(sys.argv) < 6:
     usage()
@@ -262,10 +278,31 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-rcuSchemaPwd':
         rcuSchemaPassword = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-adminListenPort':
+        adminListenPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-adminName':
+        adminName = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-adminPortEnabled':
+        adminPortEnabled = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-administrationPort':
+        administrationPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-managedName':
+        managedName = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-managedServerPort':
+        managedServerPort = sys.argv[i + 1]
+        i += 2
+    elif sys.argv[i] == '-prodMode':
+        prodMode = sys.argv[i + 1]
+        i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
-provisioner = Infra12213Provisioner(oracleHome, javaHome, domainParentDir)
-provisioner.createInfraDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword)
+provisioner = Infra12213Provisioner(oracleHome, javaHome, domainParentDir, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode)
+provisioner.createInfraDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword, adminListenPort, adminName, adminPortEnabled, administrationPort, managedName, managedServerPort, prodMode)

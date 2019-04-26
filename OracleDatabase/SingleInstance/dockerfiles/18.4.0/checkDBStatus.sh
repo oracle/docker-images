@@ -10,6 +10,7 @@
 #               1 = PDB is not open
 #               2 = Sql Plus execution failed
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+<<<<<<< HEAD
 # 
 
 ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
@@ -23,6 +24,22 @@ status=`su -p -c - oracle "sqlplus -s / as sysdba" << EOF
    set heading off;
    set pagesize 0;
    SELECT open_mode FROM v\\$pdbs WHERE name COLLATE BINARY_CI = '$ORACLE_PDB';
+=======
+#
+
+ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
+OPEN_MODE="READ WRITE"
+ORAENV_ASK=NO
+source oraenv
+
+[ -f "$ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab" ] || exit 1;
+
+# Check Oracle at least one PDB has open_mode "READ WRITE" and store it in status
+status=`su -p oracle -c "sqlplus -s / as sysdba" << EOF
+   set heading off;
+   set pagesize 0;
+   SELECT DISTINCT open_mode FROM v\\$pdbs WHERE open_mode = '$OPEN_MODE';
+>>>>>>> upstream/master
    exit;
 EOF`
 
@@ -30,10 +47,17 @@ EOF`
 ret=$?
 
 # SQL Plus execution was successful and PDB is open
+<<<<<<< HEAD
 if [ $ret -eq 0 ] && [ "$status" = "$POSITIVE_RETURN" ]; then
    exit 0;
 # PDB is not open
 elif [ "$status" != "$POSITIVE_RETURN" ]; then
+=======
+if [ $ret -eq 0 ] && [ "$status" = "$OPEN_MODE" ]; then
+   exit 0;
+# PDB is not open
+elif [ "$status" != "$OPEN_MODE" ]; then
+>>>>>>> upstream/master
    exit 1;
 # SQL Plus execution failed
 else

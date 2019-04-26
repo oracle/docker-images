@@ -1,10 +1,18 @@
 # LICENSE UPL 1.0
 #
+<<<<<<< HEAD
 # Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 11g Release 2 Express Edition
+=======
+# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile for Oracle Database 18c Express Edition
+>>>>>>> upstream/master
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -18,11 +26,14 @@
 # Run: 
 #      $ docker build -t oracle/database:18.4.0-xe -f Dockerfile.xe .
 #
+<<<<<<< HEAD
 # IMPORTANT
 # ---------
 # Oracle XE requires Docker 1.10.0 and above:
 # Oracle XE uses shared memory for MEMORY_TARGET and needs at least 1 GB.
 # Docker only supports --shm-size since Docker 1.10.0
+=======
+>>>>>>> upstream/master
 #
 # Pull base image
 # ---------------
@@ -41,6 +52,10 @@ ENV ORACLE_BASE=/opt/oracle \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
     CONF_FILE="oracle-xe-18c.conf" \
+<<<<<<< HEAD
+=======
+    CHECK_SPACE_FILE="checkSpace.sh" \
+>>>>>>> upstream/master
     CHECK_DB_FILE="checkDBStatus.sh" \
     INSTALL_DIR="$HOME/install" \
     ORACLE_DOCKER_INSTALL="true"
@@ -50,16 +65,28 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 
 # Copy binaries
 # -------------
+<<<<<<< HEAD
 COPY $INSTALL_FILE_1 $RUN_FILE $PWD_FILE $CHECK_DB_FILE $INSTALL_DIR/
 COPY $CONF_FILE /etc/sysconfig/
 
 RUN cd $INSTALL_DIR && \
     yum -y install oracle-database-preinstall-18c file openssl $INSTALL_FILE_1 && \
+=======
+COPY $CHECK_SPACE_FILE $INSTALL_FILE_1 $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
+
+RUN chmod ug+x $INSTALL_DIR/*.sh && \
+    sync && \
+    $INSTALL_DIR/$CHECK_SPACE_FILE && \
+    cd $INSTALL_DIR && \
+    yum -y install openssl oracle-database-preinstall-18c && \
+    yum -y install $INSTALL_FILE_1 && \
+>>>>>>> upstream/master
     rm -rf /var/cache/yum && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
     ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
     mkdir -p $ORACLE_BASE/oradata /home/oracle && \
+<<<<<<< HEAD
     chown -R oracle:oinstall $ORACLE_BASE/oradata /home/oracle && \
     mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
@@ -69,6 +96,16 @@ RUN cd $INSTALL_DIR && \
     rm -rf $INSTALL_DIR && \
     target_txt=$(cat /etc/security/limits.d/oracle-database-preinstall-18c.conf | grep -e 'oracle *hard *memlock*') && \
     sed -i "/^$target_txt/ c#$target_txt" /etc/security/limits.d/oracle-database-preinstall-18c.conf && \
+=======
+    chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
+    mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
+    mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
+    mv $INSTALL_DIR/$CHECK_DB_FILE $ORACLE_BASE/ && \
+    mv $INSTALL_DIR/$CONF_FILE /etc/sysconfig/ && \
+    ln -s $ORACLE_BASE/$PWD_FILE / && \
+    cd $HOME && \
+    rm -rf $INSTALL_DIR && \
+>>>>>>> upstream/master
     chmod ug+x $ORACLE_BASE/*.sh
 
 VOLUME ["$ORACLE_BASE/oradata"]

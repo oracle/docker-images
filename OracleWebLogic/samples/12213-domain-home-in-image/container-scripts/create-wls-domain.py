@@ -22,24 +22,24 @@ def getEnvVar(var):
 
 # This python script is used to create a WebLogic domain
 
-#domain_uid                   = os.environ.get("DOMAIN_UID")
-hostname                      = socket.gethostname()
+#domain_uid                   = DOMAIN_UID
 server_port                   = int(os.environ.get("MANAGED_SERVER_PORT"))
 domain_path                   = os.environ.get("DOMAIN_HOME")
-cluster_name                  = os.environ.get("CLUSTER_NAME")
-admin_server_name             = os.environ.get("ADMIN_SERVER_NAME")
+cluster_name                  = CLUSTER_NAME
+print('cluster_name             : [%s]' % cluster_name);
+admin_server_name             = ADMIN_NAME
 #admin_server_name_svc        = os.environ.get("ADMIN_SERVER_NAME_SVC")
 admin_port                    = int(os.environ.get("ADMIN_PORT"))
 domain_name                   = os.environ.get("DOMAIN_NAME")
-#t3_channel_port              = int(os.environ.get("T3_CHANNEL_PORT"))
-#t3_public_address            = os.environ.get("T3_PUBLIC_ADDRESS")
-number_of_ms                  = int(os.environ.get("CONFIGURED_MANAGED_SERVER_COUNT"))
-cluster_type                  = os.environ.get("CLUSTER_TYPE")
-managed_server_name_base      = os.environ.get("MANAGED_SERVER_NAME_BASE")
-#managed_server_name_base_svc = os.environ.get("MANAGED_SERVER_NAME_BASE_SVC")
-#domain_logs                   = os.environ.get("DOMAIN_LOGS_DIR")
-#script_dir                    = os.environ.get("CREATE_DOMAIN_SCRIPT_DIR")
-production_mode_enabled       = os.environ.get("PRODUCTION_MODE_ENABLED")
+t3_channel_port               = int(T3_CHANNEL_PORT)
+t3_public_address             = T3_PUBLIC_ADDRESS
+number_of_ms                  = int(CONFIGURED_MANAGED_SERVER_COUNT)
+cluster_type                  = CLUSTER_TYPE
+managed_server_name_base      = MANAGED_SERVER_NAME_BASE
+#managed_server_name_base_svc = MANAGED_SERVER_NAME_BASE_SVC
+#domain_logs                  = DOMAIN_LOGS_DIR
+#script_dir                   = CREATE_DOMAIN_SCRIPT_DIR
+production_mode_enabled       = PRODUCTION_MODE_ENABLED
 
 # Read the domain secrets from the common python file
 #execfile('%s/read-domain-secret.py' % script_dir)
@@ -50,12 +50,13 @@ print('admin_server_name        : [%s]' % admin_server_name);
 print('admin_port               : [%s]' % admin_port);
 print('cluster_name             : [%s]' % cluster_name);
 print('server_port              : [%s]' % server_port);
-print('hostname                 : [%s]' % hostname);
 print('number_of_ms             : [%s]' % number_of_ms);
 print('cluster_type             : [%s]' % cluster_type);
 print('managed_server_name_base : [%s]' % managed_server_name_base);
 print('production_mode_enabled  : [%s]' % production_mode_enabled);
-print('dsname                   : [%s]' % dsname);
+#print('dsname                   : [%s]' % dsname);
+print('t3_channel_port          : [%s]' % t3_channel_port);
+print('t3_public_address        : [%s]' % t3_public_address);
 
 # Open default domain template
 # ============================
@@ -75,12 +76,12 @@ set('ListenPort', admin_port)
 set('Name', admin_server_name)
 
 
-#create('T3Channel', 'NetworkAccessPoint')
-#cd('/Servers/%s/NetworkAccessPoints/T3Channel' % admin_server_name)
-#set('PublicPort', t3_channel_port)
-#set('PublicAddress', t3_public_address)
+create('T3Channel', 'NetworkAccessPoint')
+cd('/Servers/%s/NetworkAccessPoints/T3Channel' % admin_server_name)
+set('PublicPort', t3_channel_port)
+set('PublicAddress', t3_public_address)
 #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
-#set('ListenPort', t3_channel_port)
+set('ListenPort', t3_channel_port)
 
 #cd('/Servers/%s' % admin_server_name)
 #create(admin_server_name, 'Log')
@@ -152,56 +153,56 @@ else:
   set('DynamicClusterSize', number_of_ms)
   set('MaxDynamicClusterSize', number_of_ms)
   set('CalculatedListenPorts', false)
-  set('Id', 1)
 
   print('Done setting attributes for Dynamic Cluster: %s' % cluster_name);
 
 # Create a Data Source
 # ======================
-cd('/')
-print('Configuring a Data Source: %s' % dsname);
-create(dsname, 'JDBCSystemResource')
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-cmo.setName(dsname)
+#cd('/')
+#print('Configuring a Data Source: %s' % dsname);
+#create(dsname, 'JDBCSystemResource')
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#cmo.setName(dsname)
 
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-create('myJdbcDataSourceParams','JDBCDataSourceParams')
-cd('JDBCDataSourceParams/NO_NAME_0')
-set('JNDIName', java.lang.String(dsjndiname))
-set('GlobalTransactionsProtocol', java.lang.String('None'))
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#create('myJdbcDataSourceParams','JDBCDataSourceParams')
+#cd('JDBCDataSourceParams/NO_NAME_0')
+#set('JNDIName', java.lang.String(dsjndiname))
+#set('GlobalTransactionsProtocol', java.lang.String('None'))
 
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-create('myJdbcDriverParams','JDBCDriverParams')
-cd('JDBCDriverParams/NO_NAME_0')
-set('DriverName', dsdriver)
-set('URL', dsurl)
-set('PasswordEncrypted', dspassword)
-set('UseXADataSourceInterface', 'false')
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#create('myJdbcDriverParams','JDBCDriverParams')
+#cd('JDBCDriverParams/NO_NAME_0')
+#set('DriverName', dsdriver)
+#set('URL', dsurl)
+#set('PasswordEncrypted', dspassword)
+#set('UseXADataSourceInterface', 'false')
 
-print 'create JDBCDriverParams Properties'
-create('myProperties','Properties')
-cd('Properties/NO_NAME_0')
-create('user','Property')
-cd('Property/user')
-set('Value', dsusername)
+#print 'create JDBCDriverParams Properties'
+#create('myProperties','Properties')
+#cd('Properties/NO_NAME_0')
+#create('user','Property')
+#cd('Property/user')
+#set('Value', dsusername)
 
-cd('../../')
-create('databaseName','Property')
-cd('Property/databaseName')
-set('Value', dsdbname)
+#cd('../../')
+#create('databaseName','Property')
+#cd('Property/databaseName')
+#set('Value', dsdbname)
 
-print 'create JDBCConnectionPoolParams'
-cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
-create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
-cd('JDBCConnectionPoolParams/NO_NAME_0')
-set('TestTableName','SQL SELECT 1 FROM DUAL')
-set('InitialCapacity',int(dsinitalcapacity))
+#print 'create JDBCConnectionPoolParams'
+#cd('/JDBCSystemResource/' + dsname + '/JdbcResource/' + dsname)
+#create('myJdbcConnectionPoolParams','JDBCConnectionPoolParams')
+#cd('JDBCConnectionPoolParams/NO_NAME_0')
+#set('TestTableName','SQL SELECT 1 FROM DUAL')
+#set('InitialCapacity',int(dsinitalcapacity))
 
-print('Done setting attributes for Data Source: %s' % dsname);
+#print('Done setting attributes for Data Source: %s' % dsname);
 
 # Assign
 # ======
-assign('JDBCSystemResource', dsname, 'Target', cluster_name)
+# Uncomment to target and enable the data source for the cluster
+# assign('JDBCSystemResource', dsname, 'Target', cluster_name)
 
 # Write Domain
 # ============

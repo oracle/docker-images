@@ -58,37 +58,41 @@ function check_wls {
     echo -e "WebLogic Server has $action"
 }
 
-
-export AS_HOME="${DOMAIN_HOME}/servers/${ADMIN_SERVER_NAME}"
+export AS_HOME="${DOMAIN_HOME}/servers/${ADMIN_NAME}"
 export AS_SECURITY="${AS_HOME}/security"
 
-if [  -f ${AS_HOME}/logs/${ADMIN_SERVER_NAME}.log ]; then
+if [  -f ${AS_HOME}/logs/${ADMIN_NAME}.log ]; then
     exit
 fi
 
-echo "Admin Server Name: ${ADMIN_SERVER_NAME}"
 echo "Admin Server Home: ${AS_HOME}"
 echo "Admin Server Security: ${AS_SECURITY}"
 
-# Create Domain only if 1st execution
-PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
-if [ ! -e "${PROPERTIES_FILE}" ]; then
-   echo "A properties file with the username and password needs to be supplied."
+SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/security.properties
+if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
+   echo "A security.properties file with the username and password needs to be supplied."
    exit
 fi
 
 # Get Username
-USER=`awk '{print $1}' ${PROPERTIES_FILE} | grep username | cut -d "=" -f2`
+USER=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep username | cut -d "=" -f2`
 if [ -z "${USER}" ]; then
    echo "The domain username is blank.  The Admin username must be set in the properties file."
    exit
 fi
 # Get Password
-PASS=`awk '{print $1}' ${PROPERTIES_FILE} | grep password | cut -d "=" -f2`
+PASS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep password | cut -d "=" -f2`
 if [ -z "${PASS}" ]; then
    echo "The domain password is blank.  The Admin password must be set in the properties file."
    exit
 fi
+
+#Define Java Options
+JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
+if [ -z "${JAVA_OPTIONS}" ]; then
+   JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
+fi
+export JAVA_OPTIONS=${JAVA_OPTIONS}
 
 # Create domain
 mkdir -p ${AS_SECURITY}
@@ -103,7 +107,7 @@ ${DOMAIN_HOME}/bin/startWebLogic.sh &
 check_wls "started" localhost ${ADMIN_PORT} 2
 
 # tail the Admin Server Logs
-tail -f ${AS_HOME}/logs/${ADMIN_SERVER_NAME}.log &
+tail -f ${AS_HOME}/logs/${ADMIN_NAME}.log &
 
 childPID=$!
 wait $childPID

@@ -23,42 +23,26 @@ FROM oracle/weblogic:12.2.1.3-developer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
-ARG CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}"
-
-ARG DOM_ADMIN_PORT="${DOM_ADMIN_PORT:-7001}"  
-ARG DOM_ADMIN_NAME="${DOM_ADMIN_NAME:-AdminServer}" 
-ARG MANAGED_SERVER_NAME_BASE="${MANAGED_SERVER_NAME_BASE:-MS}"
-ARG MANAGED_SERVER_PORT="${MANAGED_SERVER_PORT:-8001}"
-ARG DOM_CLUSTER_NAME="${DOM_CLUSTER_NAME:-DockerCluster}" 
-ARG DOM_DEBUG_FLAG="${DOM_DEBUG_FLAG:-true}" 
-ARG PRODUCTION_MODE_ENABLED="${DOM_PRODUCTION_MODE_ENABLED:-false}"
-ARG CLUSTER_TYPE="${CLUSTER_TYPE:-DYNAMIC}"
-ARG CONFIGURED_MANAGED_SERVER_COUNT="${CONFIGURED_MANAGED_SERVER_COUNT:-2}" 
+ARG CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-domain1}"
+ARG CUSTOM_ADMIN_PORT="${CUSTOM_ADMIN_PORT:-7001}"  
+ARG CUSTOM_MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT:-8001}"
+ARG CUSTOM_DEBUG_PORT="${CUSTOM_DEBUG_PORT:-8453}"
+ARG CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-admin-server}"
+ARG CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-wlsadmin}"
 
 # WLS Configuration
 # ---------------------------
-ENV DOMAIN_NAME="${CUSTOM_DOMAIN_NAME}" \
-    PRE_DOMAIN_HOME=/u01/oracle/user_projects \
-    ADMIN_HOST="wlsadmin" \
-    NM_PORT="5556" \
-    DEBUG_PORT="8453" \
-    ORACLE_HOME=/u01/oracle \
-    CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true"  \
-    DOMAIN_HOME="/u01/oracle/user_projects/domains/${DOMAIN_NAME}" \
-    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
-
-# Domain and Server environment variables
-# ------------------------------------------------------------
-ENV ADMIN_PORT="${DOM_ADMIN_PORT}"  \
-    ADMIN_SERVER_NAME="${DOM_ADMIN_NAME}" \
-    MANAGED_SERVER_NAME_BASE="${MANAGED_SERVER_NAME_BASE}" \
-    MANAGE_S_NAME="${MANAGE_S_NAME}" \
-    MANAGED_SERVER_PORT="${MANAGED_SERVER_PORT}" \
-    CLUSTER_NAME="${DOM_CLUSTER_NAME}" \
-    DEBUG_FLAG="$(DOM_DEBUG_FLAG}" \
-    CONFIGURED_MANAGED_SERVER_COUNT="${CONFIGURED_MANAGED_SERVER_COUNT}" \
+ENV ORACLE_HOME=/u01/oracle \
     PROPERTIES_FILE_DIR="/u01/oracle/properties" \
-    PRODUCTION_MODE_ENABLED="${PRODUCTION_MODE_ENABLED}"
+    DOMAIN_NAME="${CUSTOM_DOMAIN_NAME}" \
+    DOMAIN_HOME="/u01/oracle/user_projects/domains/${CUSTOM_DOMAIN_NAME}" \
+    ADMIN_PORT="${CUSTOM_ADMIN_PORT}" \
+    ADMIN_NAME="${CUSTOM_ADMIN_NAME}" \
+    ADMIN_HOST="${CUSTOM_ADMIN_HOST}" \
+    MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT}" \
+    MANAGED_SERV_NAME="${MANAGED_SERV_NAME}" \
+    DEBUG_PORT="8453" \
+    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
@@ -67,20 +51,21 @@ COPY container-scripts/* /u01/oracle/
 USER root
 RUN chmod +xw /u01/oracle/*.sh && \
     chmod +xw /u01/oracle/*.py && \
-    mkdir +xwr ${PROPERTIES_FILE_DIR} && \
+    mkdir -p ${PROPERTIES_FILE_DIR} && \
     chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
     chown -R oracle:oracle $DOMAIN_HOME && \
     chmod -R a+xwr $DOMAIN_HOME
 
-COPY properties/domain.properties ${PROPERTIES_FILE_DIR}
+COPY properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
+
 # Configuration of WLS Domain
 RUN /u01/oracle/createWLSDomain.sh && \
     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
     chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \
-    rm ${PROPERTIES_FILE_DIR}/domain.properties
+    rm ${PROPERTIES_FILE_DIR}/*.properties
 
-# Expose Node Manager default port, and also default for admin and managed server
+# Expose ports for admin, managed server, and debug
 EXPOSE $ADMIN_PORT $MANAGED_SERVER_PORT $DEBUG_PORT
 
 WORKDIR $DOMAIN_HOME

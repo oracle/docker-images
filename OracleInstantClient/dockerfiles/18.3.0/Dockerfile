@@ -9,9 +9,9 @@
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/instantclient:18.3.0 . 
+#
+# Run:
+#      $ docker build -t oracle/instantclient:18.3.0 .
 #
 #
 FROM oraclelinux:7-slim
@@ -26,4 +26,3 @@ RUN  curl -o /etc/yum.repos.d/public-yum-ol7.repo https://yum.oracle.com/public-
 ENV PATH=$PATH:/usr/lib/oracle/18.3/client64/bin
 
 CMD ["sqlplus", "-v"]
-
