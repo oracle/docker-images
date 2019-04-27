@@ -1,0 +1,67 @@
+# LICENSE UPL 1.0
+#
+# Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile for Oracle Database 18c Release Express Edition plus NFS support
+# 
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) oracle/database:18.4.0-xe image built with official scripts
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put the downloaded file in the same directory as this Dockerfile
+# Run: 
+#      $ docker build -t oracle/database:18.4.0-xe-nfs -f Dockerfile.nfs .
+#
+# IMPORTANT
+# ---------
+# Oracle XE requires Docker 1.10.0 and above:
+# Oracle XE uses shared memory for MEMORY_TARGET and needs at least 1 GB.
+# Docker only supports --shm-size since Docker 1.10.0
+# Sample usage using docker swarm stack
+# version: '3.6'
+# services:
+#   db:
+#     image: oracle/database:18.4.0-xe-nfs
+#     hostname: db
+#     volumes:
+#       - db_data:/opt/oracle/oradata # persistent oracle database data.
+#       - /run/shm:/dev/shm
+#     ports:
+#       - 1521:1521
+#     environment:
+#       - ORACLE_PWD=Oracle_2018
+#     configs:
+#       - source: test_oranfstab_xe
+#         target: /opt/oracle/product/18c/dbhomeXE/dbs/oranfstab
+# configs:
+#   test_oranfstab_xe:
+#       external: true
+# volumes:
+#   db_data:
+#     driver: local
+#     driver_opts:
+#       type: nfs
+#       o: addr=10.1.253.110,rw,bg,hard,nointr,rsize=32768,wsize=32768,tcp,actimeo=0,vers=4,timeo=600,noatime,noacl,nocto
+#       device: ":/dbdata/xe-18c"
+
+# external config sample file (test_oranfstab_xe), note multipath support using both NAS IPs
+# server: NAS-DTICs
+# path: 10.1.253.110
+# path: 10.1.1.241
+# nfs_version: nfsv4
+# export: /dbdata/xe-18c  mount: /opt/oracle/oradata
+
+#
+# Pull base image
+# ---------------
+FROM oracle/database:18.4.0-xe
+
+# Maintainer
+# ----------
+MAINTAINER Marcelo ochoa <marcelo.ochoa@gmail.com>
+
+RUN cd $ORACLE_HOME/rdbms/lib && make -f ins_rdbms.mk dnfs_on
