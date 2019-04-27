@@ -3,12 +3,20 @@ Example of Patching an Oracle Coherence Image
 This image extends the Oracle Coherence binary image and applies a necessary patch for running Coherence on Kubernetes.
 
 # How to build and run
-First make sure you have built or pulled **oracle/coherence:12.2.1.3.0**.
+First make sure you have built or pulled the Oracle Coherence 12.2.1.3 Docker image.
+
+If the Oracle Coherence 12.2.1.3 image is not named **oracle/coherence:12.2.1.3**,
+then tag the image with that name.
+
+To tag the image, run:
+
+        $ docker tag <12.2.1.3_IMAGE:TAG> oracle/coherence:12.2.1.3
+
 
 Then download file [p29204496_122130_Generic.zip](https://updates.oracle.com/Orion/PatchDetails/process_form?patch_num=29204496),
 Coherence 12.2.1.3.2 Cumulative Patch using OPatch, and place it next to this README.
 
-To build, run:
+To build the image, run:
 
         $ docker build -t oracle/coherence:12.2.1.3.2 .
 
