@@ -6,10 +6,10 @@
 /NoSQL/                   @anandchandak
 /OpenJDK/                 @aureliogrb
 /OracleBI/                @sjvp
-/OracleCloudInfrastructure/ @Djelibeybi @gvenzl @mriccell
 /OracleCoherence/         @thegridman
 /OracleDataIntegrator/    @mavaishn
 /OracleDatabase/SingleInstance/          @gvenzl
+/OracleDatabase/RAC/      @psaini79
 /OracleEDQ/               @subhashsutrave
 /OracleFMWInfrastructure/ @mriccell
 /OracleGoldenGate/        @sbalousek
