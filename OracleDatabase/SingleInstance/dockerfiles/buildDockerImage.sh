@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 # 
 
 usage() {
@@ -28,10 +28,10 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 
 EOF
-  exit 0;
+
 }
 
 # Validate packages
@@ -78,14 +78,14 @@ DOCKERFILE="Dockerfile"
 
 if [ "$#" -eq 0 ]; then
   usage;
+  exit 1;
 fi
-
-checkDockerVersion
 
 while getopts "hesxiv:o:" optname; do
   case "$optname" in
     "h")
       usage
+      exit 0;
       ;;
     "i")
       SKIPMD5=1
@@ -115,6 +115,8 @@ while getopts "hesxiv:o:" optname; do
       ;;
   esac
 done
+
+checkDockerVersion
 
 # Which Edition should be used?
 if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
