@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -11,7 +11,7 @@
 # -----------------------
 #
 # Run:
-#      $ docker build -t oracle/instantclient:18.3.0 .
+#      $ docker build -t oracle/instantclient:18 .
 #
 #
 FROM oraclelinux:7-slim
