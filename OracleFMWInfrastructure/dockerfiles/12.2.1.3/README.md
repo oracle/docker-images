@@ -42,7 +42,7 @@ You can also pull the Oracle Server JRE 8 image from the [Oracle Container Regis
 #### Providing the Administration Server user name and password and Database username and password
 The user name and password must be supplied in a `./dockerfiles/12.2.1.3/properties/domain_security.properties` file located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server and Database.
 
-The format of the `domain.properties` file is key=value pair:
+The format of the `domain_security.properties` file is key=value pair:
 
         username=myusername
         password=welcome1
