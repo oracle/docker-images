@@ -12,7 +12,7 @@ if [ ! -d ${scriptDir} ]; then
     exit 1
 fi
 
-rm -Rf ${scriptDir}/archive
+rm -Rf ${scriptDir}/app-archive
 mkdir -p ${scriptDir}/app-archive
 jar -cvf ${scriptDir}/app-archive/sample.war -C ${scriptDir}/sample .
 jar -cvf ${scriptDir}/archive.zip  -C ${scriptDir}/app-archive/ sample.war
