@@ -53,7 +53,7 @@ if [ -z "$RCUPREFIX" ]; then
 fi
 # echo "RCU Prefix: $RCUPREFIX"
 # Get Database Connection String 
-CONNECTION_STRING_=`awk '{print $1}' $PROPERTIES_FILE | grep CONNECTION_STRING | cut -d "=" -f2`
+CONNECTION_STRING=`awk '{print $1}' $PROPERTIES_FILE | grep CONNECTION_STRING | cut -d "=" -f2`
 if [ -z "$CONNECTION_STRING" ]; then
    echo "The Connection String is blank.  The Connection String must be set in the properties file."
    exit
