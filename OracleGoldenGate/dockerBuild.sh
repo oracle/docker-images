@@ -24,17 +24,21 @@ function getCommand {
                                   || echo "Error: Cannot locate command ${primary}"
         exit 1
     }
-    eval "${primary^^}=${command}"
+    cmdname=$(echo ${primary} | tr a-z A-Z)
+    eval "${cmdname}=\"${command}\""
 }
 
 ##
 ## Required commands
 ##
+getCommand tr
+getCommand awk      gawk
 getCommand basename
 getCommand dirname
 getCommand docker
 getCommand find
-getCommand readlink
+getCommand readlink greadlink
+getCommand strings
 getCommand tar      gtar
 
 ##
@@ -90,7 +94,6 @@ if [[ "${OGG_DISTFILE/.zip/}" != "${OGG_DISTFILE}" ]]; then
     [[ "${OGG_JARFILE}" != "" ]] && {
         OGG_TARFILE="$(${BASENAME} ${OGG_DISTFILE} .zip).tar"
     } || {
-        getCommand awk gawk
         OGG_TARFILE="$(${UNZIP} -o ${OGG_DISTFILE} *.tar* 2>/dev/null | ${AWK} '/.*[.]tar/ { print $NF; exit 0 }')"
     }
 fi
@@ -107,8 +110,6 @@ if [[ "${OGG_DISTFILE/.tar/}" != "${OGG_DISTFILE}" ]]; then
 fi
 
 function getVersion {
-    getCommand strings
-    getCommand awk gawk
     local      Version=$(${STRINGS} $1 2>/dev/null | ${AWK} '/^Version[ ]1/ {print $2; exit 0;}')
     [[ ! -z  ${Version} ]] && \
         echo ${Version}
@@ -141,7 +142,7 @@ rm -fr     ggstar
 [[ ! -z "${http_proxy}"  ]] && HTTP_PROXY_ARG="--build-arg http_proxy=${http_proxy}"
 [[ ! -z "${https_proxy}" ]] && HTTPS_PROXY_ARG="--build-arg https_proxy=${https_proxy}"
 
-${DOCKER} build ${BASE_IMAGE_ARG} \
+"${DOCKER}" build ${BASE_IMAGE_ARG} \
                 ${HTTP_PROXY_ARG} ${HTTPS_PROXY_ARG} \
                 --build-arg OGG_VERSION=${OGG_VERSION} \
                 --build-arg OGG_EDITION=${OGG_EDITION} \
