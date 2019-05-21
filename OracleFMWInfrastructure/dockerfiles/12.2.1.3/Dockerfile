@@ -29,10 +29,8 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # ----------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+    PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin
 
-
-#USER root
 # Setup subdirectory for FMW install package and container-scripts
 # -----------------------------------------------------------------
 RUN mkdir -p /u01 && \
@@ -48,7 +46,6 @@ ENV FMW_PKG=fmw_12.2.1.3.0_infrastructure_Disk1_1of1.zip \
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
 RUN chown oracle:oracle -R /u01
-
 
 # Install
 # ------------------------------------------------------------
@@ -91,8 +88,6 @@ COPY container-scripts/* /u01/oracle/container-scripts/
 
 COPY --from=builder --chown=oracle:oracle /u01 /u01
 RUN chmod +xr $SCRIPT_FILE
-
-#VOLUME  $VOLUME_DIR
 
 USER oracle
 WORKDIR ${ORACLE_HOME}
