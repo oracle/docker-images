@@ -96,8 +96,8 @@ The database is created with the default password `Oradoc_db1`. To change the da
 
 	`$ docker images`
 
-#### Start the container
-The domain home will be persisted to a volume in the host, before running the admin server container make sure you have created the external volume with the correct permissions. In order to properly secure data in external volumes, it is an administrator's responsibility to set the appropriate permissions on those directories. To allow the WebLogic Server process to access data in a volume, the user running the container needs to have the proper permission to the volume folder. Please refer to blog [Docker Volumes in WebLogic] (https://blogs.oracle.com/weblogicserver/docker-volumes-in-weblogic] for more information).
+## Start the containers
+In this image the domain home will be persisted to a volume in the host. The "-v" option is used at docker run time to map the image directory where the domain home is persisted `/u01/oracle/user_projects/domains` to the host directory you have defined in domain.properties DOMAIN_HOST_VOLUME.
 
 You can override the default values of the following parameters during runtime in the `./properties/domain.properties` file. The script `./container-scripts/setEnv.sh` sets the environment variables to configure the domain. The default values of the environment variables are:
 
