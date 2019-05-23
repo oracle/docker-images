@@ -101,31 +101,30 @@ In this image the domain home will be persisted to a volume in the host. The "-v
 
 You can override the default values of the following parameters during runtime in the `./properties/domain.properties` file. The script `./container-scripts/setEnv.sh` sets the environment variables to configure the domain. The default values of the environment variables are:
 
-      * `ADMIN_NAME`                  (default: `AdminServer`)
-      * `ADMIN_LISTEN_PORT`           (default: `7001`)
-      * `ADMIN_HOST`                  (default: `InfraAdminContainer`)
-      * `DOMAIN_NAME`                 (default: `infra_domain`)
-      * `ADMINISTRATION_PORT_ENABLED` (default: `true`)
-      * `ADMINISTRATION_PORT`         (default: `9002`)
-      * `MANAGED_NAME`                (default: `infraServer1`)
-      * `MANAGEDSERVER_PORT`          (default: `8001`)
-      * `RCUPREFIX`                   (default: `INFRA01`)
-      * `PRODUCTION_MODE`             (default: `prod`)
+	`DOMAIN_NAME=myinfraDomain`
+	`ADMIN_LISTEN_PORT=7001`
+	`ADMIN_NAME=myadmin`
+	`ADMIN_HOST=InfraAdminContainer`
+	`ADMINISTRATION_PORT_ENABLED=true`
+	`ADMINISTRATION_PORT=9002`
+	`MANAGEDSERVER_PORT=8001`
+	`MANAGED_NAME=infraServer1`
+	`RCUPREFIX=INFRA01`
+	`PRODUCTION_MODE=dev`
+	`CONNECTION_STRING=InfraDB:1521/InfraPDB1.us.oracle.com`
+	`DOMAIN_HOST_VOLUME=/User/host/dir`
 
 **NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in FMW Infrastructure  12.2.1.3. An alternative is to not enable Administration port when you issue the docker run command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
 
   Start a container to launch the Administration and Managed Servers from the image created in step 1. To facilitate the setting of the environment variables defined in the `./properties/domain.properties' file we provide scripts `./container-scripts/setEnv.sh`, `./run_admin_server.sh`, and `./run_managed_server.sh'.
 
-  To run an Administration Server container, call:
-
-        `$ sh run_admin_server.sh`
+        `$ docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${DOMAIN_HOST_VOLUME}:/u01/oracle/user_projects/domains ${ENV_ARG} container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.3`
 
 
-  To run Managed Server  call:
+  To run a Managed Server, call:
 
-        `$ sh run_managed_server.sh`
-
+        `$ docker run -d -p 9802:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname}  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.3 startManagedServer.sh`
 
   Access the Administration Console:
 
