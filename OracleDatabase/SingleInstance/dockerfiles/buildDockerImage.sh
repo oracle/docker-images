@@ -35,12 +35,22 @@ EOF
 }
 
 # Validate packages
-checksumPackages() {
-  if hash md5sum 2>/dev/null; then
-    echo "Checking if required packages are present and valid..."   
+checkPackages() {
+  missing=0
+  for package in $(awk '{print $2}' Checksum.ee); do
+    if [ ! -f $package ]; then
+      echo "Required package $package is missing"
+      missing=1
+    fi
+  done
+  if [ ! $missing -eq 0 ]; then
+    echo "Make sure to download missing files in folder $VERSION."
+    exit 1;
+  fi
+  if [ ! "$SKIPMD5" -eq 1 ] && hash md5sum 2>/dev/null; then
+    echo "Checking if required packages are valid..."   
     if ! md5sum -c "Checksum.$EDITION"; then
       echo "MD5 for required packages to build this image did not match!"
-      echo "Make sure to download missing files in folder $VERSION."
       exit 1;
     fi
   else
@@ -151,11 +161,8 @@ cd "$VERSION" || {
   exit 1;
 }
 
-if [ ! "$SKIPMD5" -eq 1 ]; then
-  checksumPackages
-else
-  echo "Ignored MD5 checksum."
-fi
+checkPackages
+
 echo "=========================="
 echo "DOCKER info:"
 docker info
