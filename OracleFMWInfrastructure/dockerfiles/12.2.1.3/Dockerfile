@@ -73,14 +73,14 @@ ENV ORACLE_HOME=/u01/oracle \
     JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
-
 RUN mkdir -p /u01 && \
-    chmod a+xr /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
-    mkdir -p $VOLUME_DIR && \
+    chmod a+xr /u01 && chown oracle:oracle /u01 && \
+    mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
     mkdir -p /u01/oracle/container-scripts && \
     yum install -y libaio && \
     rm -rf /var/cache/yum
+
 
 # Copy packages and scripts
 # -------------------------
