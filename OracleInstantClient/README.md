@@ -2,7 +2,7 @@
 
 These Docker images contain the Oracle Instant Client 'Basic', 'SDK' and 'SQL\*Plus' packages.  They can be used to build and run Oracle Call Interface (OCI), Oracle C++ Call Interface (OCCI), and JDBC-OCI applications applications.  The SQL\*Plus command-line query tool allows quick ad-hoc SQL and PL/SQL execution.  The Docker images can be extended with optional packages for ODBC, or to include tools such as Oracle SQL\*Loader.
 
-The base images support building and using scripting language APIs that internally call OCI.  These include [Python's cx_Oracle](https://yum.oracle.com/oracle-linux-python.html), [Node.js's node-oracledb](http://yum.oracle.com/oracle-linux-nodejs.html), [PHP's OCI8](http://yum.oracle.com/oracle-linux-php.html), [Go's goracle](https://github.com/go-goracle/goracle) and Ruby's [ruby-oci8](https://www.rubydoc.info/github/kubo/ruby-oci8).
+The base images support building and using scripting language APIs that internally call OCI.  These include [Python's cx_Oracle](https://yum.oracle.com/oracle-linux-python.html), [Node.js's node-oracledb](http://yum.oracle.com/oracle-linux-nodejs.html), [PHP's OCI8](http://yum.oracle.com/oracle-linux-php.html), [Go's goracle](https://github.com/go-goracle/goracle) and [Ruby's ruby-oci8](https://www.rubydoc.info/github/kubo/ruby-oci8).
 
 ## About Oracle Instant Client
 
