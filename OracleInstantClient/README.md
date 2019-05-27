@@ -1,14 +1,14 @@
 # About this Docker Image
 
-These Docker images contain the Oracle Instant Client 'Basic', 'SDK' and 'SQL*Plus' packages.  They can be extended to run Oracle Call Interface (OCI), Oracle C++ Call Interface (OCCI) and JDBC applications.  They can also be extended to build and run scripting language drivers that use OCI such as Python's cx_Oracle, Node.js's node-oracledb, PHP's OCI8, and Ruby's ruby-oci8.
+These Docker images contain the Oracle Instant Client 'Basic', 'SDK' and 'SQL\*Plus' packages.  They can be used to build and run Oracle Call Interface (OCI), Oracle C++ Call Interface (OCCI), and JDBC-OCI applications applications.  The SQL\*Plus command-line query tool allows quick ad-hoc SQL and PL/SQL execution.  The Docker images can be extended with optional packages for ODBC, or to include tools such as Oracle SQL\*Loader.
 
-The SQL*Plus command-line query tool is also included, allowing quick ad-hoc SQL and PL/SQL execution.
+The base images support building and using scripting language APIs that internally call OCI.  These include [Python's cx_Oracle](https://yum.oracle.com/oracle-linux-python.html), [Node.js's node-oracledb](http://yum.oracle.com/oracle-linux-nodejs.html), [PHP's OCI8](http://yum.oracle.com/oracle-linux-php.html), [Go's goracle](https://github.com/go-goracle/goracle) and [Ruby's ruby-oci8](https://www.rubydoc.info/github/kubo/ruby-oci8).
 
 ## About Oracle Instant Client
 
 The [Oracle Instant Client](http://www.oracle.com/technetwork/database/features/instant-client/) is a repackaging of Oracle Database libraries, tools and header files usable to create and run applications that connect to a remote (or local) Oracle Database.
 
-Oracle client-server version interoperability is detailed in [Doc ID 207303.1](https://support.oracle.com/epmos/faces/DocumentDisplay?id=207303.1).  Applications using Oracle Call Interface (OCI) 19, 18 and 12.2 can connect to Oracle Database 11.2 or later.  Some tools may have other restrictions.
+Oracle client-server version interoperability is detailed in [Doc ID 207303.1](https://support.oracle.com/epmos/faces/DocumentDisplay?id=207303.1).  In summary, applications using Oracle Call Interface (OCI) 19, 18 and 12.2 can connect to Oracle Database 11.2 or later.  Some tools may have other restrictions.
 
 From release 18.3, the Oracle Instant Client RPMs for Oracle Linux are available for direct download from the [Oracle Linux yum server](https://yum.oracle.com) without requiring manual license acceptance.
 
