@@ -4,9 +4,6 @@
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
-#Define DOMAIN_HOME
-export DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME
-echo "Domain Home is: " $DOMAIN_HOME
 
 # If AdminServer.log does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer
@@ -29,6 +26,10 @@ trap _term SIGTERM
 
 # Set SIGKILL handler
 trap _kill SIGKILL
+
+#Define DOMAIN_HOME
+export DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME
+echo "Domain Home is: " $DOMAIN_HOME
 
 ADD_DOMAIN=1
 if [ ! -f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log ]; then
