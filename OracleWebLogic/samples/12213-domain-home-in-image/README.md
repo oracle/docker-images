@@ -38,6 +38,7 @@ The domain property file enables you to customize the parameters to configure th
 	DEBUG_FLAG=true
 	PRODUCTION_MODE_ENABLED=true
 	CLUSTER_TYPE=DYNAMIC
+	CLUSTER_NAME=cluster1
 
 **NOTE:** Before invoking the build make sure you have built `oracle/weblogic:12.2.1.3-developer`.
 
@@ -52,6 +53,7 @@ Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-i
 * Database Port:         `DB_PORT`             (default: `1527`)
 * Admin Server Name:     `ADMIN_NAME`          (default: `admin-server`)
 * Admin Server Host:     `ADMIN_HOST`          (default: `wlsadmin`)
+* Cluster Name:          `CLUSTER_NAME`        (default: `cluster1`)
 
 **NOTE:** The `DOMAIN_HOME` will be persisted in the image directory `/u01/oracle/user-projects/domains/$DOMAIN_NAME`.
 

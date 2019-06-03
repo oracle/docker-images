@@ -70,7 +70,7 @@ You can override the default values of the following parameters during runtime w
 
 **NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in WebLogic 12.2.1.3 the patch 27117282 must be applied. Please download the patch and apply it after you have built the 12.2.1.3 image. You can follow the sample https://github.com/oracle/docker-images/tree/master/OracleWebLogic/samples/12213-patch to see how to patch. An alternative is to not enable Administration port when you issue the docker run command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
-	$docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_NAME=abc_domain oracle/weblogic:12.2.1.3-developer
+	$ docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_NAME=docker_domain oracle/weblogic:12.2.1.3-developer
 
 Run the WLS Administration Console:
 
@@ -95,4 +95,4 @@ This project hosts two configurations (depending on the Oracle WebLogic Server v
 To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the `12213-domain` sample.
 
 ## Copyright
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.

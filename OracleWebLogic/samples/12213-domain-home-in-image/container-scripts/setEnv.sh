@@ -14,55 +14,45 @@ if [ "$#" -eq  "0" ]
     echo Export environment variables from the ${PROPERTIES_FILE} properties file
  fi
 
+extract_env() {
+   env_value=`awk '{print $1}' $2 | grep ^$1= | cut -d "=" -f2`
+   if [ -n "$env_value" ]; then
+      env_arg=`echo "CUSTOM_$1=$env_value"`
+      echo " env_arg: $env_arg"
+      export $env_arg
+   fi
+}
 
-CUSTOM_DOMAIN_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^DOMAIN_NAME= | cut -d "=" -f2`
-if [ -n "$CUSTOM_DOMAIN_NAME" ]; then
-     export CUSTOM_DOMAIN_NAME=$CUSTOM_DOMAIN_NAME
-     echo CUSTOM_DOMAIN_NAME=$CUSTOM_DOMAIN_NAME
-     BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_DOMAIN_NAME=$CUSTOM_DOMAIN_NAME"
-fi
+set_env_arg(){
+  extract_env $1 $2
+  if [ -n "$env_arg" ]; then
+      BUILD_ARG="$BUILD_ARG --build-arg $env_arg"
+  fi
+}
 
-CUSTOM_ADMIN_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_NAME= | cut -d "=" -f2`
-if [ -n "$CUSTOM_ADMIN_NAME" ]; then
-     export CUSTOM_ADMIN_NAME=$CUSTOM_ADMIN_NAME
-     echo CUSTOM_ADMIN_NAME=$CUSTOM_ADMIN_NAME
-     BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_ADMIN_NAME=$CUSTOM_ADMIN_NAME"
-fi
+# Set DOMAIN_NAME
+set_env_arg DOMAIN_NAME ${PROPERTIES_FILE}
 
-CUSTOM_ADMIN_HOST=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_HOST= | cut -d "=" -f2`
-if [ -n "$CUSTOM_ADMIN_HOST" ]; then
-    export CUSTOM_ADMIN_HOST=$CUSTOM_ADMIN_HOST
-    echo CUSTOM_ADMIN_HOST=$CUSTOM_ADMIN_HOST
-    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_ADMIN_HOST=$CUSTOM_ADMIN_HOST"
-fi
+# Set ADMIN_NAME
+set_env_arg ADMIN_NAME ${PROPERTIES_FILE}
 
-CUSTOM_ADMIN_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_PORT= | cut -d "=" -f2`
-if [ -n "$CUSTOM_ADMIN_PORT" ]; then
-    export CUSTOM_ADMIN_PORT=$CUSTOM_ADMIN_PORT
-    echo CUSTOM_ADMIN_PORT=$CUSTOM_ADMIN_PORT
-    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_ADMIN_PORT=$CUSTOM_ADMIN_PORT"
-fi
+# Set ADMIN_HOST
+set_env_arg ADMIN_HOST ${PROPERTIES_FILE}
 
-CUSTOM_MANAGED_SERVER_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^MANAGED_SERVER_PORT= | cut -d "=" -f2`
-if [ -n "$CUSTOM_MANAGED_SERVER_PORT" ]; then
-    export CUSTOM_MANAGED_SERVER_PORT=$CUSTOM_MANAGED_SERVER_PORT 
-    echo CUSTOM_MANAGED_SERVER_PORT=$CUSTOM_MANAGED_SERVER_PORT
-    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_MANAGED_SERVER_PORT=$CUSTOM_MANAGED_SERVER_PORT"
-fi
+# Set ADMIN_PORT
+set_env_arg ADMIN_LISTEN_PORT ${PROPERTIES_FILE}
 
-CUSTOM_DEBUG_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^DEBUG_PORT= | cut -d "=" -f2`
-if [ -n "$CUSTOM_DEBUG_PORT" ]; then
-    export CUSTOM_DEBUG_PORT=$CUSTOM_DEBUG_PORT
-    echo CUSTOM_DEBUG_PORT=$CUSTOM_DEBUG_PORT
-    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_DEBUG_PORT=$CUSTOM_DEBUG_PORT"
-fi
+# Set MANAGED_SERVER_PORT
+set_env_arg MANAGEDSERVER_PORT ${PROPERTIES_FILE}
 
-CUSTOM_TAG_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^IMAGE_TAG= | cut -d "=" -f2`
-if [ -n "$CUSTOM_TAG_NAME" ]; then
-    TAG_NAME=${CUSTOM_TAG_NAME}
-    export TAG_NAME
-    echo "Set the image tag name to $TAG_NAME"
-fi
+# Set DEBUG_PORT
+set_env_arg DEBUG_PORT ${PROPERTIES_FILE}
+
+# Set IMAGE_TAG
+extract_env IMAGE_TAG ${PROPERTIES_FILE}
+
+# Set CLUSTER_NAME
+set_env_arg CLUSTER_NAME ${PROPERTIES_FILE}
 
 export BUILD_ARG=$BUILD_ARG
 echo BUILD_ARG=$BUILD_ARG
