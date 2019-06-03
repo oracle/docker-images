@@ -50,5 +50,5 @@ sed -i -e "s|###INVENTORY###|$INVENTORY|g" $INSTALL_SCRIPTS/$DB_INSTALL_RSP
 cd $INSTALL_SCRIPTS       && \
 unzip $INSTALL_FILE_1 && \
 rm -f $INSTALL_SCRIPTS/$INSTALL_FILE_1 && \
-$INSTALL_SCRIPTS/client/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_SCRIPTS/$DB_INSTALL_RSP -ignoresysprereqs -ignoreprereq && \
+$INSTALL_SCRIPTS/client/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_SCRIPTS/$DB_INSTALL_RSP -ignoresysprereqs -ignoreprereq || true && \
 rm -rf $INSTALL_SCRIPTS/client

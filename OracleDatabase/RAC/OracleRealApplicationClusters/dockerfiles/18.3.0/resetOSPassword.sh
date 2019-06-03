@@ -17,7 +17,7 @@ PROGNAME=$(basename $0)
 PWD_KEY='pwd.key'
 SECRET_VOLUME='/run/secrets'
 declare -x REMOVE_OS_PWD_FILES='false'
-
+PASSWD_VALUE="NOPASSWD"
 source /etc/rac_env_vars
 
 ###################Capture Process id and source functions.sh###############
@@ -54,6 +54,10 @@ fi
 else
  print_message "Password file or password key file is empty string! generating random password"
  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
+fi
+
+if [ ! -z ${PASSWORD} ]; then
+  PASSWD_VALUE="${PASSWORD}"
 fi
 
 }
@@ -195,19 +199,23 @@ done
 print_message "generating node name from the cluster"
 setNode
 print_message "Generating password for grid and oracle user"
-password=$(generate_pwd)
+generate_pwd
+
+if [ "${PASSWD_VALUE}" == "NOPASSWD" ]; then
+ error_exit "Correct password string is not set"
+fi
 
 if [ "${RESET_PASSWORD_TYPE}" == 'reset_grid_oracle' ]; then
 print_message "Setting password for $GRID_USER user"
-reset_passwd $GRID_USER  $password 
+reset_passwd $GRID_USER  $PASSWD_VALUE
 print_message "Setting password for $ORACLE_USER user"
-reset_passwd  $ORACLE_USER $password 
+reset_passwd  $ORACLE_USER $PASSWD_VALUE
 elif [ "${RESET_PASSWORD_TYPE}" == 'reset_grid' ]; then 
-print_message "Setting password for $GRID_USER user"
-reset_passwd  $GRID_USER $password
+  print_message "Setting password for $GRID_USER user"
+  reset_passwd  $GRID_USER $PASSWD_VALUE
 elif [ "${RESET_PASSWORD_TYPE}" == 'reset_oracle' ]; then
-print_message "Setting password for $ORACLE_USER user"
-reset_passwd  $ORACLE_USER $password
+  print_message "Setting password for $ORACLE_USER user"
+  reset_passwd  $ORACLE_USER $PASSWD_VALUE
 else
 error_exit "Please specify correct value for RESET_PASSWORD_TYPE. Correct Values are reset_grid_oracle|reset_grid|reset_oracle"
 fi
