@@ -1,15 +1,20 @@
 #!/usr/bin/python
-# LICENSE UPL 1.0
+#!/usr/bin/env python
+
+###########################################################################################################
+
+
+# stig.py
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
 #
-# Since: January, 2019
-# Author: paramdeep.saini@oracle.com
-# Name: 
-# Description: python script to install Multinode RAC. This script can install multiple nodes on multiple containers.
+# NAME
+#      buildImage.py - <Build the Image>
 #
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.      
+# DESCRIPTION
+#      <This  script will build the Image>
 #
+# NOTES
 
 
 # Global Variables
@@ -44,8 +49,7 @@ def Update_Envfile(common_params):
     f1 = open(racenvfile, 'r')
     filedata1 = f1.read()
     f1.close
- 
-    print "I am in envfile"
+
     for keys in common_params.keys():
         if keys == 'domain':
            domain = common_params[keys]
@@ -53,9 +57,9 @@ def Update_Envfile(common_params):
         env_var_str = "export " + keys.upper() + "=" + common_params[keys]
         Redirect_To_File("Env vars for RAC Env set to " + env_var_str, "INFO")
         filedata1 = filedata1 + "\n" + env_var_str
-   
+
     Write_To_File(filedata1,racenvfile)
-    return "Env file updated sucesfully" 
+    return "Env file updated sucesfully"
 
 
 def Update_Hostfile(node_list):
@@ -63,9 +67,10 @@ def Update_Hostfile(node_list):
     global etchostfile
     global domain
     filedata = None
-    f = open(etchostfile,'r')
+    filedata1 = None
+    f = open(etchostfile, 'r')
     filedata = f.read()
-    f.close()
+    f.close
 
     global racenvfile
     filedata1 = None
@@ -90,23 +95,23 @@ def Update_Hostfile(node_list):
            if host_name == pubhost:
                Redirect_To_File("PUBLIC Hostname set to" + pubhost, "INFO")
                PUBLIC_HOSTNAME=pubhost
-           if counter == 0:   
+           if counter == 0:
               CRS_NODES = pubhost
               CRS_CONFIG_NODES = pubhost
               counter = counter + 1
            else:
               CRS_NODES = CRS_NODES + "," + pubhost
-              CRS_CONFIG_NODES = CRS_CONFIG_NODES  + "," + pubhost 
+              CRS_CONFIG_NODES = CRS_CONFIG_NODES  + "," + pubhost
               counter = counter + 1
         else:
-            return "Error: Did not find the key public_hostname"          
+            return "Error: Did not find the key public_hostname"
         if "public_ip" in dict_list.keys():
            pubip = dict_list['public_ip']
            if host_name == pubhost:
               Redirect_To_File("PUBLIC IP set to" + pubip, "INFO")
               PUBLIC_IP=pubip
         else:
-           return "Error: Did not find the key public_ip"    
+           return "Error: Did not find the key public_ip"
         if "private_ip" in dict_list.keys():
            privip = dict_list['private_ip']
            if host_name == pubhost:
@@ -137,9 +142,25 @@ def Update_Hostfile(node_list):
         else:
            return "Error: Did not find the key vip_ip"
 
+        delete_entry = [pubhost, privhost, viphost, pubip, privip, vipip]
+        for hostentry in delete_entry:
+            print "Processing " + hostentry
+            cmd=cmd= '""' + "sed  "  + "'" + "/" + hostentry + "/d" + "'" + " <<<" + '"' + filedata + '"' + '""'
+            output,retcode=Execute_Single_Command(cmd,'None','')
+            filedata=output
+            print "New Contents of Host file " + filedata
+
+            # Removing Empty Lines
+            cmd=cmd= '""' + "sed  "  + "'" + "/^$/d"  + "'" + " <<<" + '"' + filedata + '"' + '""'
+            output,retcode=Execute_Single_Command(cmd,'None','')
+            filedata=output
+            print "New Contents of Host file " + filedata
+
+        delete_entry [:]
+
         if pubhost not in filedata:
-            if pubip not in filedata:      
-               hoststring='%s    %s    %s' %(pubip, pubhost + "." + domain, pubhost) 
+            if pubip not in filedata:
+               hoststring='%s    %s    %s' %(pubip, pubhost + "." + domain, pubhost)
                Redirect_To_File(hoststring, "INFO")
                filedata = filedata + '\n' + hoststring
 
@@ -155,13 +176,13 @@ def Update_Hostfile(node_list):
                Redirect_To_File(hoststring, "INFO")
                filedata = filedata + '\n' + hoststring
                print filedata
-      
+
     Write_To_File(filedata,etchostfile)
     if CRS_NODES:
        Redirect_To_File("Cluster Nodes set to " + CRS_NODES, "INFO")
        filedata1 = filedata1 + '\n' + 'export CRS_NODES=' +  CRS_NODES
     if CRS_CONFIG_NODES:
-       Redirect_To_File("CRS CONFIG Variable set to " + CRS_CONFIG_NODES, "INFO") 
+       Redirect_To_File("CRS CONFIG Variable set to " + CRS_CONFIG_NODES, "INFO")
        filedata1 = filedata1 + '\n' + 'export CRS_CONFIG_NODES=' +  CRS_CONFIG_NODES
     if NODE_VIP:
        filedata1 = filedata1 + '\n' + 'export NODE_VIP=' + NODE_VIP
@@ -188,7 +209,7 @@ def Write_To_File(text,filename):
 def Setup_Operation(op_type):
     if op_type == 'installrac':
        cmd="sudo /opt/scripts/startup/runOracle.sh"
-    
+
     if op_type == 'addnode':
        cmd="sudo /opt/scripts/startup/runOracle.sh"
 
@@ -200,7 +221,7 @@ def Setup_Operation(op_type):
        return "Error occuurred in setting up env"
     else:
        return "setup operation completed sucessfully!"
- 
+
 
 def Execute_Single_Command(cmd,env,dir):
     try:
@@ -209,7 +230,7 @@ def Execute_Single_Command(cmd,env,dir):
        print shlex.split(cmd)
        out = subprocess.Popen(cmd, shell=True, cwd=dir, stdout=subprocess.PIPE)
        output, retcode = out.communicate()[0],out.returncode
-       return output,retcode 
+       return output,retcode
     except:
        Redirect_To_File("Error Occurred in Execute_Single_Command block! Please Check", "ERROR")
        sys.exit(2)
@@ -233,7 +254,7 @@ def Redirect_To_File(text,level):
 #BEGIN : TO check whether valid arguments are passed for the container ceation or not
 def main(argv):
     version= ''
-    type= '' 
+    type= ''
     dir=''
     script=''
     Redirect_To_File("Passed Parameters " + str(sys.argv[1:]), "INFO")
@@ -293,13 +314,13 @@ def main(argv):
         Redirect_To_File(hostfile_status, "ERROR")
         return sys.exit(2)
 
-    Redirect_To_File("Executing operation" + setuptype, "INFO") 
+    Redirect_To_File("Executing operation" + setuptype, "INFO")
     setup_op=Setup_Operation(setuptype)
     if 'Error' in setup_op:
         Redirect_To_File(setup_op, "ERROR")
         return sys.exit(2)
-    
+
     sys.exit(0)
-           
+
 if __name__ == '__main__':
      main(sys.argv)
