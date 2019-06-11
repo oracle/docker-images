@@ -40,7 +40,8 @@ rm -rf $GRID_HOME/inventory/backup/*
 rm -rf $GRID_HOME/mdns/init
 rm -rf $GRID_HOME/gnsd/init
 rm -rf $GRID_HOME/evm/init
-rm -rf $GRID_HOME/gpnp/*
+rm -rf $GRID_HOME/gpnp/gpnp_bcp.*
+rm -rf $GRID_HOME/gpnp/init
 rm -rf $GRID_HOME/gipc/init
 rm -rf $GRID_HOME/auth
 rm -rf $GRID_HOME/tfa
