@@ -1,5 +1,5 @@
 Oracle WebLogic domain in volume on Docker
-========================================================
+==========================================
 This project creates a Docker image which contains an Oracle WebLogic domain image. The image extends the WebLogic install image and builds an WebLogic domain persisted to a host volume.
 
 ## How to build and run

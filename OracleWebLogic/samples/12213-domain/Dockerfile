@@ -17,7 +17,7 @@
 # The resulting image of this Dockerfile contains a WebLogic Domain.
 #
 # From
-# -------------------------
+# ----
 FROM oracle/weblogic:12.2.1.3-developer
 
 # Maintainer
@@ -25,7 +25,7 @@ FROM oracle/weblogic:12.2.1.3-developer
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
 # WLS Configuration
-# ---------------------------
+# -----------------
 ENV CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" \
     CUSTOM_DOMAIN_ROOT="/u01/oracle/user_projects/domains" \
     CUSTOM_ADMIN_PORT="${CUSTOM_ADMIN_PORT:-7001}" \
@@ -41,7 +41,6 @@ ENV CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" \
     PROPERTIES_FILE_DIR="/u01/oracle/properties" \
     CUSTOM_JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false"  \
     CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
-
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/container-scripts/

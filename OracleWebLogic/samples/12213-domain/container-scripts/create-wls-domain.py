@@ -6,9 +6,9 @@
 #
 # Domain, as defined in DOMAIN_NAME, will be created in this script. Name defaults to 'base_domain'.
 #
-# Since : November, 2019
+# Since : June, 2019
 # Author: monica.riccelli@oracle.com
-# ==============================================
+# ===================================
 
 import os
 import socket
@@ -72,7 +72,7 @@ setOption('OverwriteDomain', 'true')
 
 
 # Create a cluster
-# ======================
+# ================
 cd('/')
 cl=create(cluster_name, 'Cluster')
 
