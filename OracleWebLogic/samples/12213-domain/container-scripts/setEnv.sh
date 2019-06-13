@@ -11,8 +11,7 @@ if [ "$#" -eq  "0" ]
     exit 1
  else
     PROPERTIES_FILE=$1
-    RCU_PROPERTIES_FILE=$2
-    echo Export environment variables from the ${PROPERTIES_FILE} and ${RCU_PROPERTIES_FILE} properties file
+    echo Export environment variables from the ${PROPERTIES_FILE} properties file
  fi
 
 extract_env() {

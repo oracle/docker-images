@@ -1,11 +1,11 @@
-Oracle WebLogic domain on Docker
+Oracle WebLogic domain in volume on Docker
 ========================================================
-This project creates a Docker image which contains an Oracle Fusion Middleware Infrastructure domain image. The image extends the WebLogic install image and builds an WebLogic domain persisted to a host volume.
+This project creates a Docker image which contains an Oracle WebLogic domain image. The image extends the WebLogic install image and builds an WebLogic domain persisted to a host volume.
 
 ## How to build and run
 This project offers a sample Dockerfile and scripts to build an Oracle WebLogic 12.2.1.3 domain in volume. 
 
-### Building the Oracle WebLogic 12.2.1.3 developer install (base) image
+### Building the Oracle WebLogic 12.2.1.3 developer install image
 A prerequisite to building the 12213-weblogic-domain-in-volume image is having an Oracle WebLogic 12.2.1.3 install image. The Dockerfile and scripts to build the image are under the folder, `../../OracleWebLogic/dockerfile/12.2.1.3`. For more information, see the [README](../../OracleWebLogic/dockerfile/12.2.1.3/README.md) file.
 
 **IMPORTANT**: If you are building the Oracle WebLogic image, you must first download the Oracle WebLogic 12.2.1.3 binary and place it in the folder, `../OracleWebLogic/dockerfiles/12.2.1.3`.

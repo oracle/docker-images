@@ -12,7 +12,7 @@ if [ "$#" -eq  "0" ]
  else
     managedname=$1
     mapedport=$2
-    echo Export environment variables from the ${PROPERTIES_FILE} and ${RCU_PROPERTIES_FILE} properties file
+    echo Export environment variables from the ${PROPERTIES_FILE} property file
  fi
 
 set_context() {
