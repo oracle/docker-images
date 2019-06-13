@@ -14,6 +14,8 @@ DEL_NODE=${1}
 NODE_HOSTNAME=$(hostname)
 node_count=0
 
+source /etc/rac_env_vars
+
 check_env_vars ()
 {
 

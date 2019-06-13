@@ -735,7 +735,7 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> $RAC_ENV_FILE"' 
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> /etc/rac_env_vars"' 
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
@@ -762,7 +762,7 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> $RAC_ENV_FILE"'
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> /etc/rac_env_vars"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
