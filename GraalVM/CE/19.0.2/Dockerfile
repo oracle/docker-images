@@ -8,10 +8,10 @@ FROM oraclelinux:7-slim
 # Note: If you are behind a web proxy, set the build variables for the build:
 #       E.g.:  docker build --build-arg "https_proxy=..." --build-arg "http_proxy=..." --build-arg "no_proxy=..." ...
 
-ARG GRAAL_VERSION=1.0.0-rc15
+ARG GRAAL_VERSION=19.0.2
 ENV LANG=en_US.UTF-8
 
-ENV GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-$GRAAL_VERSION/graalvm-ce-$GRAAL_VERSION-linux-amd64.tar.gz \
+ENV GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-$GRAAL_VERSION/graalvm-ce-linux-amd64-$GRAAL_VERSION.tar.gz \
     JAVA_HOME=/opt/graalvm-ce-$GRAAL_VERSION/ \
     PATH=$PATH:/opt/rh/llvm-toolset-7/root/usr/bin \
     LD_LIBRARY_PATH=/opt/rh/llvm-toolset-7/root/usr/lib64 \
