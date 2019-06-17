@@ -10,7 +10,7 @@ Further details can be found on [www.graalvm.org](https://www.graalvm.org).
 
 # How to use these images
 
-The images are intended for use in the **FROM** field of a downstream Dockerfile. For example, specify `FROM oracle/graalvm-ce:1.0.0-rc16` or a newer tag.
+The images are intended for use in the **FROM** field of a downstream Dockerfile. For example, specify `FROM oracle/graalvm-ce:latest` or a version tag.
 
 
 # License
