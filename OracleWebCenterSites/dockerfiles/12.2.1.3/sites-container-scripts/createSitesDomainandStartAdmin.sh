@@ -109,6 +109,22 @@ then
     echo ""
 fi
 
+if [ -z ${MACHINE_NAME} ]
+then
+    MACHINE_NAME=wcsites_machine_0
+    echo ""
+    echo " Setting MACHINE_NAME to wcsites_machine_0"
+    echo ""
+fi
+
+if [ -z ${CLUSTER_NAME} ]
+then
+    CLUSTER_NAME=wcsites_cluster_0
+    echo ""
+    echo " Setting CLUSTER_NAME to wcsites_cluster_0"
+    echo ""
+fi
+
 if [ -z ${ADMIN_USERNAME} ]
 then
     ADMIN_USERNAME=weblogic
@@ -261,6 +277,8 @@ sed -i 's,^\(script.oracle.wcsites.examples.blogs=\).*,\1'$SAMPLES',' bootstrap.
 sed -i 's,^\(script.wcsites.binaries.install.with.examples=\).*,\1'$SAMPLES',' bootstrap.properties
 sed -i 's,^\(script.oracle.domain=\).*,\1'$DOMAIN_NAME',' bootstrap.properties
 sed -i 's,^\(script.server.name=\).*,\1'$SITES_SERVER_NAME',' bootstrap.properties
+sed -i 's,^\(script.machine.name=\).*,\1'$MACHINE_NAME',' bootstrap.properties
+sed -i 's,^\(script.cluster.name=\).*,\1'$CLUSTER_NAME',' bootstrap.properties
 sed -i 's,^\(script.admin.server.username=\).*,\1'$ADMIN_USERNAME',' bootstrap.properties
 sed -i 's,^\(script.admin.server.password=\).*,\1'$ADMIN_PASSWORD',' bootstrap.properties
 sed -i 's,^\(script.admin.server.port=\).*,\1'$ADMIN_PORT',' bootstrap.properties
