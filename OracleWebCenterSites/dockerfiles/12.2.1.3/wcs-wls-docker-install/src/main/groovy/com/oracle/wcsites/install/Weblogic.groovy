@@ -313,6 +313,8 @@ class Weblogic implements AppServer {
 		antBuilder.replace(file:jythonConfigFile, token:"<SITES_SERVER_SSL_PORT>", value:"${config.script.sites.server.ssl.port}")
 		antBuilder.replace(file:jythonConfigFile, token:"<SITES_DATASOURCE>", value:"${config.script.oracle.wcsites.database.datasource}")
 		antBuilder.replace(file:jythonConfigFile, token:"<RCU_SCHEMA_PREFIX>", value:"${config.script.rcu.prefix}")
+		antBuilder.replace(file:jythonConfigFile, token:"<MACHINE_NAME>", value:"${config.script.machine.name}")
+		antBuilder.replace(file:jythonConfigFile, token:"<CLUSTER_NAME>", value:"${config.script.cluster.name}")
 		String dbType = config.script.oracle.wcsites.database.type
 		antBuilder.replace(file:jythonConfigFile, token:"<DATABASE>", value:dbType.toUpperCase())
 		antBuilder.replace(file:jythonConfigFile, token:"<DB_URL>", value:"${dbUrl}")
