@@ -44,7 +44,7 @@ function rand_pwd(){
       echo "INFO: Password does not Match the criteria, re-generating..." >&2
     fi
   done
-  echo "INFO: ${s}" 
+  echo "${s}" 
 }
 
 #==================================================
