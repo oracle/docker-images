@@ -38,7 +38,7 @@ Four service discovery keys are required for this implementation:
 
 ## Configuration
 
-The router configuration is based on NGINX. The NGINX configuration files need to dynamically change when containers are deployed in OCCS. Confd provides the mechanism to watch service discovery keys in OCCS and generate dynamic configuraiton files for NGINX.
+The router configuration is based on NGINX. The NGINX configuration files need to dynamically change when containers are deployed in OCCS. Confd provides the mechanism to watch service discovery keys in OCCS and generate dynamic configuration files for NGINX.
 
 ### Virtual Host
 

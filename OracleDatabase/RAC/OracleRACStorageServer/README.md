@@ -10,34 +10,50 @@ You need to make sure that you have atleast 60GB space available for container t
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
-* The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
+The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
 
-         ./buildDockerImage.sh -v (Software Version)
+```
+./buildDockerImage.sh -v (Software Version)
+./buildDockerImage.sh -v 18.3.0
+```
 
-         ./buildDockerImage.sh -v 12.2.0.1
+**NOTE**: To build RACStorage Image for 18.3.0, pass the version 18.3.0 to buildDockerImage.sh
 
-         For detailed usage of command, please execute folowing command:
-         ./buildDockerImage.sh -h
+For detailed usage of command, please execute folowing command:
+```
+./buildDockerImage.sh -h
+```
 
 ### Create Bridge
-* Before creating container, create the bridge for NFS storage container.
+Before creating container, create the bridge for NFS storage container.
 
-         docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
+```
+docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
+```
 
 **Note:** You can change subnet according to your environment.
 
 ### Disable SELINUX
 SELINUX must be disabled or in permissive mode.
 
-### Running RACStorageServer Docker container
-* Execute following command to create the container:
+### NFS Server installation on Docker Host
+You must install NFS server rpms on docker host to utilize NFS volumes in containers.
 
-        docker run -d -t --hostname racnode-storage \
-        --dns-search=example.com  --cap-add SYS_ADMIN \
-        --volume /docker_volumes/asm_vol/$ORACLE_SID:/oradata --init \
-        --network=rac_priv1_nw --ip=192.168.17.25 --tmpfs=/run  \
-        --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
-        --name racnode-storage oracle/rac-storage-server:12.2.0.1
+```
+yum -y install nfs-utils
+```
+
+### Running RACStorageServer Docker container
+Execute following command to create the container:
+
+```
+docker run -d -t --hostname racnode-storage \
+--dns-search=example.com  --cap-add SYS_ADMIN \
+--volume /docker_volumes/asm_vol/$ORACLE_SID:/oradata --init \
+--network=rac_priv1_nw --ip=192.168.17.25 --tmpfs=/run  \
+--volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+--name racnode-storage oracle/rac-storage-server:18.3.0
+```
 
 **IMPORTANT:** During the container startup 5 files named as asm_disk0[1-5].img will be created under /oradata.If the files are already present, they will not be recreated.These files can be used for ASM storage in RAC containers.
 
@@ -45,26 +61,31 @@ SELINUX must be disabled or in permissive mode.
 
 In the above example, we used **192.168.17.0/24** subnet for NFS server. You can change the subnet values according to your environment.
 
-* To check the racstorage container/services creation logs , please tail docker logs. It will take 10 minutes to create the racnode-storage container service.
+To check the racstorage container/services creation logs , please tail docker logs. It will take 10 minutes to create the racnode-storage container service.
 
-                docker logs -f racnode-storage
+```
+docker logs -f racnode-storage
+```
 
- * you should see following in docker logs output:
+you should see following in docker logs output:
 
-        #################################################
-             runOracle.sh: NFS Server is up and running
-             Create NFS volume for /oradata
-        #################################################
-
+```
+#################################################
+runOracle.sh: NFS Server is up and running
+Create NFS volume for /oradata
+#################################################
+```
 **IMPORTANT:** The NFS volume must be /oradata which you will export to RAC containers for ASM storage. It will take 10 minutes for setting up NFS server.
 
 ### NFS Volume
-* Create NFS volume using following command:
+Create NFS volume using following command:
 
-        docker volume create --driver local \
-        --opt type=nfs \
-        --opt   o=addr=192.168.17.25,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
-         --opt device=:/oradata \
-                racstorage
+```
+docker volume create --driver local \
+--opt type=nfs \
+--opt   o=addr=192.168.17.25,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+--opt device=:/oradata \
+racstorage
+```
 
 **IMPORTANT:** If you are not using 192.168.17.0/24 subnet then you need to change **addr=192.168.17.25** based on your environment.

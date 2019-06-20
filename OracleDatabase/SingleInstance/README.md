@@ -3,7 +3,9 @@ Sample Docker build files to facilitate installation, configuration, and environ
 
 ## How to build and run
 This project offers sample Dockerfiles for:
- * Oracle Database 12c Release 2 (12.2.0.1) Enterprise Edition and Standard Edition 2
+ * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
+ * Oracle Database 18c (18.3.0) Enterprise Edition and Standard Edition 2
+ * Oracle Database 12c Release 2 (12.2.0.2) Enterprise Edition and Standard Edition 2
  * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition 2
  * Oracle Database 11g Release 2 (11.2.0.2) Express Edition.
 
@@ -23,7 +25,7 @@ Before you build the image make sure that you have provided the installation bin
     
     Parameters:
        -v: version to build
-           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1
+           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
        -x: creates image based on 'Express Edition'
@@ -32,10 +34,13 @@ Before you build the image make sure that you have provided the installation bin
     
     * select one edition only: -e, -s, or -x
     
+    LICENSE UPL 1.0
+    
+    Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
-	#########################
+    #########################
 	DATABASE IS READY TO USE!
 	#########################
 
@@ -55,7 +60,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_PWD=<your database passwords> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
-	oracle/database:12.2.0.1-ee
+	oracle/database:19.3.0-ee
 	
 	Parameters:
 	   --name:        The name of the container (default: auto generated)
@@ -99,7 +104,54 @@ The password for those accounts can be changed via the **docker exec** command. 
 
 	docker exec <container name> ./setPassword.sh <your password>
 
-#### Running Oracle Database Express Edition in a Docker container
+#### Running Oracle Database 18c Express Edition in a Docker container
+To run your Oracle Database 18c Express Edition Docker image use the **docker run** command as follows:
+
+	docker run --name <container name> \
+	-p <host port>:1521 -p <host port>:5500 \
+	-e ORACLE_PWD=<your database passwords> \
+    -e ORACLE_CHARACTERSET=<your character set> \
+	-v [<host mount point>:]/opt/oracle/oradata \
+	oracle/database:18.4.0-xe
+	
+	Parameters:
+	   --name:        The name of the container (default: auto generated)
+	   -p:            The port mapping of the host port to the container port.
+	                  Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
+	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+	   -e ORACLE_CHARACTERSET:
+	                  The character set to use when creating the database (default: AL32UTF8)
+	   -v /opt/oracle/oradata
+	                  The data volume to use for the database.
+	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+	                  If omitted the database will not be persisted over container recreation.
+	   -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
+	                  Optional: A volume with custom scripts to be run after database startup.
+	                  For further details see the "Running scripts after setup and on startup" section below.
+	   -v /opt/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
+	                  Optional: A volume with custom scripts to be run after database setup.
+	                  For further details see the "Running scripts after setup and on startup" section below.
+
+Once the container has been started and the database created you can connect to it just like to any other database:
+
+	sqlplus sys/<your password>@//localhost:1521/XE as sysdba
+	sqlplus system/<your password>@//localhost:1521/XE
+	sqlplus pdbadmin/<your password>@//localhost:1521/XEPDB1
+
+The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
+
+	https://localhost:5500/em/
+
+On the first startup of the container a random password will be generated for the database if not provided. You can find this password in the output line:
+
+	ORACLE PASSWORD FOR SYS AND SYSTEM:
+
+**Note:** The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
+
+The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
+	docker exec <container name> /opt/oracle/setPassword.sh <your password>
+
+#### Running Oracle Database 11gR2 Express Edition in a Docker container
 To run your Oracle Database Express Edition Docker image use the **docker run** command as follows:
 
 	docker run --name <container name> \
@@ -118,13 +170,13 @@ To run your Oracle Database Express Edition Docker image use the **docker run** 
 
 	   -v /u01/app/oracle/oradata
 	                  The data volume to use for the database.
-	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+	                  Has to be writable by the Unix "oracle" (uid: 1000) user inside the container!
 	                  If omitted the database will not be persisted over container recreation.
-	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d
+	   -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
 	                  Optional: A volume with custom scripts to be run after database startup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
-	   -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d
-	                  Optional: A volume with custom scripts to be run after database startup.
+	   -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
+	                  Optional: A volume with custom scripts to be run after database setup.
 	                  For further details see the "Running scripts after setup and on startup" section below.
 
 There are two ports that are exposed in this image:
@@ -138,7 +190,7 @@ On the first startup of the container a random password will be generated for th
 **Note:** The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
 
 The password for those accounts can be changed via the **docker exec** command. **Note**, the container has to be running:
-	docker exec oraclexe /u01/app/oracle/setPassword.sh <your password>
+	docker exec <container name> /u01/app/oracle/setPassword.sh <your password>
 
 Once the container has been started you can connect to it just like to any other database:
 
@@ -148,7 +200,7 @@ Once the container has been started you can connect to it just like to any other
 ### Running SQL*Plus in a Docker container
 You may use the same Docker image you used to start the database, to run `sqlplus` to connect to it, for example:
 
-	docker run --rm -ti oracle/database:12.2.0.1-ee sqlplus pdbadmin/<yourpassword>@//<db-container-ip>:1521/ORCLPDB1
+	docker run --rm -ti oracle/database:19.3.0-ee sqlplus pdbadmin/<yourpassword>@//<db-container-ip>:1521/ORCLPDB1
 
 Another option is to use `docker exec` and run `sqlplus` from within the same container already running the database:
 
@@ -171,7 +223,7 @@ recommended to prefix your scripts with a number. For example `01_users.sql`, `0
 
 The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
 
-    docker run --name oracle-ee -p 1521:1521 -v /home/oracle/myScripts:/opt/oracle/scripts/startup -v /home/oracle/oradata:/opt/oracle/oradata oracle/database:12.2.0.1-ee
+    docker run --name oracle-ee -p 1521:1521 -v /home/oracle/myScripts:/opt/oracle/scripts/startup -v /home/oracle/oradata:/opt/oracle/oradata oracle/database:19.3.0-ee
     
 ## Known issues
 * The [`overlay` storage driver](https://docs.docker.com/engine/userguide/storagedriver/selectadriver/) on CentOS has proven to run into Docker bug #25409. We recommend using `btrfs` or `overlay2` instead. For more details see issue #317.
@@ -189,4 +241,4 @@ To download and run Oracle Database, regardless whether inside or outside a Dock
 All scripts and files hosted in this project and GitHub [docker-images/OracleDatabase](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.

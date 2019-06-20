@@ -44,6 +44,7 @@ ENV         JAVA_HOME=/usr/lib/jvm/jre \
 
 ADD         ${OGG_TARFILE} ${OGG_HOME}/
 COPY        runOracleGoldenGate.sh /
+COPY        bin/* /usr/local/bin/
 
 #
 # Initial setup
@@ -68,13 +69,16 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
                 echo "----------------------------------------------------------------------------------" && \
                 chown -R oracle:oinstall ${OGG_HOME}; \
             fi; \
+            . /etc/os-release && MAJOR_VERSION="${VERSION/.*/}"; \
+            yum-config-manager --enable ol${MAJOR_VERSION}_optional_latest; \
+            yum -y install oracle-softwarecollection-release-el${MAJOR_VERSION}; \
+            [[ -x /usr/bin/ol_yum_configure.sh ]] && /usr/bin/ol_yum_configure.sh; \
             if [[ "${OGG_EDITION}" == "standard" ]]; then \
                 yum -y install util-linux vi java-1.8.0-openjdk-headless && \
                 rm -rf /var/cache/yum; \
             fi; \
             if [[ "${OGG_EDITION}" == "microservices" ]]; then \
-                . /etc/os-release && MAJOR_VERSION="${VERSION/.*/}" && \
-                yum -y --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless && \
+                yum -y --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless python-requests && \
                 rm -rf /var/cache/yum && \
                 ln -s /etc/opt/rh/rh-nginx18/nginx /etc/nginx && \
                 sh /etc/ssl/certs/make-dummy-cert  /etc/nginx/ogg.pem && \

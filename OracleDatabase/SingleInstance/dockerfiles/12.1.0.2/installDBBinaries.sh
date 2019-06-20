@@ -57,26 +57,34 @@ $INSTALL_DIR/database/runInstaller -silent -force -waitforcompletion -responsefi
 cd $HOME
 
 # Remove not needed components
+# APEX
 rm -rf $ORACLE_HOME/apex && \
-rm -rf $ORACLE_HOME/jdbc && \
-# ZDLRA installer files
-rm -rf $ORACLE_HOME/lib/ra*.zip && \
+# ORDS
 rm -rf $ORACLE_HOME/ords && \
+# SQL Developer
 rm -rf $ORACLE_HOME/sqldeveloper && \
+# UCP connection pool
 rm -rf $ORACLE_HOME/ucp && \
+# All installer files
+rm -rf $ORACLE_HOME/lib/*.zip && \
 # OUI backup
 rm -rf $ORACLE_HOME/inventory/backup/* && \
 # Network tools help
-rm -rf $ORACLE_HOME/network/tools/help/mgr/help_* && \
+rm -rf $ORACLE_HOME/network/tools/help && \
+# Database upgrade assistant
+rm -rf $ORACLE_HOME/assistants/dbua && \
+# Database migration assistant
+rm -rf $ORACLE_HOME/dmu && \
+# Remove pilot workflow installer
+rm -rf $ORACLE_HOME/install/pilot && \
+# Support tools
+rm -rf $ORACLE_HOME/suptools && \
 # Temp location
 rm -rf /tmp/* && \
 # Database files directory
 rm -rf $INSTALL_DIR/database
 
-# Link password reset file to home directory
-ln -s $ORACLE_BASE/$PWD_FILE $HOME/
-
 # Check whether Perl is working
-chmod ug+x $INSTALL_DIR/installPerl.sh && \
+chmod ug+x $INSTALL_DIR/$PERL_INSTALL_FILE && \
 $ORACLE_HOME/perl/bin/perl -v || \
-$INSTALL_DIR/installPerl.sh
+$INSTALL_DIR/$PERL_INSTALL_FILE

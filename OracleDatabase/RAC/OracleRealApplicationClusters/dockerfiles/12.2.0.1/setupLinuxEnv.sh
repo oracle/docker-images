@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
@@ -16,5 +16,5 @@
 mkdir /asmdisks && \
 mkdir /responsefiles  && \
 chmod ug+x /opt/scripts/startup/*.sh && \
-yum -y install oracle-database-server-12cR2-preinstall net-tools which zip unzip tar openssl expect e2fsprogs openssh-server openssh-client vim-minimal passwd which sudo && \
+yum -y install systemd  oracle-database-server-12cR2-preinstall  net-tools which zip unzip tar openssl expect e2fsprogs openssh-server openssh-client vim-minimal passwd which sudo && \
 yum clean all 

@@ -25,7 +25,7 @@ For example, if the Docker host was using 192.168.0.10 and the ports were 3000 a
 
 Then when running the container, the ports are exposed and mapped to the same ports on the host. For example:
 
-`$ docker run -p 3000:3000 -p 9000:9000 oracle/coherence:12.2.1.0.0-standalone`
+`$ docker run -p 3000:3000 -p 9000:9000 oracle/coherence:12.2.1.3.0-standalone`
 
 The disadvantage with this approach is that using fixed ports makes containers less portable or port management on the Docker hosts more complicated.
 

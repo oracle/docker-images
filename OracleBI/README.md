@@ -8,7 +8,7 @@ The certification of Oracle Business Intelligence on Docker does not require the
 
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 
-The instructions below can also be used to build and run Oracle Buisness Intelligence 12.2.1.2.0, based on FMW Infrastructure 12.2.1.2.0, by changing 12.2.1.3 to 12.2.1.2 as required.
+The instructions below can also be used to build and run Oracle Business Intelligence 12.2.1.2.0, based on FMW Infrastructure 12.2.1.2.0, by changing 12.2.1.3 to 12.2.1.2 as required.
 
 ## Database prerequisite
 

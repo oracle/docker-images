@@ -10,7 +10,7 @@
 # -----------------------
 # The Oracle FMW Infrastructure image extends the Oracle WebLogic Infrastructure 12.2.1.3 image, you must first build the Oracle WebLogic Infrastructure image.
 # Run:
-#      $ docker build -f Dockerfile -t oracle/fmw-infrastructure:12.2.1.3
+#      $ docker build -f Dockerfile -t oracle/fmw-infrastructure:12.2.1.3 .
 #
 # IMPORTANT
 # ---------
@@ -18,7 +18,7 @@
 #
 # From
 # -------------------------
-FROM oracle/serverjre:8
+FROM oracle/serverjre:8 as builder
 
 # Maintainer
 # ----------
@@ -28,26 +28,14 @@ MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 # Common environment variables required for this build
 # ----------------------------------------------------
 ENV ORACLE_HOME=/u01/oracle \
-    SCRIPT_FILE=/u01/oracle/container-scripts/* \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    DOMAIN_NAME="${DOMAIN_NAME:-InfraDomain}" \
-    DOMAIN_HOME=/u01/oracle/user_projects/domains/${DOMAIN_NAME:-InfraDomain} \
-    VOLUME_DIR=/u01/oracle/user_projects \
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+    PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin
 
-
-#USER root
 # Setup subdirectory for FMW install package and container-scripts
 # -----------------------------------------------------------------
 RUN mkdir -p /u01 && \
     chmod a+xr /u01 && \
-    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
-    mkdir -p /u01/oracle/container-scripts
-
-
-# Copy packages and scripts
-# -------------
-COPY container-scripts/* /u01/oracle/container-scripts/
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -57,15 +45,7 @@ ENV FMW_PKG=fmw_12.2.1.3.0_infrastructure_Disk1_1of1.zip \
 # Copy packages
 # -------------
 COPY $FMW_PKG install.file oraInst.loc /u01/
-RUN chown oracle:oracle -R /u01 && \
-    chmod +xr $SCRIPT_FILE && \
-    yum install -y libaio && \
-    rm -rf /var/cache/yum && \
-    mkdir -p $VOLUME_DIR && \
-    chown -R oracle:oracle $VOLUME_DIR
-
-VOLUME  $VOLUME_DIR
-
+RUN chown oracle:oracle -R /u01
 
 # Install
 # ------------------------------------------------------------
@@ -74,7 +54,41 @@ RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
     $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
-WORKDIR ${ORACLE_HOME}
+# Final image stage
+FROM oracle/serverjre:8
+ENV ORACLE_HOME=/u01/oracle \
+    VOLUME_DIR=/u01/oracle/user_projects \
+    SCRIPT_FILE=/u01/oracle/container-scripts/* \
+    DOMAIN_NAME="${DOMAIN_NAME:-infra_domain}" \
+    ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}" \
+    ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
+    ADMIN_HOST="${ADMIN_HOST:-InfraAdminContainer}" \
+    ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-true}" \
+    ADMINISTRATION_PORT="${ADMINISTRATION_PORT:-9002}" \
+    MANAGEDSERVER_PORT="${MANAGEDSERVER_PORT:-8001}" \
+    MANAGED_NAME="${MANAGED_NAME:-infraServer1}" \
+    RCUPREFIX="${RCUPREFIX:-INFRA01}" \
+    PRODUCTION_MODE="${PRODUCTION_MODE:-prod}" \
+    CONNECTION_STRING=${CONNECTION_STRING:-InfraDB:1521/InfraPDB1.us.oracle.com} \
+    JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
-# Define default command to start script.
+RUN mkdir -p /u01 && \
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
+    chmod a+xr /u01 && chown oracle:oracle /u01 && \
+    mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
+    mkdir -p /u01/oracle/container-scripts && \
+    yum install -y libaio && \
+    rm -rf /var/cache/yum
+
+
+# Copy packages and scripts
+# -------------------------
+COPY container-scripts/* /u01/oracle/container-scripts/
+
+COPY --from=builder --chown=oracle:oracle /u01 /u01
+RUN chmod +xr $SCRIPT_FILE
+
+USER oracle
+WORKDIR ${ORACLE_HOME}
 CMD ["/u01/oracle/container-scripts/createOrStartInfraDomain.sh"]

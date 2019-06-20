@@ -39,7 +39,7 @@ Four service discovery keys are required for the blue/green implementation:
 
 ## Configuration
 
-The router configuration is based on NGINX. The NGINX configuration files need to dynamically change when containers are deployed in OCCS. Confd provides the mechanism to watch service discovery keys in OCCS and generate dynamic configuraiton files for NGINX.
+The router configuration is based on NGINX. The NGINX configuration files need to dynamically change when containers are deployed in OCCS. Confd provides the mechanism to watch service discovery keys in OCCS and generate dynamic configuration files for NGINX.
 
 ### Virtual Host
 
@@ -58,7 +58,7 @@ Second, Confd automatically uses the generated files to generate a new file. The
 
 ### Green Upstream
 
-The proces to generate the green upstream file is identical to the process described above for generating the blue upstream file.
+The process to generate the green upstream file is identical to the process described above for generating the blue upstream file.
 
 ## Usage
 

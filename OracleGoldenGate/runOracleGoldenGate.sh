@@ -10,7 +10,25 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-runAsUser="runuser -u oracle --"
+##
+## Locate a command on the local system
+##
+function getCommand {
+    local primary=$1; shift
+    local alternate=$*
+    for check in ${alternate} ${primary}; do
+        command=$(command -v ${check} 2>/dev/null) && break
+    done
+    [[ -z "${command}" ]] && {
+        [[ ! -z "${alternate}" ]] && echo "Error: Cannot locate command ${primary} or ${alternate}" \
+                                  || echo "Error: Cannot locate command ${primary}"
+        exit 1
+    }
+    eval "${primary^^}=${command}"
+}
+
+getCommand runuser
+runAsUser="${RUNUSER} -u oracle --"
 OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|replicat|server|ServiceManager)"
 
 ##
@@ -31,11 +49,29 @@ OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|repl
 }
 
 ##
+## Generate a random password with:
+##  - at least one uppercase character
+##  - at least one lowercase character
+##  - at least one digit character
+##
+function generatePassword {
+    getCommand openssl
+    local password="$(${OPENSSL} rand -base64 9)-$(${OPENSSL} rand -base64 3)"
+    if [[ "${password}" != "${password/[A-Z]/_}" && \
+          "${password}" != "${password/[a-z]/_}" && \
+          "${password}" != "${password/[0-9]/_}" ]]; then
+        export OGG_ADMIN_PWD="${password}"
+        return
+    fi
+    generatePassword
+}
+
+##
 ## Set up administrator password for Microservices Architecture
 ##
 if [[ "${OGG_EDITION}" == "microservices" ]]; then
     if [[ -z "${OGG_ADMIN_PWD}" ]]; then
-         export OGG_ADMIN_PWD="$(openssl rand -base64 9)"
+         generatePassword
          echo "----------------------------------------------------------------------------------"
          echo "--  Password for administrative user '${OGG_ADMIN}' is '${OGG_ADMIN_PWD}'"
          echo "----------------------------------------------------------------------------------"
@@ -46,11 +82,12 @@ fi
 ## Monitor a report file
 ##
 function tailReport {
+    getCommand tail
     local rptFile="$1"
     while [[ ! -f  "${rptFile}" ]]; do
         sleep 1
     done
-    tail --lines=+1 -F ${rptFile}
+    ${TAIL} --lines=+1 -F ${rptFile}
 }
 
 ##
@@ -66,14 +103,16 @@ function runBaseCommand {
 ## Mark applications and shared libraries executable
 ##
 function setExecutable {
-    find ${OGG_HOME} -type f \( -name '*.so*' -o -not -name '*.*' \) -exec chmod +x {} \;
+    getCommand find
+    ${FIND} ${OGG_HOME} -type f \( -name '*.so*' -o -not -name '*.*' \) -exec chmod +x {} \;
 }
 
 ##
 ##  Check if any OGG components are running
 ##
 function isOGGRunning {
-    pgrep -f ${OGGProcesses} &>/dev/null
+    getCommand pgrep
+    ${PGREP} -f ${OGGProcesses} &>/dev/null
 }
 
 ##
@@ -106,9 +145,10 @@ function createGlobals {
 ##
 function initSSL {
     if [[ ! -d "${OGG_DEPLOY_BASE}/ssl" ]]; then
+        getCommand orapki
         local deploymentName="$1"
         local       CommonOU="OU=GoldenGate,OU=Enterprise Replication,OU=Server Technology,O=Oracle Corp,L=Redwood Shores,ST=CA,C=US"
-        local         orapki="${runAsUser} orapki -nologo"
+        local         orapki="${runAsUser} ${ORAPKI} -nologo"
         local OGG_WALLET_PWD="${OGG_ADMIN_PWD}-A1"
         local      nginxCert="/etc/nginx/ogg.pem"
 
@@ -116,7 +156,6 @@ function initSSL {
         chown     oracle:oinstall        ${OGG_DEPLOY_BASE}/ssl
         ${runAsUser} mkdir -p            ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} 2>/dev/null || return 1
         ${orapki} wallet create  -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -auto_login
-        ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${HOSTNAME},${CommonOU}"       -keysize 2048 -self_signed -validity 7300
         ${orapki} wallet add     -wallet ${OGG_DEPLOY_BASE}/ssl/${HOSTNAME} -pwd "${OGG_WALLET_PWD}" -dn "CN=${deploymentName},${CommonOU}" -keysize 2048 -self_signed -validity 7300
 
         chmod 644               ${nginxCert}
@@ -163,9 +202,10 @@ function createDeployment {
     local OGG_JARFILE=$(ls -1 ${OGG_HOME}/lib/utl/install/oggsca*.jar)
     chown -R oracle:oinstall "${OGG_DEPLOY_BASE}"
 
-    if [[ ! -d "${OGG_DEPLOY_BASE}/ServiceManager" ]]; then
+    if [[ ! -e "${OGG_DEPLOY_BASE}/ServiceManager/etc/conf/deploymentRegistry.dat" ]]; then
+        getCommand java
         echo "${OGG_ADMIN_PWD}" | \
-        ${runAsUser} java -classpath  ${OGG_JARFILE} ogg/OGGDeployment \
+        ${runAsUser} ${JAVA} -classpath  ${OGG_JARFILE} ogg/OGGDeployment \
              --action=Create --silent \
              --oggHome=${OGG_HOME} \
              --oggDeployHome=${OGG_DEPLOY_BASE}/ServiceManager \
@@ -174,9 +214,10 @@ function createDeployment {
             ${secureOption}
     fi
 
-    if [[ ! -d "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}" ]]; then
+    if [[ ! -e "${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}/etc/conf/deploymentConfiguration.dat" ]]; then
+        getCommand java
         echo "${OGG_ADMIN_PWD}" | \
-        ${runAsUser} java -classpath ${OGG_JARFILE} ogg/OGGDeployment \
+        ${runAsUser} ${JAVA} -classpath ${OGG_JARFILE} ogg/OGGDeployment \
              --action=Create --silent \
              --oggHome=${OGG_HOME} \
              --oggDeployHome=${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT} \
@@ -205,7 +246,8 @@ function startReverseProxy {
             ${OGG_HOME}/lib/utl/reverseproxy/ReverseProxySettings -o /etc/nginx/conf.d/ogg.conf -t nginx -u ${OGG_ADMIN} "${SCHEME}://127.0.0.1:${Port_ServiceManager}"
         fi
     fi
-    scl enable rh-nginx18 -- nginx
+    getCommand scl
+    ${SCL} enable rh-nginx18 -- nginx
 }
 
 ##
@@ -263,22 +305,24 @@ function exec_microservices {
 }
 
 function term_microservices {
+    getCommand pkill
+    getCommand sleep
     echo ""
-    pkill -SIGTERM ServiceManager                         && sleep 1
-    pkill -SIGTERM '(adminsrvr|distsrvr|pmsrvr|recvsrvr)' && sleep 1
-    pkill -SIGTERM '(extract|replicat)'
+    ${PKILL} -SIGTERM ServiceManager                         && sleep 1
+    ${PKILL} -SIGTERM '(adminsrvr|distsrvr|pmsrvr|recvsrvr)' && sleep 1
+    ${PKILL} -SIGTERM '(extract|replicat)'
     local timeout=8
     local rc=0
     while (true); do
         isOGGRunning || return 0
-        sleep 1
+        ${SLEEP} 1
         timeout=$(expr ${timeout} - 1)
         if [ ${timeout} -eq 0 ]; then
             rc=1
             break
         fi
     done
-    pkill -SIGKILL ${OGGProcesses}
+    ${PKILL} -SIGKILL ${OGGProcesses}
     exit ${rc}
 }
 
