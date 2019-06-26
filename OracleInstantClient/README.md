@@ -63,9 +63,9 @@ restrictions.
 
 Optional Oracle Network and Oracle client configuration files can be
 copied to the default configuration file directory
-`/usr/lib/oracle/XX.Y/client64/lib/network/admin`, where XX.Y is the
-version of Instant Client used.  Optional files files include
-`tnsnames.ora`, `sqlnet.ora`, `oraaccess.xml` and `cwallet.sso`.
+`/usr/lib/oracle/<version>/client64/lib/network/admin`.  Optional
+files include `tnsnames.ora`, `sqlnet.ora`, `oraaccess.xml` and
+`cwallet.sso`.
 
 When files are in the default directory, you do **not** need to set
 Oracle's `TNS_ADMIN` environment variable.
