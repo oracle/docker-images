@@ -46,7 +46,7 @@ RUN  yum -y install oracle-release-el7 && yum-config-manager --enable ol7_oracle
      rm -rf /var/cache/yum
 
 # Optional Oracle Network or Oracle client configuration files can be
-# put in the default configuration file directory.  These files
+# copied to the default configuration file directory.  These files
 # include tnsnames.ora, sqlnet.ora, oraaccess.xml and cwallet.sso.
 # For example:
 # COPY wallet/* /usr/lib/oracle/${release}.${update}/client64/lib/network/admin
