@@ -45,6 +45,12 @@ RUN  yum -y install oracle-release-el7 && yum-config-manager --enable ol7_oracle
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
      rm -rf /var/cache/yum
 
+# Optional Oracle Network or Oracle client configuration files can be
+# put in the default configuration file directory.  These files
+# include tnsnames.ora, sqlnet.ora, oraaccess.xml and cwallet.sso.
+# For example:
+# COPY wallet/* /usr/lib/oracle/${release}.${update}/client64/lib/network/admin
+
 # Uncomment if the tools package is added
 # ENV PATH=$PATH:/usr/lib/oracle/${release}.${update}/client64/bin
 
