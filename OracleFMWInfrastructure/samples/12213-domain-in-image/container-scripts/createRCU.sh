@@ -68,14 +68,14 @@ if [ -e $CONTAINERCONFIG_DIR/RCU.$RCUPREFIX.suc ]
 then
    #RCU has already been executed successfully, no need to rerun
    RUN_RCU="false"
-   echo "SOA RCU has already been loaded.. skipping"
+   echo "RCU has already been loaded.. skipping"
 fi
 
 if [ "$RUN_RCU" == "true" ]
 then
    #Set the password for RCU
    echo -e ${DB_PASS}"\n"${DB_SCHEMA_PASS} > /u01/oracle/pwd.txt
-   echo "Loading SOA RCU into database"
+   echo "Loading RCU into database"
    # Run the RCU to load the schemas into the database
    /u01/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString ${CONNECTION_STRING} -dbUser ${DB_USER} -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix ${RCUPREFIX} -component MDS -component MDS -component IAU -component IAU_APPEND -component IAU_VIEWER -component OPSS  -component WLS  -component STB -f < /u01/oracle/pwd.txt >> /u01/oracle/RCU.out
    retval=$?

@@ -1,11 +1,11 @@
 Oracle Fusion Middleware Infrastructure domain on Docker
 ========================================================
-This project creates a Docker image which contains an Oracle Fusion Middleware Infrastructure domain image. The image extends the FMW Infrastructure binary image and builds an FMW Infrastructure domain persisted inside the image.
+This project creates a Docker image which contains an Oracle Fusion Middleware Infrastructure domain image. The image extends the FMW Infrastructure install/binary image and builds an FMW Infrastructure domain persisted inside the image.
 
 ### Building the Oracle Fusion Middleware Infrastructure 12.2.1.3 base image
-A prerequisite to building the 12213-fmw-domain-in-image image is having an Oracle Fusion Middleware Infrastructure 12.2.1.3 binary image. The Dockerfile and scripts to build the image are under the folder, `../../OracleFMWInfrastructure/dockerfile/12.2.1.3`. For more information, see the [README](../../OracleFMWInfrastructure/README.md) file.
+A prerequisite to building the 12213-fmw-domain-in-image image is having an Oracle Fusion Middleware Infrastructure 12.2.1.3 install/binary image. The Dockerfile and scripts to build the image are under the folder, `../../OracleFMWInfrastructure/dockerfile/12.2.1.3`. For more information, see the [README](../../OracleFMWInfrastructure/README.md) file.
 
-**IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.3 binary and place it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.3`.
+**IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.3 install/binary and place it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.3`.
 
         $ cd ../../OracleFMWInfrastructure/dockerfiles
         $ sh buildDockerImage.sh
@@ -84,7 +84,7 @@ To run RCU, start a container from the image created:
 **NOTE**: To have access to the `RCU.out`, map volume `/u01/oracle/` in the Administration Server container.
 
 ### Build the FMW Infrastructure Domain Image
-The Dockerfile iin this sample extends the FMW Infrastructure install image and creates a domain configuration inside of the image. We provide a `build.sh` script to assist with the building of the image and setting the correct BUILD_ARGS that have been defined in the `domain.properties` and `rcu.properties` files. You can override the default values of the following parameters during configuration time in both these properties files. The script `./container-scripts/setEnv.sh` sets the build time environment variables to configure the domain, the following BUILD ARGS are set:
+The Dockerfile in this sample extends the FMW Infrastructure install image and creates a domain configuration inside of the image. We provide a `build.sh` script to assist with the building of the image and setting the correct BUILD_ARGS that have been defined in the `domain.properties` and `rcu.properties` files. You can override the default values of the following parameters during configuration time in both these properties files. The script `./container-scripts/setEnv.sh` sets the build time environment variables to configure the domain, the following BUILD ARGS are set:
 
 * `CUSTOM_DOMAIN_NAME`
 * `CUSTOM_ADMIN_PORT`
