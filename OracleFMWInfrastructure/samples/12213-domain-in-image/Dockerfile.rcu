@@ -1,0 +1,42 @@
+#Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile to run RCU 
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# The RCU image extends the Oracle WebLogic Infrastructure 12.2.1.3 image, you must first build the Oracle WebLogic Infrastructure image.
+# Run:
+#      $ docker build -f Dockerfile.rcu -t 12213-fmw-rcu .
+#
+# IMPORTANT
+# ---------
+# The resulting image of this Dockerfile contains a script to run RCU 
+#
+# From
+# -------------------------
+# FROM oracle/fmw-infrastructure:12.2.1.3
+FROM  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.3
+
+# Maintainer
+# ----------
+MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
+
+
+# WLS Configuration
+# ---------------------------
+ENV ORACLE_HOME="/u01/oracle" \
+    CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
+
+
+# Add files required to build this image
+COPY container-scripts/createRCU.sh /u01/oracle/container-scripts/
+
+USER root
+RUN chmod +x /u01/oracle/container-scripts/*
+
+USER oracle
+CMD ["/u01/oracle/container-scripts/createRCU.sh"]
