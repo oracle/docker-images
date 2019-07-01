@@ -4,13 +4,13 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle FMW Infrastructure 12.2.1.3
+# This is the Dockerfile for Oracle FMW Infrastructure 12.2.1.3 domain 
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # The Oracle FMW Infrastructure image extends the Oracle WebLogic Infrastructure 12.2.1.3 image, you must first build the Oracle WebLogic Infrastructure image.
 # Run:
-#      $ docker build -f Dockerfile -t 12213-fmw-domain-in-volume .
+#      $ docker build -f Dockerfile --network=InfraNET -t 12213-fmw-domain-in-image .
 #
 # IMPORTANT
 # ---------
@@ -18,8 +18,7 @@
 #
 # From
 # -------------------------
-# FROM oracle/fmw-infrastructure:12.2.1.3
-FROM container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.3
+FROM oracle/fmw-infrastructure:12.2.1.3
 
 # Maintainer
 # ----------
