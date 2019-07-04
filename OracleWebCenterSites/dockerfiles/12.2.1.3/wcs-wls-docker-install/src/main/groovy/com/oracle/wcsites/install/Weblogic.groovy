@@ -302,6 +302,8 @@ class Weblogic implements AppServer {
 		// Replaces tokens in the Jython file
 		def jythonConfigFile = config.work + "/" + Utils.CONFIG_SCRIPT
 		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_HOME>", value:"${domainHome}")
+		antBuilder.replace(file:jythonConfigFile, token:"<ORACLE_HOME>", value:"${config.script.oracle.home}")
+		
 		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_NAME>", value:"${config.script.oracle.domain}")
 		antBuilder.replace(file:jythonConfigFile, token:"<WL_USERNAME>", value:"${config.script.admin.server.username}")
 		antBuilder.replace(file:jythonConfigFile, token:"<WL_PASSWORD>", value:"${config.script.admin.server.password}")
@@ -380,6 +382,9 @@ class Weblogic implements AppServer {
 
 		adminServerLog = generateAdminServerStartScript(domainHome)
 		setTempDirInDomainEnv(domainHome)
+		
+		// Creates password file
+		createPwdFile(domainHome, "AdminServer")
 
 		runAdminServerStartScript(domainHome)
 		monitorServerLog(adminServerLog, successMsg, true)
@@ -448,6 +453,8 @@ class Weblogic implements AppServer {
 		dirsToClean.each { directory -> antBuilder.delete(dir:directory, includeEmptyDirs:true)	}
 		// Creates password file
 		createPwdFile(domainHome, config.script.server.name)
+		// Creates parameter file
+		createParamFile(domainHome, config.script.server.name)
 		// Starts server
 		runManagedServerStartScript(domainHome, config.script.server.name)
 		// Monitors server log for startup message
@@ -472,6 +479,29 @@ class Weblogic implements AppServer {
 		File file = new File( securityFolder, "boot.properties" )
 		Utils.echo("Create Password File -> " + file.getPath())
 		file.text = "username=" + config.script.admin.server.username + System.lineSeparator() + "password=" + config.script.admin.server.password
+	}
+	
+		/**
+	 * The param file is needed for WebLogic Managed Server to get the older hostname
+	 *
+	 * @param domainHome, serverName
+	 * @return
+	 */
+	protected createParamFile(def domainHome, def serverName) {
+		def logFolderPath = domainHome + "/servers/" + serverName + "/logs"
+		def logFolder = new File( logFolderPath )
+
+		// If it doesn't exist
+		if( !logFolder.exists() )
+			logFolder.mkdirs()
+
+		// Write user-name/password to file
+		File file = new File( logFolder, "param.properties" )
+		Utils.echo("Create param File -> " + file.getPath())
+		file.text = "WCSITES_ADMIN_HOSTNAME=" + config.script.oracle.wcsites.hostname + System.lineSeparator() +
+					"WCSITES_ADMIN_PORT=" + config.script.admin.server.port + System.lineSeparator() +
+					"WCSITES_MANAGED_HOSTNAME=" + config.script.oracle.wcsites.hostname + System.lineSeparator() +
+					"WCSITES_MANAGED_PORT=" + config.script.oracle.wcsites.portnumber
 	}
 
 	/**
