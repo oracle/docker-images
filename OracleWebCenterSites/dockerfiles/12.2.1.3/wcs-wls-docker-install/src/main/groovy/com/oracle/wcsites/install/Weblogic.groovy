@@ -84,7 +84,7 @@ class Weblogic implements AppServer {
 		if(Boolean.valueOf(config.script.run.sitesconfig)) {
 
 			def sitesConfigSetupFile = new File(config.work + "/WCSites_Config_Setup.suc")
-
+			def managedServerName = config.script.server.name + "1"
 			if(!sitesConfigSetupFile.exists()) {
 				Utils.echo("4th phase: WebCenter Sites Config Setup has started.")
 				// Changes multi-cast ports for eh-cache and jboss-ticket-cache xmls
@@ -104,15 +104,15 @@ class Weblogic implements AppServer {
 				// Starts installation
 				runSilentInstall()
 				// Monitors sites.log for installation success/failure
-				monitorSitesLog(domainHome + "/servers/" + config.script.server.name + "/logs/sites.log")
+				monitorSitesLog(domainHome + "/servers/" + managedServerName + "/logs/sites.log")
 				// Pauses after installation completes
 				Thread.sleep(10000)
 
 				if(config.script.env.equalsIgnoreCase(Utils.ENV_DOCKER)){
 					// Stops Managed Server
-					Utils.echo("Stopping Managed Server: " + config.script.server.name)
-					stopManagedServer(domainHome, config.script.server.name, true)
-					Utils.echo("Stopped Managed Server Successfully: " + config.script.server.name)
+					Utils.echo("Stopping Managed Server: " + managedServerName)
+					stopManagedServer(domainHome, managedServerName, true)
+					Utils.echo("Stopped Managed Server Successfully: " + managedServerName)
 
 					// Stops Admin Server
 					Utils.echo("Stopping Admin Server.")
@@ -449,16 +449,18 @@ class Weblogic implements AppServer {
 	 */
 	private startManagedServer(def domainHome) {
 		// Cleans up logs
-		def dirsToClean = [domainHome + "/servers/" + config.script.server.name + "/logs", domainHome + "/servers/" + config.script.server.name + "/security"]
+		def managedServerName = config.script.server.name + "1"
+		def dirsToClean = [domainHome + "/servers/" + managedServerName + "/logs", domainHome + "/servers/" + managedServerName + "/security"]
 		dirsToClean.each { directory -> antBuilder.delete(dir:directory, includeEmptyDirs:true)	}
 		// Creates password file
-		createPwdFile(domainHome, config.script.server.name)
+		createPwdFile(domainHome, managedServerName)
 		// Creates parameter file
-		createParamFile(domainHome, config.script.server.name)
+		createParamFile(domainHome, managedServerName)
+
 		// Starts server
-		runManagedServerStartScript(domainHome, config.script.server.name)
+		runManagedServerStartScript(domainHome, managedServerName)
 		// Monitors server log for startup message
-		monitorServerLog(domainHome + "/servers/" + config.script.server.name + "/logs/" + config.script.server.name + ".log", Utils.WL_STARTUP_SUCCESS, true)
+		monitorServerLog(domainHome + "/servers/" + managedServerName + "/logs/" + managedServerName + ".log", Utils.WL_STARTUP_SUCCESS, true)
 	}
 
 	/**
@@ -529,16 +531,17 @@ class Weblogic implements AppServer {
 	 * @return
 	 */
 	private restartManagedServer(def domainHome, boolean exitOnFail) {
+		def managedServerName = config.script.server.name + "1"
 		// Stops managed server
-		stopManagedServer(domainHome, config.script.server.name, exitOnFail)
+		stopManagedServer(domainHome, managedServerName, exitOnFail)
 		// pauses between stop & start
 		Thread.sleep(15000)
 		// Starts managed server
-		runManagedServerStartScript(domainHome, config.script.server.name)
+		runManagedServerStartScript(domainHome, managedServerName)
 		// Pauses before you start monitoring the server log
 		Thread.sleep(30000)
 		// Monitors server log for startup message
-		monitorServerLog(domainHome + "/servers/" + config.script.server.name + "/logs/" + config.script.server.name + ".log", Utils.WL_STARTUP_SUCCESS, exitOnFail)
+		monitorServerLog(domainHome + "/servers/" + managedServerName + "/logs/" + managedServerName + ".log", Utils.WL_STARTUP_SUCCESS, exitOnFail)
 	}
 
 	/**
