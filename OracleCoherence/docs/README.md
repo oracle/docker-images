@@ -1,4 +1,4 @@
-#Documentation
+# Documentation
 This section includes documentation on running Oracle Coherence clusters inside Docker.
 
 1. [Image Usage](00.imageusage) - Usage instructions for running the Coherence image
