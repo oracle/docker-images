@@ -1,4 +1,4 @@
-#Using Coherence*Extend in Docker
+# Using Coherence*Extend in Docker
 
 ## Using Host Networking
 Coherence*Extend clients can be used with Docker and, as with clustering, the easiest way to make Extend work is to start the containers with `--net=host` to use host networking. When using host networking, the container uses the Docker host's network interfaces instead of virtualized interfaces, so all of the features of Coherence*Extend will work as normal.
@@ -6,9 +6,9 @@ Coherence*Extend clients can be used with Docker and, as with clustering, the ea
 ## Using Overlay Networks
 If host networking is not available, then Extend will also work using Docker's overlay and bridge networks. There are different configuration choices available depending on whether the Coherence cluster and Extend client are both running in containers or whether one is containerized and the other is not.   
 
-##Examples
+## Examples
 
-##Cluster and Client Both Containerized
+## Cluster and Client Both Containerized
 If both the cluster members and the Extend client are inside Docker containers and attached to the same overlay network, then everything works as normal. The client and proxy services in the cluster can communicate using the overlay network. 
 
 1. In Coherence 12.2.1, using the default cache configuration in the JAR file of every storage member also starts a proxy that listens on an ephemeral port. Start `DefaultCacheServer` on the `coh-demo0` machine using the following command:
@@ -64,10 +64,10 @@ Map (foo):
 ```
 The service type is a `RemoteCacheService` so the containerized client has connected to a proxy in exactly the same way that Coherence would work if it was not running inside containers.
 
-##Containerized Extend Client with Non-Containerized Cluster
+## Containerized Extend Client with Non-Containerized Cluster
 An Extend client application that is running inside a Docker container can easily connect to a cluster that is not running inside Docker. Many of the limitations imposed by Docker are only really relevant if connecting from the outside world into a container. To go the other way and connect from a container works as normal.
 
-##Containerized Cluster with External Client
+## Containerized Cluster with External Client
 When connecting a non-containerized client to a containerized cluster, the configuration above will not work, again due to limitation of the way that Docker virtualizes the containers network and the use of NAT'ing to expose the container to the outside world.
 
 In the above example, Coherence uses the default configuration for the Proxy and the client. The proxy listens on an ephemeral port and the client locates this port using the `NameService` service after locating the cluster. When using Docker, Coherence cannot be configured to use ephemeral ports due to the limitation of having to specify which ports a container will expose at the point when the container is started; this means that the proxy must be configured to listen on a specific port. The reason Coherence uses ephemeral ports is that it makes Coherence much easier to use as there will not be issues with port clashes due to multiple proxies being configured with the same port. When running in Docker, all of the proxies can be configured to use the same port because each container is isolated from the others so there is no contention for ports.

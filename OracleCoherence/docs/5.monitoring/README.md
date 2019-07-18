@@ -1,4 +1,4 @@
-#JMX Monitoring in Docker
+# JMX Monitoring in Docker
 
 The majority of monitoring tools for Oracle Coherence use JMX to gather statistics about the cluster and this section covers ways to make JMX work inside Docker containers.
 
@@ -44,7 +44,7 @@ The JMXMP implementation is available as an optional part of GlassFish available
 </dependency>
 ```
 
-##Using JMXMP with Coherence
+## Using JMXMP with Coherence
 The JMXMP implementation JAR can be built into an image so that it can be added to the class path of the Coherence processes that are to be monitored inside Docker containers.
 
 To make JMXMP work with Coherence, there must be an JMXMP MBean connector server running in the JVM that JMX clients can connect to from outside of the container. This requires a simple class adding to the Coherence application to start the JMX server and Coherence makes it very simple to add in as there is already a hook in the configuration.
@@ -61,7 +61,7 @@ This allows applications to specify a custom implementation of `com.tangosol.net
 
 An example of a Maven project to build a suitable class is included under the [code](code) section.
 
-###Running the Example
+### Running the Example
 There is an example Dockerfile in the [dockerfiles](dockerfiles) folder that builds an image containing the parts described above. To build this image, follow these steps:
 
 1. Set up the Docker environment as described in the [Setup](../0.setup) section.
