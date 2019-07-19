@@ -369,7 +369,7 @@ echo ""
 
 # Tail Admin Server logs... 
 touch ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log
-tail -f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log &
+tail -900f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log &
 
 childPID=$!
 wait $childPID
