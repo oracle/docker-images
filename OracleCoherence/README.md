@@ -23,12 +23,13 @@ Follow this procedure:
 
 2. Go to the **OracleCoherence/dockerfiles/12.2.1.3** folder
 
-        $ cd OracleCoherence/dockerfiles/12.2.1.3
+        $ cd OracleCoherence/dockerfiles/12.2.1.3.0
 
 3. [Download](http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html) and drop the Coherence distribution file of your choice into this folder. The build script supports either building an image from either the Standalone Installer, **fmw_12.2.1.3.0_coherence_Disk1_1of1.zip** or the Quick Installer **fmw_12.2.1.3.0_coherence_quick_Disk1_1of1.zip**
 
 4. Execute the build script `buildDockerImage.sh`.
 
+        $ cd ..
         $ sh buildDockerImage.sh
 
     or if your Docker client requires commands to be run as root you can run
