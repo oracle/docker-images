@@ -211,7 +211,7 @@ The docker images can be configured to run scripts after setup and on startup. C
 For post-setup scripts just mount the volume `/opt/oracle/scripts/setup` or extend the image to include scripts in this directory.
 For post-startup scripts just mount the volume `/opt/oracle/scripts/startup` or extend the image to include scripts in this directory.
 Both of those locations are also represented under the symbolic link `/docker-entrypoint-initdb.d`. This is done to provide
-synergy with other database Docker images. The user is free to decide whether he wants to put his setup and startup scripts
+synergy with other database Docker images. The user is free to decide whether to put the setup and startup scripts
 under `/opt/oracle/scripts` or `/docker-entrypoint-initdb.d`.
 
 After the database is setup and/or started the scripts in those folders will be executed against the database in the container.
