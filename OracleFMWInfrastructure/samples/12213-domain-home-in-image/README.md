@@ -53,13 +53,14 @@ Follow the steps below:
 
      Add to an `env.txt` file, the following parameters:
 
-	ID=InfraDB
+       ID=InfraDB
 
-	DB_PDB=InfraPDB1
+       DB_PDB=InfraPDB1
 
-	DB_DOMAIN=us.oracle.com
+       DB_DOMAIN=us.oracle.com
 
-	DB_BUNDLE=basic
+       DB_BUNDLE=basic
+
 
        $ docker run -d --name InfraDB --network=InfraNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1
 
@@ -104,11 +105,11 @@ The Dockerfile in this sample extends the FMW Infrastructure install image and c
 
   1. To build the `12.2.1.3` FMW Infrastructure domain image, run:
 
-       $ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-in-image .
+      $ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-in-image .
 
   2. Verify that you now have this image in place with:
 
-       $ docker images
+      $ docker images
 
 
 #### Start the container
