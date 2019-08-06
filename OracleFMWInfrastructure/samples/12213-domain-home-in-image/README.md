@@ -53,20 +53,20 @@ Follow the steps below:
 
      Add to an `env.txt` file, the following parameters:
 
-	`DB_SID=InfraDB`
+	ID=InfraDB
 
-	`DB_PDB=InfraPDB1`
+	DB_PDB=InfraPDB1
 
-	`DB_DOMAIN=us.oracle.com`
+	DB_DOMAIN=us.oracle.com
 
-	`DB_BUNDLE=basic`
+	DB_BUNDLE=basic
 
 	`$ docker run -d --name InfraDB --network=InfraNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1`
 
 
 Verify that the database is running and healthy. The `STATUS` field shows `healthy` in the output of `docker ps`.
 
-The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus`.  To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container with the following command:
+The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus` and give the right permissions.  To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container with the following command:
 
 	$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA
 
@@ -75,7 +75,7 @@ The database is created with the default password `Oradoc_db1`. To change the da
 ### Build and run RCU
 Many of the Oracle Fusion Middleware components require the existence of schemas in a database prior to installation. These schemas are created and loaded in your database using the Repository Creation Utility (RCU). To facilitate running RCU, you can build an image using the `Dockerfile.rcu`.
 
-      `$ docker build -f Dockerfile -t 12213-fmw-rcu .`
+      `$ docker build -f Dockerfile.rcu -t 12213-fmw-rcu .`
 
 To run RCU, start a container from the image created:
 
