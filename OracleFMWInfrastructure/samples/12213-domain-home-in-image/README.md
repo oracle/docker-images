@@ -105,11 +105,11 @@ The Dockerfile in this sample extends the FMW Infrastructure install image and c
 
   1. To build the `12.2.1.3` FMW Infrastructure domain image, run:
 
-      $ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-in-image .
+       $ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-in-image .
 
   2. Verify that you now have this image in place with:
 
-      $ docker images
+       $ docker images
 
 
 #### Start the container
