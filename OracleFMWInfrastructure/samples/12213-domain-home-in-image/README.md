@@ -68,18 +68,18 @@ Verify that the database is running and healthy. The `STATUS` field shows `healt
 
 The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus` and give the right permissions.  To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container with the following command:
 
-	$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA
+	`$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA`
 
-	SQL> alter user sys identified by MYDBPasswd container=all;
+	`SQL> alter user sys identified by MYDBPasswd container=all;`
 
 ### Build and run RCU
 Many of the Oracle Fusion Middleware components require the existence of schemas in a database prior to installation. These schemas are created and loaded in your database using the Repository Creation Utility (RCU). To facilitate running RCU, you can build an image using the `Dockerfile.rcu`.
 
-      `$ docker build -f Dockerfile.rcu -t 12213-fmw-rcu .`
+	`$ docker build -f Dockerfile.rcu -t 12213-fmw-rcu .`
 
 To run RCU, start a container from the image created:
 
-      `$ docker run -d --name RCU --network=InfraNET -v HOSTPATH/OracleFMWInfrastructure/samples/12213-domain-in-volume/properties:/u01/oracle/properties 12213-fmw-rcu`
+	`$ docker run -d --name RCU --network=InfraNET -v HOSTPATH/OracleFMWInfrastructure/samples/12213-domain-in-volume/properties:/u01/oracle/properties 12213-fmw-rcu`
 
 **NOTE**: To have access to the `RCU.out`, map volume `/u01/oracle/` in the Administration Server container.
 
@@ -104,7 +104,7 @@ The Dockerfile in this sample extends the FMW Infrastructure install image and c
 
   1. To build the `12.2.1.3` FMW Infrastructure domain image, run:
 
-        `$ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-in-image .`
+	`$ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-in-image .`
 
   2. Verify that you now have this image in place with:
 
@@ -121,16 +121,16 @@ We are supplying the scripts, `run_admin_server.sh` and `run_managed_server.sh`,
 
   To run an Administration Server container, call:
 
-        `$ sh run_admin_server.sh`
+	`$ sh run_admin_server.sh`
 
 
   To run a Managed Server with the base name, `infraMS`, pass in to the script, `run_managed_server.sh`, the name of the Managed Server you want to run, and the host port that will be mapped to the Managed Server port 8001. To run Managed Server one, with the name, `infraMS1`, and mapped to the host port 9004, call:
 
-        `$ sh run_managed_server.sh infraMS1 9004`
+	`$ sh run_managed_server.sh infraMS1 9004`
 
  To run Managed Server two with the name, `infraMS2`, and mapped to the host port 9006, call:
 
-        `$ sh run_managed_server.sh infraMS2 9006`
+	`$ sh run_managed_server.sh infraMS2 9006`
 
   Access the WLS Administration Console:
 
