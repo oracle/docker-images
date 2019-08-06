@@ -70,7 +70,7 @@ The database is created with the default password `Oradoc_db1`. To change the da
 
        $ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA
 
-       `SQL> alter user sys identified by MYDBPasswd container=all;`
+       SQL> alter user sys identified by MYDBPasswd container=all;
 
 ### Build and run RCU
 Many of the Oracle Fusion Middleware components require the existence of schemas in a database prior to installation. These schemas are created and loaded in your database using the Repository Creation Utility (RCU). To facilitate running RCU, you can build an image using the `Dockerfile.rcu`.
