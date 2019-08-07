@@ -3,7 +3,7 @@ Oracle Fusion Middleware Infrastructure domain on Docker
 This project creates a Docker image which contains an Oracle Fusion Middleware Infrastructure domain image. The image extends the FMW Infrastructure install/binary image and builds an FMW Infrastructure domain persisted inside the image.
 
 ### Building the Oracle Fusion Middleware Infrastructure 12.2.1.3 base image
-A prerequisite to building the 12213-fmw-domain-in-image image is having an Oracle Fusion Middleware Infrastructure 12.2.1.3 install/binary image. The Dockerfile and scripts to build the image are under the folder, `../../OracleFMWInfrastructure/dockerfile/12.2.1.3`. For more information, see the [README](../../OracleFMWInfrastructure/README.md) file.
+A prerequisite to building the 12213-fmw-domain-home-in-image image is having an Oracle Fusion Middleware Infrastructure 12.2.1.3 install/binary image. The Dockerfile and scripts to build the image are under the folder, `../../OracleFMWInfrastructure/dockerfile/12.2.1.3`. For more information, see the [README](../../OracleFMWInfrastructure/README.md) file.
 
 **IMPORTANT**: If you are building the Oracle FMW Infrastructure image, you must first download the Oracle FMW Infrastructure 12.2.1.3 install/binary and place it in the folder, `../OracleFMWInfrastructure/dockerfiles/12.2.1.3`.
 
@@ -80,7 +80,7 @@ Many of the Oracle Fusion Middleware components require the existence of schemas
 
 To run RCU, start a container from the image created:
 
-       $ docker run -d --name RCU --network=InfraNET -v HOSTPATH/OracleFMWInfrastructure/samples/12213-domain-in-volume/properties:/u01/oracle/properties 12213-fmw-rcu
+       $ docker run -d --name RCU --network=InfraNET -v HOSTPATH/OracleFMWInfrastructure/samples/12213-domain-home-in-image/properties:/u01/oracle/properties 12213-fmw-rcu
 
 **NOTE**: To have access to the `RCU.out`, map volume `/u01/oracle/` in the Administration Server container.
 
@@ -105,7 +105,7 @@ The Dockerfile in this sample extends the FMW Infrastructure install image and c
 
   1. To build the `12.2.1.3` FMW Infrastructure domain image, run:
 
-       $ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-in-image .
+       $ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-home-in-image .
 
   2. Verify that you now have this image in place with:
 
