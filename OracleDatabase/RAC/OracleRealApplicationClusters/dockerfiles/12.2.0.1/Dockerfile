@@ -39,6 +39,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_FILE_1="linuxx64_12201_grid_home.zip" \
     GRID_INSTALL_RSP="grid.rsp" \
     GRID_SETUP_FILE="setupGrid.sh" \
+    GRID_HOME_CLEANUP="GridHomeCleanup.sh" \
     FIXUP_PREQ_FILE="fixupPreq.sh" \
     INSTALL_GRID_BINARIES_FILE="installGridBinaries.sh" \
     INSTALL_GRID_PATCH="applyGridPatch.sh" \
