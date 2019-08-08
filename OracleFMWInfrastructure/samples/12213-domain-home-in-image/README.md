@@ -85,7 +85,11 @@ To run RCU, start a container from the image created:
 **NOTE**: To have access to the `RCU.out`, map volume `/u01/oracle/` in the Administration Server container.
 
 ### Build the FMW Infrastructure Domain Image
-The Dockerfile in this sample extends the FMW Infrastructure install image and creates a domain configuration inside of the image. We provide a `build.sh` script to assist with the building of the image and setting the correct BUILD_ARGS that have been defined in the `domain.properties` and `rcu.properties` files. You can override the default values of the following parameters during configuration time in both these properties files. The script `./container-scripts/setEnv.sh` sets the build time environment variables to configure the domain, the following BUILD ARGS are set:
+The Dockerfile in this sample extends the FMW Infrastructure install image and creates a domain configuration inside of the image. We provide a `build.sh` script to assist with the building of the image and setting the correct BUILD_ARGS that have been defined in the `domain.properties` and `rcu.properties` files. When running the images in Docker engine the database, RCU, and FMW Infrastructure image need to be running on the same Docker network (e.g. InfraNET). The `build.sh` takes one parameter the name of the network, example: 
+
+       $ ./build.sh InfraNET
+
+ You can override the default values of the following parameters during configuration time in both these properties files. The script `./container-scripts/setEnv.sh` sets the build time environment variables to configure the domain, the following BUILD ARGS are set:
 
 * `CUSTOM_DOMAIN_NAME`
 * `CUSTOM_ADMIN_PORT`
