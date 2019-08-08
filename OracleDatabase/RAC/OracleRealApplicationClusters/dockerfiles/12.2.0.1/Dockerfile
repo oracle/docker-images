@@ -75,6 +75,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     MULTI_NODE_INSTALL="MultiNodeInstall.py" \ 
     RESET_OS_PASSWORD="resetOSPassword.sh" \
     MULTI_NODE_INSTALL="MultiNodeInstall.py" \
+    ORACLE_HOME_CLEANUP="OracleHomeCleanup.sh" \
 # COMMON ENV Variable
    FUNCTIONS="functions.sh" \
    COMMON_SCRIPTS="/common_scripts" \
