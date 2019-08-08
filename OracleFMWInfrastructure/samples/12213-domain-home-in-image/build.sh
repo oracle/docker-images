@@ -15,6 +15,13 @@
 #                           . Set the TAG_NAME environment variable. Overrides the default tag.
 #
 
+if [ "$#" -eq  "0" ]
+   then
+    network=""
+ else
+    network=" --network=$1"
+    echo "Setting network to ${network} when building the image"
+fi
 
 # Determine the tag name for the resulting image using the value in the TAG_NAME.
 # The setEnv.sh will set the TAG_NAME variable if the property is found in the
@@ -40,5 +47,5 @@ set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties ${scriptDir}/properties/rcu.properties
 
 tag_name
-echo "docker build $BUILD_ARG -t  ${tagName}  ${scriptDir}"
-docker build $BUILD_ARG -t  ${tagName} --network=InfraNET  ${scriptDir}
+echo "docker build $BUILD_ARG -t  ${tagName} ${network}  ${scriptDir}"
+docker build $BUILD_ARG -t  ${tagName} ${network}  ${scriptDir}
