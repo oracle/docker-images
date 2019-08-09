@@ -19,3 +19,21 @@ This is a Unix filesystem permission issue. Docker by default will map the `uid`
 * Use named volumes
 * Change the ownership of your folder to `54321`
 * Change the permissions of your folder so that the `uid 54321` has write permissions
+
+## ORA-00600: internal error code, arguments: [pesldl03_MMap: errno 1 errmsg Operation not permitted], [], [], [], [], [], [], [], [], [], [], []
+This error happens if you try to use native compilation for PL/SQL but haven't assigned `exec` rights to `/dev/shm`.
+For example, the below would raise the error in such case:
+```
+alter session set plsql_code_type='NATIVE';
+
+create or replace procedure test as
+begin
+   null;
+end;
+/
+```
+Docker, by default, doesn't assign `exec` rights to `/dev/shm` which is where the native compiled code is stored and executed.
+As you don't have execution rights to it, however, you get the error `Operation not permitted`.
+
+Run the container with `-v /dev/shm --tmpfs /dev/shm:rw,exec,size=<yoursize>` instead, the important part being the `exec` in `--tmpfs /dev/shm:rw,exec,size=<yoursize>`.
+Also make sure you assign an appropriate size as the default Docker uses is only 64MB. 1GB and more is recommended.
