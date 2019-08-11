@@ -39,6 +39,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_FILE_1="linuxx64_12201_grid_home.zip" \
     GRID_INSTALL_RSP="grid.rsp" \
     GRID_SETUP_FILE="setupGrid.sh" \
+    GRID_HOME_CLEANUP="GridHomeCleanup.sh" \
     FIXUP_PREQ_FILE="fixupPreq.sh" \
     INSTALL_GRID_BINARIES_FILE="installGridBinaries.sh" \
     INSTALL_GRID_PATCH="applyGridPatch.sh" \
@@ -74,6 +75,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     MULTI_NODE_INSTALL="MultiNodeInstall.py" \ 
     RESET_OS_PASSWORD="resetOSPassword.sh" \
     MULTI_NODE_INSTALL="MultiNodeInstall.py" \
+    ORACLE_HOME_CLEANUP="OracleHomeCleanup.sh" \
 # COMMON ENV Variable
    FUNCTIONS="functions.sh" \
    COMMON_SCRIPTS="/common_scripts" \
