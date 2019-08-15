@@ -2,7 +2,7 @@
 
 Oracle Real Application Clusters (RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (ASM) to provide simplified storage management that is consistent across all server and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
-For more information on Oracle RAC Database 18c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+For more information on Oracle RAC Database 19c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
 ## How to build and run
 
@@ -99,7 +99,7 @@ Once you have edited the `/etc/sysconfig/docker`, execute following commands:
 # systemctl start docker
 ```
 
-Verify you have enough memory and cpu resources available for container. For details, Please refer to [Oracle 18c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/cwlin/index.html)
+Verify you have enough memory and cpu resources available for container. For details, Please refer to [Oracle 19c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/cwlin/index.html)
 
 The Oracle RAC dockerfiles, does not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under dockerfiles/<version> folder.
 
