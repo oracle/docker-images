@@ -22,6 +22,10 @@ docker build -t oracle/instantclient:19 .
 
 The build process automatically installs Instant Client using RPMs directly from the [Oracle Instant Client repository](http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html) on the [Oracle Linux yum server](https://yum.oracle.com).
 
+Applications using Oracle Call Interface (OCI) 19 can connect to
+Oracle Database 11.2 or later.  Some tools may have other
+restrictions.
+
 ## Building the Oracle Instant Client 18 Image
 
 Change directory to [`dockerfiles/18`](dockerfiles/18) and run:
@@ -31,6 +35,10 @@ docker build -t oracle/instantclient:18 .
 ```
 
 The build process will automatically install the Instant Client using RPMs sourced directly from the [Oracle Instant Client repository](http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html) on the [Oracle Linux yum server](https://yum.oracle.com).
+
+Applications using Oracle Call Interface (OCI) 18 can connect to
+Oracle Database 11.2 or later.  Some tools may have other
+restrictions.
 
 ## Building the Oracle Instant Client 12.2 Image
 
@@ -46,6 +54,24 @@ Place the downloaded Oracle Instant Client RPMs (from the previous step) in the
 ```
 docker build -t oracle/instantclient:12.2.0.1 .
 ```
+
+Applications using Oracle Call Interface (OCI) 12.2 can connect to
+Oracle Database 11.2 or later.  Some tools may have other
+restrictions.
+
+## Optional Oracle Net and Oracle Client Configuration Files
+
+Optional Oracle Network and Oracle client configuration files can be
+copied to the default configuration file directory
+`/usr/lib/oracle/<version>/client64/lib/network/admin`.  Optional
+files include `tnsnames.ora`, `sqlnet.ora`, `oraaccess.xml` and
+`cwallet.sso`.
+
+When files are in the default directory, you do **not** need to set
+Oracle's `TNS_ADMIN` environment variable.
+
+For Instant Client 12.2, and earlier, you must explicitly create the
+directory.
 
 ## Usage
 

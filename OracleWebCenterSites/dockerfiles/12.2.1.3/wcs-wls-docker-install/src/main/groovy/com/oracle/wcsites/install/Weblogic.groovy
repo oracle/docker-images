@@ -84,7 +84,7 @@ class Weblogic implements AppServer {
 		if(Boolean.valueOf(config.script.run.sitesconfig)) {
 
 			def sitesConfigSetupFile = new File(config.work + "/WCSites_Config_Setup.suc")
-
+			def managedServerName = config.script.server.name + "1"
 			if(!sitesConfigSetupFile.exists()) {
 				Utils.echo("4th phase: WebCenter Sites Config Setup has started.")
 				// Changes multi-cast ports for eh-cache and jboss-ticket-cache xmls
@@ -104,15 +104,15 @@ class Weblogic implements AppServer {
 				// Starts installation
 				runSilentInstall()
 				// Monitors sites.log for installation success/failure
-				monitorSitesLog(domainHome + "/servers/" + config.script.server.name + "/logs/sites.log")
+				monitorSitesLog(domainHome + "/servers/" + managedServerName + "/logs/sites.log")
 				// Pauses after installation completes
 				Thread.sleep(10000)
 
 				if(config.script.env.equalsIgnoreCase(Utils.ENV_DOCKER)){
 					// Stops Managed Server
-					Utils.echo("Stopping Managed Server: " + config.script.server.name)
-					stopManagedServer(domainHome, config.script.server.name, true)
-					Utils.echo("Stopped Managed Server Successfully: " + config.script.server.name)
+					Utils.echo("Stopping Managed Server: " + managedServerName)
+					stopManagedServer(domainHome, managedServerName, true)
+					Utils.echo("Stopped Managed Server Successfully: " + managedServerName)
 
 					// Stops Admin Server
 					Utils.echo("Stopping Admin Server.")
@@ -302,6 +302,8 @@ class Weblogic implements AppServer {
 		// Replaces tokens in the Jython file
 		def jythonConfigFile = config.work + "/" + Utils.CONFIG_SCRIPT
 		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_HOME>", value:"${domainHome}")
+		antBuilder.replace(file:jythonConfigFile, token:"<ORACLE_HOME>", value:"${config.script.oracle.home}")
+		
 		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_NAME>", value:"${config.script.oracle.domain}")
 		antBuilder.replace(file:jythonConfigFile, token:"<WL_USERNAME>", value:"${config.script.admin.server.username}")
 		antBuilder.replace(file:jythonConfigFile, token:"<WL_PASSWORD>", value:"${config.script.admin.server.password}")
@@ -313,6 +315,8 @@ class Weblogic implements AppServer {
 		antBuilder.replace(file:jythonConfigFile, token:"<SITES_SERVER_SSL_PORT>", value:"${config.script.sites.server.ssl.port}")
 		antBuilder.replace(file:jythonConfigFile, token:"<SITES_DATASOURCE>", value:"${config.script.oracle.wcsites.database.datasource}")
 		antBuilder.replace(file:jythonConfigFile, token:"<RCU_SCHEMA_PREFIX>", value:"${config.script.rcu.prefix}")
+		antBuilder.replace(file:jythonConfigFile, token:"<MACHINE_NAME>", value:"${config.script.machine.name}")
+		antBuilder.replace(file:jythonConfigFile, token:"<CLUSTER_NAME>", value:"${config.script.cluster.name}")
 		String dbType = config.script.oracle.wcsites.database.type
 		antBuilder.replace(file:jythonConfigFile, token:"<DATABASE>", value:dbType.toUpperCase())
 		antBuilder.replace(file:jythonConfigFile, token:"<DB_URL>", value:"${dbUrl}")
@@ -378,6 +382,9 @@ class Weblogic implements AppServer {
 
 		adminServerLog = generateAdminServerStartScript(domainHome)
 		setTempDirInDomainEnv(domainHome)
+		
+		// Creates password file
+		createPwdFile(domainHome, "AdminServer")
 
 		runAdminServerStartScript(domainHome)
 		monitorServerLog(adminServerLog, successMsg, true)
@@ -442,14 +449,18 @@ class Weblogic implements AppServer {
 	 */
 	private startManagedServer(def domainHome) {
 		// Cleans up logs
-		def dirsToClean = [domainHome + "/servers/" + config.script.server.name + "/logs", domainHome + "/servers/" + config.script.server.name + "/security"]
+		def managedServerName = config.script.server.name + "1"
+		def dirsToClean = [domainHome + "/servers/" + managedServerName + "/logs", domainHome + "/servers/" + managedServerName + "/security"]
 		dirsToClean.each { directory -> antBuilder.delete(dir:directory, includeEmptyDirs:true)	}
 		// Creates password file
-		createPwdFile(domainHome, config.script.server.name)
+		createPwdFile(domainHome, managedServerName)
+		// Creates parameter file
+		createParamFile(domainHome, managedServerName)
+
 		// Starts server
-		runManagedServerStartScript(domainHome, config.script.server.name)
+		runManagedServerStartScript(domainHome, managedServerName)
 		// Monitors server log for startup message
-		monitorServerLog(domainHome + "/servers/" + config.script.server.name + "/logs/" + config.script.server.name + ".log", Utils.WL_STARTUP_SUCCESS, true)
+		monitorServerLog(domainHome + "/servers/" + managedServerName + "/logs/" + managedServerName + ".log", Utils.WL_STARTUP_SUCCESS, true)
 	}
 
 	/**
@@ -470,6 +481,29 @@ class Weblogic implements AppServer {
 		File file = new File( securityFolder, "boot.properties" )
 		Utils.echo("Create Password File -> " + file.getPath())
 		file.text = "username=" + config.script.admin.server.username + System.lineSeparator() + "password=" + config.script.admin.server.password
+	}
+	
+		/**
+	 * The param file is needed for WebLogic Managed Server to get the older hostname
+	 *
+	 * @param domainHome, serverName
+	 * @return
+	 */
+	protected createParamFile(def domainHome, def serverName) {
+		def logFolderPath = domainHome + "/servers/" + serverName + "/logs"
+		def logFolder = new File( logFolderPath )
+
+		// If it doesn't exist
+		if( !logFolder.exists() )
+			logFolder.mkdirs()
+
+		// Write user-name/password to file
+		File file = new File( logFolder, "param.properties" )
+		Utils.echo("Create param File -> " + file.getPath())
+		file.text = "WCSITES_ADMIN_HOSTNAME=" + config.script.oracle.wcsites.hostname + System.lineSeparator() +
+					"WCSITES_ADMIN_PORT=" + config.script.admin.server.port + System.lineSeparator() +
+					"WCSITES_MANAGED_HOSTNAME=" + config.script.oracle.wcsites.hostname + System.lineSeparator() +
+					"WCSITES_MANAGED_PORT=" + config.script.oracle.wcsites.portnumber
 	}
 
 	/**
@@ -497,16 +531,17 @@ class Weblogic implements AppServer {
 	 * @return
 	 */
 	private restartManagedServer(def domainHome, boolean exitOnFail) {
+		def managedServerName = config.script.server.name + "1"
 		// Stops managed server
-		stopManagedServer(domainHome, config.script.server.name, exitOnFail)
+		stopManagedServer(domainHome, managedServerName, exitOnFail)
 		// pauses between stop & start
 		Thread.sleep(15000)
 		// Starts managed server
-		runManagedServerStartScript(domainHome, config.script.server.name)
+		runManagedServerStartScript(domainHome, managedServerName)
 		// Pauses before you start monitoring the server log
 		Thread.sleep(30000)
 		// Monitors server log for startup message
-		monitorServerLog(domainHome + "/servers/" + config.script.server.name + "/logs/" + config.script.server.name + ".log", Utils.WL_STARTUP_SUCCESS, exitOnFail)
+		monitorServerLog(domainHome + "/servers/" + managedServerName + "/logs/" + managedServerName + ".log", Utils.WL_STARTUP_SUCCESS, exitOnFail)
 	}
 
 	/**

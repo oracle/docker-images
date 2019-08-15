@@ -11,7 +11,7 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # -------------------------------------------------------------
-# (1) fmw_12.2.1.3.0_wcsites_Disk1_1of1.zip
+# (1) V886462-01.zip
 #     Download the Oracle WebCenter Sites 12c R2 (12.2.1.3.0) installer from http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -35,7 +35,7 @@ ENV ORACLE_HOME=/u01/oracle \
 	PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin \
 	SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 	SITES_INSTALLER_PKG=wcs-wls-docker-install \
-	SITES_PKG=fmw_12.2.1.3.0_wcsites_Disk1_1of1.zip \
+	SITES_PKG=V886462-01.zip \
 	SITES_JAR=fmw_12.2.1.3.0_wcsites.jar \
 	ADMIN_PORT=7001 \
 	WCSITES_PORT=7002 \

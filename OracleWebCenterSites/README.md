@@ -141,7 +141,7 @@ To mount a host directory as a data volume, execute the below command.
 ```
 	$ sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
 	$ mkdir -p /scratch/WCSitesVolume/WCSites /scratch/WCSitesVolume/WCSitesShared
-	$ sudo chown <new_userid> /scratch/WCSitesVolume/WCSites /scratch/WCSitesVolume/WCSitesShared
+	$ sudo chown 1000:1000 /scratch/WCSitesVolume/WCSites /scratch/WCSitesVolume/WCSitesShared
 ```
 All container operations are performed as 'oracle' user.
 **Note**: If a user already exist with '-u 1000 -g 1000' then use the same user. Or modify any existing user to have uid-gid as '-u 1000 -g 1000'
