@@ -27,7 +27,7 @@ declare -r INSTALL_TYPE='CRS_CONFIG' ## INSTALL TYPE default set to CRS_CONFIG
 declare -r IPMI_FLAG='false'         ## IPMI Flag by default to set false
 declare -r ASM_STORAGE_OPTION='ASM'  ## ASM_STORAGE_OPTION set to ASM
 declare -r GIMR_ON_NAS='false'       ## GIMR on NAS set to false
-declare -x GIMR_DB_FLAG='true'      #  Disabled GIMR DB FLAG 
+declare -x GIMR_DB_FLAG='false'      #  Disabled GIMR DB FLAG 
 declare -x ASM_DISKGROUP_DISKS       ## Computed during program Execution
 declare -x ASM_DISKGROUP_FG_DISKS    ## Computing During program execution.
 declare -x GIMR_DISKGROUP_DISKS      ## Computed During Program Execution

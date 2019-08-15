@@ -14,7 +14,7 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 
 ```
 ./buildDockerImage.sh -v (Software Version)
-./buildDockerImage.sh -v 18.3.0
+./buildDockerImage.sh -v 19.3.0
 ```
 
 **NOTE**: To build RACStorage Image for 18.3.0, pass the version 18.3.0 to buildDockerImage.sh
@@ -52,7 +52,7 @@ docker run -d -t --hostname racnode-storage \
 --volume /docker_volumes/asm_vol/$ORACLE_SID:/oradata --init \
 --network=rac_priv1_nw --ip=192.168.17.25 --tmpfs=/run  \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
---name racnode-storage oracle/rac-storage-server:18.3.0
+--name racnode-storage oracle/rac-storage-server:19.3.0
 ```
 
 **IMPORTANT:** During the container startup 5 files named as asm_disk0[1-5].img will be created under /oradata.If the files are already present, they will not be recreated.These files can be used for ASM storage in RAC containers.

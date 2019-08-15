@@ -19,6 +19,7 @@ declare -r GRID_USER='grid'          ## Default gris user is grid.
 declare -r ORACLE_USER='oracle'      ## default oracle user is oracle.
 declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
 declare -r RAC_ENV_FILE="/etc/rac_env_vars"   ## RACENV FILE NAME
+declare -x GIMR_DB_FLAG='true'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
 declare -x PUBLIC_HOSTNAME           ## PUBLIC HOSTNAME set based on hostname
@@ -530,13 +531,16 @@ else
 error_exit "Cluster  Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
-eval $cmd
+if [ ${GIMR_DB_FLAG} == 'true' ]; then
 
-if [ $? -eq 0 ]; then
-print_message "MGMTDB Check went fine"
-else
-error_exit "MGMTDB Check failed!"
+   cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
+   eval $cmd
+
+    if [ $? -eq 0 ]; then
+        print_message "MGMTDB Check went fine"
+    else
+         error_exit "MGMTDB Check failed!"
+    fi
 fi
 
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crsd\""'
@@ -669,13 +673,15 @@ else
 error_exit "Cluster  Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
-eval $cmd
+if [ ${GIMR_DB_FLAG} == 'true' ]; then
+   cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
+    eval $cmd
 
-if [ $? -eq 0 ]; then
-print_message "MGMTDB Check went fine"
-else
-error_exit "MGMTDB Check failed!"
+   if [ $? -eq 0 ]; then
+      print_message "MGMTDB Check went fine"
+   else
+      error_exit "MGMTDB Check failed!"
+    fi
 fi
 
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check crsd"'

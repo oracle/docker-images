@@ -3,6 +3,7 @@ Sample Docker build files to facilitate installation, configuration, and environ
 
 ## How to build and run
 This project offers sample Dockerfiles for:
+  * Oracle Database 19c Client (19.3) for Linux x86-64
   * Oracle Database 18c Client (18.3) for Linux x86-64
   * Oracle Database 12c Release 2 Client (12.2.0.1.0) for Linux x86-64
 
@@ -13,15 +14,15 @@ To assist in building the images, you can use the [buildDockerImage.sh](dockerfi
 For complete Oracle Connection Manager setup, please go though following steps and execute them as per your enviornment:
 
 ### Create Oracle Connection Manager Image
-**IMPORTANT:** You will have to provide the installation binaries of Oracle ADMIN Client Oracle Database 18c Client (18.3) for Linux x86-64 and put them into the `dockerfiles/<version>` folder. You  only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html). You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. 
+**IMPORTANT:** You will have to provide the installation binaries of Oracle ADMIN Client Oracle Database 19c Client (19.3) for Linux x86-64 and put them into the `dockerfiles/<version>` folder. You  only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html). You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root or with sudo privileges:
 
 ```
 ./buildDockerImage.sh -v (Software Version)
-./buildDockerImage.sh -v 18.3.0
+./buildDockerImage.sh -v 19.3.0
 ```
-For detailed usage of command, please execute folowing command:   
+For detailed usage of command, please execute folowing command:
 ```
 ./buildDockerImage.sh -h
 ```
@@ -44,7 +45,7 @@ Execute following command as root user to create connection manager container.
 -e DOMAIN=example.com -e PUBLIC_IP=172.16.1.15 \
 -e PUBLIC_HOSTNAME=racnode-cman1 -e SCAN_NAME=racnode-scan \
 -e SCAN_IP=172.16.1.70 --privileged=false \
--p 1521:1521 --name racnode-cman oracle/client-cman:18.3
+-p 1521:1521 --name racnode-cman oracle/client-cman:19.3.0
 ```
 
 In the above container, you can see that we are passing env variables using "-e". You need to change PUBLIC_IP, PUBLIC_HOSTNAME, SCAN_NAME, SCAN_IP according to your environment. Also, container will be binding to port 1521 on your docker host.
