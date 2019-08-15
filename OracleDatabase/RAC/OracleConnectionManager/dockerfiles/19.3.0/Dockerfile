@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -8,8 +8,8 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_180000_client.zip
-#     Oracle Database 18c Client (18.3) for Linux x86-64
+# (1) LINUX.X64_193000_client.zip 
+#     Oracle Database 19c Client (19.3) for Linux x86-64
 #     Download Oracle Connection Manager as part of the Oracle Database Client
 #     from https://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle18c-linux-180000-5022980.html 
 #

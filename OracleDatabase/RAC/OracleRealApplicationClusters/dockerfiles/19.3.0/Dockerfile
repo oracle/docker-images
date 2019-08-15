@@ -8,8 +8,8 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_180000_db_home.zip
-# (2) LINUX.X64_180000_grid_home.zip 
+# (1) LINUX.X64_193000_grid_home.zip 
+# (2) LINUX.X64_193000_db_home.zip 
 #     Download Oracle Grid 19c Release 3 Enterprise Edition for Linux x64
 #     Download Oracle Database 19c Release 3  Enterprise Edition for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
