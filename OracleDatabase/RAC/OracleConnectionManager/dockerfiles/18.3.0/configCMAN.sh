@@ -48,13 +48,15 @@ if [ -z "${PORT}" ]; then
 fi
 
 if [ -z "${PUBLIC_IP}" ]; then
-    error_exit  "Container hostname is not set or set to the empty string"
+    PUBLIC_IP=$( getent hosts "$host" | awk '{print $1}' )
+    print_message "Public IP is set to ${PUBLIC_IP}"
 else
     print_message "Public IP is set to ${PUBLIC_IP}"
 fi
 
 if [ -z "${PUBLIC_HOSTNAME}" ]; then
-   error_exit "RAC Node PUBLIC Hostname is not set ot set to empty string"
+   PUBLIC_HOSTNAME=$(hostname)
+   print_message "RAC Node PUBLIC Hostname is set to ${PUBLIC_HOSTNAME}"
 else
   print_message "RAC Node PUBLIC Hostname is set to ${PUBLIC_HOSTNAME}"
 fi

@@ -25,7 +25,7 @@
 CMAN_###CMAN_HOSTNAME###.###DOMAIN### =
 (configuration=
   # Listening address of the cman
-  (address=(protocol=tcp)(host=###CMAN_HOSTNAME###.###DOMAIN###)(port=###PORT###))
+  (address=(protocol=tcp)(host=0.0.0.0)(port=###PORT###))
   # Configuration parameters of this CMAN
   (parameter_list =
     # Need authentication for connection?
