@@ -19,7 +19,7 @@ declare -r GRID_USER='grid'          ## Default gris user is grid.
 declare -r ORACLE_USER='oracle'      ## default oracle user is oracle.
 declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
 declare -r RAC_ENV_FILE="/etc/rac_env_vars"   ## RACENV FILE NAME
-declare -x GIMR_DB_FLAG='true'      ## GIMR DB Check by default is false
+declare -x GIMR_DB_FLAG='false'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
 declare -x PUBLIC_HOSTNAME           ## PUBLIC HOSTNAME set based on hostname
