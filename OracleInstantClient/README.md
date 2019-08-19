@@ -17,7 +17,7 @@ From release 18.3, the Oracle Instant Client RPMs for Oracle Linux are available
 Change directory to [`dockerfiles/19`](dockerfiles/19) and run:
 
 ```
-docker build -t oracle/instantclient:19 .
+docker build --pull -t oracle/instantclient:19 .
 ```
 
 The build process automatically installs Instant Client using RPMs directly from the [Oracle Instant Client repository](http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html) on the [Oracle Linux yum server](https://yum.oracle.com).
@@ -31,7 +31,7 @@ restrictions.
 Change directory to [`dockerfiles/18`](dockerfiles/18) and run:
 
 ```
-docker build -t oracle/instantclient:18 .
+docker build --pull -t oracle/instantclient:18 .
 ```
 
 The build process will automatically install the Instant Client using RPMs sourced directly from the [Oracle Instant Client repository](http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html) on the [Oracle Linux yum server](https://yum.oracle.com).
@@ -52,7 +52,7 @@ Place the downloaded Oracle Instant Client RPMs (from the previous step) in the
 [`dockerfiles/12.2.0.1`](dockerfiles/12.2.0.1) directory, then switch to that directory and run:
 
 ```
-docker build -t oracle/instantclient:12.2.0.1 .
+docker build --pull -t oracle/instantclient:12.2.0.1 .
 ```
 
 Applications using Oracle Call Interface (OCI) 12.2 can connect to
