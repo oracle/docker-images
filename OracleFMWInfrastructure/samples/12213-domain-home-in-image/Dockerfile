@@ -73,6 +73,7 @@ RUN chmod +x /u01/oracle/container-scripts/* && \
     chown -R oracle:oracle $DOMAIN_HOME && \
     chmod -R a+xwr $DOMAIN_HOME
 
+USER oracle
 COPY properties/*.properties ${PROPERTIES_FILE_DIR}/
 
 # Configuration of WLS Domain

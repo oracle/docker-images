@@ -9,7 +9,7 @@ Then download file [p27117282_122130_Generic.zip](http://support.oracle.com) and
 
 To build, run:
 
-        $ docker build -t oracle/weblogic:12213-p27117282 .
+        $ docker build --force-rm=true --no-cache=true -t oracle/weblogic:12213-p27117282 .
 
 ## Run Single Server Domain
 #### Providing the Administration Server user name and password

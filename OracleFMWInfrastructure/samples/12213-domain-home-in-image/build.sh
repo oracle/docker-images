@@ -47,5 +47,5 @@ set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/domain.properties ${scriptDir}/properties/rcu.properties
 
 tag_name
-echo "docker build $BUILD_ARG -t  ${tagName} ${network}  ${scriptDir}"
-docker build $BUILD_ARG -t  ${tagName} ${network}  ${scriptDir}
+echo "docker build --force-rm=true --no-cache=true $BUILD_ARG -t  ${tagName} ${network}  ${scriptDir}"
+docker build --force-rm=true --no-cache=true $BUILD_ARG -t  ${tagName} ${network}  ${scriptDir}

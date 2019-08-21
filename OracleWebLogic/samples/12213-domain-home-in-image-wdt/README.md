@@ -73,6 +73,7 @@ To build this sample keeping the defaults, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
+          --no-cache=true \
           -t 12213-domain-home-in-image-wdt .
 
 This will use the model, variable, and archive files in the sample directory.
@@ -92,6 +93,7 @@ To parse the sample variable file and build the sample, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
+          --no-cache=true \
           -t 12213-domain-home-in-image-wdt .
 
 The Admin Server and each Managed Server are run in containers from this build image. In the sample, the securities.properties file

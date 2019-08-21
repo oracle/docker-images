@@ -60,7 +60,7 @@ Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-i
 To build this sample, run:
 
  	$ . container-scripts/setEnv.sh ./properties/docker-build/domain.properties
- 	$ docker build $BUILD_ARG  --force-rm=true -t 12213-domain-home-in-image .
+	$ docker build --force-rm=true --no-cache=true $BUILD_ARG -t 12213-domain-home-in-image .
 
 
 **During Docker Run:** of the Administration and Managed Servers, the user name and password need to be passed in as well as some optional parameters. The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_run` in the HOST. On the Docker run command line, add the `-v` option which maps the property file into the image directory `/u01/oracle/properties`.
