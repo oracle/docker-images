@@ -11,7 +11,7 @@
 # -----------------------
 #
 # Run:
-#      $ docker build -t oracle/instantclient:18 .
+#      $ docker build --pull -t oracle/instantclient:18 .
 #
 #
 FROM oraclelinux:7-slim
