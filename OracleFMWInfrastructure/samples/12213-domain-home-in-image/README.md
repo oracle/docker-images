@@ -115,6 +115,7 @@ The Dockerfile in this sample extends the FMW Infrastructure install image and c
 
        $ docker images
 
+**NOTE**: The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
 
 #### Start the container
 Start a container from the image created in step 1.

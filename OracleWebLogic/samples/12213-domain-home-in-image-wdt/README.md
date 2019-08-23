@@ -101,6 +101,8 @@ The Admin Server and each Managed Server are run in containers from this build i
   start of the Admin or Managed server. Mount the properties/docker-run directory to the container so that file can be accessed by the
   server start script. It is the responsibility of the user to manage this volume, and the security.properties, in the container.
 
+**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
+
 To start the containerized Administration Server, run:
 
     $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties 12213-domain-home-in-image-wdt
