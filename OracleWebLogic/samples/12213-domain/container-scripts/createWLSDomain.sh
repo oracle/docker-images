@@ -30,7 +30,8 @@ trap _kill SIGKILL
 export DOMAIN_HOME=$CUSTOM_DOMAIN_ROOT/$CUSTOM_DOMAIN_NAME
 echo "Domain Home is:  $DOMAIN_HOME"
 
-if [  -f ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.log ]; then
+if [ ! -f ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.log ]; then
+    echo "Log file cannot be found. Exiting..."
     exit
 fi
 
