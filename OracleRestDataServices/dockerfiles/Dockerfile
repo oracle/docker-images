@@ -20,7 +20,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/serverjre:8
+FROM container-registry.oracle.com/java/serverjre:8
 
 # Labels
 # ----------
