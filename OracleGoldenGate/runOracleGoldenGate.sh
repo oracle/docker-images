@@ -34,7 +34,7 @@ OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|repl
 ##
 ## Set some reasonable defaults
 ##
-[[ -z "${HOSTNAME}"   ]] && export HOSTNAME="${$(hostname 2>/dev/null):-localhost}"
+[[ -z "${HOSTNAME}"   ]] && export HOSTNAME="$(hostname 2>/dev/null || echo 'localhost')"
 [[ -z "${OGG_SCHEMA}" ]] && export OGG_SCHEMA="oggadmin"
 [[ -z "${OGG_ADMIN}"  ]] && export OGG_ADMIN="oggadmin"
 [[ -z "${PORT_BASE}"  ]] && {
