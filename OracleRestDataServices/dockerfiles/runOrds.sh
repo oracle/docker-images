@@ -55,11 +55,4 @@ if [ ! -f $ORDS_HOME/config/ords/standalone/standalone.properties ]; then
    setupOrds;
 fi;
 
-if [ -d /conf/ ]; then
-   cp /conf/apex_pu.xml /opt/oracle/ords/config/ords/conf/apex_pu.xml 2>/dev/null || :
-   cp /conf/apex.xml /opt/oracle/ords/config/ords/conf/apex.xml 2>/dev/null || :
-   cp /conf/credentials /opt/oracle/ords/config/ords/credentials 2>/dev/null || :
-   cp /conf/defaults.xml /opt/oracle/ords/config/ords/defaults.xml 2>/dev/null || :
-fi;
-
 java -jar $ORDS_HOME/ords.war standalone
