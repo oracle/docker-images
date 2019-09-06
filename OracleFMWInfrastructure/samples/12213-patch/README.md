@@ -9,7 +9,7 @@ Download from My Oracle Support the file [p27117282_122130_Generic.zip](http://s
 
 To build, run:
 
-        $ docker build -t oracle/fmw-infra:12213-p27117282 .
+        $ docker build --force-rm=true --no-cache=true -t oracle/fmw-infra:12213-p27117282 .
 
 ## Verify that the Patch has been applied correctly
 Run a container from the image

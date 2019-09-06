@@ -40,7 +40,7 @@ ENV PATCH_PKG="p29135930_122130_Generic.zip"
 
 # Copy patch 29135930 
 # --------------------------------
-COPY $PATCH_PKG /u01/
+COPY --chown=oracle:oracle $PATCH_PKG /u01/
 
 # Apply Patch 29135930
 # --------------------------------------------

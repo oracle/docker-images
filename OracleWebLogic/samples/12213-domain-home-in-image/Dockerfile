@@ -47,7 +47,7 @@ ENV ORACLE_HOME=/u01/oracle \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
 
 # Add files required to build this image
-COPY container-scripts/* /u01/oracle/
+COPY --chown=oracle:oracle container-scripts/* /u01/oracle/
 
 #Create directory where domain will be written to
 USER root
@@ -56,12 +56,13 @@ RUN chmod +xw /u01/oracle/*.sh && \
     mkdir -p ${PROPERTIES_FILE_DIR} && \
     chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
-    chown -R oracle:oracle $DOMAIN_HOME && \
-    chmod -R a+xwr $DOMAIN_HOME
+    chown -R oracle:oracle $DOMAIN_HOME/.. && \
+    chmod -R a+xwr $DOMAIN_HOME/..
 
-COPY properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
+COPY --chown=oracle:oracle properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
 
 # Configuration of WLS Domain
+USER oracle
 RUN /u01/oracle/createWLSDomain.sh && \
     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
     chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \

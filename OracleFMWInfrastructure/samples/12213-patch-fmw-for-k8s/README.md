@@ -8,7 +8,7 @@ If you want to patch on top of FMW Infrastructure 12.2.1.3, download the file, [
 
 To build, run:
 
-        $ docker build -t oracle/fmw-infrastructure:12213-update-k8s .
+        $ docker build --force-rm=true --no-cache=true -t oracle/fmw-infrastructure:12213-update-k8s .
 
 ## Verify that the patch has been applied correctly
 Run a container from the image:
