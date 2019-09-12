@@ -43,13 +43,13 @@ ENV CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" \
     CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
 
 # Add files required to build this image
-COPY container-scripts/* /u01/oracle/container-scripts/
+COPY --chown=oracle:oracle container-scripts/* /u01/oracle/container-scripts/
 
 #Create directory where domain will be written to
 USER root
 RUN mkdir -p $CUSTOM_DOMAIN_ROOT && \
-    chown -R oracle:oracle $CUSTOM_DOMAIN_ROOT && \
-    chmod -R a+xwr $CUSTOM_DOMAIN_ROOT && \
+    chown -R oracle:oracle $CUSTOM_DOMAIN_ROOT/.. && \
+    chmod -R a+xwr $CUSTOM_DOMAIN_ROOT/.. && \
     mkdir -p $ORACLE_HOME/properties && \
     chmod -R a+r $ORACLE_HOME/properties && \ 
     chmod +x /u01/oracle/container-scripts/*
