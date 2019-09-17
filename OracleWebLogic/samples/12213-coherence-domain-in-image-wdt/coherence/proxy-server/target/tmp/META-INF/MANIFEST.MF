@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: 11.0.3+12-LTS (Oracle Corporation)
-
