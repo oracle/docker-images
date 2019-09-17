@@ -1,0 +1,53 @@
+domainInfo:
+    AdminUserName: '@@FILE:/u01/oracle/properties/adminuser.properties@@'
+    AdminPassword: '@@FILE:/u01/oracle/properties/adminpass.properties@@'
+topology:
+    AdminServerName: 'admin-server'
+    ProductionModeEnabled: true
+    Log:
+        FileName: domain1.log
+    NMProperties:
+        JavaHome: /usr/java/jdk1.8.0_211
+        LogFile: '@@DOMAIN_HOME@@/nodemanager/nodemanager.log'
+        DomainsFile: '@@DOMAIN_HOME@@/nodemanager/nodemanager.domains'
+        NodeManagerHome: '@@DOMAIN_HOME@@/nodemanager'
+        weblogic.StartScriptName: startWebLogic.sh
+    Cluster:
+        'cluster-1':
+            CoherenceClusterSystemResource: CoherenceCluster 
+            DynamicServers:
+                ServerNamePrefix: 'managed-server-'
+                MaxDynamicClusterSize: 5
+                CalculatedListenPorts: false
+                MaximumDynamicServerCount: 5
+                ServerTemplate: 'cluster-1-template'
+                DynamicClusterSize: 5
+    Server:
+        'admin-server':
+            NetworkAccessPoint:
+                T3Channel:
+                    PublicPort: 30012
+                    ListenPort: 30012
+                    PublicAddress: kubernetes
+    ServerTemplate:
+        'cluster-1-template':
+            ListenPort: 8001
+            Cluster: 'cluster-1'
+            JTAMigratableTarget:
+                Cluster: 'cluster-1'
+            SSL:
+                ListenPort: 8100
+resources:
+    CoherenceClusterSystemResource:
+        CoherenceCluster:
+            CoherenceResource:
+                CoherenceClusterParams:
+                    ClusteringMode: unicast
+                    ClusterListenPort: 7574
+appDeployments:
+    Application:
+        'coh-proxy':
+            SourcePath: 'wlsdeploy/applications/coh.gar'
+            ModuleType: gar
+            Target: 'cluster-1'
+

@@ -1,8 +1,8 @@
-package cohapp;
+// Copyright 2019, Oracle Corporation and/or its affiliates.  All rights reserved.
+// Licensed under the Universal Permissive License v 1.0 as shown at
+// http://oss.oracle.com/licenses/upl.
 
-/*
- * Copyright (c) 2013-2014 Oracle and/or its affiliates. All rights reserved.
- */
+package cohapp;
 
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.ConfigurableCacheFactory;
@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 /**
  * MBean unit test class. This test creates a coherence cluster so we may want to move it into a
