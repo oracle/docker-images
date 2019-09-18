@@ -31,50 +31,29 @@ When the WDT `discoverDomain` tool is used on an existing domain, a ZIP archive 
 
 **NOTE:** The image is based on a WebLogic Server image in the docker-images project: `oracle/weblogic:12.2.1.3-developer`. Build that image to your local repository before building this sample.
 
-The WebLogic Deploy Tool installer is required to build this image. Add `weblogic-deploy.zip` to the sample directory. The Docker sample requires a minimum release of weblogic-deploy-tooling-0.14. This release uses the new command argument `-domain_home` on the `createDomain` step.  This argument allows a domain home path with a domain folder name that can be different from the domain name in the model file.
+The WebLogic Deploy Tool installer is required to build this image. The Docker sample requires a minimum release of 1.3.0. 
+Download `weblogic-deploy.zip` to the sample directory with the following command:
 
+   curl   -Lo ./weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-1.3.0/weblogic-deploy.zip
+     
+WDT requires the deployment artifacts to be in an archive file. This archive needs to be built (one time only) before building the Docker image. Build the
+archive.zip using the following command:
 
-    $curl -v  -Lo ./weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-1.3.0/weblogic-deploy.zip
-    
- The sample build.sh demonstrates how to use a curl to download the weblogic-deploy.zip before running the docker build:
- 
-     curl -Lo ${scriptDir}/weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.14/weblogic-deploy.zip   
-
-This sample deploys a simple, one-page web application contained in a ZIP archive. This archive needs to be built (one time only) before building the Docker image.
-
-    $ ./build-archive.sh
+    ./build-archive.sh
 
 The sample requires the Admin Host, Admin Port and Admin Name. It also requires the Managed Server port and the domain debug port. The ports will be EXPOSED through Docker. The other arguments are persisted in the image to be used when running a container. If an attribute is not provided as a `--build-arg` on the `build` command, the following defaults are set.
 
-```
-CUSTOM_ADMIN_NAME = admin-server
- The value is persisted to the image as ADMIN_NAME
-
-CUSTOM_ADMIN_HOST = wlsadmin
- The value is persisted to the image as ADMIN_HOST
-
-CUSTOM_ADMIN_PORT = 7001
- The value is persisted to the image as ADMIN_PORT
-
-CUSTOM_MANAGED_SERVER_PORT = 8001
- The value is persisted to the image as MANAGED_SERVER_PORT
-
-CUSTOM_DEBUG_PORT = 8453
- The value is persisted to the image as DEBUG_PORT
-
-CUSTOM_DOMAIN_NAME = base_domain
- The value is persisted to the image as DOMAIN_NAME
-```
 
 To build this sample keeping the defaults, run:
 
-    $ docker build \
-          --build-arg WDT_MODEL=simple-topology.yaml \
-          --build-arg WDT_ARCHIVE=archive.zip \
-          --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
-          --force-rm=true \
-          --no-cache=true \
-          -t 12213-domain-home-in-image-wdt .
+  docker build -f Dockerfile --no-cache  \
+    --build-arg CUSTOM_DOMAIN_NAME=sample-domain1 \
+    --build-arg WDT_MODEL=cohModel.yaml \
+    --build-arg WDT_ARCHIVE=archive.zip \
+    --build-arg WDT_VARIABLE=properties/docker-build/domain.properties  \
+    --force-rm=true   \
+     -t coherence-12213-domain-home-in-image-wdt .
+
 
 This will use the model, variable, and archive files in the sample directory.
 

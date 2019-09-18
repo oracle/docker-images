@@ -36,12 +36,3 @@ rm -f wlsdeploy
 mkdir -p wlsdeploy/applications
 cp coh-proxy-server/target/coh-proxy-server.gar wlsdeploy/applications
 zip -r archive.zip wlsdeploy
-
-#
-#${JAVA_HOME}/bin/jar cvf ${scriptDir}/archive/wlsdeploy/applications/simple-app.war -C ${scriptDir} simple-app/*
-#${JAVA_HOME}/bin/jar cvf ${scriptDir}/archive.zip  -C ${scriptDir}/archive wlsdeploy
-#
-#
-#mkdir -p wlsdeploy/applications
-#cp ~/coh.gar  wlsdeploy/applications
-#zip -r archive.zip wlsdeploy
