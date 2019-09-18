@@ -1,102 +1,97 @@
 Example Image with a WLS Domain
 ===============================
-This Dockerfile extends the Oracle WebLogic Server image by creating a sample WLS 12.2.1.3 domain and cluster. Utility scripts are copied into the image, enabling users to plug Node Manager automatically into the Administration Server running on another container.
-
-The Dockerfile uses the `createDomain` script from the Oracle WebLogic Deploy Tooling (WDT) to create the domain from a text-based model file. More information about WDT is available in the README file for the WDT project in GitHub:
-
-`https://github.com/oracle/weblogic-deploy-tooling`
+This sample demonstrates how to create a WLS 12.2.1.3 domain with a Coherence cluster with WDT and run it 
+inside docker containers.  The sample also includes a Coherence proxy client and proxy server program used 
+to access a Coherence cache.  The image created in this sample can also be used to create a domain
+using Kubernetes.  For more information on WDT, refer to https://github.com/oracle/weblogic-deploy-tooling.  
 
 ### WDT Model File and Archive
 
-This sample includes a basic WDT model, `simple-topology.yaml`, that describes the intended configuration of the domain within the Docker image. WDT models can be created and modified using a text editor, following the format and rules described in the README file for the WDT project in GitHub.
+The image created using WDT has both the WebLogic binary home and domain home.  The WDT input file, `cohDomain.yaml`, 
+describes the configuration of the domain, which has WebLogic dynamic cluster with a maximum of
+five managed servers.  The domain will also have a Coherence cluster scoped to the servers running in that dynamic cluster.
 
-Another option is to use the WDT `discoverDomain` tool to create a model. This process is also described in the WDT project README file. A user can use the tool to analyze an existing domain, and create a model based on its configuration. The user may choose to customize the model before using it to create a new Docker image.
+The sample model is accompanied by a properties files needed to create the domain. 
+Care should be taken to secure the credentials that are present in the model. The ADMIN credential 
+attributes in the sample model have a file token referencing a special property file. Each special 
+property file must only contain a single property and can be created and modified using a text editor. 
+The sample includes the files `adminuser.properties` and the `adminpass.properties` in the `properties/docker_build` directory.
 
-The sample model is accompanied by a properties file whose values can be changed to customize a domain. The model's variable tokens are replaced with values from 'simple-topology.properties' when building the Docker image. The properties files can be created and modified using a text editor. Select variables in the properties file are used by the Dockerfile during the build to persist ENV variables and expose ports in the image.
+The ADMIN credentials are necessary to start the Administration or Managed Server in a Docker container. 
+The sample provides `security.properties` in the `properties/docker-run` directory. This file contains 
+the admin credentials and additional properties used to customize the WebLogic Server start.  
+It is the responsibility of the user to manage this volume, and the security.properties, in the container.
 
-Care should be taken to secure the credentials that are present in the model. The ADMIN credential attributes in the sample model have a file token referencing a special property file. Each special property file must only contain a single property and can be created and modified using a text editor. The sample includes the files `adminuser.properties` and the `adminpass.properties` in the `properties/docker_build` directory.
-
-See the README file for more information on using property and file tokens in the WDT model.
-
-The ADMIN credentials are necessary to start the Administration or Managed Server in a Docker container. The sample provides `security.properties` in the `properties/docker-run` directory. This file contains the admin credentials and additional properties used to customize the WebLogic Server start.
-
-**Note**: Oracle recommends that the `adminpass.properties`, `adminuser.properties`, and `security.properties` files be deleted or secured after the image is built and the WebLogic Server is started so that the user name and password are not inadvertently exposed.
-
-Domain creation may require the deployment of applications and libraries. This is accomplished by creating a ZIP archive with a specific structure, then referencing those items in the model. This sample creates and deploys a simple ZIP archive containing a small application WAR. That archive is built in the sample directory prior to creating the Docker image.
-
-When the WDT `discoverDomain` tool is used on an existing domain, a ZIP archive is created containing any necessary applications and libraries. The corresponding configuration for those applications and libraries is added to the model.
+**Note**: Oracle recommends that the `adminpass.properties`, `adminuser.properties`, and `security.properties` files 
+be deleted or secured after the image is built and the WebLogic Server is started so that the user name 
+and password are not inadvertently exposed.
 
 ## How to Build and Run
 
-
-**NOTE:** The image is based on a WebLogic Server image in the docker-images project: `oracle/weblogic:12.2.1.3-developer`. Build that image to your local repository before building this sample.
+**NOTE:** The image is based on a WebLogic Server image: `container-registry.oracle.com/middleware/weblogic:12.2.1.3`.  
+Use `docker pull` to load that image into your local repository before building this sample.
 
 The WebLogic Deploy Tool installer is required to build this image. The Docker sample requires a minimum release of 1.3.0. 
 Download `weblogic-deploy.zip` to the sample directory with the following command:
 
-   curl   -Lo ./weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-1.3.0/weblogic-deploy.zip
+    curl  -Lo ./weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-1.3.0/weblogic-deploy.zip
      
-WDT requires the deployment artifacts to be in an archive file. This archive needs to be built (one time only) before building the Docker image. Build the
-archive.zip using the following command:
+WDT requires the deployment artifacts to be in an archive file. This archive needs to be built (one time only) 
+before building the Docker image. Build the archive.zip using the following command:
 
     ./build-archive.sh
 
-The sample requires the Admin Host, Admin Port and Admin Name. It also requires the Managed Server port and the domain debug port. The ports will be EXPOSED through Docker. The other arguments are persisted in the image to be used when running a container. If an attribute is not provided as a `--build-arg` on the `build` command, the following defaults are set.
+The sample is using names and security credentials that are compatible with the WebLogic operator quickstart, 
+see https://oracle.github.io/weblogic-kubernetes-operator/quickstart/.  This allows you to use this same image
+to run the sample in Kubernetes.
+
+Run the following command to build the image:
+
+    docker build -f Dockerfile --no-cache  \
+      --build-arg CUSTOM_DOMAIN_NAME=sample-domain1 \
+      --build-arg WDT_MODEL=cohModel.yaml \
+      --build-arg WDT_ARCHIVE=archive.zip \
+      --build-arg WDT_VARIABLE=properties/docker-build/domain.properties  \
+      --force-rm=true   \
+       -t coherence-12213-domain-home-in-image-wdt .
+
+Start the containerized Administration Server:
+
+    docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <absolute-path-sample-dir>/properties/docker-run:/u01/oracle/properties coherence-12213-domain-home-in-image-wdt
+
+Start a containerized Managed Server to self-register with the Administration Server.  Open the Coherence proxy port 9000 also so that the
+proxy client can access the cache. Run the following command:
+
+    docker run -d --name managed-server-1 --link wlsadmin:wlsadmin  -p 8001:8001 -p 9000:9000 -v ~/git-pfmackin-docker-images/docker-images/OracleWebLogic/samples/12213-coherence-domain-in-image-wdt/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 coherence-12213-domain-home-in-image-wdt startManagedServer.sh
+
+To start an additional Managed Server.  There is no need to open the proxy port for this server. Run the following command:
+
+    docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 8002:8001 -v <absolute-path-sample-dir>/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 coherence-12213-domain-home-in-image-wdt startManagedServer.sh
 
 
-To build this sample keeping the defaults, run:
+Use the WebLogic console at http://localhost:7001/console to ensure that the admin server and managed servers are running.  They may take
+ a few minutes to start. Once the servers are ready, you can test the Coherence cluster as follows:
 
-  docker build -f Dockerfile --no-cache  \
-    --build-arg CUSTOM_DOMAIN_NAME=sample-domain1 \
-    --build-arg WDT_MODEL=cohModel.yaml \
-    --build-arg WDT_ARCHIVE=archive.zip \
-    --build-arg WDT_VARIABLE=properties/docker-build/domain.properties  \
-    --force-rm=true   \
-     -t coherence-12213-domain-home-in-image-wdt .
+Build the proxy client JAR:
 
+    cd coh-proxy-client
+    mvn package -DskipTests=true
+    
+Load the cache with 10,000 entries:
 
-This will use the model, variable, and archive files in the sample directory.
+    java -jar target/proxy-client-1.0.jar load
+ 
+Read each cache entry and validate the value to make sure it is correct:
 
-This sample provides a script which will read the model variable file and parse the domain, Administration and Managed Server information
-  into a string of `--build-arg` statements. This build `arg` string is exported as the environment variable `BUILD_ARG`.
-  The sample script specifically parses the sample variable file. Use it as an example to parse a custom variable file.
-  This will insure that the values Docker exposes and persists in the image are the same values configured in the domain.
+     java -jar target/proxy-client-1.0.jar validate
 
-To parse the sample variable file and build the sample, run:
+## Summary
 
-     $ container-scripts/setEnv.sh properties/docker-build/domain.properties
-
-     $ docker build \
-          $BUILD_ARG \
-          --build-arg WDT_MODEL=simple-topology.yaml \
-          --build-arg WDT_ARCHIVE=archive.zip \
-          --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
-          --force-rm=true \
-          --no-cache=true \
-          -t 12213-domain-home-in-image-wdt .
-
-The Admin Server and each Managed Server are run in containers from this build image. In the sample, the securities.properties file
-  is provided on the docker run command. This file contains both the Admin server credentials and the JAVA_OPTS to use for the        
-  start of the Admin or Managed server. Mount the properties/docker-run directory to the container so that file can be accessed by the
-  server start script. It is the responsibility of the user to manage this volume, and the security.properties, in the container.
-
-**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
-
-To start the containerized Administration Server, run:
-
-    $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties 12213-domain-home-in-image-wdt
-
-To start a containerized Managed Server (managed-server-1) to self-register with the Administration Server above, run:
-
-    $ docker run -d --name managed-server-1 --link wlsadmin:wlsadmin -p 8001:8001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 12213-domain-home-in-image-wdt startManagedServer.sh
-
-To start a/n additional Managed Server (in this example managed-server-2), run:
-
-    $ docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 8002:8001 -v <sample-directory>/properties/docker-run/:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 12213-domain-home-in-image-wdt startManagedServer.sh
-
-The above scenario from this sample will give you a WebLogic domain with a dynamic cluster set up on a single host environment.
-
-You may create more containerized Managed Servers by calling the `docker` command above for `startManagedServer.sh` as long you change the dynamic server count attributes in the sample variable properties file before you build, and you link properly with the Administration Server. For an example of a multihost environment, see the sample `1221-multihost`.
+This sample demonstrated how to use WDT to build a WebLogic image configured with both a Coherence cluster and 
+a Coherence proxy server.  We then used docker to start the admin server and two managed servers, with the first
+managed server exposing port `9000` for the proxy.  Finally, the proxy client sample program was executed to load,
+then validate the contents of the cache.
+    
 
 # Copyright
-Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
