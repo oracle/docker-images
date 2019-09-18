@@ -1,11 +1,13 @@
 Sample Image with a WLS Domain and Coherence
 ===============================
 
-This sample demonstrates how to create a WLS 12.2.1.3 domain with a Coherence cluster with WDT and run it 
-inside docker containers.  The sample also includes a Coherence proxy server that runs inside the domain, along
-with a proxy client to access a Coherence cache.  The image created in this sample can also be used to create a domain
-using Kubernetes.  For more information on WDT, refer to https://github.com/oracle/weblogic-deploy-tooling.  For 
-more information on using WebLogic on Kubernetes, see https://github.com/oracle/weblogic-kubernetes-operator.
+This sample demonstrates how to create a WebLogic 12.2.1.3 domain with a Coherence cluster using 
+WebLogic Deploy Tooling (WDT).  The sample also includes a Coherence proxy server that runs 
+inside the domain, along with a proxy client to access a Coherence cache.  The domain is run 
+in docker containers and the Coherence cache is accessed using a proxy client running outside of docker.  
+The image created in this sample can also be used to create a domain using Kubernetes.  
+For more information on WDT, refer to https://github.com/oracle/weblogic-deploy-tooling.  For more 
+information on using WebLogic on Kubernetes, see https://github.com/oracle/weblogic-kubernetes-operator.
 
 ### WDT Model File and Property Files
 
