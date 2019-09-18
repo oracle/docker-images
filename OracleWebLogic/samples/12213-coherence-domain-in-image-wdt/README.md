@@ -34,7 +34,7 @@ When the WDT `discoverDomain` tool is used on an existing domain, a ZIP archive 
 The WebLogic Deploy Tool installer is required to build this image. Add `weblogic-deploy.zip` to the sample directory. The Docker sample requires a minimum release of weblogic-deploy-tooling-0.14. This release uses the new command argument `-domain_home` on the `createDomain` step.  This argument allows a domain home path with a domain folder name that can be different from the domain name in the model file.
 
 
-    $ wget https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-0.14/weblogic-deploy.zip
+    $curl -v  -Lo ./weblogic-deploy.zip https://github.com/oracle/weblogic-deploy-tooling/releases/download/weblogic-deploy-tooling-1.3.0/weblogic-deploy.zip
     
  The sample build.sh demonstrates how to use a curl to download the weblogic-deploy.zip before running the docker build:
  
