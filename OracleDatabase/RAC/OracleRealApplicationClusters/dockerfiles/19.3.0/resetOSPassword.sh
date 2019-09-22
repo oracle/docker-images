@@ -12,7 +12,7 @@
 
 declare -a cluster_nodes
 GRID_USER='grid'
-ORACLE_USER='oracle'
+DB_USER='oracle'
 PROGNAME=$(basename $0)
 PWD_KEY='pwd.key'
 SECRET_VOLUME='/run/secrets'
@@ -208,14 +208,14 @@ fi
 if [ "${RESET_PASSWORD_TYPE}" == 'reset_grid_oracle' ]; then
 print_message "Setting password for $GRID_USER user"
 reset_passwd $GRID_USER  $PASSWD_VALUE
-print_message "Setting password for $ORACLE_USER user"
-reset_passwd  $ORACLE_USER $PASSWD_VALUE
+print_message "Setting password for $DB_USER user"
+reset_passwd  $DB_USER $PASSWD_VALUE
 elif [ "${RESET_PASSWORD_TYPE}" == 'reset_grid' ]; then 
   print_message "Setting password for $GRID_USER user"
   reset_passwd  $GRID_USER $PASSWD_VALUE
 elif [ "${RESET_PASSWORD_TYPE}" == 'reset_oracle' ]; then
-  print_message "Setting password for $ORACLE_USER user"
-  reset_passwd  $ORACLE_USER $PASSWD_VALUE
+  print_message "Setting password for $DB_USER user"
+  reset_passwd  $DB_USER $PASSWD_VALUE
 else
 error_exit "Please specify correct value for RESET_PASSWORD_TYPE. Correct Values are reset_grid_oracle|reset_grid|reset_oracle"
 fi

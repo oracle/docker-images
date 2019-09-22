@@ -18,8 +18,8 @@
 declare -r FALSE=1
 declare -r TRUE=0
 declare -r RAC_ENV_FILE="/etc/rac_env_vars" 
-declare -r GRID_USER='grid'          ## Default gris user is grid.
-declare -r ORACLE_USER='oracle'      ## default oracle user is oracle.
+declare -x GRID_USER='grid'          ## Default gris user is grid.
+declare -x DB_USER='oracle'      ## default oracle user is oracle.
 declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
 declare -r OSDBA='dba'                ## OSDBA group
 declare -r OSASM='asmadmin'          ## OSASM group
@@ -111,6 +111,7 @@ declare -x CRS_NODES
 declare -x CRS_CONFIG_NODES
 declare -x ANSIBLE_INSTALL='false'
 declare -x GIMR_FLAG='false'
+declare -x RUN_DBCA='true'
 
 progname=$(basename "$0")
 ###################### Variabes and Constants declaration ends here  ####################
@@ -530,8 +531,8 @@ print_message "Running SSH setup for $GRID_USER user between nodes $CLUSTER_NODE
 cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$GRID_PASSWORD\""'
 eval $cmd
 sleep 30
-print_message "Running SSH setup for $ORACLE_USER user between nodes $CLUSTER_NODES"
-cmd='su - $ORACLE_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $ORACLE_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$ORACLE_PASSWORD\""'
+print_message "Running SSH setup for $DB_USER user between nodes $CLUSTER_NODES"
+cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$ORACLE_PASSWORD\""'
 eval $cmd
 }
 
@@ -570,7 +571,7 @@ fi
 done
 
 status="NA"
-cmd='su - $ORACLE_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $ORACLE_USER@$node echo ok 2>&1"'
+cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
  echo $cmd
 for node in ${CLUSTER_NODES}
 do
@@ -578,11 +579,11 @@ do
 status=$(eval $cmd)
 
 if [[ $status == ok ]] ; then
-  print_message "SSH check fine for the $ORACLE_USER@$node"
+  print_message "SSH check fine for the $DB_USER@$node"
 elif [[ $status == "Permission denied"* ]] ; then
-   error_exit "SSH check failed for the $ORACLE_USER@$node becuase of permission denied error! SSH setup did not complete sucessfully"
+   error_exit "SSH check failed for the $DB_USER@$node becuase of permission denied error! SSH setup did not complete sucessfully"
 else
-   error_exit "SSH check failed for the $ORACLE_USER@$node! Error occurred during SSH setup"
+   error_exit "SSH check failed for the $DB_USER@$node! Error occurred during SSH setup"
 fi
 
 done
@@ -1064,6 +1065,42 @@ rm -f $logdir/cluvfy_check.txt
 
 }
 
+installCrontab()
+{
+print_message "Installing crontab to monitor systemd and reset the failed units"
+local cmd;
+local stat;
+
+IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
+
+print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+
+for node in "${CLUSTER_NODES[@]}"; do
+
+print_message "Copying file $RESET_FAILED_UNITS from $SCRIPT_DIR to /tmp"
+
+cmd='su - $GRID_USER -c "ssh $node sudo cp $SCRIPT_DIR/$RESET_FAILED_UNITS /tmp/$RESET_FAILED_UNITS"'
+eval $cmd
+
+if [ $?  -eq 0 ];then
+print_message "Copied the $RESET_FAILED_UNITS under /tmp"
+else
+error_exit "Error occurred during file copy"
+fi
+
+print_message "Setting Crontab"
+cmd='su - $GRID_USER -c "ssh $node sudo crontab $SCRIPT_DIR/$CRONTAB_ENTRY"'
+eval $cmd
+
+if [ $?  -eq 0 ];then
+print_message "Sucessfully installed $CRONTAB_ENTRY using crontab"
+else
+error_exit "Error occurred in crontab setup"
+fi
+
+done
+
+}
 
 #############DB Setup Functions########################################
 
@@ -1105,7 +1142,7 @@ createRACDB()
 local responsefile=$logdir/$DBCA_RSP
 local cmd
 # Replace place holders in response file
-cmd='su - $ORACLE_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'
+cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'
 eval $cmd
 rm -f $responsefile
 }
@@ -1141,7 +1178,7 @@ local cmd
 
 if resolveip $CMAN_HOSTNAME; then
 print_message "Executing script to set the remote listener"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
+su - $DB_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
 fi
 
 }
@@ -1160,8 +1197,8 @@ all_check
 build_network
 print_message "Setting random password for $GRID_USER user"
 setpasswd $GRID_USER  $GRID_PASSWORD
-print_message "Setting random password for $ORACLE_USER user"
-setpasswd $ORACLE_USER $ORACLE_PASSWORD
+print_message "Setting random password for $DB_USER user"
+setpasswd $DB_USER $ORACLE_PASSWORD
 
 print_message "Calling setupSSH function"
 setupSSH
@@ -1187,20 +1224,24 @@ print_message "Running post root.sh steps"
 runpostrootsetps
 print_message "Checking Cluster Status"
 checkCluster
+print_message "Instaling Crontab to monitor Systemd units"
+installCrontab
 
 ####### DB Setup ##########
 if [ "${CLUSTER_TYPE}" == 'STANDALONE' ] || [ "${CLUSTER_TYPE}" == 'MEMBERDB' ]; then
+if [ "${RUN_DBCA}" == "true" ]; then
 print_message "Generating DB Responsefile Running DB creation"
 dbca_response_file
 print_message "Running DB creation"
 createRACDB
 print_message "Checking DB status"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
+su - $DB_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
 checkDBStatus
 print_message "Running User Script"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT"
+su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT"
 print_message "Setting Remote Listener"
 setremotelistener
+fi
 fi
 
 echo $TRUE

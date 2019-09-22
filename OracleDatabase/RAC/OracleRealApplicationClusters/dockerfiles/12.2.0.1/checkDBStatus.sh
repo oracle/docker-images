@@ -18,6 +18,9 @@ source /etc/rac_env_vars
 fi
 
 source $SCRIPT_DIR/functions.sh
+export ORACLE_HOME=$DB_HOME
+export PATH=$ORACLE_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib
 
 sid=$1
 
