@@ -5,6 +5,7 @@ Additional utilities for managing the Oracle GoldenGate installation.
 ## Contents
 
 * [oggServiceConfig](#oggserviceconfig)
+* [addCertificate](#addcertificate)
 
 
 ## oggServiceConfig
@@ -65,3 +66,23 @@ oggServiceConfig http://localhost:11000 Local adminsrvr \
    Set the TLS ciphers used by Administration Server in the
    deployment called 'Local' to secure values and then restart the
    Administration Server.
+
+
+## addCertificate
+
+### Summary
+The `addCertificate` utility loads a certificate into the client wallet for one or more deployments.
+
+### Examples
+
+```
+addCertificate localhost:443 Target
+```
+
+Adds the certificate for https://localhost:443 to the `Target` deployment's client wallet.
+
+```
+addCertificate localhost:443
+```
+
+Adds the certificate for https://localhost:443 to the client wallet for **all** deployments.

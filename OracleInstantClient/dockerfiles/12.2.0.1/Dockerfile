@@ -20,7 +20,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/instantclient:12.2.0.1 . 
+#      $ docker build --pull -t oracle/instantclient:12.2.0.1 .
 #
 #
 FROM oraclelinux:7-slim

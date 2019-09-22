@@ -30,10 +30,6 @@ trap _kill SIGKILL
 export DOMAIN_HOME=$CUSTOM_DOMAIN_ROOT/$CUSTOM_DOMAIN_NAME
 echo "Domain Home is:  $DOMAIN_HOME"
 
-if [  -f ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.log ]; then
-    exit
-fi
-
 SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain_security.properties
 echo $SEC_PROPERTIES_FILE
 if [ ! -e "${SEC_PROPERTIES_FILE}" ]; then
@@ -62,22 +58,25 @@ if [ ! -e "${DOMAIN_PROPERTIES_FILE}" ]; then
    exit
 fi
 
-# Create domain
-wlst.sh -skipWLSModuleScanning -loadProperties ${DOMAIN_PROPERTIES_FILE} -loadProperties ${SEC_PROPERTIES_FILE}  /u01/oracle/container-scripts/create-wls-domain.py
-retval=$?
+#Create the domain the first time
+if [ ! -f ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.log ]; then
+   # Create domain
+   wlst.sh -skipWLSModuleScanning -loadProperties ${DOMAIN_PROPERTIES_FILE} -loadProperties ${SEC_PROPERTIES_FILE}  /u01/oracle/container-scripts/create-wls-domain.py
+   retval=$?
 
-echo  "RetVal from Domain creation $retval"
+   echo  "RetVal from Domain creation $retval"
 
-if [ $retval -ne 0 ];
-then
-   echo "Domain Creation Failed.. Please check the Domain Logs"
-   exit
+   if [ $retval -ne 0 ];
+   then
+      echo "Domain Creation Failed.. Please check the Domain Logs"
+      exit
+   fi
+
+   # Create the security file to start the server(s) without the password prompt
+   mkdir -p ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/
+   echo "username=${USER}" >> ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/boot.properties
+   echo "password=${PASS}" >> ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/boot.properties
 fi
-
-# Create the security file to start the server(s) without the password prompt
-mkdir -p ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/
-echo "username=${USER}" >> ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/boot.properties
-echo "password=${PASS}" >> ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/boot.properties
 
 #Set Java options
 export JAVA_OPTIONS=${CUSTOM_JAVA_OPTIONS}

@@ -11,7 +11,7 @@
 # -----------------------
 #
 # Run:
-#      $ docker build -t oracle/instantclient:19 .
+#      $ docker build --pull -t oracle/instantclient:19 .
 #
 # Applications using Oracle Call Interface (OCI) 19 can connect to
 # Oracle Database 11.2 or later.  Some tools may have other

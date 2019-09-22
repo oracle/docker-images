@@ -73,6 +73,7 @@ To build this sample keeping the defaults, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
+          --no-cache=true \
           -t 12213-domain-home-in-image-wdt .
 
 This will use the model, variable, and archive files in the sample directory.
@@ -92,12 +93,15 @@ To parse the sample variable file and build the sample, run:
           --build-arg WDT_ARCHIVE=archive.zip \
           --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
           --force-rm=true \
+          --no-cache=true \
           -t 12213-domain-home-in-image-wdt .
 
 The Admin Server and each Managed Server are run in containers from this build image. In the sample, the securities.properties file
   is provided on the docker run command. This file contains both the Admin server credentials and the JAVA_OPTS to use for the        
   start of the Admin or Managed server. Mount the properties/docker-run directory to the container so that file can be accessed by the
   server start script. It is the responsibility of the user to manage this volume, and the security.properties, in the container.
+
+**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
 
 To start the containerized Administration Server, run:
 

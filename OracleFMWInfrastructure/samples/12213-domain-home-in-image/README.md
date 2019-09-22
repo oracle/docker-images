@@ -76,7 +76,7 @@ The database is created with the default password `Oradoc_db1`. To change the da
 ### Build and run RCU
 Many of the Oracle Fusion Middleware components require the existence of schemas in a database prior to installation. These schemas are created and loaded in your database using the Repository Creation Utility (RCU). To facilitate running RCU, you can build an image using the `Dockerfile.rcu`.
 
-       $ docker build -f Dockerfile.rcu -t 12213-fmw-rcu .
+       $ docker build --force-rm=true --no-cache=true -f Dockerfile.rcu -t 12213-fmw-rcu .
 
 To run RCU, start a container from the image created:
 
@@ -109,12 +109,13 @@ The Dockerfile in this sample extends the FMW Infrastructure install image and c
 
   1. To build the `12.2.1.3` FMW Infrastructure domain image, run:
 
-       $ docker build $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-home-in-image .
+       $ docker build --force-rm=true --no-cache=true $BUILD_ARG --network InfraNET -f Dockerfile -t 12213-fmw-domain-home-in-image .
 
   2. Verify that you now have this image in place with:
 
        $ docker images
 
+**NOTE**: The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
 
 #### Start the container
 Start a container from the image created in step 1.

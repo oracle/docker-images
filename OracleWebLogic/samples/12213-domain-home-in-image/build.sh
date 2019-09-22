@@ -40,4 +40,4 @@ set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/docker-build/domain.properties
 
 tag_name
-docker build $BUILD_ARG -t  ${tagName}  ${scriptDir}
+docker build --force-rm=true --no-cache=true $BUILD_ARG -t  ${tagName}  ${scriptDir}

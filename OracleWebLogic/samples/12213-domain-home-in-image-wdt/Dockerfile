@@ -33,6 +33,7 @@
 #            --build-arg WDT_ARCHIVE=archive.zip \
 #            --build-arg WDT_VARIABLE=properties/docker-build/domain.properties \
 #            --force-rm=true \
+#            --no-cache=true \
 #            -t 12213-domain-home-in-image-wdt .
 #
 # If the ADMIN_HOST, ADMIN_PORT, MS_PORT, DOMAIN_NAME are not provided, the variables 
@@ -138,10 +139,6 @@ RUN if [ -n "$WDT_MODEL" ]; then MODEL_OPT="-model_file $PROPERTIES_FILE_DIR/${W
         $ARCHIVE_OPT && \
         echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
         rm -rf $PROPERTIES_FILE_DIR 
-
-# Mount the domain home and the WDT home for easy access.
-VOLUME $DOMAIN_HOME
-VOLUME $WDT_HOME
 
 # Expose admin server, managed server port and domain debug port
 EXPOSE $ADMIN_PORT $MANAGED_SERVER_PORT $DEBUG_PORT

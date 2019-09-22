@@ -11,7 +11,9 @@ ENV JAVA_PKG=server-jre-8u*-linux-x64.tar.gz \
 
 ADD $JAVA_PKG /usr/java/
 
-RUN export JAVA_DIR=$(ls -1 -d /usr/java/*) && \
+RUN yum -y install tar gzip && \
+    rm -rf /var/cache/yum/* && \
+    export JAVA_DIR=$(ls -1 -d /usr/java/*) && \
     ln -s $JAVA_DIR /usr/java/latest && \
     ln -s $JAVA_DIR /usr/java/default && \
     alternatives --install /usr/bin/java java $JAVA_DIR/bin/java 20000 && \

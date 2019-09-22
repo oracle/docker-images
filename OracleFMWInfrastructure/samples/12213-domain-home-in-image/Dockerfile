@@ -62,7 +62,7 @@ ENV ORACLE_HOME="/u01/oracle" \
     PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts:${DOMAIN_HOME}/bin"
 
 # Add files required to build this image
-COPY container-scripts/* /u01/oracle/container-scripts/
+COPY --chown=oracle:oracle container-scripts/* /u01/oracle/container-scripts/
 
 #Create directory where domain will be written to
 USER root
@@ -70,12 +70,13 @@ RUN chmod +x /u01/oracle/container-scripts/* && \
     mkdir -p ${PROPERTIES_FILE_DIR} && \
     chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
-    chown -R oracle:oracle $DOMAIN_HOME && \
-    chmod -R a+xwr $DOMAIN_HOME
+    chown -R oracle:oracle $DOMAIN_HOME/.. && \
+    chmod -R a+xwr $DOMAIN_HOME/..
 
-COPY properties/*.properties ${PROPERTIES_FILE_DIR}/
+COPY --chown=oracle:oracle properties/*.properties ${PROPERTIES_FILE_DIR}/
 
 # Configuration of WLS Domain
+USER oracle
 RUN /u01/oracle/container-scripts/createFMWDomain.sh && \
     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
     chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \
