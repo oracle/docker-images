@@ -78,11 +78,13 @@ if [[ ! -f "${OGG_DISTFILE}" ]]; then
     exit 1
 fi
 shift
-pushd "$(${DIRNAME} $(command -v $0))" &>/dev/null
+
+TEMP_DIRECTORY="$(mktemp -d)"
+cp -a "$(${DIRNAME} $(command -v $0))"/* "${TEMP_DIRECTORY}"
+pushd "${TEMP_DIRECTORY}" &>/dev/null
 
 function cleanupAndExit {
-    [[ "${OGG_DISTFILE}" != $(getTargetFilename "${OGG_TARFILE}") ]] && \
-        rm -f "${OGG_TARFILE}" ggstar
+    rm -fr "${TEMP_DIRECTORY}"
     exit ${1-1}
 }
 trap cleanupAndExit SIGTERM SIGINT
