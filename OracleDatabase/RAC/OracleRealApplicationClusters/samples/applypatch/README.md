@@ -2,6 +2,7 @@ Example of how to create a patched database image
 =============================================
 Once you have built your base Oracle RAC image image you can create a patched version of it.
 In order to build such an image you will have to provide the patch zip file.
+ 
 **Notes:** 
 * Some patches require a newer version of `OPatch`, the Oracle Interim Patch Installer utility. It is highly recommended, you always update opatch with the new version. 
 * You can only patch 19.3.0 and above using this script. To pach 18.3.0 and 12.2.0.1, you need to request oneoff from Oracle Support.
