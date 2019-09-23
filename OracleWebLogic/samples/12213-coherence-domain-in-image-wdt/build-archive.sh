@@ -32,7 +32,7 @@ cd ../
 
 # build the archive
 rm archive.zip
-rm -f wlsdeploy
+rm -fr wlsdeploy
 mkdir -p wlsdeploy/applications
 cp coh-proxy-server/target/coh-proxy-server.gar wlsdeploy/applications
 zip -r archive.zip wlsdeploy
