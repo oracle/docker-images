@@ -47,11 +47,11 @@
 #
 # Pull base image
 # ---------------
-FROM container-registry.oracle.com/middleware/weblogic:12.2.1.3
+FROM oracle/weblogic:12.2.1.3-developer
 
 # Maintainer
 # ----------
-MAINTAINER Richard Killen <richard.killen@oracle.com>
+MAINTAINER Paul Mackin <paul.mackin@oracle.com>
 
 ARG WDT_ARCHIVE
 ARG WDT_VARIABLE

@@ -33,9 +33,10 @@ and password are not inadvertently exposed.
 
 ## How to Build and Run
 
-**NOTE:** The image is based on the following WebLogic Server image: 
-    `container-registry.oracle.com/middleware/weblogic:12.2.1.3`  
-Use `docker pull` to load that image into your local repository before building this sample.
+**NOTE:** The image is based on the following WebLogic Server image: `oracle/weblogic:12.2.1.3-developer`.
+Use `docker pull` to get the `container-registry.oracle.com/middleware/weblogic:12.2.1.3-dev` image, 
+then tag it as `oracle/weblogic:12.2.1.3-developer` before building this sample.
+
 
 The WebLogic Deploy Tool installer, with a minimum version of 1.3.0, is required to build this image.
 Download `weblogic-deploy.zip` to the sample directory with the following command:
