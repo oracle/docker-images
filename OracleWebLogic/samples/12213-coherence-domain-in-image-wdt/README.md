@@ -62,18 +62,24 @@ Run the following command to build the image:
       --force-rm=true   \
        -t coherence-12213-domain-home-in-image-wdt .
 
+Define an environment variable for absolute path of the directory you are running this sample. 
+For example, `/Users/xyz/docker-images/OracleWebLogic/samples/12213-coherence-domain-in-image-wdt` would replace `<absolute-path-sample-dir>` below.
+NOTE: Do not put quotes around the absolute path:
+
+    export COH_SAMPLE_DIR=<absolute-path-sample-dir>
+
 Start the Administration Server:
 
-    docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <absolute-path-sample-dir>/properties/docker-run:/u01/oracle/properties coherence-12213-domain-home-in-image-wdt
+    docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v $COH_SAMPLE_DIR/properties/docker-run:/u01/oracle/properties coherence-12213-domain-home-in-image-wdt
 
 Start a Managed Server to self-register with the Administration Server.  Open the Coherence proxy port 9000 also so that the
 proxy client can access the cache. Run the following command:
 
-    docker run -d --name managed-server-1 --link wlsadmin:wlsadmin  -p 8001:8001 -p 9000:9000 -v ~/git-pfmackin-docker-images/docker-images/OracleWebLogic/samples/12213-coherence-domain-in-image-wdt/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 coherence-12213-domain-home-in-image-wdt startManagedServer.sh
+    docker run -d --name managed-server-1 --link wlsadmin:wlsadmin  -p 8001:8001 -p 9000:9000 -v $COH_SAMPLE_DIR/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-1 coherence-12213-domain-home-in-image-wdt startManagedServer.sh
 
 Start an additional Managed Server.  There is no need to open the proxy port for this server. Run the following command:
 
-    docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 8002:8001 -v <absolute-path-sample-dir>/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 coherence-12213-domain-home-in-image-wdt startManagedServer.sh
+    docker run -d --name managed-server-2 --link wlsadmin:wlsadmin -p 8002:8001 -v $COH_SAMPLE_DIR/properties/docker-run:/u01/oracle/properties -e MANAGED_SERVER_NAME=managed-server-2 coherence-12213-domain-home-in-image-wdt startManagedServer.sh
 
 
 Use the WebLogic console at http://localhost:7001/console to ensure that the admin server and managed servers are running.  They may take
