@@ -88,21 +88,8 @@ Run the WLS Administration Console:
 
 In your browser, enter `https://xxx.xx.x.x:9002/console`. Your browser will request that you accept the Security Exception. To avoid the Security Exception, you must update the WebLogic Server SSL configuration with a custom identity certificate.
 
-## Choose your Oracle WebLogic Server distribution
-
-This project hosts two configurations (depending on the Oracle WebLogic Server version) for building Docker images with WebLogic Server 12c.
-
- * Quick Install Developer Distribution
-
-   - For more information on the Oracle WebLogic Server 12cR2 Quick Install Developer Distribution, see [WLS Quick Install Distribution for Oracle WebLogic Server 12.2.1.4.0](http://download.oracle.com/otn/nt/middleware/12c/wls/12214/README.txt).
-
-
- * Generic Distribution
-
-   - For more information on the Oracle WebLogic Server 12cR2 Generic Full Distribution, see [WebLogic Server 12.2.1.4 Documentation](http://docs.oracle.com/middleware/12214/wls/index.html).
-
 ## Samples for Oracle WebLogic Server domain creation
-To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the `12213-domain` sample.
+To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the `12214-domain` sample.
 
 ## Copyright
 Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
