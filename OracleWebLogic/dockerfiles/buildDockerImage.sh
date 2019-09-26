@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-d | -g ] [-s] [-c]
+Usage: buildDockerImage.sh -v [version] [-d | -g | -m ] [-s] [-c]
 Builds a Docker Image for Oracle WebLogic.
 
 Parameters:
@@ -20,14 +20,15 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
+   -m: creates image based on 'slim' distribution
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
 
-* select one distribution only: -d, or -g
+* select one distribution only: -d, -g, or -m
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 
 EOF
 exit 0
@@ -49,10 +50,11 @@ if [ "$#" -eq 0 ]; then usage; fi
 # Parameters
 DEVELOPER=0
 GENERIC=0
-VERSION="12.2.1.3"
+SLIM=0
+VERSION="12.2.1.4"
 SKIPMD5=0
 NOCACHE=true
-while getopts "hcsdgiv:" optname; do
+while getopts "hcsdgmiv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -65,6 +67,9 @@ while getopts "hcsdgiv:" optname; do
       ;;
     "g")
       GENERIC=1
+      ;;
+    "m")
+      SLIM=1
       ;;
     "v")
       VERSION="$OPTARG"
@@ -80,14 +85,16 @@ while getopts "hcsdgiv:" optname; do
 done
 
 # Which distribution to use?
-if [ $((DEVELOPER + GENERIC)) -gt 1 ]; then
+if [ $((DEVELOPER + GENERIC + SLIM)) -gt 1 ]; then
   usage
 elif [ $DEVELOPER -eq 1 ]; then
   DISTRIBUTION="developer"
 elif [ $GENERIC -eq 1 ]; then
   DISTRIBUTION="generic"
+elif [ $SLIM -eq 1 ]; then
+  DISTRIBUTION="slim"
 else
-  echo "Invalid distribution, please elect one distribution only: -d, or -g"
+  echo "Invalid distribution, please elect one distribution only: -d, -m, or -g"
   exit 1
 fi
 
