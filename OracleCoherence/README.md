@@ -1,6 +1,6 @@
 Oracle Coherence Docker Image
 ===============
-This section is about using [Oracle Coherence](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html) in Docker. The purpose of the Docker images described here is to facilitate the setup of development and integration testing environments for developers. This project includes example [dockerfiles](dockerfiles/12.2.1) and documentation for Coherence 12.2.1 based on Oracle Linux and Oracle JDK 8.
+This section is about using [Oracle Coherence](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html) in Docker. The purpose of the Docker images described here is to facilitate the setup of development and integration testing environments for developers. This project includes example dockerfiles and documentation for Coherence 12.2.1 based on Oracle Linux and Oracle JDK 8.
 
 The certification of Coherence on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
@@ -8,14 +8,45 @@ The certification of Coherence on Docker does not require the use of any file pr
 For more information and documentation, read the [Docker Images from Oracle Linux](https://registry.hub.docker.com/_/oraclelinux/) page.
 
 ### Standalone Distribution
-For more information on the Coherence Standalone Distribution, visit [Coherence 12.2.1 Documentation](http://docs.oracle.com/middleware/12213/coherence/index.html).
+For more information on the Coherence Standalone Distribution, visit [Coherence 12.2.1 Documentation](http://docs.oracle.com/middleware/12214/coherence/index.html).
 
 ## Building Oracle JDK (Server JRE) base image
 Before you can build these Oracle Coherence images you must have built the required Oracle Java 8 base image (see [Oracle Java images](../OracleJava/))
 
 ## How to Build
 
-Follow this procedure:
+For Coherence 12.2.1.4.0, a Maven project is provided to facilitate building the Docker image.  Maven is used to pull dependent libraries
+which are then bundled into the Docker image to enable running Coherence Management over REST and Coherence Metrics endpoints within the container.
+
+### To build a Coherence 12.2.1.4.0 Docker image
+
+Prerequisites for building with Maven:
+* Java 8 JDK
+* Maven 3.6.1
+
+Build steps:
+
+1. Checkout the GitHub Oracle Docker Images repository
+   
+   	`$ git clone git@github.com:oracle/docker-images.git`
+   	
+2. Go to the directory containing the Dockerfile for 12.2.1.4
+
+    `$ cd OracleCoherence/dockerfiles/12.2.1.4.0/src/main/docker`
+
+3. [Download](https://www.oracle.com/middleware/technologies/coherence-downloads.html) and drop the Coherence distribution file of your choice into this folder. The build script supports either building an image from either the Standalone Installer, **fmw_12.2.1.4.0_coherence_Disk1_1of1.zip** or the Quick Installer **fmw_12.2.1.4.0_coherence_quick_Disk1_1of1.zip**
+
+    Note that the `Dockerfile` is currently configured to use the Quick Installer.
+
+4. Go to the maven project directory
+
+    `$ cd OracleCoherence/dockerfiles/12.2.1.4.0`
+    
+5. Build the Docker image with Maven
+
+    `$ mvn install`
+
+Follow this procedure for Coherence 12.2.1.3.0 and earlier Coherence versions.
 
 1. Checkout the GitHub Oracle Docker Images repository
 
@@ -25,7 +56,7 @@ Follow this procedure:
 
         $ cd OracleCoherence/dockerfiles/12.2.1.3.0
 
-3. [Download](http://www.oracle.com/technetwork/middleware/coherence/downloads/index.html) and drop the Coherence distribution file of your choice into this folder. The build script supports either building an image from either the Standalone Installer, **fmw_12.2.1.3.0_coherence_Disk1_1of1.zip** or the Quick Installer **fmw_12.2.1.3.0_coherence_quick_Disk1_1of1.zip**
+3. [Download](https://www.oracle.com/middleware/technologies/coherence-downloads.html) and drop the Coherence distribution file of your choice into this folder. The build script supports either building an image from either the Standalone Installer, **fmw_12.2.1.3.0_coherence_Disk1_1of1.zip** or the Quick Installer **fmw_12.2.1.3.0_coherence_quick_Disk1_1of1.zip**
 
 4. Execute the build script `buildDockerImage.sh`.
 
@@ -66,9 +97,11 @@ Documentation covering the different aspects of running Oracle Coherence in Dock
 ## Issues
 If you find any issues with this Docker project, please report through the [GitHub Issues page](https://github.com/oracle/docker-images/issues).
 
-## License
+## Licenses
 To download and run Coherence Distribution regardless of inside or outside a Docker container, and regardless of which distribution, you must agree and accept the [OTN Standard License Terms](http://www.oracle.com/technetwork/licenses/standard-license-152015.html).
 
 To download and run Oracle JDK regardless of inside or outside a Docker container, you must agree and accept the [Oracle Binary Code License Agreement for Java SE](http://www.oracle.com/technetwork/java/javase/terms/license/index.html).
 
 All scripts and files hosted in this project on GitHub [docker-images/OracleCoherence](https://github.com/oracle/docker-images/OracleCoherence) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/), except for the files listed above with their specific licenses.
+
+Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
