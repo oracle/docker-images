@@ -31,6 +31,8 @@ This project provides a Dockerfile tested with:
 - Oracle GoldenGate 12.3.0.1.4 Microservices for Oracle
 - Oracle GoldenGate 18.1.0.0.0 for Oracle
 - Oracle GoldenGate 18.1.0.0.0 Microservices for Oracle
+- Oracle GoldenGate 19.1.0.0.2 for Oracle
+- Oracle GoldenGate 19.1.0.0.2 Microservices for Oracle
 
 To build the images, use the [dockerBuild.sh](dockerBuild.sh) script or follow the instructions for manually building an image.
 
