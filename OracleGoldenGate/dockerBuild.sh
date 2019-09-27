@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2017 Oracle and/or its affiliates.  All rights reserved.
+# Copyright (c) 2017, 2019 Oracle and/or its affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
 #
@@ -20,8 +20,8 @@ function getCommand {
         command=$(command -v ${check} 2>/dev/null) && break
     done
     [[ -z "${command}" ]] && {
-        [[ ! -z "${alternate}" ]] && echo "Error: Cannot locate command ${primary} or ${alternate}" \
-                                  || echo "Error: Cannot locate command ${primary}"
+        [[ -n "${alternate}" ]] && echo "Error: Cannot locate command ${primary} or ${alternate}" \
+                                || echo "Error: Cannot locate command ${primary}"
         exit 1
     }
     cmdname=$(echo ${primary} | tr a-z A-Z)
@@ -113,12 +113,20 @@ fi
 
 function getVersion {
     local      Version=$(${STRINGS} $1 2>/dev/null | ${AWK} '/^Version[ ]1/ {print $2; exit 0;}')
-    [[ ! -z  ${Version} ]] && \
+    [[ -n    ${Version} ]] && \
         echo ${Version}
 }
 
+function hasTag {
+    while [[ -n "$1" ]]; do
+        [[ "$1" == "--tag" || "$1" == "-t" ]] && return 0
+        shift
+    done
+    return 1
+}
+
 mkdir   ggstar
-[[ ! -z "${OGG_JARFILE}" ]] && {
+[[ -n "${OGG_JARFILE}" ]] && {
     getCommand unzip
     ${UNZIP} -q  ${OGG_JARFILE} -d ggstar
     rm       -f  ${OGG_JARFILE}
@@ -140,14 +148,17 @@ ${FIND}    ggstar -type f \( -name '*.so*' -o -not -name '*.*' \) -exec chmod +x
 ${TAR} Ccf ggstar ${OGG_TARFILE} --owner=54321 --group=54321 .
 rm -fr     ggstar
 
-[[ ! -z "${BASE_IMAGE}"  ]] && BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${BASE_IMAGE}"
-[[ ! -z "${http_proxy}"  ]] && HTTP_PROXY_ARG="--build-arg http_proxy=${http_proxy}"
-[[ ! -z "${https_proxy}" ]] && HTTPS_PROXY_ARG="--build-arg https_proxy=${https_proxy}"
+[[ -n "${BASE_IMAGE}"  ]] && BASE_IMAGE_ARG="--build-arg BASE_IMAGE=${BASE_IMAGE}"
+[[ -n "${http_proxy}"  ]] && HTTP_PROXY_ARG="--build-arg http_proxy=${http_proxy}"
+[[ -n "${https_proxy}" ]] && HTTPS_PROXY_ARG="--build-arg https_proxy=${https_proxy}"
+if ( ! hasTag "$@" ); then
+    DEFAULT_TAG="--tag oracle/goldengate-${OGG_EDITION}:${OGG_VERSION}"
+fi
 
 "${DOCKER}" build ${BASE_IMAGE_ARG} \
                 ${HTTP_PROXY_ARG} ${HTTPS_PROXY_ARG} \
                 --build-arg OGG_VERSION=${OGG_VERSION} \
                 --build-arg OGG_EDITION=${OGG_EDITION} \
                 --build-arg OGG_TARFILE=${OGG_TARFILE} \
-                --tag oracle/goldengate-${OGG_EDITION}:${OGG_VERSION} "$@" .
+                ${DEFAULT_TAG} "$@" .
 cleanupAndExit $?
