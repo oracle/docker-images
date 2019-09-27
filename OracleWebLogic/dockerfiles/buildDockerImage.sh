@@ -4,9 +4,9 @@
 # Author: bruno.borges@oracle.com
 # Description: script to build a Docker image for WebLogic
 #
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
 usage() {
