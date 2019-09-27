@@ -117,12 +117,12 @@ You can override the default values of the following parameters during runtime i
 
   Start a container to launch the Administration Server and Managed Servers from the image created in step 1. To facilitate setting the environment variables defined in the `./properties/domain.properties' file, we provide scripts `./container-scripts/setEnv.sh`, `./run_admin_server.sh`, and `./run_managed_server.sh'.
 
-        `$ docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${DOMAIN_HOST_VOLUME}:/u01/oracle/user_projects/domains ${ENV_ARG} container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4`
+        `$ docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${DOMAIN_HOST_VOLUME}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.4`
 
 
   To run a Managed Server, call:
 
-        `$ docker run -d -p 9802:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname}  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 startManagedServer.sh`
+        `$ docker run -d -p 9802:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname}  oracle/fmw-infrastructure:12.2.1.4 startManagedServer.sh`
 
   Access the WLS Administration Console:
 
