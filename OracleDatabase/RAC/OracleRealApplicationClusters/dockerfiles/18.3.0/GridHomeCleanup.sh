@@ -12,7 +12,9 @@
 
 # Image Cleanup Script
 
-source /home/grid/.bashrc
+source /home/${GRID_USER}/.bashrc
+
+ORACLE_HOME=${GRID_HOME}
 
 rm -rf /u01/app/grid/*
 rm -rf $GRID_HOME/log

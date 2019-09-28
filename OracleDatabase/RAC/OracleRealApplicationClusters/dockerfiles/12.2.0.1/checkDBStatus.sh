@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -18,6 +18,9 @@ source /etc/rac_env_vars
 fi
 
 source $SCRIPT_DIR/functions.sh
+export ORACLE_HOME=$DB_HOME
+export PATH=$ORACLE_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib
 
 sid=$1
 

@@ -16,10 +16,12 @@ declare -r TRUE=0
 DNS_SERVER_FLAG='false'   # set this variable to true if you have DNS server. Then , it is not required to populate the /etc/hosts.
 declare -r ETCHOSTS="/etc/hosts"  #
 declare -r ETCFSTAB="/etc/fstab"
-declare -r GRID_USER='grid'               ## Default user for grid installation
+declare -x GRID_USER='grid'               ## Default user for grid installation
 declare -r ASMADMIN_GROUP='asmadmin'      ## Default group for Grid.
 declare -x PUBLIC_IP                      ## Computed based on Node name.
 declare -x PUBLIC_HOSTNAME                ## PUBLIC HOSTNAME set based on hostname
+declare -x NTPD_START='false'
+declare -x RESOLV_CONF_FILE='/etc/resolv.conf'
 
 progname="$(basename $0)"
 ######################## Variable and Constant declaration ends here ######
@@ -169,6 +171,44 @@ fi
 #fi
 }
 
+###################################### Setup Resolve.conf ###########################################################
+setupResolvconf ()
+{
+local stat
+local count=1
+local temp_str
+
+   if  [ ! -z "${DNS_SERVERS}" ]; then
+        print_message "Preapring Dns Servers list"
+        IFS=', ' read -r -a dns_servers <<< "$DNS_SERVERS"
+        local arr_dns=${#dns_servers[@]}
+        echo "search ${DOMAIN}" > ${RESOLV_CONF_FILE}
+#       sed -i '/127.0.0.11/d' ${RESOLV_CONF_FILE}
+        if [ $arr_dns -ne 0 ]; then
+                for dns in "${dns_servers[@]}"
+                do
+                print_message "Setting DNS Servers"
+                if grep -Fxq "${dns}" ${RESOLV_CONF_FILE}
+                then
+                   print_message "nameserver ${dns} exist in ${RESOLV_CONF_FILE}. No need to modify the ${RESOLV_CONF_FILE}."
+		else
+                   print_message "Adding nameserver ${dns} in ${RESOLV_CONF_FILE}."
+                   echo  "nameserver ${dns}" >> ${RESOLV_CONF_FILE}
+		fi 
+               done
+        fi
+else
+       print_message  "DNS_SERVERS is set to empty. /etc/resolv.conf will use default dns docker embedded server."
+fi
+
+}
+####################################### Start NTPD ###################################################################
+startNTPD()
+{
+if [ "${NTPD_START}" != 'false' ]; then
+systemctl start ntpd
+fi 
+}
 ####################################### ETC Host Function #############################################################
 checkHostName ()
 {
@@ -269,12 +309,16 @@ fi
 
 ########
 print_message "Process id of the program : $TOP_ID"
+##### start ntpd #######
+startNTPD
 pre_grid_deploy_steps
 checkHostName
 SetupEtcHosts
 ######### ASM Device Setup ########
 build_block_device_list
 build_gimr_block_device_list
+####### Setup /etc/resolv.conf ######
+setupResolvconf
 print_message "#####################################################################"
 print_message " RAC setup will begin in 2 minutes                                   "
 print_message "####################################################################"

@@ -12,7 +12,8 @@
 
 # Image Cleanup Script
 
-source /home/oracle/.bashrc
+source /home/${DB_USER}/.bashrc
+ORACLE_HOME=${DB_HOME}
 
 rm -rf $ORACLE_HOME/bin/extjob
 rm -rf $ORACLE_HOME/PAF

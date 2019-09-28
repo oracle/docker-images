@@ -22,7 +22,7 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 ./buildDockerImage.sh -v (Software Version)
 ./buildDockerImage.sh -v 19.3.0
 ```
-For detailed usage of command, please execute folowing command:
+For detailed usage of command, please execute following command:
 ```
 ./buildDockerImage.sh -h
 ```

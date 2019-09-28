@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
@@ -19,22 +19,21 @@ mkdir -p $GRID_HOME
 groupadd -g 54334 asmadmin
 groupadd -g 54335 asmdba
 groupadd -g 54336 asmoper
-useradd -u 54332 -g oinstall -G oinstall,asmadmin,asmdba,asmoper,racdba,dba  grid
+useradd -u 54332 -g oinstall -G oinstall,asmadmin,asmdba,asmoper,racdba,dba  ${GRID_USER}
 
-chown -R grid:oinstall $GRID_BASE
-chown -R grid:oinstall $GRID_HOME
+chown -R ${GRID_USER}:oinstall $GRID_BASE
+chown -R ${GRID_USER}:oinstall $GRID_HOME
 mkdir -p $INVENTORY
-chown -R grid:oinstall $INVENTORY
+chown -R ${GRID_USER}:oinstall $INVENTORY
 
 chmod 666 /etc/sudoers
-echo "oracle       ALL=(ALL)       NOPASSWD: /usr/bin/passwd" >> /etc/sudoers
-echo "grid       ALL=(ALL)       NOPASSWD:  ALL" >> /etc/sudoers
+echo "${DB_USER}       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+echo "${GRID_USER}       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
-echo "export ORACLE_HOME=$GRID_HOME" >> /home/grid/.bashrc
-echo "export PATH=$GRID_PATH" >> /home/grid/.bashrc
-echo "export LD_LIBRARY_PATH=$GRID_LD_LIBRARY_PATH" >> /home/grid/.bashrc
-echo "export SCRIPT_DIR=$SCRIPT_DIR" >> /home/grid/.bashrc
-echo "export GRID_HOME=$GRID_HOME" >> /home/grid/.bashrc
-echo "export GRID_BASE=$GRID_BASE" >> /home/grid/.bashrc
-echo "export DB_HOME=$DB_HOME" >> /home/grid/.bashrc
+echo "export PATH=$GRID_PATH" >> /home/${GRID_USER}/.bashrc
+echo "export LD_LIBRARY_PATH=$GRID_LD_LIBRARY_PATH" >> /home/${GRID_USER}/.bashrc
+echo "export SCRIPT_DIR=$SCRIPT_DIR" >> /home/${GRID_USER}/.bashrc
+echo "export GRID_HOME=$GRID_HOME" >> /home/${GRID_USER}/.bashrc
+echo "export GRID_BASE=$GRID_BASE" >> /home/${GRID_USER}/.bashrc
+echo "export DB_HOME=$DB_HOME" >> /home/${GRID_USER}/.bashrc
