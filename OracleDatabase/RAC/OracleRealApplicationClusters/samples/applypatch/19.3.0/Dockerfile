@@ -1,28 +1,28 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for a patched Oracle Database 12c Release 1 Enterprise Edition
+# This is the Dockerfile for a patched Oracle Database 19c Release 3
 # 
 # REQUIREMETNS FOR THIS IMAGE
 # ----------------------------------
-# The oracle/database:12.2.0.1-ee image has to exist
+# The oracle/rac-database:19.3.0 image has to exist
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put the downloaded patch(es) into the sub folders patch/0NN
 # Run: 
-#      $ docker build -f Dockerfile.ee -t oracle/database:12.2.0.1-ee-<patch level> . 
+#      $ docker build -f Dockerfile -t oracle/rac-database:19.3.0-<patch level> . 
 #
 # Pull base image
 # ---------------
-FROM oracle/database-rac-patch:19.3.0
+FROM oracle/rac-database:19.3.0
 
 # Maintainer
 # ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+MAINTAINER Paramdeep Saini  <paramdeep.saini@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------

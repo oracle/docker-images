@@ -1,28 +1,25 @@
 #!/bin/bash
-# 
-# Since: January, 2017
-# Author: gerald.venzl@oracle.com
-# Description: Shell script for applying patches to Oracle Database Docker images.
-# 
+# LICENSE UPL 1.0
+#
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+#
+# Since: January, 2018
+# Author: paramdeep.saini@oracle.com
+# Description: Sets up the unix environment for DB installation.
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
-# 
+#
 
 usage() {
   cat << EOF
 
-Usage: ./buildPatchedDockerImage.sh -v [version] [-e | -s] -p [patch label]
+Usage: ./buildPatchedDockerImage.sh -v [version] -p [patch label]
 Builds a patched Docker Image for Oracle Database.
   
 Parameters:
    -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
-   -e: creates a patched image based on 'Enterprise Edition'
-   -s: creates a patched image based on 'Standard Edition 2'
    -p: patch label to be used for the tag
-
-* select one edition only: -e or -s
 
 LICENSE UPL 1.0
 

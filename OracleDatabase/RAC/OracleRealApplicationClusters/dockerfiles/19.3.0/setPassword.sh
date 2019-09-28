@@ -27,4 +27,3 @@ sqlplus / as sysdba << EOF
       ALTER USER PDBADMIN IDENTIFIED BY "$ORACLE_PWD";
       exit;
 EOF
-

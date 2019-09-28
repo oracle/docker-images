@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -386,7 +386,7 @@ wait $ssh_pid
 stat=$?
 
 if [ "${stat}" -ne 0 ]; then
-error_exit "ssh setup for Oracle  user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $DB_USER user"
+error_exit "ssh setup for Oracle user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $DB_USER user"
 fi
 }
 

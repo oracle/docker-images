@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: January, 2019
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -34,6 +34,8 @@ cd $PATCH_INSTALL_DIR/${DB_USER}
 for file in `ls -d */`; do
    # Go into sub directory (cd 001)
    cd $file;
+   if [ -f *.zip ]; then
+ 
    # Unzip the actual patch (unzip pNNNNNNN.zip)
    unzip -o *.zip;
    # Go into patch directory (cd NNNNNNN)
@@ -65,6 +67,7 @@ for file in `ls -d */`; do
    # Delete any xml artifacts if present.
    # rm -f *.xml
    # Go back into root directory
+   fi
    cd ../
 done;
 

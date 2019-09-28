@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: January, 2019
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -36,6 +36,7 @@ for file in `ls -d */`; do
    # Go into sub directory (cd 001)
    cd $file;
    # Unzip the actual patch (unzip pNNNNNNN.zip)
+   if [ -f *.zip ]; then
    unzip -o *.zip;
    # Go into patch directory (cd NNNNNNN)
    PATCH_DIR=`ls -l | grep ^d | awk '{ print $9 }'`
@@ -59,13 +60,12 @@ for file in `ls -d */`; do
    if [ $? -ne 0 ]; then
      exit 1
    fi
-
-
    cd ../
    # Clean up patch directory (-f needed because some files 
    # in patch directory may not have write permissions)
    # Delete any xml artifacts if present.
    # Go back into root directory
+   fi
    cd ../
 done;
 

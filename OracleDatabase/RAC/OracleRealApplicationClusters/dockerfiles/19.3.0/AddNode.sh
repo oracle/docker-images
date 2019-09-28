@@ -386,7 +386,7 @@ wait $ssh_pid
 stat=$?
 
 if [ "${stat}" -ne 0 ]; then
-error_exit "ssh setup for Oracle  user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $DB_USER user"
+error_exit "ssh setup for Oracle user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $DB_USER user"
 fi
 }
 

@@ -47,17 +47,13 @@ the patched image:
 
     [oracle@localhost applypatch]# ./buildPatchedDockerImage.sh -h
     
-    Usage: ./buildPatchedDockerImage.sh -v [version] [-e | -s] -p [patch label]
+    Usage: ./buildPatchedDockerImage.sh -v [version] -p [patch label]
     Builds a patched Docker Image for Oracle Database.
     
     Parameters:
        -v: version to build
            Choose one of: 19.3.0
-       -e: creates a patched image based on 'Enterprise Edition'
-       -s: creates a patched image based on 'Standard Edition 2'
        -p: patch label to be used for the tag
-    
-    * select one edition only: -e or -s
     
     LICENSE UPL 1.0
     
