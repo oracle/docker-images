@@ -1,26 +1,29 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 19c
+# This is the Dockerfile for Oracle Database 20c or higher releases
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) db_home.zip
-#     Download Oracle Database 19c Enterprise Edition or Standard Edition 2 for Linux x64
+# (1) goldimage (db_home.zip)
+#     Download Oracle Database 20c (or higher release) Enterprise Edition or Standard Edition 2 for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/database:19.3.0-${EDITION} . 
+#      $ docker build -t oracle/database:${VERSION}-${EDITION} .
 #
 # Pull base image
 # ---------------
 FROM oraclelinux:7-slim as base
+
+ARG MAJOR_VERSION
+ARG GOLDIMAGE_NAME
 
 # Maintainer
 # ----------
@@ -29,9 +32,9 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/19c/dbhome_1 \
+    ORACLE_HOME=/opt/oracle/product/$MAJOR_VERSION.0.0/dbhome_1 \
     INSTALL_DIR=/opt/install \
-    INSTALL_FILE_1="LINUX.X64_193000_db_home.zip" \
+    INSTALL_FILE_1=$GOLDIMAGE_NAME \
     INSTALL_RSP="db_inst.rsp" \
     CONFIG_RSP="dbca.rsp.tmpl" \
     PWD_FILE="setPassword.sh" \
