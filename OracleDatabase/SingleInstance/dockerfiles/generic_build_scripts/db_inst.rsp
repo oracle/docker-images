@@ -18,7 +18,7 @@
 #-------------------------------------------------------------------------------
 # Do not change the following system generated value. 
 #-------------------------------------------------------------------------------
-oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v19.0.0
+oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{MAJOR_VERSION}.0.0
 
 #-------------------------------------------------------------------------------
 # Specify the installation option.
