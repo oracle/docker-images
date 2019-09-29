@@ -156,16 +156,16 @@ MAJOR_VERSION="$(cut -d'.' -f1 <<<"$VERSION")"
 
 DOCKER_BUILD_ARGS=""
 if [ $MAJOR_VERSION -ge 20 ]; then
-  VERSION_DIR="generic_build_scripts"
+  BUILD_DIR="generic_build_scripts"
   DOCKER_BUILD_ARGS="--build-arg MAJOR_VERSION=${MAJOR_VERSION}"
   DOCKER_BUILD_ARGS="$DOCKER_BUILD_ARGS --build-arg GOLDIMAGE_NAME=${GOLDIMAGE_NAME}"
-  sed -i "s/{MAJOR_VERSION}/${MAJOR_VERSION}/g" ${VERSION_DIR}/db*.rsp*
+  sed -i "s/{MAJOR_VERSION}/${MAJOR_VERSION}/g" ${BUILD_DIR}/db*.rsp*
 else
-  VERSION_DIR=$VERSION
+  BUILD_DIR=$VERSION
 fi
 
-cd "$VERSION" || {
-  echo "Could not find version directory '$VERSION'";
+cd "$BUILD_DIR" || {
+  echo "Could not find build directory '$BUILD_DIR'";
   exit 1;
 }
 
