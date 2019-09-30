@@ -41,10 +41,18 @@ EOF
 checksumPackages() {
   if hash md5sum 2>/dev/null; then
     echo "Checking if required packages are present and valid..."   
-    if ! md5sum -c "Checksum.$EDITION"; then
-      echo "MD5 for required packages to build this image did not match!"
-      echo "Make sure to download missing files in folder $VERSION."
-      exit 1;
+    if [ "$BUILD_DIR" == "generic_build_scripts" ]; then
+      if ! grep "$GOLDIMAGE_NAME" Checksum | md5sum -c; then
+        echo "MD5 for required packages to build this image did not match!"
+        echo "Make sure to download missing files ($GOLDIMAGE_NAME) in folder ${BUILD_DIR}."
+        exit 1;
+      fi
+    else
+      if ! md5sum -c "Checksum.$EDITION"; then
+        echo "MD5 for required packages to build this image did not match!"
+        echo "Make sure to download missing files in folder ${BUILD_DIR}."
+        exit 1;
+      fi
     fi
   else
     echo "Ignored MD5 sum, 'md5sum' command not available.";
