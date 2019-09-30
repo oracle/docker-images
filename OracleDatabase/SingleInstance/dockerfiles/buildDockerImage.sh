@@ -17,9 +17,8 @@ Builds a Docker Image for Oracle Database.
   
 Parameters:
    -v: version to build
-       Choose one of: $(for i in $(ls -d */ | grep -v [A-Za-z]); do echo -n "${i%%/}  "; done)
-                                      OR
-       For 20c or higher releases: 20.x.0 21.x.0 ... where x is the quarterly release update version
+       For 19c or lower releases : $(for i in $(ls -d */ | grep -v [A-Za-z]); do echo -n "${i%%/}  "; done)
+       For 20c or higher releases: 20.x.0  21.x.0  ... where x is the quarterly release update version
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
@@ -163,6 +162,7 @@ IMAGE_NAME="oracle/database:$VERSION-$EDITION"
 # Go into version folder
 MAJOR_VERSION="$(cut -d'.' -f1 <<<"$VERSION")"
 
+# Checking if goldimage name is passed for 20 or higher versions
 if [ $MAJOR_VERSION -ge 20 ]; then
   if [ -z "$GOLDIMAGE_NAME" ]; then
     echo "Passing goldimage name (using -n flag) is mandatory for 20 or higher database releases."
@@ -176,6 +176,9 @@ if [ $MAJOR_VERSION -ge 20 ]; then
   BUILD_DIR="generic_build_scripts"
   DOCKER_BUILD_ARGS="--build-arg MAJOR_VERSION=${MAJOR_VERSION}"
   DOCKER_BUILD_ARGS="$DOCKER_BUILD_ARGS --build-arg GOLDIMAGE_NAME=${GOLDIMAGE_NAME}"
+  # taking backup of rsp files before updating them for reusability
+  cp ${BUILD_DIR}/db_inst.rsp ${BUILD_DIR}/bak.db_inst.rsp
+  cp ${BUILD_DIR}/dbca.rsp.tmpl ${BUILD_DIR}/bak.dbca.rsp.tmpl
   sed -i "s/{MAJOR_VERSION}/${MAJOR_VERSION}/g" ${BUILD_DIR}/db*.rsp*
 else
   BUILD_DIR=$VERSION
@@ -242,6 +245,12 @@ BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
 echo ""
+
+# replacing the modified rsp files with the original backup files
+if [ $MAJOR_VERSION -ge 20 ]; then
+  mv bak.db_inst.rsp db_inst.rsp
+  mv bak.dbca.rsp.tmpl dbca.rsp.tmpl
+fi
 
 cat << EOF
   Oracle Database Docker Image for '$EDITION' version $VERSION is ready to be extended: 
