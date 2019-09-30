@@ -4,7 +4,7 @@
 # Author: bruno.borges@oracle.com
 # Description: script to build a Docker image for WebLogic
 #
-#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-d | -g | -m ] [-s] [-c]
+Usage: buildDockerImage.sh -v [version] [-d | -g | -m ] [-j] [-s] [-c]
 Builds a Docker Image for Oracle WebLogic.
 
 Parameters:
@@ -20,11 +20,12 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
+   -j: creates a 14.1.1.0 image based on 'JDK 8 or 11' 
    -m: creates image based on 'slim' distribution
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
 
-* select one distribution only: -d, -g, or -m
+* select one distribution only: -d, -g, -j, or -m
 
 LICENSE UPL 1.0
 
@@ -52,30 +53,41 @@ DEVELOPER=0
 GENERIC=0
 SLIM=0
 VERSION="12.2.1.4"
+JDKVER=8
 SKIPMD5=0
 NOCACHE=true
-while getopts "hcsdgmiv:" optname; do
+while getopts "hsdgmc:j:v:" optname; do
   case "$optname" in
     "h")
       usage
       ;;
     "s")
       SKIPMD5=1
+      echo "Set- Skip md5sum"
       ;;
     "d")
       DEVELOPER=1
+      echo "Set- Distribution:Developer"
       ;;
     "g")
       GENERIC=1
+      echo "Set- Distribution:Generic"
+      ;;
+    "j")
+      JDKVER="$OPTARG"
+      echo "Set- JDK Version $JDKVER"
       ;;
     "m")
       SLIM=1
+      echo "Set- Distribution:Slim"
       ;;
     "v")
       VERSION="$OPTARG"
+      echo "Set- WebLogic's Version $VERSION"
       ;;
     "c")
       NOCACHE=false
+      echo "Set- NOCACHE to false"
       ;;
     *)
     # Should not occur
@@ -98,8 +110,15 @@ else
   exit 1
 fi
 
+# Which JDK FOR VERSION 14.1.1.0
+if [ "$VERSION" == "14.1.1.0" ]; then
+   DIST="$DISTRIBUTION-$JDKVER"
+   echo "Version= $VERSION Distribution= $DIST"
+fi
+
+
 # WebLogic Image Name
-IMAGE_NAME="oracle/weblogic:$VERSION-$DISTRIBUTION"
+IMAGE_NAME="oracle/weblogic:$VERSION-$DIST"
 
 # Go into version folder
 cd $VERSION
@@ -141,7 +160,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$DISTRIBUTION . || {
+docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile.$DIST . || {
   echo "There was an error building the image."
   exit 1
 }
@@ -152,7 +171,7 @@ echo ""
 
 if [ $? -eq 0 ]; then
 cat << EOF
-  WebLogic Docker Image for '$DISTRIBUTION' version $VERSION is ready to be extended:
+  WebLogic Docker Image for '$DIST' version $VERSION is ready to be extended:
 
     --> $IMAGE_NAME
 
