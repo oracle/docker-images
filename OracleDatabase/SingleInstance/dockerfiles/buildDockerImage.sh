@@ -17,12 +17,13 @@ Builds a Docker Image for Oracle Database.
   
 Parameters:
    -v: version to build
-       Choose one of: $(for i in $(ls -d */ | grep -v [A-Za-z]); do echo -n "${i%%/}  "; done)OR
+       Choose one of: $(for i in $(ls -d */ | grep -v [A-Za-z]); do echo -n "${i%%/}  "; done)
+                                      OR
        For 20c or higher releases: 20.x.0 21.x.0 ... where x is the quarterly release update version
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
-   -n: goldimage_name (for 20c and higher releases)
+   -n: goldimage_name (mandatory for 20c and higher releases)
    -i: ignores the MD5 checksums
    -o: passes on Docker build option
 
@@ -153,6 +154,14 @@ IMAGE_NAME="oracle/database:$VERSION-$EDITION"
 
 # Go into version folder
 MAJOR_VERSION="$(cut -d'.' -f1 <<<"$VERSION")"
+
+if [ $MAJOR_VERSION -ge 20 ]; then
+  if [ -z "$GOLDIMAGE_NAME" ]; then
+    echo "Passing goldimage name (using -n flag) is mandatory for 20 or higher database releases."
+    usage;
+    exit 1;
+  fi
+fi
 
 DOCKER_BUILD_ARGS=""
 if [ $MAJOR_VERSION -ge 20 ]; then
