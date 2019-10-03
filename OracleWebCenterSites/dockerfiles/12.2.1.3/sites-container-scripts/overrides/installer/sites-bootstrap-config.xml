@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CSINSTALL SYSTEM "sites-bootstrap.dtd">
+<CSINSTALL TITLE="Content Server" FIRSTPACKAGE="FirstPackage">
+	<IDENT PRODUCTNAME="ContentServer" EXTERNALNAME="Content Server" EXTERNALVERSION="12.1.4.0.0" VERSION="12.1.4.0.0"></IDENT>
+	<PACKAGE NAME="FirstPackage">
+		<DIALOG TITLE="Warning" NOTVISIBLE="true">
+			<IF COND="Variables.oracle.wcsites.install.type!=cluster">
+				<THEN>
+					<DIALOGACTION>
+						<ADDACTIONLIST NAME="SetConfigurationProperties"/>
+						<ADDACTIONLIST NAME="ConfigurePropertyFiles"/>
+					</DIALOGACTION>
+				</THEN>
+			</IF>
+		</DIALOG>
+	</PACKAGE>
+	
+	
+	<ACTIONLIST NAME="SetConfigurationProperties">
+		
+		<!-- Tokenize values in commons-logging.properties-->
+		<!-- FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.node.config/commons-logging.properties"
+			VAR="@install_home@" VALUE="Variables.oracle.wcsites.home" /-->
+
+		<!-- Tokenize values related to CAS -->
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@cas_internal_host@" VALUE="Variables.oracle.wcsites.cas.hostnameLocal" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@cas_internal_port@" VALUE="Variables.oracle.wcsites.cas.portnumberLocal" />
+
+		<IF COND="Variables.oracle.wcsites.management=false">
+			<THEN>
+				<!-- For delivery/production Sites, property to enableinsite in wcs_properties.json should be set to false -->
+				<SETSTORE PROPERTY="xcelerate.enableinsite" VALUE="false" />
+				<SETSTORE PROPERTY="advancedUI.enableAssetForms" VALUE="true"/>
+			</THEN>
+			<ELSE>
+				<!-- any development property -->
+				<SETSTORE PROPERTY="advancedUI.enableAssetForms" VALUE="false"/>
+			</ELSE>
+		</IF>
+		<!-- Replace new tokens with actual values in wcs_properties.json-->
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.app.protocol@" VALUE="Variables.oracle.wcsites.protocol" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.shared@" VALUE="Variables.oracle.wcsites.shared" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.config@" VALUE="Variables.oracle.wcsites.config" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="/@wcsites.app.contextroot@/" VALUE="Variables.oracle.wcsites.contextpath" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.home@" VALUE="Variables.oracle.wcsites.home" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.deploypath@" VALUE="Variables.oracle.wcsites.appserver.deploypath" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.app.host@" VALUE="Variables.oracle.wcsites.hostname" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.app.port@" VALUE="Variables.oracle.wcsites.portnumber" />
+		<!--We need to set "port" key explicitly as its been used during application start-up. It has initial value as 80 which should be replaced with actual value.-->
+		<SETSTORE PROPERTY="port" VALUE="Variables.oracle.wcsites.portnumber"/>	
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.analytics.url@" VALUE="http://localhost:8080" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.system.admin.user@" VALUE="Variables.oracle.wcsites.system.admin.user" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.system.admin.password@" VALUE="Variables.oracle.wcsites.system.admin.password" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.app.admin.user@" VALUE="Variables.oracle.wcsites.app.user" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.app.admin.password@" VALUE="Variables.oracle.wcsites.app.password" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.satelliteserver.username@" VALUE="Variables.oracle.wcsites.satellite.user" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.satelliteserver.password@" VALUE="Variables.oracle.wcsites.satellite.password" />	
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.database.datasource@" VALUE="Variables.oracle.wcsites.database.datasource" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.cas.host@" VALUE="Variables.oracle.wcsites.cas.hostname" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+			VAR="@wcsites.cas.port@" VALUE="Variables.oracle.wcsites.cas.portnumber" />
+		<!-- Setting wcsites.database.connectionpicture depending on application server selection. -->
+		<IF COND="Variables.oracle.wcsites.appserver.type=tomcat5">
+			<THEN>
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.database.connectionpicture@" VALUE="java:comp/env/$dsn" />
+			</THEN>
+			<ELSE>
+				<IF COND="Variables.oracle.wcsites.appserver.type=wls92">
+					<THEN>
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.database.connectionpicture@" VALUE="$dsn" />
+					</THEN>
+					<ELSE>
+						<!-- This is for oracle.wcsites.appserver.type=websphere60 -->
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.database.connectionpicture@" VALUE="$dsn" />
+					</ELSE>
+				</IF>
+			</ELSE>
+		</IF>
+
+		<!-- Update tokens for DB specific properties-->
+		<IF COND="Variables.oracle.wcsites.database.type=DB2">
+			<THEN>
+				<!-- DB2 stuff -->
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.db.type@" VALUE="DB2" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.smallint@" VALUE="SMALLINT" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.bigint@" VALUE="BIGINT" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.bigtext@" VALUE="LONG VARCHAR" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.blob@" VALUE="BLOB(1073741824)" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.stringpicture@" VALUE="'$string'" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.char@" VALUE="CHAR" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.varchar@" VALUE="VARCHAR" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.datetime@" VALUE="TIMESTAMP" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.double@" VALUE="FLOAT" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.forcelower@" VALUE="true" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.integer@" VALUE="INTEGER" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.maxvarcharsize@" VALUE="4000" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.null@" VALUE="" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.numeric@" VALUE="NUMERIC" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.rename@" VALUE="rename %1 to %2" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.unique@" VALUE="UNIQUE NOT NULL" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.cc.primary@" VALUE="PRIMARY KEY NOT NULL" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@wcsites.concurrent.transport.unpacker@" VALUE="false" />
+				<FILEREPLACEVAR
+					FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+					VAR="@num_parllel_tasks@" VALUE="1" />	
+			</THEN>
+			<ELSE>
+				<IF COND="Variables.oracle.wcsites.database.type=Oracle">
+					<THEN>
+						<!-- Oracle -->
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.db.type@" VALUE="Oracle" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.smallint@" VALUE="NUMBER(5)" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.bigint@" VALUE="NUMBER(38)" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.bigtext@" VALUE="CLOB" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.blob@" VALUE="BLOB" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.stringpicture@" VALUE="'$string'" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.char@" VALUE="CHAR" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.varchar@" VALUE="VARCHAR" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.datetime@" VALUE="TIMESTAMP" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.double@" VALUE="NUMBER(38,10)" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.forcelower@" VALUE="true" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.integer@" VALUE="NUMBER(10)" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.maxvarcharsize@" VALUE="2000" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.null@" VALUE="NULL" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.numeric@" VALUE="NUMBER" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.rename@" VALUE="rename %1 to %2" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.unique@" VALUE="UNIQUE NOT NULL" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.primary@" VALUE="PRIMARY KEY NOT NULL" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.concurrent.transport.unpacker@" VALUE="true" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@num_parllel_tasks@" VALUE="3" />
+					</THEN>
+					<ELSE>
+						<IF COND="Variables.oracle.wcsites.database.type=HSQLDB">
+							<THEN>
+								<!-- HSQLDB -->
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.db.type@" VALUE="HSQLDB" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.smallint@" VALUE="SMALLINT" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.bigint@" VALUE="BIGINT" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.bigtext@" VALUE="LONGVARCHAR" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.blob@" VALUE="LONGVARBINARY" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.stringpicture@" VALUE="'$string'" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.char@" VALUE="CHAR" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.varchar@" VALUE="VARCHAR" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.datetime@" VALUE="TIMESTAMP" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.double@" VALUE="FLOAT" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.forcelower@" VALUE="true" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.integer@" VALUE="INTEGER" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.maxvarcharsize@" VALUE="2147483647" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.null@" VALUE="" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.numeric@" VALUE="NUMERIC" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.rename@" VALUE="ALTER TABLE %1 RENAME TO %2" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.unique@" VALUE="" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.primary@" VALUE="PRIMARY KEY" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.concurrent.transport.unpacker@" VALUE="true" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@num_parllel_tasks@" VALUE="3" />
+							</THEN>
+							<ELSE>
+						<!-- MSSQL -->
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.db.type@" VALUE="SQL Server" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.smallint@" VALUE="SMALLINT" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.bigint@" VALUE="BIGINT" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.bigtext@" VALUE="NTEXT" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.blob@" VALUE="IMAGE" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.stringpicture@" VALUE="N'$string'" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.char@" VALUE="NCHAR" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.varchar@" VALUE="NVARCHAR" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.datetime@" VALUE="DATETIME" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.double@" VALUE="NUMERIC(28,10)" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.forcelower@" VALUE="false" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.integer@" VALUE="INT" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.maxvarcharsize@" VALUE="4000" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.null@" VALUE="NULL" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.numeric@" VALUE="NUMERIC" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.cc.rename@" VALUE="execute sp_rename %1,%2" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.unique@" VALUE="UNIQUE NOT NULL" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+									VAR="@wcsites.cc.primary@" VALUE="PRIMARY KEY NOT NULL" />
+								<FILEREPLACEVAR
+									FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@wcsites.concurrent.transport.unpacker@" VALUE="true" />
+						<FILEREPLACEVAR
+							FILENAME="Variables.oracle.wcsites.config/wcs_properties.json"
+							VAR="@num_parllel_tasks@" VALUE="1" />
+							</ELSE>
+						</IF>
+					</ELSE>
+				</IF>
+			</ELSE>
+		</IF>
+	</ACTIONLIST>
+	<ACTIONLIST NAME="ConfigurePropertyFiles">
+		<FILEREPLACEVAR VAR="@unique_id@" FILENAME="Variables.oracle.wcsites.node.config/host.properties"
+			VALUE="cas-Variables.oracle.wcsites.cas.hostnameActual-1" />
+		<FILEREPLACEVAR VAR="@hostname@"
+			FILENAME="Variables.oracle.wcsites.node.config/deployerConfigContext.xml"
+			VALUE="Variables.oracle.wcsites.hostname" />
+		<FILEREPLACEVAR VAR="@portnumber@"
+			FILENAME="Variables.oracle.wcsites.node.config/deployerConfigContext.xml"
+			VALUE="Variables.oracle.wcsites.portnumber" />	
+		<FILEREPLACEVAR VAR="/@context-path@/"
+			FILENAME="Variables.oracle.wcsites.node.config/deployerConfigContext.xml"
+			VALUE="Variables.oracle.wcsites.contextpath" />
+		<FILEREPLACEVAR VAR="@CSConnectPrefix@"
+			FILENAME="Variables.oracle.wcsites.node.config/deployerConfigContext.xml"
+			VALUE="Variables.oracle.wcsites.protocol" />
+		<FILEREPLACEVAR VAR="127.0.0.1"
+			FILENAME="Variables.oracle.wcsites.node.config/jbossTicketCacheReplicationConfig.xml"
+			VALUE="Variables.oracle.wcsites.cas.hostnameActual" />
+		<FILEREPLACEVAR VAR="@hostname@"
+			FILENAME="Variables.oracle.wcsites.node.config/cas.properties"
+			VALUE="Variables.oracle.wcsites.cas.hostname" />
+		<FILEREPLACEVAR VAR="@portnumber@"
+			FILENAME="Variables.oracle.wcsites.node.config/cas.properties"
+			VALUE="Variables.oracle.wcsites.cas.portnumber" />
+		<FILEREPLACEVAR VAR="@CSConnectPrefix@"
+			FILENAME="Variables.oracle.wcsites.node.config/cas.properties"
+			VALUE="Variables.oracle.wcsites.protocol" />
+		<FILEREPLACEVAR VAR="@CSConnectPrefix@"
+			FILENAME="Variables.oracle.wcsites.node.config/customBeans.xml"
+			VALUE="Variables.oracle.wcsites.protocol" />
+		<FILEREPLACEVAR VAR="@hostname@"
+			FILENAME="Variables.oracle.wcsites.node.config/customBeans.xml"
+			VALUE="Variables.oracle.wcsites.hostname" />
+		<FILEREPLACEVAR VAR="@portnumber@"
+			FILENAME="Variables.oracle.wcsites.node.config/customBeans.xml"
+			VALUE="Variables.oracle.wcsites.portnumber"/>
+		<FILEREPLACEVAR VAR="/@context-path@/"
+			FILENAME="Variables.oracle.wcsites.node.config/customBeans.xml"
+			VALUE="Variables.oracle.wcsites.contextpath"/>			
+	</ACTIONLIST>
+	<!--ReInit-->
+</CSINSTALL>
+
+			

@@ -1,0 +1,2602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CSINSTALL SYSTEM "sites-bootstrap.dtd">
+<CSINSTALL TITLE="Content Server Applications" FIRSTPACKAGE="UIPage">
+	<IDENT PRODUCTNAME="Content Server Applications" EXTERNALNAME="Content Server Applications" VERSION="falcon" EXTERNALVERSION="12.1.4.0.0" VAR="CSAppsVersion"></IDENT>
+	<PACKAGE NAME="UIPage">
+		<DIALOG TITLE="Warning" NOTVISIBLE="true">
+			<DIALOGACTION>
+				<!--<ADDACTIONLIST NAME="VerifyCoreInstallation"/>-->
+				<ADDACTIONLIST NAME="CreateSharedSkeleton" />
+				<ADDACTIONLIST NAME="InstallationElementsServer" />
+				<ADDACTIONLIST NAME="RegisterAssetListener" />
+				<!-- systemtools -->
+				<ADDACTIONLIST NAME="ImportSystemToolsCatalog" />
+				<ADDACTIONLIST NAME="ImportSitesTimeZoneCatalog"/>
+				<ADDACTIONLIST NAME="CCGeneralTableInstallServer" />
+				<ADDACTIONLIST NAME="UPGRADINGSCHEMA" />
+				<!-- CGIntegration: Only SLS is imported by default with Sites. Other files will be installed during CGInstallation -->
+				<ADDACTIONLIST NAME="PopulateCgIntegrationCore"/>
+				<ADDACTIONLIST NAME="ImportCGIntegration"/>
+				<ADDACTIONLIST NAME="InstallDojoTree"/>
+			</DIALOGACTION>
+			
+			<IF COND="Variables.oracle.wcsites.delivery=true">
+				<THEN>
+				   <DIALOGACTION>
+						<ADDACTIONLIST NAME="DeliveryElements" />
+						<!-- Currently SLS html -->
+						<ADDACTIONLIST NAME="Import_UI_files" />
+					</DIALOGACTION>
+				</THEN>
+			</IF>
+			
+			<IF COND="Variables.oracle.wcsites.management=true">
+				<THEN>
+					<DIALOGACTION>
+						<ADDACTIONLIST NAME="CCAddTreeTabs" />
+						<ADDACTIONLIST NAME="CCStandardAssetAssociations" />
+						<ADDACTIONLIST NAME="Import121AnalyticsElement" />
+						<ADDACTIONLIST NAME="UIElements" />
+					</DIALOGACTION>
+				</THEN>
+			</IF>
+
+			<DIALOGACTION>
+				<ADDACTIONLIST NAME="CatCVerifyJars" />
+				<ADDACTIONLIST  NAME="CatCGeneralTableInstallServer" />
+				<ADDACTIONLIST NAME="InstallConversion" />
+				<ADDACTIONLIST NAME="INSTALLMOBILITY" />
+				<ADDACTIONLIST NAME="InstallContentQuery" />
+				<ADDACTIONLIST NAME="InstallWebRoot" />
+				<ADDACTIONLIST NAME="InstallABTest" />
+				<ADDACTIONLIST NAME="InstallWCS_Controller" />
+				<ADDACTIONLIST NAME="InstallChart" />
+				<ADDACTIONLIST NAME="InstallDashboard" />
+				<ADDACTIONLIST NAME="InstallEvent" />
+                <ADDACTIONLIST NAME="InstallVisitorsAggregationTemplates" />
+				<ADDACTIONLIST NAME="InstallVisitorsProfileProviders" />
+				<ADDACTIONLIST NAME="InstallVisitorsAccessProviders" />
+				<ADDACTIONLIST NAME="InstallVisitorsIdentityProviders" />
+				<ADDACTIONLIST NAME="InstallVisitorsConfig" />
+				<ADDACTIONLIST NAME="InstallVisitorsTree" />
+				<ADDACTIONLIST NAME="PopulateSitesHome_Visitors"/>
+                <ADDACTIONLIST NAME="ImportVisitorsAssets"/>
+				<ADDACTIONLIST NAME="MSGeneralTableInstall" />
+				<ADDACTIONLIST NAME="InstallSiteCapture" />
+				<ADDACTIONLIST NAME="InstallBlogComponentOnSites" />
+				<ADDACTIONLIST NAME="InstallEloquaIntegrationElements" />
+				<ADDACTIONLIST NAME="InstallContentCloudIntegrationElements" />
+				<ADDACTIONLIST NAME="InstallBluekaiElements" />
+			</DIALOGACTION>
+				
+			<IF COND="Variables.oracle.wcsites.management=true">
+				<THEN>
+					<DIALOGACTION>
+						<ADDACTIONLIST NAME="MSAddTreeTabs" />
+					</DIALOGACTION>
+				</THEN>
+			</IF>
+
+			<DIALOGACTION>
+				<ADDACTIONLIST
+							NAME="AddAssetTypeProperties" />
+				<ADDACTIONLIST NAME="RemoveInstallationElements" />
+			</DIALOGACTION>
+		</DIALOG>
+	</PACKAGE>
+	
+	<!-- Install Blog Schemas as part of Sites Installation -->
+	<ACTIONLIST NAME="InstallBlogComponentOnSites">
+		<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Blog Schema: Installing custom asset : Blog flex family"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing Blog Schema Blog flex family"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/FlexibleAssets/makeasset"/>
+					<ARGUMENT NAME="defdirBase" VALUE="Variables.oracle.wcsites.shared/Storage"/>
+					
+					<ARGUMENT NAME="PluralAttr" VALUE="Blog Attributes"/>
+					<ARGUMENT NAME="DescAttr" VALUE="Blog Attribute"/>
+					<ARGUMENT NAME="Attr" VALUE="FW_BlogAttribute"/>
+					
+					<ARGUMENT NAME="PluralPGT" VALUE="Blog Category Definitions"/>
+					<ARGUMENT NAME="DescPGT" VALUE="Blog Category Definition"/>
+					<ARGUMENT NAME="PGT" VALUE="FW_BlogParentDef"/>
+					
+					<ARGUMENT NAME="PluralPT" VALUE="Blog Asset Definitions"/>
+					<ARGUMENT NAME="DescPT" VALUE="Blog Asset Definition"/>
+					<ARGUMENT NAME="PT" VALUE="FW_BlogAssetDef"/>
+					
+					<ARGUMENT NAME="PluralGroup" VALUE="Blog Categories"/>
+					<ARGUMENT NAME="DescGroup" VALUE="Blog Category"/>
+					<ARGUMENT NAME="Group" VALUE="FW_BlogParent"/>
+					
+					<ARGUMENT NAME="PluralProd" VALUE="Blog Assets"/>
+					<ARGUMENT NAME="DescProd" VALUE="Blog Asset"/>
+					<ARGUMENT NAME="Prod" VALUE="FW_BlogAsset"/>
+					
+					<ARGUMENT NAME="PluralFilt" VALUE="Blog Filters"/>
+					<ARGUMENT NAME="DescFilt" VALUE="Blog Filter"/>
+					<ARGUMENT NAME="Filt" VALUE="FW_BlogFilter"/>
+					
+			</EXECUTECOMMAND>
+				
+			<EXECUTECOMMAND NAME="READURL">
+				<ARGUMENT NAME="DISPLAYTEXT" VALUE="Blog Schema: Installing custom asset : Blog flex family"/>
+				<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing Blog Schema Blog flex family"/>
+				<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+				<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+				<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+				<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+				<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+				<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/FlexibleAssets/makeasset"/>
+				<ARGUMENT NAME="defdirBase" VALUE="Variables.oracle.wcsites.shared/Storage"/>
+				
+				<ARGUMENT NAME="PluralAttr" VALUE="Blog Attributes"/>
+				<ARGUMENT NAME="DescAttr" VALUE="Blog Attribute"/>
+				<ARGUMENT NAME="Attr" VALUE="FW_BlogAttribute"/>
+				
+				<ARGUMENT NAME="PluralPGT" VALUE="Blog Author Category Definitions"/>
+				<ARGUMENT NAME="DescPGT" VALUE="Blog Author Category Definition"/>
+				<ARGUMENT NAME="PGT" VALUE="FW_BlogAuthorParentDef"/>
+				
+				<ARGUMENT NAME="PluralPT" VALUE="Blog Author Definitions"/>
+				<ARGUMENT NAME="DescPT" VALUE="Blog Author Definition"/>
+				<ARGUMENT NAME="PT" VALUE="FW_BlogAuthorDef"/>
+				
+				<ARGUMENT NAME="PluralGroup" VALUE="Blog Author Categories"/>
+				<ARGUMENT NAME="DescGroup" VALUE="Blog Author Category"/>
+				<ARGUMENT NAME="Group" VALUE="FW_BlogAuthorParent"/>
+				
+				<ARGUMENT NAME="PluralProd" VALUE="Blog Authors"/>
+				<ARGUMENT NAME="DescProd" VALUE="Blog Author"/>
+				<ARGUMENT NAME="Prod" VALUE="FW_BlogAuthor"/>
+				
+				<ARGUMENT NAME="PluralFilt" VALUE="Blog Filters"/>
+				<ARGUMENT NAME="DescFilt" VALUE="Blog Filter"/>
+				<ARGUMENT NAME="Filt" VALUE="FW_BlogFilter"/>
+				
+			</EXECUTECOMMAND>
+			<EXECUTECOMMAND NAME="IMPORTCATALOG">
+				<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/blogs/AssetType/core" />
+				<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+				<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+				<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+				<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+				<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Blog Core AssetTypes" />
+				<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/blogs/AssetType/core" />
+			</EXECUTECOMMAND>
+			<EXECUTECOMMAND NAME="IMPORTCATALOG">
+				<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/blogs/Filters.html" />
+				<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+				<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+				<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+				<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+				<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Blog Filters" />
+				<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/blogs/Filters.html" />
+			</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="Import121AnalyticsElement">
+		<!-- Import the 121 catalogs catalogs -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/121analytics" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing 121 Analytics elements" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<!-- This action list is added to take of the varification of the core installation 
+		As changing the flow causes it-->
+	<!-- This is coomented in install.xml BootStrap
+	<ACTIONLIST NAME="VerifyCoreInstallation">
+		<EXECUTECOMMAND NAME="InitSystemServer">
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentServer Installation Elements" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="FILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/install/cscore.xml" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	-->
+	<ACTIONLIST NAME="InstallationElementsServer">
+		<!-- It may need core installation elements -->
+		<!-- Import the Installation catalogs -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Installation" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Xcelerate Installation Elements" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/gator/Installation" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Gator Installation Elements" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="ImportSystemToolsCatalog">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/systemtools" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Systemtools elements" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="ImportSitesTimeZoneCatalog">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG" >
+		   <ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/sites-timezone" />
+		   <ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+		   <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+		   <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+		   <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+		   <ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ElementCatalog and SiteCatalog.html" />
+		   <ARGUMENT NAME="INCLUDEFILES" VALUE="ElementCatalog.html:SiteCatalog.html" />
+		   <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/sites-timezone" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	
+	<ACTIONLIST NAME="AddAssetTypeProperties">
+		<!-- Populate properties field in the AssetType table -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddAssetTypeProperties"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Populating properties field to ASsetType table"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Populating properties field to ASsetType table"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<!-- Remove the installation element -->
+	<ACTIONLIST NAME="RemoveInstallationElements">
+		<!--Clean up csdt files/folders-->
+		<DELETEDIRECTORY SOURCE="Variables.oracle.wcsites.config/export/envision/cg-integration-core" DELETEFOLDER="TRUE" IGNOREERRORS="TRUE"/>
+		<DELETEDIRECTORY SOURCE="Variables.oracle.wcsites.config/export/envision/visitors" DELETEFOLDER="TRUE" IGNOREERRORS="TRUE"/>		
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="RegisterAssetListener">
+		<IF COND="Variables.oracle.wcsites.install.type!=upgrade">
+			<THEN>
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddEventManager" />
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering Asset Event Listener" />
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering Asset Event Listener!" />
+					<ARGUMENT NAME="command" VALUE="RegisterEventManager" />
+				</EXECUTECOMMAND>
+			</THEN>
+		</IF>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="RegisterChartsTreeTabs">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Charts TreeTabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Items.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Charts TreeTabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Items.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Roles.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Charts TreeTabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Roles.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sect.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Charts TreeTabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sect.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sect_Roles.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Charts TreeTabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sect_Roles.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sect_Sites.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Charts TreeTabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sect_Sites.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sites.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Charts TreeTabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/TreeTabs_Sites.html" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallEloquaIntegrationElements">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/ElementCatalog.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/ElementCatalog.html" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/SiteCatalog.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/SiteCatalog.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/SystemLocaleString.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/opatch/installer-elements/EloquaIntegration/SystemLocaleString.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/AssetType/AssetType.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements//EloquaIntegration/AssetType/AssetType.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Items.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Items.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Roles.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Roles.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sect.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sect.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sect_Roles.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sect_Roles.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sect_Sites.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sect_Sites.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sites.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/TreeTabs/TreeTabs_Sites.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/Tables/EloquaForm.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/Tables/EloquaForm.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/Tables/EloquaInstallations.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/Tables/EloquaInstallations.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/Tables/EloquaInstances.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/Tables/EloquaInstances.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/SystemInfo.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Eloqua-integration Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/EloquaIntegration/SystemInfo.html" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+    <ACTIONLIST NAME="InstallContentCloudIntegrationElements">
+        <EXECUTECOMMAND NAME="IMPORTCATALOG">
+            <ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/ElementCatalog.html"/>
+            <ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentCloud-integration Elements" />
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/ElementCatalog.html" />
+        </EXECUTECOMMAND>
+
+        <EXECUTECOMMAND NAME="IMPORTCATALOG">
+            <ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/SiteCatalog.html"/>
+            <ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentCloud-integration Elements" />
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/SiteCatalog.html" />
+        </EXECUTECOMMAND>
+
+        <EXECUTECOMMAND NAME="IMPORTCATALOG">
+            <ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/SystemLocaleString.html"/>
+            <ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentCloud-integration Elements" />
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/opatch/installer-elements/integrations/ContentCloud/SystemLocaleString.html" />
+        </EXECUTECOMMAND>
+
+        <EXECUTECOMMAND NAME="IMPORTCATALOG">
+            <ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/AssetType/AssetType.html"/>
+            <ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentCloud-integration Elements" />
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements//integrations/ContentCloud/AssetType/AssetType.html" />
+        </EXECUTECOMMAND>
+
+
+        <EXECUTECOMMAND NAME="IMPORTCATALOG">
+            <ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/Tables"/>
+            <ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentCloud-integration Elements" />
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/Tables" />
+        </EXECUTECOMMAND>
+
+
+        <EXECUTECOMMAND NAME="IMPORTCATALOG">
+            <ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/SystemInfo.html"/>
+            <ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentCloud-integration Elements" />
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/SystemInfo.html" />
+        </EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/TreeTabs"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Tree tab for ContentCloud-integration " />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/ContentCloud/TreeTabs" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Search/EnableSearchEvent"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enabling the search event and pausing for all assettype"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enabling the search event!"/>
+			<ARGUMENT NAME="toEnable" VALUE="true"/>
+			<ARGUMENT NAME="ENABLETYPETOTAL" VALUE="1"/>
+			<ARGUMENT NAME="ENABLEASSETTYPE0" VALUE="ContentCloud"/>
+			<ARGUMENT NAME="DESCRIPTOR0" VALUE="createdby,TEXT,true,false,100;description,TEXT,false,true,100;enddate,DATETIME,true,false,100;name,TEXT,false,true,100;startdate,DATETIME,true,false,100;updateddate,DATETIME,true,true,100;thumbnail,TEXT,true,true,100;"/>
+			<ARGUMENT NAME="CSInstallType" VALUE="Variables.oracle.wcsites.install.type"/>
+	</EXECUTECOMMAND>
+    </ACTIONLIST>
+
+	<ACTIONLIST NAME="InstallBluekaiElements">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/integrations/bluekai"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Bluekai Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Bluekai Elements" />
+		</EXECUTECOMMAND>		
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="CCVerifyJars">
+		<!-- Check for xcelerate and assetmaker jars -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/VerifyJars" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Verifying CS Direct Jars" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Cannot verify correct CS Direct jar/classpath installation!" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="CatCVerifyJars">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/GatorCheckPath" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Verifying CS Direct Advantage Jars" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Cannot verify correct CS Direct Advantage jar/classpath installation!" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="DeliveryElements">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/csdirect/delivery" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing CS Direct Elements For Production" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/csdirect/delivery" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="Import_UI_files">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ui" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing UI/Populate folder" />
+			<ARGUMENT NAME="INCLUDEFILES" VALUE="SystemLocaleString.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ui" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="CCGeneralTableInstallServer">
+		<!-- Import the system catalogs -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/csdirect" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing CS Direct Elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/csdirect" />
+		</EXECUTECOMMAND>
+
+		<!-- update the mimetype savesearch and PubStore  table -->
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="zamak" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading mimetype table" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Miscellaneous/Upgrade75ToCurrent" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error upgrading various table column size.. mimetype savsearch pubstore etc table" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="zamak" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading SystemSQL deftable column " />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Miscellaneous/UpdateSystemSQL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error upgrading the systemsql deftable coulmn needed for incache " />
+		</EXECUTECOMMAND>
+		
+	    <EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="zamak" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading mimetype table" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Asset/AddRatingTableToAssetType" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error upgrading _Rating tables to all AM asset type table" />
+		</EXECUTECOMMAND>
+		
+	     <EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="zamak" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading mimetype table" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Asset/UpgradeAttributeAssetType" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error upgrading _Subtypes table to all the attribute asset type table" />
+		</EXECUTECOMMAND>
+		
+	     <EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="zamak" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading mimetype table" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Misc/CleanDash" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error cleaning the dash info" />
+		</EXECUTECOMMAND>
+		
+	     <EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="zamak" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading IndexSourceMetaDataConfig table" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/search/Upgrade75xToCurrent" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Upgrading the IndexSourceMetaDataConfig table" />
+		</EXECUTECOMMAND>		
+		
+		<!-- Import xcelerate specific elements import whole folder Variables.oracle.wcsites.home/bootstrap/Xcelerate/Populate -->
+		<!-- it imports so many file here like Source.html,Comparators.html etc look at folder it is importing -->
+		<!-- If the schema changes any of these then it has to be excluded here and imported after schema change -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Xcelerate/Populate folder" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="SystemLocaleString.html:DeliveryType.html:AssocNamed_Subtypes.html:AssocNamed.html:Template.html:SystemInfo.html:CSEvents.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate" />
+		</EXECUTECOMMAND>
+
+		<!-- Call to custom command to install CS- Direct ContentCenter schema -->
+		<EXECUTECOMMAND NAME="CSInstallContentCenterSchema">
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Running the custom command" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="FILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/install/sites-ui-bootstrap.xml" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Running the multiple task check the server log (sites.log)" />
+		</EXECUTECOMMAND>
+
+		<!-- These imports should happen after the above schema install  -->
+		<!-- MUST be after basic table upgrade above -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Xcelerate/Populate folder" />
+			<ARGUMENT NAME="INCLUDEFILES" VALUE="SystemLocaleString.html:DeliveryType.html:SystemInfo.html:CSEvents.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate" />
+		</EXECUTECOMMAND>
+		<!-- Must be AFTER publish table upgrade -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/assetmaker/ElementCatalog.html" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing AssetMaker ElementCatalog Table" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/assetmaker/ElementCatalog.html" />
+		</EXECUTECOMMAND>
+		<!-- Import system default templates, not affiliated with any site -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Template.html" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Default Templates" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Template.html" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/adminforms" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing AdminForms Xcelerate/AdminForms/Populate folder Catalogs" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="adminformimages.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/adminforms" />
+		</EXECUTECOMMAND>
+
+		<!-- End move AdminForms from CS to CC direct -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/DeleteCatalog" />
+			<ARGUMENT NAME="catalog" VALUE="AssetStubElementCatalog" />
+			<ARGUMENT NAME="command" VALUE="deinstall" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Deinstalling AssetStubElementCatalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Deinstalling AssetStubElementCatalog" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/assetmaker/AssetStubElementCatalog.html" />
+			<ARGUMENT NAME="LOCALDATADIRECTORY"	VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/assetmaker/AssetStubElementCatalog" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing AssetMaker ElementCatalog Table" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/assetmaker/AssetStubElementCatalog.html" />
+		</EXECUTECOMMAND>
+
+		<!-- @todo removing system info import  systeminfo for a bunch of tables -->
+
+		<!-- Importing the search elements -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/search" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/Storage/IndexSourceMetaDataConfig" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="AssetListener_reg.html:SearchEngineMetaDataConfig.html" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE=" Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/search" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/search" />
+		</EXECUTECOMMAND>
+		
+		<CREATEDIRECTORY DIRECTORY="Variables.oracle.wcsites.shared/bootstrap/search"/>
+		<COPYFILE
+			SOURCE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/search/SearchEngineMetaDataConfig.html"
+			DESTINATION="Variables.oracle.wcsites.shared/bootstrap/search"
+			DISPLAYTEXT="Copying SearchEngineMetaDataConfig to configure index location" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.shared/bootstrap/search/SearchEngineMetaDataConfig.html"
+			VAR="INSTALLSEARCHSTRING" VALUE="Variables.oracle.wcsites.shared/lucene" />
+
+		<!-- Importing customized IndexSourceMetaDataConfig catalog from Installation folder -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.shared/bootstrap/search" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/Storage/IndexSourceMetaDataConfig" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Variables.oracle.wcsites.shared/bootstrap/search folder Catalogs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.shared/bootstrap/search" />
+		</EXECUTECOMMAND>
+	
+		<IF COND="Variables.oracle.wcsites.management=true">
+			<THEN>
+				<EXECUTECOMMAND NAME="IMPORTCATALOG">
+					<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/search/AssetListener_reg.html" />
+					<ARGUMENT NAME="LOCALDATADIRECTORY" VALUE="Variables.oracle.wcsites.home/Installation/search" />
+					<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing assetlistener_reg" />
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/search/AssetListener_reg.html" />
+				</EXECUTECOMMAND>
+			</THEN>
+		</IF>
+
+		 <EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddIndexToGlobalQueue" />
+			<ARGUMENT NAME="CSInstallDatabaseType" VALUE="Variables.oracle.wcsites.database.type" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Adding index to global queue" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error adding index to global queue" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		 </EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<!-- This actionlist is used for the schema creation and adding acl,users and role for ContentCenter -CS-Direct -->
+	<ACTIONLIST NAME="CSInstallContentCenterSchema">
+		<!-- Create xcelerate acls -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="xceleditor" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="63" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating xceleditor ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating xceleditor ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="xceladmin" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="127" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating xceladmin ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating xceladmin ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="xcelpublish" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="63" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating xcelpublish ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating xcelpublish ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="Visitor" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="63" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating Visitor ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating Visitor ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="VisitorAdmin" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="127" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating VisitorAdmin ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating VisitorAdmin ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="RemoteClient" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="127" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating RemoteClient ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating RemoteClient ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="WSUser" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="1" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating WSUser ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating WSUser ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="WSEditor" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="63" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating WSEditor ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating WSEditor ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddACL" />
+			<ARGUMENT NAME="name" VALUE="WSAdmin" />
+			<ARGUMENT NAME="command" VALUE="addacl" />
+			<ARGUMENT NAME="permission" VALUE="127" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating WSAdmin ACL" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating WSAdmin ACL" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade Basic tables -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Basic/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading User Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Upgrading User Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade Publish tables  -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Publish/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading User Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Upgrading User Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade new User tables-->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/User/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading User Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Upgrading User Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade workflow and email tables (includes CCFunction)-->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Workflow/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading WorkFlow Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error of Upgrading WorkFlow Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade Asset tables (includes complex assets) -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Asset/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="defdirBase"	VALUE="Variables.oracle.wcsites.shared/Storage" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading Asset Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Upgrading Asset Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+		
+		<!-- enable page filter.. page definition and pageattribute asset type -->
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="zamak" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable new page assetypes table" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Asset/EnablePageAssetType" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable new page assetypes table" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade new Site tables-->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Site/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading Site Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Upgrading Site Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade new UIFramework tables-->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/UIFramework/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="defdirBase" VALUE="Variables.oracle.wcsites.shared/Storage" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading UIFramework Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Upgrading UIFramework Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!--Upgrade new Miscellaneous tables; Reinstall Template table so that its auxiliary tables are also created-->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Miscellaneous/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="defdirBase"	VALUE="Variables.oracle.wcsites.shared/Storage" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading Miscellaneous Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error of Upgrading Miscellaneous Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/SiteBuilder/Install" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="defdirBase" VALUE="Variables.oracle.wcsites.shared/Storage" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading SiteBuilder Tables" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error upgrading SiteBuilder Tables" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!-- Add Visitor to defaultreader here!! -->  
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddUser" />
+			<ARGUMENT NAME="name" VALUE="DefaultReader" />
+			<ARGUMENT NAME="command" VALUE="adduser" />
+			<ARGUMENT NAME="passwd" VALUE="SomeReader" />
+			<ARGUMENT NAME="acl" VALUE="Visitor" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="DefaultReader update" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Updating DefaultReader" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<!-- Create required roles and users -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole" />
+			<ARGUMENT NAME="name" VALUE="GeneralAdmin" />
+			<ARGUMENT NAME="command" VALUE="addrole" />
+			<ARGUMENT NAME="description" VALUE="General Administration" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role GeneralAdmin" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role GeneralAdmin" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole" />
+			<ARGUMENT NAME="name" VALUE="WorkflowAdmin" />
+			<ARGUMENT NAME="command" VALUE="addrole" />
+			<ARGUMENT NAME="description" VALUE="Workflow Administration" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role WorkflowAdmin" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role WorkflowAdmin" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole" />
+			<ARGUMENT NAME="name" VALUE="SiteAdmin" />
+			<ARGUMENT NAME="command" VALUE="addrole" />
+			<ARGUMENT NAME="description" VALUE="Site Administration" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role SiteAdmin" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role SiteAdmin" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole" />
+			<ARGUMENT NAME="name" VALUE="AdvancedUser" />
+			<ARGUMENT NAME="command" VALUE="addrole" />
+			<ARGUMENT NAME="description" VALUE="Advanced User" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role AdvancedUser" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role AdvancedUser" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+        <EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole" />
+			<ARGUMENT NAME="name" VALUE="SitesUser" />
+			<ARGUMENT NAME="command" VALUE="addrole" />
+			<ARGUMENT NAME="description" VALUE="Sites User" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role SitesUser" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role SitesUser" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+		
+        <!-- adding the analytics role -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole" />
+			<ARGUMENT NAME="name" VALUE="Analytics" />
+			<ARGUMENT NAME="command" VALUE="addrole" />
+			<ARGUMENT NAME="description" VALUE="Supports analytics" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role analytics" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role analytics" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+        </EXECUTECOMMAND>
+        <!-- Adding ABTest Roles -->
+         <EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole"/>
+			<ARGUMENT NAME="command" VALUE="addrole"/>
+			<ARGUMENT NAME="name" VALUE="MarketingAuthor"/>
+			<ARGUMENT NAME="description" VALUE="MarketingAuthor"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role MarketingAuthor"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role MarketingAuthor"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole"/>
+			<ARGUMENT NAME="command" VALUE="addrole"/>
+			<ARGUMENT NAME="name" VALUE="MarketingEditor"/>
+			<ARGUMENT NAME="description" VALUE="Marketing Editor"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role MarketingEditor"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role MarketingAuthor"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>         
+		 
+		<EXECUTECOMMAND NAME="READURL">
+	             <ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole" />
+	             <ARGUMENT NAME="name" VALUE="Publisher" />
+	             <ARGUMENT NAME="command" VALUE="addrole" />
+	             <ARGUMENT NAME="description" VALUE="Publisher" />
+	             <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+	             <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+	             <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+	             <ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating role Publisher" />
+	             <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating role Publisher" />
+	             <ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+	         </EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddUser" />
+			<ARGUMENT NAME="name" VALUE="Variables.oracle.wcsites.app.user" />
+			<ARGUMENT NAME="command" VALUE="adduser" />
+			<ARGUMENT NAME="passwd"	VALUE="Variables.oracle.wcsites.app.password" />
+			<!--<ARGUMENT NAME="passwd" VALUE="Variables.oracle.wcsites.app.passwordVariables.CSInstallAppPass" />	 -->
+			<ARGUMENT NAME="acl" VALUE="TableEditor,Visitor,VisitorAdmin,UserEditor,UserReader,xceladmin,Browser,xceleditor,xcelpublish,PageEditor,ElementEditor,RemoteClient,WSUser,WSEditor,WSAdmin" />
+			<ARGUMENT NAME="userpub" VALUE="0" />
+			<ARGUMENT NAME="useracls" VALUE="GeneralAdmin,WorkflowAdmin,SiteAdmin,AdvancedUser,SitesUser,Analytics" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering user fwadmin" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error adding user fwadmin" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="CCAddTreeTabs">
+		<!--<EXECUTECOMMAND NAME="READURL" >
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateTreeTabs" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="creating basic tree tabs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating basic tree tabs!" />
+			</EXECUTECOMMAND> -->
+		<READURL
+			URL="Variables.oracle.wcsites.connect.stringContentServer?pagename=OpenMarket/Xcelerate/Installation/CreateTreeTabs"
+			USERNAME="Variables.oracle.wcsites.system.admin.user"
+			PASSWORD="Variables.oracle.wcsites.system.admin.password"
+			HOSTURL="Variables.oracle.wcsites.connect.stringCatalogManager" TEXT="##SUCCESS##"
+			DISPLAYTEXT="Creating basic tree tabs"
+			ERRORMESSAGE="Error creating basic tree tabs" />
+		<!-- Comment  @todo bDoUpgradeFromCC36xTo40 is not used this now to take out later -->
+		<!-- <IF COND="Variables.bDoUpgradeFromCC36xTo40=true">
+			<THEN>
+			<READURL
+			URL="Variables.oracle.wcsites.connect.stringContentServer?pagename=OpenMarket/Xcelerate/Installation/AddSitesToTreeTabs"
+			USERNAME="Variables.oracle.wcsites.system.admin.user"
+			PASSWORD="Variables.oracle.wcsites.system.admin.password"
+			HOSTURL="Variables.oracle.wcsites.connect.stringCatalogManager"
+			TEXT="##SUCCESS##"
+			DISPLAYTEXT="Adding existing sites to basic tree tabs"
+			ERRORMESSAGE="Error adding existing sites to basic tree tabs"
+			/>
+			</THEN>
+			</IF>-->
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="CCStandardAssetAssociations">
+		<!-- Postasset install (add standard asset associations, Query1, !uery2 and Query3 for Collextion) -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/PostAssetInstall" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Adding Collection's Standard Asset Associations" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Adding Collection's Standard Asset Associations!" />
+		</EXECUTECOMMAND>
+		<!-- <READURL
+			URL="Variables.oracle.wcsites.connect.stringContentServer?pagename=OpenMarket/Xcelerate/Installation/PostAssetInstall"
+			USERNAME="Variables.oracle.wcsites.system.admin.user"
+			PASSWORD="Variables.oracle.wcsites.system.admin.password"
+			HOSTURL="Variables.oracle.wcsites.connect.stringCatalogManager"
+			TEXT="##SUCCESS##"
+			DISPLAYTEXT="Adding Collection's Standard Asset Associations"
+			ERRORMESSAGE="Adding Collection's Standard Asset Associations"
+			/>-->
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="ImportCGIntegration">
+		<!-- SystemLocaleString -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/cg-integration" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing cg-integration Catalogs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/cg-integration" />
+		</EXECUTECOMMAND>	
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="InstallDojoTree">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/adminui" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL"	VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME"	VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD"	VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT"	VALUE="Importing Dojo Tree elements" />
+			<ARGUMENT NAME="ERRORMESSAGE"	VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/adminui" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="UIElements">
+		<!-- This action list import alloy ui elements -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ui" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Gator Catalogs" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ui" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="CatCGeneralTableInstallServer">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/gator" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Gator Catalogs" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="adminformimages.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/gator" />
+		</EXECUTECOMMAND>
+
+		<!-- Install CatC asset types -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/GatorCallGatorInstall" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="msupgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="Installcommand" VALUE="InstallAssets" />
+			<ARGUMENT NAME="command" VALUE="install" />
+			<ARGUMENT NAME="Cmcommand" VALUE="Variables.TransactVad" />
+			<ARGUMENT NAME="baseDir" VALUE="Variables.oracle.wcsites.shared/Storage/" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing CatalogCentre core assets" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing CatalogCentre core assets" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Gator/upgradetoalloy" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading Dimestions tables" />
+			<ARGUMENT NAME="FILENAMES" VALUE="AttrTypes_Dim.html:AttrTypes_DimP.html:AdvCols_Dim.html:AdvCols_DimP.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Gator/upgradetoalloy" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="MSGeneralTableInstall">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/GatorCallMSInstall" />
+			<ARGUMENT NAME="adminacl" VALUE="xceladmin" />
+			<ARGUMENT NAME="editacl" VALUE="xceleditor" />
+			<ARGUMENT NAME="upgradefrom" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="command" VALUE="install" />
+			<ARGUMENT NAME="Installcommand" VALUE="InstallAssets" />
+			<ARGUMENT NAME="upgrade-log" VALUE="Variables.upgradelog" />
+			<ARGUMENT NAME="baseDir" VALUE="Variables.oracle.wcsites.shared/Storage/" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing MS core assets" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing MS core assets!" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Gator/upgradetoalloy" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading Dimestions tables" />
+			<ARGUMENT NAME="FILENAMES" VALUE="Segments_Dim.html:Segments_DimP.html:Promotions_Dim.html:Promotions_DimP.html:ScalarVals_Dim.html:ScalarVals_DimP.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Gator/upgradetoalloy" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Gator/upgradetoalloy" />
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading Dimestions tables" />
+			<ARGUMENT NAME="FILENAMES" VALUE="HistoryVals_Dim.html:HistoryVals_DimP.html:HFields_Dim.html:HFields_DimP.html" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Gator/upgradetoalloy" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="MSAddTreeTabs">
+			<EXECUTECOMMAND NAME="READURL" >
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/GatorCreateMSTreeTab" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing GatorCreateMSTreeTab.xml ..." />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Installing for GatorCreateMSTreeTab!"  />
+			</EXECUTECOMMAND>	
+		<!--<READURL
+			URL="Variables.oracle.wcsites.connect.stringContentServer?pagename=OpenMarket/Xcelerate/Installation/GatorCreateMSTreeTab"
+			USERNAME="Variables.oracle.wcsites.system.admin.user"
+			PASSWORD="Variables.oracle.wcsites.system.admin.password"
+			HOSTURL="Variables.oracle.wcsites.connect.stringCatalogManager" TEXT="##SUCCESS##"
+			DISPLAYTEXT="Installing GatorCreateMSTreeTab.xml ..."
+			ERRORMESSAGE="Error Installing for GatorCreateMSTreeTab" />	-->
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="UPGRADINGSCHEMA">
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="Burns,Burns3" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading publishing assettype_publish tables" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Publish/UpgradePublishTablesTo70" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error upgrading publishing assettype_publish tables" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="UPGRADE">	 
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="VERSIONFROM" VALUE="Burns,Burns3" />
+			<ARGUMENT NAME="UPGRADEFROM" VALUE="Variables.oracle.wcsites.current.version" />
+			<ARGUMENT NAME="UPGRADETO" VALUE="Variables.CSAppsVersion" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Upgrading asset type to have _Dim and _DimP" />
+			<ARGUMENT NAME="TYPE" VALUE="CALLELEMENT" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/Asset/UpgradeAssetDimensions" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error upgrading all asset type to have dim and dim_p table" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="InstallContentQuery">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/contentquery/EmptyContentQuery.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty ContentQuery assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/contentquery/EmptyContentQuery.html" />
+		</EXECUTECOMMAND>
+	
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/contentquery"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing ContentQuery Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing ContentQuery Elements" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="EmptyContentQuery.html" />
+		</EXECUTECOMMAND>
+	
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering ContentQuery in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering ContentQuery in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="ContentQuery"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallABTest">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_ABTest/EmptyWCS_ABTest.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty WCS_ABTest assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_ABTest/EmptyWCS_ABTest.html" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_ABTest"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_ABTest Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_ABTest Elements" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="EmptyWCS_ABTest.html" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_ABTest in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_ABTest in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_ABTest"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+
+		<IF COND="Variables.Development=TRUE">
+		<THEN>
+			<IF COND="Variables.CSInstallType=upgrade">
+			<THEN>
+				<!-- This is development only task for upgrades. We can't do this on delivery -->
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_ABTest"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_ABTest assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_ABTest assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+			
+			</THEN>
+			</IF>	
+		</THEN>
+		</IF>	
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallWebRoot">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/webroot/EmptyWebRoot.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty WebRoot assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/webroot/EmptyWebRoot.html" />
+		</EXECUTECOMMAND>
+	
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/webroot"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WebRoot Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WebRoot Elements" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="EmptyWebRoot.html" />
+		</EXECUTECOMMAND>
+	
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WebRoot in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WebRoot in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WebRoot"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallWCS_Controller">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Controller/EmptyWCS_Controller.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty WCS_Controller assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Controller/EmptyWCS_Controller.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Controller"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_Controller Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_Controller Elements" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="EmptyWCS_Controller.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_Controller in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_Controller in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_Controller,WCS_Controller_Dim,WCS_Controller_DimP,WCS_Controller_Publish"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallSiteCapture">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/sitecapture"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing SiteCapture Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing SiteCapture Elements" />
+		</EXECUTECOMMAND>
+		<!--Temporary commenting sitecapture database creation
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateTable_SiteCapture"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating database table"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Creating database table"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+		-->
+	</ACTIONLIST>
+	
+	
+	<ACTIONLIST NAME="InstallWCS_Controller">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Controller/EmptyWCS_Controller.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty WCS_Controller assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Controller/EmptyWCS_Controller.html" />
+		</EXECUTECOMMAND>
+	
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Controller"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_Controller Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_Controller Elements" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="EmptyWCS_Controller.html" />
+		</EXECUTECOMMAND>
+	
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_Controller in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_Controller in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_Controller,WCS_Controller_Dim,WCS_Controller_DimP,WCS_Controller_Publish"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+		
+		<IF COND="Variables.Development=TRUE">
+		<THEN>
+			<IF COND="Variables.CSInstallType=upgrade">
+			<THEN>
+				<!-- This is development only task for upgrades. We can't do this on delivery -->
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_Controller"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_Controller assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_Controller assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+			
+			</THEN>
+			</IF>	
+		</THEN>
+		</IF>	
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="InstallChart">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart/EmptyWCS_Chart.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_Chart Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Empty WCS_Chart assettype Catalog Elements" />			
+		</EXECUTECOMMAND>	
+			
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Chart"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_Chart Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_Chart Elements" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="EmptyWCS_Chart.html" />
+		</EXECUTECOMMAND>	
+		
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_Chart in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_Chart in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_Chart"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>		
+		
+
+		<IF COND="Variables.Development=TRUE">
+		<THEN>
+			<IF COND="Variables.CSInstallType=upgrade">
+			<THEN>
+				<!-- This is development only task for upgrades. We can't do this on delivery -->
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_Chart"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_Chart assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_Chart assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+			
+			</THEN>
+			</IF>	
+		</THEN>
+		</IF>
+	</ACTIONLIST>
+	
+		<ACTIONLIST NAME="InstallDashboard">		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Dashboard/EmptyWCS_Dashboard.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_Dashboard Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Empty WCS_Dashboard assettype Catalog Elements" />			
+		</EXECUTECOMMAND>	
+			
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/WCS_Dashboard"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_Dashboard Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_Dashboard Elements" />
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="EmptyWCS_Dashboard.html" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_Dashboard in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_Dashboard in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_Dashboard"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+
+		<IF COND="Variables.Development=TRUE">
+		<THEN>
+			<IF COND="Variables.CSInstallType=upgrade">
+			<THEN>
+				<!-- This is development only task for upgrades. We can't do this on delivery -->
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_Dashboard"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_Dashboard assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_Dashboard assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+			
+			</THEN>
+			</IF>	
+		</THEN>
+		</IF>
+	</ACTIONLIST>
+		
+	<!-- VISITORS -->
+	<ACTIONLIST NAME="InstallVisitorsProfileProviders">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_ProfileProviders/WCS_ProfileProviders.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_ProfileProviders Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_ProfileProviders assettype Catalog Elements" />			
+		</EXECUTECOMMAND>	
+			
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_ProfileProviders"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_ProfileProviders Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_ProfileProviders Elements" />
+		</EXECUTECOMMAND>		
+		
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_ProfileProviders in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_ProfileProviders in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_ProfileProviders"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>		
+		
+
+		
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_ProfileProviders"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_ProfileProviders assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_ProfileProviders assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+		
+	</ACTIONLIST>
+	
+	
+	<ACTIONLIST NAME="InstallVisitorsAggregationTemplates">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_AggregationTemplates/WCS_AggregationTemplates.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_AggregationTemplates Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Empty WCS_AggregationTemplates assettype Catalog Elements" />			
+		</EXECUTECOMMAND>	
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_AggregationTemplates"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_AggregationTemplates Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_AggregationTemplates Elements" />
+		</EXECUTECOMMAND>		
+			
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_AggregationTemplates in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_AggregationTemplates in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_AggregationTemplates"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>		
+		
+
+			
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_AggregationTemplates"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_AggregationTemplates assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_AggregationTemplates assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallVisitorsAccessProviders">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_AccessProviders/WCS_AccessProviders.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_AccessProviders Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Empty WCS_AccessProviders assettype Catalog Elements" />			
+		</EXECUTECOMMAND>	
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_AccessProviders"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_AccessProviders Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_AccessProviders Elements" />
+		</EXECUTECOMMAND>		
+			
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_AccessProviders in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_AccessProviders in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_AccessProviders"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>		
+		
+
+			
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_AccessProviders"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_AccessProviders assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_AccessProviders assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallVisitorsIdentityProviders">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_IdentityProviders/WCS_IdentityProviders.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_IdentityProviders Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Empty WCS_IdentityProviders assettype Catalog Elements" />			
+		</EXECUTECOMMAND>	
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_IdentityProviders"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_IdentityProviders Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_IdentityProviders Elements" />
+		</EXECUTECOMMAND>		
+			
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_IdentityProviders in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_IdentityProviders in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_IdentityProviders"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>		
+		
+
+		
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_IdentityProviders"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_IdentityProviders assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_IdentityProviders assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallVisitorsConfig">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_VisitorsConfig/EmptyWCS_VisitorsConfig.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_VisitorsConfig Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Empty WCS_VisitorsConfig assettype Catalog Elements" />			
+		</EXECUTECOMMAND>	
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_VisitorsConfig"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_VisitorsConfig Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_VisitorsConfig Elements" />
+		</EXECUTECOMMAND>		
+			
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Registering WCS_VisitorsConfig in SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Registering WCS_VisitorsConfig in SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="WCS_VisitorsConfig"/>
+			<ARGUMENT NAME="storageDir"	VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>		
+		
+
+		
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/EnableAssetType"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="AssetTypes" VALUE="WCS_VisitorsConfig"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable WCS_VisitorsConfig assetype for all the sites"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enable WCS_VisitorsConfig assetype"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+				</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallVisitorsTree">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/WCS_VisitorsTree"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCS_VisitorsTree Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing WCS_VisitorsTree" />
+		</EXECUTECOMMAND>		
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="PopulateCgIntegrationCore">
+		<CREATEDIRECTORY DIRECTORY="Variables.oracle.wcsites.config/export/envision/cg-integration-core"/>
+		<COPYDIRECTORY
+			SOURCE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/cg-integration-core/src"
+			DESTINATION="Variables.oracle.wcsites.config/export/envision/cg-integration-core/src"/>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="PopulateSitesHome_Visitors">
+		<CREATEDIRECTORY DIRECTORY="Variables.oracle.wcsites.config/export/envision/visitors"/>
+		<COPYDIRECTORY
+			SOURCE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/visitors/assets/src"
+			DESTINATION="Variables.oracle.wcsites.config/export/envision/visitors/src"/>
+	</ACTIONLIST>
+	
+	<!-- CSDT Imports -->
+	<ACTIONLIST NAME="ImportVisitorsAssets">
+		<EXECUTECOMMAND NAME="READURL" >
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/ImportViaCSDT" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing Visitor assets" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing Visitors assets" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="CONTENTSERVERURL" VALUE="Variables.oracle.wcsites.connect.stringContentServer" />
+			<ARGUMENT NAME="CSINSTALL" VALUE="Variables.oracle.wcsites.home"/>
+			<ARGUMENT NAME="MODULE" VALUE="visitors"/>
+			<ARGUMENT NAME="IMPORTS" VALUE="WCS_IdentityProviders,WCS_ProfileProviders,WCS_AccessProviders"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	<!-- /VISITORS -->
+	
+	<ACTIONLIST NAME="INSTALLMOBILITY">
+	
+	<!-- Install Core stuff first on both delivery and oracle.wcsites.management -->
+	
+	<!--
+		Core (both delivery and oracle.wcsites.management)
+		1. DeviceGroup asset type and Desktop asset
+		2. Device asset type
+		3. DeviceRepository and all entries belonging to this table
+		4. Elements
+		5. war changes - taken care by DEPLOYMOBILITY
+
+		oracle.wcsites.management only
+		6. DeviceGroup and Device assets
+		7. SiteNavigation asset type
+		8. TreeTab
+
+		Upgrades on oracle.wcsites.management
+		10. Enable Device, DeviceGroup and SiteNavigation asset types for existing Sites.
+		
+	-->
+		
+		<!-- DeviceGroup asset type and elements -->
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup/DefaultDeviceGroup.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing DeviceGroup catalog with Default entry Desktop." />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup/DefaultDeviceGroup.html" />
+		</EXECUTECOMMAND>
+
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup/DeviceGroup_Dim.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing DeviceGroup_Dim assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup/DeviceGroup_Dim.html" />
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup/DeviceGroup_DimP.html"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing DeviceGroup_DimP assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup/DeviceGroup_DimP.html" />
+		</EXECUTECOMMAND>
+	
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="DeviceGroup.html:DefaultDeviceGroup.html:AssetPublication.html"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Device Group Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Device Group Elements" />
+		</EXECUTECOMMAND>
+	
+		<IF COND="Variables.oracle.wcsites.management!=TRUE">
+			<THEN>
+				<!-- On Delivery, we only need Device Table and not it's elements as we do not need to provide those functionalities to end user -->
+				<EXECUTECOMMAND NAME="IMPORTCATALOG">
+					<ARGUMENT NAME="CATALOGFILE" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/device/EmptyDeviceImage.html"/>
+					<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements" />
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty Device assettype Catalog" />
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/device/EmptyDeviceImage.html" />
+				</EXECUTECOMMAND>
+			</THEN>
+		</IF>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/device"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="EXCLUDEFILES" VALUE="Device.html:EmptyDeviceImage.html:AssetPublication.html"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Device Image Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Device Image Elements" />
+		</EXECUTECOMMAND>
+		
+		<!-- Installation elements specific to Mobility -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/Installation"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing mobility related elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing mobility related Elements" />
+		</EXECUTECOMMAND>
+	
+		<!-- Registering DeviceGroup and Device -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing Device and DeviceGroup into SystemInfo"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Installing Device and DeviceGroup into SystemInfo"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+			<ARGUMENT NAME="assettype" VALUE="Device,DeviceGroup"/>
+			<ARGUMENT NAME="storageDir" VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+		
+		<!-- DeviceRepository -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateDeviceRepositoryTable"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing Device Repository table"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Installing Device Repository table"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+		</EXECUTECOMMAND>
+		
+		<!-- DeviceRepository entries -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicerepository"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/Storage/DeviceRepository" />
+			<ARGUMENT NAME="INCLUDEFILES" VALUE="DeviceRepository.html"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty DeviceRepository assettype Catalog" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicerepository" />
+		</EXECUTECOMMAND>
+
+		<!-- Import other mobility elements -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Mobility Elements"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Mobility Elements" />
+		</EXECUTECOMMAND>
+		
+		<!-- oracle.wcsites.management only Mobility components -->	
+		<!-- Need to add an upgrade element to have role for the user..  Or documentation should be good enough -->
+		<IF COND="Variables.oracle.wcsites.management=TRUE">
+			<THEN>
+				<!-- All other DeviceGroup assets -->
+				<EXECUTECOMMAND NAME="IMPORTCATALOG">
+					<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/devicegroup"/>
+					<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+					<ARGUMENT NAME="INCLUDEFILES" VALUE="DeviceGroup.html:AssetPublication.html"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Device Group Elements"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Device Group Elements" />
+				</EXECUTECOMMAND>
+				
+				<!-- All other Device assets -->
+				<EXECUTECOMMAND NAME="IMPORTCATALOG">
+					<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/device"/>
+					<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/Storage/Device" />
+					<ARGUMENT NAME="INCLUDEFILES" VALUE="Device.html:AssetPublication.html"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Empty Device assettype Catalog" />
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/device" />
+				</EXECUTECOMMAND>
+				
+				
+				<!-- SiteNavigation - oracle.wcsites.management only -->
+				<EXECUTECOMMAND NAME="IMPORTCATALOG">
+					<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/SiteNavigation"/>
+					<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing SiteNavigation Elements"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing SiteNavigation Elements" />
+				</EXECUTECOMMAND>
+				
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing SiteNavigation into SystemInfo"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Installing SiteNavigation into SystemInfo"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+					<ARGUMENT NAME="assettype" VALUE="SiteNavigation"/>
+					<ARGUMENT NAME="storageDir" VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+				</EXECUTECOMMAND>
+				
+				<!-- TreeTab -->
+				<READURL
+					URL="Variables.oracle.wcsites.connect.stringContentServer?pagename=OpenMarket/Xcelerate/Installation/MobilityTreeTab"
+					USERNAME="Variables.oracle.wcsites.system.admin.user"
+					PASSWORD="Variables.oracle.wcsites.system.admin.password"
+					HOSTURL="Variables.oracle.wcsites.connect.stringCatalogManager" TEXT="##SUCCESS##"
+					DISPLAYTEXT="Creating mobility tree tabs"
+					ERRORMESSAGE="Error creating mobility tabs" />
+			</THEN>
+		</IF>
+		
+		<IF COND="Variables.oracle.wcsites.management!=TRUE">
+			<THEN>
+				<!-- We do not need SiteNavigation elements on Delivery as we do not need to give those functionalities to the end user -->
+				<EXECUTECOMMAND NAME="IMPORTCATALOG">
+					<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/mobility/SiteNavigation"/>
+					<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+					<ARGUMENT NAME="INCLUDEFILES" VALUE="SiteNavigation.html:AssetType.html:SiteNavigation_Dim.html:SiteNavigation_DimP.html"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing SiteNavigation Table"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing SiteNavigation Table" />
+				</EXECUTECOMMAND>
+				
+				<EXECUTECOMMAND NAME="READURL">
+					<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing SiteNavigation into SystemInfo"/>
+					<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Installing SiteNavigation into SystemInfo"/>
+					<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+					<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+					<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+					<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddSystemInfo"/>
+					<ARGUMENT NAME="assettype" VALUE="SiteNavigation"/>
+					<ARGUMENT NAME="storageDir" VALUE="Variables.oracle.wcsites.shared/Storage/"/>
+					<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+					<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+				</EXECUTECOMMAND>
+			</THEN>
+		</IF>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="CreateSharedSkeleton">
+		<CREATEDIRECTORY DIRECTORY="Variables.oracle.wcsites.shared"/>
+		
+		<GETSTORE PROPERTY="xcelerate.thumbnaildir" NAME="ThumbnailDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.ThumbnailDir"
+			DISPLAYTEXT="Creating directory Variables.ThumbnailDir" />
+		<REMOVEVARIABLE NAME="ThumbnailDir"/>
+		
+		<GETSTORE PROPERTY="xcelerate.objpubdir" NAME="ObjPubDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.ObjPubDir" 
+			DISPLAYTEXT="Creating directory Variables.ObjPubDir" />
+		<REMOVEVARIABLE NAME="ObjPubDir"/>
+		
+		<GETSTORE PROPERTY="xcelerate.lockdir" NAME="LockDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.LockDir"
+			DISPLAYTEXT="Creating directory Variables.LockDir" />
+		<REMOVEVARIABLE NAME="LockDir"/>
+		
+		<GETSTORE PROPERTY="xcelerate.pubkeydir" NAME="PubKeyDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.PubKeyDir"
+			DISPLAYTEXT="Creating directory Variables.PubKeyDir" />
+		<REMOVEVARIABLE NAME="PubKeyDir"/>
+		
+		<GETSTORE PROPERTY="xcelerate.saveSearchdir" NAME="SaveSearchDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.SaveSearchDir"
+			DISPLAYTEXT="Creating directory Variables.SaveSearchDir" />
+		<REMOVEVARIABLE NAME="SaveSearchDir"/>
+		
+		<GETSTORE PROPERTY="xcelerate.tempobjectsdir" NAME="TempObjectsDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.TempObjectsDir"
+			DISPLAYTEXT="Creating directory Variables.TempObjectsDir" />
+		<REMOVEVARIABLE NAME="TempObjectsDir"/>
+		
+		<GETSTORE PROPERTY="xcelerate.workflowdir" NAME="WorkflowDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.WorkflowDir"
+			DISPLAYTEXT="Creating directory Variables.WorkflowDir" />
+		<REMOVEVARIABLE NAME="WorkflowDir"/>
+		
+		<GETSTORE PROPERTY="afk.publishdata" NAME="GatorPublishDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorPublishDir"
+			DISPLAYTEXT="Creating directory Variables.GatorPublishDir" />
+		<REMOVEVARIABLE NAME="GatorPublishDir"/>
+		
+		<GETSTORE PROPERTY="afk.historydata" NAME="GatorHistoryDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorHistoryDir"
+			DISPLAYTEXT="Creating directory Variables.GatorHistoryDir" />
+		<REMOVEVARIABLE NAME="GatorHistoryDir"/>
+		
+		<GETSTORE PROPERTY="cc.urlattrpath" NAME="GatorCCUrlPath" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorCCUrlPath"
+			DISPLAYTEXT="Creating directory Variables.GatorCCUrlPath" />
+		<REMOVEVARIABLE NAME="GatorCCUrlPath"/>
+		
+		<GETSTORE PROPERTY="mwb.searchdir" NAME="GatorSearchDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorSearchDir"
+			DISPLAYTEXT="Creating directory Variables.GatorSearchDir" />
+		<REMOVEVARIABLE NAME="GatorSearchDir"/>
+		
+		<GETSTORE PROPERTY="mwb.cartsetdir" NAME="CartsetDir" />
+		<CREATEDIRECTORY DIRECTORY="Variables.CartsetDir"
+			DISPLAYTEXT="Creating directory Variables.CartsetDir" />
+		<REMOVEVARIABLE NAME="CartsetDir"/>
+		
+		<GETSTORE PROPERTY="vis.sessiondata" NAME="GatorSessionData" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorSessionData"
+			DISPLAYTEXT="Creating directory Variables.GatorSessionData" />
+		<REMOVEVARIABLE NAME="GatorSessionData"/>
+		
+		<GETSTORE PROPERTY="vis.urlpath" NAME="VisitorURLPath" />
+		<CREATEDIRECTORY DIRECTORY="Variables.VisitorURLPath"
+			DISPLAYTEXT="Creating directory Variables.VisitorURLPath" />
+		<REMOVEVARIABLE NAME="VisitorURLPath"/>
+		
+		<GETSTORE PROPERTY="vis.rulesetxmlpath" NAME="GatorVisitorRuleXML" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorVisitorRuleXML"
+			DISPLAYTEXT="Creating directory Variables.GatorVisitorRuleXML" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorVisitorRuleXML/xml"
+			DISPLAYTEXT="Creating directory Variables.GatorVisitorRuleXML/xml" />
+		<REMOVEVARIABLE NAME="GatorVisitorRuleXML"/>
+		
+		<GETSTORE PROPERTY="vis.genclasspath" NAME="GatorVisitorGenclasspath" />
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorVisitorGenclasspath"
+			DISPLAYTEXT="Creating directory Variables.GatorVisitorGenclasspath" />
+		<REMOVEVARIABLE NAME="GatorVisitorGenclasspath"/>
+		
+		<GETSTORE PROPERTY="vis.path" NAME="GatorVisPath" /> <!--Check the earlier value in 11.1.1.8.0.-->
+		<CREATEDIRECTORY DIRECTORY="Variables.GatorVisPath"
+			DISPLAYTEXT="Creating directory Variables.GatorVisPath" />
+		<REMOVEVARIABLE NAME="GatorVisPath"/>
+		
+		<!--Below directory will be created for property q.storagefilepath in writequeue.ini-->
+		<CREATEDIRECTORY DIRECTORY="Variables.oracle.wcsites.shared/queue/"
+			DISPLAYTEXT="Creating directory Variables.oracle.wcsites.shared/queue/" />
+		
+		<COPYDIRECTORY 
+			SOURCE="Variables.oracle.wcsites.home/bootstrap/sites-shared/utilities"
+			DESTINATION="Variables.oracle.wcsites.shared/utilities"/>
+	</ACTIONLIST>
+	
+	<!-- bDoUpgradeFromCC36xTo40:upgradelog:CSInstallAppPass:TransactVad:AnalysisConnectorCurrentVersion:CSAppsVersion:$INSTALLDIR-->
+</CSINSTALL>

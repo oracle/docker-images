@@ -68,6 +68,15 @@ RUN cd /u01 && \
 	cd - && \
 	$JAVA_HOME/bin/java -jar /u01/$SITES_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebCenter Sites - With Examples" && \
 	rm -rf /u01/fmw_* /u01/oraInst.loc /u01/install.file
+	
+COPY sites-container-scripts/overrides/oui/* /u01/oracle/wcsites/common/templates/wls/
+COPY sites-container-scripts/overrides/installer/* /u01/oracle/wcsites/webcentersites/sites-home/bootstrap/installer/install/
+COPY sites-container-scripts/overrides/config/* /u01/oracle/wcsites/webcentersites/sites-home/template/config/
+	
+RUN cd /u01/oracle/wcsites/common/templates/wls && \
+	$JAVA_HOME/bin/jar uvf oracle.wcsites.base.template.jar startup-plan.xml file-definition.xml && \
+	rm /u01/oracle/wcsites/common/templates/wls/startup-plan.xml && \
+	rm /u01/oracle/wcsites/common/templates/wls/file-definition.xml
 
 # Expose all Ports
 # -------------------------------------------------------------

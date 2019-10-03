@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE CSINSTALL SYSTEM "sites-bootstrap.dtd">
+<CSINSTALL TITLE="Sample Sites" FIRSTPACKAGE="SamplesInstallPage" >
+	<IDENT PRODUCTNAME="SamplesProduct" EXTERNALNAME="Samples Sites" VERSION="falcon" EXTERNALVERSION="12.1.4.0.0" VAR="CSAppsVersion"></IDENT>
+	<PACKAGE NAME="SamplesInstallPage">
+		<DIALOG TITLE="Warning" NOTVISIBLE="true">
+			<IF COND="Variables.oracle.wcsites.management=true">
+				<THEN>
+					<IF COND="Variables.oracle.wcsites.examples=true">
+						<THEN>
+							<IF COND="Variables.oracle.wcsites.examples.Samples=true">
+								<THEN>
+									<DIALOGACTION>
+										<ADDACTIONLIST NAME="DeploySamplesData"/>
+										<ADDACTIONLIST NAME="ImportInstallationElementsServer"/>
+										<ADDACTIONLIST NAME="ConfigureWebRootForSamples"/>
+										<ADDACTIONLIST NAME="InstallSamples"/>
+										<ADDACTIONLIST NAME="SamplesSitePlan"/>
+										<ADDACTIONLIST NAME="RemoveInstallationElements"/>
+									</DIALOGACTION>
+								</THEN>
+							</IF>
+						</THEN>
+					</IF>
+				</THEN>
+			</IF>
+		</DIALOG>
+	</PACKAGE>
+	
+	<ACTIONLIST NAME="ImportInstallationElementsServer">
+		<!-- It may need core installation elements -->
+		<!-- Import the Installation catalogs -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Installation"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Xcelerate Installation Elements"/>
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/gator/Installation"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Gator Installation Elements"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="ConfigureWebRootForSamples">
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/export/envision/Samples/src/_metadata/ASSET/WebRoot/6/15/samples(e4923433-4220-4721-b941-bd27219ec3ed).main.xml"
+			VAR="@SITES_PREFIX@" VALUE="Variables.oracle.wcsites.protocol" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/export/envision/Samples/src/_metadata/ASSET/WebRoot/6/15/samples(e4923433-4220-4721-b941-bd27219ec3ed).main.xml"
+			VAR="@SITES_HOSTNAME@" VALUE="Variables.oracle.wcsites.hostname" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/export/envision/Samples/src/_metadata/ASSET/WebRoot/6/15/samples(e4923433-4220-4721-b941-bd27219ec3ed).main.xml"
+			VAR="@SITES_PORTNUMBER@" VALUE="Variables.oracle.wcsites.portnumber" />
+		<FILEREPLACEVAR
+			FILENAME="Variables.oracle.wcsites.config/export/envision/Samples/src/_metadata/ASSET/WebRoot/6/15/samples(e4923433-4220-4721-b941-bd27219ec3ed).main.xml"
+			VAR="/@SITES_CONTEXT@/" VALUE="Variables.oracle.wcsites.contextpath" />
+
+	</ACTIONLIST>
+	
+	<!-- Copy the datastore -->
+	<ACTIONLIST NAME="DeploySamplesData">
+		<CREATEDIRECTORY DIRECTORY="Variables.oracle.wcsites.config/export/envision/Samples"/>
+		
+		<COPYDIRECTORY
+			SOURCE="Variables.oracle.wcsites.home/bootstrap/samples/Samples/home/export/envision/Samples/src"
+			DESTINATION="Variables.oracle.wcsites.config/export/envision/Samples/src"/>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="InstallSamples">
+		<!-- CSDT Sample Site ActionList -->
+		<EXECUTECOMMAND NAME="READURL" >
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing Samples Site" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing Samples Site" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/InstallSamplesSite" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="CSINSTALL" VALUE="Variables.oracle.wcsites.home"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="SamplesSitePlan">
+		<!--add the role to fwadmin -->
+		<EXECUTECOMMAND NAME="READURL">
+				<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddUser"/>
+				<ARGUMENT NAME="name" VALUE="Variables.oracle.wcsites.app.user"/>
+				<ARGUMENT NAME="passwd" VALUE="Variables.oracle.wcsites.app.password"/>
+				<ARGUMENT NAME="command" VALUE="adduser"/>
+				<ARGUMENT NAME="userpub" VALUE="Samples"/>
+				<ARGUMENT NAME="useracls" VALUE="GeneralAdmin,WorkflowAdmin,SiteAdmin,AdvancedUser,SitesUser"/>
+				<ARGUMENT NAME="acl" VALUE="TableEditor,Visitor,VisitorAdmin,UserEditor,UserReader,xceladmin,Browser,xceleditor,xcelpublish,PageEditor,ElementEditor,RemoteClient,WSUser,WSEditor,WSAdmin"/>
+				<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+				<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+				<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+				<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+				<ARGUMENT NAME="DISPLAYTEXT" VALUE="Samples Site: Registering user: Variables.oracle.wcsites.app.user"/>
+				<ARGUMENT NAME="ERRORMESSAGE" VALUE="*******Samples Site: Error registering user: Variables.oracle.wcsites.app.user"/>
+				<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+		
+		<!--Enabling asset types-->
+		<EXECUTECOMMAND NAME="READURL">
+            <ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/GatorSite"/>
+            <ARGUMENT NAME="Site" VALUE="Samples"/>
+            <ARGUMENT NAME="AssetTypes" VALUE="AdvCols,AttrTypes,CSElement,Device,DeviceGroup,Dimension,DimensionSet,Page,PageAttribute,PageDefinition,PageFilter,ScalarVals,Segments,SiteEntry,SiteNavigation,Template,WebRoot,WCS_Controller"/>
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+            <ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="Enable AdvCols,AttrTypes,CSElement,Device,DeviceGroup,Dimension,DimensionSet,Page,PageAttribute,PageDefinition,PageFilter,ScalarVals,Segments,SiteEntry,SiteNavigation,Template,WebRoot,WCS_Controller for Samples"/>
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error OpenMarket/Xcelerate/Installation/GatorSite page "/>
+            <ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="RemoveInstallationElements">
+		<!--Clean up csdt files/folders-->
+		<DELETEDIRECTORY SOURCE="Variables.oracle.wcsites.config/export/envision/Samples" DELETEFOLDER="TRUE" IGNOREERRORS="TRUE"/>
+	</ACTIONLIST>
+</CSINSTALL>
