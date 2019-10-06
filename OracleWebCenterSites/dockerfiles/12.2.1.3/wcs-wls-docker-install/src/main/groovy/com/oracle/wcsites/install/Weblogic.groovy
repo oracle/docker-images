@@ -96,7 +96,7 @@ class Weblogic implements AppServer {
 				startAdminServer(domainHome)
 
 				// Starts Managed Server
-				startManagedServer(domainHome)
+				startManagedServer(domainHome, managedServerName, true)
 
 				// Silent installation
 				// Pauses before starting the silent installation
@@ -447,7 +447,7 @@ class Weblogic implements AppServer {
 	 * @param domainHome
 	 * @return
 	 */
-	private startManagedServer(def domainHome) {
+	private startManagedServerRemove(def domainHome) {
 		// Cleans up logs
 		def managedServerName = config.script.server.name + "1"
 		def dirsToClean = [domainHome + "/servers/" + managedServerName + "/logs", domainHome + "/servers/" + managedServerName + "/security"]
@@ -458,7 +458,7 @@ class Weblogic implements AppServer {
 		createParamFile(domainHome, managedServerName)
 
 		// Starts server
-		runManagedServerStartScript(domainHome, managedServerName)
+		startManagedServer(domainHome, managedServerName, exitOnFail)		
 		// Monitors server log for startup message
 		monitorServerLog(domainHome + "/servers/" + managedServerName + "/logs/" + managedServerName + ".log", Utils.WL_STARTUP_SUCCESS, true)
 	}
@@ -513,7 +513,7 @@ class Weblogic implements AppServer {
 	 * @return
 	 */
 	protected runManagedServerStartScript(def domainHome, def serverName) {
-		def startScript = domainHome + "/bin/startManagedWebLogic" + Utils.SH
+		def startScript = config.work + "/startManagedServer" + Utils.SH
 		def adminServerURL = "http://" + config.script.oracle.wcsites.hostname + ":" + config.script.admin.server.port
 
 		Utils.echo("Start Managed Server -> " + startScript + " " + serverName + " " + adminServerURL)
@@ -537,7 +537,7 @@ class Weblogic implements AppServer {
 		// pauses between stop & start
 		Thread.sleep(15000)
 		// Starts managed server
-		runManagedServerStartScript(domainHome, managedServerName)
+		startManagedServer(domainHome, managedServerName, exitOnFail)
 		// Pauses before you start monitoring the server log
 		Thread.sleep(30000)
 		// Monitors server log for startup message
@@ -583,6 +583,82 @@ class Weblogic implements AppServer {
 
 		// Monitors server log file for shutdown message
 		monitorServerLog(stopLog, stopManagedServerMsg, exitOnFail)
+	}
+	
+		/**
+	 * Starts Managed Server
+	 *
+	 * @param domainHome, serverName, exitOnFail
+	 * @return
+	 */
+	protected startManagedServer(def domainHome, def serverName, boolean exitOnFail) {
+	
+		// Cleans up logs
+		def managedServerName = config.script.server.name + "1"
+		def dirsToClean = [domainHome + "/servers/" + managedServerName + "/logs", domainHome + "/servers/" + managedServerName + "/security"]
+		dirsToClean.each { directory -> antBuilder.delete(dir:directory, includeEmptyDirs:true)	}
+		// Creates password file
+		createPwdFile(domainHome, managedServerName)
+		// Creates parameter file
+		createParamFile(domainHome, managedServerName)
+		
+		def startScript = ""
+		def startLog = ""
+		def startManagedServerMsg = ""
+		
+		def adminServerURL = "t3://" + config.script.oracle.wcsites.hostname + ":" + config.script.admin.server.port
+
+		startLog = generateManagedServerStartScript(domainHome)
+		startScript = config.work + "/startManagedServer" + Utils.SH
+		startManagedServerMsg = Utils.WL_STARTUP_SUCCESS
+
+		Utils.echo("Start Managed Server -> script: " + startScript + "  server name: " + serverName + "  admin-server-url: " + adminServerURL)
+
+		if(!new File(startScript).exists()) {
+			Utils.echo("Error -> Start Managed Server -- Could not locate the script to start managed server: " + startScript)
+			if(exitOnFail)
+				System.exit(1)
+			else
+				return
+		}
+
+		antBuilder.exec(executable:startScript, dir : config.work, failifexecutionfails : false) {
+			arg(value: serverName)
+			arg(value: adminServerURL)
+		}
+
+		// Pauses before you start monitoring the server log
+		Thread.sleep(30000)
+
+		// Monitors server log file for shutdown message
+		monitorServerLog(startLog, startManagedServerMsg, exitOnFail)
+	}
+	
+		/**
+	 * For UNIX, creates a shell script that redirects the output of startManagedWebLogic.sh to a log file
+	 * 
+	 * @param domainHome
+	 * @return
+	 */
+	private def generateManagedServerStartScript(def domainHome) {		
+		def startManagedServerLog = config.work + "/wls_managed_server_start.log"
+		def startManagedServerLogFile = new File(startManagedServerLog)
+		startManagedServerLogFile.text = "Weblogic Managed Server Output" + System.lineSeparator()
+
+		def startScript = domainHome + "/bin/startManagedWebLogic" + Utils.SH
+		def runManagedServerScript = config.work + "/startManagedServer" + Utils.SH
+		def runManagedServerScriptFile = new File(runManagedServerScript)
+		runManagedServerScriptFile.withWriter('utf-8') { writer ->
+			writer.writeLine "#!/bin/sh"
+			writer.writeLine ""
+			writer.writeLine ". " + startScript + " \$1 \$2 > " + startManagedServerLog + " 2>&1 &"
+		}
+
+		Utils.echo("Start Managed Server -> Script to start managed server is created : " + runManagedServerScript)
+
+		antBuilder.chmod(file: runManagedServerScript, perm: "755")
+		
+		startManagedServerLog
 	}
 
 	/**

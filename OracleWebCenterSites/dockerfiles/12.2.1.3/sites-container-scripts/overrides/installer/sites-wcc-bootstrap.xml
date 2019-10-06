@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CSINSTALL SYSTEM "sites-bootstrap.dtd">
+<CSINSTALL TITLE="WCC Integrator" FIRSTPACKAGE="WCCIntegrationInstallPage">
+	<IDENT PRODUCTNAME="WCCIntegrationProduct" EXTERNALNAME="WCC Integration" VERSION="falcon"	EXTERNALVERSION="12.1.4.0.0" VAR="CSAppsVersion"></IDENT>
+	<PACKAGE NAME="WCCIntegrationInstallPage">
+		<DIALOG TITLE="Warning" NOTVISIBLE="true">
+			<IF COND="Variables.oracle.wcsites.wccintegration=true">
+				<THEN>
+					<DIALOGACTION>
+						<ADDACTIONLIST NAME="ImportInstallationElementsServer"/>
+						<ADDACTIONLIST NAME="PopulateSitesHome_UCMPoller"/>
+						<ADDACTIONLIST NAME="SetPropertiesForNewUCMIntegrationInstall"/>
+						<ADDACTIONLIST NAME="ImportUCMPollerElements"/>
+						<ADDACTIONLIST NAME="CreateUCMBatchTable"/>
+						<ADDACTIONLIST NAME="CreateUCMPollerTable"/>
+						<ADDACTIONLIST NAME="CreateUCMOrphanTable"/>
+                        <ADDACTIONLIST NAME="CreateUCMRulesTable"/>
+						<ADDACTIONLIST NAME="CreateUCMSignalsTable"/>
+						<ADDACTIONLIST NAME="SetPropertiesForNewUCMIntegrationInstall"/>
+					</DIALOGACTION>
+						
+					<IF COND="Variables.oracle.wcsites.management=true">
+						<THEN>
+							<DIALOGACTION>
+								<ADDACTIONLIST NAME="ImportUCMConnectorTab"/>
+								<!--
+								<ADDACTIONLIST NAME="ImportUCMSampleSite"/>
+								<ADDACTIONLIST NAME="EnableWccSampleSiteForUser"/>
+								-->
+								<ADDACTIONLIST NAME="CreateRoles"/>
+								<ADDACTIONLIST NAME="EnableRolesForAllSites"/>
+								<ADDACTIONLIST NAME="CreateTreeTabs"/>
+							</DIALOGACTION>
+						</THEN>
+					</IF>
+					
+					<DIALOGACTION>
+						<ADDACTIONLIST NAME="PropertyCleanupUCM"/>
+						<ADDACTIONLIST NAME="RemoveInstallationElements"/>
+					</DIALOGACTION>
+				</THEN>
+			</IF>
+		</DIALOG>
+	</PACKAGE>
+	
+	<ACTIONLIST NAME="ImportInstallationElementsServer">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/Installation"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Xcelerate Installation Elements"/>
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/xcelerate/gator/Installation"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing Gator Installation Elements"/>
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ucmintegration/Installation"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing WCCIntegration Installation Elements"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="PopulateSitesHome_UCMPoller">
+		<CREATEDIRECTORY DIRECTORY="Variables.oracle.wcsites.config/export/envision/ucm-poller-elements"/>
+		
+		<COPYDIRECTORY
+			SOURCE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ucmintegration/ucm-poller-elements/dist/src"
+			DESTINATION="Variables.oracle.wcsites.config/export/envision/ucm-poller-elements/src"/>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="SetPropertiesForNewUCMIntegrationInstall">
+		<EXECUTECOMMAND NAME="FLUSHPROPERTY">
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Flushing the property file"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error in flushing the property file"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+		</EXECUTECOMMAND>
+		
+		<EXECUTECOMMAND NAME="FLUSHPROPERTY">
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Flushing the property file"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error in flushing the property file"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<!-- CSDT Imports -->
+	<ACTIONLIST NAME="ImportUCMPollerElements">
+		<EXECUTECOMMAND NAME="READURL" >
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/ImportViaCSDT" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing UCM Poller elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing UCM Poller elements" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="CONTENTSERVERURL" VALUE="Variables.oracle.wcsites.connect.stringContentServer" />
+			<ARGUMENT NAME="CSINSTALL" VALUE="Variables.oracle.wcsites.home"/>
+			<ARGUMENT NAME="MODULE" VALUE="ucm-poller-elements"/>
+			<ARGUMENT NAME="IMPORTS" VALUE="@SITECATALOG, @ELEMENTCATALOG"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+
+	<ACTIONLIST NAME="CreateUCMBatchTable">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateTable_WccBatch"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="WCCIntegration: Creating WccBatch table along with an index"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating WccBatch table"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="CreateUCMPollerTable">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateTable_WccPoller"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="WCCIntegration: Creating WccPoller table along with an index"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating WccPoller table"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="CreateUCMOrphanTable">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateTable_WccOrphan"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="WCCIntegration: Creating WccOrphan table along with an index"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating WccOrphan table"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+    
+    <ACTIONLIST NAME="CreateUCMRulesTable">
+        <EXECUTECOMMAND NAME="READURL">
+            <ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateTable_WccRules"/>
+            <ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+            <ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+            <ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+            <ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+            <ARGUMENT NAME="DISPLAYTEXT" VALUE="WCCIntegration: Creating WccRules table along with an index"/>
+            <ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating WccRules table"/>
+            <ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+        </EXECUTECOMMAND>
+    </ACTIONLIST>   
+	
+	<ACTIONLIST NAME="CreateUCMSignalsTable">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateTable_WccSignals"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="WCCIntegration: Creating WccSignals table along with an index"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating WccSignals table"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+		
+		<!-- Add WccSignals entries -->
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ucmintegration/Installation/Data"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="INCLUDEFILES" VALUE="WccSignals.html"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="WccSignals data: Importing "/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ucmintegration/Installation/Data"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>	
+	
+	<ACTIONLIST NAME="ImportUCMConnectorTab">
+		<EXECUTECOMMAND NAME="IMPORTCATALOG">
+			<ARGUMENT NAME="CATALOGDIRECTORY" VALUE="Variables.oracle.wcsites.home/bootstrap/installer/installer-elements/ucmintegration/WCC"/>
+			<ARGUMENT NAME="ELEMENTDIRECTORY" VALUE="Variables.oracle.wcsites.shared/elements"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Importing UCMConnector Tab Element"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error Importing UCMConnector Tab Element" />
+		</EXECUTECOMMAND>
+	</ACTIONLIST> 
+	
+	<ACTIONLIST NAME="CreateRoles">
+		<!-- Roles -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddRole"/>
+			<ARGUMENT NAME="command" VALUE="addrole"/>
+			<ARGUMENT NAME="name" VALUE="ConnectorAdmin"/>
+			<ARGUMENT NAME="description" VALUE="Connector Admin"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="UCM Integration: Creating role Connector Admin"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating UCM Integration role Connector Admin"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="EnableRolesForAllSites">
+		<!-- Enable Roles For All Sites enabled for fwadmin user -->
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/UpdateUserRolesForAllSites"/>
+			<ARGUMENT NAME="name" VALUE="Variables.oracle.wcsites.app.user"/>
+			<ARGUMENT NAME="passwd" VALUE="Variables.oracle.wcsites.app.password"/>
+			<ARGUMENT NAME="useracls" VALUE="ConnectorAdmin"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Enabling ConnectorAdmin role for all Sites accessible to Variables.oracle.wcsites.app.user"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error enabling ConnectorAdmin role for all Sites accessible to Variables.oracle.wcsites.app.user"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="CreateTreeTabs">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/CreateConnectorAdminTreeTabUCM"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Creating Connector Admin tree tab"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error creating Connector Admin tree tab"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="PropertyCleanupUCM">
+		<DELETEPROPERTY PROPERTY="xcelerate.useidmapping" PROPFILE="Variables.oracle.wcsites.node.config/futuretense_xcel.ini" />
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="RemoveInstallationElements">
+		<!--Clean up csdt files/folders-->
+		<DELETEDIRECTORY SOURCE="Variables.oracle.wcsites.config/export/envision/ucm-poller-elements" DELETEFOLDER="TRUE" IGNOREERRORS="TRUE"/>
+	</ACTIONLIST>
+	
+	<!-- CSDT Imports -->
+	<!--
+	<ACTIONLIST NAME="ImportUCMSampleSite">
+		<EXECUTECOMMAND NAME="READURL" >
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/ImportViaCSDT" />
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="Installing UCM Poller elements" />
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="Error installing UCM Poller elements" />
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager" />
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##" />
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user" />
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password" />
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall" />
+			<ARGUMENT NAME="CSINSTALL" VALUE="Variables.oracle.wcsites.home"/>
+			<ARGUMENT NAME="CONTENTSERVERURL" VALUE="Variables.oracle.wcsites.connect.stringContentServer" />
+			<ARGUMENT NAME="MODULE" VALUE="ucm-sample-site"/>
+			<ARGUMENT NAME="IMPORTS" VALUE="@SITE,@ASSET_TYPE,WccAsset_A,WccAsset_CD,Template"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	
+	<ACTIONLIST NAME="EnableWccSampleSiteForUser">
+		<EXECUTECOMMAND NAME="READURL">
+			<ARGUMENT NAME="pagename" VALUE="OpenMarket/Xcelerate/Installation/AddUser"/>
+			<ARGUMENT NAME="name" VALUE="Variables.oracle.wcsites.app.user"/>
+			<ARGUMENT NAME="passwd" VALUE="Variables.oracle.wcsites.app.password"/>
+			<ARGUMENT NAME="command" VALUE="adduser"/>
+			<ARGUMENT NAME="userpub" VALUE="WccSample"/>
+			<ARGUMENT NAME="useracls" VALUE="GeneralAdmin,WorkflowAdmin,SiteAdmin,AdvancedUser,SitesUser"/>
+			<ARGUMENT NAME="acl" VALUE="TableEditor,Visitor,VisitorAdmin,UserEditor,UserReader,xceladmin,Browser,xceleditor,xcelpublish,PageEditor,ElementEditor,RemoteClient,WSUser,WSEditor,WSAdmin"/>
+			<ARGUMENT NAME="URL" VALUE="Variables.oracle.wcsites.connect.stringInstall"/>
+			<ARGUMENT NAME="USERNAME" VALUE="Variables.oracle.wcsites.system.admin.user"/>
+			<ARGUMENT NAME="PASSWORD" VALUE="Variables.oracle.wcsites.system.admin.password"/>
+			<ARGUMENT NAME="TEXT" VALUE="##SUCCESS##"/>
+			<ARGUMENT NAME="DISPLAYTEXT" VALUE="WccSample Sample Site: Registering user: Variables.oracle.wcsites.app.user"/>
+			<ARGUMENT NAME="ERRORMESSAGE" VALUE="WccSample Sample Site: Error registering user: Variables.oracle.wcsites.app.user"/>
+			<ARGUMENT NAME="HOSTURL" VALUE="Variables.oracle.wcsites.connect.stringCatalogManager"/>
+		</EXECUTECOMMAND>
+	</ACTIONLIST>
+	-->
+</CSINSTALL>

@@ -82,7 +82,7 @@ done
 echo ""
 echo ""
 
-echo "$SERVER_NAME log file :  $DOMAIN_HOME/servers/$SERVER_NAME/logs/$SERVER_NAME.log"
+echo "$SERVER_NAME log file :  $DOMAIN_HOME/bin/$SERVER_NAME.out"
 
 echo ""
 echo ""
@@ -90,7 +90,7 @@ echo "$SERVER_NAME server has been started."
 echo ""
 echo ""
 # Tail Mananaged Server logs...
-tail -900f ${DOMAIN_HOME}/servers/$SERVER_NAME/logs/$SERVER_NAME.log &
+tail -900f $DOMAIN_HOME/bin/$SERVER_NAME.out &
 
 childPID=$!
 wait $childPID
