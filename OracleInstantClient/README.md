@@ -62,7 +62,7 @@ restrictions.
 ## Optional Oracle Net and Oracle Client Configuration Files
 
 Optional Oracle Network and Oracle client configuration files can be
-copied to the default configuration file directory
+copied or mounted to the default configuration file directory
 `/usr/lib/oracle/<version>/client64/lib/network/admin`.  Optional
 files include `tnsnames.ora`, `sqlnet.ora`, `oraaccess.xml` and
 `cwallet.sso`.
@@ -72,6 +72,34 @@ Oracle's `TNS_ADMIN` environment variable.
 
 For Instant Client 12.2, and earlier, you must explicitly create the
 directory.
+
+## Using Wallets with Instant Client
+
+Oracle Wallets allow database connection over TLS and/or without requiring
+database credentials.
+
+To use a wallet with Instant Client, obtain your wallet files and place them in
+a secure host directory.  Then, when running a container, use a volume to mount
+the files to the default Instant Client network configuration file directory,
+for example:
+
+```
+docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.3/client64/lib/network/admin:Z,ro . . .
+```
+
+You should review which volume options are required.  The `Z` option is needed
+when selinux is in effect, see "Configure the selinux label" in [Use bind
+mounts](https://docs.docker.com/storage/bind-mounts/).
+
+If you have a wallet zip downloaded from an Oracle Cloud Database then you
+should unzip it and, in this example, place the extracted files in
+`/my/host/wallet_dir` on your host.  Cloud database wallets provide connection
+strings for the database service and enable TLS.  Your container applications
+should use one of the connection strings from `tnsnames.ora` and also supply a
+valid database username and password for connection.  If you are using C based
+applications (including database drivers for Python, Node.js, Go, Ruby or PHP)
+you only need the `tnsnames.ora`, `sqlnet.ora` and `cwallet.sso` files from the
+zip file.  Keep the files secure.
 
 ## Usage
 

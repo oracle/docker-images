@@ -45,11 +45,18 @@ RUN  yum -y install oracle-release-el7 && yum-config-manager --enable ol7_oracle
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
      rm -rf /var/cache/yum
 
-# Optional Oracle Network or Oracle client configuration files can be
-# copied to the default configuration file directory.  These files
-# include tnsnames.ora, sqlnet.ora, oraaccess.xml and cwallet.sso.
-# For example:
-# COPY wallet/* /usr/lib/oracle/${release}.${update}/client64/lib/network/admin
+# Optional Oracle Network and Oracle client configuration files can be put in the
+# default configuration file directory /usr/lib/oracle/${release}.${update}/client64/lib/network/admin.
+# Configuration files include tnsnames.ora, sqlnet.ora, oraaccess.xml and
+# cwallet.sso.  You can use a Docker volume to mount the directory containing
+# the files at runtime, for example:
+#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.3/client64/lib/network/admin:Z,ro . . .
+# this avoids embedding private information such as wallets in images.
+# If you choose to include network configuration files in images, you can use a
+# Dockerfile COPY, for example:
+#   COPY tnsnames.ora sqlnet.ora /usr/lib/oracle/${release}.${update}/client64/lib/network/admin/
+# There is no need to set the TNS_ADMIN environment variable when files are in
+# the container's default configuration file directory, as shown.
 
 # Uncomment if the tools package is added
 # ENV PATH=$PATH:/usr/lib/oracle/${release}.${update}/client64/bin
