@@ -7,11 +7,15 @@
 #
 # Dockerfile template for Oracle Instant Client
 #
-# HOW TO BUILD THIS IMAGE
-# -----------------------
+# HOW TO BUILD THIS IMAGE AND RUN A CONTAINER
+# -------------------------------------------
 #
 # Run:
 #      $ docker build --pull -t oracle/instantclient:19 .
+#      $ docker run -ti --rm oracle/instantclient:19 sqlplus hr@example.com/orclpdb1
+#
+# NOTES
+# -----
 #
 # Applications using Oracle Call Interface (OCI) 19 can connect to
 # Oracle Database 11.2 or later.  Some tools may have other
@@ -20,7 +24,30 @@
 # Note Instant Client 19 automatically configures the global library
 # search path to include Instant Client libraries.
 #
-# Instant Client Packages are available from http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html
+# OPTIONAL ORACLE CONFIGURATION FILES
+# -----------------------------------
+#
+# Optional Oracle Network and Oracle client configuration files can be put in the
+# default configuration file directory /usr/lib/oracle/<version>/client64/lib/network/admin.
+# Configuration files include tnsnames.ora, sqlnet.ora, oraaccess.xml and
+# cwallet.sso.  You can use a Docker volume to mount the directory containing
+# the files at runtime, for example:
+#
+#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.3/client64/lib/network/admin:Z,ro . . .
+#
+# This avoids embedding private information such as wallets in images.  If you
+# do choose to include network configuration files in images, you can use a
+# Dockerfile COPY, for example:
+#
+#   COPY tnsnames.ora sqlnet.ora /usr/lib/oracle/${release}.${update}/client64/lib/network/admin/
+#
+# There is no need to set the TNS_ADMIN environment variable when files are in
+# the container's default configuration file directory, as shown.
+#
+# ORACLE INSTANT CLIENT PACKAGES
+# ------------------------------
+#
+# Instant Client Packages are available from https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html
 #
 # Base - one of these packages is required to run applications and tools
 #   oracle-instantclientXX.Y-basic      : Basic Package - All files required to run OCI, OCCI, and JDBC-OCI applications
@@ -44,19 +71,6 @@ ARG update=3
 RUN  yum -y install oracle-release-el7 && yum-config-manager --enable ol7_oracle_instantclient && \
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
      rm -rf /var/cache/yum
-
-# Optional Oracle Network and Oracle client configuration files can be put in the
-# default configuration file directory /usr/lib/oracle/${release}.${update}/client64/lib/network/admin.
-# Configuration files include tnsnames.ora, sqlnet.ora, oraaccess.xml and
-# cwallet.sso.  You can use a Docker volume to mount the directory containing
-# the files at runtime, for example:
-#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.3/client64/lib/network/admin:Z,ro . . .
-# this avoids embedding private information such as wallets in images.
-# If you choose to include network configuration files in images, you can use a
-# Dockerfile COPY, for example:
-#   COPY tnsnames.ora sqlnet.ora /usr/lib/oracle/${release}.${update}/client64/lib/network/admin/
-# There is no need to set the TNS_ADMIN environment variable when files are in
-# the container's default configuration file directory, as shown.
 
 # Uncomment if the tools package is added
 # ENV PATH=$PATH:/usr/lib/oracle/${release}.${update}/client64/bin
