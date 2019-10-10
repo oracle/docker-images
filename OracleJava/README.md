@@ -16,7 +16,7 @@ $ docker build -t oracle/jdk:11 .
 
 
 ## Building the Java 8 (Server JRE) base image
-[Download Server JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html) `.tar.gz` file and drop it inside the folder `../OracleJava/java-8`.
+[Download Server JRE 8](https://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html) `.tar.gz` file and drop it inside the folder `../OracleJava/java-8`.
 
 Build it using:
 
