@@ -6,17 +6,17 @@
 # So it should start NM and also associate with AdminServer, as well Managed Server
 # Otherwise, only start NM (container is being restarted)o
 
-export MS_HOME="${DOMAIN_HOME}/servers/${MANAGED_SERV_NAME}"
+export MS_HOME="${DOMAIN_HOME}/servers/${MANAGED_SERVER_NAME}"
 export MS_SECURITY="${MS_HOME}/security"
 
-if [ -f ${MS_HOME}/logs/${MANAGED_SERV_NAME}.log ]; then
+if [ -f ${MS_HOME}/logs/${MANAGED_SERVER_NAME}.log ]; then
    exit
 fi
 
 # Wait for AdminServer to become available for any subsequent operation
 /u01/oracle/waitForAdminServer.sh
 
-echo "Managed Server Name: ${MANAGED_SERV_NAME}"
+echo "Managed Server Name: ${MANAGED_SERVER_NAME}"
 echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
@@ -39,11 +39,14 @@ if [ -z "${PASS}" ]; then
 fi
 
 #Set Java Options
-JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
-if [ -z "${JAVA_OPTIONS}" ]; then 
-   JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
+# Use the Env JAVA_OPTIONS if it's been set
+if [ -z "$JAVA_OPTIONS" ]; then
+  JAVA_OPTIONS=`grep ^JAVA_OPTIONS= ${SEC_PROPERTIES_FILE} | cut -d "=" -f2-`
+  if [ -z "${JAVA_OPTIONS}" ]; then 
+    JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
+  fi
+  export JAVA_OPTIONS=${JAVA_OPTIONS}
 fi
-export JAVA_OPTIONS=${JAVA_OPTIONS}
 echo "Java Options: ${JAVA_OPTIONS}"
 
 # Create Managed Server
@@ -53,11 +56,15 @@ echo "password=${PASS}" >> ${MS_SECURITY}/boot.properties
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
 
 # Start 'ManagedServer'
+ADMIN_SERVER_URL="http://${ADMIN_HOST}:${ADMIN_SERVER_PORT}"
+if [ "${SSL_ENABLED}" = "true" ]; then
+  ADMIN_SERVER_URL="https://${ADMIN_HOST}:${ADMIN_SERVER_SSL_PORT}" 
+fi
 echo "Start Managed Server"
-${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_SERV_NAME} http://${ADMIN_HOST}:${ADMIN_PORT}
+${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_SERVER_NAME} ${ADMIN_SERVER_URL}
 
 # tail Managed Server log
-tail -f ${MS_HOME}/logs/${MANAGED_SERV_NAME}.log &
+tail -f ${MS_HOME}/logs/${MANAGED_SERVER_NAME}.log &
 
 childPID=$!
 wait $childPID
