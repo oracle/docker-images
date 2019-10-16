@@ -88,7 +88,7 @@ if [ -z "${PASS}" ]; then
 fi
 
 #Define Java Options
-JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
+JAVA_OPTIONS=`awk '{print $1}' ${SEC_PROPERTIES_FILE} | grep ^JAVA_OPTIONS= | cut -d "=" -f2-`
 if [ -z "${JAVA_OPTIONS}" ]; then
    JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
 fi
