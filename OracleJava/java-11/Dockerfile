@@ -6,17 +6,49 @@ FROM oraclelinux:7-slim
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-ENV JAVA_PKG=jdk-11.*_linux-x64_bin.tar.gz \
-    JAVA_HOME=/usr/java/default
+RUN set -eux; \
+	yum install -y \
+		gzip \
+		tar \
+	; \
+	rm -rf /var/cache/yum
+	
 
-ADD $JAVA_PKG /usr/java/
+# Default to UTF-8 file.encoding
+ENV LANG en_US.UTF-8
 
-RUN yum -y install tar gzip && \
-    rm -rf /var/cache/yum/* && \
-    export JAVA_DIR=$(ls -1 -d /usr/java/*) && \
-    ln -s $JAVA_DIR /usr/java/latest && \
-    ln -s $JAVA_DIR /usr/java/default && \
-    alternatives --install /usr/bin/java java $JAVA_DIR/bin/java 20000 && \
-    alternatives --install /usr/bin/javac javac $JAVA_DIR/bin/javac 20000 && \
-    alternatives --install /usr/bin/jar jar $JAVA_DIR/bin/jar 20000
-    
+
+# Download the JDK from
+#
+#  - https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html
+#	
+# and place it on the same directory as the Dockerfile
+#
+
+ENV JAVA_VERSION=11.0.5 \
+	JAVA_PKG=jdk-11.0.5_linux-x64_bin.tar.gz \
+	JAVA_SHA256=387e60bdad6d6fc20d41cd712536f0f7adbb086fa73bc3cb225b3edad0bfa0a6 \
+	JAVA_HOME=/usr/java/jdk-11
+	
+ENV	PATH $JAVA_HOME/bin:$PATH
+
+##
+COPY $JAVA_PKG /jdk.tgz
+RUN set -eux; \
+	\
+	echo "$JAVA_SHA256 */jdk.tgz" | sha256sum -c -; \
+	mkdir -p "$JAVA_HOME"; \
+	tar --extract --file /jdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
+	rm /jdk.tgz; \
+	\
+	ln -sfT "$JAVA_HOME" /usr/java/default; \
+	ln -sfT "$JAVA_HOME" /usr/java/latest; \
+	for bin in "$JAVA_HOME/bin/"*; do \
+		base="$(basename "$bin")"; \
+		[ ! -e "/usr/bin/$base" ]; \
+		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+	done; \
+	java --version; \
+	javac --version
+
+CMD ["jshell"]
