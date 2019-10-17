@@ -35,13 +35,13 @@ ENV JAVA_VERSION=11.0.5 \
 ENV	PATH $JAVA_HOME/bin:$PATH
 
 ##
-COPY $JAVA_PKG /jdk.tgz
+COPY $JAVA_PKG /tmp/jdk.tgz
 RUN set -eux; \
 	\
-	echo "$JAVA_SHA256 */jdk.tgz" | sha256sum -c -; \
+	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /jdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
-	rm /jdk.tgz; \
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
+	rm /tmp/jdk.tgz; \
 	\
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
