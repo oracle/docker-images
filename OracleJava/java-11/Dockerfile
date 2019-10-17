@@ -10,6 +10,8 @@ RUN set -eux; \
 	yum install -y \
 		gzip \
 		tar \
+# JDK assumes freetype is available		
+		freetype fontconfig \
 	; \
 	rm -rf /var/cache/yum
 	
@@ -48,6 +50,8 @@ RUN set -eux; \
 		[ ! -e "/usr/bin/$base" ]; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
+# -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
+	java -Xshare:dump; \
 	java --version; \
 	javac --version
 
