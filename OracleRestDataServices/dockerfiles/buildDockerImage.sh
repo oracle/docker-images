@@ -29,12 +29,15 @@ EOF
 
 # Validate packages
 checksumPackages() {
-  echo "Checking if required packages are present and valid..."
-  md5sum -c Checksum.$VERSION
-  if [ "$?" -ne 0 ]; then
-    echo "MD5 for required packages to build this image did not match!"
-    echo "Make sure to download missing files in folder '$VERSION'."
-    exit $?
+  # Check if Checksum file exists
+  if [ -f "Checksum.$VERSION" ]; then
+    echo "Checking if required packages are present and valid..."
+    md5sum -c "Checksum.$VERSION"
+    if [ "$?" -ne 0 ]; then
+      echo "MD5 for required packages to build this image did not match!"
+      echo "Make sure to download missing files in folder '$VERSION'."
+      exit $?
+    fi
   fi
 }
 
@@ -158,4 +161,3 @@ EOF
 else
   echo "Oracle Rest Data Services Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
-
