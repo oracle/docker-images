@@ -32,7 +32,8 @@ checksumPackages() {
   # Check if Checksum file exists
   if [ -f "Checksum.$VERSION" ]; then
     echo "Checking if required packages are present and valid..."
-    ret=$(md5sum -c "Checksum.$VERSION")
+    md5sum -c "Checksum.$VERSION"
+    ret=$?
     if [ "$ret" -ne 0 ]; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files."
