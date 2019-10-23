@@ -937,6 +937,8 @@ runrootsh $GRID_HOME  $GRID_USER
 checkCluster
 print_message "Checking Cluster Class"
 checkClusterClass
+print_message "Running User Script for $GRID_USER user"
+su - $GRID_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT GRID"
 
 ###### DB Node Addition ######
 if [ "${CLUSTER_TYPE}" != 'Domain' ]; then
@@ -950,8 +952,8 @@ addDBInst
 print_message "Checking DB status"
 su - $DB_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
 checkDBStatus
-print_message "Running User Script"
-su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT"
+print_message "Running User Script for $DB_USER user"
+su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT DB"
 print_message "Setting Remote Listener"
 setremotelistener
 fi
