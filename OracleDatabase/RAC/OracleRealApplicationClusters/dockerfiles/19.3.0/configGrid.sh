@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -1225,7 +1225,7 @@ runpostrootsetps
 print_message "Checking Cluster Status"
 checkCluster
 print_message "Running User Script for $GRID_USER user"
-su - $GRID_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT GRID"
+su - $GRID_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $GRID_SCRIPT_ROOT GRID"
 
 ####### DB Setup ##########
 if [ "${CLUSTER_TYPE}" == 'STANDALONE' ] || [ "${CLUSTER_TYPE}" == 'MEMBERDB' ]; then
@@ -1238,7 +1238,7 @@ print_message "Checking DB status"
 su - $DB_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
 checkDBStatus
 print_message "Running User Script $DB_USER user"
-su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT DB"
+su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $DB_SCRIPT_ROOT DB"
 print_message "Setting Remote Listener"
 setremotelistener
 fi
