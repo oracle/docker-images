@@ -893,7 +893,7 @@ sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir
 sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" $logdir/$GRID_INSTALL_RSP
 sed -i -e "s|###ASM_DG_FAILURE_GROUP###|$ASM_DG_FAILURE_GROUP|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_FLAG###|$GIMR_FLAG|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###GIMR_FLAG###|$GIMR_DB_FLAG|g" $logdir/$GRID_INSTALL_RSP
 fi
 
 }
@@ -1130,6 +1130,7 @@ else
 
 if [ -f $COMMON_SCRIPTS/$DBCA_RESPONSE_FILE ];then
 cp $COMMON_SCRIPTS/$DBCA_RESPONSE_FILE $logdir/$DBCA_RSP
+chmod 666 $logdir/$DBCA_RSP
 else
 error_exit "$COMMON_SCRIPTS/$DBCA_RESPONSE_FILE does not exist"
 fi
@@ -1144,7 +1145,6 @@ local cmd
 # Replace place holders in response file
 cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'
 eval $cmd
-rm -f $responsefile
 }
 
 checkDBStatus ()
@@ -1224,8 +1224,8 @@ print_message "Running post root.sh steps"
 runpostrootsetps
 print_message "Checking Cluster Status"
 checkCluster
-print_message "Instaling Crontab to monitor Systemd units"
-installCrontab
+print_message "Running User Script for $GRID_USER user"
+su - $GRID_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $GRID_SCRIPT_ROOT GRID"
 
 ####### DB Setup ##########
 if [ "${CLUSTER_TYPE}" == 'STANDALONE' ] || [ "${CLUSTER_TYPE}" == 'MEMBERDB' ]; then
@@ -1237,8 +1237,8 @@ createRACDB
 print_message "Checking DB status"
 su - $DB_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
 checkDBStatus
-print_message "Running User Script"
-su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT"
+print_message "Running User Script for $DB_USER user"
+su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $DB_SCRIPT_ROOT DB"
 print_message "Setting Remote Listener"
 setremotelistener
 fi
