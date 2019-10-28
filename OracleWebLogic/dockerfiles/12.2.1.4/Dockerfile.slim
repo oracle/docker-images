@@ -96,6 +96,7 @@ COPY --from=builder --chown=oracle:oracle /u01 /u01
 COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls-domain.py /u01/oracle/
 
 RUN chmod +xr $SCRIPT_FILE && \
+    chown oracle:oracle -R /u01 && \
     chown oracle:oracle -R /u01/oracle/createAndStartEmptyDomain.sh && \
     chown oracle:oracle -R /u01/oracle/create-wls-domain.py
 

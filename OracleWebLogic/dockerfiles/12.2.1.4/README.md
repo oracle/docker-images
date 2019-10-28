@@ -2,6 +2,8 @@ Oracle WebLogic Server on Docker
 =================================
 These Docker configurations have been used to create the Oracle WebLogic Server (WLS) image. Providing this WLS image facilitates the configuration and environment setup for DevOps users. This project includes the installation and creation of an empty WebLogic Server domain (an Administration Server only). These Oracle WebLogic Server 12.2.1.4 images are based on Oracle Linux and Oracle JRE 8 (Server).
 
+The WebLogic Server install image allows you to run a WebLogic multi-server domain/cluster or a WebLogic single server domain.  This makes it extremely simple to deploy applications and any resource the application might need.
+
 The certification of Oracle WebLogic Server on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Dockerfiles.
 
 For more information on the certification, please see the [Oracle WebLogic Server on Docker certification whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [The WebLogic Server Blog](https://blogs.oracle.com/WebLogicServer/) for updates.
