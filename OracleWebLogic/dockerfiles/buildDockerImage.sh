@@ -114,6 +114,9 @@ fi
 if [ "$VERSION" == "14.1.1.0" ]; then
    DIST="$DISTRIBUTION-$JDKVER"
    echo "Version= $VERSION Distribution= $DIST"
+else
+   DIST="$DISTRIBUTION"
+   echo "Version= $VERSION Distribution= $DIST"
 fi
 
 
@@ -157,6 +160,7 @@ fi
 # BUILDING THE IMAGE #
 # ################## #
 echo "Building image '$IMAGE_NAME' ..."
+echo "Building image using Dockerfile.'$DIST'"
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
