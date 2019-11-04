@@ -112,7 +112,7 @@ if [[ "${OGG_DISTFILE/.tar/}" != "${OGG_DISTFILE}" ]]; then
 fi
 
 function getVersion {
-    local      Version=$(${STRINGS} $1 2>/dev/null | ${AWK} '/^Version[ ]1/ {print $2; exit 0;}')
+    local      Version=$(${STRINGS} $1 2>/dev/null | ${AWK} '/^Version[ ][12]/ {print $2; exit 0;}')
     [[ -n    ${Version} ]] && \
         echo ${Version}
 }
