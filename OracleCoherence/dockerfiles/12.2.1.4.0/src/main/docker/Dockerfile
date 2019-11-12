@@ -30,16 +30,40 @@
 
 # Pull base image
 # ---------------
-FROM oracle/serverjre:8
+FROM oracle/serverjre:8 AS builder
 
 # Maintainer
 # ----------
-MAINTAINER Patrick Fry <patrick.fry@oracle.com>
+LABEL maintainer="patrick.fry@oracle.com"
 
 # Environment variables required for this build (do NOT change)
 ENV FMW_PKG=fmw_12.2.1.4.0_coherence_quick_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.4.0_coherence_quick.jar \
     ORACLE_HOME=/u01/oracle/oracle_home \
+    PATH=$PATH:/usr/java/default/bin \
+    CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
+
+RUN mkdir -p /u01 && \
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
+
+# Copy files required to build this image
+COPY $FMW_PKG install.file oraInst.loc /u01/
+
+RUN chmod a+xr /u01 && \
+    chown oracle:oracle -R /u01
+
+USER oracle
+
+# Install Coherence
+# ------------------------------------------------------------
+RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
+    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
+    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
+
+# Final stage image containing the installed Oracle Home
+FROM oracle/serverjre:8
+
+ENV ORACLE_HOME=/u01/oracle/oracle_home \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_home/oracle_common/common/bin \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
 
@@ -49,12 +73,7 @@ ENV DEPENDENCY_MODULES=/u01/coherence/thirdparty/lib
 RUN mkdir -p /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
 
-# Copy files required to build this image
-COPY $FMW_PKG install.file oraInst.loc /u01/
-COPY start.sh                          /start.sh
-COPY extend-cache-config.xml           $COHERENCE_HOME/conf/extend-cache-config.xml
-COPY logging.properties                $COHERENCE_HOME/conf/logging.properties
-COPY coherence/thirdparty/lib/         $DEPENDENCY_MODULES/
+COPY start.sh /start.sh
 
 RUN mkdir -p /logs && \
     chmod 755 /start.sh && \
@@ -62,12 +81,12 @@ RUN mkdir -p /logs && \
     chown oracle:oracle -R /u01 && \
     chown oracle:oracle -R /logs
 
-USER oracle
+COPY --from=builder --chown=oracle:oracle /u01/oracle /u01/oracle
 
-# Setup required packages (unzip), filesystem, and oracle user
-# ------------------------------------------------------------
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
-    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
-    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
+COPY --chown=oracle:oracle extend-cache-config.xml     $COHERENCE_HOME/conf/extend-cache-config.xml
+COPY --chown=oracle:oracle logging.properties          $COHERENCE_HOME/conf/logging.properties
+COPY --chown=oracle:oracle coherence/thirdparty/lib/   $DEPENDENCY_MODULES/
+
+USER oracle
 
 ENTRYPOINT ["/start.sh"]
