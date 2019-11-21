@@ -8,26 +8,20 @@ FROM oraclelinux:7-slim
 # Note: If you are behind a web proxy, set the build variables for the build:
 #       E.g.:  docker build --build-arg "https_proxy=..." --build-arg "http_proxy=..." --build-arg "no_proxy=..." ...
 
-ARG GRAAL_VERSION=19.2.1
+ARG GRAAL_VERSION=19.3.0
+ARG JAVA_VERSION=java8
 ENV LANG=en_US.UTF-8
 
-ENV GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-$GRAAL_VERSION/graalvm-ce-linux-amd64-$GRAAL_VERSION.tar.gz \
-    JAVA_HOME=/opt/graalvm-ce-$GRAAL_VERSION/ \
-    PATH=$PATH:/opt/rh/llvm-toolset-7/root/usr/bin \
-    LD_LIBRARY_PATH=/opt/rh/llvm-toolset-7/root/usr/lib64 \
-    MANPATH=/opt/rh/llvm-toolset-7/root/usr/share/man \
-    PKG_CONFIG_PATH=/opt/rh/llvm-toolset-7/root/usr/lib64/pkgconfig \
-    PYTHONPATH=/opt/rh/llvm-toolset-7/root/usr/lib/python2.7/site-packages \
-    X_SCLS=llvm-toolset-7
+ENV GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-$JAVA_VERSION-linux-amd64-$GRAAL_VERSION.tar.gz \
+    JAVA_HOME=/opt/graalvm-ce-$JAVA_VERSION-$GRAAL_VERSION/
 
 RUN yum update -y oraclelinux-release-el7 \
     && yum install -y oraclelinux-developer-release-el7 oracle-softwarecollection-release-el7 \
     && yum-config-manager --enable ol7_developer \
     && yum-config-manager --enable ol7_developer_EPEL \
     && yum-config-manager --enable ol7_optional_latest \
-    && yum-config-manager --enable ol7_software_collections \
     && yum install -y bzip2-devel ed gcc gcc-c++ gcc-gfortran gzip file fontconfig less libcurl-devel make openssl openssl-devel readline-devel tar vi which xz-devel zlib-devel \
-    && yum install -y glibc-static libcxx libcxx-devel llvm-toolset-7 zlib-static \
+    && yum install -y glibc-static libcxx libcxx-devel zlib-static \
     && rm -rf /var/cache/yum
 
 RUN fc-cache -f -v
