@@ -21,7 +21,7 @@ RUN yum update -y oraclelinux-release-el7 \
     && yum-config-manager --enable ol7_developer_EPEL \
     && yum-config-manager --enable ol7_optional_latest \
     && yum install -y bzip2-devel ed gcc gcc-c++ gcc-gfortran gzip file fontconfig less libcurl-devel make openssl openssl-devel readline-devel tar vi which xz-devel zlib-devel \
-    && yum install -y glibc-static libcxx libcxx-devel zlib-static \
+    && yum install -y glibc-static libcxx libcxx-devel libstdc++-static zlib-static \
     && rm -rf /var/cache/yum
 
 RUN fc-cache -f -v
