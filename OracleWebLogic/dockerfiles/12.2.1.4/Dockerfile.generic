@@ -24,7 +24,9 @@
 # ---------
 # The resulting image of this Dockerfile contains a WLS Empty Domain.
 #
-# From the OIracle Docker GitHub Project
+# Extend base JRE image
+# You must either build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8` or
+# pull the latest image from the Oracle Container Registry and tag it as `oracle/serverjre:8`
 # --------------------------------------
 FROM oracle/serverjre:8 as builder
 
@@ -61,7 +63,7 @@ USER oracle
 
 RUN cd /u01 && ${JAVA_HOME}/bin/jar xf /u01/$FMW_PKG && cd - && \
     ${JAVA_HOME}/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
-    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file && \
+    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/install.file && \
     rm -rf /u01/oracle/cfgtoollogs
 
 # Final image stage
