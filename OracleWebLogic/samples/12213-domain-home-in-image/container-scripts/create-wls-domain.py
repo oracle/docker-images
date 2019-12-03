@@ -23,13 +23,16 @@ def getEnvVar(var):
 # This python script is used to create a WebLogic domain
 
 #domain_uid                   = DOMAIN_UID
-server_port                   = int(os.environ.get("MANAGED_SERVER_PORT"))
+ssl_enabled                   = SSL_ENABLED
+managed_server_port           = int(os.environ.get("MANAGED_SERVER_PORT"))
+managed_server_ssl_port       = int(os.environ.get("MANAGED_SERVER_SSL_PORT"))
 domain_path                   = os.environ.get("DOMAIN_HOME")
 cluster_name                  = CLUSTER_NAME
 print('cluster_name             : [%s]' % cluster_name);
-admin_server_name             = ADMIN_NAME
+admin_server_name             = ADMIN_SERVER_NAME
 #admin_server_name_svc        = os.environ.get("ADMIN_SERVER_NAME_SVC")
-admin_port                    = int(os.environ.get("ADMIN_PORT"))
+admin_server_port             = int(os.environ.get("ADMIN_SERVER_PORT"))
+admin_server_ssl_port         = int(os.environ.get("ADMIN_SERVER_SSL_PORT"))
 domain_name                   = os.environ.get("DOMAIN_NAME")
 t3_channel_port               = int(T3_CHANNEL_PORT)
 t3_public_address             = T3_PUBLIC_ADDRESS
@@ -46,10 +49,13 @@ production_mode_enabled       = PRODUCTION_MODE_ENABLED
 
 print('domain_path              : [%s]' % domain_path);
 print('domain_name              : [%s]' % domain_name);
+print('ssl_enabled              : [%s]' % ssl_enabled);
 print('admin_server_name        : [%s]' % admin_server_name);
-print('admin_port               : [%s]' % admin_port);
+print('admin_server_port        : [%s]' % admin_server_port);
+print('admin_server_ssl_port    : [%s]' % admin_server_ssl_port);
 print('cluster_name             : [%s]' % cluster_name);
-print('server_port              : [%s]' % server_port);
+print('managed_server_port      : [%s]' % managed_server_port);
+print('managed_server_ssl_port  : [%s]' % managed_server_ssl_port);
 print('number_of_ms             : [%s]' % number_of_ms);
 print('cluster_type             : [%s]' % cluster_type);
 print('managed_server_name_base : [%s]' % managed_server_name_base);
@@ -72,7 +78,7 @@ set('FileName', '%s.log' % (domain_name))
 # ===================================
 cd('/Servers/AdminServer')
 #set('ListenAddress', '%s-%s' % (domain_uid, admin_server_name_svc))
-set('ListenPort', admin_port)
+set('ListenPort', admin_server_port)
 set('Name', admin_server_name)
 
 
@@ -87,6 +93,14 @@ set('ListenPort', t3_channel_port)
 #create(admin_server_name, 'Log')
 #cd('/Servers/%s/Log/%s' % (admin_server_name, admin_server_name))
 #set('FileName', '%s.log' % (admin_server_name))
+
+if (ssl_enabled == 'true'):
+    print 'Enabling SSL in the Admin server...'
+    cd('/Servers/' + admin_server_name)
+    create(admin_server_name, 'SSL')
+    cd('/Servers/' + admin_server_name + '/SSL/' + admin_server_name)
+    set('ListenPort', admin_server_ssl_port)
+    set('Enabled', 'True')
 
 # Set the admin user's username and password
 # ==========================================
@@ -119,10 +133,17 @@ if cluster_type == "CONFIGURED":
     cd('/Servers/%s/' % name )
     print('managed server name is %s' % name);
 #   set('ListenAddress', '%s-%s' % (domain_uid, name_svc))
-    set('ListenPort', server_port)
+    set('ListenPort', managed_server_port)
     set('NumOfRetriesBeforeMSIMode', 0)
     set('RetryIntervalBeforeMSIMode', 1)
     set('Cluster', cluster_name)
+
+    if (ssl_enabled == 'true'):
+      print 'Enabling SSL in the managed server...'
+      create(name, 'SSL')
+      cd('/Servers/' + name+ '/SSL/' + name)
+      set('ListenPort', managed_server_ssl_port)
+      set('Enabled', 'True')
 
 #    create(name,'Log')
 #    cd('/Servers/%s/Log/%s' % (name, name))
@@ -136,7 +157,10 @@ else:
   st1=create(templateName, 'ServerTemplate')
   print('Done creating Server Template: %s' % templateName)
   cd('/ServerTemplates/%s' % templateName)
-  cmo.setListenPort(server_port)
+  cmo.setListenPort(managed_server_port)
+  if (ssl_enabled == 'true'):
+    cmo.getSSL().setEnabled(true)
+    cmo.getSSL().setListenPort(managed_server_ssl_port)
 #  cmo.setListenAddress('%s-%s${id}' % (domain_uid, managed_server_name_base_svc))
   cmo.setCluster(cl)
 #  create(templateName,'Log')
