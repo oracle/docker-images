@@ -247,7 +247,7 @@ Now create the Docker container using the image. For the details of environment 
   --privileged=false \
   --volume racstorage:/oradata \
   --cap-add=SYS_NICE \
-  --cap-add=SYS_RESOURCE
+  --cap-add=SYS_RESOURCE \
   --cap-add=NET_ADMIN \
   -e NODE_VIP=172.16.1.160  \
   -e VIP_HOSTNAME=racnode1-vip  \
