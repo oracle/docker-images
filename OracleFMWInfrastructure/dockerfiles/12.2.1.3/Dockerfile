@@ -18,7 +18,7 @@
 #
 # Extend base JRE image
 # You must build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8`
-# -------------------------
+# ----------------------------------------------------------------------------------------------
 FROM oracle/serverjre:8 as builder
 
 # Maintainer

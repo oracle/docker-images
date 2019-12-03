@@ -25,9 +25,8 @@
 # The resulting image of this Dockerfile contains a WLS Empty Domain.
 #
 # Extend base JRE image
-# You must either build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8` or                                                                          
-# pull the latest image from the Oracle Container Registry and tag it as `oracle/serverjre:8`
-# --------------------------------------
+# You must build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8`                                                                          
+# ----------------------------------------------------------------------------------------------
 FROM oracle/serverjre:8 as builder
 
 # Maintainer
