@@ -23,7 +23,7 @@ def getEnvVar(var):
 # This python script is used to create a WebLogic domain
 
 #domain_uid                   = DOMAIN_UID
-ssl_enabled                   = SSL_ENABLED
+ssl_enabled                   = os.environ.get("SSL_ENABLED")
 managed_server_port           = int(os.environ.get("MANAGED_SERVER_PORT"))
 managed_server_ssl_port       = int(os.environ.get("MANAGED_SERVER_SSL_PORT"))
 domain_path                   = os.environ.get("DOMAIN_HOME")
