@@ -12,15 +12,9 @@ if [ ! -e "$PROPERTIES_FILE" ]; then
     exit
 fi
 
-JAVA_OPTIONS_PROP=`grep '^JAVA_OPTIONS=' $PROPERTIES_FILE | cut -d "=" -f2-`
-if [ -z "$JAVA_OPTIONS_PROP" ]; then
-    JAVA_OPTIONS_PROP="-Dweblogic.StdoutDebugEnabled=false"
-fi
-# Use the Env JAVA_OPTIONS if it's been set
+JAVA_OPTIONS=`awk '{print $1}' $PROPERTIES_FILE | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
 if [ -z "$JAVA_OPTIONS" ]; then
-  export JAVA_OPTIONS=${JAVA_OPTIONS_PROP}
-else
-  JAVA_OPTIONS="${JAVA_OPTIONS} ${JAVA_OPTIONS_PROP}"
+    JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
 fi
 
 export MS_HOME="${DOMAIN_HOME}/servers/${MANAGED_SERVER_NAME}"
@@ -57,12 +51,8 @@ echo password=$PASS >> ${MS_SECURITY}/boot.properties
 
 # Start Managed Server 
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
-ADMIN_SERVER_URL="http://${ADMIN_HOST}:${ADMIN_SERVER_PORT}"
-if [ "${SSL_ENABLED}" = "true" ]; then
-  ADMIN_SERVER_URL="https://${ADMIN_HOST}:${ADMIN_SERVER_SSL_PORT}" 
-fi
 echo 'Start Managed Server: ${MANAGED_SERVER_NAME}'
-${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_SERVER_NAME} ${ADMIN_SERVER_URL}
+${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_SERVER_NAME} http://${ADMIN_HOST}:${ADMIN_PORT}
 
 # Tail Managed Server Log
 tail -f ${MS_LOGS}/${MANAGED_SERVER_NAME}.log &

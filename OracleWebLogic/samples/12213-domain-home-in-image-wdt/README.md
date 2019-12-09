@@ -47,23 +47,17 @@ This sample deploys a simple, one-page web application contained in a ZIP archiv
 The sample requires the Admin Host, Admin Port and Admin Name. It also requires the Managed Server port and the domain debug port. The ports will be EXPOSED through Docker. The other arguments are persisted in the image to be used when running a container. If an attribute is not provided as a `--build-arg` on the `build` command, the following defaults are set.
 
 ```
-CUSTOM_ADMIN_SERVER_NAME = admin-server
- The value is persisted to the image as ADMIN_SERVER_NAME
+CUSTOM_ADMIN_NAME = admin-server
+ The value is persisted to the image as ADMIN_NAME
 
 CUSTOM_ADMIN_HOST = wlsadmin
  The value is persisted to the image as ADMIN_HOST
 
-CUSTOM_ADMIN_SERVER_PORT = 7001
- The value is persisted to the image as ADMIN_SERVER_PORT
-
-CUSTOM_ADMIN_SERVER_SSL_PORT = 7002
- The value is persisted to the image as ADMIN_SERVER_SSL_PORT
+CUSTOM_ADMIN_PORT = 7001
+ The value is persisted to the image as ADMIN_PORT
 
 CUSTOM_MANAGED_SERVER_PORT = 8001
  The value is persisted to the image as MANAGED_SERVER_PORT
-
-CUSTOM_MANAGED_SERVER_SSL_PORT = 8002
- The value is persisted to the image as MANAGED_SERVER_SSL_PORT
 
 CUSTOM_DEBUG_PORT = 8453
  The value is persisted to the image as DEBUG_PORT
@@ -112,8 +106,6 @@ The Admin Server and each Managed Server are run in containers from this build i
 To start the containerized Administration Server, run:
 
     $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 -v <sample-directory>/properties/docker-run:/u01/oracle/properties 12213-domain-home-in-image-wdt
-
-If both the JAVA_OPTIONS environment variable and the JAVA_OPTIONS in the properties/docker-run/security.properties file are configured, the latter gets appended to the former. If SSL is enabled, pass "-e JAVA_OPTIONS=-Dweblogic.security.SSL.ignoreHostnameVerification=true" to the "docker run ..." command that starts a managed server.  This is necessary because the Demo identity certificate gets generated with a host name different from the admin server host when the domain is created.
 
 To start a containerized Managed Server (managed-server-1) to self-register with the Administration Server above, run:
 

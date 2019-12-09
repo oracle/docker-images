@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash ex
 
 # Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 # The Universal Permissive License (UPL), Version 1.0
@@ -17,22 +17,6 @@ if [ "$#" -eq  "0" ]; then
     echo Export environment variables from the ${PROPERTIES_FILE} properties file
 fi
 
-extract_env() {
-   env_value=`awk '{print $1}' $2 | grep ^$1= | cut -d "=" -f2`
-   if [ -n "$env_value" ]; then
-      env_arg=`echo "CUSTOM_$1=$env_value"`
-      echo " env_arg: $env_arg"
-      export $1
-   fi
-}
-
-set_env_arg(){
-  extract_env $1 $2
-  if [ -n "$env_arg" ]; then
-      BUILD_ARG="$BUILD_ARG --build-arg $env_arg"
-  fi
-}
-
 DOMAIN_DIR=`awk '{print $1}' $PROPERTIES_FILE | grep ^DOMAIN_NAME= | cut -d "=" -f2`
 if [ ! -n "$DOMAIN_DIR" ]; then  
    if [ -n "$DOMAIN_NAME" ]; then
@@ -46,33 +30,40 @@ if [ -n "$DOMAIN_DIR" ]; then
      BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_DOMAIN_NAME=$DOMAIN_NAME"
 fi
 
+ADMIN_HOST=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_HOST= | cut -d "=" -f2`
+if [ -n "$ADMIN_HOST" ]; then
+    export ADMIN_HOST
+    echo ADMIN_HOST=$ADMIN_HOST
+    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_ADMIN_HOST=$ADMIN_HOST"
+fi
 
-# Set ADMIN_HOST
-set_env_arg ADMIN_HOST ${PROPERTIES_FILE}
+ADMIN_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_NAME= | cut -d "=" -f2`
+if [ -n "$ADMIN_NAME" ]; then
+    export ADMIN_NAME
+    echo ADMIN_NAME=$ADMIN_NAME
+    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_ADMIN_NAME=$ADMIN_NAME"
+fi
 
-# Set ADMIN_SERVER_NAME
-set_env_arg ADMIN_SERVER_NAME ${PROPERTIES_FILE}
+ADMIN_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^ADMIN_PORT= | cut -d "=" -f2`
+if [ -n "$ADMIN_PORT" ]; then
+    export ADMIN_PORT
+    echo ADMIN_PORT=$ADMIN_PORT
+    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_ADMIN_PORT=$ADMIN_PORT"
+fi
 
-# Set ADMIN_SERVER_PORT
-set_env_arg ADMIN_SERVER_PORT ${PROPERTIES_FILE}
+MANAGED_SERVER_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^MANAGED_SERVER_PORT= | cut -d "=" -f2`
+if [ -n "$MANAGED_SERVER_PORT" ]; then
+    export MANAGED_SERVER_PORT 
+    echo MANAGED_SERVER_PORT=$MANAGED_SERVER_PORT
+    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_MANAGED_SERVER_PORT=$MANAGED_SERVER_PORT"
+fi
 
-# Set ADMIN_SERVER_SSL_PORT
-set_env_arg ADMIN_SERVER_SSL_PORT ${PROPERTIES_FILE}
-
-# Set MANAGED_SERVER_NAME
-set_env_arg MANAGED_SERVER_NAME_BASE ${PROPERTIES_FILE}
-
-# Set MANAGED_SERVER_PORT
-set_env_arg MANAGED_SERVER_PORT ${PROPERTIES_FILE}
-
-# Set MANAGED_SERVER_SSL_PORT
-set_env_arg MANAGED_SERVER_SSL_PORT ${PROPERTIES_FILE}
-
-# Set DEBUG_PORT
-set_env_arg DEBUG_PORT ${PROPERTIES_FILE}
-
-# Set SSL_ENABLED
-set_env_arg SSL_ENABLED ${PROPERTIES_FILE}
+DEBUG_PORT=`awk '{print $1}' $PROPERTIES_FILE | grep ^DEBUG_PORT= | cut -d "=" -f2`
+if [ -n "$DEBUG_PORT" ]; then
+    export DEBUG_PORT
+    echo DEBUG_PORT=$DEBUG_PORT
+    BUILD_ARG="$BUILD_ARG --build-arg CUSTOM_DEBUG_PORT=$DEBUG_PORT"
+fi
 
 CUSTOM_TAG_NAME=`awk '{print $1}' $PROPERTIES_FILE | grep ^IMAGE_TAG= | cut -d "=" -f2`
 if [ -n "$CUSTOM_TAG_NAME" ]; then
