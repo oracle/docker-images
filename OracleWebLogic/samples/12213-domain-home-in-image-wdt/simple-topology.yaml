@@ -3,7 +3,7 @@ domainInfo:
     AdminPassword: '@@FILE:/u01/oracle/properties/adminpass.properties@@'
 topology:
     Name: '@@PROP:DOMAIN_NAME@@'
-    AdminServerName: '@@PROP:ADMIN_SERVER_NAME@@'
+    AdminServerName: '@@PROP:ADMIN_NAME@@'
     ProductionModeEnabled: '@@PROP:PRODUCTION_MODE_ENABLED@@'
     Log:
         FileName: '@@PROP:DOMAIN_NAME@@.log'
@@ -16,23 +16,17 @@ topology:
                 DynamicClusterSize: '@@PROP:CONFIGURED_MANAGED_SERVER_COUNT@@'
                 MaxDynamicClusterSize: '@@PROP:CONFIGURED_MANAGED_SERVER_COUNT@@'
     Server:
-        '@@PROP:ADMIN_SERVER_NAME@@':
-            ListenPort: '@@PROP:ADMIN_SERVER_PORT@@'
+        '@@PROP:ADMIN_NAME@@':
+            ListenPort: '@@PROP:ADMIN_PORT@@'
             NetworkAccessPoint:
                 T3Channel:
                     ListenPort: '@@PROP:T3_CHANNEL_PORT@@'
                     PublicAddress: '@@PROP:T3_PUBLIC_ADDRESS@@'
                     PublicPort: '@@PROP:T3_CHANNEL_PORT@@'
-            SSL:
-                Enabled: '@@PROP:SSL_ENABLED@@'
-                ListenPort: '@@PROP:ADMIN_SERVER_SSL_PORT@@'
     ServerTemplate:
         '@@PROP:CLUSTER_NAME@@-template':
             ListenPort: '@@PROP:MANAGED_SERVER_PORT@@'
             Cluster: '@@PROP:CLUSTER_NAME@@'
-            SSL:
-                Enabled: '@@PROP:SSL_ENABLED@@'
-                ListenPort: '@@PROP:MANAGED_SERVER_SSL_PORT@@'
 appDeployments:
     Application:
         # Quote needed because of hyphen in string

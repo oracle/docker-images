@@ -15,16 +15,11 @@ if [ ! -e "$PROPERTIES_FILE" ]; then
 fi
 
 # Define Admin Server JAVA_OPTIONS
-JAVA_OPTIONS_PROP=`grep '^JAVA_OPTIONS=' $PROPERTIES_FILE | cut -d "=" -f2-`
-if [ -z "$JAVA_OPTIONS_PROP" ]; then
-    JAVA_OPTIONS_PROP="-Dweblogic.StdoutDebugEnabled=false"
+JAVA_OPTIONS=`awk '{print $1}' $PROPERTIES_FILE | grep ^JAVA_OPTIONS= | cut -d "=" -f2`
+if [ -z "${JAVA_OPTIONS}" ]; then
+    JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
 fi
-# Use the Env JAVA_OPTIONS if it's been set
-if [ -z "$JAVA_OPTIONS" ]; then
-  export JAVA_OPTIONS=${JAVA_OPTIONS_PROP}
-else
-  JAVA_OPTIONS="${JAVA_OPTIONS} ${JAVA_OPTIONS_PROP}"
-fi
+export ${JAVA_OPTIONS}
 echo "Java Options: ${JAVA_OPTIONS}"
 
 DERBY_FLAG=false
