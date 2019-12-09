@@ -1,6 +1,10 @@
 Example of Image with WLS Domain
 ================================
-This Dockerfile extends the Oracle WebLogic image built under 1221-domain with tag name '1221-domain'
+This Dockerfile extends the Oracle WebLogic image built under 12213-domain with tag name '12213-weblogic-domain-in-volumel' the image under the samples '../12213-domain'.
+To build the 12.2.1.3 domain image run:
+
+      $ docker build -t 12213-domain-with-resources .
+
 
 WLST Offline script are used during Docker image build phase to deploy the
 
@@ -8,7 +12,7 @@ WLST Offline script are used during Docker image build phase to deploy the
 - JMS artifacts (JMS Server, Queue etc).
 
 # How to build and run
-First make sure you have built sample image inside **1221-domain**. Now to build this sample, run:
+To build this sample, run:
 
         $ docker build -t 1221-domain-with-resources .
 
@@ -24,4 +28,4 @@ When configured to do JMS Persistance the persistent store should be mapped to a
 
 
 # Copyright
-Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
