@@ -1,5 +1,13 @@
 # FAQ: Docker and Oracle Database
 
+## Can I use setup or startup scripts with the Oracle Database image pulled from the Oracle Container Registry or Docker Hub?
+Unfortunately, no. 
+
+Unlike the other pre-built images published by Oracle on both the [Oracle Container Registry](https://container-registry.oracle.com) and [Docker Hub](https://hub.docker.com/search?q=oracle&type=image&image_filter=store), the Oracle Database 12c R2 Standard Edition 2 and Enterprise Edition images are not based on any of the Dockerfiles contained in this repository. If you require the runtime functionality documented in this repository, you will need to build an image from the appropriate Dockerfile. 
+
+You can review the documentation for the published [Oracle Database 12c R2 Standard Edition 2](https://container-registry.oracle.com/pls/apex/f?p=113:4:115514266578664::NO:4:P4_REPOSITORY,AI_REPOSITORY,AI_REPOSITORY_NAME,P4_REPOSITORY_NAME,P4_EULA_ID,P4_BUSINESS_AREA_ID:8,8,Oracle%20Database%20Standard%20Edition%202,Oracle%20Database%20Standard%20Edition%202,1,0&cs=3M7OZKUYUdXrhRcqDYvjcNMWxeKHvx6UsXuvffUQ_Jzxp3L23ABb0HfUj6WwrUFwCIOcQQJi9fvA5cNYNtaZTkw) and [Oracle Database 12c R2 Enterprise Edition](https://container-registry.oracle.com/pls/apex/f?p=113:4:115514266578664::NO:4:P4_REPOSITORY,AI_REPOSITORY,AI_REPOSITORY_NAME,P4_REPOSITORY_NAME,P4_EULA_ID,P4_BUSINESS_AREA_ID:9,9,Oracle%20Database%20Enterprise%20Edition,Oracle%20Database%20Enterprise%20Edition,1,0&cs=3lBoxWZ5InuJuWk8u1uRtc6CDKy3bKfdwUFF4uxS8sl3_E5PEGVWIZxntjcUezVRaePRKf3M8vTVdZifwndd37g) images on the Oracle Container Registry. Reviewing the documentation does not require an Oracle Single Sign-on account.
+
+
 ## How do I change the timezone of my container
 As of Docker 17.06-ce, Docker does not yet provide a way to pass down the `TZ` Unix environment variable from the host to the container. Because of that all containers run in the UTC timezone. If you would like to have your database run in a different timezone you can pass on the `TZ` environment variable within the `docker run` command via the `-e` option. An example would be: `docker run ... -e TZ="Europe/Vienna" oracle/database:12.2.0.1-ee`. Another option would be to specify two read-only volume mounts: `docker run ... -v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro oracle/database:12.2.0.1-ee`. This will synchronize the timezone of the the container with that of the Docker host.
 
@@ -36,4 +44,5 @@ Docker, by default, doesn't assign `exec` rights to `/dev/shm` which is where th
 As you don't have execution rights to it, however, you get the error `Operation not permitted`.
 
 Run the container with `-v /dev/shm --tmpfs /dev/shm:rw,exec,size=<yoursize>` instead, the important part being the `exec` in `--tmpfs /dev/shm:rw,exec,size=<yoursize>`.
-Also make sure you assign an appropriate size as the default Docker uses is only 64MB. 1GB and more is recommended.
+Also make sure you assign an appropriate size as the default Docker uses is only 64MB. Assigning 1GB or  more is recommended.
+
