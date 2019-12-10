@@ -20,8 +20,8 @@ mkdir -p /opt/containers/common_scripts
     * You can create responsefile, based on your environment. You can find the response file grid.rsp and dbca.rsp under <version> dir.
     * In this README.MD, we have used pre-populated Oracle grid and database responsefiles. Copy them under `/opt/containers/common_scripts`.
 ```
-cp <version>/grid_sample.rsp /opt/containers/common_scripts
-cp <version>/dbca_sample.rsp /opt/containers/common_scripts
+cp docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/samples/customracdb/<version/grid_sample.rsp /opt/containers/common_scripts
+cp docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/samples/customracdb/<version>/dbca_sample.rsp /opt/containers/common_scripts
 ```
 **Notes**: 
 * Using the sample responsefiles, you will be able to create 2 node RAC on containers. 
@@ -113,7 +113,7 @@ docker create -t -i \
 -e ASM_DISCOVERY_DIR=/dev \
 -e CRS_NODES="racnode1,racnode2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
--e DBCA_RESPONSE_FILE="dbca.rsp" \
+-e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 -e OP_TYPE="INSTALL" \
 --restart=always \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
@@ -152,8 +152,8 @@ docker create -t -i \
 -e ASM_DEVICE_LIST=/dev/asm_disk1 \
 -e ASM_DISCOVERY_DIR=/dev \
 -e CRS_NODES="racnode1,racnode2" \
--e GRID_RESPONSE_FILE="grid.rsp" \
--e DBCA_RESPONSE_FILE="dbca.rsp" \
+-e GRID_RESPONSE_FILE="grid_sample.rsp" \
+-e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 --restart=always \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --cpu-rt-runtime=95000 \
@@ -196,7 +196,7 @@ docker create -t -i \
 -e ASM_DISCOVERY_DIR=/dev \
 -e CRS_NODES="racnode1,racnode2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
--e DBCA_RESPONSE_FILE="dbca.rsp" \
+-e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 -e OP_TYPE="INSTALL" \
 --restart=always \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
@@ -234,8 +234,8 @@ docker create -t -i \
 -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
 -e ASM_DISCOVERY_DIR=/dev \
 -e CRS_NODES="racnode1,racnode2" \
--e GRID_RESPONSE_FILE="grid.rsp" \
--e DBCA_RESPONSE_FILE="dbca.rsp" \
+-e GRID_RESPONSE_FILE="grid_sample.rsp" \
+-e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 --restart=always \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --cpu-rt-runtime=95000 \
