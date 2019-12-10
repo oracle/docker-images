@@ -306,3 +306,6 @@ To connect to the container execute following command:
 ```
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
+
+# Copyright
+Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
