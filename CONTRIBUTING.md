@@ -32,11 +32,18 @@ signed the OCA can be accepted.
 
 ## Oracle Product Ownership and Responsibility
 
-The GitHub user who submits the initial pull request will be marked as the
-[code owner](./CODEOWNERS) for that product by default. This means any future 
-pull requests that affect the product will need to be approved by this user.
+For any new product content, *you must obtain internal Oracle approvals for the 
+distribution of this content prior to submitting a pull request*. If you are 
+unfamiliar with the approval process to submit code to an existing GitHub
+repository, please contact the [Oracle Open Source team](mailto:opensource_ww_grp@oracle.com)
+for details.
 
-The code owner will also be assigned to any issues relating to their product.
+The GitHub user who submits the initial pull request to add a new product image 
+should add themselves to the [code owner](./CODEOWNERS) file in that same 
+request. This will flag the user as the owner of the content and any future pull 
+requests that affect the conten will need to be approved by this user.
+
+The code owner will also be assigned to any issues relating to their content.
 
 You must ensure that you check the [issues](https://github.com/oracle/docker-images/issues) 
 on at least a weekly basis, though daily is preferred.
