@@ -33,7 +33,7 @@
 # cwallet.sso.  You can use a Docker volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.3/client64/lib/network/admin:Z,ro . . .
+#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.5/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -66,7 +66,7 @@
 FROM oraclelinux:7-slim
 
 ARG release=19
-ARG update=3
+ARG update=5
 
 RUN  yum -y install oracle-release-el7 && yum-config-manager --enable ol7_oracle_instantclient && \
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
