@@ -16,8 +16,9 @@
 # ---------
 # The resulting image of this Dockerfile contains a FMW Infra Base Domain.
 #
-# From
-# -------------------------
+# Extend base JRE image
+# You must build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8`
+# ----------------------------------------------------------------------------------------------
 FROM oracle/serverjre:8 as builder
 
 # Maintainer
@@ -52,7 +53,7 @@ RUN chown oracle:oracle -R /u01
 USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
     $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
-    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
+    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/install.file
 
 # Final image stage
 FROM oracle/serverjre:8
