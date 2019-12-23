@@ -9,6 +9,13 @@ trap "echo TRAPed signal" HUP INT QUIT KILL TERM
 
 main()
     {
+#   Support running as an arbitrary user. See OpenShift best practice https://docs.okd.io/latest/creating_images/guidelines.html
+    if ! whoami &> /dev/null; then
+      if [ -w /etc/passwd ]; then
+        echo "${USER_NAME:-default}:x:$(id -u):0:${USER_NAME:-default} user:${HOME}:/sbin/nologin" >> /etc/passwd
+      fi
+    fi
+
     COMMAND=server
     SCRIPT_NAME=$(basename "${0}")
     MAIN_CLASS="com.tangosol.net.DefaultCacheServer"
