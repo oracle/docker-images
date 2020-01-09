@@ -50,7 +50,7 @@ RUN mkdir -p /u01 && \
 COPY $FMW_PKG install.file oraInst.loc /u01/
 
 RUN chmod a+xr /u01 && \
-    chown oracle:oracle -R /u01
+    chown oracle:root -R /u01
 
 USER oracle
 
