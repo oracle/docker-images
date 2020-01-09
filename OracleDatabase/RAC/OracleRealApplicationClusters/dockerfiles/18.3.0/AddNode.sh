@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -15,9 +15,11 @@
 ####################### Variables and Constants #################
 declare -r FALSE=1
 declare -r TRUE=0
-declare -r GRID_USER='grid'          ## Default gris user is grid.
-declare -r ORACLE_USER='oracle'      ## default oracle user is oracle.
+declare -x GRID_USER='grid'          ## Default gris user is grid.
+declare -x DB_USER='oracle'      ## default oracle user is oracle.
 declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
+declare -r RAC_ENV_FILE="/etc/rac_env_vars"   ## RACENV FILE NAME
+declare -x GIMR_DB_FLAG='false'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
 declare -x PUBLIC_HOSTNAME           ## PUBLIC HOSTNAME set based on hostname
@@ -61,7 +63,10 @@ declare -x PWD_KEY='pwd.key'                  ## PWD Key File
 declare -x ORACLE_PWD_FILE
 declare -x GRID_PWD_FILE
 declare -x REMOVE_OS_PWD_FILES='false'
-declare -x COMMON_OS_PWD_FILE
+declare -x COMMON_OS_PWD_FILE='common_os_pwdfile.enc'
+declare -x CRS_CONFIG_NODES
+declare -x ANSIBLE_INSTALL='false'
+declare -x RUN_DBCA='true'
 
 progname=$(basename "$0")
 ###################### Variabes and Constants declaration ends here  ####################
@@ -352,8 +357,13 @@ local password
 local ssh_pid
 local stat
 
+if [ -z $CRS_NODES ]; then
+  CRS_NODES=$PUBLIC_HOSTNAME
+fi
+
+
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
-EXISTING_CLS_NODES+=",$PUBLIC_HOSTNAME"
+EXISTING_CLS_NODES+=",$CRS_NODES"
 CLUSTER_NODES=$(echo $EXISTING_CLS_NODES | tr ',' ' ')
 
 print_message "Cluster Nodes are $CLUSTER_NODES"
@@ -368,15 +378,15 @@ if [ "${stat}" -ne 0 ]; then
 error_exit "ssh setup for Grid user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $GRID_USER  user"
 fi
 
-print_message "Running SSH setup for $ORACLE_USER user between nodes ${CLUSTER_NODES[@]}"
-cmd='su - $ORACLE_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $ORACLE_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$ORACLE_PASSWORD\""'
+print_message "Running SSH setup for $DB_USER user between nodes ${CLUSTER_NODES[@]}"
+cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$ORACLE_PASSWORD\""'
 (eval $cmd) &
 ssh_pid=$!
 wait $ssh_pid
 stat=$?
 
 if [ "${stat}" -ne 0 ]; then
-error_exit "ssh setup for Oracle  user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $ORACLE_USER user"
+error_exit "ssh setup for Oracle user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $DB_USER user"
 fi
 }
 
@@ -412,7 +422,7 @@ fi
 done
 
 status="NA"
-cmd='su - $ORACLE_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $ORACLE_USER@$node echo ok 2>&1"'
+cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
  echo $cmd
 for node in ${CLUSTER_NODES}
 do
@@ -420,11 +430,11 @@ do
 status=$(eval $cmd)
 
 if [[ $status == ok ]] ; then
-  print_message "SSH check fine for the $ORACLE_USER@$node"
+  print_message "SSH check fine for the $DB_USER@$node"
 elif [[ $status == "Permission denied"* ]] ; then
-   error_exit "SSH check failed for the $ORACLE_USER@$node becuase of permission denied error! SSH setup did not complete sucessfully"
+   error_exit "SSH check failed for the $DB_USER@$node becuase of permission denied error! SSH setup did not complete sucessfully"
 else
-   error_exit "SSH check failed for the $ORACLE_USER@$node! Error occurred during SSH setup"
+   error_exit "SSH check failed for the $DB_USER@$node! Error occurred during SSH setup"
 fi
 
 done
@@ -441,8 +451,22 @@ $INVENTORY/orainstRoot.sh
 
 runrootsh ()
 {
+
 local ORACLE_HOME=$1
-$ORACLE_HOME/root.sh
+local USER=$2
+
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
+fi
+
+print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+for node in "${CLUSTER_NODES[@]}"; do
+cmd='su - $USER -c "ssh $node sudo $ORACLE_HOME/root.sh"'
+eval $cmd
+done
+
 }
 
 generate_response_file ()
@@ -450,22 +474,30 @@ generate_response_file ()
 cp $SCRIPT_DIR/$ADDNODE_RSP $logdir/$ADDNODE_RSP
 chmod 666 $logdir/$ADDNODE_RSP
 
+
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
+
+if [ -z ${CRS_CONFIG_NODES} ]; then
+   CRS_CONFIG_NODES="$PUBLIC_HOSTNAME:$VIP_HOSTNAME:HUB"
+   print_message "Clustered Nodes are set to $CRS_CONFIG_NODES"
+fi
+
 sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$ADDNODE_RSP
 sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $logdir/$ADDNODE_RSP
 sed -i -r "s|###PUBLIC_HOSTNAME###|$PUBLIC_HOSTNAME|g"  $logdir/$ADDNODE_RSP
 sed -i -r "s|###HOSTNAME_VIP###|$VIP_HOSTNAME|g"  $logdir/$ADDNODE_RSP
-sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###OSDBA###|$OSDBA|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###OSOPER###|$OSOPER|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###OSASM###|$OSASM|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###OSDBA###|$OSDBA|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###OSOPER###|$OSOPER|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###OSASM###|$OSASM|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" $logdir/$ADDNODE_RSP
 fi
 
 }
@@ -499,13 +531,16 @@ else
 error_exit "Cluster  Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
-eval $cmd
+if [ ${GIMR_DB_FLAG} == 'true' ]; then
 
-if [ $? -eq 0 ]; then
-print_message "MGMTDB Check went fine"
-else
-error_exit "MGMTDB Check failed!"
+   cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
+   eval $cmd
+
+    if [ $? -eq 0 ]; then
+        print_message "MGMTDB Check went fine"
+    else
+         error_exit "MGMTDB Check failed!"
+    fi
 fi
 
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crsd\""'
@@ -538,6 +573,80 @@ fi
 
 }
 
+setDevicePermissions ()
+{
+
+local cmd
+local state=3
+
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
+fi
+
+print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+for node in "${CLUSTER_NODES[@]}"; do
+print_message "Setting Device permissions for RAC Install  on $node"
+
+if [ ! -z "${GIMR_DEVICE_LIST}" ];then
+
+print_message "Preapring GIMR Device list"
+IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
+        local arr_device=${#devices[@]}
+if [ $arr_device -ne 0 ]; then
+        for device in "${devices[@]}"
+        do
+        print_message "Changing Disk permission and ownership"
+        cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        print_message "Populate Rac Env Vars on Remote Hosts"
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> /etc/rac_env_vars"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+       done
+fi
+
+fi
+
+if [ ! -z "${ASM_DEVICE_LIST}" ];then
+
+print_message "Preapring ASM Device list"
+IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
+        local arr_device=${#devices[@]}
+if [ $arr_device -ne 0 ]; then
+        for device in "${devices[@]}"
+        do
+        print_message "Changing Disk permission and ownership"
+        cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+        print_message "Populate Rac Env Vars on Remote Hosts"
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> /etc/rac_env_vars"'
+        print_message "Command : $cmd execute on $node"
+        eval $cmd
+        unset cmd
+       done
+fi
+
+fi
+
+done
+
+}
+
 checkCluster ()
 {
 local cmd;
@@ -564,13 +673,15 @@ else
 error_exit "Cluster  Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
-eval $cmd
+if [ ${GIMR_DB_FLAG} == 'true' ]; then
+   cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
+    eval $cmd
 
-if [ $? -eq 0 ]; then
-print_message "MGMTDB Check went fine"
-else
-error_exit "MGMTDB Check failed!"
+   if [ $? -eq 0 ]; then
+      print_message "MGMTDB Check went fine"
+   else
+      error_exit "MGMTDB Check failed!"
+    fi
 fi
 
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check crsd"'
@@ -628,13 +739,26 @@ local vip_hostname=$VIP_HOSTNAME
 local cmd
 local stat
 
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
+fi
+
 if [ -f "$logdir/cluvfy_check.txt" ]; then
 print_message "Moving any exisiting cluvfy $logdir/cluvfy_check.txt to $logdir/cluvfy_check_$TIMESTAMP.txt"
 mv $logdir/cluvfy_check.txt $logdir/cluvfy_check."$(date +%Y%m%d-%H%M%S)".txt
 fi
 
-cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $hostname -vip $vip_hostname\" | tee -a $logdir/cluvfy_check.txt"'
+#cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $hostname -vip $vip_hostname\" | tee -a $logdir/cluvfy_check.txt"'
+#eval $cmd
+
+print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+for cls_node in "${CLUSTER_NODES[@]}"; do
+print_message "ssh to the node $node and executing cvu checks on $cls_node"
+cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $cls_node\" | tee -a $logdir/cluvfy_check.txt"'
 eval $cmd
+done
 
 print_message "Checking $logdir/cluvfy_check.txt if there is any failed check."
 FAILED_CMDS=$(sed -n -f - $logdir/cluvfy_check.txt << EOF
@@ -678,7 +802,7 @@ eval $cmd
 print_message "Node Addition performed. removing Responsefile"
 rm -f $responsefile
 cmd='su - $GRID_USER -c "ssh $node \"rm -f $responsefile\""'
-eval $cmd
+#eval $cmd
 
 }
 
@@ -686,11 +810,17 @@ eval $cmd
 addDBNode ()
 {
 local node=$EXISTING_CLS_NODE
-local new_node_hostname=$PUBLIC_HOSTNAME
+
+if [ -z $CRS_NODES ]; then
+   new_node_hostname=$PUBLIC_HOSTNAME
+else
+   new_node_hostname=$CRS_NODES
+fi
+
 local stat=3
 local cmd
 
-cmd='su - $ORACLE_USER -c "ssh $node \"$DB_HOME/addnode/addnode.sh \"CLUSTER_NEW_NODES={$new_node_hostname}\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs -noCopy  -silent\" | tee -a $logfile"'
+cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/addnode/addnode.sh \"CLUSTER_NEW_NODES={$new_node_hostname}\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs -noCopy  -silent\" | tee -a $logfile"'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -708,6 +838,12 @@ local node=$EXISTING_CLS_NODE
 local stat=3
 local cmd
 
+if [ -z $CRS_NODES ]; then
+  CLUSTER_NODES=$PUBLIC_HOSTNAME
+else
+  CLUSTER_NODES=$( echo $CRS_NODES | tr ',' ' ' )
+fi
+
 if [ -z "${ORACLE_SID}" ];then
  error_exit "ORACLE SID is not defined. Cannot Add Instance"
 fi
@@ -716,8 +852,13 @@ if [ -z "${HOSTNAME}" ]; then
 error_exit "Hostname is not defined"
 fi
 
-cmd='su - $ORACLE_USER -c "ssh $node \"$DB_HOME/bin/dbca -addInstance -silent  -nodeName  $HOSTNAME -gdbName $ORACLE_SID\" | tee -a $logfile"'
+
+for new_node in "${CLUSTER_NODES[@]}"; do
+print_message "Adding DB Instance on $node"
+cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/bin/dbca -addInstance -silent  -nodeName $new_node  -gdbName $ORACLE_SID\" | tee -a $logfile"'
 eval $cmd
+done
+
 }
 
 checkDBStatus ()
@@ -752,7 +893,7 @@ local cmd
 
 if resolveip $CMAN_HOSTNAME; then
 print_message "Executing script to set the remote listener"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
+su - $DB_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
 fi
 
 }
@@ -768,11 +909,11 @@ fi
 
 ###### Etc Host and other Checks and setup before proceeding installation #####
 all_check
-print_message "Setting random password for root/$GRID_USER/$ORACLE_USER user"
+print_message "Setting random password for root/$GRID_USER/$DB_USER user"
 print_message "Setting random password for $GRID_USER user"
 setpasswd $GRID_USER  $GRID_PASSWORD
-print_message "Setting random password for $ORACLE_USER user"
-setpasswd $ORACLE_USER $ORACLE_PASSWORD
+print_message "Setting random password for $DB_USER user"
+setpasswd $DB_USER $ORACLE_PASSWORD
 print_message "Setting random password for root user"
 setpasswd root $PASSWORD
 
@@ -781,6 +922,8 @@ setupSSH
 checkSSH
 
 #### Grid Node Addition #####
+print_message "Setting Device permission to grid and asmadmin on all the cluster nodes"
+setDevicePermissions
 print_message "Checking Cluster Status on $EXISTING_CLS_NODE"
 CheckRemoteCluster
 print_message "Generating Responsefile for node addition"
@@ -790,25 +933,29 @@ cluvfyCheck
 print_message "Running Node Addition and cluvfy test for node $PUBLIC_HOSTNAME"
 addGridNode
 print_message "Running root.sh on node $PUBLIC_HOSTNAME"
-runrootsh $GRID_HOME 
+runrootsh $GRID_HOME  $GRID_USER
 checkCluster
 print_message "Checking Cluster Class"
 checkClusterClass
+print_message "Running User Script for $GRID_USER user"
+su - $GRID_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $GRID_SCRIPT_ROOT GRID"
 
 ###### DB Node Addition ######
 if [ "${CLUSTER_TYPE}" != 'Domain' ]; then
+if [ "${RUN_DBCA}" == 'true' ]; then
 print_message  "Performing DB Node addition"
 addDBNode
 print_message "Running root.sh"
-runrootsh $DB_HOME
+runrootsh $DB_HOME $DB_USER
 print_message "Adding DB Instance"
 addDBInst 
 print_message "Checking DB status"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
+su - $DB_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
 checkDBStatus
-print_message "Running User Script"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT"
+print_message "Running User Script for $DB_USER user"
+su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $DB_SCRIPT_ROOT DB"
 print_message "Setting Remote Listener"
 setremotelistener
+fi
 fi
 echo $TRUE

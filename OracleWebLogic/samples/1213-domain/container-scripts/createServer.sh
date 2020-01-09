@@ -15,7 +15,7 @@ fi
 
 # Start Node Manager
 echo "Starting NodeManager in background..."
-nohup startNodeManager.sh > log.nm 2>&1 &
+nohup /u01/oracle/user_projects/domains/base_domain/bin/startNodeManager.sh > log.nm 2>&1 &
 echo "NodeManager started."
 
 # Add this 'Machine' and 'ManagedServer' to the AdminServer only if 1st execution

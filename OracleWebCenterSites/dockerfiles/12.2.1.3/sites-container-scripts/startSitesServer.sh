@@ -42,24 +42,23 @@ trap _int SIGINT
 trap _term SIGTERM
 trap _kill SIGKILL
 
-WCSITES_MANAGED_HOSTNAME=`hostname -I`
+WCSITES_MANAGED_HOSTNAME=`hostname -i`
 
 replaceWith=$WCSITES_MANAGED_HOSTNAME
 replaceString=$WCSITES_OLD_MANAGED_HOSTNAME
 
-location=$DOMAIN_HOME/wcsites/wcsites/config/
+location=$DOMAIN_HOME/config/fmwconfig/servers/${SITES_SERVER_NAME}/config/
 
 echo The following list of files are found in location ${location} that contains ${replaceString}, will be replaced with ${replaceWith}
 grep -l ${replaceString} ${location}"jbossTicketCacheReplicationConfig.xml"
 grep -l ${replaceString} ${location}"jbossTicketCacheReplicationConfig.xml" | xargs sed -i "s/${replaceString}/${replaceWith}/g"
 
+echo Remove file $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 rm $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
-
-#echo "WCSITES_MANAGED_HOSTNAME="$WCSITES_MANAGED_HOSTNAME>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 
 echo "WCSITES_ADMIN_HOSTNAME="$WCSITES_ADMIN_HOSTNAME>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 echo "WCSITES_ADMIN_PORT="$ADMIN_PORT>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
-echo "WCSITES_MANAGED_HOSTNAME="$WCSITES_ADMIN_HOSTNAME>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
+echo "WCSITES_MANAGED_HOSTNAME="$WCSITES_MANAGED_HOSTNAME>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 echo "WCSITES_MANAGED_PORT="$WCSITES_MANAGED_PORT>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 
 # First Update the server in the domain

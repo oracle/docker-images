@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -13,6 +13,8 @@ declare -a cluster_nodes
 DEL_NODE=${1}
 NODE_HOSTNAME=$(hostname)
 node_count=0
+
+source /etc/rac_env_vars
 
 check_env_vars ()
 {

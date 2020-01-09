@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
@@ -27,7 +27,7 @@ mkdir -p $INVENTORY
 chown -R grid:oinstall $INVENTORY
 
 chmod 666 /etc/sudoers
-echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+echo "oracle       ALL=(ALL)       NOPASSWD: /usr/bin/passwd" >> /etc/sudoers
 echo "grid       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 chmod 440 /etc/sudoers
 

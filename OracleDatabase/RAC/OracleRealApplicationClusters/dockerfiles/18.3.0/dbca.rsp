@@ -49,8 +49,7 @@ sid=###ORACLE_SID###
 # Default value : SI
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-databaseConfigType=RAC
-
+databaseConfigType=###DATABASE_CONFIG_TYPE###
 #-----------------------------------------------------------------------------
 # Name          : RACOneNodeServiceName
 # Datatype      : String
@@ -169,7 +168,7 @@ createAsContainerDatabase=###CONTAINER_DB_FLAG###
 # Default value : 0
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-numberOfPDBs=1
+numberOfPDBs=###PDB_COUNT###
 
 #-----------------------------------------------------------------------------
 # Name          : pdbName 
@@ -210,7 +209,7 @@ pdbAdminPassword=###ORACLE_PWD###
 # Default value : None
 # Mandatory     : No (Yes for RAC database-centric database )
 #-----------------------------------------------------------------------------
-nodelist=###PUBLIC_HOSTNAME###
+nodelist=###DB_NODES###
 
 #-----------------------------------------------------------------------------
 # Name          : templateName
@@ -220,7 +219,7 @@ nodelist=###PUBLIC_HOSTNAME###
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-templateName=/u01/app/oracle/product/18.3.0/dbhome_1/assistants/dbca/templates/General_Purpose.dbc
+templateName={ORACLE_HOME}/assistants/dbca/templates/General_Purpose.dbc
 
 #-----------------------------------------------------------------------------
 # Name          : sysPassword
@@ -602,4 +601,4 @@ automaticMemoryManagement=false
 # Default value : 
 # Mandatory     : NO
 #-----------------------------------------------------------------------------
-totalMemory=5000
+totalMemory=###TOTAL_MEMORY###

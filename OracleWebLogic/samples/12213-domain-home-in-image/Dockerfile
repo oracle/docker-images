@@ -29,6 +29,7 @@ ARG CUSTOM_MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT:-8001}"
 ARG CUSTOM_DEBUG_PORT="${CUSTOM_DEBUG_PORT:-8453}"
 ARG CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-admin-server}"
 ARG CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-wlsadmin}"
+ARG CUSTOM_CLUSTER_NAME="${CUSTOM_CLUSTER_NAME:-DockerCluster}"
 
 # WLS Configuration
 # ---------------------------
@@ -39,13 +40,14 @@ ENV ORACLE_HOME=/u01/oracle \
     ADMIN_PORT="${CUSTOM_ADMIN_PORT}" \
     ADMIN_NAME="${CUSTOM_ADMIN_NAME}" \
     ADMIN_HOST="${CUSTOM_ADMIN_HOST}" \
+    CLUSTER_NAME="${CUSTOM_CLUSTER_NAME}" \
     MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT}" \
     MANAGED_SERV_NAME="${MANAGED_SERV_NAME}" \
     DEBUG_PORT="8453" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
 
 # Add files required to build this image
-COPY container-scripts/* /u01/oracle/
+COPY --chown=oracle:oracle container-scripts/* /u01/oracle/
 
 #Create directory where domain will be written to
 USER root
@@ -54,12 +56,13 @@ RUN chmod +xw /u01/oracle/*.sh && \
     mkdir -p ${PROPERTIES_FILE_DIR} && \
     chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
-    chown -R oracle:oracle $DOMAIN_HOME && \
-    chmod -R a+xwr $DOMAIN_HOME
+    chown -R oracle:oracle $DOMAIN_HOME/.. && \
+    chmod -R a+xwr $DOMAIN_HOME/..
 
-COPY properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
+COPY --chown=oracle:oracle properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
 
 # Configuration of WLS Domain
+USER oracle
 RUN /u01/oracle/createWLSDomain.sh && \
     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
     chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \

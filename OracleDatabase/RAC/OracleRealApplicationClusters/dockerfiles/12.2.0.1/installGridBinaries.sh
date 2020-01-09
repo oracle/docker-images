@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: December, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -9,6 +9,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
+
 
 EDITION=$1
 
@@ -40,6 +41,9 @@ if [ "$GRID_HOME" == "" ]; then
    exit 1;
 fi;
 
+export ORACLE_HOME=$GRID_HOME
+export PATH=$ORACLE_HOME/bin:$PATH
+
 temp_var1=`hostname`
 # Install Oracle binaries
 mkdir -p /home/grid/.ssh && \
@@ -47,3 +51,4 @@ chmod 700 /home/grid/.ssh && \
 unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $GRID_HOME    && \
 #rm -f $INSTALL_SCRIPTS/$INSTALL_FILE_1 && \
 $GRID_HOME/perl/bin/perl $GRID_HOME/clone/bin/clone.pl -silent ORACLE_BASE=$GRID_BASE ORACLE_HOME=$GRID_HOME OSDBA_GROUP=asmdba OSASM_GROUP=asmadmin  ORACLE_HOME_NAME="grid122_home1" INVENTORY_LOCATION=$INVENTORY  LOCAL_NODE="$temp_var1" CRS=TRUE
+

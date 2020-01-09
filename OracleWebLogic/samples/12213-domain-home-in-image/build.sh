@@ -20,8 +20,8 @@
 # The setEnv.sh will set the TAG_NAME variable if the property is found in the
 # properties file. This function should be called after the setEnv.sh is run
 tag_name() {
-   tagName=${TAG_NAME:-"12213-domain-home-in-image:latest"}
-   # echo ${TAG_NAME} and ${tagName}
+   tagName=${CUSTOM_IMAGE_TAG:-"12213-domain-home-in-image:latest"}
+   echo "CUSTOM_IMAGE_TAG  ${tagName} "
 }
 
 # The location where the script is running will be used as the Context for
@@ -40,4 +40,4 @@ set_context
 . ${scriptDir}/container-scripts/setEnv.sh ${scriptDir}/properties/docker-build/domain.properties
 
 tag_name
-docker build $BUILD_ARG -t  ${tagName}  ${scriptDir}
+docker build --force-rm=true --no-cache=true $BUILD_ARG -t  ${tagName}  ${scriptDir}
