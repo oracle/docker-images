@@ -91,12 +91,9 @@ ENV ORACLE_HOME=/u01/oracle/oracle_home \
 # Allow the start script to dynamically modify the /etc/passwd file when
 # running in environments that create a dynamic user
 # see: https://docs.okd.io/latest/creating_images/guidelines.html
-RUN mkdir -p /u01 && \
-    chgrp root /u01 && \
-    chmod g=u /u01 && \
-    mkdir -p /u01/oracle && \
-    chgrp root /u01/oracle && \
-    chmod g=u /u01/oracle && \
+RUN mkdir -p /u01/oracle && \
+    chgrp -R root /u01 && \
+    chmod -R g=u /u01 && \
     mkdir -p /logs && \
     chgrp -R root /logs && \
     chmod -R g=u /logs && \
