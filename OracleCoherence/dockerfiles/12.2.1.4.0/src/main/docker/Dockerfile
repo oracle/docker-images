@@ -70,10 +70,10 @@ COPY logging.properties            $COHERENCE_HOME/conf/logging.properties
 COPY coherence/thirdparty/lib/     $DEPENDENCY_MODULES/
 
 # Change permissions of the files
-RUN chgrp -R 0 /u01 && \
+RUN chgrp -R root /u01 && \
     chmod -R g=u /u01 && \
     chmod 755 /start.sh && \
-    chgrp -R 0 /start.sh && \
+    chgrp -R root /start.sh && \
     chmod -R g=u /start.sh
 
 
@@ -92,13 +92,13 @@ ENV ORACLE_HOME=/u01/oracle/oracle_home \
 # running in environments that create a dynamic user
 # see: https://docs.okd.io/latest/creating_images/guidelines.html
 RUN mkdir -p /u01 && \
-    chgrp 0 /u01 && \
+    chgrp root /u01 && \
     chmod g=u /u01 && \
     mkdir -p /u01/oracle && \
-    chgrp 0 /u01/oracle && \
+    chgrp root /u01/oracle && \
     chmod g=u /u01/oracle && \
     mkdir -p /logs && \
-    chgrp -R 0 /logs && \
+    chgrp -R root /logs && \
     chmod -R g=u /logs && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash -u 1000 -g 0 oracle &&\
     chmod g=u /etc/passwd
@@ -108,9 +108,9 @@ RUN mkdir -p /u01 && \
 # random user that is a member of the root group regardless of the user configured in
 # this Dockerfile.
 # see: https://docs.okd.io/latest/creating_images/guidelines.html
-COPY --from=builder --chown=oracle:0 /u01/oracle    /u01/oracle
-COPY --from=builder --chown=oracle:0 /start.sh      /start.sh
-COPY --from=builder --chown=oracle:0 /u01/coherence /u01/coherence
+COPY --from=builder --chown=oracle:root /u01/oracle    /u01/oracle
+COPY --from=builder --chown=oracle:root /start.sh      /start.sh
+COPY --from=builder --chown=oracle:root /u01/coherence /u01/coherence
 
 # The oracle user was added with the uid 1000. We use the uid here rather than the username
 # for OpenShift best practice - see https://docs.okd.io/latest/creating_images/guidelines.html
