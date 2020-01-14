@@ -94,6 +94,9 @@ ENV ORACLE_HOME=/u01/oracle/oracle_home \
 RUN mkdir -p /u01 && \
     chgrp 0 /u01 && \
     chmod g=u /u01 && \
+    mkdir -p /u01/oracle && \
+    chgrp 0 /u01/oracle && \
+    chmod g=u /u01/oracle && \
     mkdir -p /logs && \
     chgrp -R 0 /logs && \
     chmod -R g=u /logs && \
