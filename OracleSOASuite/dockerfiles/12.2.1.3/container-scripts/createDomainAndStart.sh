@@ -152,6 +152,8 @@ then
     echo "INFO: SOA RCU has already been loaded. Skipping..."
 fi
 
+RUN_RCU="false"
+
 if [ "$RUN_RCU" = "true" ] 
 then
   setupRCU
@@ -205,6 +207,7 @@ then
   if [ $retval -ne 0 ]; 
   then
     echo "ERROR: Domain Configuration failed. Please check the logs"
+    sleep 1800
     exit
   else
     updateListenAddress
