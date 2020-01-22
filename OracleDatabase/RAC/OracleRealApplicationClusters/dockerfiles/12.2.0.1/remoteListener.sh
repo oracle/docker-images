@@ -43,7 +43,7 @@ if [ -z "${cman_host}" ]; then
   echo "Cman Host : $cman_host"
 fi;
 
-ORACLE_HOME=$DB_HOME
+export ORACLE_HOME=$DB_HOME
 ORACLE_SID=$($DB_HOME/bin/srvctl status database -d $sid | grep $(hostname) | awk '{ print $2 }')
 
 echo "setting Oracle sid to  $ORACLE_SID on $(hostname)"
