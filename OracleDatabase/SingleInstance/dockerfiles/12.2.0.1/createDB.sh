@@ -66,13 +66,13 @@ dbca -silent -createDatabase -responseFile $ORACLE_BASE/dbca.rsp ||
 
 echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_HOME/network/admin/tnsnames.ora
 echo "$ORACLE_PDB= 
-(DESCRIPTION = 
-  (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
-  (CONNECT_DATA =
-    (SERVER = DEDICATED)
-    (SERVICE_NAME = $ORACLE_PDB)
-  )
-)" >> $ORACLE_HOME/network/admin/tnsnames.ora
+  (DESCRIPTION = 
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = $ORACLE_PDB)
+    )
+  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
 
 # Remove second control file, fix local_listener, make PDB auto open, enable EM global port
 sqlplus / as sysdba << EOF
