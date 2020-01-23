@@ -136,7 +136,7 @@ Sample Data will look like this:
     ADMIN_PASSWORD=Welcome1
     MANAGED_SERVER=soa_server1
     DOMAIN_TYPE=soa
-    ADMIN_HOST=slc09cwi.us.oracle.com
+    ADMIN_HOST=admin.yourcompany.com
     
 To start a docker container with a SOA domain and the WebLogic AdminServer call `docker run` command and pass the above `adminserver.env.list` file.
 
@@ -173,7 +173,7 @@ Sample Data will look like this:
 
     MANAGED_SERVER=soa_server1
     DOMAIN_TYPE=soa
-    ADMIN_HOST=slc09cwi.us.oracle.com
+    ADMIN_HOST=admin.yourcompany.com
     ADMIN_PORT=7001
     
 To start a docker container for SOA server you can simply call `docker run` command and passing `soaserver.env.list`. 
