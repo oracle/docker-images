@@ -1,4 +1,4 @@
-# Oracle WebCenter Sites 12c R2 (12.2.1.3.0) on Docker
+# Oracle WebCenter Sites 12c R2 (12.2.1.4.0) on Docker
 
 ## Contents
 
@@ -15,7 +15,7 @@
 ## 1. Introduction
 To create web content management solutions, developers need a lightweight environment. Docker images need minimum resources, thereby allowing developers to quickly create development environments.
 
-This project offers scripts to build an Oracle WebCenter Sites image based on 12c R2 (12.2.1.3). Use this Docker configuration to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle WebCenter Sites, see the [Oracle WebCenter Sites Online Documentation](https://docs.oracle.com/middleware/12213/wcs/index.html).
+This project offers scripts to build an Oracle WebCenter Sites image based on 12c R2 (12.2.1.4). Use this Docker configuration to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle WebCenter Sites, see the [Oracle WebCenter Sites Online Documentation](https://docs.oracle.com/middleware/12213/wcs/index.html).
 
 This project creates Oracle WebCenter Sites Docker image with a single node targeted for development and testing, and excludes components such as SatelliteServer, SiteCapture, and VisitorServices. This image is supported as per Oracle Support Note 2017945.1.
 
@@ -63,12 +63,12 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
 2. Click **Accept** to accept the license agreement.
 3. To download Oracle Fusion Middleware infrastructure base image:    
     ```
-        $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.3
+        $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
     ```
 	
     Retag the Oracle Fusion Middleware Infrastructure Docker image by running the following command:
     ```
-        $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.3 oracle/fmw-infrastructure:12.2.1.3
+        $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4
     ```
     **Note**: 
     - If you want to download image from the Docker Store, see [FAQ](#8-alternate-download-location-for-oracle-fusion-middleware-infrastructure-and-oracle-database-images) section.
@@ -94,15 +94,15 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
 ### C. To clone and download Oracle WebCenter Sites docker scripts and binary file.
 1. Clone or download the [GitHub repository](https://github.com/oracle/docker-images).
 The repository contains Docker files and scripts to build Docker images for Oracle products.
-2. Download Oracle WebCenter Sites 12c R2 12.2.1.3 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
-3. Save the Oracle WebCenter Sites 12.2.1.3 binary into the cloned repository folder located at: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/`.
+2. Download Oracle WebCenter Sites 12c R2 12.2.1.4 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
+3. Save the Oracle WebCenter Sites 12.2.1.4 binary into the cloned repository folder located at: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.4/`.
 
 ## 5. Building Oracle WebCenter Sites Docker Images
 
 To build Oracle WebCenter Sites Docker image, go to folder located at `../docker-images/OracleWebCenterSites/dockerfiles/` and run the following command:
 
 ```
-   $ sh buildDockerImage.sh -v 12.2.1.3
+   $ sh buildDockerImage.sh -v 12.2.1.4
 ```
 
    For more information on usage of _buildDockerImage.sh_ command, see [FAQ](#1-what-is-the-usage-of-builddockerimagesh-file),
@@ -236,7 +236,7 @@ b. Run the following command and pass the environment file name as a parameter:
 ```
 Sample command:
 ```
-   $ docker run -d --name WCSitesAdminContainer --network=WCSitesNet -p 7001:7001 -p 9001:9001 -v /scratch/WCSitesVolume/WCSites:/u01/oracle/user_projects -v /scratch/WCSitesVolume/WCSitesShared:/u01/oracle/sites-shared --env-file ./wcsitesadminserver.env.list oracle/wcsites:12.2.1.3
+   $ docker run -d --name WCSitesAdminContainer --network=WCSitesNet -p 7001:7001 -p 9001:9001 -v /scratch/WCSitesVolume/WCSites:/u01/oracle/user_projects -v /scratch/WCSitesVolume/WCSitesShared:/u01/oracle/sites-shared --env-file ./wcsitesadminserver.env.list oracle/wcsites:12.2.1.4
 ```
 Admin Container start up command explained:
 
@@ -249,7 +249,7 @@ Admin Container start up command explained:
 | --v                    | user_projects_volume_dir| ‘/scratch/WCSitesVolume/WCSites’ mounts the host directory as a Volume.      |
 | --v                    | sites_shared_volume_dir | ‘/scratch/WCSitesVolume/WCSitesShared’ mounts the host directory as a Volume.|
 | --env-file             | environment_file        | ‘wcsitesadminserver.env.list’ sets the environment variables.                            |
-| oracle/wcsites:12.2.1.3| repo_name:tag_name      | Repository name, Tag name of the image.                                                   |
+| oracle/wcsites:12.2.1.4| repo_name:tag_name      | Repository name, Tag name of the image.                                                   |
 
 For monitoring Docker container Logs:
 ```
@@ -295,7 +295,7 @@ b. Run the following command and pass the environment file name as a parameter:
 ```
 Sample command:
 ```
-   $ docker run -d -t --name WCSitesManagedContainer --network=WCSitesNet --volumes-from WCSitesAdminContainer -p 7002:7002 -p 9002:9002 --env-file ./wcsitesserver.env.list oracle/wcsites:12.2.1.3 /bin/bash -c "/u01/oracle/sites-container-scripts/startSitesServer.sh; /bin/bash"
+   $ docker run -d -t --name WCSitesManagedContainer --network=WCSitesNet --volumes-from WCSitesAdminContainer -p 7002:7002 -p 9002:9002 --env-file ./wcsitesserver.env.list oracle/wcsites:12.2.1.4 /bin/bash -c "/u01/oracle/sites-container-scripts/startSitesServer.sh; /bin/bash"
 ```
 Managed Container start up command explained:
 
@@ -307,7 +307,7 @@ Managed Container start up command explained:
 | -p                     | sites_ssl_port      | Sites SSL port; set to ‘9002’. Maps the container port to host’s port.		  |
 | --volumes-from         | admin_container_name| ‘WCSitesAdminContainer’ mounts the directory from Admin container.           |
 | --env-file             | environment_file    | ‘wcsitesadminserver.env.list’ sets the environment variables.                |
-| oracle/wcsites:12.2.1.3| repo_name:tag_name  | Repository name, Tag name of the image.                                      |
+| oracle/wcsites:12.2.1.4| repo_name:tag_name  | Repository name, Tag name of the image.                                      |
    
 																												 
    **IMPORTANT**: Monitor the container logs to check if WebCenter Sites starts up before logging in to the Console.
@@ -359,13 +359,13 @@ To view the Docker Container logs run:
 ##### 3. How to reset Oracle WebCenter Sites [Administrator,Application,SatelliteServer] passwords?
 See [How to Reset a WebCenter Sites Password] (https://docs.oracle.com/middleware/1221/wcs/admin/GUID-BECECCFD-0EAF-4157-B23D-6CBD4F3BDEE9.htm#WBCSA8419)
 ##### 4. How to modify start/stop admin/managed server scripts?
-You can find these scripts here: dockerfiles/12.2.1.3/sites-container-scripts) sites-container-scripts are located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/sites-container-scripts/*` 
+You can find these scripts here: dockerfiles/12.2.1.4/sites-container-scripts) sites-container-scripts are located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts/*` 
 
 ##### 5. Why do I get an error message as "... RCU exists already"?
 Most likely, you're not running this command for the first time. The RCU_prefix may be present already. Drop the corresponding schemas or use a different prefix.
 
 ##### 6. Where can I find RCU configuration Wizard and WebCenter Sites configuration scripts?
-See [Readme.md](dockerfiles/12.2.1.3/wcs-wls-docker-install/README.md) located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.3/wcs-wls-docker-install/README.md`
+See [Readme.md](dockerfiles/12.2.1.4/wcs-wls-docker-install/README.md) located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.4/wcs-wls-docker-install/README.md`
 
 ##### 7. How do I configure WebCenter Sites with an On-Prem Oracle Database instance? 
 Set DB_CONNECTSTRING connection string parameter as mentioned in section [Update the environment file](#1-update-the-environment-file-1).
@@ -375,7 +375,7 @@ Before you build an Oracle WebCenter Sites image, download the Oracle Fusion Mid
 
 If you download Oracle Fusion Middleware infrastructure from Docker Store, then retag using below command:
 ```
-   $ docker tag store/oracle/fmw-infrastructure:12.2.1.3 oracle/fmw-infrastructure:12.2.1.3
+   $ docker tag store/oracle/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4
 ```
 If you download Oracle Database from Docker Store, then retag using below command:
 ```
