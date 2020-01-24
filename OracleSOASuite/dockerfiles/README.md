@@ -5,7 +5,7 @@ Sample Docker configurations to facilitate installation, configuration, and envi
 
 You will be able to build the SOA images based on the version which is required using the build scripts provided. 
 
-## SOA Distributable version 12.2.1.x Docker image Creation and Running
+## SOA 12.2.1.x Docker image Creation and Running
 
 To build a SOA image either you can start from building Oracle JDK and Oracle FMW Infrastrucure image or use the already available Oracle FMW Infrastructure image. The FMW Infrastructure image is available in the [Oracle Container Registry](https://container-registry.oracle.com), and can be pulled from there. If you plan to use the Oracle FMW Infrastructure image from the [Oracle Container Registry](https://container-registry.oracle.com), you can skip the next two steps and continue with "Building a Docker Image for SOA".
 
