@@ -1,14 +1,16 @@
 SOA on Docker
 =============
 
-Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start dockerfiles for SOA 12.2.1.3.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle WebLogic Infrastructure 12.2.1.3.0.
+Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start dockerfiles for Oracle SOA 12.2.1.3.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle Fusion Middleware Infrastructure 12.2.1.3.0.
 
-At the end of this configuration there will be 3 containers running : 1) DB Container 2) WLS Admin Server Container 3) WLS Managed Server (SOA Server) Container.
+At the end of this configuration there may be 3 containers running: 
+1. Oracle Database Container (Only when container based Database is used)
+2. Oracle Weblogic Admin Server Container 
+3. Oracle Weblogic Managed Server Container (SOA Server)
+
 The containers will be connected using a Docker User Defined network 
 
-
 ## Create a User Defined network
-
 
 In this configuration creation of a user defined network will enable the communication between the containers just using container names. For this setup we will use a user defined network using bridge driver.
 
@@ -20,10 +22,9 @@ Sample command:
 
     $ docker network create -d bridge SOANet
 
-
 # Mount a host directory as a data volume
 
-Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic server domain files.This volume will be created on the host at `/scratch/DockerVolume/SOAVolume/`. Since the volume is created as "root" user, provide read/write/execute permissions to "oracle" user (by providing permissions to "others"), as all operations inside the container happens with "oracle" user login.
+Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic Server domain files. This volume will be created on the host at `/scratch/DockerVolume/SOAVolume/`. Since the volume is created as "root" user, provide read/write/execute permissions to "oracle" user (by providing permissions to "others"), as all operations inside the container happens with "oracle" user login.
 
 To determine if a user already exists on your host system with uid:gid of 1000, run:
 
@@ -75,9 +76,9 @@ It maps the containers 1521 and 5500 port to respective host port such that the 
 
 You can either build the SOA image with the Dockerfile provided or use the already available Oracle SOA Suite (12.2.1.3.0) image in the [Oracle Container Registry](https://container-registry.oracle.com).
 
-## Creating a container for AdminServer
+## Creating a container for Administration Server
 
-Start a container to launch the Admin Server from the image created using above steps. The environment variables used to configure the domain are defined in `adminserver.env.list` file. Replace in `adminserver.env.list` the values for the Database and WebLogic passwords. 
+Start a container to launch the Administration Server from the image created using above steps. The environment variables used to configure the domain are defined in `adminserver.env.list` file. Replace in `adminserver.env.list` the values for the Database and WebLogic passwords. 
 
 Create an environment file adminserver.env.list
 
@@ -86,7 +87,7 @@ Create an environment file adminserver.env.list
     DB_PASSWORD=<database_sys_password>
     DB_SCHEMA_PASSWORD=<soa-infra schema password>
     ADMIN_PASSWORD=<admin_password>
-    MANAGED_SERVER=<managed servername>
+    MANAGED_SERVER=<Managed Server name>
     DOMAIN_TYPE=<soa/osb/soaosb/soaess/soaessosb/bpm>
     
 Sample Data will look like this:
@@ -99,7 +100,7 @@ Sample Data will look like this:
     MANAGED_SERVER=soa_server1
     DOMAIN_TYPE=soa
     
-To start a docker container with a SOA domain and the WebLogic AdminServer call `docker run` command and pass the above `adminserver.env.list` file.
+To start a docker container with a SOA domain and the WebLogic Administration Server call `docker run` command and pass the above `adminserver.env.list` file.
 
 A sample docker run command is given below:
 
@@ -107,16 +108,16 @@ A sample docker run command is given below:
      
 >IMPORTANT: the resulting images will NOT have a domain pre-configured. But, it has the scripts to create and configure a soa domain >while creating a container out of the image.
      
-The options `-i -t` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation and configuration followed by starting the Admin Server. 
+The options `-i -t` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation and configuration followed by starting the Administration Server. 
 
->IMPORTANT: You need to wait till all the above commands are run before you can access the AdminServer Web Console.
->The following lines highlight when the Admin server is ready to be used:    
+>IMPORTANT: You need to wait till all the above commands are run before you can access the Administration Server Web Console.
+>The following lines highlight when the Administration Server is ready to be used:    
 
 `INFO: Admin server is running`
 
 `INFO: Admin server running, ready to start managed server`
 
-The above line indicate the admin server started successfully with the name `soaas`, mapping container port 7001 to host port 7001 enables accessing of the Weblogic host outside of the local host, connecting to SOANet network enables accessing the DB container by it's name i.e soadb. This includes the command to tail logs to keep the container up and running.
+The above line indicate that the Administration Server started successfully with the name `soaas`, mapping container port 7001 to host port 7001 enables accessing of the Weblogic host outside of the local host, connecting to SOANet network enables accessing the DB container by it's name i.e soadb. This includes the command to tail logs to keep the container up and running.
 
 
 ## Creating a container for SOA Server
@@ -125,10 +126,10 @@ Start a container to launch the Managed Server from the image created. The envir
 
 Create an environment file `soaserver.env.list` with the below details:
 
-    MANAGED_SERVER=<managed server name, For Exp:- soa_server1, osb_server1, bpm_server1>
+    MANAGED_SERVER=<Managed Server name, For Exp:- soa_server1, osb_server1, bpm_server1>
     DOMAIN_TYPE=<soa/osb/bpm>
     ADMIN_HOST=<Admin host name>
-    ADMIN_PORT=<port number where Admin Server is running>
+    ADMIN_PORT=<port number where Administration Server is running>
     ADMIN_PASSWORD=<admin_password>
  
 Sample Data will look like this:
@@ -145,13 +146,13 @@ A sample docker run command is given below:
 
     $ docker run -i -t  --name soams --network=SOANet -p 8001:8001   --volumes-from soaas   --env-file ./soaserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/dockertools/startMS.sh"
     
-Using `--volumes-from` reuses the volume created by the Admin container. In the above `docker run` command, `soaas` is the name of the Admin server container started in the previous step and we must use the same name used for the AdminServer to start the SOA managed server. 
+Using `--volumes-from` reuses the volume created by the Administration Server container. In the above `docker run` command, `soaas` is the name of the Administration Server container started in the previous step and we must use the same name used for the Administration Server to start the SOA Managed Server. 
 
 This includes the command to tail logs to keep the container up and running.
 
 >IMPORTANT: You need to wait till all the above commands are run before you can start the SOA Server.
 
-The following lines highlight when the SOA managed server is ready to be used:    
+The following lines highlight when the SOA Managed Server is ready to be used:    
 `INFO: Managed Server is running`
 
 `INFO: Managed server has been started`

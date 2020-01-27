@@ -3,10 +3,10 @@
 # Script to build a Docker image for Oracle SOA suite.
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
-# http://oss.oracle.com/licenses/upl.
+# https://oss.oracle.com/licenses/upl
 #
 #=============================================================
 usage() {
@@ -108,7 +108,7 @@ fi
 versionOK=false
 if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 ]
 then
-  IMAGE_NAME="${DC_REGISTRY_SOA}/oracle/soasuite:$VERSION"
+  IMAGE_NAME="oracle/soa:$VERSION"
   DOCKERFILE_NAME=Dockerfile
   versionOK=true
   THEDIR=${VERSION}
