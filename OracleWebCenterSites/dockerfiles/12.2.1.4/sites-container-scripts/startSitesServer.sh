@@ -1,13 +1,11 @@
 #!/bin/bash
 #
-# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019, 2020 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description: This script is used to start a Sites Managed Server.
 #
-export DOMAIN_NAME=$DOMAIN_NAME
-export DOMAIN_ROOT="/u01/oracle/user_projects/domains"
 export DOMAIN_HOME="${DOMAIN_ROOT}/${DOMAIN_NAME}"
 export SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts
 
@@ -44,15 +42,6 @@ trap _kill SIGKILL
 
 WCSITES_MANAGED_HOSTNAME=`hostname -i`
 
-#replaceWith=$WCSITES_MANAGED_HOSTNAME
-#replaceString=$WCSITES_OLD_MANAGED_HOSTNAME
-#
-#location=$DOMAIN_HOME/config/fmwconfig/servers/${SITES_SERVER_NAME}/config/
-#
-#echo The following list of files are found in location ${location} that contains ${replaceString}, will be replaced with ${replaceWith}
-#grep -l ${replaceString} ${location}"jbossTicketCacheReplicationConfig.xml"
-#grep -l ${replaceString} ${location}"jbossTicketCacheReplicationConfig.xml" | xargs sed -i "s/${replaceString}/${replaceWith}/g"
-
 echo Remove file $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 rm $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 
@@ -67,16 +56,22 @@ echo "WCSITES_MANAGED_PORT="$WCSITES_MANAGED_PORT>> $DOMAIN_HOME/servers/${SITES
 if [ -z ${K8SENV} ]
 then
     K8SENV=false
-    echo ""
-    echo " Setting K8SENV to false"
-    echo ""
 fi
 
-echo " K8SENV is ${K8SENV}"
-
 if [ $K8SENV == "true" ]; then
+	echo "K8SENV is true."
 	sh $SITES_CONTAINER_SCRIPTS/replaceSitesK8STokens.sh	
 fi
 
+echo "Starting Sites Managed Server"
+echo "=========================="
+
 #start Sites Server
-sh $SITES_CONTAINER_SCRIPTS/startManagedServer.sh $SITES_SERVER_NAME
+echo "tailing logs to $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/$SITES_SERVER_NAME.out"
+$DOMAIN_HOME/bin/startManagedWebLogic.sh $SITES_SERVER_NAME "http://"$WCSITES_ADMIN_HOSTNAME:$WCSITES_ADMIN_PORT > $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/$SITES_SERVER_NAME.out 2>&1 &
+
+# Tail Mananaged Server logs...
+tail -900f $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/$SITES_SERVER_NAME.out &
+
+childPID=$!
+wait $childPID

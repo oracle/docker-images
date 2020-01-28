@@ -81,11 +81,11 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
        
     Download Oracle Database 12.2.0.1 base image:    
     ``` 
-        $ docker pull container-registry.oracle.com/database/enterprise:12.2.0.1    
+        $ docker pull container-registry.oracle.com/database/enterprise:12.2.0.1-slim    
     ```
     Retag the Oracle Database Docker image by running the following command:
     ```
-       $ docker tag container-registry.oracle.com/database/enterprise:12.2.0.1 database/enterprise:12.2.0.1
+       $ docker tag container-registry.oracle.com/database/enterprise:12.2.0.1-slim database/enterprise:12.2.0.1
     ```
     **Note**: 
     - If you want to download image from the Docker Store, see [FAQ](#8-alternate-download-location-for-oracle-fusion-middleware-infrastructure-and-oracle-database-images) section.
@@ -291,11 +291,11 @@ a. To run WebLogic Managed Server container, go to folder where `wcsitesserver.e
  
 b. Run the following command and pass the environment file name as a parameter: 
 ```
-   $ docker run -d -t --name <container_name> --network=<network_name> --volumes-from <admin_container_name> -p <sites_port>:7002 -p <sites_ssl_port>:9002 --env-file <environment_file> <repo_name:tag_name> /bin/bash -c "/u01/oracle/sites-container-scripts/startSitesServer.sh; /bin/bash"
+   $ docker run -d -t --name <container_name> --network=<network_name> --volumes-from <admin_container_name> -p <sites_port>:7002 -p <sites_ssl_port>:9002 --env-file <environment_file> <repo_name:tag_name> sites-container-scripts/startSitesServer.sh
 ```
 Sample command:
 ```
-   $ docker run -d -t --name WCSitesManagedContainer --network=WCSitesNet --volumes-from WCSitesAdminContainer -p 7002:7002 -p 9002:9002 --env-file ./wcsitesserver.env.list oracle/wcsites:12.2.1.4 /bin/bash -c "/u01/oracle/sites-container-scripts/startSitesServer.sh; /bin/bash"
+   $ docker run -d -t --name WCSitesManagedContainer --network=WCSitesNet --volumes-from WCSitesAdminContainer -p 7002:7002 -p 9002:9002 --env-file ./wcsitesserver.env.list oracle/wcsites:12.2.1.4 sites-container-scripts/startSitesServer.sh
 ```
 Managed Container start up command explained:
 
