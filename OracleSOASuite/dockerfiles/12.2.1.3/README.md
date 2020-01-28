@@ -8,7 +8,7 @@ At the end of this configuration there may be 3 containers running:
 2. Oracle Weblogic Admin Server Container 
 3. Oracle Weblogic Managed Server Container (SOA Server)
 
-The containers will be connected using a Docker User Defined network 
+The containers will be connected using a Docker User Defined network. 
 
 ## Create a User Defined network
 

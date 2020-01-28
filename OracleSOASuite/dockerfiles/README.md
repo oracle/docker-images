@@ -48,7 +48,7 @@ IMPORTANT: To build the SOA image with bundle patches, you must first download t
 
 Download and drop the patch zip files (for e.g. `p29928100_122130_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.3.0` the folder is `12.2.1.3/patches`
 
-Build the image with the -p option which will copy and install the patches into the image. You can build the Oralce SOA 12.2.1.3 image using:
+Build the image with the -p option which will copy and install the patches into the image. You can build the Oracle SOA 12.2.1.3 image using:
 
 $ sh buildDockerImage.sh -v 12.2.1.3 -p
 
