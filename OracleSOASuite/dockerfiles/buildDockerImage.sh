@@ -3,10 +3,10 @@
 # Script to build a Docker image for Oracle SOA suite.
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
-# http://oss.oracle.com/licenses/upl.
+# https://oss.oracle.com/licenses/upl
 #
 #=============================================================
 usage() {
@@ -19,6 +19,7 @@ Parameters:
    -h: view usage
    -v: Release version to build. Required. Allowed values are
        12.2.1.2, 12.2.1.3
+   -p: Apply SOA Patches
    -s: Skip checksum verification
 
 LICENSE Universal Permissive License (UPL), Version 1.0
@@ -77,7 +78,7 @@ EOF
 #=============================================================
 VERSION="NONE"
 SKIPMD5=0
-while getopts "hsv:" optname; do
+while getopts "hspv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -87,6 +88,9 @@ while getopts "hsv:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "p")
+      PATCHING="true"
       ;;
     *)
       # Should not occur
@@ -104,10 +108,14 @@ fi
 versionOK=false
 if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 ]
 then
-  IMAGE_NAME="${DC_REGISTRY_SOA}/oracle/soasuite:$VERSION"
+  IMAGE_NAME="oracle/soa:$VERSION"
   DOCKERFILE_NAME=Dockerfile
   versionOK=true
   THEDIR=${VERSION}
+fi
+
+if [ "${PATCHING}" = "true" ]; then
+  DOCKERFILE_NAME=Dockerfile.patch
 fi
 
 if [ "${versionOK}" = "false" ]; then
