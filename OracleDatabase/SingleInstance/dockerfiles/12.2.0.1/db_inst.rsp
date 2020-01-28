@@ -32,7 +32,7 @@ oracle.install.option=INSTALL_DB_SWONLY
 #-------------------------------------------------------------------------------
 # Specify the Unix group to be set for the inventory directory.  
 #-------------------------------------------------------------------------------
-UNIX_GROUP_NAME=dba
+UNIX_GROUP_NAME=oinstall
 
 #-------------------------------------------------------------------------------
 # Specify the location which holds the inventory files.
@@ -81,27 +81,27 @@ oracle.install.db.OSDBA_GROUP=dba
 # The OSOPER_GROUP is the OS group which is to be granted SYSOPER privileges.
 # The value to be specified for OSOPER group is optional.
 #------------------------------------------------------------------------------
-oracle.install.db.OSOPER_GROUP=dba
+oracle.install.db.OSOPER_GROUP=oper
 
 #------------------------------------------------------------------------------
 # The OSBACKUPDBA_GROUP is the OS group which is to be granted SYSBACKUP privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.OSBACKUPDBA_GROUP=dba
+oracle.install.db.OSBACKUPDBA_GROUP=backupdba
 
 #------------------------------------------------------------------------------
 # The OSDGDBA_GROUP is the OS group which is to be granted SYSDG privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.OSDGDBA_GROUP=dba
+oracle.install.db.OSDGDBA_GROUP=dgdba
 
 #------------------------------------------------------------------------------
 # The OSKMDBA_GROUP is the OS group which is to be granted SYSKM privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.OSKMDBA_GROUP=dba
+oracle.install.db.OSKMDBA_GROUP=kmdba
 
 #------------------------------------------------------------------------------
 # The OSRACDBA_GROUP is the OS group which is to be granted SYSRAC privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.OSRACDBA_GROUP=dba
+oracle.install.db.OSRACDBA_GROUP=racdba
 
 #------------------------------------------------------------------------------
 # Specify whether to enable the user to set the password for

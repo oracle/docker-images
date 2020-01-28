@@ -23,12 +23,11 @@ export ORACLE_PDB=${2:-ORCLPDB1}
 
 # Auto generate ORACLE PWD if not passed on
 export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
-echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
+echo "ORACLE PASSWORD FOR SYS, SYSTEM: $ORACLE_PWD";
 
 # Replace place holders in response file
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
-sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
 
@@ -65,19 +64,10 @@ dbca -silent -createDatabase -responseFile $ORACLE_BASE/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
 
 echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_HOME/network/admin/tnsnames.ora
-echo "$ORACLE_PDB= 
-  (DESCRIPTION = 
-    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
-    (CONNECT_DATA =
-      (SERVER = DEDICATED)
-      (SERVICE_NAME = $ORACLE_PDB)
-    )
-  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
 
 # Remove second control file, fix local_listener, make PDB auto open, enable EM global port
 sqlplus / as sysdba << EOF
    ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
-   ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
    EXEC DBMS_XDB_CONFIG.SETGLOBALPORTENABLED (TRUE);
    exit;
 EOF

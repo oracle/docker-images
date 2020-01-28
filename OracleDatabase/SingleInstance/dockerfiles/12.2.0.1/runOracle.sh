@@ -146,13 +146,6 @@ else
    fi;
 fi;
 
-# Default for ORACLE PDB
-export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
-
-# Make ORACLE_PDB upper case
-# Github issue # 984
-export ORACLE_PDB=${ORACLE_PDB^^}
-
 # Default for ORACLE CHARACTERSET
 export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
@@ -177,7 +170,7 @@ else
   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
   # Create database
-  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD;
+  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PWD;
    
   # Move database operational files to oradata
   moveFiles;

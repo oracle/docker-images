@@ -95,7 +95,7 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
 FROM base
 
 USER oracle
-COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
+COPY --chown=oracle:oinstall --from=builder $ORACLE_BASE $ORACLE_BASE
 
 USER root
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
@@ -107,7 +107,7 @@ WORKDIR /home/oracle
 VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 5500
 HEALTHCHECK --interval=1m --start-period=5m \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
 CMD exec $ORACLE_BASE/$RUN_FILE
