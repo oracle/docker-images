@@ -25,11 +25,13 @@ Please refer [README.md](https://github.com/oracle/docker-images/blob/master/Ora
 
 ## Building Docker Image for SOA
 
-IMPORTANT: To build the SOA image, you must first download the required version of the Oracle SOA Suite binary and drop in the folder with the same version for e.g. 12.2.1.3.0 binaries need to be dropped into `../OracleSOASuite/dockerfiles/12.2.1.3`. 
+IMPORTANT: To build the Oracle SOA image, you must first download the required version of the Oracle SOA Suite and Oracle Service Bus binaries. Both these install binaries are required to create the Oracle SOA image. These binaries must be downloaded and copied into the folder with the same version for e.g. 12.2.1.3.0 binaries need to be dropped into `../OracleSOASuite/dockerfiles/12.2.1.3`.
 
-The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com). Search for "Oracle SOA Suite" and download the version which is required, for e.g. 12.2.1.3.0 is available under `Oracle Fusion Middleware 12c (12.2.1.3.0) SOA Suite and Business Process Management` software. 
+The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com). Search for "Oracle SOA Suite" and download the version which is required, for e.g. 12.2.1.3.0 is available under `Oracle Fusion Middleware 12c (12.2.1.3.0) SOA Suite and Business Process Management` software. Also search for 'Oracle Service Bus' and download the `Oracle Service Bus 12.2.1.3.0` version.
 
-Extract the zip file and drop the `fmw_12.2.1.3.0_soa.jar` under `dockerfiles/12.2.1.3.0` for building SOA. To build the Oracle Service Bus image, search for 'Oracle Service Bus' and download the `Oracle Service Bus 12.2.1.3.0`, extract the zip file and drop the `fmw_12.2.1.3.0_osb.jar`. Both these install binaries are required to create the SOA image
+Extract the downloaded zip files and copy `fmw_12.2.1.3.0_soa.jar`, `fmw_12.2.1.3.0_osb.jar` files under `dockerfiles/12.2.1.3` for building Oracle SOA 12.2.1.3 image.
+
+Build the Oracle SOA 12.2.1.3 image using:
 
 $ sh buildDockerImage.sh -v 12.2.1.3
 
@@ -46,9 +48,13 @@ IMPORTANT: To build the SOA image with bundle patches, you must first download t
 
 Download and drop the patch zip files (for e.g. `p29928100_122130_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.3.0` the folder is `12.2.1.3/patches`
 
-Build the image with the -p option which will copy and install the patches into the image.
+Build the image with the -p option which will copy and install the patches into the image. You can build the Oralce SOA 12.2.1.3 image using:
 
 $ sh buildDockerImage.sh -v 12.2.1.3 -p
+
+Alternatively you can also use `docker build` command with `Dockerfile.patch` file to build the patched image.
+
+$ docker build -t oracle/soa:12.2.1.3 -f Dockerfile.patch . 
 
 # License
 
