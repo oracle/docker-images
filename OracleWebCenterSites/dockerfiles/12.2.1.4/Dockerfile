@@ -41,9 +41,7 @@ COPY $SITES_PKG install.file oraInst.loc /u01/
 #Install packages and adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # -------------------------------------------------------------
 
-RUN yum install -y hostname && \
-	rm -rf /var/cache/yum/* && \
-	mkdir -p /u01/oracle/logs && \
+RUN mkdir -p /u01/oracle/logs && \
 	chmod a+xr /u01 && \
 	chown oracle:oracle -R /u01 && \
 	chmod a+xr -R /u01/oracle/*.* && \
@@ -83,11 +81,12 @@ ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 	ADMIN_PORT=7001 \
 	WCSITES_PORT=7002 \
 	ADMIN_SSL_PORT=9001 \
-	WCSITES_SSL_PORT=9002
+	WCSITES_SSL_PORT=9002 \
+    PATH=$PATH:/u01/oracle/sites-container-scripts
 	
 RUN yum install -y hostname && \
     rm -rf /var/cache/yum
-
+	
 COPY --from=builder --chown=oracle:oracle /u01 /u01
 
 # Expose all Ports
@@ -98,4 +97,4 @@ USER oracle
 WORKDIR $ORACLE_HOME
 # Define default command to start.
 # -------------------------------------------------------------
-CMD ["/u01/oracle/sites-container-scripts/createSitesDomainandStartAdmin.sh"]
+CMD ["/u01/oracle/sites-container-scripts/createOrStartSitesDomain.sh"]

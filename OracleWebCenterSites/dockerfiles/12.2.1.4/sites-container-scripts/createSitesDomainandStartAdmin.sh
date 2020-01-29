@@ -402,7 +402,7 @@ echo "Starting the Admin Server"
 echo "=========================="
 
 # Now we start the Admin server in this container... 
-echo "tail $DOMAIN_HOME/bin/weblogic.out in a new window"
+echo "tailing ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/weblogic.out"
 ${DOMAIN_HOME}/startWebLogic.sh > ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/weblogic.out 2>&1 &
 
 # Tail Admin Server logs... 
