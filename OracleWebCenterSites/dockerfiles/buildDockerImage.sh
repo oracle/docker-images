@@ -19,11 +19,9 @@ Parameters:
 	-c: enables Docker image layer cache during build
 	-s: skips the MD5 check of packages
 
-LICENSE CDDL 1.0 + GPL 2.0
+Copyright (c) 2019, 2020 Oracle and/or its affiliates.
 
-Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
-
-Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 EOF
 exit 0
