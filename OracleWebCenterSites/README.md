@@ -31,8 +31,8 @@ Before you build, select the version and distribution for which you want to buil
 ## Building the WebCenter Sites Docker images
 
 **IMPORTANT**
-- Refer [Oracle WebCenter Sites 12.2.1.4.0] for detail set up.
-- Refer [Oracle WebCenter Sites 12.2.1.3.0] for detail set up.
+- Refer [Oracle WebCenter Sites 12.2.1.4.0]](dockerfiles/12.2.1.4) for detail set up.
+- Refer [Oracle WebCenter Sites 12.2.1.3.0]](dockerfiles/12.2.1.3) for detail set up.
 
 ## License
 To download and run the WebCenter Sites distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
