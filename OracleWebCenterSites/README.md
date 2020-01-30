@@ -8,7 +8,7 @@ This project creates Oracle WebCenter Sites Docker image with a single node targ
 
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 
-## Building the WebCenter Sites Docker images
+## Prerequisites
 You must download the WebCenter Sites binary and put it in its correct location (see `.download` files inside `dockerfiles/<version>`).
 
 Before you build, select the version and distribution for which you want to build an image, then download the required packages (see `.download` files) and place them in the folder of your distribution version of choice. Then, from the `dockerfiles` folder, run the `buildDockerImage.sh` script.
@@ -24,17 +24,15 @@ Before you build, select the version and distribution for which you want to buil
 				-c: enables Docker image layer cache during build
 				-s: skips the MD5 check of packages
 		
-		LICENSE CDDL 1.0 + GPL 2.0
+		Copyright (c) 2019, 2020 Oracle and/or its affiliates.
 		
-		Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
-		
-		Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+		Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+## Building the WebCenter Sites Docker images
 
 **IMPORTANT**
-
-   For detail Oracle WebCenter Sites 12.2.1.3.0 set up, refer [this](dockerfiles/12.2.1.3).
-        
-   For detail Oracle WebCenter Sites 12.2.1.4.0 set up, refer [this](dockerfiles/12.2.1.4).
+- Refer [Oracle WebCenter Sites 12.2.1.4.0] for detail set up.
+- Refer [Oracle WebCenter Sites 12.2.1.3.0] for detail set up.
 
 ## License
 To download and run the WebCenter Sites distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.

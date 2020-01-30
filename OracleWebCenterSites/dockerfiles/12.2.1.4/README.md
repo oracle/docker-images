@@ -333,17 +333,20 @@ Now you can access WebCenter Sites Server at
 
 ##### 1. What is the usage of buildDockerImage.sh file?
 ```   
-   $ sh buildDockerImage.sh
-   Usage: buildDockerImage.sh -v [version]
-   Builds a Docker Image for Oracle WebCenter Sites.
-   Parameters:
-      -v: version to build. Required.
-   Choose: 12.2.1.x
-      -c: enables Docker image layer cache during build
-      -s: skips the MD5 check of packages
-      
-   LICENSE UPL 1.0
-   Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+	-bash-4.2$ sh buildDockerImage.sh -h
+	
+	Usage: buildDockerImage.sh -v [version] [-s] [-c]
+	Builds a Docker Image for Oracle WebCenter Sites.
+	
+	Parameters:
+			-v: version to build. Required.
+					Choose one of: 12.2.1.3  12.2.1.4
+			-c: enables Docker image layer cache during build
+			-s: skips the MD5 check of packages
+	
+	Copyright (c) 2019, 2020 Oracle and/or its affiliates.
+	
+	Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 ```
 ##### 2. Where do I find the auto-generated WebLogic Administrator, Database schema, Oracle WebCenter Sites [Administrator,Application,SatelliteServer] passwords?
 If you do not specify WebLogic/Database/Sites username and password, a password is auto-generated. 
