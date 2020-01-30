@@ -17,10 +17,6 @@
 FROM oracle/fmw-infrastructure:12.2.1.3 as builder
 
 #
-# Maintainer
-# ----------
-LABEL maintainer="Prashanth Nagaraja <prashanth.nagaraja@oracle.com>"
-#
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 USER root
@@ -49,6 +45,11 @@ RUN cd /u01 && \
 # Rebuild from base image
 # -----------------------
 FROM oracle/fmw-infrastructure:12.2.1.3
+
+#
+# Maintainer
+# ----------
+LABEL maintainer="Sambasiva Battagiri <sambasiva.battagiri@oracle.com>"
 
 #
 # Install the required packages

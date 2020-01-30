@@ -1,9 +1,9 @@
 #
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
-# http://oss.oracle.com/licenses/upl.
+# https://oss.oracle.com/licenses/upl
 #
 
 import os
@@ -12,6 +12,8 @@ import sys
 import com.oracle.cie.domain.script.jython.WLSTException as WLSTException
 
 class SOA12212Provisioner:
+
+    jrfDone = 0;
 
     MACHINES = {
         'machine1' : {
@@ -22,6 +24,10 @@ class SOA12212Provisioner:
     }
 
     SOA_CLUSTERS = {
+        'soa_cluster' : {}
+    }
+
+    SOA_ESS_CLUSTERS = {
         'soa_cluster' : {}
     }
 
@@ -44,6 +50,27 @@ class SOA12212Provisioner:
             'ListenPort': 8001,
             'Machine': 'machine1',
             'Cluster': 'soa_cluster'
+        },
+        'soa_server2' : {
+            'ListenAddress': '',
+            'ListenPort': 8002,
+            'Machine': 'machine1',
+            'Cluster': 'soa_cluster'
+        }
+    }
+
+    SOA_ESS_SERVERS = {
+        'soa_server1' : {
+            'ListenAddress': '',
+            'ListenPort': 8001,
+            'Machine': 'machine1',
+            'Cluster': 'soa_cluster'
+        },
+        'soa_server2' : {
+            'ListenAddress': '',
+            'ListenPort': 8002,
+            'Machine': 'machine1',
+            'Cluster': 'soa_cluster'
         }
     }
 
@@ -51,6 +78,12 @@ class SOA12212Provisioner:
         'osb_server1' : {
             'ListenAddress': '',
             'ListenPort': 9001,
+            'Machine': 'machine1',
+            'Cluster': 'osb_cluster'
+        },
+        'osb_server2' : {
+            'ListenAddress': '',
+            'ListenPort': 9002,
             'Machine': 'machine1',
             'Cluster': 'osb_cluster'
         }
@@ -74,6 +107,15 @@ class SOA12212Provisioner:
             '@@ORACLE_HOME@@/soa/common/templates/wls/oracle.soa_template.jar'
         ],
         'serverGroupsToTarget' : [ 'SOA-MGD-SVRS-ONLY' ]
+    }
+
+    SOA_ESS_12212_TEMPLATES = {
+        'extensionTemplates' : [
+            '@@ORACLE_HOME@@/soa/common/templates/wls/oracle.soa_template.jar',
+            '@@ORACLE_HOME@@/oracle_common/common/templates/wls/oracle.ess.basic_template.jar',
+            '@@ORACLE_HOME@@/em/common/templates/wls/oracle.em_ess_template.jar'
+        ],
+        'serverGroupsToTarget' : [ 'SOA-MGD-SVRS', 'ESS-MGD-SVRS' ]
     }
 
     OSB_12212_TEMPLATES = {
@@ -114,7 +156,10 @@ class SOA12212Provisioner:
         if domainType == "soa" or domainType == "soaosb":
                 self.extendSoaDomain(domainHome, db, dbPrefix, dbPassword)
 
-        if domainType == "osb" or domainType == "soaosb" :
+        if domainType == "soaess" or domainType == "soaessosb" :
+               self.extendSoaEssDomain(domainHome, db, dbPrefix, dbPassword)
+
+        if domainType == "osb" or domainType == "soaosb" or domainType == "soaessosb" :
                 self.extendOsbDomain(domainHome, db, dbPrefix, dbPassword,domainType)
 
         if domainType == "bpm":
@@ -175,7 +220,7 @@ class SOA12212Provisioner:
 
                 print 'INFO: SOA Servers created.....'
 
-        if domainType == 'osb' or domainType == "soaosb":
+        if domainType == 'osb' or domainType == "soaosb" or domainType == "soaessosb" :
 
                 print 'INFO: Creating OSB cluster...'
                 for cluster in self.OSB_CLUSTERS:
@@ -194,6 +239,23 @@ class SOA12212Provisioner:
 
 
                 print 'INFO: OSB Servers created.....'
+
+        if domainType == "soaess" or domainType == "soaessosb" :
+                for cluster in self.SOA_ESS_CLUSTERS:
+                        cd('/')
+                        create(cluster, 'Cluster')
+                        cd('Cluster/' + cluster)
+                        for param in  self.SOA_ESS_CLUSTERS[cluster]:
+                                set(param, self.SOA_ESS_CLUSTERS[cluster][param])
+                for server in self.SOA_ESS_SERVERS:
+                        cd('/')
+                        create(server, 'Server')
+                        cd('Server/' + server)
+                        for param in self.SOA_ESS_SERVERS[server]:
+                                set(param, self.SOA_ESS_SERVERS[server][param])
+
+                print 'INFO: SOA Servers created.....'
+
         setOption('OverwriteDomain', 'true')
         domainHome = self.domainParentDir + '/' + name
 
@@ -209,14 +271,26 @@ class SOA12212Provisioner:
         readDomain(domainHome)
         setOption('AppDir', self.domainParentDir + '/applications')
 
+        if self.jrfDone == 1:
+            print 'INFO: JRF templates already applied '
+            return
+
         print 'INFO: Applying JRF templates...'
         for extensionTemplate in self.JRF_12212_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
+
+        self.jrfDone = 1
         return
 
     def applySOATemplates(self):
         print 'INFO: Applying SOA templates...'
         for extensionTemplate in self.SOA_12212_TEMPLATES['extensionTemplates']:
+            addTemplate(self.replaceTokens(extensionTemplate))
+        return
+
+    def applySOAESSTemplates(self):
+        print 'INFO: Applying SOA+ESS templates...'
+        for extensionTemplate in self.SOA_ESS_12212_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
         return
 
@@ -246,6 +320,15 @@ class SOA12212Provisioner:
                 set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
+    def targetSOAESSServers(self,serverGroupsToTarget):
+        for server in self.SOA_ESS_SERVERS:
+            if not server == 'AdminServer':
+                setServerGroups(server, serverGroupsToTarget)
+                print "INFO: Set CoherenceClusterSystemResource to defaultCoherenceCluster for server:" + server
+                cd('/Servers/' + server)
+                set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+        return
+
     def targetSOACluster(self):
         for cluster in self.SOA_CLUSTERS:
             print "INFO: Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + cluster
@@ -253,6 +336,12 @@ class SOA12212Provisioner:
             set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
         return
 
+    def targetSOAESSCluster(self):
+        for cluster in self.SOA_ESS_CLUSTERS:
+            print "INFO: Set CoherenceClusterSystemResource to defaultCoherenceCluster for cluster:" + cluster
+            cd('/Cluster/' + cluster)
+            set('CoherenceClusterSystemResource', 'defaultCoherenceCluster')
+        return
 
     def targetOSBServers(self,serverGroupsToTarget):
         for server in self.OSB_SERVERS:
@@ -275,6 +364,12 @@ class SOA12212Provisioner:
         self.applySOATemplates()
 
         print 'INFO: Extension Templates added'
+
+	if 'soa_server1' not in self.SOA_SERVERS:
+	        print 'INFO: deleting soa_server1'
+	        cd('/')
+	        delete('soa_server1','Server')
+	        print 'INFO: deleted soa_server1'
 
         self.configureJDBCTemplates(db,dbPrefix,dbPassword)
         self.configureXADataSources()
@@ -300,6 +395,46 @@ class SOA12212Provisioner:
         return
 
 
+    def extendSoaEssDomain(self, domainHome, db, dbPrefix, dbPassword):
+        self.readAndApplyJRFTemplates(domainHome)
+        self.applySOAESSTemplates()
+
+        print 'INFO: Extension Templates added'
+
+        print 'INFO: deleting ess_server1'
+        cd('/')
+        delete('ess_server1', 'Server')
+        print 'INFO: ess_server1 deleted'
+
+        if 'soa_server1' not in self.SOA_ESS_SERVERS:
+	        print 'INFO: deleting soa_server1'
+                cd('/')
+                delete('soa_server1','Server')
+                print 'INFO: deleted soa_server1'
+
+        self.configureJDBCTemplates(db,dbPrefix,dbPassword)
+        self.configureXADataSources()
+
+        print 'INFO: Targeting Server Groups...'
+        serverGroupsToTarget = list(self.JRF_12212_TEMPLATES['serverGroupsToTarget'])
+        serverGroupsToTarget.extend(self.SOA_ESS_12212_TEMPLATES['serverGroupsToTarget'])
+
+        cd('/')
+        self.targetSOAESSServers(serverGroupsToTarget)
+
+        cd('/')
+        self.targetSOAESSCluster()
+
+        print "INFO: Set WLS clusters as target of defaultCoherenceCluster:[" + ",".join(self.SOA_ESS_CLUSTERS) + "]"
+
+        cd('/CoherenceClusterSystemResource/defaultCoherenceCluster')
+        set('Target', ",".join(self.SOA_ESS_CLUSTERS))
+        print 'INFO: Preparing to update domain...'
+        updateDomain()
+        print 'INFO: Domain updated successfully'
+        closeDomain()
+        return
+
     def extendOsbDomain(self, domainHome, db, dbPrefix, dbPassword,domainType):
         self.readAndApplyJRFTemplates(domainHome)
 
@@ -308,6 +443,12 @@ class SOA12212Provisioner:
             addTemplate(self.replaceTokens(extensionTemplate))
 
         print 'INFO: Extension Templates added'
+
+	if 'osb_server1' not in self.OSB_SERVERS:
+	        print 'INFO: deleting osb_server1'
+                cd('/')
+                delete('osb_server1','Server')
+                print 'INFO: deleted osb_server1'
 
         self.configureJDBCTemplates(db,dbPrefix,dbPassword)
         cd('/JDBCSystemResources/SOADataSource/JdbcResource/SOADataSource')

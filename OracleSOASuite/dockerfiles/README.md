@@ -43,6 +43,8 @@ Verify you now have the image `oracle/soa:12.2.1.3` in place with
 
 $ docker images | grep "soa"
 
+>IMPORTANT: The image created in above step will NOT have a domain pre-configured. But it has the scripts to create and configure a SOA domain.
+
 # Building Docker Image with bundle patches for SOA
 IMPORTANT: To build the SOA image with bundle patches, you must first download the required version of the Oracle SOA Suite binaries as explained in above step.
 
