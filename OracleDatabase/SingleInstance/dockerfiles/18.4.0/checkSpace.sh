@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
@@ -18,6 +18,7 @@ if [ $AVAILABLE_SPACE_GB -lt $REQUIRED_SPACE_GB ]; then
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   echo "$script_name: ERROR - There is not enough space available in the docker container."
   echo "$script_name: The container needs at least $REQUIRED_SPACE_GB GB, but only $AVAILABLE_SPACE_GB GB are available."
+  echo "If needed, you can increase the size limit in dockerd using \`--storage-opt dm.basesize=$((REQUIRED_SPACE_GB+1))G -s devicemapper'"
   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
   exit 1;
 fi;

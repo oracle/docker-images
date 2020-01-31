@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # LICENSE UPL 1.0
 # 
 # Since: January, 2018

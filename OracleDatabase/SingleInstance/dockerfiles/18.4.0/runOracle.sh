@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ############# Execute custom scripts ##############
 function runUserScripts {

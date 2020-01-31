@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # 
 # Since: April, 2016
 # Author: gerald.venzl@oracle.com
