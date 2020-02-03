@@ -1,0 +1,5 @@
+#
+# Oracle SOA Suite for Oracle Middleware (BPM, FMW, SOA)
+# Download patches from : https://support.oracle.com
+#
+# To build the SOA image with patches, you must download and drop the SOA 12.2.1.3.0 patch zip files (for e.g. p29928100_122130_Generic.zip) into the patches directory.

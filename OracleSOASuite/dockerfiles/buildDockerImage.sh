@@ -19,7 +19,6 @@ Parameters:
    -h: view usage
    -v: Release version to build. Required. Allowed values are
        12.2.1.2, 12.2.1.3
-   -p: Apply SOA Patches
    -s: Skip checksum verification
 
 LICENSE Universal Permissive License (UPL), Version 1.0
@@ -78,7 +77,7 @@ EOF
 #=============================================================
 VERSION="NONE"
 SKIPMD5=0
-while getopts "hspv:" optname; do
+while getopts "hsv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -88,9 +87,6 @@ while getopts "hspv:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
-      ;;
-    "p")
-      PATCHING="true"
       ;;
     *)
       # Should not occur
@@ -114,9 +110,6 @@ then
   THEDIR=${VERSION}
 fi
 
-if [ "${PATCHING}" = "true" ]; then
-  DOCKERFILE_NAME=Dockerfile.patch
-fi
 
 if [ "${versionOK}" = "false" ]; then
   echo "ERROR: Incorrect version ${VERSION} specified"
