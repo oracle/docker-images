@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 #
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 
 export DOMAIN_NAME=${DOMAIN_NAME:-soainfra}
@@ -159,10 +159,10 @@ then
   # then drop the prefix and restart. New Domain creation
   # scenario
   echo "INFO: Dropping Schema $RCUPREFIX..."
-  /$vol_name/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -f < /tmp/pwd.txt
+  /$vol_name/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -component ESS -f < /tmp/pwd.txt
 	
   echo "INFO: Creating Schema $RCUPREFIX..."
-  /$vol_name/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -variables SOA_PROFILE_TYPE=SMALL,HEALTHCARE_INTEGRATION=NO -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -f < /tmp/pwd.txt
+  /$vol_name/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -variables SOA_PROFILE_TYPE=SMALL,HEALTHCARE_INTEGRATION=NO -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -component ESS -f < /tmp/pwd.txt
   retval=$?
 
   if [ $retval -ne 0 ]; 
@@ -226,19 +226,13 @@ fi
 #
 # Creating domain env file
 #=========================
-mkdir -p $DOMAIN_HOME/servers/AdminServer/security $DOMAIN_HOME/servers/${MANAGED_SERVER}/security
+mkdir -p $DOMAIN_HOME/servers/AdminServer/security
 
 #
 # Password less Adminserver starting
 #===================================
 echo "username=weblogic" > $DOMAIN_HOME/servers/AdminServer/security/boot.properties
 echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/AdminServer/security/boot.properties
-
-#
-# Password less Managed Server starting
-#======================================
-echo "username=weblogic" > $DOMAIN_HOME/servers/${MANAGED_SERVER}/security/boot.properties
-echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/${MANAGED_SERVER}/security/boot.properties
 
 #
 # Setting env variables

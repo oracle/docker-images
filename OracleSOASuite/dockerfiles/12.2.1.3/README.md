@@ -4,9 +4,9 @@ SOA on Docker
 Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start dockerfiles for Oracle SOA 12.2.1.3.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle Fusion Middleware Infrastructure 12.2.1.3.0.
 
 At the end of this configuration there may be 3 containers running: 
-1. Oracle Database Container (Only when container based Database is used)
-2. Oracle Weblogic Admin Server Container 
-3. Oracle Weblogic Managed Server Container (SOA Server)
+1. Oracle Database Container (Optional: only when RCU schema is created in a database running in a container) 
+2. Oracle Weblogic Administration Server Container 
+3. Oracle Weblogic Managed Server Container (Oracle SOA Server or Oracle Service Bus Server)
 
 The containers will be connected using a Docker User Defined network. 
 
@@ -24,52 +24,50 @@ Sample command:
 
 # Mount a host directory as a data volume
 
-Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic Server domain files. This volume will be created on the host at `/scratch/DockerVolume/SOAVolume/`. Since the volume is created as "root" user, provide read/write/execute permissions to "oracle" user (by providing permissions to "others"), as all operations inside the container happens with "oracle" user login.
+Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic Server domain files. This volume will be created on the host at `/u01/DockerVolume/SOAVolume/`. Since the volume is created as "root" user, provide read/write/execute permissions to "oracle" user (by providing permissions to "others"), as all operations inside the container happens with "oracle" user login.
 
 To determine if a user already exists on your host system with uid:gid of 1000, run:
 
     # getent passwd 1000
 
-If that returns a username (which is the first field), use that user for the `useradd` command below. If not, create the `oracle` user manually. 
+If that returns a username (which is the first field), you can skip the below useradd command. If not, create the `oracle` user manually. 
 
     # useradd -u 1000 -g 1000 oracle 
 
-Run the following commands as root:
+Once the `oracle` user is created, run the following commands as a root user:
 
-    # mkdir -p /scratch/DockerVolume/SOAVolume/
-    # chown 1000:1000 /scratch/DockerVolume/SOAVolume/
-    # chmod 700 /scratch/DockerVolume/SOAVolume/
+    # mkdir -p /u01/DockerVolume/SOAVolume/
+    # chown 1000:1000 /u01/DockerVolume/SOAVolume/
+    # chmod 700 /u01/DockerVolume/SOAVolume/
 
 # Database
 
 You need to have a running database container or a database running on any machine. The database connection details are required for creating SOA specific RCU schemas while configuring SOA domain. While using a 12.2.0.1 CDB/PDB DB, ensure PDB is used to load the schemas. RCU loading on CDB is not supported.
 
-Please refer [README.md](https://github.com/oracle/docker-images/blob/master/OracleDatabase/README.md) under docker/OracleDatabase for details on how to build Oracle Database image.
+Run the database container to host the RCU schemas using below steps:
 
-The DB image created through above step need to be retagged from `container-registry.oracle.com/oracle/database:12.2.0.1-ee`  to `oracle/database:12.2.0.1-ee` before continuing with next steps.
+The Oracle database server container requires custom configuration parameters for starting up the container. These custom configuration parameters correspond to the datasource parameters in the SOA image to connect to the database running in the container.
 
-$ docker tag container-registry.oracle.com/oracle/database:12.2.0.1-e  oracle/database:12.2.0.1-ee
+     Add to an `db.env.txt` file, the following parameters:
 
-## Running Oracle Database in a Docker container
+	`DB_SID=soadb`
 
-Create an environment file db.env.list
+	`DB_PDB=soapdb`
 
-    ORACLE_SID=<DB SID>
-    ORACLE_PDB=<PDB ID>
-    ORACLE_PWD=<password>
-    
-Sample Data will look like this:
+	`DB_DOMAIN=us.oracle.com`
 
-    ORACLE_SID=soadb
-    ORACLE_PDB=soapdb
-    ORACLE_PWD=Welcome1
+	`DB_BUNDLE=basic`
 
-Sample Command to Start the Database is as follows
+	`$ docker run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 -v /u01/DockerVolume/SOAVolume/DB:/opt/oracle/oradata --env-file ./db.env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1`
 
-     $ docker run --name soadb  --network=SOANet -p 1521:1521 -p 5500:5500 -v /scratch/DockerVolume/SOAVolume/DB:/opt/oracle/oradata --env-file ./db.env.list  oracle/database:12.2.0.1-ee
-     
-The above command starts a DB container attaching to a network and mounting a host directory as `/opt/oracle/oradata` for persistence. 
-It maps the containers 1521 and 5500 port to respective host port such that the services can be accessible outside of localhost.
+
+Verify that the database is running and healthy. The `STATUS` field shows `healthy` in the output of `docker ps`.
+
+The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus`.  To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container with the following command:
+
+	$ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@soadb:1521/soadb.us.oracle.com AS SYSDBA
+
+	SQL> alter user sys identified by Welcome1 container=all;
 
 
 ## SOA 12.2.1.3.0 Docker image
@@ -87,26 +85,32 @@ Create an environment file adminserver.env.list
     DB_PASSWORD=<database_sys_password>
     DB_SCHEMA_PASSWORD=<soa-infra schema password>
     ADMIN_PASSWORD=<admin_password>
-    MANAGED_SERVER=<Managed Server name>
-    DOMAIN_TYPE=<soa/osb/soaosb/soaess/soaessosb/bpm>
+    DOMAIN_NAME=soainfra
+    DOMAIN_TYPE=<soa/osb/bpm>
+    ADMIN_HOST=<Administration Server container name or hostname>
+
+>IMPORTANT: DOMAIN_TYPE must be carefully chosen and specified depending on the usecase. It can't be changed once you proceed.
+In case of SOASuite domains, the supported Domain types are soa,osb and bpm.
+    soa       : Deploys an Oracle SOA Domain
+    osb       : Deploys an OSB Domain (Oracle Service Bus)
+    bpm       : Deploys a BPM Domain (Oracle Business Process Management Domain)
     
 Sample Data will look like this:
 
-    CONNECTION_STRING=soadb:1521/soapdb
+    CONNECTION_STRING=soadb:1521/soapdb.us.oracle.com
     RCUPREFIX=SOA1
     DB_PASSWORD=Welcome1
     DB_SCHEMA_PASSWORD=Welcome1
     ADMIN_PASSWORD=Welcome1
-    MANAGED_SERVER=soa_server1
+    DOMAIN_NAME=soainfra
     DOMAIN_TYPE=soa
+    ADMIN_HOST=soaas
     
 To start a docker container with a SOA domain and the WebLogic Administration Server call `docker run` command and pass the above `adminserver.env.list` file.
 
 A sample docker run command is given below:
 
-     $docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v /scratch/DockerVolume/SOAVolume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soa:12.2.1.3.0
-     
->IMPORTANT: the resulting images will NOT have a domain pre-configured. But, it has the scripts to create and configure a soa domain >while creating a container out of the image.
+     $ docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v /u01/DockerVolume/SOAVolume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soa:12.2.1.3
      
 The options `-i -t` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation and configuration followed by starting the Administration Server. 
 
@@ -117,38 +121,44 @@ The options `-i -t` in the above command runs the container in interactive mode 
 
 `INFO: Admin server running, ready to start managed server`
 
-The above line indicate that the Administration Server started successfully with the name `soaas`, mapping container port 7001 to host port 7001 enables accessing of the Weblogic host outside of the local host, connecting to SOANet network enables accessing the DB container by it's name i.e soadb. This includes the command to tail logs to keep the container up and running.
+The above line indicate that the Administration Server started successfully with the name `soaas`, mapping container port 7001 to host port 7001 enables accessing of the Weblogic host outside of the local host, connecting to SOANet network enables accessing the DB container by it's name i.e soadb.
+
+You can view the Administration Server logs using:
+
+$ docker logs -f \<Administration Server Container Name\> 
 
 
-## Creating a container for SOA Server
+## Creating Managed Server containers (SOA and OSB Servers)
 
-Start a container to launch the Managed Server from the image created. The environment variables used to run the Managed Server image are defined in the file `soaserver.env.list`. 
+You can start containers to launch the Managed Servers (SOA and OSB Servers) from the image created. The environment variables used to run the Managed Server containers are defined below. 
 
-Create an environment file `soaserver.env.list` with the below details:
+Create an environment variables file specific to each cluster in the SOA domain as described below. For instance `soaserver.env.list` for SOA cluster and `osbserver.env.list` for OSB cluster:
 
-    MANAGED_SERVER=<Managed Server name, For Exp:- soa_server1, osb_server1, bpm_server1>
+    MANAGED_SERVER=<Managed Server name. Must be either soa_server1 or osb_server1>
     DOMAIN_TYPE=<soa/osb/bpm>
-    ADMIN_HOST=<Admin host name>
+    DOMAIN_NAME=soainfra
+    ADMIN_HOST=<Administration Server container name Or hostname>
     ADMIN_PORT=<port number where Administration Server is running>
     ADMIN_PASSWORD=<admin_password>
+
+>IMPORTANT: In the Managed Servers environment variables file the MANAGED_SERVER value must be mentioned as soa_server1 for soa and bpm domain types, osb_server1 for osb domain type.
  
-Sample Data will look like this:
+Sample data for `soaserver.env.list` will look like this:
 
     MANAGED_SERVER=soa_server1
     DOMAIN_TYPE=soa
-    ADMIN_HOST=host.domain.com
+    DOMAIN_NAME=soainfra
+    ADMIN_HOST=soaas
     ADMIN_PORT=7001
     ADMIN_PASSWORD=Welcome1
-    
-To start a docker container for SOA server you can simply call `docker run` command and passing `soaserver.env.list`. 
+
+To start a docker container for SOA server (for soa and bpm domain types) you can simply call `docker run` command and passing `soaserver.env.list`. 
 
 A sample docker run command is given below:
 
-    $ docker run -i -t  --name soams --network=SOANet -p 8001:8001   --volumes-from soaas   --env-file ./soaserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/dockertools/startMS.sh"
+    $ docker run -i -t  --name soams --network=SOANet -p 8001:8001  --volumes-from soaas  --env-file ./soaserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/dockertools/startMS.sh"
     
 Using `--volumes-from` reuses the volume created by the Administration Server container. In the above `docker run` command, `soaas` is the name of the Administration Server container started in the previous step and we must use the same name used for the Administration Server to start the SOA Managed Server. 
-
-This includes the command to tail logs to keep the container up and running.
 
 >IMPORTANT: You need to wait till all the above commands are run before you can start the SOA Server.
 
@@ -157,14 +167,36 @@ The following lines highlight when the SOA Managed Server is ready to be used:
 
 `INFO: Managed server has been started`
 
-Once the SOA container is created logs will be tailed and displayed to keep the container running.
+Once the Managed Server container is created, you can view the server logs using:
+
+$ docker logs -f \<Managed Server Container Name\>
+
+Similarly you can start a docker container for OSB server (only in the case of osb domain type) by using `docker run` command and passing `osbserver.env.list`.
+
+Sample data for `osbserver.env.list` will look like this:
+
+    MANAGED_SERVER=osb_server1
+    DOMAIN_TYPE=osb
+    DOMAIN_NAME=soainfra
+    ADMIN_HOST=soaas
+    ADMIN_PORT=7001
+    ADMIN_PASSWORD=Welcome1
+
+A sample docker run command is given below:
+
+    $ docker run -i -t  --name soams --network=SOANet -p 9001:9001  --volumes-from soaas  --env-file ./osbserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/dockertools/startMS.sh"
+
+>IMPORTANT: Note that the container port used for OSB server (9001) is different from SOA server (8001).
 
 Now you can access
 
-   * AdminServer Web Console at http://<hostname>:7001/console  with weblogic/Welcome1 credentials.
+   * AdminServer Web Console at http://\<hostname\>:7001/console  with weblogic/Welcome1 credentials.
 
-   * EM Console at http://<hostname>:7001/em  with weblogic/Welcome1 credentials.
+   * EM Console at http://\<hostname\>:7001/em  with weblogic/Welcome1 credentials.
 
-   * SOA infra Console at http://<hostname>:8001/soa-infra with weblogic/Welcome1 credentials.
+   * SOA infra Console at http://\<hostname\>:8001/soa-infra with weblogic/Welcome1 credentials.
 
-   * Service Bus Console at http://<hostname>:7001/servicebus with weblogic/Welcome1 credentials.
+   * Service Bus Console at http://\<hostname\>:7001/servicebus with weblogic/Welcome1 credentials.
+
+   * Business Process Management Composer at http://\<hostname\>:8001/bpm/composer with weblogic/Welcome1 credentials.
+
