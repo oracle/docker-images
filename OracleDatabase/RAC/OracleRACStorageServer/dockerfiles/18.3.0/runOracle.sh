@@ -108,7 +108,7 @@ exit 1
 fi
 
 if [  -z $ASM_STORAGE_SIZE_GB ] ;then
-echo "ASM_STORAGE_SIZE env variable is not defined! Assining 50GB default"
+echo "ASM_STORAGE_SIZE env variable is not defined! Assigning 50GB default"
 ASM_STORAGE_SIZE_GB=50
 else
 echo "ASM STORAGE SIZE set to : $ASM_STORAGE_SIZE_GB"
