@@ -156,7 +156,7 @@ To start a docker container for SOA server (for soa and bpm domain types) you ca
 
 A sample docker run command is given below:
 
-    $ docker run -i -t  --name soams --network=SOANet -p 8001:8001  --volumes-from soaas  --env-file ./soaserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/dockertools/startMS.sh"
+    $ docker run -i -t  --name soams --network=SOANet -p 8001:8001  --volumes-from soaas  --env-file ./soaserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/container-scripts/startMS.sh"
     
 Using `--volumes-from` reuses the volume created by the Administration Server container. In the above `docker run` command, `soaas` is the name of the Administration Server container started in the previous step and we must use the same name used for the Administration Server to start the SOA Managed Server. 
 
@@ -184,7 +184,7 @@ Sample data for `osbserver.env.list` will look like this:
 
 A sample docker run command is given below:
 
-    $ docker run -i -t  --name soams --network=SOANet -p 9001:9001  --volumes-from soaas  --env-file ./osbserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/dockertools/startMS.sh"
+    $ docker run -i -t  --name soams --network=SOANet -p 9001:9001  --volumes-from soaas  --env-file ./osbserver.env.list oracle/soa:12.2.1.3.0 "/u01/oracle/container-scripts/startMS.sh"
 
 >IMPORTANT: Note that the container port used for OSB server (9001) is different from SOA server (8001).
 

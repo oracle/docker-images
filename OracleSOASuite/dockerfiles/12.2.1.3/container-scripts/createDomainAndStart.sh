@@ -72,7 +72,7 @@ updateListenAddress() {
 
   export thehost=`hostname -I`
   echo "INFO: Updating the listen address - ${thehost} ${ADMIN_HOST}"
-  cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/updListenAddress.py $vol_name ${thehost} AdminServer ${ADMIN_HOST}"
+  cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/updListenAddress.py $vol_name ${thehost} AdminServer ${ADMIN_HOST}"
   echo ${cmd}
   ${cmd} > ${DOMAIN_HOME}/logs/aslisten.log 2>&1
 }
@@ -199,7 +199,7 @@ fi
 
 if [ "$CONFIGURE_DOMAIN" = "true" ] 
 then
-  cfgCmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/createDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -domainType $DOMAIN_TYPE"
+  cfgCmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/createDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -domainType $DOMAIN_TYPE"
   ${cfgCmd}
   retval=$?
   if [ $retval -ne 0 ]; 
@@ -241,6 +241,6 @@ echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc
 echo "export PATH=$PATH:/u01/oracle/common/bin:$DOMAIN_HOME/bin" >> /u01/oracle/.bashrc
 
 # Now we start the Admin server in this container... 
-/u01/oracle/dockertools/startAS.sh
+/u01/oracle/container-scripts/startAS.sh
 
 sleep infinity
