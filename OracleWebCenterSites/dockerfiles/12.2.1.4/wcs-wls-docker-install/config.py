@@ -321,7 +321,7 @@ class WCSITES12213Provisioner:
 #oracleHome will be passed by command line parameter -oh.
 oracleHome = '<ORACLE_HOME>'
 #javaHome will be passed by command line parameter -jh.
-javaHome = '/usr/java/default'
+javaHome = '<JAVA_HOME>'
 #domainParentDir will be passed by command line parameter -parent.
 domainParentDir = '<DOMAIN_HOME>../../'
 #domainName is hard-coded to wcsites_domain. You can change to other name of your choice. Command line parameter -name.

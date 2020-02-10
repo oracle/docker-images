@@ -55,7 +55,7 @@ RUN cd /u01 && \
 	$JAVA_HOME/bin/jar xf /u01/$SITES_PKG && \
 	cd - && \
 	$JAVA_HOME/bin/java -jar /u01/$SITES_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebCenter Sites - With Examples" && \
-	rm -rf /u01/fmw_* /u01/oraInst.loc /u01/install.file
+	rm -rf /u01/$SITES_PKG /u01/$SITES_JAR /u01/oraInst.loc /u01/install.file
 	
 COPY sites-container-scripts/overrides/oui/* /u01/oracle/wcsites/common/templates/wls/
 COPY sites-container-scripts/overrides/installer/* /u01/oracle/wcsites/webcentersites/sites-home/bootstrap/installer/install/
