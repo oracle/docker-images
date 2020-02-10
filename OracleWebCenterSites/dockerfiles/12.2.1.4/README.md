@@ -34,7 +34,7 @@ Oracle WebCenter Sites has been tested and is known to run on the following hard
 |       | Version                        | Command to verify version |
 | :---: | :----------------------------: | :-----------------------: |
 | OS    | Oracle Linux 7.5 or higher     | more /etc/oracle-release  |
-| Docker| Docker version 18.09 or higher | docker –version           |
+| Docker| Docker version 18.09 or higher | docker version           |
 
 ## 3. Prerequisites
 Before you begin, ensure to do the following steps:
