@@ -31,9 +31,9 @@ ADD  $FMW_JAR1 $FMW_JAR2 /u01/
 RUN mkdir /u01/patches && \
     chown oracle:oracle -R /u01
 COPY patches/* /u01/patches/ 
-COPY container-scripts/* /u01/oracle/dockertools/
+COPY container-scripts/* /u01/oracle/container-scripts/
 RUN  cd /u01 && chmod 755 *.jar && \
-     chmod +xr /u01/oracle/dockertools/*.*
+     chmod +xr /u01/oracle/container-scripts/*.*
 
 #
 # Copy files and packages for install
@@ -89,5 +89,5 @@ COPY --from=builder --chown=oracle:oracle /u01 /u01
 # 
 USER oracle
 WORKDIR $ORACLE_HOME
-CMD ["/u01/oracle/dockertools/createDomainAndStart.sh"]
+CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
 

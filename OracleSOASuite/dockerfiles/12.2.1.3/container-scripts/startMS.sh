@@ -35,7 +35,7 @@ function _kill() {
 }
 
 #calling soa extension function script
-/u01/oracle/dockertools/soaExtFun.sh
+/u01/oracle/container-scripts/soaExtFun.sh
 
 
 #=================================================================
@@ -64,7 +64,7 @@ mkdir -p ${LOGDIR}
 
 export thehost=`hostname -I`
 echo "INFO: Updating the listen address - ${thehost} ${ADMIN_HOST}"
-/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/updListenAddress.py $vol_name $thehost ${MANAGED_SERVER} ${ADMIN_HOST} > ${LOGDIR}/mslisten.log 2>&1
+/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/updListenAddress.py $vol_name $thehost ${MANAGED_SERVER} ${ADMIN_HOST} > ${LOGDIR}/mslisten.log 2>&1
 
 # Set boot.properties
 #
