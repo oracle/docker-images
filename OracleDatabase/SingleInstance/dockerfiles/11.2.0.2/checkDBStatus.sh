@@ -26,13 +26,16 @@ EOF`
 # Store return code from SQL*Plus
 ret=$?
 
-# SQL Plus execution was successful and database is open
-if [ $ret -eq 0 ] && [ "$status" = "$POSITIVE_RETURN" ]; then
-   exit 0;
-# Database is not open
-elif [ "$status" != "$POSITIVE_RETURN" ]; then
-   exit 1;
-# SQL Plus execution failed
+if [ $ret -eq 0 ]; then
+   # SQL Plus execution was successful
+   if [ "$status" = "$POSITIVE_RETURN" ]; then
+      # database is open
+      exit 0;
+   else
+      # database is not open
+      exit 1;
+   fi;
 else
+   # SQL Plus execution failed
    exit 2;
 fi;

@@ -30,13 +30,16 @@ EOF`
 # Store return code from SQL*Plus
 ret=$?
 
-# SQL Plus execution was successful and PDB is open
-if [ $ret -eq 0 ] && [ "$status" = "$OPEN_MODE" ]; then
-   exit 0;
-# PDB is not open
-elif [ "$status" != "$OPEN_MODE" ]; then
-   exit 1;
-# SQL Plus execution failed
+if [ $ret -eq 0 ]; then
+   # SQL Plus execution was successful
+   if [ "$status" = "$OPEN_MODE" ]; then
+      # database is open
+      exit 0;
+   else
+      # database is not open
+      exit 1;
+   fi;
 else
+   # SQL Plus execution failed
    exit 2;
 fi;
