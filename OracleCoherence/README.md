@@ -100,25 +100,13 @@ Follow this procedure for Coherence 12.2.1.3.0 and earlier Coherence versions.
 5. Execute the build script `buildDockerImage.sh`.
 
         $ cd ..
-        $ sh buildDockerImage.sh
+        $ sh buildDockerImage.sh -v 12.2.1.3.2
 
     or if your Docker client requires commands to be run as root you can run
 
-        $ sudo sh buildDockerImage.sh
+        $ sudo sh buildDockerImage.sh -v 12.2.1.3.2
 
-    The script will determine which installer and image it is building from the installer file that is in the working directory. If both the Standalone and Quick installers are present then the default will be to use the Standalone installer. You can specify which installer to use with a script argument. To run the Standalone installer use:
-
-        $ sh buildDockerImage.sh -s
-
-    Or to run the Quick installer use:
-
-        $ sh buildDockerImage.sh -q
-
-6. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example if the Standalone installer is used the image will be `oracle/coherence:12.2.1.3.0-standalone`
-
-7. Since this image has also got the Coherence 12.2.1.3.2 cumulative patch using OPatch, the image should be tagged as shown below:
-
-        $ docker tag <12.2.1.3_IMAGE:TAG> oracle/coherence:12.2.1.3.2
+6. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example if the Standalone installer is used the image will be `oracle/coherence:12.2.1.3.2-standalone`
 
 ## Documentation
 Documentation covering the different aspects of running Oracle Coherence in Docker containers is covered in the [docs](docs) section.

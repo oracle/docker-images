@@ -70,7 +70,6 @@ USER root
 
 COPY start.sh                      /start.sh
 COPY extend-cache-config.xml       $COHERENCE_HOME/conf/extend-cache-config.xml
-COPY logging.properties            $COHERENCE_HOME/conf/logging.properties
 
 RUN chgrp -R root /u01 && \
     chmod -R g=u /u01 && \
@@ -91,14 +90,14 @@ ENV ORACLE_HOME=/u01/oracle/oracle_home \
 # Allow the start script to dynamically modify the /etc/passwd file when
 # running in environments that create a dynamic user
 # see: https://docs.okd.io/latest/creating_images/guidelines.html
-RUN mkdir -p /u01/oracle && \
-    chgrp -R root /u01 && \
-    chmod -R g=u /u01 && \
+RUN mkdir -p /u01 && \
     mkdir -p /logs && \
     chgrp -R root /logs && \
     chmod -R g=u /logs && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash -u 1000 -g 0 oracle && \
-    chmod g=u /etc/passwd
+    chmod g=u /etc/passwd && \
+    chgrp -R root /u01 && \
+    chmod -R g=u /u01
 
 # The directories copied below are created with the owner oracle and the group 0 (root)
 # This ensures that the image is compatible with OpenShift which runs containers with a
