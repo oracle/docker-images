@@ -96,6 +96,7 @@ RUN mkdir -p /u01 && \
     chmod -R g=u /logs && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash -u 1000 -g 0 oracle && \
     chmod g=u /etc/passwd && \
+    chown root /u01/oracle && \
     chgrp -R root /u01 && \
     chmod -R g=u /u01
 
