@@ -47,14 +47,10 @@ Run the container with `-v /dev/shm --tmpfs /dev/shm:rw,exec,size=<yoursize>` in
 Also make sure you assign an appropriate size as the default Docker uses is only 64MB. Assigning 1GB or  more is recommended.
 
 ## ORA-12637: Packet receive failed
-When initially connecting to your database via `sqlplus` the connection may appear to hang and timeout after a few minutes with:
-```
-ERROR:
-ORA-12637: Packet receive failed
+When initially connecting to your 19c (or higher) database the client may appear to hang and timeout after a few minutes with: `ORA-12637: Packet receive failed`
 
-
-Enter user-name:
+Some network stacks do not correctly handle Out Of Band breaks which are enabled by default in Oracle Database 19c. Problems have been seen on _docker-engine-19.03.1.ol-1.0.0.el7_. You may disable this feature by setting `DISABLE_OOB=ON` in the clients _sqlnet.ora_ file. By default the Oracle Instant Client for Linux will use _/<instant_client_path>/network/admin/sqlnet.ora_, _$TNS_ADMIN/sqlnet.ora_ and _~/.sqlnet.ora_. For example you could use
 ```
-Some network stacks do not support the new default Out Of Band break setting in Oracle Database 19c. This has been seen on _docker-engine-19.03.1.ol-1.0.0.el7_. Disable this feature by setting `DISABLE_OOB=ON` in the _sqlnet.ora_ file. The Oracle Instant Client with default settings will use _~/.sqlnet.ora_ so you can test with
-```$ echo "DISABLE_OOB=ON" >> ~/.sqlnet.ora```.
-For more information configuring _sqlnet.ora_ see [Database Net Services Reference](https://docs.oracle.com/en/database/oracle/oracle-database/20/netrf/parameters-for-the-sqlnet.ora.html) and issue #1352
+$ echo "DISABLE_OOB=ON" >> ~/.sqlnet.ora
+```
+For more information configuring _sqlnet.ora_ file see [Database Net Services Reference](https://docs.oracle.com/en/database/oracle/oracle-database/20/netrf/parameters-for-the-sqlnet.ora.html), [Instant Client Installation for Linux] (https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html), _What is DISABLE_OOB (Out Of Band Break)? (Doc ID 373475.1)_ and issue #1352
