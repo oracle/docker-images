@@ -46,3 +46,15 @@ As you don't have execution rights to it, however, you get the error `Operation 
 Run the container with `-v /dev/shm --tmpfs /dev/shm:rw,exec,size=<yoursize>` instead, the important part being the `exec` in `--tmpfs /dev/shm:rw,exec,size=<yoursize>`.
 Also make sure you assign an appropriate size as the default Docker uses is only 64MB. Assigning 1GB or  more is recommended.
 
+## ORA-12637: Packet receive failed
+When initially connecting to your database via `sqlplus` the connection may appear to hang and timeout after a few minutes with:
+```
+ERROR:
+ORA-12637: Packet receive failed
+
+
+Enter user-name:
+```
+Some network stacks do not support the new default Out Of Band break setting in Oracle Database 19c. This has been seen on _docker-engine-19.03.1.ol-1.0.0.el7_. Disable this feature by setting `DISABLE_OOB=ON` in the _sqlnet.ora_ file. The Oracle Instant Client with default settings will use _~/.sqlnet.ora_ so you can test with
+```$ echo "DISABLE_OOB=ON" >> ~/.sqlnet.ora```.
+For more information configuring _sqlnet.ora_ see [Database Net Services Reference](https://docs.oracle.com/en/database/oracle/oracle-database/20/netrf/parameters-for-the-sqlnet.ora.html) and issue #1352
