@@ -53,4 +53,4 @@ Oracle Net 19c will attempt to [automatically detect support for Out Of Band bre
 ```
 $ echo "DISABLE_OOB=ON" >> ~/.sqlnet.ora
 ```
-For more information configuring _sqlnet.ora_ file see [Database Net Services Reference](https://www.oracle.com/pls/topic/lookup?ctx=dblatest&id=GUID-2041545B-58D4-48DC-986F-DCC9D0DEC642), [Instant Client Installation for Linux] (https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html), _What is DISABLE_OOB (Out Of Band Break)? (Doc ID 373475.1)_ and issue #1352
+For more information configuring _sqlnet.ora_ file see [Database Net Services Reference](https://www.oracle.com/pls/topic/lookup?ctx=dblatest&id=GUID-2041545B-58D4-48DC-986F-DCC9D0DEC642), [Instant Client Installation for Linux](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html), [What is DISABLE_OOB (Out Of Band Break)? (Doc ID 373475.1)](https://support.oracle.com/epmos/faces/DocumentDisplay?id=373475.1) and issue #1352
