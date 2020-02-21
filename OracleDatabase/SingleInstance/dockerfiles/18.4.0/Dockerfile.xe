@@ -44,46 +44,19 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 
 # Copy binaries
 # -------------
-<<<<<<< HEAD
-<<<<<<< HEAD
-COPY $INSTALL_FILE_1 $RUN_FILE $PWD_FILE $CHECK_DB_FILE $INSTALL_DIR/
-COPY $CONF_FILE /etc/sysconfig/
-
-RUN cd $INSTALL_DIR && \
-    yum -y install oracle-database-preinstall-18c file openssl $INSTALL_FILE_1 && \
-=======
-COPY $CHECK_SPACE_FILE $INSTALL_FILE_1 $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
-=======
 COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
->>>>>>> upstream/master
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
     yum -y install openssl oracle-database-preinstall-18c && \
-<<<<<<< HEAD
-    yum -y install $INSTALL_FILE_1 && \
->>>>>>> upstream/master
-=======
     yum -y localinstall $INSTALL_FILE_1 && \
->>>>>>> upstream/master
     rm -rf /var/cache/yum && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
     ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
     mkdir -p $ORACLE_BASE/oradata /home/oracle && \
-<<<<<<< HEAD
-    chown -R oracle:oinstall $ORACLE_BASE/oradata /home/oracle && \
-    mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
-    mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
-    mv $INSTALL_DIR/$CHECK_DB_FILE $ORACLE_BASE/ && \
-    ln -s $ORACLE_BASE/$PWD_FILE / && \
-    cd $HOME && \
-    rm -rf $INSTALL_DIR && \
-    target_txt=$(cat /etc/security/limits.d/oracle-database-preinstall-18c.conf | grep -e 'oracle *hard *memlock*') && \
-    sed -i "/^$target_txt/ c#$target_txt" /etc/security/limits.d/oracle-database-preinstall-18c.conf && \
-=======
     chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
     mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
@@ -92,7 +65,6 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     ln -s $ORACLE_BASE/$PWD_FILE / && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
->>>>>>> upstream/master
     chmod ug+x $ORACLE_BASE/*.sh
 
 VOLUME ["$ORACLE_BASE/oradata"]
