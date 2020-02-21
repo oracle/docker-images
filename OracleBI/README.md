@@ -8,7 +8,7 @@ The certification of Oracle Business Intelligence on Docker does not require the
 
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 
-The instructions below can also be used to build and run Oracle Business Intelligence 12.2.1.2.0, based on FMW Infrastructure 12.2.1.2.0, by changing 12.2.1.3 to 12.2.1.2 as required.
+The instructions below can also be used to build and run Oracle Business Intelligence 12.2.1.2.0, based on FMW Infrastructure 12.2.1.2.0, by changing 12.2.1.3 to 12.2.1.2 as required. A docker image for Oracle Business Intelligence 12.2.1.4.0, on FMW Infrastructure 12.2.1.3.0, can be built and run by changing 12.2.1.3 to 12.2.1.4 in the commands that follow.
 
 ## Database prerequisite
 
@@ -108,6 +108,13 @@ The following example URLS provide access to the BI domain:
 * http://www.example.com:9502/analytics - BI Answers/Dashboards
 * http://www.example.com:9502/va - Data Visualisation
 * http://www.example.com:9502/xmlpserver - BI Publisher
+
+If access to the OBI Server component is required, e.g. by the BI Administration Tool, then port 9514 must be exposed and the previous `docker run` command should be modified
+
+e.g.:
+
+        $ docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/biplatform:12.2.1.3
+
 
 ### Using a host directory for persistent data
 

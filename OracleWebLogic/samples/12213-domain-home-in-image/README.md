@@ -38,6 +38,7 @@ The domain property file enables you to customize the parameters to configure th
 	DEBUG_FLAG=true
 	PRODUCTION_MODE_ENABLED=true
 	CLUSTER_TYPE=DYNAMIC
+	CLUSTER_NAME=cluster1
 
 **NOTE:** Before invoking the build make sure you have built `oracle/weblogic:12.2.1.3-developer`.
 
@@ -52,14 +53,16 @@ Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-i
 * Database Port:         `DB_PORT`             (default: `1527`)
 * Admin Server Name:     `ADMIN_NAME`          (default: `admin-server`)
 * Admin Server Host:     `ADMIN_HOST`          (default: `wlsadmin`)
+* Cluster Name:          `CLUSTER_NAME`        (default: `cluster1`)
 
 **NOTE:** The `DOMAIN_HOME` will be persisted in the image directory `/u01/oracle/user-projects/domains/$DOMAIN_NAME`.
 
 To build this sample, run:
 
  	$ . container-scripts/setEnv.sh ./properties/docker-build/domain.properties
- 	$ docker build $BUILD_ARG  --force-rm=true -t 12213-domain-home-in-image .
+ 	$ docker build --force-rm=true --no-cache=true $BUILD_ARG -t 12213-domain-home-in-image .
 
+**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
 
 **During Docker Run:** of the Administration and Managed Servers, the user name and password need to be passed in as well as some optional parameters. The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_run` in the HOST. On the Docker run command line, add the `-v` option which maps the property file into the image directory `/u01/oracle/properties`.
 

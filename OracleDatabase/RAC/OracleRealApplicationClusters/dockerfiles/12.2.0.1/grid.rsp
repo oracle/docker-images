@@ -195,7 +195,7 @@ oracle.install.crs.config.gpnp.gnsClientDataFile=
 # Specify the GNS subdomain and an unused virtual hostname for GNS service
 #-------------------------------------------------------------------------------
 oracle.install.crs.config.gpnp.gnsSubDomain=###GNS_SUBDOMAIN###
-oracle.install.crs.config.gpnp.gnsVIPAddress=###GNSVIP_ADDRESS###
+oracle.install.crs.config.gpnp.gnsVIPAddress=###GNSVIP_HOSTNAME###
 
 #-------------------------------------------------------------------------------
 # Specify the list of sites - only if configuring an Extended Cluster

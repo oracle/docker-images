@@ -69,9 +69,9 @@ else
 # If neither -s or -q were specified then determine which image we are building
 # by which installer is present. If both the Standard and Quick installers are
 # present then the Standard installer will be used.
-  if [ -f "fmw_${VERSION}_coherence_Disk1_1of1.zip" ]; then
+  if [ -f fmw_*_coherence_Disk1_1of1.zip ]; then
     DISTRIBUTION="standalone"
-  elif [ -f "fmw_${VERSION}_coherence_quick_Disk1_1of1.zip" ]; then
+  elif [ -f fmw_*_coherence_quick_Disk1_1of1.zip ]; then
     DISTRIBUTION="quickinstall"
   else
     echo "A valid distribution type argument has not been provided and no installer file can be found."

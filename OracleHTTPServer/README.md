@@ -19,7 +19,7 @@ You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry]
 ### Building OHS Docker Image
 IMPORTANT: You have to download the OHS binary and put it in place (see .download files inside dockerfiles/).
 
-Download the required package (see .download file) and drop them in the version folder (12.2.1.2.0 or 12.2.1.3.0). Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root providing the version name with -v option.
+Download the required package (see .download file) and drop them in the version folder (12.2.1.3.0). Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root providing the version name with -v option.
 
     $ sh buildDockerImage.sh -v 12.2.1.3.0
 

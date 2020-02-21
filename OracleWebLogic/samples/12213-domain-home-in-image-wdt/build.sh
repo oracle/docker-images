@@ -190,6 +190,7 @@ build_domain_image() {
        $MODEL_ARGS \
        $ADDITIONAL_BUILD_ARGS \
        --force-rm=true \
+       --no-cache=true \
        -f ${dockerFile} \
        -t ${tagName} \
        ${scriptDir}"
@@ -201,6 +202,7 @@ build_domain_image() {
        $MODEL_ARGS \
        $ADDITIONAL_BUILD_ARGS \
        --force-rm=true \
+       --no-cache=true \
        -f ${dockerFile} \
        -t ${tagName} \
        ${scriptDir}

@@ -1,76 +1,61 @@
-#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
-#
-# Util scripts are copied into the image enabling users to plug NodeManager
-# automatically into the AdminServer running on another container.
+# This is the Dockerfile for Oracle WebLogic 12.2.1.3 domain persisted on a Docker volume
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
+# This Oracle WebLogic domain image extends the Oracle WebLogic 12.2.1.3 developer image, you must first build the Oracle WebLogic 12.2.1.3 binary image.
 # Run:
-#      $ sudo docker build -t 12213-domain
+#      $ docker build -f Dockerfile -t 12213-weblogic-domain-in-volume .
 #
-# Pull base image
-# ---------------
-FROM  oracle/weblogic:12.2.1.3-developer
+# IMPORTANT
+# ---------
+# The resulting image of this Dockerfile contains a WebLogic Domain.
+#
+# From
+# ----
+FROM oracle/weblogic:12.2.1.3-developer
 
 # Maintainer
 # ----------
 MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
 
-ARG CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" 
-
 # WLS Configuration
-# ---------------------------
-ENV DOMAIN_NAME="${CUSTOM_DOMAIN_NAME}" \
-    PRE_DOMAIN_HOME=/u01/oracle/user_projects \
-    ADMIN_HOST="wlsadmin" \
-    NM_PORT="5556" \
-    MS_PORT="8001" \
-    DEBUG_PORT="8453" \
-    ORACLE_HOME=/u01/oracle \
-    SCRIPT_FILE=/u01/oracle/createAndStartWLSDomain.sh \
-    CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true"  \
-    DOMAIN_HOME="/u01/oracle/user_projects/domains/${DOMAIN_NAME}" \ 
-    PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
-
-# Domain and Server environment variables
-# ------------------------------------------------------------
-ENV ADMIN_PORT="${ADMIN_PORT:-7001}"  \
-    ADMIN_USERNAME="${ADMIN_USERNAME:-weblogic}" \
-    ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
-    MS_NAME="${MS_NAME:-""}" \
-    NM_NAME="${NM_NAME:-""}" \
-    ADMIN_PASSWORD="${ADMIN_PASSWORD:-""}" \
-    CLUSTER_NAME="${CLUSTER_NAME:-DockerCluster}" \
-    DEBUG_FLAG=true \
-    PRODUCTION_MODE=dev
+# -----------------
+ENV CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" \
+    CUSTOM_DOMAIN_ROOT="/u01/oracle/user_projects/domains" \
+    CUSTOM_ADMIN_PORT="${CUSTOM_ADMIN_PORT:-7001}" \
+    CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-AdminServer}" \
+    CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-AdminContainer}" \
+    CUSTOM_MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT:-8001}" \
+    CUSTOM_MANAGED_SERVER_NAME_BASE="${CUSTOM_MANAGED_SERVER_NAME_BASE:-MS}" \
+    CUSTOM_CONFIGURED_MANAGED_SERVER_COUNT="${CUSTOM_CONFIGURED_MANAGED_SERVER_COUNT:-2}" \
+    CUSTOM_MANAGED_NAME="${CUSTOM_MANAGED_NAME:-MS1}" \
+    CUSTOM_CLUSTER_NAME="${CUSTOM_CLUSTER_NAME:-cluster1}" \
+    CUSTOM_CLUSTER_TYPE="${CUSTOM_CLUSTER_TYPE:-DYNAMIC}" \
+    CUSTOM_PRODUCTION_MODE_ENABLED="${CUSTOM_PRODUCTION_MODE_ENABLED:-prod}" \
+    PROPERTIES_FILE_DIR="/u01/oracle/properties" \
+    CUSTOM_JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false"  \
+    CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
 
 # Add files required to build this image
-COPY container-scripts/* /u01/oracle/
+COPY --chown=oracle:oracle container-scripts/* /u01/oracle/container-scripts/
 
 #Create directory where domain will be written to
 USER root
-RUN chmod +xw /u01/oracle/*.sh && \
-    chmod +xw /u01/oracle/*.py && \
-    mkdir -p $PRE_DOMAIN_HOME && \
-    chown -R oracle:oracle $PRE_DOMAIN_HOME && \
-    chmod -R a+xwr $PRE_DOMAIN_HOME && \ 
-    mkdir -p $DOMAIN_HOME && \ 
-    chmod -R a+xwr $DOMAIN_HOME
+RUN mkdir -p $CUSTOM_DOMAIN_ROOT && \
+    chown -R oracle:oracle $CUSTOM_DOMAIN_ROOT/.. && \
+    chmod -R a+xwr $CUSTOM_DOMAIN_ROOT/.. && \
+    mkdir -p $ORACLE_HOME/properties && \
+    chmod -R a+r $ORACLE_HOME/properties && \ 
+    chmod +x /u01/oracle/container-scripts/*
 
-
-VOLUME $PRE_DOMAIN_HOME
-# Expose Node Manager default port, and also default for admin and managed server
-EXPOSE $NM_PORT $ADMIN_PORT $MS_PORT $DEBUG_PORT
+VOLUME $CUSTOM_DOMAIN_ROOT
 
 USER oracle
 WORKDIR $ORACLE_HOME
-
-# Define default command to start bash.
-CMD ["/u01/oracle/createAndStartWLSDomain.sh"]
+CMD ["/u01/oracle/container-scripts/createWLSDomain.sh"]

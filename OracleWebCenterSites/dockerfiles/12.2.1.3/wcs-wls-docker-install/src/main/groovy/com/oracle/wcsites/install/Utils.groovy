@@ -143,7 +143,7 @@ class Utils {
 		// WebCenter Sites config directory
 		if (!config.script.sites.config?.trim()) {
 			if(config.script.oracle.wcsites.appserver.type == WEBLOGIC)
-				config.script.sites.config="${config.script.oracle.home}/user_projects/domains/${config.script.oracle.domain}/wcsites/wcsites/config"
+				config.script.sites.config="${config.script.oracle.home}/user_projects/domains/${config.script.oracle.domain}/config/fmwconfig/wcsconfig"
 			else {
 				echo("Unable to identify the application server type!")
 				System.exit(1)
@@ -494,6 +494,11 @@ class Utils {
 
 		// Sites shared directory
 		antBuilder.replace(file: rspFile, token: "oracle.wcsites.shared=", value: "oracle.wcsites.shared=" + config.script.oracle.wcsites.shared, summary: true)
+		
+		config.script.sites.node.config="${config.script.oracle.home}/user_projects/domains/${config.script.oracle.domain}/config/fmwconfig/servers/${config.script.server.name}1/config"
+		echo("Node config location --> " + config.script.sites.node.config)
+		// Sites node config directory
+		antBuilder.replace(file: rspFile, token: "oracle.wcsites.node.config=", value: "oracle.wcsites.node.config=" + config.script.sites.node.config, summary: true)
 
 		// Samples
 		antBuilder.replace(file: rspFile, token: "oracle.wcsites.examples=", value: "oracle.wcsites.examples="+ config.script.oracle.wcsites.examples.examples, summary: true)

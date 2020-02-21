@@ -27,9 +27,9 @@ If you want to patch on top of WebLogic Server 12.2.1.3 October PSU download:
 
 To build, run:
 
-        $ docker build -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patch-ontop-12213 .
+        $ docker build --force-rm=true --no-cache=true -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patch-ontop-12213 .
         or
-        $ docker build -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patch-ontop-12213-psu .
+        $ docker build --force-rm=true --no-cache=true -t oracle/weblogic:12213-patch-wls-for-k8s -f Dockerfile.patch-ontop-12213-psu .
 
 ## Verify that the patch has been applied correctly
 Run a container from the image:

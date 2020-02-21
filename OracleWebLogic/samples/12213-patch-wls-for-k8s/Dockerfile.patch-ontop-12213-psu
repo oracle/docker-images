@@ -42,7 +42,7 @@ ENV PATCH_PKG2="p29135930_12213181016_Generic.zip"
 
 # Copy supplemental package and scripts
 # --------------------------------
-COPY $PATCH_PKG0 $PATCH_PKG1 $PATCH_PKG2 /u01/
+COPY --chown=oracle:oracle $PATCH_PKG0 $PATCH_PKG1 $PATCH_PKG2 /u01/
 
 # Installation of Supplemental Quick Installer
 # --------------------------------------------

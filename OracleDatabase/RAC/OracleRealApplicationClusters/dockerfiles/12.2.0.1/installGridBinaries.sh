@@ -41,6 +41,9 @@ if [ "$GRID_HOME" == "" ]; then
    exit 1;
 fi;
 
+export ORACLE_HOME=$GRID_HOME
+export PATH=$ORACLE_HOME/bin:$PATH
+
 temp_var1=`hostname`
 # Install Oracle binaries
 mkdir -p /home/grid/.ssh && \

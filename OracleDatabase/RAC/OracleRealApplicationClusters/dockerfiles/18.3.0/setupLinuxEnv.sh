@@ -18,3 +18,5 @@ mkdir /responsefiles  && \
 chmod ug+x /opt/scripts/startup/*.sh && \
 yum -y install systemd oracle-database-preinstall-18c net-tools which zip unzip tar openssl expect e2fsprogs openssh-server openssh-client vim-minimal passwd which sudo && \
 yum clean all 
+
+#yum -y install systemd oracle-database-preinstall-18c  net-tools ntpd crontab perl gcc hostname  which zip unzip tar openssl expect e2fsprogs openssh-server openssh-client vim-minimal passwd which sudo xorg-x11-server-Xorg xorg-x11-xauth xorg-x11-apps

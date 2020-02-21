@@ -13,9 +13,15 @@ export DOMAIN_HOME="${DOMAIN_ROOT}/${DOMAIN_NAME}"
 replaceWith=$DOCKER_HOST
 replaceString=$WCSITES_ADMIN_HOSTNAME
 
-location=$DOMAIN_HOME/wcsites/wcsites/config
+location=$DOMAIN_HOME/config/fmwconfig/servers/${SITES_SERVER_NAME}1/config/
 
 echo The following list of files are found in location ${location} that contains ${replaceString}, will be replaced with ${replaceWith}
 #grep -rl ${replaceString} ${location} | xargs sed -i "s/${replaceString}/${replaceWith}/g"
 grep -rl --exclude="jbossTicketCacheReplicationConfig.xml" ${replaceString} ${location}
 grep -rl --exclude="jbossTicketCacheReplicationConfig.xml" ${replaceString} ${location} | xargs sed -i "s/${replaceString}/${replaceWith}/g"
+
+location=$DOMAIN_HOME/config/fmwconfig/wcsconfig/
+
+echo The following list of files are found in location ${location} that contains ${replaceString}, will be replaced with ${replaceWith}
+grep -rl ${replaceString} ${location}"wcs_properties.json"
+grep -rl ${replaceString} ${location}"wcs_properties.json" | xargs sed -i "s/${replaceString}/${replaceWith}/g"

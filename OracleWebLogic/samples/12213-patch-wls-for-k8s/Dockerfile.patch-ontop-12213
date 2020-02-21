@@ -53,7 +53,7 @@ ENV PATCH_PKG2="p29135930_122130_Generic.zip"
 # --------------------------------
 # Copy patches 27117282 & 29135930 
 # --------------------------------
-COPY $PATCH_PKG1 $PATCH_PKG2 /u01/
+COPY --chown=oracle:oracle $PATCH_PKG1 $PATCH_PKG2 /u01/
 
 # PATCH_PKG1 (27117282) is only needed if the WebLogic binary image
 # is created manually from this Github project under dockerfiles/12.2.1.3.

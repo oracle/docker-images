@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 # 
 # Since: April, 2016
 # Author: gerald.venzl@oracle.com
@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 # 
 
 usage() {
@@ -28,10 +28,10 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
 
 EOF
-  exit 0;
+
 }
 
 # Validate packages
@@ -48,14 +48,35 @@ checksumPackages() {
   fi
 }
 
+# Check Podman version
+checkPodmanVersion() {
+  # Get Podman version
+  echo "Checking Podman version."
+  PODMAN_VERSION=$(docker info --format '{{.host.BuildahVersion}}')
+  # Remove dot in Podman version
+  PODMAN_VERSION=${PODMAN_VERSION//./}
+
+  if [ -z "$PODMAN_VERSION" ]; then
+    exit 1;
+  elif [ "$PODMAN_VERSION" -lt "${MIN_PODMAN_VERSION//./}" ]; then
+    echo "Podman version is below the minimum required version $MIN_PODMAN_VERSION"
+    echo "Please upgrade your Podman installation to proceed."
+    exit 1;
+  fi
+}
+
 # Check Docker version
 checkDockerVersion() {
   # Get Docker Server version
-  DOCKER_VERSION=$(docker version --format '{{.Server.Version | printf "%.5s" }}')
+  echo "Checking Docker version."
+  DOCKER_VERSION=$(docker version --format '{{.Server.Version | printf "%.5s" }}'|| exit 0)
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
-  if [ "$DOCKER_VERSION" -lt "${MIN_DOCKER_VERSION//./}" ]; then
+  if [ -z "$DOCKER_VERSION" ]; then
+    # docker could be aliased to podman and errored out (https://github.com/containers/libpod/pull/4608)
+    checkPodmanVersion
+  elif [ "$DOCKER_VERSION" -lt "${MIN_DOCKER_VERSION//./}" ]; then
     echo "Docker version is below the minimum required version $MIN_DOCKER_VERSION"
     echo "Please upgrade your Docker installation to proceed."
     exit 1;
@@ -74,18 +95,19 @@ VERSION="19.3.0"
 SKIPMD5=0
 DOCKEROPS=""
 MIN_DOCKER_VERSION="17.09"
+MIN_PODMAN_VERSION="1.6.0"
 DOCKERFILE="Dockerfile"
 
 if [ "$#" -eq 0 ]; then
   usage;
+  exit 1;
 fi
-
-checkDockerVersion
 
 while getopts "hesxiv:o:" optname; do
   case "$optname" in
     "h")
       usage
+      exit 0;
       ;;
     "i")
       SKIPMD5=1
@@ -116,6 +138,8 @@ while getopts "hesxiv:o:" optname; do
   esac
 done
 
+checkDockerVersion
+
 # Which Edition should be used?
 if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
   usage
@@ -126,6 +150,7 @@ elif [ $STANDARD -eq 1 ]; then
 elif [ $EXPRESS -eq 1 ]; then
   if [ "$VERSION" == "18.4.0" ]; then
     EDITION="xe"
+    SKIPMD5=1
   elif [ "$VERSION" == "11.2.0.2" ]; then
     EDITION="xe"
     DOCKEROPS="--shm-size=1G $DOCKEROPS";

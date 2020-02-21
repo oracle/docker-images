@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
@@ -15,10 +15,11 @@
 ####################### Variables and Constants #################
 declare -r FALSE=1
 declare -r TRUE=0
-declare -r GRID_USER='grid'          ## Default gris user is grid.
-declare -r ORACLE_USER='oracle'      ## default oracle user is oracle.
+declare -x GRID_USER='grid'          ## Default gris user is grid.
+declare -x DB_USER='oracle'      ## default oracle user is oracle.
 declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
 declare -r RAC_ENV_FILE="/etc/rac_env_vars"   ## RACENV FILE NAME
+declare -x GIMR_DB_FLAG='false'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
 declare -x PUBLIC_HOSTNAME           ## PUBLIC HOSTNAME set based on hostname
@@ -65,7 +66,7 @@ declare -x REMOVE_OS_PWD_FILES='false'
 declare -x COMMON_OS_PWD_FILE='common_os_pwdfile.enc'
 declare -x CRS_CONFIG_NODES
 declare -x ANSIBLE_INSTALL='false'
-
+declare -x RUN_DBCA='true'
 
 progname=$(basename "$0")
 ###################### Variabes and Constants declaration ends here  ####################
@@ -377,15 +378,15 @@ if [ "${stat}" -ne 0 ]; then
 error_exit "ssh setup for Grid user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $GRID_USER  user"
 fi
 
-print_message "Running SSH setup for $ORACLE_USER user between nodes ${CLUSTER_NODES[@]}"
-cmd='su - $ORACLE_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $ORACLE_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$ORACLE_PASSWORD\""'
+print_message "Running SSH setup for $DB_USER user between nodes ${CLUSTER_NODES[@]}"
+cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$ORACLE_PASSWORD\""'
 (eval $cmd) &
 ssh_pid=$!
 wait $ssh_pid
 stat=$?
 
 if [ "${stat}" -ne 0 ]; then
-error_exit "ssh setup for Oracle  user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $ORACLE_USER user"
+error_exit "ssh setup for Oracle user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $DB_USER user"
 fi
 }
 
@@ -421,7 +422,7 @@ fi
 done
 
 status="NA"
-cmd='su - $ORACLE_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $ORACLE_USER@$node echo ok 2>&1"'
+cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
  echo $cmd
 for node in ${CLUSTER_NODES}
 do
@@ -429,11 +430,11 @@ do
 status=$(eval $cmd)
 
 if [[ $status == ok ]] ; then
-  print_message "SSH check fine for the $ORACLE_USER@$node"
+  print_message "SSH check fine for the $DB_USER@$node"
 elif [[ $status == "Permission denied"* ]] ; then
-   error_exit "SSH check failed for the $ORACLE_USER@$node becuase of permission denied error! SSH setup did not complete sucessfully"
+   error_exit "SSH check failed for the $DB_USER@$node becuase of permission denied error! SSH setup did not complete sucessfully"
 else
-   error_exit "SSH check failed for the $ORACLE_USER@$node! Error occurred during SSH setup"
+   error_exit "SSH check failed for the $DB_USER@$node! Error occurred during SSH setup"
 fi
 
 done
@@ -530,13 +531,16 @@ else
 error_exit "Cluster  Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
-eval $cmd
+if [ ${GIMR_DB_FLAG} == 'true' ]; then
 
-if [ $? -eq 0 ]; then
-print_message "MGMTDB Check went fine"
-else
-error_exit "MGMTDB Check failed!"
+   cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
+   eval $cmd
+
+    if [ $? -eq 0 ]; then
+        print_message "MGMTDB Check went fine"
+    else
+         error_exit "MGMTDB Check failed!"
+    fi
 fi
 
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crsd\""'
@@ -603,7 +607,7 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> $RAC_ENV_FILE"'
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> /etc/rac_env_vars"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
@@ -630,7 +634,7 @@ if [ $arr_device -ne 0 ]; then
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
-        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> $RAC_ENV_FILE"'
+        cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> /etc/rac_env_vars"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
@@ -669,13 +673,15 @@ else
 error_exit "Cluster  Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
-eval $cmd
+if [ ${GIMR_DB_FLAG} == 'true' ]; then
+   cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
+    eval $cmd
 
-if [ $? -eq 0 ]; then
-print_message "MGMTDB Check went fine"
-else
-error_exit "MGMTDB Check failed!"
+   if [ $? -eq 0 ]; then
+      print_message "MGMTDB Check went fine"
+   else
+      error_exit "MGMTDB Check failed!"
+    fi
 fi
 
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check crsd"'
@@ -814,7 +820,7 @@ fi
 local stat=3
 local cmd
 
-cmd='su - $ORACLE_USER -c "ssh $node \"$DB_HOME/addnode/addnode.sh \"CLUSTER_NEW_NODES={$new_node_hostname}\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs -noCopy  -silent\" | tee -a $logfile"'
+cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/addnode/addnode.sh \"CLUSTER_NEW_NODES={$new_node_hostname}\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs -noCopy  -silent\" | tee -a $logfile"'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -849,7 +855,7 @@ fi
 
 for new_node in "${CLUSTER_NODES[@]}"; do
 print_message "Adding DB Instance on $node"
-cmd='su - $ORACLE_USER -c "ssh $node \"$DB_HOME/bin/dbca -addInstance -silent  -nodeName $new_node  -gdbName $ORACLE_SID\" | tee -a $logfile"'
+cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/bin/dbca -addInstance -silent  -nodeName $new_node  -gdbName $ORACLE_SID\" | tee -a $logfile"'
 eval $cmd
 done
 
@@ -887,7 +893,7 @@ local cmd
 
 if resolveip $CMAN_HOSTNAME; then
 print_message "Executing script to set the remote listener"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
+su - $DB_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
 fi
 
 }
@@ -903,11 +909,11 @@ fi
 
 ###### Etc Host and other Checks and setup before proceeding installation #####
 all_check
-print_message "Setting random password for root/$GRID_USER/$ORACLE_USER user"
+print_message "Setting random password for root/$GRID_USER/$DB_USER user"
 print_message "Setting random password for $GRID_USER user"
 setpasswd $GRID_USER  $GRID_PASSWORD
-print_message "Setting random password for $ORACLE_USER user"
-setpasswd $ORACLE_USER $ORACLE_PASSWORD
+print_message "Setting random password for $DB_USER user"
+setpasswd $DB_USER $ORACLE_PASSWORD
 print_message "Setting random password for root user"
 setpasswd root $PASSWORD
 
@@ -931,9 +937,12 @@ runrootsh $GRID_HOME  $GRID_USER
 checkCluster
 print_message "Checking Cluster Class"
 checkClusterClass
+print_message "Running User Script for $GRID_USER user"
+su - $GRID_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $GRID_SCRIPT_ROOT GRID"
 
 ###### DB Node Addition ######
 if [ "${CLUSTER_TYPE}" != 'Domain' ]; then
+if [ "${RUN_DBCA}" == 'true' ]; then
 print_message  "Performing DB Node addition"
 addDBNode
 print_message "Running root.sh"
@@ -941,11 +950,12 @@ runrootsh $DB_HOME $DB_USER
 print_message "Adding DB Instance"
 addDBInst 
 print_message "Checking DB status"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
+su - $DB_USER -c "$SCRIPT_DIR/$CHECK_DB_FILE $ORACLE_SID"
 checkDBStatus
-print_message "Running User Script"
-su - $ORACLE_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $SCRIPT_ROOT"
+print_message "Running User Script for $DB_USER user"
+su - $DB_USER -c "$SCRIPT_DIR/$USER_SCRIPTS_FILE $DB_SCRIPT_ROOT DB"
 print_message "Setting Remote Listener"
 setremotelistener
+fi
 fi
 echo $TRUE

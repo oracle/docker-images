@@ -2,17 +2,17 @@
 
 Oracle Real Application Clusters (RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (ASM) to provide simplified storage management that is consistent across all server and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
-For more information on Oracle RAC Database 18c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+For more information on Oracle RAC Database 19c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
 ## How to build and run
 
 This project offers sample Docker files for Oracle Grid Infrastructure and Real Application Cluster Database:
-
-    
-    Oracle Database 18c Grid Infrastructure (18.3) for Linux x86-64
-    Oracle Database 18c (18.3) for Linux x86-64
-    Oracle Database 12c Release 2 Grid Infrastructure (12.2.0.1.0) for Linux x86-64
-    Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
+ * Oracle Database 19c Grid Infrastructure (19.3) for Linux x86-64
+ * Oracle Database 19c (19.3) for Linux x86-64 
+ * Oracle Database 18c Grid Infrastructure (18.3) for Linux x86-64
+ * Oracle Database 18c (18.3) for Linux x86-64
+ * Oracle Database 12c Release 2 Grid Infrastructure (12.2.0.1.0) for Linux x86-64
+ * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
 
 
 IMPORTANT: You can build and run RAC containers on a single host or multiple hosts. To access the RAC DB on your network either use the Docker MACVLAN driver or use Oracle Connection Manager. To Run RAC containers on Multi-Host, you must use the Docker MACVLAN driver and your network must be reachable on all the nodes for RAC containers.
@@ -37,13 +37,13 @@ To create a RAC cluster, please execute the steps in the following sections belo
 
 **IMPORTANT :** You must make the changes specified in this section (customized for your environment) before you proceed to the next section.
 
-You must install and configure [Oracle Container Runtime for Docker](https://docs.oracle.com/cd/E52668_01/E87205/html/index.html) on Oracle Linux 7 to run RAC on Docker. Each container that you will deploy as part of your cluster must satisfy the minimum hardware requirements of the RAC and GI software. An Oracle RAC database is a shared everything database. 
+You must install and configure [Oracle Container Runtime for Docker](https://docs.oracle.com/cd/E52668_01/E87205/html/index.html) on Oracle Linux 7 to run RAC on Docker. Each container that you will deploy as part of your cluster must satisfy the minimum hardware requirements of the RAC and GI software. An Oracle RAC database is a shared everything database.
 
-All data files, control files, redo log files, and the server parameter file (`SPFILE`) used by the Oracle RAC database must reside on shared storage that is accessible by all the Oracle RAC database instances. 
+All data files, control files, redo log files, and the server parameter file (`SPFILE`) used by the Oracle RAC database must reside on shared storage that is accessible by all the Oracle RAC database instances.
 
 You must provide block devices shared across the hosts.  If you don't have shared block storage, you can use an NFS volume.
 
-Please refer Oracle Database 18c Release documentation [Oracle Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/18/cwlin/index.html) and allocate following resource as per the Oracle documentation.
+Please refer Oracle Database 19c Release documentation [Oracle Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/cwlin/index.html) and allocate following resource as per the Oracle documentation.
 
 1. You must configure the following addresses manually in your DNS.
    * Public IP address for each container
@@ -99,22 +99,20 @@ Once you have edited the `/etc/sysconfig/docker`, execute following commands:
 # systemctl start docker
 ```
 
-Verify you have enough memory and cpu resources available for container. For details, Please refer to [Oracle 18c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/18/cwlin/index.html)
+Verify you have enough memory and cpu resources available for container. For details, Please refer to [Oracle 19c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/cwlin/index.html)
 
 The Oracle RAC dockerfiles, does not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under dockerfiles/<version> folder.
 
-    Oracle Database 18c Grid Infrastructure (18.3) for Linux x86-64
-    Oracle Database 18c (18.3) for Linux x86-64
-
-FOLLOWING FREELY AVAILABLE PATCH IS REQUIRED FOR THIS IMAGE TO WORK. Download following patch from OTN and stage it on your machine.
-
-Patch# p28322130_183000OCWRU_Linux-x86-64.zip You can download this patch from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/<version> folder.
+    Oracle Database 19c Grid Infrastructure (19.3) for Linux x86-64
+    Oracle Database 19c (19.3) for Linux x86-64
 
 ### Notes
 
 * SELINUX must be in permissive mode.
 * If the docker bridge network is not available outside your host, you can use the Oracle Connection Manager (CMAN) image to access the RAC Database from outside the host.
-* If you are planing to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/<version> folder.
+* If you are planing to build and deploy Oracle RAC 18.3.0, you need to download Oracle 18.3.0 Grid Infrastructure and Oracle Database 18.3.0 Database. You also need to download Patch# p28322130_183000OCWRU_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/18.3.0 folder.
+* If you are planing to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/12.2.0.1 folder.
+* To understand the RAC on Docker setup in detail, you can refer [Best Practices for Deploying Oracle RAC on Docker](https://www.oracle.com/technetwork/database/options/clustering/rac-ondocker-bp-wp-5458685.pdf) white paper published on OTN.
 
 ## Section 2: Building Oracle RAC Database Docker Install Images
 
@@ -124,7 +122,7 @@ To assist in building the images, you can use the [buildDockerImage.sh](https://
 
 ```
 ./buildDockerImage.sh -v (Software Version)
-#  e.g., ./buildDockerImage.sh -v 18.3.0
+#  e.g., ./buildDockerImage.sh -v 19.3.0
 ```
 
 For detailed usage of command, please execute following command:
@@ -228,7 +226,7 @@ Now create the Docker container using the image. For the details of environment 
   --restart=always --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cpu-rt-runtime=95000 --ulimit rtprio=99  \
   --name racnode1 \
-  oracle/database-rac:18.3.0
+  oracle/database-rac:19.3.0
 ```
 
 **Note:** Change environment variable such as IPs, ASM_DEVICE_LIST, PWD_FILE and PWD_KEY based on your env. Also, change the devices based on your env.
@@ -249,7 +247,7 @@ Now create the Docker container using the image. For the details of environment 
   --privileged=false \
   --volume racstorage:/oradata \
   --cap-add=SYS_NICE \
-  --cap-add=SYS_RESOURCE 
+  --cap-add=SYS_RESOURCE \
   --cap-add=NET_ADMIN \
   -e NODE_VIP=172.16.1.160  \
   -e VIP_HOSTNAME=racnode1-vip  \
@@ -272,7 +270,7 @@ Now create the Docker container using the image. For the details of environment 
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
   --name racnode1 \
-  oracle/database-rac:18.3.0
+  oracle/database-rac:19.3.0
 ```
 
 **Notes:**
@@ -394,16 +392,16 @@ To create additional nodes, use following command:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  oracle/database-rac:18.3.0
+  oracle/database-rac:19.3.0
 ```
 
-For details of all environment variables and parameters, please refer to section 6.  
+For details of all environment variables and parameters, please refer to section 6.
 
 ### Deploying RAC on Docker with RAC Storage Container
 
 If you are using physical block devices for shared storage, skip to "Assigning Network to additional RAC container"
 
-Use the existing `racstorage:/oradata` volume when creating the additional Docker container using the image.  
+Use the existing `racstorage:/oradata` volume when creating the additional Docker container using the image.
 
 For example:
 
@@ -442,7 +440,7 @@ For example:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  container-registry.oracle.com/database/rac:18.3.0
+  container-registry.oracle.com/database/rac:19.3.0
 ```
 
 **Notes:**

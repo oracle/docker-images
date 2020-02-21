@@ -1,14 +1,11 @@
 #!/bin/sh
 #
+# Copyright (c) 2016, 2020 Oracle and/or its affiliates.
 #
-#
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 # Author: nevin.cleetus@oracle.com
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
 #
 #*************************************************************************
 # script is used to start a WebLogic Admin server.
@@ -21,6 +18,9 @@ LOGFILE=${LOGDIR}/as.log
 STSFILE=${LOGDIR}/as.status
 mkdir -p ${LOGDIR}
 rm -f ${LOGFILE} ${STSFILE}
+
+#calling soa extension function script
+/u01/oracle/container-scripts/soaExtFun.sh
 
 echo "INFO: Starting the Admin Server..."
 echo "INFO: Logs = ${LOGFILE}"

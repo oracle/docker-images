@@ -57,6 +57,8 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     ASM_DISCOVERY_DIR="/dev" \
     RESET_OS_PASSWORD="resetOSPassword.sh" \
     MULTI_NODE_INSTALL="MultiNodeInstall.py" \
+    DB_USER="oracle" \
+    GRID_USER="grid" \
 # RAC DB Env Variables
     DB_BASE=/u01/app/oracle \
     DB_HOME=/u01/app/oracle/product/18.3.0/dbhome_1 \
@@ -72,6 +74,8 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     REMOTE_LISTENER_FILE="remoteListener.sh" \ 
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
+    GRID_HOME_CLEANUP="GridHomeCleanup.sh" \
+    ORACLE_HOME_CLEANUP="OracleHomeCleanup.sh" \
 # COMMON ENV Variable
    FUNCTIONS="functions.sh" \
    COMMON_SCRIPTS="/common_scripts" \
@@ -91,7 +95,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # COPY Binaries
-COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $SETUP_LINUX_FILE $GRID_SETUP_FILE $INSTALL_GRID_BINARIES_FILE $FIXUP_PREQ_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $INSTALL_FILE_1 $INSTALL_FILE_2 $GRID_PATCH $INSTALL_SCRIPTS/
+COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $SETUP_LINUX_FILE $GRID_SETUP_FILE $INSTALL_GRID_BINARIES_FILE $FIXUP_PREQ_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $INSTALL_FILE_1 $INSTALL_FILE_2 $GRID_PATCH  $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $INSTALL_SCRIPTS/
 
 # Setup Scripts
 COPY $RUN_FILE $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $GRID_INSTALL_RSP $DBCA_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $STOP_FILE $CHECK_DB_FILE $REMOTE_LISTENER_FILE $SETUPGRIDENV $DELNODE $RESET_OS_PASSWORD $MULTI_NODE_INSTALL  $SCRIPT_DIR/ 
@@ -105,13 +109,15 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     unzip -q $INSTALL_DIR/install/$GRID_PATCH -d $INSTALL_DIR/install && \
     chown -R grid:oinstall $INSTALL_DIR/install/$PATCH_NUMBER && \
     sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-18c.conf && \
-    su  grid -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
+    su  ${GRID_USER} -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
     $INVENTORY/orainstRoot.sh && \
     $GRID_HOME/root.sh && \
-    su  oracle  -c  "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
-    su  oracle  -c  "$INSTALL_DIR/install/$ENABLE_RAC_FILE" && \
+    su  ${DB_USER}  -c  "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
+    su  ${DB_USER}  -c  "$INSTALL_DIR/install/$ENABLE_RAC_FILE" && \
     $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
+    su  ${GRID_USER} -c "$INSTALL_SCRIPTS/$GRID_HOME_CLEANUP" && \
+    su  ${DB_USER} -c "$INSTALL_SCRIPTS/$ORACLE_HOME_CLEANUP" && \
     $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
     rm -rf $INSTALL_DIR/install && \
     sync && \
@@ -125,6 +131,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     ln -s $GRID_HOME/bin/$DOCKERORACLEINIT /usr/sbin/oracleinit && \
     chmod +x /etc/rc.d/rc.local  && \
     sed -i  's/#X11UseLocalhost.*/X11UseLocalhost no/' /etc/ssh/sshd_config && \
+    rm -f /etc/sysctl.d/99-sysctl.conf && \
     sync
 
 USER grid

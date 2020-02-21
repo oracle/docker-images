@@ -1,6 +1,6 @@
 # Example of Apache HTTP Server with WebLogic plugin for load balancing WebLogic on Docker Containers
 #
-# Copyright (c) 2016-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -40,6 +40,8 @@ COPY weblogic.conf /etc/httpd/conf.d/
 COPY custom_mod_wl_apache.conf.sample /config/custom_mod_wl_apache.conf
 COPY custom_mod_wl_apache.conf.sample /configtmp/custom_mod_wl_apache.conf
 COPY custom_mod_ssl_apache.conf.sample /configtmp/custom_mod_ssl_apache.conf
+COPY custom_mod_mpm.conf.sample /etc/httpd/conf.modules.d/00-mpm.conf
+COPY custom_mod_cgi.conf.sample /etc/httpd/conf.modules.d/01-cgi.conf
 COPY container-scripts/* /u01/oracle/container-scripts/
 
 # Use unzip because the base image does not contain a JDK

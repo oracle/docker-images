@@ -43,7 +43,7 @@ ENV ORACLE_HOME="/u01/oracle" \
     CUSTOM_PRODUCTION_MODE="${CUSTOM_PRODUCTION_MODE:-prod}" \
     CUSTOM_DEBUG_PORT="${CUSTOM_DEBUG_PORT:-8453}" \
     CUSTOM_DEBUG_FLAG="${CUSTOM_DEBUG_FLAG:-false}" \
-    CUSTOM_JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
+    CUSTOM_JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
     CUSTOM_CONNECTION_STRING="${CUSTOM_CONNECTION_STRING:-"InfraDB:1521/InfraPDB1.us.oracle.com"}" \
     CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
 

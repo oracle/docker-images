@@ -95,17 +95,33 @@ fi
 
 if [ -z ${DOMAIN_NAME} ]
 then
-    DOMAIN_NAME=base_domain
+    DOMAIN_NAME=wcsites_domain
     echo ""
-    echo " Setting DOMAIN_NAME to base_domain"
+    echo " Setting DOMAIN_NAME to wcsites_domain"
     echo ""
 fi
 
 if [ -z ${SITES_SERVER_NAME} ]
 then
-    SITES_SERVER_NAME=wcsites_server1
+    SITES_SERVER_NAME=wcsites_server
     echo ""
-    echo " Setting SITES_SERVER_NAME to wcsites_server1"
+    echo " Setting SITES_SERVER_NAME to wcsites_server"
+    echo ""
+fi
+
+if [ -z ${MACHINE_NAME} ]
+then
+    MACHINE_NAME=wcsites_machine
+    echo ""
+    echo " Setting MACHINE_NAME to wcsites_machine"
+    echo ""
+fi
+
+if [ -z ${CLUSTER_NAME} ]
+then
+    CLUSTER_NAME=wcsites_cluster
+    echo ""
+    echo " Setting CLUSTER_NAME to wcsites_cluster"
     echo ""
 fi
 
@@ -261,6 +277,8 @@ sed -i 's,^\(script.oracle.wcsites.examples.blogs=\).*,\1'$SAMPLES',' bootstrap.
 sed -i 's,^\(script.wcsites.binaries.install.with.examples=\).*,\1'$SAMPLES',' bootstrap.properties
 sed -i 's,^\(script.oracle.domain=\).*,\1'$DOMAIN_NAME',' bootstrap.properties
 sed -i 's,^\(script.server.name=\).*,\1'$SITES_SERVER_NAME',' bootstrap.properties
+sed -i 's,^\(script.machine.name=\).*,\1'$MACHINE_NAME',' bootstrap.properties
+sed -i 's,^\(script.cluster.name=\).*,\1'$CLUSTER_NAME',' bootstrap.properties
 sed -i 's,^\(script.admin.server.username=\).*,\1'$ADMIN_USERNAME',' bootstrap.properties
 sed -i 's,^\(script.admin.server.password=\).*,\1'$ADMIN_PASSWORD',' bootstrap.properties
 sed -i 's,^\(script.admin.server.port=\).*,\1'$ADMIN_PORT',' bootstrap.properties
@@ -297,14 +315,6 @@ fi
 export DOMAIN_NAME=$DOMAIN_NAME
 export DOMAIN_ROOT="/u01/oracle/user_projects/domains"
 export DOMAIN_HOME="${DOMAIN_ROOT}/${DOMAIN_NAME}"
-
-#
-# Creating domain env file
-#=========================
-echo "WCSITES_ADMIN_HOSTNAME="$WCSITES_ADMIN_HOSTNAME>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
-echo "WCSITES_ADMIN_PORT="$ADMIN_PORT>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
-echo "WCSITES_MANAGED_HOSTNAME="$WCSITES_ADMIN_HOSTNAME>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
-echo "WCSITES_MANAGED_PORT="$WCSITES_MANAGED_PORT>> $DOMAIN_HOME/servers/${SITES_SERVER_NAME}/logs/param.properties
 
 #--------------------------------------------------------------------------------------------
 echo "Replacement started."
@@ -348,7 +358,7 @@ echo ""
 echo "Start Sites Managed Server once Admin Server is started."
 
 # Now we start the Admin server in this container... 
-sh $SITES_CONTAINER_SCRIPTS/startAdminServer.sh
+sh $DOMAIN_HOME/startWebLogic.sh
 
 INSTALL_END=$(date '+%s')
 INSTALL_ELAPSED=`expr $INSTALL_END - $INSTALL_START`
@@ -359,7 +369,7 @@ echo ""
 
 # Tail Admin Server logs... 
 touch ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log
-tail -f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log &
+tail -900f ${DOMAIN_HOME}/servers/AdminServer/logs/AdminServer.log &
 
 childPID=$!
 wait $childPID

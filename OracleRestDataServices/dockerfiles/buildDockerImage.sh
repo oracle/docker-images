@@ -29,12 +29,16 @@ EOF
 
 # Validate packages
 checksumPackages() {
-  echo "Checking if required packages are present and valid..."
-  md5sum -c Checksum.$VERSION
-  if [ "$?" -ne 0 ]; then
-    echo "MD5 for required packages to build this image did not match!"
-    echo "Make sure to download missing files in folder '$VERSION'."
-    exit $?
+  # Check if Checksum file exists
+  if [ -f "Checksum.$VERSION" ]; then
+    echo "Checking if required packages are present and valid..."
+    md5sum -c "Checksum.$VERSION"
+    ret=$?
+    if [ "$ret" -ne 0 ]; then
+      echo "MD5 for required packages to build this image did not match!"
+      echo "Make sure to download missing files."
+      exit "$ret"
+    fi
   fi
 }
 
@@ -67,7 +71,7 @@ done
 
 # Determine latest version
 # Do this after the options so that users can still do a "-h"
-if [ `ls -al ords*zip 2>/dev/null | wc -l` -gt 1 ]; then
+if [ "$(ls -al ords*zip 2>/dev/null | wc -l)" -gt 1 ]; then
   echo "ERROR: Found multiple versions of ORDS zip files.";
   echo "ERROR: Please only put one ORDS zip file into this directory!";
   exit 1;
@@ -141,11 +145,10 @@ docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS \
   exit 1
 }
 BUILD_END=$(date '+%s')
-BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
+BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 
 echo ""
 
-if [ $? -eq 0 ]; then
 cat << EOF
   Oracle Rest Data Services version $VERSION is ready to be extended: 
     
@@ -154,8 +157,3 @@ cat << EOF
   Build completed in $BUILD_ELAPSED seconds.
   
 EOF
-
-else
-  echo "Oracle Rest Data Services Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
-fi
-

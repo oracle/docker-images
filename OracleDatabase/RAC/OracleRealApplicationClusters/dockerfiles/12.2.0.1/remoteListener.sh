@@ -43,7 +43,7 @@ if [ -z "${cman_host}" ]; then
   echo "Cman Host : $cman_host"
 fi;
 
-
+ORACLE_HOME=$DB_HOME
 ORACLE_SID=$($DB_HOME/bin/srvctl status database -d $sid | grep $(hostname) | awk '{ print $2 }')
 
 echo "setting Oracle sid to  $ORACLE_SID on $(hostname)"
@@ -61,6 +61,22 @@ alter system register;
 alter system register;
 alter system register;  
  exit;
+EOF`
+
+echo "Register remote listener for ASM instance"
+
+export ORACLE_SID=+ASM1
+export ORACLE_HOME=$GRID_HOME
+
+status=`$ORACLE_HOME/bin/sqlplus / as sysasm << EOF
+   set heading off;
+   set pagesize 0;
+   alter system set remote_listener='$scan_name:1521,(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=$cman_host)(PORT=1521))))'  scope=both;
+   alter system register;
+   alter system register;
+   alter system register;
+   alter system register;
+   exit;
 EOF`
 
 #echo "Stopping Oracle Database"
