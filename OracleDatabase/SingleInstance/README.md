@@ -4,17 +4,18 @@ Sample Docker build files to facilitate installation, configuration, and environ
 ## How to build and run
 This project offers sample Dockerfiles for:
  * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
+ * Oracle Database 18c (18.4.0) Express Edition (XE)
  * Oracle Database 18c (18.3.0) Enterprise Edition and Standard Edition 2
  * Oracle Database 12c Release 2 (12.2.0.2) Enterprise Edition and Standard Edition 2
  * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition 2
- * Oracle Database 11g Release 2 (11.2.0.2) Express Edition.
+ * Oracle Database 11g Release 2 (11.2.0.2) Express Edition (XE)
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle Database Docker Install Images
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_<version>_database.zip*. You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE) and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_<version>_database.zip*. You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
 
