@@ -4,10 +4,10 @@ Sample Docker build files to facilitate installation, configuration, and environ
 ## How to build and run
 This project offers sample Dockerfiles for:
  * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
+ * Oracle Database 18c (18.4.0) Express Edition
  * Oracle Database 18c (18.3.0) Enterprise Edition and Standard Edition 2
  * Oracle Database 12c Release 2 (12.2.0.2) Enterprise Edition and Standard Edition 2
  * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition 2
- * Oracle Database 18c (18.4.0) Express Edition
  * Oracle Database 11g Release 2 (11.2.0.2) Express Edition
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
