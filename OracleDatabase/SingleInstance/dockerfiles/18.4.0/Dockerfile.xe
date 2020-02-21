@@ -8,9 +8,7 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) oracle-database-xe-18c-1.0-1.x86_64.rpm
-#     Download Oracle Database Express Edition (XE) Release 18.4.0.0.0 (18c) for Linux x64
-#     from https://www.oracle.com/technetwork/database/database-technologies/express-edition/downloads/index.html
+# None
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -32,7 +30,7 @@ MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
     ORACLE_SID=XE \
-    INSTALL_FILE_1="oracle-database-xe-18c-1.0-1.x86_64.rpm" \
+    INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-18c-1.0-1.x86_64.rpm" \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
     CONF_FILE="oracle-xe-18c.conf" \
@@ -46,14 +44,13 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 
 # Copy binaries
 # -------------
-COPY $CHECK_SPACE_FILE $INSTALL_FILE_1 $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
+COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
-    yum -y install openssl oracle-database-preinstall-18c && \
-    yum -y install $INSTALL_FILE_1 && \
+    yum -y install openssl oracle-database-preinstall-18c $INSTALL_FILE_1 && \
     rm -rf /var/cache/yum && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
