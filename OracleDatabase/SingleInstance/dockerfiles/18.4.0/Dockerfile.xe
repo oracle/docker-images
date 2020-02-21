@@ -1,18 +1,10 @@
 # LICENSE UPL 1.0
 #
-<<<<<<< HEAD
-# Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
-#
-# ORACLE DOCKERFILES PROJECT
-# --------------------------
-# This is the Dockerfile for Oracle Database 11g Release 2 Express Edition
-=======
 # Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 18c Express Edition
->>>>>>> upstream/master
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -24,14 +16,6 @@
 # Run: 
 #      $ docker build -t oracle/database:18.4.0-xe -f Dockerfile.xe .
 #
-<<<<<<< HEAD
-# IMPORTANT
-# ---------
-# Oracle XE requires Docker 1.10.0 and above:
-# Oracle XE uses shared memory for MEMORY_TARGET and needs at least 1 GB.
-# Docker only supports --shm-size since Docker 1.10.0
-=======
->>>>>>> upstream/master
 #
 # Pull base image
 # ---------------
@@ -50,10 +34,7 @@ ENV ORACLE_BASE=/opt/oracle \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
     CONF_FILE="oracle-xe-18c.conf" \
-<<<<<<< HEAD
-=======
     CHECK_SPACE_FILE="checkSpace.sh" \
->>>>>>> upstream/master
     CHECK_DB_FILE="checkDBStatus.sh" \
     INSTALL_DIR="$HOME/install" \
     ORACLE_DOCKER_INSTALL="true"
