@@ -16,19 +16,10 @@ ORACLE_PDB="`ls -dl $ORACLE_BASE/oradata/$ORACLE_SID/*/ | grep -v pdbseed | awk 
 ORAENV_ASK=NO
 source oraenv
 
-<<<<<<< HEAD
-sqlplus / as sysdba << EOF
-=======
 su -p oracle -c "sqlplus / as sysdba << EOF
->>>>>>> upstream/master
       ALTER USER SYS IDENTIFIED BY "$ORACLE_PWD";
       ALTER USER SYSTEM IDENTIFIED BY "$ORACLE_PWD";
       ALTER SESSION SET CONTAINER=$ORACLE_PDB;
       ALTER USER PDBADMIN IDENTIFIED BY "$ORACLE_PWD";
       exit;
-<<<<<<< HEAD
-EOF
-
-=======
 EOF"
->>>>>>> upstream/master

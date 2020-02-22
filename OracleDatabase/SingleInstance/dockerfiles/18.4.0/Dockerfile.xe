@@ -19,7 +19,7 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim
+FROM oraclelinux:7-slim AS baseOS
 
 # Maintainer
 # ----------
@@ -42,6 +42,10 @@ ENV ORACLE_BASE=/opt/oracle \
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$PATH
 
+RUN yum -y install openssl file oracle-database-preinstall-18c && \
+    rm -rf /var/cache/yum
+
+FROM baseOS AS baseInstall
 # Copy binaries
 # -------------
 COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
@@ -50,7 +54,6 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
-    yum -y install openssl oracle-database-preinstall-18c && \
     yum -y localinstall $INSTALL_FILE_1 && \
     rm -rf /var/cache/yum && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
@@ -65,6 +68,21 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     ln -s $ORACLE_BASE/$PWD_FILE / && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
+    chmod ug+x $ORACLE_BASE/*.sh
+
+FROM baseOS
+
+COPY --from=baseInstall $ORACLE_BASE/ $ORACLE_BASE/
+COPY --from=baseInstall /etc/oratab /etc/oratab
+COPY --from=baseInstall /etc/init.d/oracle-xe-18c /etc/init.d/oracle-xe-18c
+COPY --from=baseInstall /etc/sysconfig/$CONF_FILE /etc/sysconfig/$CONF_FILE
+
+RUN mkdir -p /home/oracle && \
+    chown -R oracle:oinstall /home/oracle && \
+    chown oracle:oinstall $ORACLE_BASE && \
+    sed -i -r 's/^(session\s+required\s+pam_limits.so)/#\1/' /etc/pam.d/* && \
+    ln -s $ORACLE_BASE/$PWD_FILE / && \
+    cd $HOME && \
     chmod ug+x $ORACLE_BASE/*.sh
 
 VOLUME ["$ORACLE_BASE/oradata"]
