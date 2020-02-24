@@ -33,6 +33,7 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-18c-1.0-1.x86_64.rpm" \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
+    CLR_FILE="cleanup.sh" \
     CONF_FILE="oracle-xe-18c.conf" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
@@ -48,13 +49,14 @@ RUN yum -y install openssl file oracle-database-preinstall-18c && \
 FROM baseOS AS baseInstall
 # Copy binaries
 # -------------
-COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
+COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CLR_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
     yum -y localinstall $INSTALL_FILE_1 && \
+    $INSTALL_DIR/$CLR_FILE && \
     rm -rf /var/cache/yum && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
@@ -82,12 +84,14 @@ RUN mkdir -p /home/oracle && \
     chown oracle:oinstall $ORACLE_BASE && \
     sed -i -r 's/^(session\s+required\s+pam_limits.so)/#\1/' /etc/pam.d/* && \
     ln -s $ORACLE_BASE/$PWD_FILE / && \
+    rm -rf /var/lib/rpm/* && \
+    rm -rf /var/log/* && \
     cd $HOME && \
     chmod ug+x $ORACLE_BASE/*.sh
 
 VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 8080 5500
-HEALTHCHECK --interval=1m --start-period=5m \
+HEALTHCHECK --interval=1m --start-period=20m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 CMD exec $ORACLE_BASE/$RUN_FILE

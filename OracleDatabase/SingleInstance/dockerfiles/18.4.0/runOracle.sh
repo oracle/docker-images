@@ -94,7 +94,42 @@ function createDB {
    export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
    sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" /etc/sysconfig/$CONF_FILE
 
-   (echo "$ORACLE_PWD"; echo "$ORACLE_PWD";) | /etc/init.d/oracle-xe-18c configure
+   # Check whether database already exists
+   if [ -f /opt/oracle/scripts/setup/init-db.tar.gz ]; then
+      (cd /tmp;tar xfz /opt/oracle/scripts/setup/init-db.tar.gz)
+      # start process of restore from rman full backup, first spfile
+      su -p oracle -c "rman target /<<EOF
+startup nomount force;
+restore spfile from '/tmp/spfile.bks';
+exit;
+EOF"
+      # make some directory of not exitst
+      mkdir -p /opt/oracle/oradata/XE/
+      mkdir -p /opt/oracle/admin/XE/adump
+      mkdir -p /opt/oracle/fast_recovery_area
+      chown oracle:oinstall /opt/oracle/oradata/XE/
+      chown oracle:oinstall /opt/oracle/fast_recovery_area
+      chown oracle:oinstall /opt/oracle/admin/XE/adump
+      # begin restore
+      su -p oracle -c "sqlplus / as sysdba<<EOF
+shutdown immediate;
+startup nomount;
+exit;
+EOF"
+      su -p oracle -c "rman target /<<EOF
+restore controlfile from '/tmp/control.bks';
+alter database mount;
+restore database;
+report schema;
+recover database noredo;
+alter database open resetlogs;
+exit;
+EOF"
+      # reset password for SYS
+      orapwd file=$ORACLE_HOME/dbs/orapw$ORACLE_SID password=$ORACLE_PWD ignorecase=n force=y format=12
+      chown oracle:oinstall $ORACLE_HOME/dbs/orapw$ORACLE_SID
+      echo "XE:/opt/oracle/product/18c/dbhomeXE:N" >> /etc/oratab
+   fi;
 
    # Listener 
    echo "# listener.ora Network Configuration File:
@@ -156,6 +191,8 @@ EXTPROC_CONNECTION_DATA =
 
   # Move database operational files to oradata
   moveFiles;
+  /etc/init.d/oracle-xe-18c stop
+  /etc/init.d/oracle-xe-18c start
 }
 
 ############# MAIN ################
