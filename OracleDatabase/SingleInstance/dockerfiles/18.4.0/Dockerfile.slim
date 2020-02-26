@@ -14,12 +14,15 @@
 # -----------------------
 # Put the downloaded file in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/database:18.4.0-xe -f Dockerfile.xe .
-#
+#      $ docker build -t oracle/database:18.4.0-xe-slim -f Dockerfile.slim .
+# Sample usage with init-db directory having an RMAN full backup:
+#      $ docker run -ti --rm --name testdb -v /home/init-db:/opt/oracle/scripts/setup -v /run/shm:/dev/shm oracle/database:18.4.0-xe-slim
+# passing init-db.tar.gz with a full RMAN backup initial db
+#      $ docker run -ti --rm --name testdb -v /home/init-db.tar.gz:/opt/oracle/scripts/setup/init-db.tar.gz -v /run/shm:/dev/shm oracle/database:18.4.0-xe-slim
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim
+FROM oraclelinux:7-slim AS baseOS
 
 # Maintainer
 # ----------
@@ -31,8 +34,9 @@ ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
     ORACLE_SID=XE \
     INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-18c-1.0-1.x86_64.rpm" \
-    RUN_FILE="runOracle.sh" \
+    RUN_FILE="runOracle-slim.sh" \
     PWD_FILE="setPassword.sh" \
+    CLR_FILE="cleanup.sh" \
     CONF_FILE="oracle-xe-18c.conf" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
@@ -42,16 +46,20 @@ ENV ORACLE_BASE=/opt/oracle \
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$PATH
 
+RUN yum -y install openssl file oracle-database-preinstall-18c && \
+    rm -rf /var/cache/yum
+
+FROM baseOS AS baseInstall
 # Copy binaries
 # -------------
-COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
+COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CLR_FILE $CHECK_DB_FILE $CONF_FILE $INSTALL_DIR/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
-    yum -y install openssl oracle-database-preinstall-18c && \
     yum -y localinstall $INSTALL_FILE_1 && \
+    $INSTALL_DIR/$CLR_FILE && \
     rm -rf /var/cache/yum && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
@@ -67,9 +75,27 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     rm -rf $INSTALL_DIR && \
     chmod ug+x $ORACLE_BASE/*.sh
 
+FROM baseOS
+
+COPY --from=baseInstall $ORACLE_BASE/ $ORACLE_BASE/
+COPY --from=baseInstall /etc/oratab /etc/oratab
+COPY --from=baseInstall /etc/init.d/oracle-xe-18c /etc/init.d/oracle-xe-18c
+COPY --from=baseInstall /etc/sysconfig/$CONF_FILE /etc/sysconfig/$CONF_FILE
+
+RUN mkdir -p /home/oracle && \
+    chown -R oracle:oinstall /home/oracle && \
+    chown oracle:oinstall $ORACLE_BASE && \
+    sed -i -r 's/^(session\s+required\s+pam_limits.so)/#\1/' /etc/pam.d/* && \
+    ln -s $ORACLE_BASE/$PWD_FILE / && \
+    rm -rf /var/lib/rpm/* && \
+    rm -rf /var/log/* && \
+    ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
+    cd $HOME && \
+    chmod ug+x $ORACLE_BASE/*.sh
+
 VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 8080 5500
-HEALTHCHECK --interval=1m --start-period=5m \
+HEALTHCHECK --interval=1m --start-period=20m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 CMD exec $ORACLE_BASE/$RUN_FILE

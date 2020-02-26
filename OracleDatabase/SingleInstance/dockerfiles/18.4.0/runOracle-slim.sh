@@ -94,7 +94,6 @@ function createDB {
    export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
    sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" /etc/sysconfig/$CONF_FILE
 
-   (echo "$ORACLE_PWD"; echo "$ORACLE_PWD";) | /etc/init.d/oracle-xe-18c configure
 
    # Listener 
    echo "# listener.ora Network Configuration File:
@@ -153,7 +152,52 @@ EXTPROC_CONNECTION_DATA =
      )
   )
 " > $ORACLE_HOME/network/admin/tnsnames.ora
+   su -p oracle -c "lsnrctl start"
 
+   # make some required directories it not exists
+   su -p oracle -c "mkdir -p $ORACLE_BASE/oradata/$ORACLE_SID"
+   su -p oracle -c "mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump"
+   su -p oracle -c "mkdir -p $ORACLE_BASE/fast_recovery_area"
+
+   # Check init-db.tar format
+   if [ -f /opt/oracle/scripts/setup/init-db.tar ]; then
+      (cd /opt/oracle/scripts/setup;tar xf init-db.tar)
+   fi;
+
+   # Check init-db.tar.gz format
+   if [ -f /opt/oracle/scripts/setup/init-db.tar.gz ]; then
+      (cd /opt/oracle/scripts/setup;tar xfz init-db.tar.gz)
+   fi;
+
+   # Check whether database already exists
+   if [ -f /opt/oracle/scripts/setup/spfile.bks ]; then
+      # start process of restore from rman full backup, first spfile
+      su -p oracle -c "rman target /<<EOF
+startup nomount force;
+restore spfile from '/opt/oracle/scripts/setup/spfile.bks';
+shutdown immediate;
+startup nomount;
+exit;
+EOF"
+
+      # begin restore if control files are present
+      if [ -f /opt/oracle/scripts/setup/control.bks ]; then
+         su -p oracle -c "rman target /<<EOF
+restore controlfile from '/opt/oracle/scripts/setup/control.bks';
+alter database mount;
+restore database;
+report schema;
+recover database noredo;
+alter database open resetlogs;
+exit;
+EOF"
+      fi;
+
+      # reset password for SYS
+      orapwd file=$ORACLE_HOME/dbs/orapw$ORACLE_SID password=$ORACLE_PWD ignorecase=n force=y format=12
+      chown oracle:oinstall $ORACLE_HOME/dbs/orapw$ORACLE_SID
+      echo "$ORACLE_SID:$ORACLE_HOME:N" >> /etc/oratab
+   fi;
   # Move database operational files to oradata
   moveFiles;
 }
