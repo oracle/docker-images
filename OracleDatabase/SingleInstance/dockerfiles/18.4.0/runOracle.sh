@@ -71,6 +71,27 @@ function symLinkFiles {
    cp $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab /etc/oratab
 }
 
+########### Opposite of the above ############
+function undoSymLinkFiles {
+
+   if [ -L $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora ]; then
+      rm $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
+   fi;
+
+   if [ -L $ORACLE_HOME/dbs/orapw$ORACLE_SID ]; then
+      rm $ORACLE_HOME/dbs/orapw$ORACLE_SID
+   fi;
+
+   if [ -L $ORACLE_HOME/network/admin/listener.ora ]; then
+      rm $ORACLE_HOME/network/admin/listener.ora
+   fi;
+
+   if [ -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
+      rm $ORACLE_HOME/network/admin/tnsnames.ora
+   fi;
+
+   sed -i "\|${ORACLE_SID}:${ORACLE_HOME}|d" /etc/oratab
+}
 ########### SIGTERM handler ############
 function _term() {
    echo "Stopping container."
@@ -173,6 +194,10 @@ if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
       su -p oracle -c "mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump"
    fi;
+else
+    # If the oradata folder is missing/empty, but db was previously set up,
+    # allow a new db to be set up in its place
+    undoSymLinkFiles;
 fi;
 
 /etc/init.d/oracle-xe-18c start | grep -qc "Oracle Database is not configured"
