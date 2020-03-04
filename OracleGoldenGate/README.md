@@ -40,6 +40,10 @@ To build the images, use the [dockerBuild.sh](dockerBuild.sh) script or follow t
 
 **IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not uncompress the Oracle GoldenGate ZIP file. The `dockerBuild.sh` script will handle that for you. You also must have Internet connectivity when building the Docker image for the package manager to perform additional software installations.
 
+**IMPORTANT:** The Docker Base Image should be prepared before you start creating Oracle GoldenGate Docker Image. Please refer the section [Changing the Base Image](https://github.com/oracle/docker-images/tree/master/OracleGoldenGate#changing-the-base-image) regarding the base images.
+
+All shell commands in this document assume the usage of Bash shell.
+
 For more information about Oracle GoldenGate please see the [Oracle GoldenGate 12c On-line Documentation](https://docs.oracle.com/goldengate/c1230/gg-winux/index.html).
 
 ## Option 1 - Using `dockerBuild.sh` to Build Oracle GoldenGate Docker Images
