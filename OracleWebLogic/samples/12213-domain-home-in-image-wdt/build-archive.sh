@@ -25,5 +25,5 @@ fi
 
 rm -Rf ${scriptDir}/archive
 mkdir -p ${scriptDir}/archive/wlsdeploy/applications
-${JAVA_HOME}/bin/jar cvf ${scriptDir}/archive/wlsdeploy/applications/simple-app.war -C ${scriptDir} simple-app/* 
+${JAVA_HOME}/bin/jar cvf ${scriptDir}/archive/wlsdeploy/applications/simple-app.war -C ${scriptDir}/simple-app WEB-INF -C ${scriptDir}/simple-app simple.html
 ${JAVA_HOME}/bin/jar cvf ${scriptDir}/archive.zip  -C ${scriptDir}/archive wlsdeploy
