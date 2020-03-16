@@ -25,11 +25,20 @@ sh buildDockerImage.sh -v 12.2.0.1 -e
 ## 2. Startup a container and create the database
 
 We first need to start up a container to get the database created.
-**Note:**  First make sure you have built **oracle/database:12.2.0.1-ee**. 
+**Note:**  First make sure you have built **oracle/database:12.2.0.1-ee**.
 Now start the container as follow:
 ```
 docker run --name oracle-build -p 1521:1521 -p 5500:5500 oracle/database:12.2.0.1-ee
 ```
+
+---
+**NOTE**
+
+Look into the Dockerfile for getting useful information whether you need to set some flags to run the docker container.
+For example, Oracle 11.2.0.2 needs the Docker flag `--shm-size` when you start the container.
+
+---
+
 
 ## 3. Reset passwords (optional)
 
