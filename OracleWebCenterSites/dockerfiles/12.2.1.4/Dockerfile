@@ -37,6 +37,7 @@ ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 COPY sites-container-scripts/* $SITES_CONTAINER_SCRIPTS/
 COPY $SITES_INSTALLER_PKG /u01/$SITES_INSTALLER_PKG
 COPY $SITES_PKG install.file oraInst.loc /u01/
+COPY patches/* /u01/patches/
 
 #Install packages and adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # -------------------------------------------------------------
@@ -55,17 +56,39 @@ RUN cd /u01 && \
 	$JAVA_HOME/bin/jar xf /u01/$SITES_PKG && \
 	cd - && \
 	$JAVA_HOME/bin/java -jar /u01/$SITES_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebCenter Sites - With Examples" && \
-	rm -rf /u01/$SITES_PKG /u01/$SITES_JAR /u01/oraInst.loc /u01/install.file
+	rm -rf /u01/$SITES_PKG /u01/$SITES_JAR
 	
 COPY sites-container-scripts/overrides/oui/* /u01/oracle/wcsites/common/templates/wls/
-COPY sites-container-scripts/overrides/installer/* /u01/oracle/wcsites/webcentersites/sites-home/bootstrap/installer/install/
-COPY sites-container-scripts/overrides/config/* /u01/oracle/wcsites/webcentersites/sites-home/template/config/
 	
 RUN cd /u01/oracle/wcsites/common/templates/wls && \
 	$JAVA_HOME/bin/jar uvf oracle.wcsites.base.template.jar startup-plan.xml file-definition.xml && \
 	rm /u01/oracle/wcsites/common/templates/wls/startup-plan.xml && \
 	rm /u01/oracle/wcsites/common/templates/wls/file-definition.xml
 	
+#
+# Apply WCSites Patches
+# -----------------
+RUN export OPATCH_NO_FUSER=true && patchzips=`ls /u01/patches/p*.zip 2>/dev/null`; \
+    if [ ! -z "$patchzips" ]; then \
+      cd /u01/patches;  \
+      echo -e "\nBelow patches present in patches directory. Applying these patches:"; \
+      ls p*.zip; \
+      echo -e ""; \
+      for filename in `ls p*.zip`; do echo "Extracting patch: ${filename}"; $JAVA_HOME/bin/jar xf ${filename}; done; \
+      rm -f /u01/patches/p*.zip; \
+	  $ORACLE_HOME/OPatch/opatch napply -silent -oh $ORACLE_HOME -jre $JAVA_HOME -invPtrLoc /u01/oraInst.loc -phBaseDir /u01/patches; \
+      $ORACLE_HOME/OPatch/opatch util cleanup -silent; \
+      rm -rf /u01/patches /u01/oracle/cfgtoollogs/opatch/*; \
+      echo -e "\nPatches applied in WCSites oracle home are:"; \
+      cd $ORACLE_HOME/OPatch; \
+      $ORACLE_HOME/OPatch/opatch lspatches; \
+    else \
+      echo -e "\nNo patches present in patches directory. Skipping patch application."; \
+    fi
+
+RUN	rm -rf /u01/oraInst.loc /u01/install.file && \
+	chown oracle:oracle -R /u01
+
 #
 # Rebuild from base image
 # -----------------------
