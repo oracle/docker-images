@@ -97,6 +97,13 @@ The repository contains Docker files and scripts to build Docker images for Orac
 2. Download Oracle WebCenter Sites 12c R2 12.2.1.4 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
 3. Save the Oracle WebCenter Sites 12.2.1.4 binary into the cloned repository folder located at: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.4/`.
 
+### D. For Building Docker Image with bundle patches for Oracle WebCenter Sites
+IMPORTANT: To build the Oracle WebCenter Sites image with bundle patches, you must first download the required version of the Oracle WebCenter Sites binaries as explained in below step.
+
+Download Oracle WebCenter Sites patch from Oracle Support Portal (Patch Number: `31037913`).
+
+Download and drop the patch zip files (for e.g. `p31037913_122140_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.4` the folder is `12.2.1.4/patches`
+
 ## 5. Building Oracle WebCenter Sites Docker Images
 
 To build Oracle WebCenter Sites Docker image, go to folder located at `../docker-images/OracleWebCenterSites/dockerfiles/` and run the following command:
