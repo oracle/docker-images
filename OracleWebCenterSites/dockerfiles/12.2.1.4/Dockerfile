@@ -59,8 +59,6 @@ RUN cd /u01 && \
 	rm -rf /u01/$SITES_PKG /u01/$SITES_JAR
 	
 COPY sites-container-scripts/overrides/oui/* /u01/oracle/wcsites/common/templates/wls/
-#COPY sites-container-scripts/overrides/installer/* /u01/oracle/wcsites/webcentersites/sites-home/bootstrap/installer/install/
-#COPY sites-container-scripts/overrides/config/* /u01/oracle/wcsites/webcentersites/sites-home/template/config/
 	
 RUN cd /u01/oracle/wcsites/common/templates/wls && \
 	$JAVA_HOME/bin/jar uvf oracle.wcsites.base.template.jar startup-plan.xml file-definition.xml && \
@@ -109,7 +107,7 @@ ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 	WCSITES_SSL_PORT=9002 \
     PATH=$PATH:/u01/oracle/sites-container-scripts
 	
-RUN yum install -y hostname net-tools netstat ps wget curl telnet && \
+RUN yum install -y hostname && \
     rm -rf /var/cache/yum
 	
 COPY --from=builder --chown=oracle:oracle /u01 /u01
