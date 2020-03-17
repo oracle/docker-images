@@ -20,7 +20,7 @@ mkdir -p ${LOGDIR}
 rm -f ${LOGFILE} ${STSFILE}
 
 #calling soa extension function script
-/u01/oracle/dockertools/soaExtFun.sh
+/u01/oracle/container-scripts/soaExtFun.sh
 
 echo "INFO: Starting the Admin Server..."
 echo "INFO: Logs = ${LOGFILE}"

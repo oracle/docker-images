@@ -1,15 +1,15 @@
 # Example of creating an image with pre-built DB
-***Warning: The description below requires changes in the dockerfile related to the version and edition in question (docker-images/OracleDatabase/dockerfiles/$VERSION/Dockerfile.$EDITION). It's recommended that you revert the changes after you have completed creating image without VOLUME (see next section).***
+***Warning: The description below requires changes in the dockerfile related to the version and edition in question (docker-images/OracleDatabase/SingleInstance/dockerfiles/$VERSION/Dockerfile). It's recommended that you revert the changes after you have completed creating image without VOLUME (see next section).***
 
 ## 1. Create an image without a VOLUME
 
-When creating an image with a pre-build DB, we first need an image without a VOLUME. To create such an image you'll need to comment out the VOLUME command in the dockerfile in use (docker-images/OracleDatabase/dockerfiles/$VERSION/Dockerfile.$EDITION).
+When creating an image with a pre-build DB, we first need an image without a VOLUME. To create such an image you'll need to comment out the VOLUME command in the dockerfile in use (docker-images/OracleDatabase/SingleInstance/dockerfiles/$VERSION/Dockerfile).
 
 Comment out the following line:
 ```
 #VOLUME ["$ORACLE_BASE/oradata"]
 ```
-In the example below I have edited the Dockerfile for version 12.2.0.1 and Enterprise Edition (ee) (docker-images/OracleDatabase/dockerfiles/12.2.0.1/Dockerfile.ee).
+In the example below I have edited the Dockerfile for version 12.2.0.1 and Enterprise Edition (ee) (docker-images/OracleDatabase/SingleInstance/dockerfiles/12.2.0.1/Dockerfile).
 
 If you want to keep your existing image, you need to rename it:
 ```
@@ -18,7 +18,7 @@ docker tag oracle/database:12.2.0.1-ee oracle/database-org:12.2.0.1-ee
 
 Then create an image without a VOLUME:
 ```
-cd docker-images/OracleDatabase/dockerfiles
+cd docker-images/OracleDatabase/SingleInstance/dockerfiles
 sh buildDockerImage.sh -v 12.2.0.1 -e
 ```
 

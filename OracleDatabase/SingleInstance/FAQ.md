@@ -46,3 +46,11 @@ As you don't have execution rights to it, however, you get the error `Operation 
 Run the container with `-v /dev/shm --tmpfs /dev/shm:rw,exec,size=<yoursize>` instead, the important part being the `exec` in `--tmpfs /dev/shm:rw,exec,size=<yoursize>`.
 Also make sure you assign an appropriate size as the default Docker uses is only 64MB. Assigning 1GB or  more is recommended.
 
+## ORA-12637: Packet receive failed
+When initially connecting to your 19c (or higher) database the client may appear to hang and timeout after a few minutes with: `ORA-12637: Packet receive failed`
+
+Oracle Net 19c will attempt to [automatically detect support for Out Of Band breaks](https://www.oracle.com/pls/topic/lookup?ctx=dblatest&id=GUID-554C0311-68FB-4628-AC8D-C22D8ADDE995) and enable or disable the feature. Some network stacks do not correctly handle this and problems have been seen on _docker-engine-19.03.1.ol-1.0.0.el7_. You may explicitly disable this feature by setting `DISABLE_OOB=ON` in the client's _sqlnet.ora_ file. By default Oracle Instant Client for Linux will use _/<instant_client_path>/network/admin/sqlnet.ora_, _$TNS_ADMIN/sqlnet.ora_ or _~/.sqlnet.ora_. For example you could use
+```
+$ echo "DISABLE_OOB=ON" >> ~/.sqlnet.ora
+```
+For more information configuring _sqlnet.ora_ file see [Database Net Services Reference](https://www.oracle.com/pls/topic/lookup?ctx=dblatest&id=GUID-2041545B-58D4-48DC-986F-DCC9D0DEC642), [Instant Client Installation for Linux](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html), [What is DISABLE_OOB (Out Of Band Break)? (Doc ID 373475.1)](https://support.oracle.com/epmos/faces/DocumentDisplay?id=373475.1) and issue #1352
