@@ -5,7 +5,7 @@
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # TAG_NAME              - Tag the docker image with this name. This overrides the default of 
-#                         12213-domain-home-in-imag:latest. 
+#                         12213-domain-home-in-imag-ssl:latest. 
 #
 #                         There are three ways to tag the domain home image using this build script.
 #
@@ -20,7 +20,7 @@
 # The setEnv.sh will set the TAG_NAME variable if the property is found in the
 # properties file. This function should be called after the setEnv.sh is run
 tag_name() {
-   tagName=${CUSTOM_IMAGE_TAG:-"12213-domain-home-in-image:latest"}
+   tagName=${CUSTOM_IMAGE_TAG:-"12213-domain-home-in-image-ssl:latest"}
    echo "CUSTOM_IMAGE_TAG  ${tagName} "
 }
 
