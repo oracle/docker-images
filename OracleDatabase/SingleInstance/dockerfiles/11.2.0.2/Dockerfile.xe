@@ -30,9 +30,13 @@ FROM oraclelinux:7-slim
 
 # Labels
 # ----------
-LABEL "maintainer"="Gerald Venzl <gerald.venzl@oracle.com>" \
-      "volume.oradata"="/opt/oracle/oradata"                \
-      "port.listener"="1521"                                \
+LABEL "maintainer"="Gerald Venzl <gerald.venzl@oracle.com>"             \
+      "volume.oradata"="/opt/oracle/oradata"                            \
+      "volume.setup.location1"="/opt/oracle/scripts/setup"              \
+      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
+      "volume.startup.location1"="/opt/oracle/scripts/startup"          \
+      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
+      "port.listener"="1521"                                            \
       "port.apex"="8080"
 
 # Environment variables required for this build (do NOT change)
