@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2020 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: July, 2017
 # Author: gerald.venzl@oracle.com
@@ -34,6 +34,29 @@ function checkError {
 
 
 cd "../dockerfiles"
+
+###################### TESTS 19.3.0 images ###########################
+
+# Copy binary file
+cp $BIN_DIR/LINUX.X64_193000_db_home.zip ./19.3.0/
+
+###################### TEST 19.3.0 EE ###########################
+
+# Build 19.3.0 EE images
+./buildDockerImage.sh -e -v 19.3.0
+checkError "Build 19.3.0 EE image" $?
+
+###################### TEST 19.3.0 SE2 ###########################
+
+# Build 19.3.0 SE2 images
+./buildDockerImage.sh -s -v 19.3.0
+checkError "Build 19.3.0 SE2 image" $?
+
+# Delete binary file
+rm ./19.3.0/LINUX.X64_193000_db_home.zip
+
+###################### END TESTS 19.3.0 images ###########################
+
 
 ###################### TESTS 18.3.0 images ###########################
 
