@@ -23,9 +23,12 @@
 # ---------------
 FROM oraclelinux:7-slim as base
 
-# Maintainer
+# Labels
 # ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+LABEL "maintainer"="Gerald Venzl <gerald.venzl@oracle.com>" \
+      "volume.oradata"="/opt/oracle/oradata"                \
+      "port.listener"="1521"                                \
+      "port.oemexpress"="5500"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -107,8 +110,6 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 USER oracle
 WORKDIR /home/oracle
 
-VOLUME ["$ORACLE_BASE/oradata"]
-EXPOSE 1521 5500
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 

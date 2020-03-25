@@ -28,9 +28,12 @@
 # ---------------
 FROM oraclelinux:7-slim
 
-# Maintainer
+# Labels
 # ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+LABEL "maintainer"="Gerald Venzl <gerald.venzl@oracle.com>" \
+      "volume.oradata"="/opt/oracle/oradata"                \
+      "port.listener"="1521"                                \
+      "port.apex"="8080"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -78,8 +81,6 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl compat-libstdc+
     rm -rf $INSTALL_DIR && \
     chmod ug+x $ORACLE_BASE/*.sh
 
-VOLUME ["$ORACLE_BASE/oradata"]
-EXPOSE 1521 8080
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
