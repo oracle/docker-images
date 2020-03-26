@@ -30,7 +30,7 @@ FROM oraclelinux:7-slim
 
 # Labels
 # ------
-LABEL "provider"="Oracle Corporation"                                   \
+LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"         \
       "maintainer"="Gerald Venzl"                                       \
       "volume.data"="/u01/app/oracle/oradata"                           \

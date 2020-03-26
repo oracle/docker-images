@@ -96,7 +96,7 @@ image to be useful.
 
 | Label   | Value | Applicability |
 | -------- | ----- | ------------- |
-| provider | The provider of the image (should be `Oracle Corporation` for base images in this repo) | All images |
+| provider | The provider of the image (should be `Oracle` for base images in this repo) | All images |
 | issues | URL where issues and questions can be posted (should be `https://github.com/oracle/docker-images/issues` for base images in this repo | All images |
 | maintainer | Name of the maintainer team | All images |
 | volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.<br/>If your image has multiple volumes, use qualified names to specify the purpose of each volume, for example `volume.data` for data to be persisted outside the container.<br/>Use hierarchical nesting for multiple volumes of the same type, for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul> | For all images that have data that should be persisted outside the container |
