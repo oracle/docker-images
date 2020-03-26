@@ -81,24 +81,24 @@ a pull request.
 1. Extend an existing product image wherever possible. For example, if your
 product requires WebLogic, then extend the WebLogic image instead of creating
 your own WebLogic installation.
-2. If you can't extend an existing image, your image must use the
+1. If you can't extend an existing image, your image must use the
 `oraclelinux:7-slim` base image as this image provides the smallest
 attack surface and is updated whenever a CVE errata is published.
-3. Re-use existing scripts wherever possible. If a particular base image or
+1. Re-use existing scripts wherever possible. If a particular base image or
 script doesn't have the functionality you need, open an issue and work with
 the image owner to implement it.
-4. Specify a version in the `FROM` directive, i.e. use
+1. Specify a version in the `FROM` directive, i.e. use
 `FROM oraclelinux:7-slim` or `FROM java/serverjre:8`.
-5. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
+1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
 to be extended, then this should output documentation on how to extend the
 image to be useful.
-6. Use `LABEL` instructions for additional information such as ports and volumes. The following are common label instructions that should be present in all images where applicable:
+1. Use `LABEL` instructions for additional information such as ports and volumes. The following are common label instructions that should be present in all images where applicable:
 
 | Label   | Value | Applicability |
 | -------- | ----- | ------------- |
 | provider | The provider of the image (should be `Oracle Corporation` for base images in this repo) | All images |
 | issues | URL where issues and questions can be posted (should be `https://github.com/oracle/docker-images/issues` for base images in this repo | All images |
-| maintainer | Name of the maintainer | All images |
+| maintainer | Name of the maintainer team | All images |
 | volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.<br/>If your image has multiple volumes, use qualified names to specify the purpose of each volume, for example `volume.data` for data to be persisted outside the container.<br/>Use hierarchical nesting for multiple volumes of the same type, for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul> | For all images that have data that should be persisted outside the container |
 | port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If your images has multiple ports, use qualified names to specify the purpose of each port, for example `port.app` for the port on which your application is reachable.<br/>Use hierarchical nesting for multiple ports of the same type, for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> | For all images that have ports that should be exposed outside the container |
 
@@ -151,4 +151,4 @@ any defaults that are used if no input is provided.
 gracefully fail if that value is not provided.
 
 
-*Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.*
+*Copyright (c) 2017, 2020 Oracle and/or its affiliates.*
