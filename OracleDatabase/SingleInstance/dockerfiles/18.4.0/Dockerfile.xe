@@ -24,8 +24,8 @@ FROM oraclelinux:7-slim
 # Labels
 # ------
 LABEL "provider"="Oracle Corporation"                                   \
-      "maintainer"="Gerald Venzl"                                       \
       "issues"="https://github.com/oracle/docker-images/issues"         \
+      "maintainer"="Gerald Venzl"                                       \
       "volume.data"="/opt/oracle/oradata"                               \
       "volume.setup.location1"="/opt/oracle/scripts/setup"              \
       "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
