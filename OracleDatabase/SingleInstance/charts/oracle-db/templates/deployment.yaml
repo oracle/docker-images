@@ -10,12 +10,15 @@ metadata:
 {{- include "oracle-db-labels" . |indent 2}}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}
   template:
     metadata:
       labels:
         app: {{ template "fullname" . }}
     spec:
-      terminationGracePeriodSeconds: {{ default "120" .Values.shutdownTimeout }}
+      terminationGracePeriodSeconds: 60
    {{- if .Values.imagePullSecrets}}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}

@@ -5,36 +5,32 @@ Oracle Database Server 19c is an industry leading relational database server.
 ## Getting started
 
 ```console
-$helm install local/oracle-db
+$helm install oracle-db
 ```
 
 ## Introduction
 
-The Oracle Database Server Chart contains the Oracle Database Server 19c Enterprise Edition running on Oracle Linux 7. This image contains a default database in a multitenant configuration with one pdb.
+The Oracle Database Server Chart contains the Oracle Database Server 19c running on Oracle Linux 7. This image contains a default database in a multitenant configuration with one pdb.
 
 For more information on Oracle Database Server 19c refer to http://docs.oracle.com/en/database/
 
 ## Prerequisites
 
-- Kubernetes 1.8+
+- Kubernetes 1.11+
 - NFS PV provisioner support from https://github.com/kubernetes-incubator/external-storage/tree/master/nfs
-- Using Oracle Database EE Docker image require you to accept terms of service
+- Using Oracle Database Docker image require you to accept terms of service
 
-## Using Oracle  Database EE Docker image
+## Using Oracle  Database Docker image
 ### Accepting the terms of service
-From the store.docker.com website accept `Terms of Service` for Oracle Database Enterprise Edition.
+From the container-registry.oracle.com website accept `Terms of Service` for Oracle Database Enterprise Edition.
 
-### Login to Docker Store
-Login to Docker Store with your credentials 
-
-`$ docker login store.docker.com`
 
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm install --name my-release local/oracle-db
+$ helm install --name my-release oracle-db
 ```
 
 The command deploys Oracle Database on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
@@ -57,20 +53,15 @@ The following tables lists the configurable parameters of the Oracle  Database c
 
 | Parameter                            | Description                                | Default                                                    |
 | -------------------------------      | -------------------------------            | ---------------------------------------------------------- |
-| db_sid                               | set database name(ORACLE_SID)              | ORCLCDB                                                    |
-| db_pdb                               | set pdb name                               | ORCLPDB1                                                   |
-| db_memory                            | SGA and PGA size                           | 2GB                                                        |
-| db_domain                            | domain name of database                    | localdomain                                                |
-| persistence.enabled                  | Enable Datafiles Persistence               | true                                                       |
-| persistence.accessMode               | Datafile mount access mode                 | ReadWriteOnce                                              |
-| persistence.size                     | size of persistence storage                | 50g                                                        |
-| persistence.storageClass             | Storage Class for PVC                      | oci                                                        |
-| imageRegistry                        | image registry to pull db image from       | local                                                      |
-| image                                | image to pull                              | database19c:19.3.0                                 |
-| imagePullPolicy                      | image pull policy                          | IfNotPresent                                               |
-| hcInitialDelay                       | Health Check initial delay(in seconds)     | 300                                                        |
-| hctimeout                            | Health Check timeout      (in seconds)     | 10                                                         |
-| shutdownTimeout                      | Timeout to wait for graceful shutdown      | 120                                                        |
+| oracle_sid                           | Database name (ORACLE_SID)                 | ORCLCDB                                                    |
+| oracle_pdb                           | PDB name                                   | ORCLPDB1                                                   |
+| oracle_pwd                           | SYS, SYSTEM and PDB_ADMIN password         | Auto generated                                             |
+| oracle_characterset                  | The character set to use                   | AL32UTF8                                                   |
+| oracle_edition                       | The database edition                       | enterprise                                                 |
+| persistence.size                     | Size of persistence storage                | 100g                                                       |
+| persistence.storageClass             | Storage Class for PVC                      |                                                            |
+| image                                | Image to pull                              | database19c:19.3.0                                         |
+| imagePullPolicy                      | Image pull policy                          | IfNotPresent                                               |
 | -------------------------------      | -------------------------------            | ---------------------------------------------------------- |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
