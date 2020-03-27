@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017, 2020 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -26,7 +26,6 @@ FROM oraclelinux:7-slim as base
 # ------
 LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"         \
-      "maintainer"="Gerald Venzl"                                       \
       "volume.data"="/opt/oracle/oradata"                               \
       "volume.setup.location1"="/opt/oracle/scripts/setup"              \
       "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \

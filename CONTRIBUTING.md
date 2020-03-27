@@ -98,7 +98,6 @@ image to be useful.
 | -------- | ----- | ------------- |
 | provider | The provider of the image (should be `Oracle` for base images in this repo) | All images |
 | issues | URL where issues and questions can be posted (should be `https://github.com/oracle/docker-images/issues` for base images in this repo | All images |
-| maintainer | Name of the maintainer team | All images |
 | volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.<br/>If your image has multiple volumes, use qualified names to specify the purpose of each volume, for example `volume.data` for data to be persisted outside the container.<br/>Use hierarchical nesting for multiple volumes of the same type, for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul> | For all images that have data that should be persisted outside the container |
 | port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If your images has multiple ports, use qualified names to specify the purpose of each port, for example `port.app` for the port on which your application is reachable.<br/>Use hierarchical nesting for multiple ports of the same type, for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> | For all images that have ports that should be exposed outside the container |
 
@@ -107,7 +106,6 @@ For example, for the Oracle Database 18c XE image we use the following labels:
 ```
 LABEL "provider"="Oracle Corporation"                                   \
       "issues"="https://github.com/oracle/docker-images/issues"         \
-      "maintainer"="Gerald Venzl"                                       \
       "volume.data"="/opt/oracle/oradata"                               \
       "volume.setup.location1"="/opt/oracle/scripts/setup"              \
       "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
