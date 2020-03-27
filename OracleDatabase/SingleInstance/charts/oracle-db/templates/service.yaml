@@ -1,0 +1,22 @@
+#
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fullname" . }}
+{{- include "oracle-db-labels" . | indent 2 }}
+spec:
+  type: NodePort
+  ports:
+  - name: listener
+    port: 1521
+    protocol: TCP
+  - name: xmldb
+    port: 5500
+    protocol: TCP
+  selector:
+    app: {{ template "fullname" . }}
+---
