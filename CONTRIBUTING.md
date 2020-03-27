@@ -104,7 +104,7 @@ image to be useful.
 For example, for the Oracle Database 18c XE image we use the following labels:
 
 ```
-LABEL "provider"="Oracle Corporation"                                   \
+LABEL "provider"="Oracle"                                   \
       "issues"="https://github.com/oracle/docker-images/issues"         \
       "volume.data"="/opt/oracle/oradata"                               \
       "volume.setup.location1"="/opt/oracle/scripts/setup"              \
