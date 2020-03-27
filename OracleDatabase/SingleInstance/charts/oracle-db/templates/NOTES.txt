@@ -11,13 +11,13 @@ ORCLCDB=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=<ip-address>)(PORT=<port>))
 ORCLPDB1=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=<ip-address>)(PORT=<port>))
     (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<ORACLE_PDB>)))
 #                                                                              
-#ip-address : IP address of any of the Kubernetes.
+#ip-address : IP address of any of the Kubernetes nodes
 #port       : Service Port that is mapped to the port 1521 of the container.
+#
 
 ip and port can be found using the following:
 
-if service is configured using NodePort:
-1. Get the application URL by running these commands:
+1. Get the application details by running these commands:
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ template "fullname" . }})
   export NODE_XDB_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[1].nodePort}" services {{ template "fullname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -25,5 +25,5 @@ if service is configured using NodePort:
   echo XDB at $NODE_IP:$NODE_XDB_PORT
 
 Oracle Databases SID, PDB name can be figured out by :
-ORACLE_SID=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == '{{ template "fullname" . }}')].env[?(.name == 'DB_SID')].value }" deploy {{ template "fullname" . }}
-ORACLE_PDB=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == '{{ template "fullname" . }}')].env[?(.name == 'DB_PDB')].value }" deploy {{ template "fullname" . }}
+ORACLE_SID=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == '{{ template "fullname" . }}')].env[?(.name == 'ORACLE_SID')].value }" deploy {{ template "fullname" . }}
+ORACLE_PDB=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == '{{ template "fullname" . }}')].env[?(.name == 'ORACLE_PDB')].value }" deploy {{ template "fullname" . }}
