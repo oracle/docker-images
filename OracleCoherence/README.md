@@ -188,7 +188,7 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
     sudo sh buildDockerImage.sh -v 12.2.1.3.2
     ```
 
-6. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example
+6. The resulting image file will be called `oracle/coherence:${version}-${distribution}`, for example
    if the Standalone installer is used the image will be `oracle/coherence:12.2.1.3.2-standalone`
 
 ## Documentation
