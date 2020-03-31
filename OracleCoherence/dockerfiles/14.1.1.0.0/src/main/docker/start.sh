@@ -1,15 +1,15 @@
 #!/usr/bin/env sh
 
-#!/bin/sh -e -x -u
-
-# Copyright 2019, 2020, Oracle Corporation and/or its affiliates.
+# Copyright (c) 2019, 2020, Oracle Corporation and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+set -ex
 
 trap "echo TRAPed signal" HUP INT QUIT KILL TERM
 
 main()
     {
-#   Support running as an arbitrary user. See OpenShift best practice https://docs.okd.io/latest/creating_images/guidelines.html
+    # Support running as an arbitrary user. See OpenShift best practice https://docs.okd.io/latest/creating_images/guidelines.html
     if ! whoami &> /dev/null; then
       if [ -w /etc/passwd ]; then
         echo "${USER_NAME:-default}:x:$(id -u):0:${USER_NAME:-default} user:${HOME}:/sbin/nologin" >> /etc/passwd
