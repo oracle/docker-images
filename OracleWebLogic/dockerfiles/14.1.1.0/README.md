@@ -21,7 +21,7 @@ To assist in building the images, you can use the [`buildDockerImage.sh`](docker
 The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle WebLogic Server Docker install images
-**IMPORTANT:** You must download the binary of Oracle WebLogic Server and put it in place (see `.download` files inside `dockerfiles/<version>`).  WebLogic Server 14.1.1.0 supports Java SE 11. If you want to run WebLogic Server on Oracle JDK 11 image, you must build the image by using the Dockerfile in [`../../../OracleJava/java11`](https://github.com/oracle/docker-images/tree/master/OracleJava/java-11). There is no longer a Oracle Server JRE for Java SE 11, it is bundled into Oracle JDK 11.
+**IMPORTANT:** You must download the binary of Oracle WebLogic Server and put it in place (see `.download` files inside `dockerfiles/<version>`).  WebLogic Server 14.1.1.0 supports Java SE 11. If you want to run WebLogic Server on Oracle JDK 11 image, you can either build the image by using the Dockerfile in [`../../../OracleJava/java11`](https://github.com/oracle/docker-images/tree/master/OracleJava/java-11) or pull the jdk 11 image from the Oracle Container Registry. There is no longer a Oracle Server JRE for Java SE 11, it is bundled into Oracle JDK 11.  
 
 Before you build, select the version and distribution for which you want to build an image, then download the required packages (see `.download` files) and locate them in the folder of your distribution version of choice. Then, from the `dockerfiles` folder, run the `buildDockerImage.sh` script as root.
 
@@ -92,4 +92,4 @@ Run the WLS Administration Console:
 In your browser, enter `https://xxx.xx.x.x:9002/console`. Your browser will request that you accept the Security Exception. To avoid the Security Exception, you must update the WebLogic Server SSL configuration with a custom identity certificate.
 
 ## Copyright
-Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2020 Oracle and/or its affiliates.
