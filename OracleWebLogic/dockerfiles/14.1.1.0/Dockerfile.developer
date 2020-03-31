@@ -7,11 +7,8 @@
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_14.1.1.0.0_wls_quick_Disk1_1of1.zip
-#     Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
-#
-# (2) jdk-11.0.6_linux-x64_bin.tar.gz 
-#     Download from http://www.oracle.com/technetwork/java/javase/downloads/jdk-11.0.6_linux-x64_bin.tar.gz 
+# fmw_14.1.1.0.0_wls_quick_Disk1_1of1.zip
+# Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -23,17 +20,17 @@
 # ---------
 # The resulting image of this Dockerfile contains a WLS Empty Domain.
 #
-# From the OIracle Docker GitHub Project
+# From the Oracle Docker GitHub Project
 # --------------------------------------
 FROM oracle/jdk:11 as builder
 
 # Labels
 # ------
-#LABEL "provider"="Oracle"                                               \
-#      "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"       \
-#      "issues"="https://github.com/oracle/docker-images/issues"         \
-#      "port.admin.listen"="7001"                                        \
-#      "port.administration"="9002"
+LABEL "provider"="Oracle"                                               \
+      "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"       \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "port.admin.listen"="7001"                                        \
+      "port.administration"="9002"
 
 # Common environment variables required for this build (do NOT change)
 # --------------------------------------------------------------------
