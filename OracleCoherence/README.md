@@ -1,7 +1,7 @@
 <!--
     Copyright (c) 2015, 2020, Oracle and/or its affiliates.
     Licensed under the Universal Permissive License v 1.0 as shown at
-    http://oss.oracle.com/licenses/upl.
+    https://oss.oracle.com/licenses/upl.
 -->
 Oracle Coherence Docker Image
 ===============
@@ -45,13 +45,13 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
 1. Checkout the GitHub Oracle Docker Images repository
 
-    ```shell script
+    ```shell
     git clone git@github.com:oracle/docker-images.git
     ````
    	
 1. Go to the directory containing the Dockerfile
 
-    ```shell script
+    ```shell
     cd OracleCoherence/dockerfiles/14.1.1.0.0/src/main/docker
     ```
 
@@ -64,7 +64,7 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
 1. Go to the maven project directory
 
-    ```shell script
+    ```shell
     cd OracleCoherence/dockerfiles/14.1.1.0.0
     ```
     
@@ -72,7 +72,7 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
     To build a Docker image using Oracle 8 JDK:
 
-    ```shell script
+    ```shell
     mvn install
     ```
 
@@ -80,7 +80,7 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
     To build a Docker image using GraalVM (CE) (*Coherence 14.1.1.0.0 only*)
 
-    ```shell script
+    ```shell
     mvn install -Pgraal
     ```
    
@@ -90,13 +90,13 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
 1. Checkout the GitHub Oracle Docker Images repository
 
-    ```shell script
+    ```shell
     git clone git@github.com:oracle/docker-images.git
     ````
 
 2. Go to the `OracleCoherence/dockerfiles/12.2.1.3` folder
 
-    ```shell script
+    ```shell
     cd OracleCoherence/dockerfiles/12.2.1.3.0
     ```
 
@@ -108,14 +108,14 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
 4. Execute the build script `buildDockerImage.sh`.
 
-    ```shell script
+    ```shell
     cd ..
     sh buildDockerImage.sh
     ```
 
     or if your Docker client requires commands to be run as root you can run
 
-    ```shell script
+    ```shell
     sudo sh buildDockerImage.sh
     ```
 
@@ -124,40 +124,40 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
     present then the default will be to use the Standalone installer. You can specify which
     installer to use with a script argument. To run the Standalone installer use:
 
-    ```shell script
+    ```shell
     sh buildDockerImage.sh -s
     ```
 
     Or to run the Quick installer use:
 
-    ```shell script
+    ```shell
     sh buildDockerImage.sh -q
     ```
 
     If you are using a different version of Coherence than 12.2.1.3.0 then you can use the `-v`
     parameter to specify a version. For example if you are using 12.2.1.2.0 you would run:
 
-    ```shell script
+    ```shell
     sh buildDockerImage.sh -v 12.2.1.2.0
     ```
 
 5. The resulting image file will be called oracle/coherence:${version}-${distribution}, for example
    if the Standalone installer is used the image will be `oracle/coherence:12.2.1.3.0-standalone`
 
-6. The image is built with a shell script as its ENTRYPOINT that allows the image to be run using
+6. The image is built with a shell as its ENTRYPOINT that allows the image to be run using
    the normal Docker run command. See the [Image Usage](00.imageusage) documentation.
 
 ### For Coherence 12.2.1.3.2 follow this process
 
 1. Checkout the GitHub Oracle Docker Images repository
 
-    ```shell script
+    ```shell
     git clone git@github.com:oracle/docker-images.git
     ```
 
 2. Go to the `OracleCoherence/dockerfiles/12.2.1.3.2` folder
 
-    ```shell script
+    ```shell
     cd OracleCoherence/dockerfiles/12.2.1.3.2
     ```
 
@@ -171,14 +171,14 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
 5. Execute the build script `buildDockerImage.sh`.
 
-    ```shell script
+    ```shell
     cd ..
     sh buildDockerImage.sh -v 12.2.1.3.2
     ```
 
     or if your Docker client requires commands to be run as root you can run
 
-    ```shell script
+    ```shell
     sudo sh buildDockerImage.sh -v 12.2.1.3.2
     ```
 
