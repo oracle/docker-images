@@ -178,6 +178,8 @@ To run your Oracle GoldenGate Docker image use a **docker run** command like thi
         -e OGG_ADMIN=<admin user name> \
         -e OGG_ADMIN_PWD=<admin password> \
         -e OGG_DEPLOYMENT=<deployment name for Microservices Architecture> \
+        -e PORT_BASE=11000 \
+        -p 8443:443 \
         -v <host mount point>:<container-mount-point> ... \
         <image name>
 
@@ -189,10 +191,12 @@ Parameters:
 - `-e OGG_ADMIN`      - The name of the administrative account to create for Microservices Architecture (default: `oggadmin`)
 - `-e OGG_ADMIN_PWD`  - The password for the Microservices Architecture administrative account (default: auto generated)
 - `-e OGG_DEPLOYMENT` - The name of the deployment for Microservices Architecture (default: `Local`)
+- `-e PORT_BASE`      - The starting port number used by OGG services (default: 7809 for Classic Edition, 9100 for Microservices Edition)
 - `<image name>`      - The Docker image name created using **Option 1** or **Option 2**
 
 **NOTE:** Only the `OGG_SCHEMA` environment variable is used by Oracle GoldenGate Standard Edition containers. The other environment variables are used by the Microservices Architecture.
 
+### Volumes
 Mount points for Oracle GoldenGate Standard Edition are located in the container under the `/u01/app/ogg/` directory. For example:
 
 - `/u01/app/ogg/dirprm` - The parameter file directory
@@ -202,6 +206,33 @@ For the Microservices Architecture, Oracle GoldenGate data is located under the 
 
 - `/u02/ogg/Local/etc/conf`     - Configuration files for the 'Local' deployment
 - `/u02/ogg/Local/var/lib/data` - Trail files for the 'Local' deployment
+
+### Ports
+
+Depending on the OGG Edition, the container will expose one or more ports starting at
+`PORT_BASE`. For the Microservices Edition, the container will also expose a Load Balancer on
+port 443. To publish the Manager port from a Classic Edition container from the Docker host, use the
+`--publish` (`-p`) option for `docker run`. For example:
+
+    -p 7809:7809
+
+For a Microservices Edition container, there are two options.
+
+1. Publish the port of the embedded load balancer to access all the microservices from a single port (preferred)
+
+    ```
+    -p 8443:443
+    ```
+
+2. Publish the ports from individual OGG Microservices:
+
+    ```
+    -p 9100:9100   # Service Manager
+    -p 9101:9101   # Administration Server
+    -p 9102:9102   # Distribution Server
+    -p 9103:9103   # Receiver Server
+    -p 9104:9104   # Performance Metrics Server
+    ```
 
 ### SSL Certificate for Microservices Architecture
 When the Oracle GoldenGate Docker image is created for Microservices Architecture, a dummy SSL certificate is generated for the OGG Web UI. Your own SSL certificate can be used instead of the dummy certificate like this:
