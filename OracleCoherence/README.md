@@ -221,4 +221,4 @@ repository required to build the Docker images are, unless otherwise noted, rele
 [UPL 1.0](https://oss.oracle.com/licenses/upl/), except for the files listed above with their
 specific licenses.
 
-Copyright &copy; 2015, 2020, Oracle and/or its affiliates.
+Copyright (c) 2015, 2020, Oracle and/or its affiliates.
