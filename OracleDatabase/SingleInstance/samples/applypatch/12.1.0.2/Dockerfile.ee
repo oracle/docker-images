@@ -20,10 +20,6 @@
 # ---------------
 FROM oracle/database:12.1.0.2-ee
 
-# Maintainer
-# ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
-
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV PATCH_DIR="patches" \
