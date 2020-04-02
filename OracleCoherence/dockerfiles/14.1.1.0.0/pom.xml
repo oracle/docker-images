@@ -167,7 +167,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <final.stage.base.image.name>store/oracle/serverjre:8</final.stage.base.image.name>
+        <final.stage.base.image.name>oracle/serverjre:8</final.stage.base.image.name>
         <docker.image.name>oracle/coherence:${project.version.dist}</docker.image.name>
       </properties>
     </profile>
