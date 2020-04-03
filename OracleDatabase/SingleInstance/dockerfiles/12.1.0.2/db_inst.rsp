@@ -40,7 +40,7 @@ ORACLE_HOSTNAME=localhost
 #-------------------------------------------------------------------------------
 # Specify the Unix group to be set for the inventory directory.  
 #-------------------------------------------------------------------------------
-UNIX_GROUP_NAME=dba
+UNIX_GROUP_NAME=oinstall
 
 #-------------------------------------------------------------------------------
 # Specify the location which holds the inventory files.
@@ -83,7 +83,7 @@ INVENTORY_LOCATION=###ORACLE_BASE###/oraInventory
 # Specify value as the following to select all the languages.
 # Example : SELECTED_LANGUAGES=all_langs  
 #-------------------------------------------------------------------------------
-SELECTED_LANGUAGES=en
+SELECTED_LANGUAGES=ja
 
 #-------------------------------------------------------------------------------
 # Specify the complete path of the Oracle Home. 
@@ -127,22 +127,22 @@ oracle.install.db.DBA_GROUP=dba
 # The OPER_GROUP is the OS group which is to be granted OSOPER privileges.
 # The value to be specified for OSOPER group is optional.
 #------------------------------------------------------------------------------
-oracle.install.db.OPER_GROUP=dba
+oracle.install.db.OPER_GROUP=oper
 
 #------------------------------------------------------------------------------
 # The BACKUPDBA_GROUP is the OS group which is to be granted OSBACKUPDBA privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.BACKUPDBA_GROUP=dba
+oracle.install.db.BACKUPDBA_GROUP=backupdba
 
 #------------------------------------------------------------------------------
 # The DGDBA_GROUP is the OS group which is to be granted OSDGDBA privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.DGDBA_GROUP=dba
+oracle.install.db.DGDBA_GROUP=dgdba
 
 #------------------------------------------------------------------------------
 # The KMDBA_GROUP is the OS group which is to be granted OSKMDBA privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.KMDBA_GROUP=dba
+oracle.install.db.KMDBA_GROUP=kmdba
 
 #------------------------------------------------------------------------------
 # Specify whether to enable the user to set the password for
