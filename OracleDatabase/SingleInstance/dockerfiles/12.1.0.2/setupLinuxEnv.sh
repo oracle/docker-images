@@ -23,4 +23,4 @@ yum -y install oracle-rdbms-server-12cR1-preinstall tar openssl && \
 rm -rf /var/cache/yum && \
 ln -s $ORACLE_BASE/$PWD_FILE /home/oracle/ && \
 echo oracle:oracle | chpasswd && \
-chown -R oracle:oinstall $ORACLE_BASE
+chown -R oracle:dba $ORACLE_BASE
