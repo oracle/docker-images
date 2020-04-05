@@ -83,3 +83,8 @@ rm -rf $ORACLE_HOME/suptools && \
 rm -rf /tmp/* && \
 # Database files directory
 rm -rf $INSTALL_DIR/database
+
+# Check whether Perl is working
+chmod ug+x $INSTALL_DIR/$PERL_INSTALL_FILE && \
+$ORACLE_HOME/perl/bin/perl -v || \
+$INSTALL_DIR/$PERL_INSTALL_FILE
