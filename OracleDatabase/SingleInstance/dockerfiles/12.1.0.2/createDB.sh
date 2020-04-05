@@ -19,7 +19,7 @@ export ORACLE_SID=${1:-ORCLCDB}
 
 # Auto generate ORACLE PWD if not passed on
 export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
-echo "ORACLE PASSWORD FOR SYS, SYSTEM: $ORACLE_PWD";
+echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
 # Replace place holders in response file
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
