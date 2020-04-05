@@ -85,6 +85,6 @@ rm -rf /tmp/* && \
 rm -rf $INSTALL_DIR/database
 
 # Check whether Perl is working
-chmod ug+x $INSTALL_DIR/$PERL_INSTALL_FILE && \
-$ORACLE_HOME/perl/bin/perl -v || \
-$INSTALL_DIR/$PERL_INSTALL_FILE
+# chmod ug+x $INSTALL_DIR/$PERL_INSTALL_FILE && \
+# $ORACLE_HOME/perl/bin/perl -v || \
+# $INSTALL_DIR/$PERL_INSTALL_FILE
