@@ -40,7 +40,7 @@ ORACLE_HOSTNAME=localhost
 #-------------------------------------------------------------------------------
 # Specify the Unix group to be set for the inventory directory.  
 #-------------------------------------------------------------------------------
-UNIX_GROUP_NAME=oinstall
+UNIX_GROUP_NAME=dba
 
 #-------------------------------------------------------------------------------
 # Specify the location which holds the inventory files.
@@ -127,22 +127,22 @@ oracle.install.db.DBA_GROUP=dba
 # The OPER_GROUP is the OS group which is to be granted OSOPER privileges.
 # The value to be specified for OSOPER group is optional.
 #------------------------------------------------------------------------------
-oracle.install.db.OPER_GROUP=oper
+oracle.install.db.OPER_GROUP=dba
 
 #------------------------------------------------------------------------------
 # The BACKUPDBA_GROUP is the OS group which is to be granted OSBACKUPDBA privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.BACKUPDBA_GROUP=backupdba
+oracle.install.db.BACKUPDBA_GROUP=dba
 
 #------------------------------------------------------------------------------
 # The DGDBA_GROUP is the OS group which is to be granted OSDGDBA privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.DGDBA_GROUP=dgdba
+oracle.install.db.DGDBA_GROUP=dba
 
 #------------------------------------------------------------------------------
 # The KMDBA_GROUP is the OS group which is to be granted OSKMDBA privileges.
 #------------------------------------------------------------------------------
-oracle.install.db.KMDBA_GROUP=kmdba
+oracle.install.db.KMDBA_GROUP=dba
 
 #------------------------------------------------------------------------------
 # Specify whether to enable the user to set the password for
