@@ -43,7 +43,6 @@ ENV ORACLE_BASE=/opt/oracle \
     CREATE_DB_FILE="createDB.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
-    CHECK_DB_FILE="checkDBStatus.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
 
@@ -55,7 +54,7 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
 # Copy files needed during both installation and runtime
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
-COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
@@ -79,7 +78,7 @@ ARG DB_EDITION
 RUN yum -y install unzip
 
 # Copy DB install file
-COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $PERL_INSTALL_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
+COPY --chown=oracle:oinstall $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_RSP $PERL_INSTALL_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/
 
 # Install DB software binaries
 USER oracle
@@ -98,7 +97,7 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
 FROM base
 
 USER oracle
-COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
+COPY --chown=oracle:oinstall --from=builder $ORACLE_BASE $ORACLE_BASE
 
 USER root
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
@@ -109,8 +108,6 @@ WORKDIR /home/oracle
 
 VOLUME ["$ORACLE_BASE/oradata"]
 EXPOSE 1521 5500
-HEALTHCHECK --interval=1m --start-period=5m \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
 CMD exec $ORACLE_BASE/$RUN_FILE

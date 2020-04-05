@@ -105,7 +105,7 @@ SID = "###ORACLE_SID###"
 # Default value : false
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-CREATEASCONTAINERDATABASE = "true"
+CREATEASCONTAINERDATABASE = "false"
 
 #-----------------------------------------------------------------------------
 # Name          : NUMBEROFPDBS
@@ -115,7 +115,7 @@ CREATEASCONTAINERDATABASE = "true"
 # Default value : 0
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-NUMBEROFPDBS = 1
+NUMBEROFPDBS = 0
 
 #-----------------------------------------------------------------------------
 # Name          : PDBNAME 
@@ -125,7 +125,7 @@ NUMBEROFPDBS = 1
 # Default value : None
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-PDBNAME = "###ORACLE_PDB###"
+PDBNAME =
 
 #-----------------------------------------------------------------------------
 # Name          : PDBADMINPASSWORD
@@ -135,7 +135,7 @@ PDBNAME = "###ORACLE_PDB###"
 # Default value : None
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-PDBADMINPASSWORD = "###ORACLE_PWD###"
+PDBADMINPASSWORD =
 
 #-----------------------------------------------------------------------------
 # Name          : TEMPLATENAME
@@ -184,7 +184,7 @@ SYSTEMPASSWORD = "###ORACLE_PWD###"
 # Default value : NONE
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-EMCONFIGURATION = "DBEXPRESS"
+EMCONFIGURATION = NONE
 
 
 #-----------------------------------------------------------------------------
@@ -196,7 +196,7 @@ EMCONFIGURATION = "DBEXPRESS"
 # Mandatory     : No, will be picked up from DBEXPRESS_HTTPS_PORT env variable
 #                 or auto generates a free port between 5500 and 5599
 #-----------------------------------------------------------------------------
-EMEXPRESSPORT = "5500"
+EMEXPRESSPORT = NONE
 
 #-----------------------------------------------------------------------------
 # Name          : DBSNMPPASSWORD
@@ -207,7 +207,7 @@ EMEXPRESSPORT = "5500"
 # Mandatory     : Yes, if EMCONFIGURATION is specified or
 #                 the value of RUNCVUCHECKS is TRUE
 #-----------------------------------------------------------------------------
-DBSNMPPASSWORD = "###ORACLE_PWD###"
+DBSNMPPASSWORD =
 
 #-----------------------------------------------------------------------------
 # Name          : STORAGETYPE
