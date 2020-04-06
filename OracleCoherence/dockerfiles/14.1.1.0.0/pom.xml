@@ -154,21 +154,32 @@
 
   <profiles>
     <profile>
-      <id>graal</id>
-      <properties>
-        <final.stage.base.image.name>oracle/graalvm-ce</final.stage.base.image.name>
-        <docker.image.name>oracle/coherence-graal:${project.version.dist}</docker.image.name>
-      </properties>
-    </profile>
-
-    <profile>
       <id>jre8</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
+        <install.stage.base.image.name>oracle/serverjre:8</install.stage.base.image.name>
         <final.stage.base.image.name>oracle/serverjre:8</final.stage.base.image.name>
         <docker.image.name>oracle/coherence:${project.version.dist}</docker.image.name>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>jdk11</id>
+      <properties>
+        <install.stage.base.image.name>oracle/jdk:11</install.stage.base.image.name>
+        <final.stage.base.image.name>oracle/jdk:11</final.stage.base.image.name>
+        <docker.image.name>oracle/coherence:${project.version.dist}-jdk11</docker.image.name>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>graal</id>
+      <properties>
+        <install.stage.base.image.name>oracle/serverjre:8</install.stage.base.image.name>
+        <final.stage.base.image.name>oracle/graalvm-ce</final.stage.base.image.name>
+        <docker.image.name>oracle/coherence:${project.version.dist}-graal</docker.image.name>
       </properties>
     </profile>
   </profiles>
