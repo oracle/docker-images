@@ -44,9 +44,9 @@ Java 8 (see [Oracle Java images](../OracleJava/)) image.
 
 ## How to Build
 
-For Coherence 14.1.1.0.0 and 12.2.1.4.0, a Maven project is provided to facilitate building
-the Docker image. Maven is used to pull dependent libraries which are then bundled into the
-Docker image to enable running Coherence Management over REST and Coherence Metrics endpoints 
+For Coherence 14.1.1.0.0 and 12.2.1.4.0, Maven is required to build the Docker image.
+Maven is used to pull dependent libraries which are then bundled into the Docker image
+to enable running the Coherence Management over REST and Coherence Metrics endpoints 
 within the container.
 
 ### To build a Coherence 14.1.1.0.0 or 12.2.1.4.0 Docker image
