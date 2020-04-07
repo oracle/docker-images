@@ -8,7 +8,7 @@ Oracle Coherence Docker Image
 This section is about using [Oracle Coherence](https://www.oracle.com/technetwork/middleware/coherence/overview/index.html)
 in Docker. The purpose of the Docker images described here is to facilitate the setup of development
 and integration testing environments for developers. This project includes example Dockerfiles and
-documentation for Coherence based on Oracle Linux and Oracle JDK 8.
+documentation for Coherence based on Oracle Linux and Oracle Java 8, 11 or Graal base images.
 
 The certification of Coherence on Docker does not require the use of any file presented in this
 repository. Customers and users are welcome to use them as starters, and customize/tweak, or create
@@ -17,26 +17,36 @@ from scratch new scripts and Dockerfiles.
 ## Oracle Linux Base Image
 For more information and documentation, read the [Docker Images from Oracle Linux](https://registry.hub.docker.com/_/oraclelinux/) page.
 
-### Standalone Distribution
+## Oracle Coherence Standalone Distribution
 For more information on the Coherence Standalone Distribution, visit the
 [Coherence Documentation](https://docs.oracle.com/en/middleware/standalone/coherence/index.html).
 
-## Building the Oracle JDK (Server JRE) and GraalVM CE images
+## Building the Java Base Image(s)
+
+Coherence Docker images use a Java base image. Before you can build a Coherence image
+you must have built the required Java image or images.
+
+### Coherence 14.1.1.0.0
+
+Coherence 14.1.1.0.0 Docker images can use the following as base images:
+
+1. Oracle Java 8 - see [Oracle Java images](../OracleJava/)
+1. Oracle Java 11 - see [Oracle Java images](../OracleJava/)
+3. GraalVM CE Java 8 or Java 11 images - see [GraalVM images](../GraalVM/CE/)
+
+> Note: For building a Graal based Coherence image, the Oracle Java 8 image is also required for
+>       the image build process.
+
+### Coherence versions prior to 14.1.1.0.0
 
 Before you can build these Oracle Coherence images you must have built the required Oracle
 Java 8 (see [Oracle Java images](../OracleJava/)) image.
 
-Additionally if you will be building a Coherence image with GraalVM as the base image, then the
-GraalVM CE (see [GraalVM](../GraalVM/CE/)) image is also required. Either Java 8 or Java 11 based
-GraalVM images may be used as a base image.
-
->Note: A GraalVM CE base image can only be used for Oracle Coherence 14.1.1.0.0.
-
 ## How to Build
 
-For Coherence 14.1.1.0.0 and 12.2.1.4.0, a Maven project is provided to facilitate building
-the Docker image.  Maven is used to pull dependent libraries which are then bundled into the
-Docker image to enable running Coherence Management over REST and Coherence Metrics endpoints 
+For Coherence 14.1.1.0.0 and 12.2.1.4.0, Maven is required to build the Docker image.
+Maven is used to pull dependent libraries which are then bundled into the Docker image
+to enable running the Coherence Management over REST and Coherence Metrics endpoints 
 within the container.
 
 ### To build a Coherence 14.1.1.0.0 or 12.2.1.4.0 Docker image
@@ -75,18 +85,21 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
     cd OracleCoherence/dockerfiles/14.1.1.0.0
     ```
 
-1. Ensure that image `oracle/serverjre:8` is available
+1. Ensure that image `oracle/serverjre:8` or `oracle/jdk:11` is available
 
    Image `oracle/serverjre:8` is required for both the Coherence Java 8 based Docker image and the
    Graal based Docker image. For the Graal based Docker image `oracle/serverjre:8` is used in the
    first stage of the multipart Docker image build process.
+   
+   If building a Coherence Java 11 based Docker image (*Coherence 14.1.1.0.0 only), then only
+   `oracle/jdk:11` is required.
 
 1. Ensure that image `oracle/graalvm-ce` is available if building a Graal based Coherence
    image (*Coherence 14.1.1.0.0 only*)
 
 1. Build the Docker image with Maven
 
-    To build a Docker image using Oracle 8 JDK:
+    To build a Docker image which uses Oracle Java 8 as the base image:
 
     ```shell
     mvn install
@@ -94,13 +107,21 @@ The following steps build a Coherence 14.1.1.0.0 Docker container as an example
 
     The resulting image file will be called `oracle/coherence:14.1.1.0.0`.
 
-    To build a Docker image using GraalVM (CE) (*Coherence 14.1.1.0.0 only*)
+    To build a Docker image using Oracle Java 11 as the base image (*Coherence 14.1.1.0.0 only*):
+
+    ```shell
+    mvn install -Pjdk11
+    ```
+
+    The resulting image file will be called `oracle/coherence:14.1.1.0.0-jdk11`.
+
+    To build a Docker image using GraalVM (CE) as the base image (*Coherence 14.1.1.0.0 only*):
 
     ```shell
     mvn install -Pgraal
     ```
    
-   The resulting image file will be called `oracle/coherence-graal:14.1.1.0.0`.
+   The resulting image file will be called `oracle/coherence:14.1.1.0.0-graal`.
 
 ### To build a Docker image for for Coherence 12.2.1.3.0 and earlier Coherence versions
 
