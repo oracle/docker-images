@@ -31,11 +31,14 @@ persistence:
 ## Leave empty if there is no such requirement
 availabilityDomain:
 
+## Deploy multiple replicas for fast fail over
+replicas: 1
+
 ## name of image
 image: container-registry.oracle.com/oracle/database:19.3.0
 
-## image pull policy
-imagePullPolicy: IfNotPresent
+## image pull policy, IfNotPresent or
+imagePullPolicy: Always
 
 ## container registry login/password
 imagePullSecrets:

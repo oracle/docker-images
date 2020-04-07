@@ -9,7 +9,7 @@ metadata:
   name: {{ template "fullname" . }}
 {{- include "oracle-db-labels" . |indent 2}}
 spec:
-  replicas: 1
+  replicas: {{ default 1 .Values.replicas }}
   selector:
     matchLabels:
       app: {{ template "fullname" . }}
@@ -18,7 +18,7 @@ spec:
       labels:
         app: {{ template "fullname" . }}
     spec:
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 30
    {{- if .Values.imagePullSecrets}}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}
@@ -41,9 +41,9 @@ spec:
           readinessProbe:
             exec:
               command: [ '/bin/sh', '-c', '$ORACLE_BASE/checkDBLockStatus.sh' ]
-            initialDelaySeconds: 60
-            periodSeconds: 60
-            timeoutSeconds: 30
+            initialDelaySeconds: 20
+            periodSeconds: 40
+            timeoutSeconds: 20
           volumeMounts:
             - mountPath: /opt/oracle/oradata
               name: datamount
