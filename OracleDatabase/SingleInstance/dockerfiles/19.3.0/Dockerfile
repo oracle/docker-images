@@ -42,7 +42,8 @@ ENV ORACLE_BASE=/opt/oracle \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
-    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
+    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
+    SLIMMING=false
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
