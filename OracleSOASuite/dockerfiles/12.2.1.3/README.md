@@ -36,15 +36,15 @@ If that returns a username (which is the first field), you can skip the below us
 
 Once the `oracle` user is created, run the following commands as a root user:
 
-    # mkdir -p /u01/DockerVolume/SOAVolume/
-    # chown 1000:1000 /u01/DockerVolume/SOAVolume/
-    # chmod 700 /u01/DockerVolume/SOAVolume/
+    # mkdir -p /u01/DockerVolume/SOAVolume/SOA
+    # chown -R 1000:1000 /u01/DockerVolume/SOAVolume/
+    # chmod -R 700 /u01/DockerVolume/SOAVolume/
 
 # Database
 
 You need to have a running database container or a database running on any machine. The database connection details are required for creating SOA specific RCU schemas while configuring SOA domain. While using a 12.2.0.1 CDB/PDB DB, ensure PDB is used to load the schemas. RCU loading on CDB is not supported.
 
-Run the database container to host the RCU schemas using below steps:
+Run the database container to host the RCU schemas using below steps. For creating an Oracle Database container that uses data volumes to persist data, refer Oralce Enterprise Database documentation available at `https://container-registry.oracle.com`. 
 
 The Oracle database server container requires custom configuration parameters for starting up the container. These custom configuration parameters correspond to the datasource parameters in the SOA image to connect to the database running in the container.
 
@@ -58,8 +58,7 @@ The Oracle database server container requires custom configuration parameters fo
 
 	`DB_BUNDLE=basic`
 
-	`$ docker run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 -v /u01/DockerVolume/SOAVolume/DB:/opt/oracle/oradata --env-file ./db.env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1`
-
+	`$ docker run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 --env-file ./db.env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1`
 
 Verify that the database is running and healthy. The `STATUS` field shows `healthy` in the output of `docker ps`.
 
@@ -86,14 +85,13 @@ Create an environment file adminserver.env.list
     DB_SCHEMA_PASSWORD=<soa-infra schema password>
     ADMIN_PASSWORD=<admin_password>
     DOMAIN_NAME=soainfra
-    DOMAIN_TYPE=<soa/osb/bpm>
+    DOMAIN_TYPE=<soa/osb>
     ADMIN_HOST=<Administration Server container name or hostname>
 
 >IMPORTANT: DOMAIN_TYPE must be carefully chosen and specified depending on the usecase. It can't be changed once you proceed.
-In case of SOASuite domains, the supported Domain types are soa,osb and bpm.
-    soa       : Deploys an Oracle SOA Domain
+In case of SOASuite domains, the supported Domain types are soa and osb.  
+    soa       : Deploys an Oracle SOA Domain  
     osb       : Deploys an OSB Domain (Oracle Service Bus)
-    bpm       : Deploys a BPM Domain (Oracle Business Process Management Domain)
     
 Sample Data will look like this:
 
@@ -110,7 +108,7 @@ To start a docker container with a SOA domain and the WebLogic Administration Se
 
 A sample docker run command is given below:
 
-     $ docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v /u01/DockerVolume/SOAVolume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soa:12.2.1.3
+     $ docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v /u01/DockerVolume/SOAVolume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soa:12.2.1.3.0
      
 The options `-i -t` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation and configuration followed by starting the Administration Server. 
 
@@ -135,13 +133,13 @@ You can start containers to launch the Managed Servers (SOA and OSB Servers) fro
 Create an environment variables file specific to each cluster in the SOA domain as described below. For instance `soaserver.env.list` for SOA cluster and `osbserver.env.list` for OSB cluster:
 
     MANAGED_SERVER=<Managed Server name. Must be either soa_server1 or osb_server1>
-    DOMAIN_TYPE=<soa/osb/bpm>
+    DOMAIN_TYPE=<soa/osb>
     DOMAIN_NAME=soainfra
     ADMIN_HOST=<Administration Server container name Or hostname>
     ADMIN_PORT=<port number where Administration Server is running>
     ADMIN_PASSWORD=<admin_password>
 
->IMPORTANT: In the Managed Servers environment variables file the MANAGED_SERVER value must be mentioned as soa_server1 for soa and bpm domain types, osb_server1 for osb domain type.
+>IMPORTANT: In the Managed Servers environment variables file the MANAGED_SERVER value must be mentioned as soa_server1 for soa domain type and osb_server1 for osb domain type.
  
 Sample data for `soaserver.env.list` will look like this:
 
@@ -152,7 +150,7 @@ Sample data for `soaserver.env.list` will look like this:
     ADMIN_PORT=7001
     ADMIN_PASSWORD=Welcome1
 
-To start a docker container for SOA server (for soa and bpm domain types) you can simply call `docker run` command and passing `soaserver.env.list`. 
+To start a docker container for SOA server (for soa domain type) you can simply call `docker run` command and passing `soaserver.env.list`. 
 
 A sample docker run command is given below:
 
@@ -197,6 +195,4 @@ Now you can access
    * SOA infra Console at http://\<hostname\>:8001/soa-infra with weblogic/Welcome1 credentials.
 
    * Service Bus Console at http://\<hostname\>:7001/servicebus with weblogic/Welcome1 credentials.
-
-   * Business Process Management Composer at http://\<hostname\>:8001/bpm/composer with weblogic/Welcome1 credentials.
 
