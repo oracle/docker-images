@@ -150,6 +150,7 @@ elif [ $STANDARD -eq 1 ]; then
 elif [ $EXPRESS -eq 1 ]; then
   if [ "$VERSION" == "18.4.0" ]; then
     EDITION="xe"
+    SKIPMD5=1
   elif [ "$VERSION" == "11.2.0.2" ]; then
     EDITION="xe"
     DOCKEROPS="--shm-size=1G $DOCKEROPS";

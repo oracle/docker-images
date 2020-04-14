@@ -63,9 +63,18 @@ if [ -z ${DOMAIN_NAME} ]
 then
 	DOMAIN_NAME=wcsites_domain
 	echo ""
-	echo " Setting DOMAIN_NAME to wcsites_domain"
+	echo " Setting DOMAIN_NAME to $DOMAIN_NAME"
 	echo ""
 fi
+
+if [ -z ${ADMIN_NAME} ]
+then
+        ADMIN_NAME=AdminServer
+        echo ""
+        echo " Setting ADMIN_NAME to $ADMIN_NAME"
+        echo ""
+fi
+
 
 export DOMAIN_HOME="${DOMAIN_ROOT}/${DOMAIN_NAME}"
 
@@ -281,7 +290,6 @@ then
 	export WCSITES_SSL_PORT=9002
 	ORACLE_HOME=/u01/oracle
 	WORK_DIR=/u01/oracle/user_projects/wcs-wls-docker-install/work
-	JAVA_PATH=/usr/java/default/bin/java
 
 	#Hostname Parameters
 	export WCSITES_ADMIN_HOSTNAME=$(sed -r 's/\./\\\./g' <<< $(hostname -I))
@@ -293,7 +301,7 @@ then
 	#find bootstrap.properties -type f -exec dos2unix {} {} \;
 
 	sed -i 's,^\(script.rcu.prefix=\).*,\1'$RCU_PREFIX',' bootstrap.properties
-	sed -i 's,^\(script.java.path=\).*,\1'$JAVA_PATH',' bootstrap.properties
+	sed -i 's,^\(script.java.path=\).*,\1'$JAVA_HOME',' bootstrap.properties
 	sed -i 's,^\(script.oracle.wcsites.hostname=\).*,\1'$WCSITES_ADMIN_HOSTNAME',' bootstrap.properties
 	sed -i 's,^\(script.oracle.wcsites.portnumber=\).*,\1'$WCSITES_MANAGED_PORT',' bootstrap.properties
 	sed -i 's,^\(script.db.user=\).*,\1'$DB_USER',' bootstrap.properties

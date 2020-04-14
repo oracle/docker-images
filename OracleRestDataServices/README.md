@@ -62,6 +62,7 @@ To run your ORDS Docker image use the **docker run** command as follows:
     -e ORACLE_SERVICE=<your Oracle DB Service name (default: ORCLPDB1)> \
     -e ORACLE_PWD=<your database SYS password> \
     -e ORDS_PWD=<your ORDS password> \
+    -e CONTEXT_ROOT=<http context-root to use (default: ords)> \
     -v [<host mount point>:]/opt/oracle/ords/config/ords \
     oracle/restdataservices:3.0.12
     
@@ -76,6 +77,7 @@ To run your ORDS Docker image use the **docker run** command as follows:
        -e ORACLE_SERVICE: The Oracle Database Service name that ORDS should use (default: ORCLPDB1)
        -e ORACLE_PWD:     The Oracle Database SYS password
        -e ORDS_PWD:       The ORDS_PUBLIC_USER password
+       -e CONTEXT_ROOT:   (optional) The http context-root that ORDS should use (default: ords)
        -v /opt/oracle/ords/config/ords
                           The data volume to use for the ORDS configuration files.
                           Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!

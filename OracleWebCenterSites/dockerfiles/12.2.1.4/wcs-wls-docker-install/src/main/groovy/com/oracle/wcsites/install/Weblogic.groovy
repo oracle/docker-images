@@ -303,6 +303,7 @@ class Weblogic implements AppServer {
 		def jythonConfigFile = config.work + "/" + Utils.CONFIG_SCRIPT
 		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_HOME>", value:"${domainHome}")
 		antBuilder.replace(file:jythonConfigFile, token:"<ORACLE_HOME>", value:"${config.script.oracle.home}")
+		antBuilder.replace(file:jythonConfigFile, token:"<JAVA_HOME>", value:"${config.script.java.path}")
 		
 		antBuilder.replace(file:jythonConfigFile, token:"<DOMAIN_NAME>", value:"${config.script.oracle.domain}")
 		antBuilder.replace(file:jythonConfigFile, token:"<WL_USERNAME>", value:"${config.script.admin.server.username}")
@@ -347,7 +348,7 @@ class Weblogic implements AppServer {
 			writer.writeLine ""
 			writer.writeLine ". " + config.script.oracle.home + "/wlserver/server/bin/setWLSEnv.sh"
 			writer.writeLine "mkdir -p tmp"
-			writer.writeLine config.script.java.path + " -Djava.io.tmpdir=" + config.work + "/tmp weblogic.WLST " + jythonConfigFile + " >${configWizardLog}"
+			writer.writeLine config.script.java.path + "/bin/java" + " -Djava.io.tmpdir=" + config.work + "/tmp weblogic.WLST " + jythonConfigFile + " >${configWizardLog}"
 		}
 
 		Utils.echo("Weblogic Configuration Wizard -> command: " + config.work + "/runConfigWizard.sh")

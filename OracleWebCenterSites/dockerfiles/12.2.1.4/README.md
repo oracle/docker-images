@@ -33,8 +33,8 @@ Oracle WebCenter Sites has been tested and is known to run on the following hard
 
 |       | Version                        | Command to verify version |
 | :---: | :----------------------------: | :-----------------------: |
-| OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
-| Docker| Docker version 17.03 or higher | docker –version           |
+| OS    | Oracle Linux 7.5 or higher     | more /etc/oracle-release  |
+| Docker| Docker version 18.09 or higher | docker version           |
 
 ## 3. Prerequisites
 Before you begin, ensure to do the following steps:
@@ -96,6 +96,13 @@ Sign in to [Oracle Container Registry](https://container-registry.oracle.com). C
 The repository contains Docker files and scripts to build Docker images for Oracle products.
 2. Download Oracle WebCenter Sites 12c R2 12.2.1.4 binary from [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/webcenter/sites/downloads/index.html).
 3. Save the Oracle WebCenter Sites 12.2.1.4 binary into the cloned repository folder located at: `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.4/`.
+
+### D. For Building Docker Image with bundle patches for Oracle WebCenter Sites
+IMPORTANT: To build the Oracle WebCenter Sites image with bundle patches, you must first download the required version of the Oracle WebCenter Sites binaries as explained in below step.
+
+Download Oracle WebCenter Sites patch from Oracle Support Portal (Patch Number: `31037913`).
+
+Download and drop the patch zip files (for e.g. `p31037913_122140_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.4` the folder is `12.2.1.4/patches`
 
 ## 5. Building Oracle WebCenter Sites Docker Images
 
@@ -360,7 +367,7 @@ To view the Docker Container logs run:
    $ docker logs --details <Admin-Container-Id>
 ```
 ##### 3. How to reset Oracle WebCenter Sites [Administrator,Application,SatelliteServer] passwords?
-See [How to Reset a WebCenter Sites Password] (https://docs.oracle.com/middleware/1221/wcs/admin/GUID-BECECCFD-0EAF-4157-B23D-6CBD4F3BDEE9.htm#WBCSA8419)
+See [How to Reset a WebCenter Sites Password](https://docs.oracle.com/middleware/1221/wcs/admin/GUID-BECECCFD-0EAF-4157-B23D-6CBD4F3BDEE9.htm#WBCSA8419)
 ##### 4. How to modify start/stop admin/managed server scripts?
 You can find these scripts here: dockerfiles/12.2.1.4/sites-container-scripts) sites-container-scripts are located at `../docker-images/OracleWebCenterSites/dockerfiles/12.2.1.4/sites-container-scripts/*` 
 

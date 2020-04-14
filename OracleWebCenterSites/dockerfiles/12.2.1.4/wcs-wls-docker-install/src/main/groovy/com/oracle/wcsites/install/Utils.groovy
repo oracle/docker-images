@@ -291,7 +291,7 @@ class Utils {
 
 		// Validates java
 		echo("Validation -> Checking if full path to JAVA executable is correctly specified")
-		antBuilder.exec(executable : config.script.java.path, failifexecutionfails: true) {
+		antBuilder.exec(executable : config.script.java.path + "/bin/java", failifexecutionfails: true) {
 			arg(value: "-version")
 		}
 		
