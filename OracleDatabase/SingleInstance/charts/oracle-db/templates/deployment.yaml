@@ -10,6 +10,11 @@ metadata:
 {{- include "oracle-db-labels" . |indent 2}}
 spec:
   replicas: {{ default 1 .Values.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 100
+      maxUnavailable: 100
+    type: RollingUpdate
   selector:
     matchLabels:
       app: {{ template "fullname" . }}
@@ -31,7 +36,7 @@ spec:
         failure-domain.beta.kubernetes.io/zone: "{{ .Values.availabilityDomain }}"
     {{- end }}
       containers:
-        - name: {{ template "fullname" . }}
+        - name: oracle
           image: {{ .Values.image }}
           imagePullPolicy: {{ default "IfNotPresent" .Values.imagePullPolicy | quote }}
           terminationMessagePath: /tmp/docker-term-log
