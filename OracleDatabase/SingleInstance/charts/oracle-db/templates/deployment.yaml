@@ -36,7 +36,7 @@ spec:
         failure-domain.beta.kubernetes.io/zone: "{{ .Values.availabilityDomain }}"
     {{- end }}
       containers:
-        - name: oracle
+        - name: oracle-db
           image: {{ .Values.image }}
           imagePullPolicy: {{ default "IfNotPresent" .Values.imagePullPolicy | quote }}
           terminationMessagePath: /tmp/docker-term-log

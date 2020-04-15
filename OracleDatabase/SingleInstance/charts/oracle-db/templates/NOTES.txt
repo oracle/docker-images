@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 
@@ -25,5 +25,5 @@ ip and port can be found using the following:
   echo XDB at $NODE_IP:$NODE_XDB_PORT
 
 Oracle Databases SID, PDB name can be figured out by :
-ORACLE_SID=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == '{{ template "fullname" . }}')].env[?(.name == 'ORACLE_SID')].value }" deploy {{ template "fullname" . }}
-ORACLE_PDB=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == '{{ template "fullname" . }}')].env[?(.name == 'ORACLE_PDB')].value }" deploy {{ template "fullname" . }}
+ORACLE_SID=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == 'oracle-db')].env[?(.name == 'ORACLE_SID')].value }" deploy {{ template "fullname" . }}
+ORACLE_PDB=kubectl get  -o jsonpath="{.spec.template.spec.containers[?(.name == 'oracle-db')].env[?(.name == 'ORACLE_PDB')].value }" deploy {{ template "fullname" . }}
