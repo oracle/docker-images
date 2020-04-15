@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2018, Oracle and/or its affiliates.
 #
 # If log.nm does not exists, container is starting for 1st time
 # So it should start NM and also associate with AdminServer, as well Managed Server

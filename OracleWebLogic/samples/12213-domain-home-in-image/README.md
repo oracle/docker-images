@@ -95,4 +95,4 @@ The above scenario from this sample will give you a WebLogic domain with a clust
 You may create more containerized Managed Servers by calling the `docker` command above
 
 # Copyright
-Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2020, Oracle and/or its affiliates.
