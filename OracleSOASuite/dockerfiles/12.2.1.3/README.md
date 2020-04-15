@@ -38,13 +38,15 @@ Once the `oracle` user is created, run the following commands as a root user:
 
     # mkdir -p /u01/DockerVolume/SOAVolume/SOA
     # chown -R 1000:1000 /u01/DockerVolume/SOAVolume/
-    # chmod -R 700 /u01/DockerVolume/SOAVolume/
+    # chmod -R 750 /u01/DockerVolume/SOAVolume/
 
 # Database
 
 You need to have a running database container or a database running on any machine. The database connection details are required for creating SOA specific RCU schemas while configuring SOA domain. While using a 12.2.0.1 CDB/PDB DB, ensure PDB is used to load the schemas. RCU loading on CDB is not supported.
 
-Run the database container to host the RCU schemas using below steps. For creating an Oracle Database container that uses data volumes to persist data, refer Oralce Enterprise Database documentation available at `https://container-registry.oracle.com`. 
+To create an Oracle Database container, you can either use the pre-built Oracle Database image available at `https://container-registry.oracle.com` or build a new Oracle Database image by following the [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase) github documentation.
+
+Below steps creates an Oracle Database container (using `container-registry.oracle.com/database/enterprise:12.2.0.1` image) without attaching data volumes to persist the data. In this case the data in the database will be lost when the container is stopped. For creating an Oracle Database container that uses data volumes to persist the data, refer the Oracle Enterprise Database documentation available at `https://container-registry.oracle.com` or [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase) github documentation.
 
 The Oracle database server container requires custom configuration parameters for starting up the container. These custom configuration parameters correspond to the datasource parameters in the SOA image to connect to the database running in the container.
 
