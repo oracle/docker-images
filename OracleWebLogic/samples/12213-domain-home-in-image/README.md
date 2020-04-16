@@ -65,7 +65,7 @@ To build this sample, run:
  	$ . container-scripts/setEnv.sh ./properties/docker-build/domain.properties
  	$ docker build --force-rm=true --no-cache=true $BUILD_ARG -t 12213-domain-home-in-image .
 
-**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
+**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.  To enable SSL for each WebLogic Server instance in the domain, set SSL_ENABLED=true in the ./properties/docker-build/domain.properties file.
 
 **During Docker Run:** of the Administration and Managed Servers, the user name and password need to be passed in as well as some optional parameters. The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_run` in the HOST. On the Docker run command line, add the `-v` option which maps the property file into the image directory `/u01/oracle/properties`.
 
