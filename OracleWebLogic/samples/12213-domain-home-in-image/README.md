@@ -46,14 +46,17 @@ The domain property file enables you to customize the parameters to configure th
 Under the directory `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/container_scripts` find the script `setEnv.sh`. This script extracts the following Docker arguments and passes them as a `--build-arg` to the Dockerfile.
 
 
-* Domain Name:           `DOMAIN_NAME`         (default: `base_domain`)  
-* Admin Port:            `ADMIN_PORT`          (default: `7001`)          
-* Managed Server Port:   `MANAGED_SERVER_PORT` (default: `8001`)          
-* Debug Port:            `DEBUG_PORT`          (default: `8453`)
-* Database Port:         `DB_PORT`             (default: `1527`)
-* Admin Server Name:     `ADMIN_NAME`          (default: `admin-server`)
-* Admin Server Host:     `ADMIN_HOST`          (default: `wlsadmin`)
-* Cluster Name:          `CLUSTER_NAME`        (default: `cluster1`)
+* Domain Name:              `DOMAIN_NAME`             (default: `base_domain`)  
+* SSL Enabled:              `SSL_ENABLED`             (default: `false`)
+* Admin Server Port:        `ADMIN_PORT`              (default: `7001`)          
+* Admin Server SSL Port:    `ADMIN_SERVER_SSL_PORT`   (default: `7002`)          
+* Managed Server Port:      `MANAGED_SERVER_PORT`     (default: `8001`)          
+* Managed Server SSL Port:  `MANAGED_SERVER_SSL_PORT` (default: `8002`)          
+* Debug Port:               `DEBUG_PORT`              (default: `8453`)
+* Database Port:            `DB_PORT`                 (default: `1527`)
+* Admin Server Name:        `ADMIN_NAME`              (default: `admin-server`)
+* Admin Server Host:        `ADMIN_HOST`              (default: `wlsadmin`)
+* Cluster Name:             `CLUSTER_NAME`            (default: `cluster1`)
 
 **NOTE:** The `DOMAIN_HOME` will be persisted in the image directory `/u01/oracle/user-projects/domains/$DOMAIN_NAME`.
 
@@ -62,7 +65,7 @@ To build this sample, run:
  	$ . container-scripts/setEnv.sh ./properties/docker-build/domain.properties
  	$ docker build --force-rm=true --no-cache=true $BUILD_ARG -t 12213-domain-home-in-image .
 
-**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.
+**NOTE:** The docker build command makes use of the `--no-cache` option to ensure that each build will create a new domain and not pickup anything from the Docker cache unexpectedly.  To enable SSL for each WebLogic Server instance in the domain, set SSL_ENABLED=true in the ./properties/docker-build/domain.properties file.
 
 **During Docker Run:** of the Administration and Managed Servers, the user name and password need to be passed in as well as some optional parameters. The property file is located in a `docker-images/OracleWebLogic/samples/12213-domain-home-in-image/properties/docker_run` in the HOST. On the Docker run command line, add the `-v` option which maps the property file into the image directory `/u01/oracle/properties`.
 
@@ -72,6 +75,8 @@ To start the containerized Administration Server, run:
 	$ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 \
           -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker-run:/u01/oracle/properties \
           12213-domain-home-in-image
+
+When SSL is enabled and at the time the managed server is coming up it connects to the admin server (over SSL) to download the domain configuration. Because the demo identity certificate gets generated when the domain is created, the host name of the environment is used as the host name for the certificate. To bypass host name verification and allow a successful SSL connection the system property -Dweblogic.security.SSL.ignoreHostnameVerification=true must be set in the "docker run ..." command which starts the managed server. Note that if both the JAVA_OPTIONS environment variable and the JAVA_OPTIONS in the docker-run/security.properties file are configured, the latter gets appended to the former.
 
 To start a containerized Managed Server (MS1) to self-register with the Administration Server above, run:
 
@@ -90,4 +95,4 @@ The above scenario from this sample will give you a WebLogic domain with a clust
 You may create more containerized Managed Servers by calling the `docker` command above
 
 # Copyright
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2020, Oracle and/or its affiliates.
