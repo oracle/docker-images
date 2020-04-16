@@ -76,7 +76,7 @@ To start the containerized Administration Server, run:
           -v <HOST DIRECTORY TO PROPERTIES FILE>/properties/docker-run:/u01/oracle/properties \
           12213-domain-home-in-image
 
-If both the JAVA_OPTIONS environment variable and the JAVA_OPTIONS in the docker-run/security.properties file are configured, the latter gets appended to the former. If SSL is enabled, pass "-e JAVA_OPTIONS=-Dweblogic.security.SSL.ignoreHostnameVerification=true" to the "docker run ..." command that starts a managed server.  This is necessary because the Demo identity certificate gets generated with a host name different from the admin server host when the domain is created.
+When SSL is enabled and at the time the managed server is coming up it connects to the admin server (over SSL) to download the domain configuration. Because the demo identity certificate gets generated when the domain is created, the host name of the environment is used as the host name for the certificate. To bypass host name verification and allow a successful SSL connection the system property -Dweblogic.security.SSL.ignoreHostnameVerification=true must be set in the "docker run ..." command which starts the managed server. Note that if both the JAVA_OPTIONS environment variable and the JAVA_OPTIONS in the docker-run/security.properties file are configured, the latter gets appended to the former.
 
 To start a containerized Managed Server (MS1) to self-register with the Administration Server above, run:
 
