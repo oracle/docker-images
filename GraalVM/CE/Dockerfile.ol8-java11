@@ -11,7 +11,7 @@ FROM oraclelinux:8-slim
 ARG GRAALVM_VERSION=20.0.0
 ARG JAVA_VERSION=java11
 ARG GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAALVM_VERSION/graalvm-ce-$JAVA_VERSION-GRAALVM_ARCH-$GRAALVM_VERSION.tar.gz 
-ARG TARGETPLATFORM="linux/amd64"
+ARG TARGETPLATFORM
 
 ENV LANG=en_US.UTF-8 JAVA_HOME=/opt/graalvm-ce-$JAVA_VERSION-$GRAALVM_VERSION/
 
