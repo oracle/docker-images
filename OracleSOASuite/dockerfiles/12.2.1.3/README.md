@@ -1,5 +1,4 @@
-SOA on Docker
-=============
+# Oracle SOA on Docker
 
 Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start dockerfiles for Oracle SOA 12.2.1.3.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle Fusion Middleware Infrastructure 12.2.1.3.0.
 
@@ -8,7 +7,12 @@ At the end of this configuration there may be 3 containers running:
 2. Oracle Weblogic Administration Server Container 
 3. Oracle Weblogic Managed Server Container (Oracle SOA Server or Oracle Service Bus Server)
 
-The containers will be connected using a Docker User Defined network. 
+The containers will be connected using a Docker User Defined network.
+
+## Get Started
+
+To run an Oracle SOA Suite domain deployment, you will need the Oracle SOA Suite image and an Oracle Database to run RCU and create the SOA domain schemas.
+Follow the steps below:
 
 ## Create a User Defined network
 
@@ -22,7 +26,7 @@ Sample command:
 
     $ docker network create -d bridge SOANet
 
-# Mount a host directory as a data volume
+## Mount a host directory as a data volume
 
 Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic Server domain files. This volume will be created on the host at `/u01/DockerVolume/SOAVolume/`. Since the volume is created as `root` user, provide `read/write/execute` permissions to `oracle` user (by providing permissions to `others`), as all operations inside the container happens with `oracle` user login.
 
@@ -40,7 +44,7 @@ Once the `oracle` user is created, run the following commands as a `root` user:
     # chown -R 1000:1000 /u01/DockerVolume/SOAVolume/
     # chmod -R 750 /u01/DockerVolume/SOAVolume/
 
-# Database
+## Run the Database container to host the RCU schemas
 
 You need to have a running database container or a database running on any machine. The database connection details are required for creating SOA specific RCU schemas while configuring SOA domain. While using a 12.2.0.1 CDB/PDB DB, ensure PDB is used to load the schemas. RCU loading on CDB is not supported.
 
@@ -138,7 +142,7 @@ Create an environment variables file specific to each cluster in the SOA domain 
     ADMIN_PORT=<port number where Administration Server is running>
     ADMIN_PASSWORD=<admin_password>
 
->IMPORTANT: In the Managed Servers environment variables file the MANAGED_SERVER value must be mentioned as soa_server1 for soa domain type and osb_server1 for osb domain type.
+>IMPORTANT: In the Managed Servers environment variables file the MANAGED_SERVER value must be mentioned as `soa_server1` for `soa` domain type and `osb_server1` for `osb` domain type.
  
 Sample data for `soaserver.env.list` will look like this:
 
@@ -168,7 +172,7 @@ Once the Managed Server container is created, you can view the server logs using
 
     $ docker logs -f <Managed Server Container Name>
 
-Similarly you can start a docker container for OSB server (only in the case of osb domain type) by using `docker run` command and passing `osbserver.env.list`.
+Similarly you can start a docker container for OSB server (only in the case of `osb` domain type) by using `docker run` command and passing `osbserver.env.list`.
 
 Sample data for `osbserver.env.list` will look like this:
 
