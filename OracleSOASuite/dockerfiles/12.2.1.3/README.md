@@ -14,7 +14,7 @@ The containers will be connected using a Docker User Defined network.
 
 In this configuration creation of a user defined network will enable the communication between the containers just using container names. For this setup we will use a user defined network using bridge driver.
 
-Create a user defined network using the bridge driver by executing the following command :
+Create a user defined network using the bridge driver by executing the following command:
 
     $ docker network create -d bridge <some name>
    
@@ -24,9 +24,9 @@ Sample command:
 
 # Mount a host directory as a data volume
 
-Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic Server domain files. This volume will be created on the host at `/u01/DockerVolume/SOAVolume/`. Since the volume is created as "root" user, provide read/write/execute permissions to "oracle" user (by providing permissions to "others"), as all operations inside the container happens with "oracle" user login.
+Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a directory from the host into a container as volume. In this project we will use that option for the data volume. The volume will be used to store Database datafiles and WebLogic Server domain files. This volume will be created on the host at `/u01/DockerVolume/SOAVolume/`. Since the volume is created as `root` user, provide `read/write/execute` permissions to `oracle` user (by providing permissions to `others`), as all operations inside the container happens with `oracle` user login.
 
-To determine if a user already exists on your host system with uid:gid of 1000, run:
+To determine if a user already exists on your host system with `uid:gid` of `1000`, run:
 
     # getent passwd 1000
 
@@ -34,7 +34,7 @@ If that returns a username (which is the first field), you can skip the below us
 
     # useradd -u 1000 -g 1000 oracle 
 
-Once the `oracle` user is created, run the following commands as a root user:
+Once the `oracle` user is created, run the following commands as a `root` user:
 
     # mkdir -p /u01/DockerVolume/SOAVolume/SOA
     # chown -R 1000:1000 /u01/DockerVolume/SOAVolume/
@@ -44,31 +44,28 @@ Once the `oracle` user is created, run the following commands as a root user:
 
 You need to have a running database container or a database running on any machine. The database connection details are required for creating SOA specific RCU schemas while configuring SOA domain. While using a 12.2.0.1 CDB/PDB DB, ensure PDB is used to load the schemas. RCU loading on CDB is not supported.
 
-To create an Oracle Database container, you can either use the pre-built Oracle Database image available at `https://container-registry.oracle.com` or build a new Oracle Database image by following the [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase) github documentation.
+To create an Oracle Database container, you can either use the pre-built Oracle Database image available at `https://container-registry.oracle.com` or build a new Oracle Database image by following the [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase) GitHub documentation.
 
-Below steps creates an Oracle Database container (using `container-registry.oracle.com/database/enterprise:12.2.0.1` image) without attaching data volumes to persist the data. In this case the data in the database will be lost when the container is stopped. For creating an Oracle Database container that uses data volumes to persist the data, refer the Oracle Enterprise Database documentation available at `https://container-registry.oracle.com` or [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase) github documentation.
+Below steps creates an Oracle Database container (using `container-registry.oracle.com/database/enterprise:12.2.0.1` image) without attaching data volumes to persist the data. In this case the data in the database will be lost when the container is stopped. For creating an Oracle Database container that uses data volumes to persist the data, refer the `Oracle Database 12c Enterprise Edition` documentation available at `https://container-registry.oracle.com` or [Oracle Database](https://github.com/oracle/docker-images/tree/master/OracleDatabase) GitHub documentation.
 
-The Oracle database server container requires custom configuration parameters for starting up the container. These custom configuration parameters correspond to the datasource parameters in the SOA image to connect to the database running in the container.
+The Oracle Database server container requires custom configuration parameters for starting up the container. These custom configuration parameters correspond to the datasource parameters in the SOA image to connect to the database running in the container.
 
-     Add to an `db.env.txt` file, the following parameters:
+    Add to an `db.env.txt` file, the following parameters:
 
-	`DB_SID=soadb`
+    DB_SID=soadb
+    DB_PDB=soapdb
+    DB_DOMAIN=us.oracle.com
+    DB_BUNDLE=basic
 
-	`DB_PDB=soapdb`
-
-	`DB_DOMAIN=us.oracle.com`
-
-	`DB_BUNDLE=basic`
-
-	`$ docker run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 --env-file ./db.env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1`
+    $ docker run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 --env-file ./db.env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1
 
 Verify that the database is running and healthy. The `STATUS` field shows `healthy` in the output of `docker ps`.
 
 The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus`.  To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container with the following command:
 
-	$ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@soadb:1521/soadb.us.oracle.com AS SYSDBA
+    $ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@soadb:1521/soadb.us.oracle.com AS SYSDBA
 
-	SQL> alter user sys identified by Welcome1 container=all;
+    SQL> alter user sys identified by Welcome1 container=all;
 
 
 ## SOA 12.2.1.3.0 Docker image
@@ -91,9 +88,9 @@ Create an environment file adminserver.env.list
     ADMIN_HOST=<Administration Server container name or hostname>
 
 >IMPORTANT: DOMAIN_TYPE must be carefully chosen and specified depending on the usecase. It can't be changed once you proceed.
-In case of SOASuite domains, the supported Domain types are soa and osb.  
-    soa       : Deploys an Oracle SOA Domain  
-    osb       : Deploys an OSB Domain (Oracle Service Bus)
+In case of SOASuite domains, the supported Domain types are `soa` and `osb`.  
+    `soa`       : Deploys an Oracle SOA Domain  
+    `osb`       : Deploys an OSB Domain (Oracle Service Bus)
     
 Sample Data will look like this:
 
@@ -110,7 +107,7 @@ To start a docker container with a SOA domain and the WebLogic Administration Se
 
 A sample docker run command is given below:
 
-     $ docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v /u01/DockerVolume/SOAVolume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soa:12.2.1.3.0
+    $ docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v /u01/DockerVolume/SOAVolume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soa:12.2.1.3.0
      
 The options `-i -t` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation and configuration followed by starting the Administration Server. 
 
@@ -121,11 +118,11 @@ The options `-i -t` in the above command runs the container in interactive mode 
 
 `INFO: Admin server running, ready to start managed server`
 
-The above line indicate that the Administration Server started successfully with the name `soaas`, mapping container port 7001 to host port 7001 enables accessing of the Weblogic host outside of the local host, connecting to SOANet network enables accessing the DB container by it's name i.e soadb.
+The above line indicate that the Administration Server started successfully with the name `soaas`, mapping container port 7001 to host port 7001 enables accessing of the Weblogic host outside of the local host, connecting to SOANet network enables accessing the DB container by it's name i.e `soadb`.
 
 You can view the Administration Server logs using:
 
-$ docker logs -f \<Administration Server Container Name\> 
+    $ docker logs -f <Administration Server Container Name> 
 
 
 ## Creating Managed Server containers (SOA and OSB Servers)
@@ -169,7 +166,7 @@ The following lines highlight when the SOA Managed Server is ready to be used:
 
 Once the Managed Server container is created, you can view the server logs using:
 
-$ docker logs -f \<Managed Server Container Name\>
+    $ docker logs -f <Managed Server Container Name>
 
 Similarly you can start a docker container for OSB server (only in the case of osb domain type) by using `docker run` command and passing `osbserver.env.list`.
 
@@ -190,11 +187,11 @@ A sample docker run command is given below:
 
 Now you can access
 
-   * AdminServer Web Console at http://\<hostname\>:7001/console  with weblogic/Welcome1 credentials.
+   * Administration Server Web Console at `http://<hostname>:7001/console` with weblogic/Welcome1 credentials.
 
-   * EM Console at http://\<hostname\>:7001/em  with weblogic/Welcome1 credentials.
+   * Enterprise Manager Console at `http://<hostname>:7001/em` with weblogic/Welcome1 credentials.
 
-   * SOA infra Console at http://\<hostname\>:8001/soa-infra with weblogic/Welcome1 credentials.
+   * SOA Infra Console at `http://<hostname>:8001/soa-infra` with weblogic/Welcome1 credentials.
 
-   * Service Bus Console at http://\<hostname\>:7001/servicebus with weblogic/Welcome1 credentials.
+   * Service Bus Console at `http://<hostname>:7001/servicebus` with weblogic/Welcome1 credentials.
 
