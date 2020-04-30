@@ -92,6 +92,30 @@ the image owner to implement it.
 1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
 to be extended, then this should output documentation on how to extend the
 image to be useful.
+1. Use `LABEL` instructions for additional information such as ports and volumes. The following are common label instructions that should be present in all images where applicable:
+
+| Label   | Value | Applicability |
+| -------- | ----- | ------------- |
+| provider | `Oracle` | All images |
+| issues | `https://github.com/oracle/docker-images/issues` | All images |
+| maintainer | Name of the maintainer | At the discretion of the author. |
+| volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.<br/>If your image has multiple volumes, use qualified names to specify the purpose of each volume, for example `volume.data` for data to be persisted outside the container.<br/>Use hierarchical nesting for multiple volumes of the same type, for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul> | Mandatory for all images that require persistent storage beyond the life of an individual container. |
+| port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If your images has multiple ports, use qualified names to specify the purpose of each port, for example `port.app` for the port on which your application is reachable.<br/>Use hierarchical nesting for multiple ports of the same type, for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> | Mandatory for all images that require externally accessible port mappings. |
+
+For example, for the Oracle Database 18c XE image we use the following labels:
+
+```
+LABEL "provider"="Oracle"                                   \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.data"="/opt/oracle/oradata"                               \
+      "volume.setup.location1"="/opt/oracle/scripts/setup"              \
+      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
+      "volume.startup.location1"="/opt/oracle/scripts/startup"          \
+      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
+      "port.listener"="1521"                                            \
+      "port.oemexpress"="5500"                                          \
+      "port.apex"="8080"
+```
 
 ### Security-related Rules
 
@@ -102,10 +126,6 @@ image to be useful.
 1. Do not hard-code any passwords. If passwords are required, generate them
 on container startup using `openssl rand` or accept a password argument during
 container startup (via `-e`).
-
-
-
-
 
 ### Guidelines and Recommendations
 
@@ -130,4 +150,4 @@ any defaults that are used if no input is provided.
 gracefully fail if that value is not provided.
 
 
-*Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.*
+*Copyright (c) 2017, 2020 Oracle and/or its affiliates.*
