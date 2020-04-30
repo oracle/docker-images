@@ -55,11 +55,11 @@ USER oracle
 RUN cd /u01 && \
 	$JAVA_HOME/bin/jar xf /u01/$SITES_PKG && \
 	cd - && \
-	$JAVA_HOME/bin/java -jar /u01/$SITES_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebCenter Sites - With Examples" && \
+	$JAVA_HOME/bin/java -jar /u01/$SITES_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
 	rm -rf /u01/$SITES_PKG /u01/$SITES_JAR
 	
 COPY sites-container-scripts/overrides/oui/* /u01/oracle/wcsites/common/templates/wls/
-	
+
 RUN cd /u01/oracle/wcsites/common/templates/wls && \
 	$JAVA_HOME/bin/jar uvf oracle.wcsites.base.template.jar startup-plan.xml file-definition.xml && \
 	rm /u01/oracle/wcsites/common/templates/wls/startup-plan.xml && \

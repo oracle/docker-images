@@ -7,3 +7,5 @@ Response File Version=1.0.0.0.0
 
 DECLINE_SECURITY_UPDATES=true
 SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+
+INSTALL_TYPE="WebCenter Sites - With Examples"
