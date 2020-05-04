@@ -39,13 +39,16 @@ spec:
         - name: oracle-db
           image: {{ .Values.image }}
           imagePullPolicy: {{ default "IfNotPresent" .Values.imagePullPolicy | quote }}
-          terminationMessagePath: /tmp/docker-term-log
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "/bin/sh", "-c", "/bin/echo -en 'shutdown abort;\n' | env ORACLE_SID=${ORACLE_SID^^} sqlplus -S / as sysdba" ]
           ports:
             - containerPort: 1521
             - containerPort: 5500
           readinessProbe:
             exec:
-              command: [ '/bin/sh', '-c', '$ORACLE_BASE/checkDBLockStatus.sh' ]
+              command: [ "/bin/sh", "-c", "$ORACLE_BASE/checkDBLockStatus.sh" ]
             initialDelaySeconds: 20
             periodSeconds: 40
             timeoutSeconds: 20
