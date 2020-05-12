@@ -1,4 +1,4 @@
-Quickstart Running Oracle NoSQL Database on Docker
+# Quickstart Running Oracle NoSQL Database on Docker
 
 Start up KVLite in a Docker container. You must give it a name. Startup of KVLite is the default CMD of the Docker image:
 
@@ -32,23 +32,21 @@ You can also use the Oracle NoSQL Command Line Interface (CLI). Start the follow
     kv->
 You have now Oracle NoSQL on a Docker container.
 
-More information
+# More information
+For more information on Oracle NoSQL, visit the [homepage](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html) and the [documentation](http://docs.oracle.com/cd/NOSQL/html/index.html) for specific NoSQL instructions.
 
-For more information on Oracle NoSQL, visit the homepage and the documentation for specific NoSQL instructions.
+The Oracle NoSQL Database Community Edition also contains OpenJDK.
+The Oracle NoSQL Database Enterprise Edition also contains Oracle Java Server JRE.
 
-The Oracle NoSQL Database Community Edition also contains OpenJDK. The Oracle NoSQL Database Enterprise Edition also contains Oracle Java Server JRE.
+# Licenses
+Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt).
 
-Licenses
+OpenJDK is licensed under the [GNU General Public License v2.0 with the Classpath Exception](http://openjdk.java.net/legal/gplv2+ce.html)
 
-Oracle NoSQL Community Edition is licensed under the APACHE LICENSE v2.0.
+The files in this repository folder are licensed under the [Universal Permissive License 1.0](http://oss.oracle.com/licenses/upl)
 
-OpenJDK is licensed under the GNU General Public License v2.0 with the Classpath Exception
-
-The files in this repository folder are licensed under the Universal Permissive License 1.0
-
-Commercial Support on Docker Containers
-
-Oracle NoSQL Community Edition has no commercial support.
+# Commercial Support on Docker Containers
+Oracle NoSQL Community Edition has **no** commercial support.
 
 Copyright
 
