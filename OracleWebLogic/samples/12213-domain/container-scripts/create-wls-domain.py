@@ -23,14 +23,14 @@ def getEnvVar(var):
 # This python script is used to create a WebLogic domain
 domain_name                   = DOMAIN_NAME
 admin_server_name             = ADMIN_NAME
-admin_port                    = int(ADMIN_PORT)
+admin_port                    = int(ADMIN_LISTEN_PORT)
 server_port                   = int(MANAGED_SERVER_PORT)
 managed_server_name_base      = MANAGED_SERVER_NAME_BASE
 number_of_ms                  = int(CONFIGURED_MANAGED_SERVER_COUNT)
 domain_path                   = os.environ.get("DOMAIN_HOME")
 cluster_name                  = CLUSTER_NAME
 cluster_type                  = CLUSTER_TYPE
-production_mode_enabled       = PRODUCTION_MODE_ENABLED
+production_mode               = PRODUCTION_MODE
 
 print('domain_path              : [%s]' % domain_path);
 print('domain_name              : [%s]' % domain_name);
@@ -41,7 +41,7 @@ print('server_port              : [%s]' % server_port);
 print('number_of_ms             : [%s]' % number_of_ms);
 print('cluster_type             : [%s]' % cluster_type);
 print('managed_server_name_base : [%s]' % managed_server_name_base);
-print('production_mode_enabled  : [%s]' % production_mode_enabled);
+print('production_mode          : [%s]' % production_mode);
 
 # Open default domain template
 # ============================
@@ -125,10 +125,7 @@ print 'Domain Created'
 # Update Domain
 readDomain(domain_path)
 cd('/')
-if production_mode_enabled == "true":
-  cmo.setProductionModeEnabled(true)
-else: 
-  cmo.setProductionModeEnabled(false)
+setOption('ServerStartMode',production_mode)
 updateDomain()
 closeDomain()
 print 'Domain Updated'

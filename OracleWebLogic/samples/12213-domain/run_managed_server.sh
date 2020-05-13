@@ -32,7 +32,7 @@ set_context
 
 echo "Admin Host is: ${adminhost}"
 admin_host() {
-   adminhost=${CUSTOM_ADMIN_HOST:-"AdminContainer"}
+   adminhost=${ADMIN_HOST:-"AdminContainer"}
 }
 
 managed_name() {
@@ -47,11 +47,11 @@ managed_name() {
 
 maped_port() {
   if [ -z "$mapedport" ]; then
-     echo "You must pass in the docker port that will be mapped to the managed server port $CUSTOM_MANAGED_SERVER_PORT"
+     echo "You must pass in the docker port that will be mapped to the managed server port $MANAGED_SERVER_PORT"
      exit
   else
      export mapedport=$mapedport
-     echo "docker port $mapedport will be mapped to managed server port $CUSTOM_MANAGED_SERVER_PORT"
+     echo "docker port $mapedport will be mapped to managed server port $MANAGED_SERVER_PORT"
   fi
 }
 
@@ -59,8 +59,8 @@ admin_host
 managed_name
 maped_port
 echo "Admin Host is: ${adminhost}"
-ENV_ARG="${ENV_ARG} -e CUSTOM_MANAGED_NAME=$managedname"
+ENV_ARG="${ENV_ARG} -e MANAGED_NAME=$managedname -e MANAGED_SERVER_CONTAINER=true"
 
-echo "docker run -d -p ${mapedport}:${CUSTOM_MANAGED_SERVER_PORT} -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --link ${adminhost}:${adminhost} --name ${managedname} 12213-weblogic-domain-in-volume /u01/oracle/container-scripts/startManagedServer.sh" 
+echo "docker run -d -p ${mapedport}:${MANAGED_SERVER_PORT} -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --link ${adminhost}:${adminhost} --name ${managedname} 12213-weblogic-domain-in-volume /u01/oracle/container-scripts/startManagedServer.sh" 
 
-docker run -d -p ${mapedport}:${CUSTOM_MANAGED_SERVER_PORT} -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --link ${adminhost}:${adminhost} --name ${managedname} 12213-weblogic-domain-in-volume /u01/oracle/container-scripts/startManagedServer.sh 
+docker run -d -p ${mapedport}:${MANAGED_SERVER_PORT} -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --link ${adminhost}:${adminhost} --name ${managedname} 12213-weblogic-domain-in-volume /u01/oracle/container-scripts/startManagedServer.sh 

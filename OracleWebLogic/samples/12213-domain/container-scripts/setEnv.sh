@@ -17,7 +17,7 @@ if [ "$#" -eq  "0" ]
 extract_env() {
    env_value=`awk '{print $1}' $2 | grep ^$1= | cut -d "=" -f2`
    if [ -n "$env_value" ]; then
-      env_arg=`echo "CUSTOM_$1=$env_value"`
+      env_arg=`echo "$1=$env_value"`
       echo " env_arg: $env_arg"
       export $env_arg
    fi
@@ -30,6 +30,7 @@ set_env_arg(){
   fi
 }
 
+
 # Set DOMAIN_NAME
 set_env_arg DOMAIN_NAME ${PROPERTIES_FILE}
 
@@ -37,13 +38,14 @@ set_env_arg DOMAIN_NAME ${PROPERTIES_FILE}
 set_env_arg ADMIN_NAME ${PROPERTIES_FILE}
 
 # Set ADMIN_PORT
-set_env_arg ADMIN_PORT ${PROPERTIES_FILE}
+set_env_arg ADMIN_LISTEN_PORT ${PROPERTIES_FILE}
 
 # Set ADMIN_HOST
 set_env_arg ADMIN_HOST ${PROPERTIES_FILE}
 
-# Set ADMIN_LISTEN_PORT
-set_env_arg ADMIN_LISTEN_PORT ${PROPERTIES_FILE}
+# Set ADMINISTRATION_PORT_ENABLED
+set_env_arg ADMINISTRATION_PORT_ENABLED ${PROPERTIES_FILE}
+
 
 # Set MANAGED_SERVER_PORT
 set_env_arg MANAGED_SERVER_PORT ${PROPERTIES_FILE}
@@ -60,8 +62,8 @@ set_env_arg CLUSTER_NAME ${PROPERTIES_FILE}
 # Set CLUSTER_TYPE
 set_env_arg CLUSTER_TYPE ${PROPERTIES_FILE}
 
-# Set PRODUCTION_MODE_ENABLED
-set_env_arg PRODUCTION_MODE_ENABLED ${PROPERTIES_FILE}
+# Set PRODUCTION_MODE
+set_env_arg PRODUCTION_MODE ${PROPERTIES_FILE}
 
 # Set DOMAIN_HOST_VOLUME
 extract_env DOMAIN_HOST_VOLUME ${PROPERTIES_FILE}

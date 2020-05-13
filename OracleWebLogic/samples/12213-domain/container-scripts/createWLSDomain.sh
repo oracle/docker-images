@@ -27,7 +27,7 @@ trap _term SIGTERM
 # Set SIGKILL handler
 trap _kill SIGKILL
 
-export DOMAIN_HOME=$CUSTOM_DOMAIN_ROOT/$CUSTOM_DOMAIN_NAME
+export DOMAIN_HOME=$DOMAIN_ROOT/$DOMAIN_NAME
 echo "Domain Home is:  $DOMAIN_HOME"
 
 SEC_PROPERTIES_FILE=${PROPERTIES_FILE_DIR}/domain_security.properties
@@ -59,7 +59,7 @@ if [ ! -e "${DOMAIN_PROPERTIES_FILE}" ]; then
 fi
 
 #Create the domain the first time
-if [ ! -f ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.log ]; then
+if [ ! -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log ]; then
    # Create domain
    wlst.sh -skipWLSModuleScanning -loadProperties ${DOMAIN_PROPERTIES_FILE} -loadProperties ${SEC_PROPERTIES_FILE}  /u01/oracle/container-scripts/create-wls-domain.py
    retval=$?
@@ -73,13 +73,13 @@ if [ ! -f ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.
    fi
 
    # Create the security file to start the server(s) without the password prompt
-   mkdir -p ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/
-   echo "username=${USER}" >> ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/boot.properties
-   echo "password=${PASS}" >> ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/security/boot.properties
+   mkdir -p ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/
+   echo "username=${USER}" >> ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/boot.properties
+   echo "password=${PASS}" >> ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/boot.properties
 fi
 
 #Set Java options
-export JAVA_OPTIONS=${CUSTOM_JAVA_OPTIONS}
+export JAVA_OPTIONS=${JAVA_OPTIONS}
 echo "Java Options: ${JAVA_OPTIONS}"
 
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
@@ -89,8 +89,8 @@ echo "=========================="
 
 # Start Admin Server and tail the logs
 ${DOMAIN_HOME}/startWebLogic.sh
-touch ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.log
-tail -f ${DOMAIN_HOME}/servers/${CUSTOM_ADMIN_NAME}/logs/${CUSTOM_ADMIN_NAME}.log &
+touch ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
+tail -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log &
 
 childPID=$!
 wait $childPID

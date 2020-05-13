@@ -5,16 +5,16 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 
-export DOMAIN_HOME=$CUSTOM_DOMAIN_ROOT/$CUSTOM_DOMAIN_NAME
+export DOMAIN_HOME=$DOMAIN_ROOT/$DOMAIN_NAME
 echo "Domain Home is:  $DOMAIN_HOME"
 
-export MS_HOME="${DOMAIN_HOME}/servers/${CUSTOM_MANAGED_NAME}"
+export MS_HOME="${DOMAIN_HOME}/servers/${MANAGED_NAME}"
 export MS_SECURITY="${MS_HOME}/security"
 
 # Wait for AdminServer to become available for any subsequent operation
 /u01/oracle/container-scripts/waitForAdminServer.sh
 
-echo "Managed Server Name: ${CUSTOM_MANAGED_NAME}"
+echo "Managed Server Name: ${MANAGED_NAME}"
 echo "Managed Server Home: ${MS_HOME}"
 echo "Managed Server Security: ${MS_SECURITY}"
 
@@ -51,16 +51,17 @@ fi
 
 #Set Java options
 #JAVA_OPTIONS="-Dweblogic.StdoutDebugEnabled=false"
-export JAVA_OPTIONS=${CUSTOM_JAVA_OPTIONS}
+export JAVA_OPTIONS=${JAVA_OPTIONS}
 echo "Java Options: ${JAVA_OPTIONS}"
 
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
 
-echo "Connecting to Admin Server at http://${CUSTOM_ADMIN_HOST}:${CUSTOM_ADMIN_PORT}"
-${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${CUSTOM_MANAGED_NAME} "http://${CUSTOM_ADMIN_HOST}:${CUSTOM_ADMIN_PORT}"
+echo "Connecting to Admin Server at http://${ADMIN_HOST}:${ADMIN_LISTEN_PORT}"
+${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${MANAGED_NAME} "http://${ADMIN_HOST}:${ADMIN_LISTEN_PORT}"
 
 # tail Managed Server log
-tail -f ${MS_HOME}/logs/${CUSTOM_MANAGED_NAME}.log &
+touch ${MS_HOME}/logs/${MANAGED_NAME}.log
+tail -f ${MS_HOME}/logs/${MANAGED_NAME}.log &
 
 childPID=$!
 wait $childPID

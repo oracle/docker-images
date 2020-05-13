@@ -7,7 +7,7 @@
 # This script will wait until Admin Server is available.
 # There is no timeout!
 #
-connectString="${CUSTOM_ADMIN_HOST}/${CUSTOM_ADMIN_PORT}"
+connectString="${ADMIN_HOST}/${ADMIN_LISTEN_PORT}"
 
 echo "Waiting for WebLogic Admin Server on ${connectString} to become available..."
 while :

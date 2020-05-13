@@ -4,7 +4,6 @@
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
-
 set_context() {
    scriptDir="$( cd "$( dirname "$0" )" && pwd )"
    if [ ! -d "${scriptDir}" ]; then
@@ -20,7 +19,7 @@ set_context
 
 # HOST volume where the domain home will be persisted
 domain_host_volume() {
-   domainhostvol=${CUSTOM_DOMAIN_HOST_VOLUME}
+   domainhostvol=${DOMAIN_HOST_VOLUME}
    if [ -z "$domainhostvol" ]; then
       echo "The parameter DOMAIN_HOST_VOLUME must be set in ${scriptDir}/properties/domain.properties."
       exit
@@ -34,14 +33,22 @@ domain_host_volume() {
 }
 
 admin_host() {
-   adminhost=${CUSTOM_ADMIN_HOST:-"AdminContainer"}
+   adminhost=${ADMIN_HOST:-"AdminContainer"}
 }
 
+admin_listen_port() {
+   adminport=${ADMIN_LISTEN_PORT}
+}
+administration_port() {
+   administrationport=${ADMINISTRATION_PORT}
+}
 #echo "ENV_ARG is: ${ENV_ARG}"
 
 admin_host
+admin_listen_port
+administration_port
 domain_host_volume
 
-echo "docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --hostname ${adminhost} -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-weblogic-domain-in-volume"
+echo "docker run -d -p 9001:${adminport} -p 9002:${administrationport} --name ${adminhost} --hostname ${adminhost} -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-weblogic-domain-in-volume"
 
-docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --hostname ${adminhost} -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-weblogic-domain-in-volume
+docker run -d -p 9001:$ADMIN_LISTEN_PORT -p 9002:9002 --name ${adminhost} --hostname ${adminhost} -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} 12213-weblogic-domain-in-volume
