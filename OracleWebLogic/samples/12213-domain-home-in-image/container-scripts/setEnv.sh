@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 BUILD_ARG=''
 if [ "$#" -eq  "0" ]
@@ -33,6 +33,9 @@ set_env_arg(){
 # Set DOMAIN_NAME
 set_env_arg DOMAIN_NAME ${PROPERTIES_FILE}
 
+# Set SSL_ENABLED
+set_env_arg SSL_ENABLED ${PROPERTIES_FILE}
+
 # Set ADMIN_NAME
 set_env_arg ADMIN_NAME ${PROPERTIES_FILE}
 
@@ -42,8 +45,17 @@ set_env_arg ADMIN_HOST ${PROPERTIES_FILE}
 # Set ADMIN_PORT
 set_env_arg ADMIN_LISTEN_PORT ${PROPERTIES_FILE}
 
+# Set ADMIN_SERVER_SSL_PORT
+set_env_arg ADMIN_SERVER_SSL_PORT ${PROPERTIES_FILE}
+
+# Set MANAGED_SERVER_NAME
+set_env_arg MANAGED_SERVER_NAME ${PROPERTIES_FILE}
+
 # Set MANAGED_SERVER_PORT
 set_env_arg MANAGEDSERVER_PORT ${PROPERTIES_FILE}
+
+# Set MANAGED_SERVER_SSL_PORT
+set_env_arg MANAGED_SERVER_SSL_PORT ${PROPERTIES_FILE}
 
 # Set DEBUG_PORT
 set_env_arg DEBUG_PORT ${PROPERTIES_FILE}
@@ -53,6 +65,9 @@ extract_env IMAGE_TAG ${PROPERTIES_FILE}
 
 # Set CLUSTER_NAME
 set_env_arg CLUSTER_NAME ${PROPERTIES_FILE}
+
+# Set CLUSTER_TYPE
+set_env_arg CLUSTER_TYPE ${PROPERTIES_FILE}
 
 export BUILD_ARG=$BUILD_ARG
 echo BUILD_ARG=$BUILD_ARG
