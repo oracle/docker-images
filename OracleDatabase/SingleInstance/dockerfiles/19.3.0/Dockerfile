@@ -34,7 +34,7 @@ LABEL "provider"="Oracle"                                               \
       "port.listener"="1521"                                            \
       "port.oemexpress"="5500"
 
-# Argument to control cleaning up of oracle home
+# Argument to control removal of components not needed after db software installation
 ARG SLIMMING=true
 
 # Environment variables required for this build (do NOT change)
