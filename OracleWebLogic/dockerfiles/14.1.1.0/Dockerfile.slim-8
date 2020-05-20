@@ -1,41 +1,37 @@
-#Copyright (c) 2014, 2020, Oracle and/or its affiliates.
-#
-#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# Copyright (c) 2020 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle WebLogic Server 12.2.1.4 Slim Distro
+# This is the Dockerfile for Oracle WebLogic Server 14.1.1.0 Slim Distro
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.4.0_wls_quick_slim_Disk1_1of1.zip
-#     Download the Slim installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
-#
-# (2) server-jre-8uXX-linux-x64.tar.gz
-#     Download from http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
+# fmw_14.1.1.0.0_wls_quick_slim_Disk1_1of1.zip
+# Download the Slim installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -f Dockerfile.slim -t oracle/weblogic:12.2.1.4-slim .
+#      $ docker build -f Dockerfile.slim -t oracle/weblogic:14.1.1.0-slim .
 #
 # IMPORTANT
 # ---------
 # The resulting image of this Dockerfile contains a WLS Empty Domain.
 #
-# Extend base JRE image
-# You must build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8`
-# ----------------------------------------------------------------------------------------------
+# From the Oracle Docker GitHub Project
+# ----------------------------------------
 FROM oracle/serverjre:8 as builder
 
 # Labels
 # ------
-LABEL "provider"="Oracle"                                               \
-      "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"       \
-      "issues"="https://github.com/oracle/docker-images/issues"         \
-      "port.admin.listen"="7001"                                        \
+LABEL provider="Oracle"                                               \
+      maintainer="Monica Riccelli <monica.riccelli@oracle.com>"       \
+      issues="https://github.com/oracle/docker-images/issues"         \
+      "port.admin.listen"="7001"                                      \
       "port.administration"="9002"
+
 
 # Common environment variables required for this build (do NOT change)
 # --------------------------------------------------------------------
@@ -52,8 +48,8 @@ RUN mkdir -p /u01 && \
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV FMW_PKG=fmw_12.2.1.4.0_wls_quick_slim_Disk1_1of1.zip \
-    FMW_JAR=fmw_12.2.1.4.0_wls_quick_slim.jar
+ENV FMW_PKG=fmw_14.1.1.0.0_wls_quick_slim_Disk1_1of1.zip \
+    FMW_JAR=fmw_14.1.1.0.0_wls_quick_slim.jar
 
 # Copy packages
 # -------------

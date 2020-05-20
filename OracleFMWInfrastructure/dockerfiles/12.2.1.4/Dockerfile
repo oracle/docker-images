@@ -1,4 +1,4 @@
-#Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -21,10 +21,13 @@
 # ----------------------------------------------------------------------------------------------
 FROM oracle/serverjre:8 as builder
 
-# Maintainer
-# ----------
-MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
-
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"       \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "port.admin.listen"="7001"                                        \
+      "port.administration"="9002"
 
 # Common environment variables required for this build
 # ----------------------------------------------------
@@ -61,6 +64,7 @@ FROM oracle/serverjre:8
 ENV ORACLE_HOME=/u01/oracle \
     VOLUME_DIR=/u01/oracle/user_projects \
     SCRIPT_FILE=/u01/oracle/container-scripts/* \
+    HEALTH_SCRIPT_FILE=/u01/oracle/get_healthcheck_url.sh \
     DOMAIN_NAME="${DOMAIN_NAME:-infra_domain}" \
     ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}" \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
@@ -92,5 +96,6 @@ COPY --from=builder --chown=oracle:oracle /u01 /u01
 RUN chmod +xr $SCRIPT_FILE
 
 USER oracle
+HEALTHCHECK --start-period=30s --interval=30s --timeout=300s  --retries=20 CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR ${ORACLE_HOME}
 CMD ["/u01/oracle/container-scripts/createOrStartInfraDomain.sh"]
