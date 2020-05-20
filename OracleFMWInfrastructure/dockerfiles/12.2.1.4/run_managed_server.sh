@@ -2,7 +2,7 @@
 #
 #Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Pass in the managed server name to run and the mapped port
 
@@ -31,6 +31,7 @@ managed_name() {
 
 admin_host
 managed_name
+ENV_ARG="${ENV_ARG} -e MANAGED_NAME=$managedname -e MANAGED_SERVER_CONTAINER=true"
 
 echo "docker run -d -p 9802:8002 --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties ${ENV_ARG} --volumes-from ${adminhost} --name ${managedname}  oracle/fmw-infrastructure:12.2.1.3 startManagedServer.sh"
 
