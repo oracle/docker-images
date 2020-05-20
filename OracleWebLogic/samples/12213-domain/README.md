@@ -96,4 +96,4 @@ We are supplying scripts `run_admin_server.sh` and `run_managed_server.sh` to fa
 
 
 ## Copyright
-Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2019, 2020, Oracle and/or its affiliates.

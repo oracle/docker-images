@@ -1,8 +1,8 @@
 #! /bin/bash
 #
-#Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2020, Oracle and/or its affiliates.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Pass in the managed server name to run and the mapped port
 

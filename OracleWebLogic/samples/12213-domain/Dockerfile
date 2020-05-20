@@ -1,6 +1,6 @@
-#Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2019, 2020,  Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -20,9 +20,14 @@
 # ----
 FROM oracle/weblogic:12.2.1.3-developer
 
-# Maintainer
-# ----------
-MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"       \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "port.admin.listen"="7001"                                        \
+      "port.administration"="9002"                                      \
+      "port.managed.server"="8001"                                      
 
 # WLS Configuration
 # -----------------
