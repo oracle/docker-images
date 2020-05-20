@@ -27,7 +27,8 @@ LABEL "provider"="Oracle"                                               \
       "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"       \
       "issues"="https://github.com/oracle/docker-images/issues"         \
       "port.admin.listen"="7001"                                        \
-      "port.administration"="9002"
+      "port.administration"="9002"                                      \
+      "port.managed.server"="8001"
 
 # Common environment variables required for this build
 # ----------------------------------------------------

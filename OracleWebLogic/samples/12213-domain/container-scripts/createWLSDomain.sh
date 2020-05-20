@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-#Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014, 2020 Oracle and/or its affiliates.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 
 # If AdminServer.log does not exists, container is starting for 1st time
