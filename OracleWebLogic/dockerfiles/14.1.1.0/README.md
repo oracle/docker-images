@@ -7,7 +7,7 @@ The certification of Oracle WebLogic Server on Docker does not require the use o
 For more information on the certification, please see the [Oracle WebLogic Server on Docker certification whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [The WebLogic Server Blog](https://blogs.oracle.com/WebLogicServer/) for updates.
 
 ## How to build and run
-This project offers sample Dockerfiles for Oracle WebLogic Serveri 14cR1 (14.1.1.0). It provides at least one Dockerfile for the `developer` distribution, a second Dockerfile for the `generic` distribution, and a third Dockerfile for the `slim` distribution.  
+This project offers sample Dockerfiles for Oracle WebLogic Server 14.1.1.0. It provides at least one Dockerfile for the `developer` distribution, a second Dockerfile for the `generic` distribution, and a third Dockerfile for the `slim` distribution.  
 
 1- The WebLogic `generic` image is supported for `development` and `production` deployment of WebLogic configurations using Docker.   It contains the same binaries as those installed by the WebLogic generic installer.  The WebLogic generic image is primarily intended for WebLogic domains managed with the WebLogic Kubernetes Operator, when WLS console-based monitoring, and possibly configuration, is required.  All servers within a domain managed with the Operator will use the same WebLogic image.  Support is also provided for environments where Kubernetes and/or the WebLogic Kubernetes Operator is not being used.
 
@@ -43,7 +43,7 @@ Before you build, select the version and distribution for which you want to buil
 
         LICENSE UPL 1.0
 
-        Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+        Copyright (c) 2014, 2020, Oracle and/or its affiliates
 
 **IMPORTANT:** The resulting images will have a single server domain (Administration Server only), by default.
 

@@ -27,7 +27,7 @@ A prerequisite to building the 12213-weblogic-domain-in-volume image is having a
 
         LICENSE UPL 1.0
 
-        Copyright (c) 2014,2019 Oracle and/or its affiliates. All rights reserved.
+        Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 
 #### Providing the Administration Server user name and password and Database username and password
 The administration server user name and password must be supplied in a `domain_security.properties` file. This file should be located in a HOST directory that you will map at Docker runtime with the `-v` option to the image directory `/u01/oracle/properties`. The properties file enables the scripts to configure the correct authentication for the WebLogic Administration Server.
@@ -59,6 +59,7 @@ You can override the default values of the following parameters during runtime i
       * `ADMIN_HOST`
       * `MANAGED_SERVER_PORT`
       * `MANAGED_SERVER_NAME_BASE`
+      * `MANAGED_SERVER_CONTAINER`
       * `CONFIGURED_MANAGED_SERVER_COUNT`
       * `CLUSTER_NAME`
       * `CLUSTER_TYPE`
