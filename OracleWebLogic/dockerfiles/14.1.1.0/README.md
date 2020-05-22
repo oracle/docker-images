@@ -35,7 +35,7 @@ Before you build, select the version and distribution for which you want to buil
            -d: creates image based on 'developer' distribution
            -g: creates image based on 'generic' distribution
            -m: creates image based on 'slim' distribution
-           -j: for WebLogic 14.1.1.0 indicate Server JRE 8 or JDK 11
+           -j: choose '8' to create a 14.1.1.0 image with JDK 8 or '11' to create a 14.1.1.0 image with JDK 11. 
            -c: enables Docker image layer cache during build
            -s: skips the MD5 check of packages
 
@@ -56,8 +56,8 @@ Before you build, select the version and distribution for which you want to buil
 
         `$ docker images`
      
-     If the WebLogic imagte is built extending Oracle Server JRE 8, then the built image will be called oracle/weblogic:14.1.1.0-developer-8
-     If the WebLogic imagte is built extending Oracle JDK 11, then the built image will be called oracle/weblogic:14.1.1.0-developer-11
+     If the WebLogic image is built extending Oracle Server JRE 8, then the built image will be called oracle/weblogic:14.1.1.0-developer-8
+     If the WebLogic image is built extending Oracle JDK 11, then the built image will be called oracle/weblogic:14.1.1.0-developer-11
      
 
 ### Running a single server domain from the image

@@ -103,7 +103,7 @@ RUN chmod +xr $SCRIPT_FILE $HEALTH_SCRIPT_FILE && \
 
 USER oracle
 
-HEALTHCHECK --start-period=10s --interval=10s --timeout=120s  --retries=12 CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
+HEALTHCHECK --start-period=10s --timeout=30s --retries=3 CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR ${ORACLE_HOME}
 
 # Define default command to start script.
