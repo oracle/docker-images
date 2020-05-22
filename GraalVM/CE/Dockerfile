@@ -8,13 +8,6 @@ FROM oraclelinux:7-slim
 # Note: If you are behind a web proxy, set the build variables for the build:
 #       E.g.:  docker build --build-arg "https_proxy=..." --build-arg "http_proxy=..." --build-arg "no_proxy=..." ...
 
-ARG GRAALVM_VERSION=19.3.2
-ARG JAVA_VERSION=java8
-ARG GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAALVM_VERSION/graalvm-ce-$JAVA_VERSION-linux-amd64-$GRAALVM_VERSION.tar.gz 
-
-ENV LANG=en_US.UTF-8 \
-    JAVA_HOME=/opt/graalvm-ce-$JAVA_VERSION-$GRAALVM_VERSION/
-
 RUN yum update -y oraclelinux-release-el7 \
     && yum install -y oraclelinux-developer-release-el7 oracle-softwarecollection-release-el7 \
     && yum-config-manager --enable ol7_developer \
@@ -25,6 +18,13 @@ RUN yum update -y oraclelinux-release-el7 \
     && rm -rf /var/cache/yum
 
 RUN fc-cache -f -v
+
+ARG GRAALVM_VERSION=20.1.0
+ARG JAVA_VERSION=java8
+ARG GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAALVM_VERSION/graalvm-ce-$JAVA_VERSION-linux-amd64-$GRAALVM_VERSION.tar.gz
+
+ENV LANG=en_US.UTF-8 \
+    JAVA_HOME=/opt/graalvm-ce-$JAVA_VERSION-$GRAALVM_VERSION/
 
 ADD gu-wrapper.sh /usr/local/bin/gu
 RUN set -eux \
@@ -40,7 +40,6 @@ RUN set -eux \
         [ ! -e "/usr/bin/$base" ]; \
         alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
     done \
-    && rm -f /opt/graalvm-ce-java8-19.3.2/jre/lib/amd64/server/libjvm.debuginfo \
     && chmod +x /usr/local/bin/gu
 
 CMD java -version
