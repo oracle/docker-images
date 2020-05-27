@@ -97,6 +97,6 @@ COPY --from=builder --chown=oracle:oracle /u01 /u01
 RUN chmod +xr $SCRIPT_FILE
 
 USER oracle
-HEALTHCHECK --start-period=10s --timeout=30s --retries=4  CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
+HEALTHCHECK --start-period=4m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR ${ORACLE_HOME}
 CMD ["/u01/oracle/container-scripts/createOrStartInfraDomain.sh"]
