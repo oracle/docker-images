@@ -24,7 +24,7 @@ spec:
         app: {{ template "fullname" . }}
     spec:
       terminationGracePeriodSeconds: 30
-   {{- if .Values.imagePullSecrets}}
+    {{- if .Values.imagePullSecrets}}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}
     {{- end }}
@@ -39,10 +39,12 @@ spec:
         - name: oracle-db
           image: {{ .Values.image }}
           imagePullPolicy: {{ default "IfNotPresent" .Values.imagePullPolicy | quote }}
+        {{- if .Values.preStopHook }}
           lifecycle:
             preStop:
               exec:
                 command: [ "/bin/sh", "-c", "/bin/echo -en 'shutdown abort;\n' | env ORACLE_SID=${ORACLE_SID^^} sqlplus -S / as sysdba" ]
+        {{- end }}
           ports:
             - containerPort: 1521
             - containerPort: 5500

@@ -34,6 +34,9 @@ availabilityDomain:
 ## Deploy multiple replicas for fast fail over
 replicas: 1
 
+## deploy LoadBalancer service
+loadBalService: false
+
 ## name of image
 image: container-registry.oracle.com/oracle/database:19.3.0
 
