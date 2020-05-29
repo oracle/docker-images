@@ -9,11 +9,21 @@ COPY php.module /etc/dnf/modules.d/php.module
 
 RUN microdnf install php-cli \
                      php-common \
+                     php-fpm \
                      php-json \
                      php-mbstring \
                      php-mysqlnd \
                      php-pdo \
+                     php-soap \
                      php-xml && \
-    microdnf clean all
+    microdnf clean all && \
+    mkdir -p /run/php-fpm && \
+    sed -i '/^listen = /clisten = 0.0.0.0:9000' /etc/php-fpm.d/www.conf && \
+    sed -i '/^listen.allowed_clients/c;listen.allowed_clients =' /etc/php-fpm.d/www.conf && \
+    sed -i '/^;catch_workers_output/ccatch_workers_output = yes' /etc/php-fpm.d/www.conf
 
-CMD ["/bin/php", "-v"]
+EXPOSE 9000
+
+WORKDIR /var/www
+
+CMD ["/sbin/php-fpm", "-F", "-O"]

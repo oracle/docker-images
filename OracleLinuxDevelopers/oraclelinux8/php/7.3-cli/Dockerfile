@@ -9,9 +9,10 @@ COPY php.module /etc/dnf/modules.d/php.module
 
 RUN microdnf install php-cli \
                      php-common \
-                     php-fpm \
                      php-json \
                      php-mbstring \
+                     php-mysqlnd \
+                     php-pdo \
                      php-xml && \
     microdnf clean all
 
