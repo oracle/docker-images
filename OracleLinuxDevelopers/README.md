@@ -54,8 +54,13 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### PHP
 
-* [`oraclelinux8-php:7.2-cli`](oraclelinux7/php/7.2-cli/Dockerfile)
-* [`oraclelinux8-php:7.3-cli`](oraclelinux7/php/7.3-cli/Dockerfile)
+* [`oraclelinux8-php:7.2-apache`](oraclelinux8/php/7.2-apache/Dockerfile)
+* [`oraclelinux8-php:7.3-apache`](oraclelinux8/php/7.3-apache/Dockerfile)
+* [`oraclelinux8-php:7.2-cli`](oraclelinux8/php/7.2-cli/Dockerfile)
+* [`oraclelinux8-php:7.3-cli`](oraclelinux8/php/7.3-cli/Dockerfile)
+* [`oraclelinux8-php:7.2-fpm`](oraclelinux8/php/7.2-fpm/Dockerfile)
+* [`oraclelinux8-php:7.3-fpm`](oraclelinux8/php/7.3-fpm/Dockerfile)
+
 
 ### Python
 
