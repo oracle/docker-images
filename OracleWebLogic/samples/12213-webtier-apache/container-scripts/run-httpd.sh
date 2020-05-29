@@ -6,9 +6,9 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018-2020 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # Apache gets grumpy about PID files pre-existing
 rm -f /run/httpd/httpd.pid
@@ -33,7 +33,8 @@ else
   fi
 
   # We only copy this file when SSL is enabled
-  cp /configtmp/custom_mod_ssl_apache.conf /etc/httpd/conf.d/
+  sudo cp /configtmp/custom_mod_ssl_apache.conf /etc/httpd/conf.d/
+  # Copied in the Docker File
 
   if [ -z ${SSL_CERT_FILE} ] || [ -z ${SSL_CERT_KEY_FILE} ]; then
     echo Warning: both SSL_CERT_FILE and SSL_CERT_KEY_FILE need to be specified.
