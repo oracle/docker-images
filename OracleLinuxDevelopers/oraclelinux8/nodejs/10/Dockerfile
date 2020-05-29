@@ -7,7 +7,9 @@ LABEL "provider"="Oracle"                                               \
 
 COPY nodejs.module /etc/dnf/modules.d/nodejs.module
 
-RUN microdnf install nodejs nodejs-nodemon npm && \
+RUN microdnf install nodejs \
+                     nodejs-nodemon \
+                     npm && \
     microdnf clean all
 
 CMD ["/bin/node", "-v"]

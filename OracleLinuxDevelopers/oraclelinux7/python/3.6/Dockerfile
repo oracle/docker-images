@@ -3,7 +3,10 @@
 FROM oraclelinux:7-slim
 
 RUN yum-config-manager --disable ol7_UEKR5 && \
-    yum -y install python3 python3-libs python3-pip python3-setuptools && \
+    yum -y install python3 \
+                   python3-libs \
+                   python3-pip \
+                   python3-setuptools && \
     rm -rf /var/cache/yum/*
 
 CMD ["/bin/python3","--version"]

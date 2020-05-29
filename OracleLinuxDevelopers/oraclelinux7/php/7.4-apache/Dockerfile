@@ -7,11 +7,21 @@ LABEL "provider"="Oracle"                                               \
 
 RUN yum -y install oracle-php-release-el7 && \
     yum-config-manager --disable ol7_UEKR5 && \
-    yum -y install httpd php php-cli php-json php-mbstring php-mysqlnd php-pdo php-xml unzip && \
+    yum -y install httpd \
+                   php \
+                   php-cli \
+                   php-json \
+                   php-mbstring \
+                   php-mysqlnd \
+                   php-pdo \
+                   php-xml \
+                   unzip && \
     rm -rf /var/cache/yum/* && \
+    # Redirect logging for container usage
     sed -i 's/;error_log = syslog/error_log = \/dev\/stderr/' /etc/php.ini && \
     ln -sf /dev/stdout /var/log/httpd/access_log && \
     ln -sf /dev/stderr /var/log/httpd/error_log && \
+    # Remove userdir and welcome module configuration
     rm -f /etc/httpd/conf.d/{userdir.conf,welcome.conf}
 
 CMD ["/sbin/httpd", "-DFOREGROUND"]

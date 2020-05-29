@@ -7,7 +7,14 @@ LABEL "provider"="Oracle"                                               \
 
 RUN yum -y install oracle-php-release-el7 oracle-release-el7 && \
     yum-config-manager --disable ol7_UEKR5 && \
-    yum -y install php-cli php-json php-mbstring php-mysqlnd php-pdo php-xml php-oci8-19c oracle-instantclient19.5-basic && \
+    yum -y install oracle-instantclient19.5-basic \
+                   php-cli \
+                   php-json \
+                   php-mbstring \
+                   php-mysqlnd \
+                   php-oci8-19c \
+                   php-pdo \
+                   php-xml && \
     rm -rf /var/cache/yum/*
 
 CMD ["/bin/php", "-v"]

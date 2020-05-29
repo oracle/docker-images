@@ -7,7 +7,12 @@ LABEL "provider"="Oracle"                                               \
 
 RUN yum -y install oracle-php-release-el7 && \
     yum-config-manager --disable ol7_UEKR5 && \
-    yum -y install php-cli php-json php-mbstring php-mysqlnd php-pdo php-xml && \
+    yum -y install php-cli \
+                   php-json \
+                   php-mbstring \
+                   php-mysqlnd \
+                   php-pdo \
+                   php-xml && \
     rm -rf /var/cache/yum/*
 
 CMD ["/bin/php", "-v"]
