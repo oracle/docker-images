@@ -9,8 +9,8 @@ COPY python38.module /etc/dnf/modules.d/python38.module
 
 RUN microdnf install python38 \
                      python38-libs \
-                     python38-pip-wheel \
-                     python3-setuptools-wheel && \
+                     python38-pip \
+                     python38-setuptools && \
     microdnf clean all
 
 CMD ["/bin/python3", "-V"]

@@ -8,7 +8,6 @@ LABEL "provider"="Oracle"                                               \
 COPY python36.module /etc/dnf/modules.d/python36.module
 
 RUN microdnf install python36 \
-                     platform-python-pip \
                      python3-pip \
                      python3-setuptools && \
     microdnf clean all
