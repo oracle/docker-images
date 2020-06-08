@@ -12,4 +12,6 @@ RUN yum -y install oracle-nodejs-release-el7 oracle-release-el7 && \
     yum -y install nodejs node-oracledb-node10 && \
     rm -rf /var/cache/yum/*
 
+ENV NODE_PATH=/usr/lib/node_modules
+
 CMD ["/bin/node", "-v"]
