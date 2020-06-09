@@ -3,13 +3,14 @@
 These are developer-oriented images designed to be used as the base image and
 extended to include application code.
 
-Each of the language and version variants are based off the `oraclelinux:7-slim`
-base image with as minimal a package set as possible. If your application
-requires additional modules or packages, they should be installed as part of
-your downstream `Dockerfile`.
+Each of the language and version variants are based off either the
+`oraclelinux:7-slim` or `oraclelinux:8-slim` base images with as minimal a
+package set as possible. If your application requires additional modules or
+packages, they should be installed as part of your downstream `Dockerfile`.
 
-All images use the available language packages from the Oracle Linux yum server.
-There are no external dependencies.
+All images use the available language packages from the
+[Oracle Linux yum server](https://yum.oracle.com). There are no external
+dependencies.
 
 The `-oracledb` variants include the language-specific driver for connecting to
 and Oracle Database along with the appropriate Oracle Instant Client packages.
