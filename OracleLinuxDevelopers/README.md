@@ -25,7 +25,7 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 ### Node.js
 
 * [`oraclelinux7-nodejs:10`](oraclelinux7/nodejs/10/Dockerfile)
-* [`oraclelinux7-nodejs:10-oracledb`](oraclelinux7/nodejs/10/Dockerfile)
+* [`oraclelinux7-nodejs:10-oracledb`](oraclelinux7/nodejs/10-oracledb/Dockerfile)
 * [`oraclelinux7-nodejs:12`](oraclelinux7/nodejs/12/Dockerfile)
 
 ### PHP
