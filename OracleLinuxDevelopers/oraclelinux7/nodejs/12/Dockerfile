@@ -6,7 +6,6 @@ LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"
 
 RUN yum -y install oracle-nodejs-release-el7 && \
-    yum-config-manager --disable ol7_UEKR5 && \
     yum -y install nodejs && \
     rm -rf /var/cache/yum/*
 

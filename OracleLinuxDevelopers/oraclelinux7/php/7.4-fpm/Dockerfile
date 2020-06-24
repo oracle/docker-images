@@ -7,7 +7,6 @@ LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"
 
 RUN yum -y install oracle-php-release-el7 && \
-    yum-config-manager --disable ol7_UEKR5 && \
     yum -y install php-fpm \
                    php-json \
                    php-mbstring \
