@@ -6,7 +6,6 @@ LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"
 
 RUN yum -y install oracle-golang-release-el7 && \
-    yum-config-manager --disable ol7_UEKR5 && \
     yum-config-manager --disable ol7_developer_golang114 && \
     yum-config-manager --enable ol7_developer_golang113 && \
     yum -y install golang && \
