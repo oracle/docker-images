@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -22,9 +22,20 @@
 # ---------------
 FROM oraclelinux:7-slim as base
 
-# Maintainer
-# ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.data"="/opt/oracle/oradata"                               \
+      "volume.setup.location1"="/opt/oracle/scripts/setup"              \
+      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
+      "volume.startup.location1"="/opt/oracle/scripts/startup"          \
+      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
+      "port.listener"="1521"                                            \
+      "port.oemexpress"="5500"
+
+# Argument to control removal of components not needed after db software installation
+ARG SLIMMING=true
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -42,7 +53,8 @@ ENV ORACLE_BASE=/opt/oracle \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
-    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
+    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
+    SLIMMING=$SLIMMING
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
@@ -101,8 +113,6 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 USER oracle
 WORKDIR /home/oracle
 
-VOLUME ["$ORACLE_BASE/oradata"]
-EXPOSE 1521 5500
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 

@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2020 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -28,9 +28,17 @@
 # ---------------
 FROM oraclelinux:7-slim
 
-# Maintainer
-# ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.data"="/u01/app/oracle/oradata"                           \
+      "volume.setup.location1"="/u01/app/oracle/scripts/startup"        \
+      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
+      "volume.startup.location1"="/u01/app/oracle/scripts/setup"        \
+      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
+      "port.listener"="1521"                                            \
+      "port.apex"="8080"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -78,8 +86,6 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl compat-libstdc+
     rm -rf $INSTALL_DIR && \
     chmod ug+x $ORACLE_BASE/*.sh
 
-VOLUME ["$ORACLE_BASE/oradata"]
-EXPOSE 1521 8080
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
