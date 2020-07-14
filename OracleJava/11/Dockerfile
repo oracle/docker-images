@@ -10,7 +10,7 @@
 # ----------------------------------
 #
 # (1) jdk-11.XX_linux-x64_bin.tar.gz
-#     Download from https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html
+#     Download from https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -20,7 +20,7 @@
 #
 # This command is already scripted on build.sh so you can alternatively run
 #		$ bash build.sh
-
+#
 # The builder image will be use to uncompress the tar.gz file with the Java Runtime.
 
 FROM oraclelinux:7-slim as builder

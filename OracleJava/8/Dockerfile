@@ -10,7 +10,7 @@
 # ----------------------------------
 #
 # (1) server-jre-8uXX-linux-x64.tar.gz
-#     Download from http://www.oracle.com/technetwork/java/javase/downloads/server-jre8-downloads-2133154.html
+#     Download from https://www.oracle.com/java/technologies/javase-server-jre8-downloads.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -20,7 +20,7 @@
 #
 # This command is already scripted on build.sh so you can alternatively run
 #		$ bash build.sh
-
+#
 # The builder image will be use to uncompress the tar.gz file with the Java Runtime.
 
 FROM oraclelinux:7-slim as builder
