@@ -20,7 +20,7 @@
 #
 # This command is already scripted on build.sh so you can alternatively run
 #		$ bash build.sh
-
+#
 # The builder image will be use to uncompress the tar.gz file with the Java Runtime.
 
 FROM oraclelinux:7-slim as builder
