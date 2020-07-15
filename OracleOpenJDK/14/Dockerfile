@@ -29,11 +29,10 @@ MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 ENV JAVA_PKG=https://download.java.net/java/GA/jdk14.0.2/205943a0976c4ed48cb16f1043c5c647/12/GPL/openjdk-14.0.2_linux-x64_bin.tar.gz \
 	JAVA_SHA256=91310200f072045dc6cef2c8c23e7e6387b37c46e9de49623ce0fa461a24623d \
 	JAVA_VERSION=14.0.2 \
-	JAVA_HOME=/usr/java/jdk-14 
+	JAVA_HOME=/usr/java/jdk-14 \
+	LANG en_US.UTF-8
 
 ENV	PATH $JAVA_HOME/bin:$PATH
-
-ENV LANG en_US.UTF-8
 	
 # Since the files is compressed as tar.gz first yum install gzip and tar
 RUN set -eux; \
