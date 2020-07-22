@@ -14,49 +14,46 @@
 # -----------------------
 # Put the downloaded file in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/database:18.4.0-xe-slim -f Dockerfile.slim .
+#      $ docker build -t oracle/database:11.2.0.2-xe-slim -f Dockerfile.slim .
 # Sample usage with init-db directory having an RMAN full backup:
-#      $ docker run -ti --rm --name testdb -v /home/init-db:/opt/oracle/scripts/setup -v /run/shm:/dev/shm oracle/database:18.4.0-xe-slim
+#      $ docker run -ti --rm --name testdb -v /home/init-db:/opt/oracle/scripts/setup -v /run/shm:/dev/shm oracle/database:11.2.0.2-xe-slim
 # passing init-db.tar.gz with a full RMAN backup initial db
-#      $ docker run -ti --rm --name testdb -v /home/init-db.tar.gz:/opt/oracle/scripts/setup/init-db.tar.gz -v /run/shm:/dev/shm oracle/database:18.4.0-xe-slim
+#      $ docker run -ti --rm --name testdb -v /home/init-db.tar.gz:/opt/oracle/scripts/setup/init-db.tar.gz -v /run/shm:/dev/shm oracle/database:11.2.0.2-xe-slim
 #
 # Pull base image
 # ---------------
-FROM oracle/database:18.4.0-xe AS db-xe
+FROM oracle/database:11.2.0.2-xe AS db-xe
 FROM oraclelinux:7-slim AS baseOS
 
 # Labels
 # ------
 LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"         \
-      "volume.data"="/opt/oracle/oradata"                               \
-      "volume.setup.location1"="/opt/oracle/scripts/setup"              \
+      "volume.data"="/u01/app/oracle/oradata"                           \
+      "volume.setup.location1"="/u01/app/oracle/scripts/startup"        \
       "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
-      "volume.startup.location1"="/opt/oracle/scripts/startup"          \
+      "volume.startup.location1"="/u01/app/oracle/scripts/setup"        \
       "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
       "port.listener"="1521"                                            \
-      "port.oemexpress"="5500"                                          \
       "port.apex"="8080"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
+ENV ORACLE_BASE=/u01/app/oracle \
+    ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe \
     ORACLE_SID=XE \
-    INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-18c-1.0-1.x86_64.rpm" \
+    INSTALL_FILE_1="oracle-xe-11.2.0-1.0.x86_64.rpm.zip" \
+    INSTALL_DIR="$HOME/install" \
+    CONFIG_RSP="xe.rsp" \
     RUN_FILE="runOracle-slim.sh" \
     PWD_FILE="setPassword.sh" \
     CLR_FILE="cleanup.sh" \
-    CONF_FILE="oracle-xe-18c.conf" \
-    CHECK_SPACE_FILE="checkSpace.sh" \
-    CHECK_DB_FILE="checkDBStatus.sh" \
-    INSTALL_DIR="$HOME/install" \
-    ORACLE_DOCKER_INSTALL="true"
+    CHECK_DB_FILE="checkDBStatus.sh"
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$PATH
 
-RUN yum -y install openssl file oracle-database-preinstall-18c && \
+RUN yum -y install unzip libaio bc initscripts net-tools openssl compat-libstdc++-33 && \
     rm -rf /var/cache/yum
 
 FROM baseOS AS baseInstall
@@ -64,27 +61,25 @@ FROM baseOS AS baseInstall
 # -------------
 COPY $CLR_FILE $INSTALL_DIR/
 
-COPY --from=db-xe --chown=oracle:oinstall $ORACLE_BASE/ $ORACLE_BASE/
-COPY --from=db-xe --chown=oracle:oinstall /etc/oratab /etc/oratab
-COPY --from=db-xe --chown=root:root /etc/init.d/oracle-xe-18c /etc/init.d/oracle-xe-18c
-COPY --from=db-xe --chown=root:root /etc/sysconfig/$CONF_FILE /etc/sysconfig/$CONF_FILE
-COPY --from=db-xe --chown=root:root /opt/ORCLfmap /opt/ORCLfmap
+COPY --from=db-xe --chown=root:root /etc/passwd /etc/passwd
+COPY --from=db-xe --chown=root:root /etc/group /etc/group
+COPY --from=db-xe --chown=root:root /etc/init.d/oracle-xe /etc/init.d/oracle-xe
+COPY --from=db-xe --chown=oracle:dba $ORACLE_BASE/ $ORACLE_BASE/
 
 RUN chmod +x $INSTALL_DIR/$CLR_FILE && \
     $INSTALL_DIR/$CLR_FILE
 
 FROM baseOS
 
+COPY --from=baseInstall --chown=root:root /etc/passwd /etc/passwd
+COPY --from=baseInstall --chown=root:root /etc/group /etc/group
+COPY --from=baseInstall --chown=root:root /etc/init.d/oracle-xe /etc/init.d/oracle-xe
 COPY --from=baseInstall $ORACLE_BASE/ $ORACLE_BASE/
-COPY --from=baseInstall /etc/oratab /etc/oratab
-COPY --from=baseInstall /etc/init.d/oracle-xe-18c /etc/init.d/oracle-xe-18c
-COPY --from=baseInstall /etc/sysconfig/$CONF_FILE /etc/sysconfig/$CONF_FILE
-COPY --from=baseInstall /opt/ORCLfmap /opt/ORCLfmap
-COPY $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $ORACLE_BASE/
+COPY $RUN_FILE $PWD_FILE $CHECK_DB_FILE $ORACLE_BASE/
 
 RUN mkdir -p /home/oracle && \
-    chown -R oracle:oinstall /home/oracle && \
-    chown oracle:oinstall $ORACLE_BASE && \
+    chown -R oracle:dba /home/oracle && \
+    chown oracle:dba $ORACLE_BASE && \
     sed -i -r 's/^(session\s+required\s+pam_limits.so)/#\1/' /etc/pam.d/* && \
     ln -s $ORACLE_BASE/$PWD_FILE / && \
     rm -rf /var/lib/rpm/* && \
