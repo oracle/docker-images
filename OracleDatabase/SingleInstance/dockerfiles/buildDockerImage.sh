@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [Docker build option]
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [-l] [Docker build option]
 Builds a Docker Image for Oracle Database.
   
 Parameters:
@@ -21,6 +21,7 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
+   -l: creates slim images based on 'Enterprise Edition' or 'Express Edition'
    -i: ignores the MD5 checksums
    -o: passes on Docker build option
 
@@ -97,13 +98,14 @@ DOCKEROPS=""
 MIN_DOCKER_VERSION="17.09"
 MIN_PODMAN_VERSION="1.6.0"
 DOCKERFILE="Dockerfile"
+SLIM=0
 
 if [ "$#" -eq 0 ]; then
   usage;
   exit 1;
 fi
 
-while getopts "hesxiv:o:" optname; do
+while getopts "hlesxiv:o:" optname; do
   case "$optname" in
     "h")
       usage
@@ -120,6 +122,9 @@ while getopts "hesxiv:o:" optname; do
       ;;
     "x")
       EXPRESS=1
+      ;;
+    "l")
+      SLIM=1
       ;;
     "v")
       VERSION="$OPTARG"
@@ -161,12 +166,17 @@ elif [ $EXPRESS -eq 1 ]; then
 fi;
 
 # Which Dockerfile should be used?
-if [ "$VERSION" == "12.1.0.2" ] || [ "$VERSION" == "11.2.0.2" ] || [ "$VERSION" == "18.4.0" ]; then
-  DOCKERFILE="$DOCKERFILE.$EDITION"
+if [ $SLIM -eq 1 ]; then
+  DOCKERFILE="$DOCKERFILE.slim"
+  # Oracle Database Image Nameorigin
+  IMAGE_NAME="oracle/database:$VERSION-$EDITION-slim";
+else
+  if [ "$VERSION" == "12.1.0.2" ] || [ "$VERSION" == "11.2.0.2" ] || [ "$VERSION" == "18.4.0" ]; then
+    DOCKERFILE="$DOCKERFILE.$EDITION"
+  fi;
+  # Oracle Database Image Nameorigin
+  IMAGE_NAME="oracle/database:$VERSION-$EDITION";
 fi;
-
-# Oracle Database Image Name
-IMAGE_NAME="oracle/database:$VERSION-$EDITION"
 
 # Go into version folder
 cd "$VERSION" || {
