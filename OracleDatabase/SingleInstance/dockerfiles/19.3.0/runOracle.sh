@@ -156,6 +156,9 @@ export ORACLE_PDB=${ORACLE_PDB^^}
 # Default for ORACLE CHARACTERSET
 export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
+# Call relinkOracleBinary.sh before the database is created or started
+. "$ORACLE_BASE/$RELINK_BINARY_FILE"
+
 # Check whether database already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    symLinkFiles;
