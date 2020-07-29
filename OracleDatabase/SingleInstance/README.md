@@ -59,6 +59,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_PWD=<your database passwords> \
+	-e ORACLE_EDITION=<your database edition> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
 	oracle/database:19.3.0-ee
@@ -70,6 +71,9 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+	   -e ORACLE_EDITION:
+	                  The Oracle Database Edition (enterprise/standard, default: enterprise)
+	                  Supported 19.3 onwards.
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
 	   -v /opt/oracle/oradata
