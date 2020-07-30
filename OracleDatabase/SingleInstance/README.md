@@ -72,7 +72,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 	   -e ORACLE_EDITION:
-	                  The Oracle Database Edition (enterprise/standard, default: enterprise)
+	                  The Oracle Database Edition (enterprise/standard).
 	                  Supported 19.3 onwards.
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
@@ -98,6 +98,12 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 	https://localhost:5500/em/
 
 **NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
+
+#### Selecting the Edition (Supported from 19.3.0 release)
+
+The edition of the database can be changed during runtime by passing the ORACLE_EDITION parameter to the docker run command. Therefore, an enterprise docker image can be used to run standard edition database and vice-versa. You can find the edition of the running database in the output line:
+
+    ORACLE EDITION:
 
 #### Changing the admin accounts passwords
 
