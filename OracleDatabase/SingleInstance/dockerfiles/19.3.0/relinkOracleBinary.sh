@@ -24,12 +24,12 @@ fi
 
 # If datafiles already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
-    datafiles_edition=$(echo $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/.docker_*) | rev | cut -d_ -f1 | rev)
+    datafiles_edition=$(ls $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/.docker_* | rev | cut -d_ -f1 | rev)
     if [ "${ORACLE_EDITION}" != "" ] && [ "${ORACLE_EDITION,,}" != $datafiles_edition ]; then
         echo "The datafiles being used were created with $datafiles_edition edition software home. \
         Please pass -e ORACLE_EDITION=$datafiles_edition to the docker run cmd.";
         exit 1;
-    elif [ "${CURRENT_EDITION,,}" != $datafiles_edition ]; then
+    elif [ "${ORACLE_EDITION}" == "" ] && [ "${CURRENT_EDITION,,}" != $datafiles_edition ]; then
         echo "The current software home is of ${CURRENT_EDITION,,} edition whereas \
         the datafiles being used were created with $datafiles_edition edition software home. \
         Please pass -e ORACLE_EDITION=$datafiles_edition to the docker run cmd.";
