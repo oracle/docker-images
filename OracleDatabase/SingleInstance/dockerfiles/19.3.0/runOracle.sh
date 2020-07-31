@@ -22,6 +22,7 @@ function moveFiles {
    mv $ORACLE_HOME/network/admin/sqlnet.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    mv $ORACLE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_HOME/install/.docker_* $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
 
    # oracle user does not have permissions in /etc, hence cp and not mv
    cp /etc/oratab $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
@@ -181,7 +182,7 @@ else
    
   # Create database
   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD;
-   
+
   # Move database operational files to oradata
   moveFiles;
    
