@@ -105,6 +105,8 @@ The edition of the database can be changed during runtime by passing the ORACLE_
 
     ORACLE EDITION:
 
+This parameter modifies the software home binaries but it doesn't have any effect on the datafiles. So, if existing datafiles are reused to bring up the database, the same ORACLE_EDITION must be passed as the one used to create the datafiles for the first time.
+
 #### Changing the admin accounts passwords
 
 On the first startup of the container a random password will be generated for the database if not provided. You can find this password in the output line:  
