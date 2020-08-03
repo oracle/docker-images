@@ -47,8 +47,9 @@ ENV ORACLE_HOME=/u01/oracle \
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
 RUN mkdir -p /u01 && \
-    chmod a+xr /u01 && \
-    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
+    chown oracle:root -R /u01 && \
+    chmod -R 775 /u01
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -57,11 +58,7 @@ ENV FMW_PKG=fmw_12.2.1.4.0_wls_Disk1_1of1.zip \
 
 # Copy packages
 # -------------
-COPY $FMW_PKG install.file oraInst.loc /u01/
-RUN chown oracle:root -R /u01 && \
-   chgrp -R 0 /u01 && \
-   chmod -R u+xwr /u01 && \
-   chmod -R g+rwX /u01
+COPY --chown=oracle:root $FMW_PKG install.file oraInst.loc /u01/
 
 # Install
 # ------------------------------------------------------------
@@ -93,8 +90,7 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
 RUN mkdir -p /u01 && \
-    chmod a+xr /u01 && \
-    chmod -R g+rwX /u01 && \
+    chmod 775 /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
     chown oracle:root /u01
 
