@@ -46,7 +46,7 @@ ENV ORACLE_HOME=/u01/oracle \
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN mkdir -p /u01 && \
+RUN mkdir /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
     chown oracle:root -R /u01 && \
     chmod -R 775 /u01
