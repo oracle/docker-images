@@ -42,9 +42,10 @@ ENV ORACLE_HOME=/u01/oracle \
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
-RUN mkdir -p /u01 && \
-    chmod a+xr /u01 && \
-    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle
+RUN mkdir /u01 && \
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
+    chown oracle:root -R /u01 && \
+    chmod -R 775 /u01
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -53,8 +54,7 @@ ENV FMW_PKG=fmw_14.1.1.0.0_wls_quick_slim_Disk1_1of1.zip \
 
 # Copy packages
 # -------------
-COPY $FMW_PKG install.file oraInst.loc /u01/
-RUN chown oracle:oracle -R /u01
+COPY --chown=oracle:root $FMW_PKG install.file oraInst.loc /u01/
 
 # Install
 # ------------------------------------------------------------
@@ -88,18 +88,18 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # ------------------------------------------------------------
 RUN mkdir -p /u01 && \
-    chmod a+xr /u01 && \
+    chmod 775 /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
-    chown oracle:oracle /u01
+    chown oracle:root /u01
 
-COPY --from=builder --chown=oracle:oracle /u01 /u01
+COPY --from=builder --chown=oracle:root /u01 /u01
 
 # Copy scripts
 #-------------
 COPY container-scripts/createAndStartEmptyDomain.sh container-scripts/create-wls-domain.py container-scripts/get_healthcheck_url.sh /u01/oracle/
 
 RUN chmod +xr $SCRIPT_FILE $HEALTH_SCRIPT_FILE && \
-    chown oracle:oracle $SCRIPT_FILE /u01/oracle/create-wls-domain.py $HEALTH_SCRIPT_FILE
+    chown oracle:root $SCRIPT_FILE /u01/oracle/create-wls-domain.py $HEALTH_SCRIPT_FILE
 
 USER oracle
 
