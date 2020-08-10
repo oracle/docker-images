@@ -7,7 +7,7 @@ It's not intended for production use as the values used are not necessarily appr
 # Configuration
 This example YAML file will create:
 * A namespace _example-namespace_ to hold all objects
-* A ConfigMap _oracle-rdbms-config_ that describes database initiization settings (characterset, name, etc)
+* A ConfigMap _oracle-rdbms-config_ that describes database initialization settings (characterset, name, etc)
 * A PersistantVolumeClaim _oracle-rdbms-oradata_ that will hold the database files
 * A Deployment _oracle-rdbms_ that starts a container with the settings from _oracle-rdbms-config_ using the 
     volume _oracle-rdbms-oradata_ and ensures it remains running
@@ -16,7 +16,7 @@ This example YAML file will create:
 Some key values customizable values:
 * _oracle-rdbms_
   * image: "local-repo.com/oracle/database:19.3.0-ee"
-  * livenessProbe.initialDelaySeconds: 300        # In seconds, this is five minutes
+  * livenessProbe.initialDelaySeconds: 300               # In seconds, this is five minutes
 * _oracle-rdbms-config_
   * ORACLE_CHARACTERSET: "AL32UTF8"
   * ORACLE_EDITION: "enterprise"
@@ -28,7 +28,7 @@ Some key values customizable values:
 You **must** change the image path to match your local image registry. 
 
 The livenessProbe will restart a container if it is not ready within the timeout, development systems may 
-    require more time and this should be adjusted accordingly
+    require more time and this should be adjusted accordingly.
 
 # Deployment
 
@@ -76,8 +76,8 @@ The livenessProbe will restart a container if it is not ready within the timeout
                          -o jsonpath={.data.ORACLE_PWD} | base64 --decode; echo
     ```
 
-1. Create a new database client container within the same namespace to talk to the database 
-    via the Service named _database_.
+1. Create a new database client container within the same namespace. This will talk to the database
+    via the Kubernetes Service named _database_.
 
     Replace `local-repo.com/oracle/instantclient:19` with the image path in your local image registry.
 
