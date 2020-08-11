@@ -72,9 +72,9 @@ The following tables lists the configurable parameters of the Oracle  Database c
 | oracle_edition                       | The database edition                       | enterprise                                                 |
 | persistence.size                     | Size of persistence storage                | 100g                                                       |
 | persistence.storageClass             | Storage Class for PVC                      |                                                            |
-| image                                | Image to pull                              | database19c:19.3.0                                         |
-| imagePullPolicy                      | Image pull policy                          | IfNotPresent                                               |
-| -------------------------------      | -------------------------------            | ---------------------------------------------------------- |
+| image                                | Image to pull                              | container-registry.oracle.com/database/enterprise:19.3.0.0 |
+| imagePullPolicy                      | Image pull policy                          | Always                                                     |
+
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
