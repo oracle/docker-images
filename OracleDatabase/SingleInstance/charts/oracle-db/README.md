@@ -3,9 +3,10 @@
 Oracle Database Server 19c is an industry leading relational database server.
 
 ## Getting started
-
+A Helm chart is used for packaging to make it easy to install in Kubernetes. The chart is available at [charts/oracle-db](./) directory.
+Clone the repo and execute the following command to generate oracle-db-1.0.0.tgz
 ```console
-$helm install oracle-db
+$ helm package charts/oracle-db
 ```
 
 ## Introduction
@@ -16,9 +17,10 @@ For more information on Oracle Database Server 19c refer to http://docs.oracle.c
 
 ## Prerequisites
 
-- Kubernetes 1.11+
-- NFS PV provisioner support from https://github.com/kubernetes-incubator/external-storage/tree/master/nfs
-- Using Oracle Database Docker image require you to accept terms of service
+- Kubernetes 1.12+
+- Helm 2.x or 3.x
+- NFS PV: https://kubernetes.io/docs/concepts/storage/volumes/#nfs
+- Using Oracle Database Docker image requires you to accept terms of service
 
 ## Using Oracle  Database Docker image
 ### Accepting the terms of service
@@ -27,10 +29,15 @@ From the container-registry.oracle.com website accept `Terms of Service` for Ora
 
 ## Installing the Chart
 
-To install the chart with the release name `my-release`:
+To install the chart with the release name `db19c`:
 
-```console
-$ helm install --name my-release oracle-db
+Helm 3.x syntax
+```
+$ helm install db19c oracle-db-1.0.0.tgz
+```
+Helm 2.x syntax
+```
+$ helm install --name db19c oracle-db-1.0.0.tgz
 ```
 
 The command deploys Oracle Database on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
@@ -39,10 +46,15 @@ The command deploys Oracle Database on the Kubernetes cluster in the default con
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `my-release` deployment:
+To uninstall/delete the `db19c` deployment:
 
-```console
-$ helm delete my-release
+Helm 3.x syntax
+```
+$ helm uninstall db19c 
+```
+Helm 2.x syntax
+```
+$ helm delete db19c
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -66,16 +78,26 @@ The following tables lists the configurable parameters of the Oracle  Database c
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
-```console
-$ helm install --name my-release --set db_sid=ORCL,db_pdb=prod  local/oracle-db
+Helm 3.x syntax
+```
+$ helm install db19c --set oracle_sid=ORCL,oracle_pdb=prod oracle-db-1.0.0.tgz
+```
+Helm 2.x syntax
+```
+$ helm install --name db19c --set oracle_sid=ORCL,oracle_pdb=prod oracle-db-1.0.0.tgz
 ```
 
 The above command sets  the Oracle Database name to 'ORCL' and PDB name to 'prod'.
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
-```console
-$ helm install --name my-release -f values.yaml local/oracle-db
+Helm 3.x syntax
+```
+$ helm install db19c -f values.yaml oracle-db-1.0.0.tgz
+```
+Helm 2.x syntax
+```
+$ helm install --name db19c -f values.yaml oracle-db-1.0.0.tgz
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
@@ -83,7 +105,7 @@ $ helm install --name my-release -f values.yaml local/oracle-db
 
 ## Persistence
 
-The [Oracle Database](https://www.oracle.com) image stores the Oracle Database data files  and configurations at the `/ORCL` path of the container.
+The [Oracle Database](https://www.oracle.com) image stores the Oracle Database data files  and configurations at the `/opt/oracle/oradata` path of the container.
 
 Persistent Volume Claims are used to keep the data across deployments. 
 See the [Configuration](#configuration) section to configure the PVC or to disable persistence.

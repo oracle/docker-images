@@ -38,9 +38,9 @@ replicas: 1
 loadBalService: false
 
 ## name of image
-image: container-registry.oracle.com/oracle/database:19.3.0
+image: container-registry.oracle.com/database/enterprise:19.3.0.0
 
-## image pull policy, IfNotPresent or
+## image pull policy, IfNotPresent or Always
 imagePullPolicy: Always
 
 ## container registry login/password
