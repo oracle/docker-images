@@ -1,11 +1,11 @@
 # Oracle Database
 [Oracle](http://www.oracle.com)
-Oracle Database Server 19c is an industry leading relational database server.
+Database Server 19c is an industry leading relational database server.
 
 ## Getting started
-A Helm chart is used for packaging to make it easy to install in Kubernetes. The chart is available at [charts/oracle-db](./) directory.
+A Helm chart is used for packaging the deployment yamls to simplify install in Kubernetes. The chart is available at [charts/oracle-db](./) directory.
 Clone the repo and execute the following command to generate oracle-db-1.0.0.tgz
-```console
+```
 $ helm package charts/oracle-db
 ```
 
@@ -20,7 +20,11 @@ For more information on Oracle Database Server 19c refer to http://docs.oracle.c
 - Kubernetes 1.12+
 - Helm 2.x or 3.x
 - NFS PV: https://kubernetes.io/docs/concepts/storage/volumes/#nfs
-- Using Oracle Database Docker image requires you to accept terms of service
+- Using Oracle Database Docker image requires you to accept terms of service from https://container-registry.oracle.com
+- Create image pull secrets
+    ``` 
+    $ kubectl create secret docker-registry regcred --docker-server=container-registry.oracle.com --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+    ```
 
 ## Using Oracle  Database Docker image
 ### Accepting the terms of service
@@ -72,8 +76,10 @@ The following tables lists the configurable parameters of the Oracle  Database c
 | oracle_edition                       | The database edition                       | enterprise                                                 |
 | persistence.size                     | Size of persistence storage                | 100g                                                       |
 | persistence.storageClass             | Storage Class for PVC                      |                                                            |
+| loadBalService                       | Create a load balancer service instead of NodePort | false                                              |
 | image                                | Image to pull                              | container-registry.oracle.com/database/enterprise:19.3.0.0 |
 | imagePullPolicy                      | Image pull policy                          | Always                                                     |
+| imagePullSecrets                     | container registry login/password          |                                                            |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
