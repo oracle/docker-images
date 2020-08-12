@@ -4,7 +4,6 @@
 /GlassFish/               @arindam-bandyopadhyay
 /GraalVM/                 @mzachh
 /NoSQL/                   @anandchandak
-/OpenJDK/                 @aureliogrb
 /OracleBI/                @sjvp
 /OracleCoherence/         @thegridman
 /OracleDataIntegrator/    @mavaishn
@@ -16,7 +15,9 @@
 /OracleHTTPServer/        @Prabhat-Kishore
 /OracleInstantClient/     @cjbj
 /OracleJava/              @aureliogrb @Djelibeybi
+/OracleLinuxDevelopers/   @Djelibeybi
 /OracleRestDataServices/  @gvenzl
 /OracleTuxedo/            @toddinpal
-/OracleWebCenterSites/    @ashishchalak
+/OracleWebCenterSites/    @prshshuk
 /OracleWebLogic/          @mriccell
+/OracleSOASuite/          @rdas0405

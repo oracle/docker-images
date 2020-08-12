@@ -59,6 +59,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_PWD=<your database passwords> \
+	-e ORACLE_EDITION=<your database edition> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
 	oracle/database:19.3.0-ee
@@ -70,6 +71,9 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+	   -e ORACLE_EDITION:
+	                  The Oracle Database Edition (enterprise/standard).
+	                  Supported 19.3 onwards.
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
 	   -v /opt/oracle/oradata
@@ -94,6 +98,14 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 	https://localhost:5500/em/
 
 **NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
+
+#### Selecting the Edition (Supported from 19.3.0 release)
+
+The edition of the database can be changed during runtime by passing the ORACLE_EDITION parameter to the docker run command. Therefore, an enterprise docker image can be used to run standard edition database and vice-versa. You can find the edition of the running database in the output line:
+
+    ORACLE EDITION:
+
+This parameter modifies the software home binaries but it doesn't have any effect on the datafiles. So, if existing datafiles are reused to bring up the database, the same ORACLE_EDITION must be passed as the one used to create the datafiles for the first time.
 
 #### Changing the admin accounts passwords
 

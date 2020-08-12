@@ -1,8 +1,8 @@
 #!/bin/sh
 #
-#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014, 2020, Oracle and/or its affiliates.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # TAG_NAME              - Tag the docker image with this name. This overrides the default of 
 #                         12213-domain-home-in-imag:latest. 
