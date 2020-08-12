@@ -121,7 +121,7 @@ The password for those accounts can be changed via the **docker exec** command. 
 To run your Oracle Database 18c Express Edition Docker image use the **docker run** command as follows:
 
 	docker run --name <container name> \
-	-p <host port>:1521 -p <host port>:5500 \
+	-p <host port>:1521 -p <host port>:8080 \
 	-e ORACLE_PWD=<your database passwords> \
     -e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
