@@ -1,6 +1,6 @@
 # Oracle Database
 [Oracle](http://www.oracle.com)
-Database Server 19c is an industry leading relational database server.
+Database 19c is an industry leading relational database server.
 
 ## Getting started
 A Helm chart is used for packaging the deployment yamls to simplify install in Kubernetes. The chart is available at [charts/oracle-db](./) directory.
@@ -11,16 +11,16 @@ $ helm package charts/oracle-db
 
 ## Introduction
 
-The Oracle Database Server Chart contains the Oracle Database Server 19c running on Oracle Linux 7. This image contains a default database in a multitenant configuration with one pdb.
+The Oracle Database Chart contains the Oracle Database 19c running on Oracle Linux 7. This image contains a default database in a multitenant configuration with one pdb.
 
-For more information on Oracle Database Server 19c refer to http://docs.oracle.com/en/database/
+For more information on Oracle Database 19c refer to http://docs.oracle.com/en/database/
 
 ## Prerequisites
 
 - Kubernetes 1.12+
 - Helm 2.x or 3.x
 - NFS PV: https://kubernetes.io/docs/concepts/storage/volumes/#nfs
-- Using Oracle Database Docker image requires you to accept terms of service from https://container-registry.oracle.com
+- Using Oracle Database Docker image requires you to accept terms of service
 - Create image pull secrets
     ``` 
     $ kubectl create secret docker-registry regcred --docker-server=container-registry.oracle.com --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
@@ -28,7 +28,7 @@ For more information on Oracle Database Server 19c refer to http://docs.oracle.c
 
 ## Using Oracle  Database Docker image
 ### Accepting the terms of service
-From the container-registry.oracle.com website accept `Terms of Service` for Oracle Database Enterprise Edition.
+From the https://container-registry.oracle.com website accept `Terms of Service` for Oracle Database Enterprise Edition.
 
 
 ## Installing the Chart
