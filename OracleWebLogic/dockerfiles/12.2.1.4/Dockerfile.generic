@@ -8,7 +8,7 @@
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.4.0_wls_Disk1_1of1.zip
+# (1) fmw_12.2.1.4.0_wls_lite_Disk1_1of1.zip
 #     Download the Generic installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 #
 # (2) server-jre-8uXX-linux-x64.tar.gz
@@ -53,8 +53,8 @@ RUN mkdir /u01 && \
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV FMW_PKG=fmw_12.2.1.4.0_wls_Disk1_1of1.zip \
-    FMW_JAR=fmw_12.2.1.4.0_wls.jar
+ENV FMW_PKG=fmw_12.2.1.4.0_wls_lite_Disk1_1of1.zip \
+    FMW_JAR=fmw_12.2.1.4.0_wls_lite_generic.jar 
 
 # Copy packages
 # -------------
