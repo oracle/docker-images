@@ -7,7 +7,7 @@
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# fmw_14.1.1.0.0_wls_quick_Disk1_1of1.zip
+# fmw_14.1.1.0.0_wls_lite_quick_Disk1_1of1.zip
 # Download the Developer Quick installer from http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -48,8 +48,8 @@ RUN mkdir /u01 && \
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV FMW_PKG=fmw_14.1.1.0.0_wls_quick_Disk1_1of1.zip \ 
-    FMW_JAR=fmw_14.1.1.0.0_wls_quick.jar
+ENV FMW_PKG=fmw_14.1.1.0.0_wls_lite_quick_Disk1_1of1.zip \ 
+    FMW_JAR=fmw_14.1.1.0.0_wls_lite_quick_generic.jar
 
 # Copy packages
 # -------------
