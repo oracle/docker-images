@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
 # 
 
 SCRIPT_DIR=$(dirname $0)
@@ -28,7 +28,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2020 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
 
 EOF
 
