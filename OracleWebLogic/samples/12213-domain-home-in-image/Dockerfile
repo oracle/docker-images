@@ -71,6 +71,7 @@ COPY --chown=oracle:root properties/docker-build/domain*.properties ${PROPERTIES
 # Configuration of WLS Domain
 USER oracle
 RUN /u01/oracle/createWLSDomain.sh && \
+    chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \
     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
     rm ${PROPERTIES_FILE_DIR}/*.properties
 
