@@ -17,7 +17,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.2.1.3-developer
+FROM oracle/weblogic:12.2.1.4-developer
 
 # Maintainer
 # ----------
@@ -57,7 +57,9 @@ COPY --chown=oracle:root container-scripts/* /u01/oracle/
 
 #Create directory where domain will be written to
 USER root
-RUN mkdir -p ${PROPERTIES_FILE_DIR} && \
+RUN chmod +xw /u01/oracle/*.sh && \
+    chmod +xw /u01/oracle/*.py && \
+    mkdir -p ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
     chown -R oracle:root $DOMAIN_HOME/.. && \
     chmod -R 775 $DOMAIN_HOME/.. && \
