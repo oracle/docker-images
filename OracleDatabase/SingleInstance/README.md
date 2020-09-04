@@ -47,7 +47,7 @@ Before you build the image make sure that you have provided the installation bin
 
 You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
-The character set for the database is set during creating of the database. 11g Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
+The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
 
 ### Running Oracle Database in a Docker container
 
@@ -232,7 +232,7 @@ SQL scripts will be executed as sysdba, shell scripts will be executed as the cu
 recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
 
 **Note:** The startup scripts will also be executed after the first time database setup is complete.  
-**Note:** Use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/` for Express Edition.  
+**Note:** For 11gR2 Express Edition only, use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/`.
 
 The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
 
