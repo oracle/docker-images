@@ -6,9 +6,9 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018-2020 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 usage() {
 cat << EOF
@@ -17,12 +17,12 @@ Usage: buildDockerImage.sh -v [version] [-s]
 Builds a Docker Image for Apache HTTP Server (standalone) .
 
 Parameters:
-   -v: Release version to build. Required. E.g 12.2.1.3.0
+   -v: Release version to build. Required. E.g 12.2.1.3.0 or 12.2.1.4.0 (default version : 12.2.1.3.0)
    -s: skips the MD5 check of packages
 
 LICENSE Universal Permissive License v1.0
 
-Copyright (c) 2016-2018: Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2018-2020: Oracle and/or its affiliates. All rights reserved.
 
 
 EOF
@@ -33,7 +33,7 @@ exit 0
 # Validate packages
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
-  md5sum -c *.download
+   md5sum -c fmw_${VERSION}_wlsplugins_Disk1_1of1.zip.download
   if [ "$?" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder dockerfiles. See *.download files for more information"
@@ -42,9 +42,10 @@ checksumPackages() {
 }
 
 
-#Parameters
+#Default value of Parameters 
 VERSION="12.2.1.3.0"
 SKIPMD5=0
+
 while getopts "hsdgiv:" optname; do
   case "$optname" in
     "h")
@@ -63,16 +64,36 @@ while getopts "hsdgiv:" optname; do
   esac
 done
 
-# Apache Image Name
-IMAGE_NAME="oracle/apache:12.2.1.3"
 
-# cd $VERSION
+# Validate Versions, supported versions 12.2.1.3.0 and 12.2.1.4.0
+
+versionOK=false
+if [ "${VERSION}" = "NONE" ]; then
+   VERSION="12.2.1.3.0"
+   versionOK=true
+else
+  if [ ${VERSION} = 12.2.1.3.0 -o ${VERSION} = 12.2.1.4.0 ]; then
+       versionOK=true
+  fi
+fi
+
+# Confirm Versions Before starting the Build
+if [ "${versionOK}" = "false" ]; then
+  echo "ERROR: Incorrect version ${VERSION} specified"
+  usage
+fi
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
 else
   echo "Skipped MD5 checksum."
 fi
+
+# Apache Image Name
+IMAGE_NAME="oracle/apache:${VERSION%??}"
+
+# Build  Arg Version
+ARG_VERSION=" --build-arg VERSION=${VERSION}"
 
 # Proxy settings
 PROXY_SETTINGS=""
@@ -101,9 +122,10 @@ fi
 # ################## #
 echo "Building image '$IMAGE_NAME' ..."
 echo "Proxy Settings '$PROXY_SETTINGS'"
+echo "Build Arg Version '$ARG_VERSION'"
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile . || {
+docker build  --force-rm=true --no-cache=true $PROXY_SETTINGS -t $IMAGE_NAME  $ARG_VERSION -f Dockerfile . || {
   echo "There was an error building the image."
   exit 1
 }

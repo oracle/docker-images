@@ -13,6 +13,12 @@
 # Apache gets grumpy about PID files pre-existing
 rm -f /run/httpd/httpd.pid
 
+# Inorder to listen the apache container on port 8080, the variable NonPriviledgedPorts to be set to true.
+# Oracle user to update httpd conf file to support apache container on NonPriviledgedPorts 
+if [ ${NonPriviledgedPorts} = "true" ]; then
+  sudo  sed -i -e "s;Listen 80;Listen 8080;" /etc/httpd/conf/httpd.conf  
+fi
+
 echo $SSL_CERT_FILE $SSL_CERT_KEY_FILE $VIRTUAL_HOST_NAME 
 
 if [ ! -f /config/custom_mod_wl_apache.conf ]; then
