@@ -4,9 +4,9 @@ This project includes a Dockerfile and samples for standalone Apache HTTP Server
 
 ## Build Apache With the Plugin Docker Image
 
-This project offers a generic Dockerfile for the Apache HTTP Server with the Oracle WebLogic Server Proxy Plugin in standalone mode to build different verions of the `Apache` image. To assist in building the images, you can use the  `buildDockerImage.sh` script. The only supported versions are 12.2.1.3.0 & 12.2.1.4.0. This Docker file See below for instructions and usage.
+This project offers a generic Dockerfile for the Apache HTTP Server with the Oracle WebLogic Server Proxy Plugin in standalone mode to build different verions of the `Apache` image. To assist in building the images, you can use the  `buildDockerImage.sh` script. The only supported versions are 12.2.1.3.0 & 12.2.1.4.0. See below for instructions and usage.
 
-The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and construct the build args based on the verion of the apache image to be buil, is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
+The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and construct the build args based on the verion of the apache image to be built, is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
 
 IMPORTANT: You have to download the `Oracle WebLogic Server Proxy Plugin` of version 12.2.1.3.0 and 12.2.1.4.0  package (see the `.download` file) and place it in this directory.
 
@@ -78,11 +78,12 @@ Start an Apache container on NonPriviledgedPort by calling:
         $ docker run -d --name apache \
                      -e WEBLOGIC_HOST=<admin-host> \
                      -e WEBLOGIC_PORT=7001 \
+                     -e NonPriviledgedPorts=true \
                      -p 8080:8080 \
                      oracle/apache:<version>
 
 
-Now you can access the WebLogic Server Administration Console under `http://localhost/console` (NonPriviledgedPort 8080) instead of using port 7001. You can access the Console from a remote machine using the WebLogic Administration Server's `<admin-host>` instead of `localhost`.
+Now you can access the WebLogic Server Administration Console under `http://localhost:8080/console` (NonPriviledgedPort 8080) instead of using port 7001. You can access the Console from a remote machine using the WebLogic Administration Server's `<admin-host>` instead of `localhost`.
 
 ## Provide Your Own Apache Plugin Configuration
 If you want to start the Apache container with some pre-specified `mod_weblogic` configuration:
@@ -103,6 +104,7 @@ This mounting can be done by using the `-v` option with the `docker run` command
         $ docker run -v <host-config-dir>:/config -w /config \
                      -d -e WEBLOGIC_HOST=<admin-host> \
                      -e WEBLOGIC_PORT=7001 \
+                     -e NonPriviledgedPorts=true \
                      -p 8080:8080 oracle/apache:<version>
 
 **Note**: You can also mount the file directly as follows:
@@ -119,6 +121,7 @@ This mounting can be done by using the `-v` option with the `docker run` command
             -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf  \
             -w /config -d -e WEBLOGIC_HOST=<admin-host> \
             -e WEBLOGIC_PORT=7001 \
+            -e NonPriviledgedPorts=true \
             -p 8080:8080 oracle/apache:<version>
 
 
