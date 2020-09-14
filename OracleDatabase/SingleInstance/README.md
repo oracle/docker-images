@@ -130,7 +130,7 @@ To run your Oracle Database 18c Express Edition Docker image use the **docker ru
 	Parameters:
 	   --name:        The name of the container (default: auto generated)
 	   -p:            The port mapping of the host port to the container port.
-	                  Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
+	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (EM Express)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
