@@ -7,7 +7,7 @@ LABEL "org.opencontainers.image.authors"="Oracle Linux Product Team <ol-ovm-info
       "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleLinuxDevelopers/oraclelinux7/nodejs/12-oracledb" \
       "org.opencontainers.image.vendor"="Oracle America, Inc" \
       "org.opencontainers.image.description"="Oracle Linux 7 (slim) with Node.js 12 installed \
-      and Oracle Datbase connectivity enabled."
+      and Oracle Database connectivity enabled."
 
 RUN yum -y install oracle-nodejs-release-el7 oracle-release-el7 && \
     yum -y install nodejs node-oracledb-node12 && \
