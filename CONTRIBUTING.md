@@ -32,20 +32,20 @@ signed the OCA can be accepted.
 
 ## Oracle Product Ownership and Responsibility
 
-For any new product content, *you must obtain internal Oracle approvals for the 
-distribution of this content prior to submitting a pull request*. If you are 
+For any new product content, *you must obtain internal Oracle approvals for the
+distribution of this content prior to submitting a pull request*. If you are
 unfamiliar with the approval process to submit code to an existing GitHub
 repository, please contact the [Oracle Open Source team](mailto:opensource_ww_grp@oracle.com)
 for details.
 
-The GitHub user who submits the initial pull request to add a new product image 
-should add themselves to the [code owner](./CODEOWNERS) file in that same 
-request. This will flag the user as the owner of the content and any future pull 
+The GitHub user who submits the initial pull request to add a new product image
+should add themselves to the [code owner](./CODEOWNERS) file in that same
+request. This will flag the user as the owner of the content and any future pull
 requests that affect the conten will need to be approved by this user.
 
 The code owner will also be assigned to any issues relating to their content.
 
-You must ensure that you check the [issues](https://github.com/oracle/docker-images/issues) 
+You must ensure that you check the [issues](https://github.com/oracle/docker-images/issues)
 on at least a weekly basis, though daily is preferred.
 
 If you wish to nominate additional or alternative users, they must be a visible
@@ -92,13 +92,22 @@ the image owner to implement it.
 1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
 to be extended, then this should output documentation on how to extend the
 image to be useful.
-1. Use `LABEL` instructions for additional information such as ports and volumes. The following are common label instructions that should be present in all images where applicable:
+1. Use `LABEL` instructions for additional information such as ports and volumes.
+The following [OpenContainer `image-spec`](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
+labels are recommended as a base set, but none are mandatory:
+
+* `org.opencontainers.image.description`: used by GitHub Container Registry.
+* `org.opencontainers.image.authors`: replaces the deprecated `MAINTAINER` directive.
+* `org.opencontainers.image.url`: can either point to this repository or a product landing site.
+* `org.opencontainers.image.documentation`: can either point to a `README.md` file in this repository or the product documentation.
+* `org.opencontainers.image.source`: should point to this repository.
+* `org.opencontainers.image.vendor`: should always be set to `Oracle America, Inc."
+* `org.opencontainers.image.title`: should be set to the official product name
+
+Additional product-specific labels are listed below:
 
 | Label   | Value | Applicability |
 | -------- | ----- | ------------- |
-| provider | `Oracle` | All images |
-| issues | `https://github.com/oracle/docker-images/issues` | All images |
-| maintainer | Name of the maintainer | At the discretion of the author. |
 | volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.<br/>If your image has multiple volumes, use qualified names to specify the purpose of each volume, for example `volume.data` for data to be persisted outside the container.<br/>Use hierarchical nesting for multiple volumes of the same type, for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul> | Mandatory for all images that require persistent storage beyond the life of an individual container. |
 | port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If your images has multiple ports, use qualified names to specify the purpose of each port, for example `port.app` for the port on which your application is reachable.<br/>Use hierarchical nesting for multiple ports of the same type, for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> | Mandatory for all images that require externally accessible port mappings. |
 
