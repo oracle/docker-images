@@ -93,21 +93,15 @@ the image owner to implement it.
 to be extended, then this should output documentation on how to extend the
 image to be useful.
 1. Use `LABEL` instructions for additional information such as ports and volumes.
-The following [OpenContainer `image-spec`](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
-labels are recommended as a base set, but none are mandatory:
-
-* `org.opencontainers.image.description`: used by GitHub Container Registry.
-* `org.opencontainers.image.authors`: replaces the deprecated `MAINTAINER` directive.
-* `org.opencontainers.image.url`: can either point to this repository or a product landing site.
-* `org.opencontainers.image.documentation`: can either point to a `README.md` file in this repository or the product documentation.
-* `org.opencontainers.image.source`: should point to this repository.
-* `org.opencontainers.image.vendor`: should always be set to `Oracle America, Inc."
-* `org.opencontainers.image.title`: should be set to the official product name
+The following are common label instructions that should be present in all images where applicable:
 
 Additional product-specific labels are listed below:
 
 | Label   | Value | Applicability |
 | -------- | ----- | ------------- |
+| provider | `Oracle` | All images |
+| issues | `https://github.com/oracle/docker-images/issues` | All images |
+| maintainer | Name of the maintainer | At the discretion of the author. |
 | volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.<br/>If your image has multiple volumes, use qualified names to specify the purpose of each volume, for example `volume.data` for data to be persisted outside the container.<br/>Use hierarchical nesting for multiple volumes of the same type, for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul> | Mandatory for all images that require persistent storage beyond the life of an individual container. |
 | port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If your images has multiple ports, use qualified names to specify the purpose of each port, for example `port.app` for the port on which your application is reachable.<br/>Use hierarchical nesting for multiple ports of the same type, for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> | Mandatory for all images that require externally accessible port mappings. |
 
@@ -125,6 +119,22 @@ LABEL "provider"="Oracle"                                   \
       "port.oemexpress"="5500"                                          \
       "port.apex"="8080"
 ```
+
+You may also chose to use the [OpenContainer `image-spec`](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
+pre-defined annotation keys:
+
+* **org.opencontainers.image.created** date and time on which the image was built (string, date-time as defined by [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6)).
+* **org.opencontainers.image.authors** contact details of the people or organization responsible for the image (freeform string)
+* **org.opencontainers.image.url** URL to find more information on the image (string)
+* **org.opencontainers.image.documentation** URL to get documentation on the image (string)
+* **org.opencontainers.image.source** URL to get source code for building the image (should be the URL of this repository).
+* **org.opencontainers.image.version** version of the packaged software
+* **org.opencontainers.image.vendor** Name of the distributing entity, organization or individual (should be "Oracle").
+* **org.opencontainers.image.licenses** License(s) under which contained software is distributed as an [SPDX License Expression][spdx-license-expression].
+* **org.opencontainers.image.title** Human-readable title of the image (string)
+* **org.opencontainers.image.description** Human-readable description of the software packaged in the image (string)
+
+The use of these keys is optional and at each image authors' discretion.
 
 ### Security-related Rules
 
