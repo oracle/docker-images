@@ -1,14 +1,16 @@
-Oracle Java OpenJDK
+Oracle Java OpenJDK on Docker
 =====
-This repository contains a sample Docker configuration to facilitate installation and environment setup for DevOps users. This project includes a Dockerfile for Oracle OpenJDK 14 based on Oracle Linux.
+This repository contains sample Docker configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles for Oracle OpenJDK based on Oracle Linux.
 
-## Building the Java 14 (OpenJDK) base image
-
-Build it using:
-
+## Building the Oracle Java OpenJDK base image
+Navigate to the folder containing the Dockerfile and run:
 ```
-$ cd ../OracleOpenJDK/14
-$ docker build -t oracle/openjdk:14 .
+$ docker build -t oracle/openjdk:xx .
+```
+
+This command is already scripted in build.sh so you can alternatively run:
+```
+$ bash build.sh
 ```
 
 ## License
