@@ -15,7 +15,7 @@
 # Put all downloaded files in the same directory as this Dockerfile
 # RUN:
 #      $ sh buildDockerImage.sh -v <version>
-#  The value of version is either 12.2.1.3 or 12.2.1.4   
+#  The value of version is either 12.2.1.3.0 or 12.2.1.4.0   
 #
 # PULL BASE IMAGE
 # -----------------------------------
@@ -50,15 +50,18 @@ COPY custom_mod_mpm.conf.sample /etc/httpd/conf.modules.d/00-mpm.conf
 COPY custom_mod_cgi.conf.sample /etc/httpd/conf.modules.d/01-cgi.conf
 COPY container-scripts/* /u01/oracle/container-scripts/
 
+
 # Use unzip because the base image does not contain a JDK
 # Note that adding unzip does not noticeably increase the size of the image
 RUN yum install -y sudo unzip httpd libaio mod_ssl.x86_64 && \
     groupadd sudo && \					 
     useradd -b /u01 -d /u01/oracle -m -G sudo -s /bin/bash oracle && \
-    touch /etc/sudoers && \
-    sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
-    sed -i /etc/sudoers -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
-    echo "oracle ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    touch /etc/sudoers.d/oracle && \
+    visudo -c -q -f /etc/sudoers.d/oracle && \
+    chmod 600 /etc/sudoers.d/oracle && \
+    sed -i /etc/sudoers.d/oracle -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    sed -i /etc/sudoers.d/oracle -re 's/^root.*/root ALL=(ALL:ALL) NOPASSWD: ALL/g' && \
+    echo "oracle ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/oracle && \
     unzip /tmp/$FMW_PKG -d /tmp && \
     unzip /tmp/$PLUGINS_PKG -d /tmp && \
     unzip /tmp/$PLUGIN_PKG -d $PLUGIN_HOME && \
