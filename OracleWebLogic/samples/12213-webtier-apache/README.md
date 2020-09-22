@@ -1,14 +1,14 @@
 Apache HTTP Server with Oracle WebLogic Server Proxy Plugin on Docker
 ===============
-This project includes a Dockerfile and samples for standalone Apache HTTP Server with the 12.2.1.3.0 and 12.2.1.4.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux. This is a generic Docker File and can be used to build apache images of different versions and to support containers to run on differnet ports i.e 80 and 8080. The certification of Apache on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Dockerfiles.The only supported versions are 12.2.1.3.0 & 12.2.1.4.0.
+This project includes a Dockerfile and samples for standalone Apache HTTP Server with the 12.2.1.3.0 and 12.2.1.4.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux. This is a generic Dockerfile and can be used to build Apache images of different versions and to support containers to run on different ports, such as 80 and 8080. The certification of Apache on Docker does not require the use of any file in this repository. Customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Dockerfiles.The only supported versions are 12.2.1.3.0 and 12.2.1.4.0.
 
 ## Build Apache With the Plugin Docker Image
 
-This project offers a generic Dockerfile for the Apache HTTP Server with the Oracle WebLogic Server Proxy Plugin in standalone mode to build different verions of the `Apache` image. To assist in building the images, you can use the  `buildDockerImage.sh` script. The only supported versions are 12.2.1.3.0 & 12.2.1.4.0. See below for instructions and usage.
+This project offers a generic Dockerfile for the Apache HTTP Server with the Oracle WebLogic Server Proxy Plugin in standalone mode to build different versions of the `Apache` image. To assist in building the images, you can use the  `buildDockerImage.sh` script. The only supported versions are 12.2.1.3.0 and 12.2.1.4.0. See below for instructions and usage.
 
-The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and construct the build args based on the verion of the apache image to be built, is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
+The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and constructs the build args based on the version of the Apache image to be built; it is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
 
-IMPORTANT: You have to download the `Oracle WebLogic Server Proxy Plugin` of version 12.2.1.3.0 and 12.2.1.4.0  package (see the `.download` file) and place it in this directory.
+IMPORTANT: You have to download the `Oracle WebLogic Server Proxy Plugin`, version 12.2.1.3.0 or 12.2.1.4.0 package, (see the `.download` file) and place it in this directory.
 
 Run the `buildDockerImage.sh` script with version option `-v`.
 
@@ -63,7 +63,7 @@ NOTE: To set the `DOMAIN_NAME`, you must set both `DOMAIN_NAME` and `DOMAIN_HOME
                      -p 7001:7001 \
                      store/oracle/weblogic:<version>
 
-Start an Apache container on default port by calling:
+Start an Apache container on the default port by calling:
 
         $ docker run -d --name apache \
                      -e WEBLOGIC_HOST=<admin-host> \

@@ -6,7 +6,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016-2020 Oracle and/or its affiliates.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -22,7 +22,7 @@ Parameters:
 
 LICENSE Universal Permissive License v1.0
 
-Copyright (c) 2016-2020: Oracle and/or its affiliates.
+Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 
 
 EOF

@@ -6,15 +6,15 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2018-2020 Oracle and/or its affiliates.
+# Copyright (c) 2018, 2020, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # Apache gets grumpy about PID files pre-existing
 rm -f /run/httpd/httpd.pid
 
-# Inorder to listen the apache container on port 8080, the variable NonPriviledgedPorts to be set to true.
-# Oracle user to update httpd conf file to support apache container on NonPriviledgedPorts 
+# To listen to the Apache container on port 8080, the variable NonPriviledgedPorts must to be set to true.
+# Oracle user to update httpd conf file to support Apache container on NonPriviledgedPorts 
 if [ ${NonPriviledgedPorts} = "true" ]; then
   sudo  sed -i -e "s;Listen 80;Listen 8080;" /etc/httpd/conf/httpd.conf  
 fi

@@ -1,13 +1,13 @@
 # Example of Apache HTTP Server with WebLogic plugin for load balancing WebLogic on Docker Containers
 #
-# Copyright (c) 2016-2020 Oracle and/or its affiliates.
+# Copyright (c) 2016, 2020, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# For version 12.2.1.3 Required file fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip
-# For Version 12.2.1.4 Required file fmw_12.2.1.4.0_wlsplugins_Disk1_1of1.zip
+# For version 12.2.1.3.0, the required file is fmw_12.2.1.3.0_wlsplugins_Disk1_1of1.zip
+# For version 12.2.1.4.0, the required file is fmw_12.2.1.4.0_wlsplugins_Disk1_1of1.zip
 # Download the generic installer from http://www.oracle.com/technetwork/middleware/webtier/downloads/index-jsp-156711.html and save it in this same folder.
 #
 # HOW TO BUILD THIS IMAGE
