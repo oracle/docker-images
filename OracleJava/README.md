@@ -1,6 +1,6 @@
 Oracle Java on Docker
 =====
-This repository contains sample Docker configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of currently supportes versions 11 and later and for Server JRE 8.
+This repository contains sample Docker configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of currently supported versions 11 and later and for Server JRE 8.
 
 Oracle Java Server JRE provides the features from Oracle Java JDK commonly required for server-side applications (i.e. Running a Java EE application server). For more information about Server JRE, visit the [Understanding the Server JRE blog entry](https://blogs.oracle.com/java-platform-group/understanding-the-server-jre) from the Java Product Management team.
 
