@@ -1,0 +1,5 @@
+[python38]
+name=python38
+stream=3.8
+profiles=common
+state=enabled

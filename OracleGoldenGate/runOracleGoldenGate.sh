@@ -229,6 +229,7 @@ function createDeployment {
              --portPmSrvr=${Port_MetricsServer} --enablePmSrvr=Yes \
              --portPmSrvrUdp=${Port_MetricsServerUDP} \
              --ggSchema=${OGG_SCHEMA} \
+             --envTnsAdmin=${TNS_ADMIN:=${OGG_DEPLOY_BASE}/${OGG_DEPLOYMENT}/etc} \
             ${secureOption}
     else
         return 0

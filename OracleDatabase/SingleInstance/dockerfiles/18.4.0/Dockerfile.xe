@@ -12,7 +12,6 @@
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put the downloaded file in the same directory as this Dockerfile
 # Run: 
 #      $ docker build -t oracle/database:18.4.0-xe -f Dockerfile.xe .
 #

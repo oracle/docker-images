@@ -40,7 +40,7 @@ admin_host() {
 admin_host
 domain_host_volume
 
-echo " docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.3"
+echo " docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.4"
 
-docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.3
+docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${domainhostvol}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:12.2.1.4
 

@@ -1,0 +1,5 @@
+[nodejs]
+name=nodejs
+stream=10
+profiles=s2i
+state=enabled
