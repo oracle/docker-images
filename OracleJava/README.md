@@ -10,15 +10,17 @@ Download the linux x-64 compressed archive (tar.gz) [JDK or Server JRE] (https:/
 e.g. for JDK 14 download jdk-14[X]_linux-x64_bin.tar.gz into OracleJava/14, 
 for ServerJRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
 
-Navigate to the folder containing the downloads and run docker build.  Tag it with the correct version number.
+Navigate to the folder containing the download and run docker build. Tag it with the correct version number.
 
 e.g. For JDK 14 run
 ```
+$ cd ../OracleJava/14
 $ docker build -t oracle/jdk:14 .
 ```
 
-for Server JRE run
+for Server JRE 8 run
 ```
+$ cd ../OracleJava/8
 $ docker build -t oracle/serverjre:8 .
 ```
 
