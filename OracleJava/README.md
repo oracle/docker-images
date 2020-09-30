@@ -1,23 +1,30 @@
 Oracle Java on Docker
 =====
-This repository contains sample Docker configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux for all the currently available Oracle JDK's and Server JRE 8.
+This repository contains sample Docker configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of currently supported versions 11 and later and for Server JRE 8.
 
 Oracle Java Server JRE provides the features from Oracle Java JDK commonly required for server-side applications (i.e. Running a Java EE application server). For more information about Server JRE, visit the [Understanding the Server JRE blog entry](https://blogs.oracle.com/java-platform-group/understanding-the-server-jre) from the Java Product Management team.
 
 ## Building the Oracle Java base image
-[Download JDK or Server JRE](https://www.oracle.com/in/java/technologies/javase-downloads.html) file as per your requirement from [Oracle Technical Resources](https://www.oracle.com/in/technical-resources/) and place it in the same directory as the Dockerfile.
+Download the linux x-64 compressed archive (tar.gz) [JDK or Server JRE] (https://www.oracle.com/in/java/technologies/javase-downloads.html) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
 
-Navigate to the folder containing the downloads and run:
+e.g. for JDK 14 download jdk-14[X]_linux-x64_bin.tar.gz into OracleJava/14, 
+for ServerJRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
+
+Navigate to the folder containing the download and run docker build. Tag it with the correct version number.
+
+e.g. For JDK 14 run
 ```
-$ docker build -t oracle/jdk:xx .
+$ cd ../OracleJava/14
+$ docker build -t oracle/jdk:14 .
 ```
-for JDK's and
+
+for Server JRE 8 run
 ```
+$ cd ../OracleJava/8
 $ docker build -t oracle/serverjre:8 .
 ```
-for Server JRE.
 
-This command is already scripted in build.sh so you can alternatively run:
+The right command with the correct tag is already scripted in build.sh so you can alternatively run:
 ```
 $ bash build.sh
 ```
@@ -28,4 +35,4 @@ To download and run the Oracle JDK or Server JRE, regardless of inside or outsid
 All scripts and files hosted in this project and GitHub [`docker/OracleJava`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Customer Support
-We support JDK 8 (Server JRE), JDK 11, JDK 14 and JDK 15 when running on certified operating systems in a Docker container. For additional details on the JDK Certified System Configurations, please refer to the [Oracle Java SE Certified System Configuration Pages](https://www.oracle.com/technetwork/java/javaseproducts/documentation/index.html#sysconfig).
+Oracle offers support for JDK 8 (Server JRE), JDK 11, JDK 14 and JDK 15 when running on certified operating systems in a Docker container. For additional details on the JDK Certified System Configurations, please refer to the [Oracle Java SE Certified System Configuration Pages](https://www.oracle.com/technetwork/java/javaseproducts/documentation/index.html#sysconfig).
