@@ -16,12 +16,12 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/jdk:11 ..
+#      $ docker build -t oracle/jdk:11 .
 #
-# This command is already scripted on build.sh so you can alternatively run
+# This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
-# The builder image will be use to uncompress the tar.gz file with the Java Runtime.
+# The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
 FROM oraclelinux:7-slim as builder
 

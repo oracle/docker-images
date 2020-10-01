@@ -17,7 +17,7 @@
 # Run:
 #      $ docker build -t oracle/openjdk:14 .
 #
-# This command is already scripted on build.sh so you can alternatively run
+# This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
 
