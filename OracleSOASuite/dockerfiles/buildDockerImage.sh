@@ -18,11 +18,11 @@ Builds a Docker Image for Oracle SOA/OSB/BPM
 Parameters:
    -h: view usage
    -v: Release version to build. Required. Allowed values are
-       12.2.1.2, 12.2.1.3
+       12.2.1.2, 12.2.1.3, 12.2.1.4
    -s: Skip checksum verification
 
 LICENSE Universal Permissive License (UPL), Version 1.0
-Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2016-2017: Oracle and/or its affiliates.
 
 EOF
 exit 0
@@ -62,7 +62,7 @@ checksumPackages() {
   if [ "$?" -ne 0 ]; then
     cat <<EOF
 
-ERROR: MD5 for required packages to build the ${VERSION} 
+ERROR: MD5 for required packages to build the ${VERSION}
        image did not match. Please make sure to download
        or check the files in the ${VERSION} folder.
 EOF
@@ -102,7 +102,7 @@ fi
 . ../setenv.sh
 
 versionOK=false
-if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 ]
+if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 -o ${VERSION} = 12.2.1.4 ]
 then
   IMAGE_NAME="oracle/soa:$VERSION"
   DOCKERFILE_NAME=Dockerfile
@@ -172,7 +172,7 @@ echo ""
 
 if [ $? -eq 0 ]; then
   cat << EOF
-INFO: Oracle SOA suite Docker Image for version: $VERSION 
+INFO: Oracle SOA suite Docker Image for version: $VERSION
       is ready to be extended.
       --> $IMAGE_NAME
 INFO: Build completed in $BUILD_ELAPSED seconds.
