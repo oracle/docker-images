@@ -4,6 +4,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
+*~
 OUD
 *.tmp
 *.tar
@@ -21,3 +22,5 @@ dockerfiles/**/opatch_patch
 dockerfiles/**/patches
 samples/oud-add-dir-to-remote.env
 samples/stress-oud-dir.env
+CONTRIBUTING.md
+LICENSE.txt

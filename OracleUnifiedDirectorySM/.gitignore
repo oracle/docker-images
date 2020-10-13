@@ -4,7 +4,9 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
 #
+*~
 OUD
+OUDSM
 *.tmp
 *.tar
 *.tar.gz
@@ -19,3 +21,5 @@ setenv.sh
 dockerfiles/**/install
 dockerfiles/**/opatch_patch
 dockerfiles/**/patches
+CONTRIBUTING.md
+LICENSE.txt
