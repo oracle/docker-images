@@ -1,0 +1,48 @@
+[before-jdk-install]
+# Instructions/Commands to be executed Before JDK install
+
+[after-jdk-install]
+# Instructions/Commands to be executed After JDK install
+
+[final-build-commands]
+
+ENV BASE_DIR=/u01 \
+    ORACLE_HOME=/u01/oracle \
+    SCRIPT_DIR=/u01/oracle/container-scripts \
+    USER_PROJECTS_DIR=/u01/oracle/user_projects \
+	OUD_INSTANCE_NAME=${OUD_INSTANCE_NAME:-asinst_1} \	
+    PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+
+USER root
+
+RUN mkdir -p ${USER_PROJECTS_DIR} && \
+    chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 770 ${USER_PROJECTS_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
+    yum install -y libaio hostname vi && \
+    rm -rf /var/cache/yum
+
+COPY --chown=oracle:oracle files/container-scripts/ ${SCRIPT_DIR}/
+RUN chmod a+xr ${SCRIPT_DIR}/* && \
+     chown -R oracle:oracle ${SCRIPT_DIR}
+
+USER oracle
+# Disabling Enpoint Identification for selected CLIs to allow connecting to OUD Instance with any hostname \
+RUN echo "" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "dsconfig.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "dsreplication.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "uninstall.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "status.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "import-ldif.online.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "manage-suffix.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "ldapmodify.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    echo "ldapsearch.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+	echo "start-ds.java-args=-server -Xms256m -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
+    ${ORACLE_HOME}/oud/bin/dsjavaproperties
+
+# run container health check
+HEALTHCHECK --interval=1m --start-period=5m \
+   CMD "${SCRIPT_DIR}/checkOUDInstance.sh" > /dev/null || exit 1
+   
+# Create and Start OUD Instance
+# ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createAndStartOUDInstance.sh"]
+CMD ["sh", "-c", "${SCRIPT_DIR}/createAndStartOUDInstance.sh"]

@@ -1,0 +1,21 @@
+#
+# Copyright (c) 2020 Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+OUD
+*.tmp
+*.tar
+*.tar.gz
+*.tgz
+*.out
+tmp*
+pipeline.yaml
+kubernetes
+setenv.sh
+**/buildDockerImage.sh
+**/Dockerfile
+dockerfiles/**/install
+dockerfiles/**/opatch_patch
+dockerfiles/**/patches
