@@ -7,76 +7,133 @@ Building OUDSM image with WebLogic Image Tool
 2. [Prerequisites](#2-prerequisites)
 3. [Setup WebLogic Image Tool](#3-setup-weblogic-image-tool)
 4. [Download the required packages/installers](#4-download-the-required-packagesinstallers)
-5. [Add installers/packages to the cache](#5-add-installerspackages-to-the-cache)
-6. [Additional build files](#6-additional-build-files)
-7. [Additional build commands](#7-additional-build-commands)
-8. [Create OUDSM image](#8-create-oud-image)
-9. [Sample Dockerfile genered with imagetool](#9-sample-dockerfile-genered-with-imagetool)
+5. [Additional build files](#5-additional-build-files)
+6. [Additional build commands](#6-additional-build-commands)
+7. [Steps to Create OUDSM image](#7-steps-to-create-oudsm-image)
+8. [Sample Dockerfile generated with imagetool](#8-sample-dockerfile-generated-with-imagetool)
 
 # 1. Introduction
-This README describes the steps involved in building OUDSM image with the WebLogic Image Tool.
+This README describes the steps involved in building an OUDSM image with the WebLogic Image Tool.
 
 # 2. Prerequisites
 
-* Docker client and daemon on the build machine, with minimum Docker version 18.03.1.ce.
-* Bash version 4.0 or later, to enable the <tab> command complete feature.
-* Set JAVA_HOME environment variable to the appropriate JDK location.
+The following prerequisites are necessary before building OUDSM Docker images with Image Tool:
+
+* A working installation of Docker 18.03 or later
+* Bash version 4.0 or later, to enable the command complete feature.
+* JAVA_HOME environment variable set to the location of your JDK e.g:  /scratch/export/oracle/product/jdk
 
 # 3. Setup WebLogic Image Tool
 
+* Download the latest WebLogic Image Tool version from the release [page](https://github.com/oracle/weblogic-image-tool/releases).
+* Unzip the release ZIP file to a desired \<work directory\>.
 
-* Download WebLogic Image Tool version 1.8.0 from the release [page](https://github.com/oracle/weblogic-image-tool/releases/download/release-1.8.0/imagetool.zip).
-* Unzip the release ZIP file to a desired location.
-* Run the following commands to setup imagetool
+```
+$ unzip imagetool.zip
+Archive:  imagetool.zip
+   creating: imagetool/
+   creating: imagetool/bin/
+  inflating: imagetool/bin/setup.sh
+  inflating: imagetool/bin/logging.properties
+  inflating: imagetool/bin/imagetool.cmd
+  inflating: imagetool/bin/imagetool.sh
+  inflating: imagetool/LICENSE.txt
+   creating: imagetool/lib/
+  inflating: imagetool/lib/imagetool_completion.sh
+  inflating: imagetool/lib/imagetool.jar
+  inflating: imagetool/VERSION.txt
+  inflating: imagetool/lib/fluent-hc-4.5.12.jar
+  inflating: imagetool/lib/httpclient-4.5.12.jar
+  inflating: imagetool/lib/httpcore-4.4.13.jar
+  inflating: imagetool/lib/commons-logging-1.2.jar
+  inflating: imagetool/lib/commons-codec-1.11.jar
+  inflating: imagetool/lib/httpmime-4.5.12.jar
+  inflating: imagetool/lib/picocli-4.3.2.jar
+  inflating: imagetool/lib/json-20200518.jar
+  inflating: imagetool/lib/compiler-0.9.6.jar
+$
+``` 
 
-        $ cd your_unzipped_location/bin
-        $ source setup.sh
+Run the following commands to setup imagetool
 
+```
+$ cd <work directory>/imagetool/bin
+$ source setup.sh
+```
+
+Execute the following to validate the WebLogic Image Tool:
+
+```
+$ ./imagetool.sh --version
+imagetool:1.9.3
+$
+```
+
+The Image Tool creates a temporary Docker context directory, prefixed by wlsimgbuilder_temp, every time the tool runs. Under normal circumstances, this context directory will be deleted. However, if the process is aborted or the tool is unable to remove the directory, it is safe for you to delete it manually. By default, the Image Tool creates the Docker context directory under the user's home directory. If you prefer to use a different directory for the temporary context, set the environment variable `WLSIMG_BLDDIR`.
+
+```
+$ export WLSIMG_BLDDIR="/path/to/dir"
+```
+
+The Image Tool maintains a local file cache store. This store is used to look up where the Java, WebLogic Server installers, and WebLogic Server patches reside in the local file system. By default, the cache store is located in the user's $HOME/cache directory. Under this directory, the lookup information is stored in the .metadata file. All automatically downloaded patches also reside in this directory. You can change the default cache store location by setting the environment variable `WLSIMG_CACHEDIR`.
+
+```
+$ export WLSIMG_CACHEDIR="/path/to/cachedir"
+```
 
 # 4. Download the required packages/installers
 
-Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. Below the list of packages/installers required for OUDSM image.
+Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice e.g: \<work directory\>/stage:
 
-* JDK - jdk-8u241-linux-x64.tar.gz
-* FMW Infrastructure - fmw_12.2.1.4.0_infrastructure_Disk1_1of1.zip
-* OUD/OUDSM - fmw_12.2.1.4.0_oud.jar
+* Oracle Unified Directory 12.2.1.4.0
+* Oracle JDK
+* Oracle Fusion Middleware Infrastructure 12.2.1.4.0
 
-Also download the required patches to be applied on the OUDSM image.
+**Note** : the required list of packages/installers & patches for specific bundled patchsets can be found in the latest manifest file. For example, the list below displays the packages/installers & patches from [manifest.oudsm.july2020.properties](manifest.oudsm.july2020.properties):
 
-# 5. Add installers/packages to the cache
+```
+[JDK]
+jdk-8u261-linux-x64.tar.gz
 
-Add the required installers, packages & patches to the imagetool cache. In the command, type, version and the location of the package/installer have to be provided.
+[INFRA]
+fmw_12.2.1.4.0_infrastructure.jar
 
-For adding the JDK to cache using sample command mentioned below...
+[INFRA_PATCH]
+p28186730_139424_Generic.zip:Opatch
+p31537019_122140_Generic.zip:WLS
+p31470730_122140_Generic.zip:COH
+p31488215_122140_Generic.zip:JDEV
 
-    $ imagetool cache addInstaller --type jdk --version 8u241 --path /scratch/software/jdk-8u241-linux-x64.tar.gz
+[OUDSM]
+fmw_12.2.1.4.0_oud_generic.jar
 
-For adding FMW infrastructure installer below the sample command,
+[OUDSM_PATCH]
+p31400392_122140_Generic.zip:OUD
+```
 
-	$ imagetool cache addInstaller --type fmw --version 12.2.1.4.0 --path /scratch/software/fmw_12.2.1.4.0_infrastructure_Disk1_1of1.zip
+Download any patches listed in the manifest file from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
 
-For adding OUD/OUDSM installer to cache using sample command mentioned below...
+# 5. Additional build files
 
-    $ imagetool cache addInstaller --type oud --version 12.2.1.4.0 --path /scratch/software/fmw_12.2.1.4.0_oud.jar
+The OUDSM image requires additional files that are needed for creating and starting OUDSM Instance inside container. Download the required files from the docker-images [repository](https://github.com/oracle/docker-images). 
 
-Add the required patch zip files to the cache. The patchId is the patch number followed by the version of the product. Below sample usage,
+For example:
+```  
+$ cd <work directory>
+$ git clone https://github.com/oracle/docker-images.git
+```
 
-    $ imagetool cache addEntry --key 30851280_12.2.1.4.0 --value /scratch/software/OUDPatches/p30851280_122140_Generic.zip
+This will create the required directories and files under \<work directory\>/docker-images.
 
-# 6. Additional build files
+The files required for creation of the OUDSM image can be located in the <work directory>/docker-images\OracleUnifiedDirectorySM/dockerfiles/12.2.1.4.0/container-scripts directory:
 
-OUDSM image requires additional files that are needed for creating and starting OUDSM Instance inside container.
-These files can be downloaded from the [github location](https://orahub.oraclecorp.com/paascicd/FMW-DockerImages/tree/master/OracleUnifiedDirectorySM/dockerfiles/12.2.1.4.0/container-scripts). 
+# 6 Additional build commands
 
-The list of files required for OUDSM image are,
-* createDomainAndStart.sh
+The OUDSM image requires additional build commands to set the required environment variables, install os packages and copy the additional build files to the image being built. 
 
-# 7. Additional build commands
+A sample additional build commands input file can be found at `<work directory>/docker-image/OracleUnifiedDirectorySM/imagetool/12.2.1.4.0/additionalBuildCmds.txt`, containing the following additional build commands:
 
-OUDSM image requires additional build commands to set the required environment variables, install os packages and copy the additional build files to the image being built. 
-
-Below a sample additional build commands input file,
-
+```
 [before-jdk-install]
 # Instructions/Commands to be executed Before JDK install
 
@@ -91,42 +148,104 @@ Below a sample additional build commands input file,
 
 [final-build-commands]
 
-	ENV BASE_DIR=/u01 \
-	    ORACLE_HOME=/u01/oracle \
-	    SCRIPT_DIR=/u01/oracle/container-scripts \
-	    PROPS_DIR=/u01/oracle/properties \
-	    VOLUME_DIR=/u01/oracle/user_projects \
-	    DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
-	    ADMIN_USER="${ADMIN_USER:-}" \
-	    ADMIN_PASS="${ADMIN_PASS:-}" \
-	    DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
-	    DOMAIN_HOME="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}"/"${DOMAIN_NAME:-base_domain}" \
-	    ADMIN_PORT="${ADMIN_PORT:-7001}" \
-	    ADMIN_SSL_PORT="${ADMIN_SSL_PORT:-7002}" \
-	    DOMAIN_TYPE="oudsm" \
-	    USER_MEM_ARGS=${USER_MEM_ARGS:-"-Djava.security.egd=file:/dev/./urandom"} \
-	    JAVA_OPTIONS="${JAVA_OPTIONS} -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" \
-	    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
-	
-	USER root
-	
-	RUN mkdir -p ${VOLUME_DIR} && \
-	    chown -R oracle:oracle ${VOLUME_DIR} && chmod -R 770 ${VOLUME_DIR} && \
-	    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-	    mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \
-	    yum install -y hostname && \
-	    rm -rf /var/cache/yum
-	
-	COPY --chown=oracle:oracle files/createDomainAndStart.sh ${SCRIPT_DIR}/
-	RUN chmod a+xr ${SCRIPT_DIR}/* && \
-	     chown -R oracle:oracle ${SCRIPT_DIR}
-	
-	USER oracle
-	ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]
-    
-# 8. Create OUDSM image
+ENV BASE_DIR=/u01 \
+    ORACLE_HOME=/u01/oracle \
+    SCRIPT_DIR=/u01/oracle/container-scripts \
+    PROPS_DIR=/u01/oracle/properties \
+    VOLUME_DIR=/u01/oracle/user_projects \
+    DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
+    ADMIN_USER="${ADMIN_USER:-}" \
+    ADMIN_PASS="${ADMIN_PASS:-}" \
+    DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
+    DOMAIN_HOME="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}"/"${DOMAIN_NAME:-base_domain}" \
+    ADMIN_PORT="${ADMIN_PORT:-7001}" \
+    ADMIN_SSL_PORT="${ADMIN_SSL_PORT:-7002}" \
+    DOMAIN_TYPE="oudsm" \
+    USER_MEM_ARGS=${USER_MEM_ARGS:-"-Djava.security.egd=file:/dev/./urandom"} \
+    JAVA_OPTIONS="${JAVA_OPTIONS} -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" \
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
-Now we can build the OUDSM image with the imagetool. 
+USER root
+
+RUN mkdir -p ${VOLUME_DIR} && \
+    chown -R oracle:oracle ${VOLUME_DIR} && chmod -R 770 ${VOLUME_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
+    mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \
+    yum install -y hostname && \
+    rm -rf /var/cache/yum
+
+COPY --chown=oracle:oracle files/container-scripts/ ${SCRIPT_DIR}/
+RUN chmod a+xr ${SCRIPT_DIR}/* && \
+     chown -R oracle:oracle ${SCRIPT_DIR}
+
+USER oracle
+ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]
+```
+
+# 7. Steps to Create OUDSM image
+
+Add the required installers, packages & patches to the imagetool cache. 
+
+Navigate to the `imagetool/bin` directory and run the following commands. In the below examples substitute `<work directory>/stage` for the directory where the approriate files reside.
+
+### i) Add JDK package to Imagetool cache
+
+```
+$ ./imagetool.sh cache addInstaller --type jdk --version 8u261 --path <work directory>/stage/jdk-8u261-linux-x64.tar.gz
+```
+
+For example:
+
+```
+$ ./imagetool.sh cache addInstaller --type jdk --version 8u261 --path /scratch/OUDDockerK8S/stage/jdk-8u261-linux-x64.tar.gz
+[INFO   ] Successfully added to cache. jdk_8u261=/scratch/OUDDockerK8S/stage/jdk-8u261-linux-x64.tar.gz
+$
+```
+
+### ii) Add installers to Imagetool cache
+
+```
+$ ./imagetool.sh cache addInstaller --type oud --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_oud_generic.jar
+$ ./imagetool.sh cache addInstaller --type oud --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_infrastructure.jar
+```
+
+For example:
+
+```
+$ ./imagetool.sh cache addInstaller --type oud --version 12.2.1.4.0 --path /scratch/OUDDockerK8S/stage/fmw_12.2.1.4.0_oud.jar
+[INFO   ] Successfully added to cache. oud_12.2.1.4.0=/scratch/OUDDockerK8S/stage/fmw_12.2.1.4.0_oud.jar
+$ ./imagetool.sh cache addInstaller --type fmw --version 12.2.1.4.0 --path /scratch/OUDDockerK8S/stage/fmw_12.2.1.4.0_infrastructure.jar
+[INFO   ] Successfully added to cache. fmw_12.2.1.4.0=/scratch/OUDDockerK8S/OUDstage/fmw_12.2.1.4.0_infrastructure.jar
+```
+
+### iii) Add Patches to Imagetool cache
+
+```bash
+$ ./imagetool.sh cache addEntry --key 28186730_13.9.4.2.4 --value <work directory>/stage/p28186730_139424_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31400392_12.2.1.4.0 --value <work directory>/stage/p31400392_122140_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31537019_12.2.1.4.0 --value <work directory>/stage/p31537019_122140_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31470730_12.2.1.4.0 --value <work directory>/stage/p31470730_122140_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31488215_12.2.1.4.0 --value <work directory>/stage/p31488215_122140_Generic.zip
+```
+
+For example:
+
+```
+$ ./imagetool.sh cache addEntry --key 28186730_13.9.4.2.4 --value /scratch/OUDDockerK8S/stage/p28186730_139424_Generic.zip
+[INFO   ] Added entry 28186730_13.9.4.2.4=/scratch/OUDDockerK8S/stage/p28186730_139424_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31400392_12.2.1.4.0 --value /scratch/OUDDockerK8S/stage/p31400392_122140_Generic.zip
+[INFO   ] Added entry 31400392_12.2.1.4.0=/scratch/OUDDockerK8S/stage/p31400392_122140_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31537019_12.2.1.4.0 --value /scratch/OUDDockerK8S/stage/p31537019_122140_Generic.zip
+[INFO   ] Added entry 31537019_12.2.1.4.0=/scratch/OUDDockerK8S/stage/stage/p31537019_122140_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31470730_12.2.1.4.0 --value /scratch/OUDDockerK8S/stage/p31470730_122140_Generic.zip
+[INFO   ] Added entry 31470730_12.2.1.4.0=/scratch/OUDDockerK8S/stage/stage/p31470730_122140_Generic.zip
+$ ./imagetool.sh cache addEntry --key 31488215_12.2.1.4.0 --value /scratch/OUDDockerK8S/stage/p31488215_122140_Generic.zip
+[INFO   ] Added entry 31488215_12.2.1.4.0=/scratch/OUDDockerK8S/stage/p31488215_122140_Generic.zip
+```
+
+### iv) Create the OUD image
+
+Execute the `imagetool create` command to create the OUD image.
 
 The following parameters are provided as input to the create command,
 
@@ -138,17 +257,40 @@ The following parameters are provided as input to the create command,
 * addtionalBuildFiles - path of additional build files as comma separated list.
 
 
-Below a sample command used to build OUDSM image,
+Below a sample command used to build OUD image,
 
-    $ imagetool create --jdkVersion=8u241 --type oud_wls --version=12.2.1.4.0 \
-        --tag=oud-with-patch:12.2.1.4.0 \
-        --additionalBuildCommands <Path to Repo directory OracleUnifiedDirectorySM>/imagetool/12.2.1.4.0/additionalBuildCmds.txt \
-        --additionalBuildFiles \
-            <Path to Repo directory OracleUnifiedDirectorySM>/dockerfiles/12.2.1.4.0/container-scripts \
-        --patches 30851280
+```
+$ ./imagetool.sh create --jdkVersion=8u241 --type oud_wls --version=12.2.1.4.0 \
+    --tag=oracle/oudsm:12.2.1.4.0 \
+    --additionalBuildCommands <work directory>/docker-image/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/imagetool/12.2.1.4.0/buildCmds.txt \
+    --additionalBuildFiles <work directory>/docker-image/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts \
+    --patches <patch_a>,<patch_b>,...
+```
 
-# 9. Sample Dockerfile genered with imagetool
-Below is the content of sample Dockerfile generated by imagetool in dryrun for OUDSM image,
+For example:
+
+```
+$ ./imagetool.sh create --jdkVersion=8u261 --type oud_wls --version=12.2.1.4.0 \
+--tag=oracle/oudsm:12.2.1.4.0 \
+--additionalBuildCommands /scratch/OUDDockerK8S/docker-image/OracleUnifiedDirectorySM/imagetool/12.2.1.4.0/additionalBuildCmds.txt \
+--additionalBuildFiles /scratch/OUDDockerK8S/docker-image/OracleUnifiedDirectorySM/dockerfiles/12.2.1.4.0/container-scripts \
+--patches 28186730,31400392,31537019,31470730,31488215
+```
+
+### v) View the docker image
+
+Run the `docker images` command to ensure the new OAM image is loaded into the repository:
+
+```
+$ docker images
+REPOSITORY                                                                   TAG                       IMAGE ID            CREATED             SIZE
+oracle/oudsm                                                                 12.2.1.4.0                7157885054a2        10 minutes ago      2.74GB
+...
+```
+
+# 8. Sample Dockerfile generated with imagetool
+
+Below is the content of a sample Dockerfile generated by imagetool in dryrun for OUDSM image,
 
     ########## BEGIN DOCKERFILE ########
 
