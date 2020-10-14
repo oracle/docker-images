@@ -16,8 +16,6 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Cloud Infrastructure Tools](/OracleCloudInfrastructure)
 - [Oracle Coherence](/OracleCoherence)
 - [Oracle Database](/OracleDatabase)
-- [Oracle Data Integrator](/OracleDataIntegrator)
-- [Oracle Enterprise Data Quality](/OracleEDQ)
 - [Oracle FMW Infrastructure](/OracleFMWInfrastructure)
 - [Oracle GoldenGate](/OracleGoldenGate)
 - [Oracle HTTP Server](/OracleHTTPServer)
@@ -25,7 +23,6 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Java](/OracleJava)
 - [Oracle Rest Data Services](OracleRestDataServices) (ORDS)
 - [Oracle SOA Suite](/OracleSOASuite)
-- [Oracle Tuxedo](/OracleTuxedo)
 - [Oracle TSAM Plus](/OracleTuxedo/tsam)
 - [Oracle WebLogic Server](/OracleWebLogic)
 - [Oracle WebCenter Sites](/OracleWebCenterSites)
@@ -42,6 +39,13 @@ software before installation. If you want commercial software downloaded for you
 
 - [Oracle Forms and Reports](https://github.com/oracle/docker-images/issues/212)
 - [Oracle Unified Directory](Contrib/OracleUnifiedDirectory/)
+
+### Archived Projects
+
+- [ContainerCloud](/Archive/ContainerCloud)
+- [Oracle Data Integrator](/Archive/OracleDataIntegrator)
+- [Oracle Enterprise Data Quality](/Archive/OracleEDQ)
+- [Oracle Tuxedo](/Archive/OracleTuxedo)
 
 ## Pre-Built Images with Commercial Software
 
