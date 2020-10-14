@@ -1,29 +1,103 @@
-Building OIG image with WebLogic Image Tool
-=============================================
+Building an OIG image with WebLogic Image Tool
+==============================================
 
 ## Contents
 
 1. [Introduction](#1-introduction-1)
-2. [Download the required packages/installers&Patches](#2-download-the-required-packagesinstallerspatches)
-3. [Required build files](#3-required-build-files)
-4. [Steps to create image](#4-steps-to-create-image)
-5. [Sample Dockerfile generated with imagetool](#5-sample-dockerfile-generated-with-imagetool)
+2. [Prerequisites](#2-prerequisites)
+3. [Download and setup the WebLogic Image Tool](#3-download-and-setup-the-weblogic-image-tool)
+4. [Download the required packages/installers&Patches](#4-download-the-required-packagesinstallerspatches)
+5. [Required build files](#5-required-build-files)
+6. [Steps to create image](#6-steps-to-create-image)
+7. [Sample Dockerfile generated with imagetool](#7-sample-dockerfile-generated-with-imagetool)
 
 # 1. Introduction
 
-This README describes the steps involved in building OIG image with the WebLogic Image Tool. To setup the WebLogic Image Tool,  
+This README describes the steps involved in building an OIG docker image with the WebLogic Image Tool. 
 
-Download WebLogic Image Tool version 1.8.0 from the release [page](https://github.com/oracle/weblogic-image-tool/releases/download/release-1.8.0/imagetool.zip).
+# 2. Prerequisites
 
-Unzip the release ZIP file to a desired location.
+The following prerequisites are necessary before building OIG Docker images with Image Tool:
 
-Run the following commands to setup imagetool
-  $ cd your_unzipped_location/bin
-  $ source setup.sh
+* A working installation of Docker 18.03.1 or later
+* Bash version 4.0 or later, to enable the <tab> command complete feature
+* JAVA_HOME environment variable set to the location of your JDK e.g:  /scratch/export/oracle/product/jdk
 
-# 2. Download the required packages/installers&Patches
+# 3. Download and setup the WebLogic Image Tool
 
-Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice. Below the list of packages/installers & patches required for SOA image.
+a) Download the latest WebLogic Image Tool version from the release [page](https://github.com/oracle/weblogic-image-tool/releases).
+
+b) Unzip the release ZIP file to a desired \<work directory\>.
+
+```
+$ unzip imagetool.zip -d <work directory>
+Archive:  imagetool.zip
+   creating: imagetool/
+   creating: imagetool/bin/
+  inflating: imagetool/bin/setup.sh
+  inflating: imagetool/bin/logging.properties
+  inflating: imagetool/bin/imagetool.cmd
+  inflating: imagetool/bin/imagetool.sh
+   creating: imagetool/lib/
+  inflating: imagetool/lib/imagetool_completion.sh
+  inflating: imagetool/lib/imagetool.jar
+  inflating: imagetool/lib/fluent-hc-4.5.6.jar
+  inflating: imagetool/lib/httpclient-4.5.6.jar
+  inflating: imagetool/lib/httpcore-4.4.10.jar
+  inflating: imagetool/lib/commons-logging-1.2.jar
+  inflating: imagetool/lib/commons-codec-1.10.jar
+  inflating: imagetool/lib/httpmime-4.5.6.jar
+  inflating: imagetool/lib/picocli-4.1.4.jar
+  inflating: imagetool/lib/json-20180813.jar
+  inflating: imagetool/lib/compiler-0.9.6.jar
+$
+```
+c) Run the following commands to setup imagetool:
+
+```
+$ cd <work directory>/imagetool/bin
+$ source setup.sh
+```
+
+d) Execute the following to validate the WebLogic Image Tool:
+
+```
+$ ./imagetool.sh --version
+imagetool:1.9.3
+```
+
+On pressing tab after typing `imagetool` on the command line, it will display the subcommands available in the imagetool:
+
+```
+$ ./imagetool.sh <TAB>
+cache   create  help    rebase  update
+```
+
+e) The Image Tool creates a temporary Docker context directory, prefixed by wlsimgbuilder_temp, every time the tool runs. Under normal circumstances, this context directory will be deleted. However, if the process is aborted or the tool is unable to remove the directory, it is safe for you to delete it manually. By default, the Image Tool creates the Docker context directory under the user's home directory. If you prefer to use a different directory for the temporary context, set the environment variable `WLSIMG_BLDDIR`.
+
+```
+$ export WLSIMG_BLDDIR="/path/to/dir"
+```
+
+f) The Image Tool maintains a local file cache store. This store is used to look up where the Java, WebLogic Server installers, and WebLogic Server patches reside in the local file system. By default, the cache store is located in the user's $HOME/cache directory. Under this directory, the lookup information is stored in the .metadata file. All automatically downloaded patches also reside in this directory. You can change the default cache store location by setting the environment variable `WLSIMG_CACHEDIR`.
+
+```
+$ export WLSIMG_CACHEDIR="/path/to/cachedir"
+```
+
+# 4. Download the required packages/installers&Patches
+
+a) Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice e.g: \<work directory\>/stage:
+
+* Oracle Identity and Access Management 12.2.1.4.0
+* Oracle Fusion Middleware 12c Infrastructure 12.2.1.4.0
+* Oracle SOA Suite 12.2.1.4.0
+* Oracle Service Bus 12.2.1.4.0
+* Oracle JDK 
+
+
+**Note** : the required list of packages/installers & patches for specific bundled patchsets can be found in the latest manifest file. For example, the list below displays the packages/installers & patches from manifest.oam.july2020.properties:
+
 ```
 JDK
     jdk-8u241-linux-x64.tar.gz
@@ -51,62 +125,79 @@ IDM
     fmw_12.2.1.4.0_idm.jar
 ```
 
-# 3. Required build files
+b) Download any patches listed in the manifest file from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
 
-The following files from this [repository](./) will be used for building the image,
 
-        additionalBuildCmds.txt
-        buildArgs
+# 5. Required build files
 
-Update the repository location in `buildArgs` file in place of the place holder %DOCKER_REPO%
+a) The OIG image requires additional files for creating the OIG domain and starting the WebLogic Servers. Download the required files from the FMW [repository](https://github.com/oracle/fmw-kubernetes.git). For example:
 
-```diff
-< --additionalBuildCommands %DOCKER_REPO%/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt
----
-> --additionalBuildCommands /scratch/brkarthi/source/FMW-DockerImages/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt
+
+```  
+$ cd <work directory>
+$ git clone https://github.com/oracle/fmw-kubernetes.git
 ```
-Similarily, update the placeholders %JDK_VERSION% & %BUILDTAG%
+
+This will create the required directories and files under \<work directory\>/fmw-kubernetes.
 
 
-# 4. Steps to create image
+b) Edit the `<work directory>/fmw-kubernetes/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs` file and change `%DOCKER_REPO%`, `%JDK_VERSION%` & `%BUILDTAG%` appropriately.
+
+For example:
+
+```
+create
+--jdkVersion=8u261
+--type oam
+--version=12.2.1.4.0
+--tag=oig-with-patch:12.2.1.4.0
+--installerResponseFile /scratch/fmw-kubernetes/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/fmw-kubernetes/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/install/iam.response
+--additionalBuildCommands /scratch/fmw-kubernetes/OracleIdentityGovernance/imagetool/12.2.1.4.0/addtionalBuildCmds.txt
+--additionalBuildFiles /scratch/fmw-kubernetes/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts
+```
+
+# 6. Steps to create image
+
+Navigate to the `imagetool/bin` directory and run the following commands. In the below examples substitute `<work directory>/stage` for the directory where the approriate files reside.
 
 ### i) Add JDK package to Imagetool cache
 
-```bash
-    $ imagetool cache addInstaller --type jdk --version 8u241 --path <download location>/jdk-8u241-linux-x64.tar.gz
+```
+$ imagetool cache addInstaller --type jdk --version 8u241 --path <work directory>/stage/jdk-8u241-linux-x64.tar.gz
 ```
 
 ### ii) Add installers to Imagetool cache
 
-```bash
-    $ imagetool cache addInstaller --type fmw --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_infrastructure.jar
-    $ imagetool cache addInstaller --type soa --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_soa.jar
-    $ imagetool cache addInstaller --type osb --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_osb.jar
-   $ imagetool cache addInstaller --type idm --version 12.2.1.4.0 --path <download location>/fmw_12.2.1.4.0_idm.jar
-     
+```
+$ imagetool cache addInstaller --type fmw --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_infrastructure.jar
+$ imagetool cache addInstaller --type soa --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_soa.jar
+$ imagetool cache addInstaller --type osb --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_osb.jar
+$ imagetool cache addInstaller --type idm --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_idm.jar  
 ```
 ### iii) Add Patches to Imagetool cache
 
-```bash
-    $ imagetool cache addEntry --key 28186730_13.9.4.2.2 --path <download location>/p28186730_139422_Generic.zip
-    $ imagetool cache addEntry --key 30432881_12.2.1.4.0 --path <download location>/p30432881_122140_Generic.zip
-    $ imagetool cache addEntry --key 30513324_12.2.1.4.0 --path <download location>/p30513324_122140_Linux-x86-64.zip
-    $ imagetool cache addEntry --key 30581253_12.2.1.4.0 --path <download location>/p30581253_122140_Generic.zip
-    $ imagetool cache addEntry --key 30689820_12.2.1.4.0 --path <download location>/p30689820_122140_Generic.zip
-    $ imagetool cache addEntry --key 30729380_12.2.1.4.0 --path <download location>/p30729380_122140_Generic.zip
-    $ imagetool cache addEntry --key 30749990_12.2.1.4.0 --path <download location>/p30749990_122140_Generic.zip
-    $ imagetool cache addEntry --key 30779352_12.2.1.4.0 --path <download location>/p30779352_122140_Generic.zip
+```
+$ imagetool cache addEntry --key 28186730_13.9.4.2.2 --path <work directory>/stage/p28186730_139422_Generic.zip
+$ imagetool cache addEntry --key 30432881_12.2.1.4.0 --path <work directory>/stage/p30432881_122140_Generic.zip
+$ imagetool cache addEntry --key 30513324_12.2.1.4.0 --path <work directory>/stage/p30513324_122140_Linux-x86-64.zip
+$ imagetool cache addEntry --key 30581253_12.2.1.4.0 --path <work directory>/stage/p30581253_122140_Generic.zip
+$ imagetool cache addEntry --key 30689820_12.2.1.4.0 --path <work directory>/stage/p30689820_122140_Generic.zip
+$ imagetool cache addEntry --key 30729380_12.2.1.4.0 --path <work directory>/stage/p30729380_122140_Generic.zip
+$ imagetool cache addEntry --key 30749990_12.2.1.4.0 --path <work directory>/stage/p30749990_122140_Generic.zip
+$ imagetool cache addEntry --key 30779352_12.2.1.4.0 --path <work directory>/stage/p30779352_122140_Generic.zip
 ```
 
-### iv) Updated patch/Opatch to the buildAgrs
+### iv) Add patches to the buildArgs file:
 
-Append patch and opatch list to be used for image creation to the `buildArgs` file. Below the sample options for the above patches,
+Edit the `buildArgs` file and add the patches:
 
 ```
 --patches 30432881_12.2.1.4.0,30513324_12.2.1.4.0,30581253_12.2.1.4.0,30689820_12.2.1.4.0,30729380_12.2.1.4.0,30749990_12.2.1.4.0,30779352_12.2.1.4.0
 --opatchBugNumber=28186730_13.9.4.2.2
 ```
-Below a sample `buildArgs` file after appending patch/Opacth detals,
+
+A sample `buildAgs` file is now as follows:
+
 ```
 create
 --jdkVersion=8u241
@@ -115,18 +206,37 @@ create
 --tag=200506.0000
 --additionalBuildCommands /scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt                    
 --additionalBuildFiles /scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createDomainAndStart.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createOIMDomain.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/dbUtils.class,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/oim_soa_integration.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startAdmin.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startMS.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/update_listenaddress.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/wait-for-it.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/xaview.sql
-
 ```
 
-### v) Create image
+### v) Create the OIG image
 
-Execute the below command to create the SOA image,
+For example:
 
-```bash
-        $ imagetool @buildArgs
+```
+$ cd <work directory>/imagetool/bin
+$ ./imagetool.sh @<work directory>/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs
 ```
 
-# 5. Sample Dockerfile generated with imagetool
+###  vi) View the docker image
+
+Run the `docker images` command to ensure the new OIG image is loaded into the repository:
+
+```
+$ docker images
+REPOSITORY                                                    TAG                 IMAGE ID            CREATED             SIZE
+oig-with-patch                                                12.2.1.4.0          d4cccfcd67c4        3 minutes ago      5.01GB
+oraclelinux                                                   7-slim              153f8d73287e        2 weeks ago         131MB
+```
+
+
+# 7. Sample Dockerfile generated with imagetool
+
+Below is a sample dockerfile created with the imagetool. This can be viewed by issuing the `imagetool` command with the `--dryRun` option:
+
+```
+./imagetool.sh @<work directory/build/buildArgs --dryRun
+```
+
 
 ```Dockerfile
 ########## BEGIN DOCKERFILE ##########
