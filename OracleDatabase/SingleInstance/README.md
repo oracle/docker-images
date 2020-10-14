@@ -59,6 +59,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_PWD=<your database passwords> \
+	-e SGA_SIZE=<your database sga memory> \
+	-e PGA_SIZE=<your database pga memory> \
 	-e ORACLE_EDITION=<your database edition> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
@@ -71,6 +73,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
 	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+	   -e SGA_SIZE:   The total memory that should be used for all SGA components (optional)
+	   -e PGA_SIZE:   The target aggregate PGA memory that should be used for all server processes attached to the instance (optional)
 	   -e ORACLE_EDITION:
 	                  The Oracle Database Edition (enterprise/standard).
 	                  Supported 19.3 onwards.
