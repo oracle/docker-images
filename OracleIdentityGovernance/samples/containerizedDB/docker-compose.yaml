@@ -1,16 +1,16 @@
 #
-## Copyright (c) 2020 Oracle and/or its affiliates.
-##
-## Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
-##
-## Author: OIG Development
-##
-## Description: script to build a Docker image for Oracle Access Manager 
-##
-##
-## DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-##
-##
+# Copyright (c) 2020 Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Author: OIG Development
+#
+# Description: docker compose yaml to run OIG with containerized DB 
+#
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+#
 #
 version: "3.0"
 
