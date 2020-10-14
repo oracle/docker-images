@@ -3,7 +3,7 @@
 # #
 # # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 # #
-# # Author: OIM Development (<raminder.deep.kaler@oracle.com>)
+# # Author: OIG Development 
 # #
 #*************************************************************************
 # script is used to start a WebLogic Admin server.
