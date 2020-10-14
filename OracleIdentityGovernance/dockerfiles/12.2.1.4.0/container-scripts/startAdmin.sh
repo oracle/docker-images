@@ -1,10 +1,10 @@
 #!/bin/sh
-# # Copyright (c) 2020 Oracle and/or its affiliates.
-# #
-# # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
-# #
-# # Author: OIG Development 
-# #
+# Copyright (c) 2020 Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Author: OIG Development 
+#
 #*************************************************************************
 # script is used to start a WebLogic Admin server.
 #*************************************************************************
