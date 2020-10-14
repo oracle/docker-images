@@ -4,7 +4,7 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
-# Author: Kaushik C
+# Author: OIG Development
 #
 # Description: script to build a Docker image for Oracle Access Manager 
 #
