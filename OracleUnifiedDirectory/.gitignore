@@ -14,13 +14,8 @@ OUD
 tmp*
 pipeline.yaml
 kubernetes
-setenv.sh
-**/buildDockerImage.sh
-**/Dockerfile
-dockerfiles/**/install
-dockerfiles/**/opatch_patch
-dockerfiles/**/patches
 samples/oud-add-dir-to-remote.env
 samples/stress-oud-dir.env
 CONTRIBUTING.md
 LICENSE.txt
+OCRReadme.md

@@ -13,15 +13,15 @@ Oracle Unified Directory (OUD) on Docker
 
 ## Introduction
 
-Oracle Unified Directory provides comprehensive Directory Solution for robust Identity Management.
+Oracle Unified Directory provides comprehensive directory solution for robust identity management.
 
 Oracle Unified Directory is an all-in-one directory solution with storage, proxy, synchronization and virtualization capabilities. While unifying the approach, it provides all the services required for high-performance Enterprise and carrier-grade environments. Oracle Unified Directory ensures scalability to billions of entries, ease of installation, elastic deployments, enterprise manageability and effective monitoring.
 
-This project offers Dockerfiles and scripts to build and configure an Oracle Unified Directory image based on 12cPS4 (12.2.1.4.0) release. Use this Docker Image to facilitate installation, configuration, and environment setup for DevOps users. 
+This project offers instructions and scripts to build and configure an Oracle Unified Directory image based on 12cPS4 (12.2.1.4.0) release. Use this Docker image to facilitate installation, configuration, and environment setup for DevOps users. 
 
 This Image refers to binaries for OUD Release 12.2.1.4.0 and it has the capability to create different types of OUD Instances (Directory Service, Proxy, Replication) on containers targeted for development and testing.
 
-***Image***: oracle/oud:12.2.1.4.0
+***Image***: `oracle/oud:12.2.1.4.0`
 
 ## Prerequisites for OUD on Docker
 
@@ -38,7 +38,7 @@ Refer to the [Prerequisites](https://oracle.github.io/fmw-kubernetes/oud/prerequ
 An OUD Docker image can be created and/or made available for deployment in a Docker environment in the following ways:
 
 1. Download a pre-built OUD Docker image from [My Oracle Support](https://support.oracle.com) (Patch 31979398).  This image contains the latest bundle patch and one-off patches for Oracle Unified Directory 12.2.1.4.0.
-2. Build your own OUD Docker image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own OUD 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an OUD Docker Image using Image Tool](https://github.com/oracle/docker-images/OracleUnifiedDirectory/imagetool/12.2.1.4.0)
+2. Building an OUD container image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own OUD 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an OUD Docker image using Image Tool](https://github.com/oracle/docker-images/OracleUnifiedDirectory/imagetool/12.2.1.4.0)
 
 ## Running the OUD Docker Image in a Docker Container
 

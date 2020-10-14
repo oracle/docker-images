@@ -14,11 +14,11 @@ Oracle Unified Directory Service Manager (OUDSM) on Docker
 
 Oracle Unified Directory Services Manager (OUDSM) is an interface for managing instances of Oracle Unified Directory. OUDSM enables you to configure the structure of the directory, define objects in the directory, add and configure users, groups, and other entries. OUDSM is also the interface you use to manage entries, schema, security, and other directory features.
 
-This project offers Dockerfiles and scripts to build and configure an Oracle Unified Directory Services Manager image based on 12cPS4 (12.2.1.4.0) release. Use this Docker Image to facilitate installation, configuration, and environment setup for DevOps users. 
+This project offers instruction and scripts to build and configure an Oracle Unified Directory Services Manager image based on 12cPS4 (12.2.1.4.0) release. Use this Docker Image to facilitate installation, configuration, and environment setup for DevOps users. 
 
-This Image refers to binaries for OUDSM Release 12.2.1.4.0.
+This image refers to binaries for OUDSM Release 12.2.1.4.0.
 
-***Image***: oracle/oudsm:12.2.1.4.0
+***Image***: `oracle/oudsm:12.2.1.4.0`
 
 ## Prerequisites for OUDSM on Docker
 
@@ -35,7 +35,7 @@ Refer to the [Prerequisites](https://oracle.github.io/fmw-kubernetes/oudsm/prere
 An OUDSM Docker image can be created and/or made available for deployment in a Docker environment in the following ways:
 
 1. Download a pre-built OUDSM Docker image from [My Oracle Support](https://support.oracle.com) (Patch 31979410).  This image contains the latest bundle patch and one-off patches for Oracle Unified Directory Services Manager 12.2.1.4.0.
-2. Build your own OUDSM Docker image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own OUDSM 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an OUDSM Docker Image using Image Tool](https://github.com/oracle/docker-images/OracleUnifiedDirectorySM/imagetool/12.2.1.4.0).)
+2. Building an OUDSM container image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own OUDSM 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an OUDSM Docker Image using Image Tool](https://github.com/oracle/docker-images/OracleUnifiedDirectorySM/imagetool/12.2.1.4.0).)
 
 ## OUDSM Docker Container Configuration
 

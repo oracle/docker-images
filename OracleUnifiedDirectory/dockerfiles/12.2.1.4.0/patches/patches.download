@@ -1,0 +1,10 @@
+#
+# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl.
+#
+# Oracle Unified Directory
+# Download patches from : https://support.oracle.com
+#
+# To build the OUD image with patches, you must download and drop the OUD 12.2.1.4.0 patch zip files (for e.g. p30851280_122140_Generic.zip) into the patches directory.

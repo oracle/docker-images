@@ -15,11 +15,6 @@ OUDSM
 tmp*
 pipeline.yaml
 kubernetes
-setenv.sh
-**/buildDockerImage.sh
-**/Dockerfile
-dockerfiles/**/install
-dockerfiles/**/opatch_patch
-dockerfiles/**/patches
 CONTRIBUTING.md
 LICENSE.txt
+OCRReadme.md
