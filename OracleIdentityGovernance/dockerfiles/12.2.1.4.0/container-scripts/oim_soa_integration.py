@@ -1,9 +1,9 @@
-# # Copyright (c) 2020 Oracle and/or its affiliates.
-# #
-# # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
-# #
-# # Author: OIG Development 
-# #
+# Copyright (c) 2020 Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Author: OIG Development 
+#
 import os,sys
 import time as st
 #The following need to be externalized, i.e., passed to the py script which invocation
