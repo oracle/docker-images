@@ -25,6 +25,7 @@ export ORACLE_PDB=${2:-ORCLPDB1}
 if [[ "${SGA_SIZE}" != "" && "${PGA_SIZE}" == "" ]] || [[ "${SGA_SIZE}" == "" && "${PGA_SIZE}" != "" ]]; then
    echo "ERROR: Provide both the values, SGA_SIZE and PGA_SIZE or neither of them. Exiting.";
    exit 1;
+fi;
 
 # Auto generate ORACLE PWD if not passed on
 export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
@@ -49,7 +50,7 @@ if [[ "${SGA_SIZE}" == "" && "${PGA_SIZE}" == "" ]]; then
     fi;
 else
     sed -i -e "s|totalMemory=2048||g" $ORACLE_BASE/dbca.rsp
-    sed -i -e "s|initParams=*|&sga_target=${SGA_SIZE},pga_aggregate_target=${PGA_SIZE},|g" $ORACLE_BASE/dbca.rsp
+    sed -i -e "s|initParams=.*|&,sga_target=${SGA_SIZE}M,pga_aggregate_target=${PGA_SIZE}M|g" $ORACLE_BASE/dbca.rsp
 fi;
 
 # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
