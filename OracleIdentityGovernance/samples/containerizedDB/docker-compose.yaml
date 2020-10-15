@@ -19,16 +19,17 @@ services:
   # The Oracle DB Definition
   #
   oimdb:
-    image: ${DC_REGISTRY_DB}/oracle/database:12.2.0.1-ee
+    image: ${DC_REGISTRY_DB}/oracle/database:latest
     ports:
       - "${DC_ORCL_PORT}:1521"
       - "${DC_ORCL_OEM_PORT}:5500"
     environment:
-      - DB_SID=${DC_ORCL_SID}
-      - DB_PDB=${DC_ORCL_PDB}
+      - ORACLE_SID=${DC_ORCL_SID}
+      - ORACLE_PDB=${DC_ORCL_PDB}
+      - ORACLE_PWD=${DC_ORCL_SYSPWD}
     container_name: oimdb
     volumes:
-      - ${DC_ORCL_DBDATA}:/ORCL
+      - ${DC_ORCL_DBDATA}:/opt/oracle/oradata
 
   #
   # The OIG Admin Server
@@ -43,8 +44,8 @@ services:
     environment:
       - ADMIN_HOST=${DC_HOSTNAME}
       - ADMIN_PASSWORD=${DC_ADMIN_PWD}
-      - CONNECTION_STRING=${DC_ORCL_HOST}:${DC_ORCL_PORT}/${DC_ORCL_PDB}.localdomain
-      - DB_PASSWORD=Oradoc_db1
+      - CONNECTION_STRING=${DC_ORCL_HOST}:${DC_ORCL_PORT}/${DC_ORCL_PDB}
+      - DB_PASSWORD=${DC_ORCL_SYSPWD}
       - DB_SCHEMA_PASSWORD=${DC_RCU_SCHPWD}
       - RCUPREFIX=${DC_RCU_OIMPFX}
     volumes:

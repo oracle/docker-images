@@ -55,8 +55,6 @@ To configure the OIG Containers with Kubernetes see the [Oracle Identity Governa
 
 ## Appendix A: Using an Oracle Database Docker Image for OIG
 
-**Note**: Database docker images are not supported in production and should only be used for testing with Docker only configurations and not Kubernetes.
-
 OIG requires a database to store the configuration information and RCU schema information. If you do not have a database available and require one for testing, then you can use an Oracle Database Docker image. The instructions below show how to install the database image and start the container.
  
 ### Pulling the Oracle Database Image
@@ -86,27 +84,41 @@ OIG requires a database to store the configuration information and RCU schema in
 1. Pull the Oracle Database image:
   
    ```
-   $ docker pull container-registry.oracle.com/database/enterprise:12.2.0.1
+   $ docker pull container-registry.oracle.com/database/enterprise:19.3.0.0
    ```
    
    The output will look similar to the following:	
    
    ```
    Trying to pull repository container-registry.oracle.com/database/enterprise ...
-   12.2.0.1: Pulling from container-registry.oracle.com/database/enterprise
-   f07cd347d7cc: Pull complete
-   e6d45c5d2f56: Pull complete
-   0c3e3e3a81c6: Pull complete
-   522e6a16038b: Pull complete
-   b49278619f9a: Pull complete
-   Digest: sha256:1f700299f7a96c5ffcdb14e251745f1cf3832fc32fff59ee7fdce956bd5b5bf8
-   Status: Downloaded newer image for container-registry.oracle.com/database/enterprise:12.2.0.1
+   19.3.0.0: Pulling from container-registry.oracle.com/database/enterprise
+   35defbf6c365: Pull complete
+   b7267f7fbeee: Pull complete
+   29ee28675c53: Pull complete
+   bd7b86188ada: Pull complete
+   30dde8221db6: Pull complete
+   043a075be1ea: Pull complete
+   c4bdd478d3d0: Pull complete
+   a6654847368b: Pull complete
+   bc5458a731fb: Pull complete
+   f5b4867f6b93: Pull complete
+   554f6f42e624: Pull complete
+   0cf0c2777355: Pull complete
+   d25e60f1987a: Pull complete
+   c809a85a6250: Pull complete
+   07f4457e2768: Pull complete
+   1a02ac6d1f8b: Pull complete
+   4e48b81b580d: Pull complete
+   a047904c9d59: Pull complete
+   b7fe2df9722e: Pull complete
+   Digest: sha256:9b28cbc568bc58fb085516664369930efbd943d22fa24299c68651586e3ef668
+   Status: Downloaded newer image for container-registry.oracle.com/database/enterprise:19.3.0.0
    ```
 	
 1. Run the `docker tag` to tag the image as follows:
 
    ```
-   [dockeruser@mydockerhost]$ docker tag container-registry.oracle.com/database/enterprise:12.2.0.1 localhost/oracle/database:12.2.0.1-ee
+   [dockeruser@mydockerhost]$ docker tag container-registry.oracle.com/database/enterprise:19.3.0.0 localhost/oracle/database:latest
    ```
 	
 1. Run the `docker images` command to show the image is installed into the repository. The output should look similar to this:	
@@ -114,15 +126,9 @@ OIG requires a database to store the configuration information and RCU schema in
    ```
    $ docker images
    REPOSITORY                                        TAG           IMAGE ID      CREATED       SIZE
-   container-registry.oracle.com/database/enterprise 12.2.0.1      12a359cd0528  3 years ago   3.44GB
-   localhost/oracle/database                         12.2.0.1-ee   12a359cd0528  3 years ago   3.44GB
+   container-registry.oracle.com/database/enterprise 19.3.0.0      2e375ab66980  2 months ago   6.66GB
+   localhost/oracle/database                         latest        2e375ab66980  2 months ago   6.66GB
    ```
 
-1. Pull the Oracle Instant Client from the [Oracle Container Registry](https://container-registry.oracle.com/) (search for **instantclient**, click, and then accept the T&C before running the command).  This is required so you can change the default database password when you create the database later.
-  
-   ```
-   $ docker pull container-registry.oracle.com/database/instantclient:12.2.0.1
-   ```
-  
 ## Copyright
 Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
