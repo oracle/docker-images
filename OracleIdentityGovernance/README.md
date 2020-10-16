@@ -93,23 +93,7 @@ OIG requires a database to store the configuration information and RCU schema in
    Trying to pull repository container-registry.oracle.com/database/enterprise ...
    19.3.0.0: Pulling from container-registry.oracle.com/database/enterprise
    35defbf6c365: Pull complete
-   b7267f7fbeee: Pull complete
-   29ee28675c53: Pull complete
-   bd7b86188ada: Pull complete
-   30dde8221db6: Pull complete
-   043a075be1ea: Pull complete
-   c4bdd478d3d0: Pull complete
-   a6654847368b: Pull complete
-   bc5458a731fb: Pull complete
-   f5b4867f6b93: Pull complete
-   554f6f42e624: Pull complete
-   0cf0c2777355: Pull complete
-   d25e60f1987a: Pull complete
-   c809a85a6250: Pull complete
-   07f4457e2768: Pull complete
-   1a02ac6d1f8b: Pull complete
-   4e48b81b580d: Pull complete
-   a047904c9d59: Pull complete
+   ...
    b7fe2df9722e: Pull complete
    Digest: sha256:9b28cbc568bc58fb085516664369930efbd943d22fa24299c68651586e3ef668
    Status: Downloaded newer image for container-registry.oracle.com/database/enterprise:19.3.0.0
@@ -118,7 +102,7 @@ OIG requires a database to store the configuration information and RCU schema in
 1. Run the `docker tag` to tag the image as follows:
 
    ```
-   [dockeruser@mydockerhost]$ docker tag container-registry.oracle.com/database/enterprise:19.3.0.0 localhost/oracle/database:latest
+   [dockeruser@mydockerhost]$ docker tag container-registry.oracle.com/database/enterprise:19.3.0.0 localhost/oracle/database:19.3.0.0
    ```
 	
 1. Run the `docker images` command to show the image is installed into the repository. The output should look similar to this:	
@@ -127,7 +111,7 @@ OIG requires a database to store the configuration information and RCU schema in
    $ docker images
    REPOSITORY                                        TAG           IMAGE ID      CREATED       SIZE
    container-registry.oracle.com/database/enterprise 19.3.0.0      2e375ab66980  2 months ago   6.66GB
-   localhost/oracle/database                         latest        2e375ab66980  2 months ago   6.66GB
+   localhost/oracle/database                         19.3.0.0      2e375ab66980  2 months ago   6.66GB
    ```
 
 ## Copyright
