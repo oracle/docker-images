@@ -102,7 +102,7 @@ OIG requires a database to store the configuration information and RCU schema in
 1. Run the `docker tag` to tag the image as follows:
 
    ```
-   [dockeruser@mydockerhost]$ docker tag container-registry.oracle.com/database/enterprise:19.3.0.0 localhost/oracle/database:19.3.0.0
+   [dockeruser@mydockerhost]$ docker tag container-registry.oracle.com/database/enterprise:19.3.0.0 localhost/oracle/database:19.3.0.0-ee
    ```
 	
 1. Run the `docker images` command to show the image is installed into the repository. The output should look similar to this:	
@@ -111,7 +111,7 @@ OIG requires a database to store the configuration information and RCU schema in
    $ docker images
    REPOSITORY                                        TAG           IMAGE ID      CREATED       SIZE
    container-registry.oracle.com/database/enterprise 19.3.0.0      2e375ab66980  2 months ago   6.66GB
-   localhost/oracle/database                         19.3.0.0      2e375ab66980  2 months ago   6.66GB
+   localhost/oracle/database                         19.3.0.0-ee   2e375ab66980  2 months ago   6.66GB
    ```
 
 ## Copyright

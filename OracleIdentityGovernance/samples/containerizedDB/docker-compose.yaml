@@ -19,7 +19,7 @@ services:
   # The Oracle DB Definition
   #
   oimdb:
-    image: ${DC_REGISTRY_DB}/oracle/database:19.3.0.0
+    image: ${DC_REGISTRY_DB}/oracle/database:${DC_DB_VERSION}
     ports:
       - "${DC_ORCL_PORT}:1521"
       - "${DC_ORCL_OEM_PORT}:5500"

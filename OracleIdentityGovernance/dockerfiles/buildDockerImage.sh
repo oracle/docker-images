@@ -75,7 +75,6 @@ cd $VERSION
 echo  "version --> $VERSION  "
 
 # Proxy settings
-PROXY_SETTINGS="--build-arg http_proxy=http://www-proxy.us.oracle.com:80"
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi

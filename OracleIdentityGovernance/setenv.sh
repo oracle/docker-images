@@ -24,6 +24,7 @@ export DC_USERHOME=/scratch/${USER}/docker/OIG
 # can be found
 export DC_REGISTRY_OIG="localhost"
 export DC_REGISTRY_DB="localhost"
+export DC_DB_VERSION="19.3.0.0-ee"
 
 # Proxy Environment
 export http_proxy=""

@@ -37,15 +37,7 @@ ENV FMW_JAR=fmw_12.2.1.4.0_idm_generic.jar \
     PATH=$PATH:/u01/oracle \
     DOMAIN_TYPE="oim"    
 
-    
-# Install OL7 required packages. Refer FMW 12.2.1.4 System requirements 
-# guide for complete list of packages
-# Change the open file limits and kernel parameters that need changing
-# Setup filesystem and oracle user
-# Unzip OIM installer
-# Go to /u01 as user 'oracle' to proceed with OIM installation
-#---------------------------------------------------------------
-# Proxy needs to be set before running yum in /etc/yum.conf
+
  
 USER root
 RUN mkdir -p /u01 && \
@@ -76,7 +68,6 @@ RUN cd /u01 && \
 #
 # Apply patch to OPatch
 #
-USER oracle
 WORKDIR ${ORACLE_HOME} 
 RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
     if [ ! -z "$opatchzip" ]; then \
@@ -98,8 +89,6 @@ RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
 #
 # Apply product patches 
 #    
-USER oracle
-WORKDIR ${ORACLE_HOME}
 RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
     if [ ! -z "$patchzips" ]; then \
       cd ${PATCH_DIR};  \
@@ -128,7 +117,6 @@ RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
     fi
 
 
-WORKDIR $ORACLE_HOME
 
 #
 # Define default command to start bash.

@@ -128,9 +128,8 @@ if [ "$RUN_RCU" = "true" ]
 then
 
   # Before running RCU, OIM prerequisite script needs to be run.
-  java -cp /$vol_name/oracle/dockertools/:/$vol_name/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar dbUtils $jdbc_url sys $DB_PASSWORD file /$vol_name/oracle/dockertools/xaview.sql
-
-  #java -cp ./:/u01/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar dbUtils jdbc:oracle:thin:@adc01djy.us.oracle.com:1521/OIMDB sys Welcome1 file process.sql
+  javac -cp $vol_name/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar /$vol_name/oracle/dockertools/DBUtils.java -d /$vol_name/oracle/dockertools/
+  java -cp /$vol_name/oracle/dockertools/:/$vol_name/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar DBUtils $jdbc_url sys $DB_PASSWORD file /$vol_name/oracle/dockertools/xaview.sql
 
   # Run the RCU.. it hasnt been loaded before..
   /$vol_name/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OIM  -component MDS -component SOAINFRA -component OPSS -f < /tmp/pwd.txt

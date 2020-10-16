@@ -205,7 +205,7 @@ create
 --version=12.2.1.4.0
 --tag=200506.0000
 --additionalBuildCommands /scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt                    
---additionalBuildFiles /scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createDomainAndStart.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createOIMDomain.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/dbUtils.class,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/oim_soa_integration.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startAdmin.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startMS.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/update_listenaddress.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/wait-for-it.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/xaview.sql
+--additionalBuildFiles /scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createDomainAndStart.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createOIMDomain.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/DBUtils.java,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/oim_soa_integration.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startAdmin.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startMS.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/update_listenaddress.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/wait-for-it.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/xaview.sql
 ```
 
 ### v) Create the OIG image
@@ -363,7 +363,7 @@ WORKDIR /u01/oracle
     
     RUN mkdir -p /u01/oracle/dockertools 
         
-    COPY --chown=oracle:oracle files/createDomainAndStart.sh files/createOIMDomain.py files/dbUtils.class files/oim_soa_integration.py files/startAdmin.sh files/startMS.sh files/update_listenaddress.py files/wait-for-it.sh files/xaview.sql /u01/oracle/dockertools/
+    COPY --chown=oracle:oracle files/createDomainAndStart.sh files/createOIMDomain.py files/DBUtils.java files/oim_soa_integration.py files/startAdmin.sh files/startMS.sh files/update_listenaddress.py files/wait-for-it.sh files/xaview.sql /u01/oracle/dockertools/
     RUN chmod a+xr /u01/oracle/dockertools/*.* && \
          chown -R oracle:oracle /u01/oracle/dockertools
     
