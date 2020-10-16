@@ -1,9 +1,9 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
-# Author: OIG Development
-#
+// Copyright (c) 2020 Oracle and/or its affiliates.
+//
+// Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+//
+// Author: OIG Development
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
