@@ -59,8 +59,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_PWD=<your database passwords> \
-	-e SGA_SIZE=<your database sga memory in MB> \
-	-e PGA_SIZE=<your database pga memory in MB> \
+	-e SGA_SIZE=<your database SGA memory in MB> \
+	-e PGA_SIZE=<your database PGA memory in MB> \
 	-e ORACLE_EDITION=<your database edition> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
