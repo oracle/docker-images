@@ -18,6 +18,9 @@ Example of how to create a database with user defined names.
 # customscripts
 Example of how to execute custom scripts on database setup/startup.
 
+# kubernetes
+Example of how to deploy the database using native Kubernetes objects.
+
 # plugpdb
 Example of how to plug an existing PDB into a CDB inside the container.
 
