@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020 Oracle and/or its affiliates.
 #
 #
 # Container image template for Oracle Instant Client
