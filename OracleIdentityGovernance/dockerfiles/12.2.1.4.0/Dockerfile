@@ -46,8 +46,7 @@ RUN mkdir -p /u01 && \
     mkdir ${OPATCH_PATCH_DIR} && \
     chown -R oracle:oracle /u01 && \
     chown -R oracle:oracle ${PATCH_DIR} && \
-    chown -R oracle:oracle ${OPATCH_PATCH_DIR} \
-    echo "INFO: DOMAIN_HOME = $DOMAIN_HOME" 
+    chown -R oracle:oracle ${OPATCH_PATCH_DIR} 
 
 #
 # Copy files and packages for install
