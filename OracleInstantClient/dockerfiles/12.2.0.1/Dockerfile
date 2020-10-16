@@ -1,11 +1,9 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
 #
-# ORACLE DOCKERFILES PROJECT
-# --------------------------
 #
-# Dockerfile template for Oracle Instant Client
+# Container image template for Oracle Instant Client
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ==================================

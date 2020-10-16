@@ -2,15 +2,12 @@
 #
 # Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
 #
-# ORACLE DOCKERFILES PROJECT
-# --------------------------
-#
-# Dockerfile template for Oracle Instant Client
+# Container image template for Oracle Instant Client
 #
 # HOW TO BUILD THIS IMAGE AND RUN A CONTAINER
-# -------------------------------------------
+# --------------------------------------------
 #
-# Run:
+# Execute:
 #      $ docker build --pull -t oracle/instantclient:19 .
 #      $ docker run -ti --rm oracle/instantclient:19 sqlplus hr@example.com/orclpdb1
 #
@@ -21,8 +18,8 @@
 # Oracle Database 11.2 or later.  Some tools may have other
 # restrictions.
 #
-# Note Instant Client 19 automatically configures the global library
-# search path to include Instant Client libraries.
+# Oracle Instant Client 19 automatically configures the global library search
+# path to include Instant Client libraries.
 #
 # OPTIONAL ORACLE CONFIGURATION FILES
 # -----------------------------------
