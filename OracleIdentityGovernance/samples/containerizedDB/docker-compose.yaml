@@ -1,0 +1,103 @@
+#
+# Copyright (c) 2020 Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Author: OIG Development
+#
+# Description: docker compose yaml to run OIG with containerized DB 
+#
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+#
+#
+version: "3.0"
+
+services:
+  #
+  # The Oracle DB Definition
+  #
+  oimdb:
+    image: ${DC_REGISTRY_DB}/oracle/database:${DC_DB_VERSION}
+    ports:
+      - "${DC_ORCL_PORT}:1521"
+      - "${DC_ORCL_OEM_PORT}:5500"
+    environment:
+      - ORACLE_SID=${DC_ORCL_SID}
+      - ORACLE_PDB=${DC_ORCL_PDB}
+      - ORACLE_PWD=${DC_ORCL_SYSPWD}
+    container_name: oimdb
+    volumes:
+      - ${DC_ORCL_DBDATA}:/opt/oracle/oradata
+
+  #
+  # The OIG Admin Server
+  #
+  oimadmin:
+    image: ${OIG_IMAGE}
+    container_name: oimadmin
+    hostname: oimadmin
+    command: /bin/bash -c "sleep 5s; /u01/oracle/dockertools/createDomainAndStart.sh"
+    ports:
+      - "7001:7001"
+    environment:
+      - ADMIN_HOST=${DC_HOSTNAME}
+      - ADMIN_PASSWORD=${DC_ADMIN_PWD}
+      - CONNECTION_STRING=${DC_ORCL_HOST}:${DC_ORCL_PORT}/${DC_ORCL_PDB}
+      - DB_PASSWORD=${DC_ORCL_SYSPWD}
+      - DB_SCHEMA_PASSWORD=${DC_RCU_SCHPWD}
+      - RCUPREFIX=${DC_RCU_OIMPFX}
+    volumes:
+      - ${DC_DDIR_OIM}:/u01/oracle/user_projects
+
+  #
+  # The SOA Managed Server
+  #
+  soams:
+    image: ${OIG_IMAGE}
+    container_name: soams
+    hostname: soams
+    depends_on:
+      - "oimadmin"
+    command: /bin/bash -c "/u01/oracle/dockertools/startMS.sh"
+    ports:
+      - "8001:8001"
+      - "8002:8002"
+      - "8003:8003"
+    environment:
+      - ADMIN_HOST=${DC_HOSTNAME}
+      - ADMIN_PORT=7001
+      - adminhostname=${DC_HOSTNAME}
+      - adminport=7001
+      - MANAGED_SERVER=soa_server1
+      - server=soa_server1
+    volumes:
+      - ${DC_DDIR_OIM}:/u01/oracle/user_projects
+
+
+  #
+  # The OIG Managed Server
+  #
+  oimms:
+    image: ${OIG_IMAGE}
+    container_name: oimms
+    hostname: oimms
+    depends_on:
+      - "oimadmin"
+    command: /bin/bash -c "/u01/oracle/dockertools/startMS.sh"
+    ports:
+      - "14000:14000"
+      - "14001:14001"
+      - "14002:14002"
+    environment:
+      - ADMIN_HOST=${DC_HOSTNAME}
+      - ADMIN_PORT=7001
+      - ADMIN_PASSWORD=${DC_ADMIN_PWD}
+      - adminhostname=${DC_HOSTNAME}
+      - adminport=7001
+      - MANAGED_SERVER=oim_server1
+      - server=oim_server1
+    volumes:
+      - ${DC_DDIR_OIM}:/u01/oracle/user_projects
+      

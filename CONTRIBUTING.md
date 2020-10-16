@@ -32,20 +32,20 @@ signed the OCA can be accepted.
 
 ## Oracle Product Ownership and Responsibility
 
-For any new product content, *you must obtain internal Oracle approvals for the 
-distribution of this content prior to submitting a pull request*. If you are 
+For any new product content, *you must obtain internal Oracle approvals for the
+distribution of this content prior to submitting a pull request*. If you are
 unfamiliar with the approval process to submit code to an existing GitHub
 repository, please contact the [Oracle Open Source team](mailto:opensource_ww_grp@oracle.com)
 for details.
 
-The GitHub user who submits the initial pull request to add a new product image 
-should add themselves to the [code owner](./CODEOWNERS) file in that same 
-request. This will flag the user as the owner of the content and any future pull 
+The GitHub user who submits the initial pull request to add a new product image
+should add themselves to the [code owner](./CODEOWNERS) file in that same
+request. This will flag the user as the owner of the content and any future pull
 requests that affect the conten will need to be approved by this user.
 
 The code owner will also be assigned to any issues relating to their content.
 
-You must ensure that you check the [issues](https://github.com/oracle/docker-images/issues) 
+You must ensure that you check the [issues](https://github.com/oracle/docker-images/issues)
 on at least a weekly basis, though daily is preferred.
 
 If you wish to nominate additional or alternative users, they must be a visible
@@ -92,7 +92,10 @@ the image owner to implement it.
 1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
 to be extended, then this should output documentation on how to extend the
 image to be useful.
-1. Use `LABEL` instructions for additional information such as ports and volumes. The following are common label instructions that should be present in all images where applicable:
+1. Use `LABEL` instructions for additional information such as ports and volumes.
+The following are common label instructions that should be present in all images where applicable:
+
+Additional product-specific labels are listed below:
 
 | Label   | Value | Applicability |
 | -------- | ----- | ------------- |
@@ -116,6 +119,22 @@ LABEL "provider"="Oracle"                                   \
       "port.oemexpress"="5500"                                          \
       "port.apex"="8080"
 ```
+
+You may also chose to use the [OpenContainer `image-spec`](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
+pre-defined annotation keys:
+
+* **org.opencontainers.image.created** date and time on which the image was built (string, date-time as defined by [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6)).
+* **org.opencontainers.image.authors** contact details of the people or organization responsible for the image (freeform string)
+* **org.opencontainers.image.url** URL to find more information on the image (string)
+* **org.opencontainers.image.documentation** URL to get documentation on the image (string)
+* **org.opencontainers.image.source** URL to get source code for building the image (should be the URL of this repository).
+* **org.opencontainers.image.version** version of the packaged software
+* **org.opencontainers.image.vendor** Name of the distributing entity, organization or individual (should be "Oracle").
+* **org.opencontainers.image.licenses** License(s) under which contained software is distributed as an [SPDX License Expression][spdx-license-expression].
+* **org.opencontainers.image.title** Human-readable title of the image (string)
+* **org.opencontainers.image.description** Human-readable description of the software packaged in the image (string)
+
+The use of these keys is optional and at each image authors' discretion.
 
 ### Security-related Rules
 
