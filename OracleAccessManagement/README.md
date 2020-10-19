@@ -9,7 +9,6 @@ Oracle Access Management (OAM) on Docker
 4. [Installing the OAM Docker Image](#installing-the-oam-docker-image)
 5. [OAM Docker Container Configuration](#oam-docker-container-configuration)
 6. [OAM Kubernetes Configuration](#oam-kubernetes-configuration)
-7. [Appendix A: Using an Oracle Database Docker Image for OAM](#appendix-a-using-an-oracle-database-docker-image-for-oam)
 
 
 ## Introduction
