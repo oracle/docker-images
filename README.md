@@ -57,8 +57,8 @@ acceptance prior to download:
 
 ## Support
 
-For support and certification information, please consult the documentation f
-or each product.
+For support and certification information, please consult the documentation
+for each product.
 
 For support, bug reporting and feedback about the provided Dockerfiles, please
 open an [issue on GitHub](https://github.com/oracle/docker-images/issues).
