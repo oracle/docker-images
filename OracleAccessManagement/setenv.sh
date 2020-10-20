@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -67,7 +67,7 @@ exportComposeEnv() {
   export DC_DDIR_OAM=${DC_USERHOME}/oamdomain
   export DC_OAM_VERSION=12.2.1.4.0
   export DC_ADMIN_USER=weblogic
-  export DC_DB_DOMAIN=xxx.example.com
+  export DC_DB_DOMAIN=xxxx.example.com
 }
 
 #===============================================

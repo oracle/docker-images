@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# # Copyright (c) 2019,2020 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Author: Kaushik C
 #
@@ -21,11 +21,11 @@ Builds a Docker Image for Oracle OAM Suite .
 Parameters:
    -h: view usage
    -v: Release version to build. Required. E.g 12.2.1.4.0
-   -d: Domain type to be built. Required for building the domain oam
-   -s: skips the MD5 check of packages (DEFAULT)
+   -d: Domain type to be built. Required for building the domain -oam.
+   -s: skips the MD5 check of packages
 
-LICENSE CDDL 1.0 + GPL 2.0
-Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
+LICENSE UPL 1.0 + GPL 2.0
+Copyright (c) 2016-2017: Oracle and/or its affiliates.
 EOF
 exit 0
 }
@@ -33,6 +33,10 @@ exit 0
 
 # Validate packages
 checksumPackages() {
+  if [ "${SKIPMD5}" -eq 1 ]; then
+    echo "INFO: Skipped MD5 checksum as requested"
+    return
+  fi
   echo "Checking if required packages are present and valid..."
   md5sum -c *.download
   if [ "$?" -ne 0 ]; then
@@ -44,7 +48,7 @@ checksumPackages() {
 
 #Parameters
 VERSION="12.2.1.4.0"
-SKIPMD5=1
+SKIPMD5=0
 while getopts "hsdgiv:t:" optname; do
   case "$optname" in
     "h")
@@ -77,7 +81,6 @@ cd $VERSION
 echo  "version --> $VERSION  "
 
 # Proxy settings
-PROXY_SETTINGS="--build-arg http_proxy=http://www-proxy.us.oracle.com:80"
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi

@@ -1,11 +1,8 @@
 #!/bin/bash
 #
+# Copyright (c) 2019,2020 Oracle and/or its affiliates.
 #
-#
-#
-# Copyright (c) 2019-2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Author: Kaushik C
 #
@@ -191,9 +188,7 @@ EOF
     echo "Domain Configuration Phase"
     echo "=========================="
     echo "/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning ${SCRIPT_DIR}/create_domain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -user $ADMIN_USER -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -isSSLEnabled $SSLEnabled" 
-    #export WL_HOME=${ORACLE_HOME}/wlserver
     cfgCmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning ${SCRIPT_DIR}/create_domain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -user $ADMIN_USER -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -isSSLEnabled $SSLEnabled"
-    #/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning ${SCRIPT_DIR}/create_domain.py "-oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -isSSLEnabled $SSLEnabled"
     echo "Cmd is ${cfgCmd}"
     ${cfgCmd}
     retval=$?
@@ -251,7 +246,7 @@ EOF
 fi
 
 #Echo Env Details
-# echo "Java Options: ${JAVA_OPTIONS}"
+echo "Java Options: ${JAVA_OPTIONS}"
 echo "Domain Root: ${DOMAIN_ROOT}"
 echo "Domain Name: ${DOMAIN_NAME}"
 echo "Domain Home: ${DOMAIN_HOME}"
@@ -263,7 +258,6 @@ cd ${ORACLE_HOME}
 # Update Listen Address for the Admin Server
 updateListenAddress
 # Now we start the Admin server in this container... 
-# ${DOMAIN_HOME}/bin/startWebLogic.sh &
 ${SCRIPT_DIR}/startAdmin.sh
 retval=$?
 if [ $retval -ne 0 ]; 
