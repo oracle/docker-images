@@ -1,40 +1,36 @@
-# Creating Oracle Unified Directory Docker Containers
+# Creating Oracle Unified Directory Containers
 
 ## Contents
 1. [Before You Begin](#before-you-begin)
-2. [Background](#background)
-3. [What Do You Need?](#what-do-you-need)
-4. [Directory Server/Service (instanceType=Directory)](#directory-serverservice-instancetypedirectory)
-5. [Directory Proxy Server/Service (instanceType=Proxy)](#directory-proxy-serverservice-instancetypeproxy)
-6. [Replication Server/Service (instanceType=Replication)](#replication-serverservice-instancetypereplication)
-7. [Directory Server/Service added to existing Replication Server/Service (instanceType=AddDS2RS)](#directory-serverservice-added-to-existing-replication-serverservice-instancetypeaddds2rs)
-8. [Directory Server/Service (myoudds2b) added to existing Directory Server/Service (myoudds2) (instanceType=AddDS2RS)](#directory-serverservice-myoudds2b-added-to-existing-directory-serverservice-myoudds2-instancetypeaddds2rs)
-9. [Directory Client to run CLIs like ldapsearch, dsconfig, and dsreplication](#directory-client-to-run-clis-like-ldapsearch-dsconfig-and-dsreplication)
-10. [Directory Server/Service (instanceType=Directory) with dstune configuration options](#directory-serverservice-instancetypedirectory-with-dstune-configuration-options)
-11. [Access interfaces (LDAP / LDAPS / HTTP / HTTPS) exposed by OUD container](#access-interfaces-ldap-ldaps-http-https-exposed-by-oud-container)
-12. [Removing an OUD Docker Container](#removing-an-oud-docker-container)
+1. [What Do You Need?](#what-do-you-need)
+1. [Prepare to Run OUD image](#prepare-to-run-oud-image)
+1. [Directory Server/Service (instanceType=Directory)](#directory-serverservice-instancetypedirectory)
+1. [Directory Proxy Server/Service (instanceType=Proxy)](#directory-proxy-serverservice-instancetypeproxy)
+1. [Replication Server/Service (instanceType=Replication)](#replication-serverservice-instancetypereplication)
+1. [Directory Server/Service added to existing Replication Server/Service (instanceType=AddDS2RS)](#directory-serverservice-added-to-existing-replication-serverservice-instancetypeaddds2rs)
+1. [Directory Server/Service (myoudds2b) added to existing Directory Server/Service (myoudds2) (instanceType=AddDS2RS)](#directory-serverservice-myoudds2b-added-to-existing-directory-serverservice-myoudds2-instancetypeaddds2rs)
+1. [Directory Client to run CLIs like ldapsearch, dsconfig, and dsreplication](#directory-client-to-run-clis-like-ldapsearch-dsconfig-and-dsreplication)
+1. [Directory Server/Service (instanceType=Directory) with dstune configuration options](#directory-serverservice-instancetypedirectory-with-dstune-configuration-options)
+1. [Access interfaces (LDAP / LDAPS / HTTP / HTTPS) exposed by OUD container](#access-interfaces-ldap-ldaps-http-https-exposed-by-oud-container)
+1. [Removing an OUD Container](#removing-an-oud-container)
 
 ## Before You Begin
 								
-The samples below show you how to create and configure Oracle Unified Directory (OUD) 12.2.1.4.0 Docker containers.
-
-## Background
-
-Docker is a platform that enables users to build, package, ship and run distributed applications. Docker users package up their applications, and any dependent libraries or files, into a Docker image. Docker images are portable artifacts that can be distributed across many environments. Images that have been distributed can be used to instantiate containers where applications can run in isolation from other applications running in other containers on the same host operating system.
+The samples below show you how to create and configure Oracle Unified Directory (OUD) 12.2.1.4.0 containers.
 
 ## What Do You Need?
                             
-* An OUD Docker image loaded into the Docker repository
+* An OUD image loaded into the Docker repository
 * A basic understanding of Docker
 * An understanding of OUD and its deployment options.
                             
-## Prepare to Run OUD Docker Image
+## Prepare to Run OUD image
 
 ### Create a Bridged Network
 
-Create a bridged network so the OUD Docker container(s) can communicate with each other.
+Create a bridged network so the OUD container(s) can communicate with each other.
 
-To create a docker network, run the following command:
+To create a bridged network, run the following command:
 
 ```
 $ docker network create -d bridge OUDNet
@@ -48,7 +44,7 @@ f18ca45a95c8ae1b6885fcc1b489a1a1a76bcdd292272276c2960335734c8d39
 
 ### Mount a host directory as a data volume
 
-Mount a volume (a directory stored outside a Docker container's file system), to store OUD Instance files and any other configuration. The default location of the user_projects volume in the container is /u01/oracle/user_projects (this is the directory under which the OUD instance is created).
+Mount a volume (a directory stored outside a container's file system), to store OUD Instance files and any other configuration. The default location of the user_projects volume in the container is /u01/oracle/user_projects (this is the directory under which the OUD instance is created).
 
 This option allows you to mount a directory from your host to a container as a volume. This volume is used to store OUD Instance files.
 
@@ -57,9 +53,9 @@ To prepare a host directory (for example: /scratch/user_projects) for mounting a
 **Note:** The userid can be anything but it must have uid:guid with the value 1000:1000.  This is same value as the oracle user running in the container.  This ensures that the oracle user has access to the data volume.
 
 ```
-$ sudo su - root<br>
-$ mkdir -p /scratch/user_projects<br>
-$ chown 1000:1000 /scratch/user_projects<br>
+$ sudo su - root
+$ mkdir -p /scratch/user_projects
+$ chown 1000:1000 /scratch/user_projects
 $ exit
 ```
 
@@ -72,12 +68,6 @@ In this section you will create two containers, each of which will host a single
 The parameter file for creating each of the containers can be found in this project at the following location : samples/oud-dir.env.  This file contains the following values:
 
 ```
-#
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at
-# https://oss.oracle.com/licenses/upl.
-#
 instanceType=Directory
 OUD_INSTANCE_NAME=myoudds1
 hostname=myoudds1
@@ -249,12 +239,6 @@ In this section you will create a single container, which will host a single OUD
 The parameter file for creating the container can be found in this project at the following location : samples/oud-proxy.env.  This file contains the following values:
 
 ```
-#
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at
-# https://oss.oracle.com/licenses/upl.
-#
 instanceType=Proxy
 OUD_INSTANCE_NAME=myoudp
 hostname=myoudp
@@ -399,12 +383,6 @@ In this section you will create a single container, which will host a single OUD
 The parameter file for creating the container can be found in this project at the following location : samples/oud-add-replication.env.  This file contains the following values:
 
 ```
-#
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at
-# https://oss.oracle.com/licenses/upl.
-#
 instanceType=Replication
 OUD_INSTANCE_NAME=myoudrs1
 hostname=myoudrs1
@@ -550,12 +528,6 @@ In this example you will create a single container, which will host a single OUD
 The parameter file for creating the container can be found in this project at the following location : samples/oud-add-dir-to-rs.env.  This file contains the following values:
 
 ```
-#
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at
-# https://oss.oracle.com/licenses/upl.
-#
 instanceType=AddDS2RS
 OUD_INSTANCE_NAME=myoudds1b
 hostname=myoudds1b
@@ -703,12 +675,6 @@ In this example you will create a single container, which will host a single OUD
 The parameter file for creating the container can be found in this project at the following location : samples/oud-add-ds_rs.env.  This file contains the following values:
 
 ```
-#
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at
-# https://oss.oracle.com/licenses/upl.
-#
 instanceType=AddDS2RS
 OUD_INSTANCE_NAME=myoudds2b
 hostname=myoudds2b
@@ -982,12 +948,6 @@ In the examples below you will create two containers, which will each host a sin
 The parameter file for creating the first container can be found in this project at the following location : samples/oud-dir-dstune.env.  This file contains the following values:
 
 ```
-#
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at
-# https://oss.oracle.com/licenses/upl.
-#
 instanceType=Directory
 OUD_INSTANCE_NAME=myouddstune
 hostname=myoudds1
@@ -1139,12 +1099,6 @@ Select 'q' to quit the dstune utility.
 The parameter file for creating the second container can be found in this project at the following location : samples/oud-dir-dstune-autotune.env.  This file contains the following values:
 
 ```
-#
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at
-# https://oss.oracle.com/licenses/upl.
-#
 instanceType=Directory
 OUD_INSTANCE_NAME=myoudautotune
 hostname=myoudds1
@@ -1260,7 +1214,7 @@ Select 'q' to quit the dstune utility.
 
 ## Access interfaces (LDAP / LDAPS / HTTP / HTTPS) exposed by OUD container
 
-You can use the docker inspect command to return various configuration parameters from your container.
+You can use the `docker inspect` command to return various configuration parameters from your container.
 
 To return the full list of parameters run the following command:
 
@@ -1310,7 +1264,7 @@ Returns:
 /myoudds2b : 172.18.0.7
 ```
 
-When container ports are mapped to the host port (through -p parameter for docker run), you can access those ports using the hostname as well.
+When container ports are mapped to the host port (through -p parameter for `docker run`), you can access those ports using the hostname as well.
 
 Using ldapsearch CLI, access to ldapPort and ldapsPort can be validated.
 
@@ -1318,7 +1272,7 @@ Using dsconfig CLI, access to adminConnectorPort and httpAdminConnectorPort can 
 
 Using REST Client, access to httpPort and httpsPort can be validated.
 
-## Removing an OUD Docker Container
+## Removing an OUD Container
 
 If you need to remove an OUD Docker container perform the following steps:
 							

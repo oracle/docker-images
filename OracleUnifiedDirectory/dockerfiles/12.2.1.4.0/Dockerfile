@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -19,7 +19,7 @@ FROM oracle/serverjre:8 as base
 
 # Maintainer
 # ----------
-LABEL maintainer="OUD Team"
+LABEL maintainer="Oracle Unified Directory team"
 
 #
 # Environment variables required for this build (do NOT change)
@@ -151,5 +151,4 @@ HEALTHCHECK --interval=1m --start-period=5m \
    CMD "${SCRIPT_DIR}/checkOUDInstance.sh" > /dev/null || exit 1
    
 # Create and Start OUD Instance
-# ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createAndStartOUDInstance.sh"]
 CMD ["sh", "-c", "${SCRIPT_DIR}/createAndStartOUDInstance.sh"]

@@ -1,5 +1,5 @@
-Building an OUD image with WebLogic Image Tool
-===========================================
+Building an Oracle Unified Directory image with WebLogic Image Tool
+===================================================================
 
 ## Contents
 
@@ -10,7 +10,7 @@ Building an OUD image with WebLogic Image Tool
 5. [Required build files](#5-required-build-files)
 6. [Additional build commands](#6-additional-build-commands)
 7. [Steps to Create OUD image](#7-steps-to-create-oud-image)
-8. [Sample Dockerfile generated with imagetool](#8-sample-dockerfile-generated-with-imagetool)
+8. [Generate Sample dockerfile with imagetool](#8-generate-sample-dockerfile-with-imagetool)
 
 # 1. Introduction
 
@@ -21,13 +21,13 @@ This README describes the steps involved in building an OUD image with the WebLo
 The following prerequisites are necessary before building OUD Docker images with Image Tool:
 
 * A working installation of Docker 18.03.1 or later
-* Bash version 4.0 or later, to enable the <tab> command complete feature.
+* Bash version 4.0 or later (commands should be run in a `bash` shell)
 * JAVA_HOME environment variable set to the location of your JDK e.g:  /scratch/export/oracle/product/jdk
 
 # 3. Setup WebLogic Image Tool
 
 * Download the latest WebLogic Image Tool version from the release [page](https://github.com/oracle/weblogic-image-tool/releases).
-* Unzip the release ZIP file to a desired \<work directory\>.
+* Extract the release archive (zip, tar.gz) content into a desired \<work directory\>.
 
 ```
 $ unzip imagetool.zip
@@ -116,7 +116,7 @@ $ git clone https://github.com/oracle/docker-images
 
 This will create the required directories and files under \<work directory\>/docker-images.
 
-The files required for creation of the OUD image can be located in the \<work directory\>/docker-images\OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts directory:
+The files required for creation of the OUD image can be located in the \<work directory\>/docker-images/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts directory:
 
 # 6. Additional build commands
 
@@ -198,7 +198,7 @@ $
 ### ii) Add installers to Imagetool cache
 
 ```
-$ ./imagetool.sh cache addInstaller --type oud --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_oud_generic.jar
+$ ./imagetool.sh cache addInstaller --type oud --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_oud.jar
 ```
 
 For example:
@@ -243,9 +243,9 @@ The following parameters are provided as input to the create command,
 Below a sample command used to build OUD image,
 
 ```
-$ ./imagetool.sh create --jdkVersion=8u241 --type oud --version=12.2.1.4.0 \
-    --tag=oud-with-patch:12.2.1.4.0 \
-    --additionalBuildCommands <work directory>/docker-images/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/imagetool/12.2.1.4.0/buildCmds.txt \
+$ ./imagetool.sh create --jdkVersion=8u261 --type oud --version=12.2.1.4.0 \
+    --tag=oracle/oud:12.2.1.4.0 \
+    --additionalBuildCommands <work directory>/docker-images/OracleUnifiedDirectory/imagetool/12.2.1.4.0/additionalBuildCmds.txt \
     --additionalBuildFiles <work directory>/docker-images/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts \
     --patches <patch_a>,<patch_b>,...
 ```
@@ -254,7 +254,7 @@ For example:
 
 ```
 $ ./imagetool.sh create --jdkVersion=8u261 --type oud --version=12.2.1.4.0 \
---tag=oud-with-patch:12.2.1.4.0 \
+--tag=oracle/oud:12.2.1.4.0 \
 --additionalBuildCommands /scratch/OUDDockerK8S/docker-images/OracleUnifiedDirectory/imagetool/12.2.1.4.0/additionalBuildCmds.txt \
 --additionalBuildFiles /scratch/OUDDockerK8S/docker-images/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts \
 --patches 28186730,31400392
@@ -262,172 +262,30 @@ $ ./imagetool.sh create --jdkVersion=8u261 --type oud --version=12.2.1.4.0 \
 
 ### v) View the docker image
 
-Run the `docker images` command to ensure the new OAM image is loaded into the repository:
+Run the `docker images` command to ensure the new OUD image is loaded into the repository:
 
 ```
 $ docker images
 REPOSITORY                                                                   TAG                       IMAGE ID            CREATED             SIZE
-oud-with-patch                                                               12.2.1.4.0                8a937042bef3        9 minutes ago       992MB
+oracle/oud                                                                   12.2.1.4.0                8a937042bef3        9 minutes ago       992MB
 ...
 ```
 
-# 8. Sample Dockerfile generated with imagetool
+# 8. Generate Sample dockerfile with imagetool
 
-Below is a sample dockerfile created with the imagetool. This can be viewed by issuing the `imagetool` command with the `--dryRun` option:
-
-```
-./imagetool.sh @<work directory/build/buildArgs --dryRun
-```
+If you want to review a sample dockerfile created with the imagetool issue the `imagetool` command with the `--dryRun` option:
 
 ```
-	########## BEGIN DOCKERFILE ##########
-	#
-	# Copyright (c) 2019, 2020, Oracle and/or its affiliates.  All rights reserved.
-	#
-	# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-	#
-	#
-	FROM oraclelinux:7-slim as OS_UPDATE
-	LABEL com.oracle.weblogic.imagetool.buildid="f3557b16-8e34-4bf0-be6a-baa06fd8c137"
-	USER root
-	
-	RUN yum -y --downloaddir= install gzip tar unzip \
-	 && yum -y --downloaddir= clean all \
-	 && rm -rf /var/cache/yum/* \
-	 && rm -rf
-	
-	## Create user and group
-	RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
-	 && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
-	 && mkdir /u01 \
-	 && chown oracle:oracle /u01
-	
-	# Install Java
-	FROM OS_UPDATE as JDK_BUILD
-	LABEL com.oracle.weblogic.imagetool.buildid="f3557b16-8e34-4bf0-be6a-baa06fd8c137"
-	
-	ENV JAVA_HOME=/u01/jdk
-	
-	COPY --chown=oracle:oracle jdk-8u241-linux-x64.tar.gz /tmp/imagetool/
-	
-	USER oracle
-	
-	    # Instructions/Commands to be executed Before JDK install
-	
-	
-	RUN tar xzf /tmp/imagetool/jdk-8u241-linux-x64.tar.gz -C /u01 \
-	 && mv /u01/jdk* /u01/jdk \
-	 && rm -rf /tmp/imagetool
-	
-	    # Instructions/Commands to be executed After JDK install
-	
-	
-	# Install Middleware
-	FROM OS_UPDATE as WLS_BUILD
-	LABEL com.oracle.weblogic.imagetool.buildid="f3557b16-8e34-4bf0-be6a-baa06fd8c137"
-	
-	ENV JAVA_HOME=/u01/jdk \
-	    ORACLE_HOME=/u01/oracle \
-	    OPATCH_NO_FUSER=true
-	
-	RUN mkdir -p /u01/oracle \
-	 && mkdir -p /u01/oracle/oraInventory \
-	 && chown oracle:oracle /u01/oracle/oraInventory \
-	 && chown oracle:oracle /u01/oracle
-	
-	COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-	
-	COPY --chown=oracle:oracle fmw_12.2.1.4.0_oud.jar oud.rsp /tmp/imagetool/
-	COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
-	
-	    COPY --chown=oracle:oracle p28186730_139421_Generic.zip /tmp/imagetool/opatch/
-	
-	    COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
-	
-	USER oracle
-	
-	
-	RUN  \
-	 /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_oud.jar -silent ORACLE_HOME=/u01/oracle \
-	    -responseFile /tmp/imagetool/oud.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-	
-	RUN cd /tmp/imagetool/opatch \
-	 && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139421_Generic.zip \
-	 && /u01/jdk/bin/java -jar /tmp/imagetool/opatch/6880880/opatch_generic.jar -silent -ignoreSysPrereqs -force -novalidation oracle_home=/u01/oracle
-	
-	RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
-	 && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle
-	
-	
-	
-	FROM OS_UPDATE as FINAL_BUILD
-	
-	ARG ADMIN_NAME
-	ARG ADMIN_HOST
-	ARG ADMIN_PORT
-	ARG MANAGED_SERVER_PORT
-	
-	ENV ORACLE_HOME=/u01/oracle \
-	    JAVA_HOME=/u01/jdk \
-	    LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
-	    PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
-	
-	LABEL com.oracle.weblogic.imagetool.buildid="f3557b16-8e34-4bf0-be6a-baa06fd8c137"
-	
-	    COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-	
-	COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
-	
-	
-	
-	USER oracle
-	WORKDIR /u01/oracle
-	
-	#ENTRYPOINT /bin/bash
-	
-	
-	    ENV BASE_DIR=/u01 \
-	        ORACLE_HOME=/u01/oracle \
-	        SCRIPT_DIR=/u01/oracle/container-scripts \
-	        USER_PROJECTS_DIR=/u01/oracle/user_projects \
-	    	OUD_INSTANCE_NAME=${OUD_INSTANCE_NAME:-asinst_1} \
-	        PATH=$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
-	
-	    USER root
-	
-	    RUN mkdir -p ${USER_PROJECTS_DIR} && \
-	        chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 770 ${USER_PROJECTS_DIR} && \
-	        mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-	        yum install -y libaio hostname vi && \
-	        rm -rf /var/cache/yum
-	
-	    COPY --chown=oracle:oracle \
-	        files/checkOUDInstance.sh \
-	        files/common_functions.sh \
-	        files/createAndStartOUDInstance.sh \
-	        files/generate-start-ds_debug.sh \
-	        files/setEnvVars.sh \
-	        files/startOUDInstance.sh \
-	        ${SCRIPT_DIR}/
-	    RUN chmod a+xr ${SCRIPT_DIR}/* && \
-	         chown -R oracle:oracle ${SCRIPT_DIR}
-	
-	    USER oracle
-	    # Disabling Enpoint Identification for selected CLIs to allow connecting to OUD Instance with any hostname \
-	    RUN echo "" >> ${ORACLE_HOME}/oud/config/java.properties && \
-	        echo "dsconfig.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
-	        echo "dsreplication.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
-	        echo "uninstall.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
-	        echo "status.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${ORACLE_HOME}/oud/config/java.properties && \
-	        ${ORACLE_HOME}/oud/bin/dsjavaproperties
-	
-	    # run container health check
-	    HEALTHCHECK --interval=1m --start-period=5m \
-	       CMD "${SCRIPT_DIR}/checkOUDInstance.sh" > /dev/null || exit 1
-	
-	    # Create and Start OUD Instance
-	    # ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createAndStartOUDInstance.sh"]
-	    CMD ["sh", "-c", "${SCRIPT_DIR}/createAndStartOUDInstance.sh"]
-	
-	########## END DOCKERFILE ##########
+./imagetool.sh @<work directory>/docker-images/OracleUnifiedDirectory/imagetool/12.2.1.4.0/additionalBuildCmds.txt --dryRun
 ```
+
+# Licensing & Copyright
+
+## License
+To download and run Oracle Fusion Middleware products, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
+
+All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectory](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+
+## Copyright
+Copyright (c) 2020 Oracle and/or its affiliates.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl

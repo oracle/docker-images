@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -20,7 +20,7 @@ FROM oracle/fmw-infrastructure:12.2.1.4.0 as base
 
 # Maintainer
 # ----------
-LABEL maintainer="OUD Team"
+LABEL maintainer="Oracle Unified Directory team"
 
 #
 # Environment variables required for this build (do NOT change)
@@ -51,7 +51,6 @@ USER root
 RUN mkdir -p ${BASE_DIR} && \
     mkdir -p ${PATCHES_BASE_DIR}/opatch_patch && \
     mkdir -p ${PATCHES_BASE_DIR}/patches && \
-#    useradd -b ${BASE_DIR} -d ${ORACLE_HOME} -m -s /bin/bash oracle && \
     chmod a+xr ${BASE_DIR} && chown oracle:oracle ${BASE_DIR} && \
     chmod -R a+xr ${PATCHES_BASE_DIR} && chown -R oracle:oracle ${PATCHES_BASE_DIR} && \
     mkdir -p ${VOLUME_DIR} && \

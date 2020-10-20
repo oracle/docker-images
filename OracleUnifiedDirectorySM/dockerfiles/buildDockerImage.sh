@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -17,9 +17,9 @@ Builds a Docker Image for Oracle Unified Directory Service Manager
 Parameters:
    -h: view usage
    -v: Release version to build. Required. E.g 12.2.1.4.0
-   -s: skips the MD5 check of packages (DEFAULT)
+   -s: skips the MD5 check of packages
 
-Copyright (c) 2020: Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2020: Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at 
 https://oss.oracle.com/licenses/upl.
 EOF
