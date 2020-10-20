@@ -80,7 +80,6 @@ public class DBUtils {
             else {
                 dbUtils.printUsage();
             }
-            System.out.println("All Scripts Executed Successfully");
         }
         catch (Exception exception) {
             try {

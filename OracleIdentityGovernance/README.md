@@ -7,7 +7,7 @@ Oracle Identity Governance (OIG) on Docker
 1. [Introduction](#introduction)
 2. [Prerequisites for OIG on Docker](#prerequisites-for-oig-on-docker)
 3. [Prerequisites for OIG on Kubernetes](#prerequisites-for-oig-on-kubernetes)
-4. [Installing the OIG Docker Image](#installing-the-oig-docker-image)
+4. [Building the OIG Image](#building-the-oig-image)
 5. [OIG Docker Container Configuration](#oig-docker-container-configuration)
 6. [OIG Kubernetes Configuration](#oig-kubernetes-configuration)
 
@@ -33,13 +33,13 @@ The following prerequisites are required for building OIG Docker images:
 
 Refer to the [Prerequisites](https://oracle.github.io/fmw-kubernetes/oig/prerequisites) in the Oracle Identity Governance Kubernetes documentation.
 
-## Installing the OIG Image
+## Building the OIG Image
 
 An OIG image can be created and/or made available for deployment in the following ways:
 
 1. Build your own OIG image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own OIG 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an OIG Image using Image Tool](https://github.com/oracle/docker-images/tree/master/OracleIdentityGovernance/imagetool/12.2.1.4.0).
 
-1. Build your own OIG image using the dockerfile samples. To customize the docker image for specific use-cases, Oracle provides dockerfile samples and build scripts. For more information, see [Building an Oracle Identity Governance Image using Dockerfile Samples](https://github.com/oracle/docker-images/tree/master/OracleIdentityGovernance/dockerfiles/12.2.1.4.0).
+1. Build your own OIG image using the dockerfile samples. To customize the image for specific use-cases, Oracle provides dockerfile samples and build scripts. For more information, see [Building an Oracle Identity Governance Image using Dockerfile Samples](https://github.com/oracle/docker-images/tree/master/OracleIdentityGovernance/dockerfiles/12.2.1.4.0).
 
 
 ## OIG Docker Container Configuration
