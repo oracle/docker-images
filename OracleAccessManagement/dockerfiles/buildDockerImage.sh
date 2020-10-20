@@ -21,7 +21,7 @@ Builds a Docker Image for Oracle OAM Suite .
 Parameters:
    -h: view usage
    -v: Release version to build. Required. E.g 12.2.1.4.0
-   -d: Domain type to be built. Required for building the domain -oam.
+   -d: Domain type to be built. Required for building the domain.Value required: oam
    -s: skips the MD5 check of packages
 
 LICENSE UPL 1.0 + GPL 2.0
