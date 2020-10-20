@@ -1,12 +1,13 @@
 # # Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
 # #
-# # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # #
 # # Author: Kaushik C
 # #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Access Manager 12.2.1.4.0
+#
 #
 # Base image of this dockerfile is the FMW Infrastructure 12.2.1.4.0 docker image.
 #
@@ -18,10 +19,6 @@
 # Pull base image
 # ---------------
 FROM oracle/fmw-infrastructure:12.2.1.4.0 as base
-#
-# Maintainer
-# ----------
-MAINTAINER OAM Development <Kaushik C>
 #
 #
 # Environment variables required for this build (do NOT change)
@@ -59,7 +56,6 @@ ENV FMW_IDM_JAR=fmw_12.2.1.4.0_idm_generic.jar \
 # ----------------------------------------------------------------
 USER root
 RUN mkdir -p ${BASE_DIR} && \
-#    useradd -b ${BASE_DIR} -d ${ORACLE_HOME} -m -s /bin/bash oracle && \
     chmod a+xr ${BASE_DIR} && chown oracle:oracle ${BASE_DIR} && \
     mkdir -p ${USER_PROJECTS_DIR} && \
     chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 775 ${USER_PROJECTS_DIR} && \
@@ -67,9 +63,8 @@ RUN mkdir -p ${BASE_DIR} && \
     chown -R oracle:oracle ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
     mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
     mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \ 
-    yum install -y libaio && \
-    yum install -y hostname && \
-    rm -rf /var/cache/yum && \
+    #yum install -y libaio hostname && \
+    #rm -rf /var/cache/yum && \
     mkdir ${PATCH_DIR} && \
     mkdir ${OPATCH_PATCH_DIR} && \
     chown -R oracle:oracle ${BASE_DIR} && \
@@ -131,8 +126,6 @@ RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
 #
 # Apply product patches 
 #    
-USER oracle
-WORKDIR ${ORACLE_HOME}
 RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
     if [ ! -z "$patchzips" ]; then \
       cd ${PATCH_DIR};  \
@@ -162,15 +155,14 @@ RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
 
 FROM base as FINAL_BUILD
 
+RUN yum install -y libaio hostname && \
+    rm -rf /var/cache/yum
 COPY --from=builder --chown=oracle:oracle $BASE_DIR $BASE_DIR
 COPY --from=builder --chown=oracle:oracle $JAVA_HOME $JAVA_HOME
 
 
 # Define default command to start script.
-# CMD ["/u01/oracle/createAndStartEmptyDomain.sh"]
 USER oracle
 WORKDIR $ORACLE_HOME
 # Define default command to start bash.
-#ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]
 CMD ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]
-
