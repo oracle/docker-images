@@ -6,7 +6,7 @@ Sample Docker configurations to facilitate installation, configuration, and envi
 ***Image***: oracle/oig:<version; example:12.2.1.4.0>
 
 ## Prerequisites
-The following prerequisites are necessary before building OIG Docker images:
+The following prerequisites are necessary before building OIG images:
 
 * A working installation of Docker 18.03 or later
 
@@ -171,7 +171,7 @@ Building your own OIG image involves the following steps:
     $ export http_proxy=http://<proxy_server_hostname>:<proxy_server_port>
     $ export https_proxy=http://<proxy_server_hostname>:<proxy_server_port>
 	
-  2. Run the following command to build the OIG docker image:
+  2. Run the following command to build the OIG image:
 
     $ cd <work directory>/docker-images/OracleIdentityGovernance/dockerfiles
     $ sh buildDockerImage.sh -v 12.2.1.4.0
@@ -435,7 +435,7 @@ Building your own OIG image involves the following steps:
 	container-registry.oracle.com/soasuite                      2.2.1.4-200612  9e9262639994  6 weeks ago         2.32GB
     oracle/soasuite                                             12.2.1.4.0      9e9262639994  6 weeks ago         2.32GB
 
-   The OIG docker image is now built successfully! 
+   The OIG image is now built successfully! 
    
    To create OIG Docker containers refer to the **OIG Docker Container Configuration** below.
 

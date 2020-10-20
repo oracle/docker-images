@@ -13,11 +13,11 @@ Building an OIG image with WebLogic Image Tool
 
 # 1. Introduction
 
-This README describes the steps involved in building an OIG docker image with the WebLogic Image Tool. 
+This README describes the steps involved in building an OIG image with the WebLogic Image Tool. 
 
 # 2. Prerequisites
 
-The following prerequisites are necessary before building OIG Docker images with Image Tool:
+The following prerequisites are necessary before building OIG images with Image Tool:
 
 * A working installation of Docker 18.03.1 or later
 * Bash version 4.0 or later, to enable the <tab> command complete feature
@@ -238,7 +238,7 @@ $ cd <work directory>/imagetool/bin
 $ ./imagetool.sh @<work directory>/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs
 ```
 
-###  vi) View the docker image
+###  vi) View the image
 
 Run the `docker images` command to ensure the new OIG image is loaded into the repository:
 
@@ -262,7 +262,7 @@ Below is a sample dockerfile created with the imagetool. This can be viewed by i
 ```Dockerfile
 ########## BEGIN DOCKERFILE ##########
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. 
+# Copyright (c) 2019, 2020, Oracle and/or its affiliates.  All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
