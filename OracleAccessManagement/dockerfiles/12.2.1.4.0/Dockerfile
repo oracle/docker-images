@@ -8,10 +8,6 @@
 # --------------------------
 # This is the Dockerfile for Oracle Access Manager 12.2.1.4.0
 #
-# Maintainer
-# ----------
-LABEL maintainer="Kaushik C <kaushik.c@oracle.com>"
-
 #
 # Base image of this dockerfile is the FMW Infrastructure 12.2.1.4.0 docker image.
 #
@@ -67,8 +63,6 @@ RUN mkdir -p ${BASE_DIR} && \
     chown -R oracle:oracle ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
     mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
     mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \ 
-    #yum install -y libaio hostname && \
-    #rm -rf /var/cache/yum && \
     mkdir ${PATCH_DIR} && \
     mkdir ${OPATCH_PATCH_DIR} && \
     chown -R oracle:oracle ${BASE_DIR} && \
@@ -159,8 +153,8 @@ RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
 
 FROM base as FINAL_BUILD
 
-yum install -y libaio hostname && \
-rm -rf /var/cache/yum
+RUN yum install -y libaio hostname && \
+    rm -rf /var/cache/yum
 COPY --from=builder --chown=oracle:oracle $BASE_DIR $BASE_DIR
 COPY --from=builder --chown=oracle:oracle $JAVA_HOME $JAVA_HOME
 

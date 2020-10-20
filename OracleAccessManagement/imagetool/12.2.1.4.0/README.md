@@ -17,7 +17,7 @@ This README describes the steps involved in building an OAM image with the WebLo
 
 # 2. Prerequisites
 
-The following prerequisites are necessary before building OAM Docker images with Image Tool:
+The following prerequisites are necessary before building OAM images with Image Tool:
 
 * A working installation of Docker 18.03.1 or later
 * Bash version 4.0 or later, to enable the <tab> command complete feature
@@ -27,7 +27,7 @@ The following prerequisites are necessary before building OAM Docker images with
 
 a) Download the latest WebLogic Image Tool version from the release [page](https://github.com/oracle/weblogic-image-tool/releases).
 
-b) Unzip the release ZIP file to a desired \<work directory\>.
+b) Unzip the release ZIP file to a desired \<work directory\> e.g /scratch.
 
 ```
 $ unzip imagetool.zip -d <work directory>
@@ -127,18 +127,18 @@ b) Download any patches listed in the manifest file from [My Oracle Support](htt
 # 5. Required build files
 
 
-a) The OAM image requires additional files for creating the OAM domain and starting the WebLogic Servers. Download the required files from the FMW [repository](https://github.com/oracle/fmw-kubernetes.git). For example:
+a) The OAM image requires additional files for creating the OAM domain and starting the WebLogic Servers. Download the required files from the FMW [repository](https://github.com/oracle/docker-images/). For example:
 
 
 ```  
 $ cd <work directory>
-$ git clone https://github.com/oracle/fmw-kubernetes.git
+$ git clone https://github.com/oracle/docker-images
 ```
 
-This will create the required directories and files under \<work directory\>/fmw-kubernetes.
+This will create the required directories and files under \<work directory\>/docker-images.
 
 
-b) Edit the `<work directory>/fmw-kubernetes/OracleAccessManagement/imagetool/12.2.1.4.0/buildArgs` file and change `%DOCKER_REPO%`, `%JDK_VERSION%` & `%BUILDTAG%` appropriately.
+b) Edit the `<work directory>/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/buildArgs` file and change `%DOCKER_REPO%`, `%JDK_VERSION%` & `%BUILDTAG%` appropriately.
 
 
 For example:
@@ -149,9 +149,10 @@ create
 --type oam
 --version=12.2.1.4.0
 --tag=oam-with-patch:12.2.1.4.0
---installerResponseFile /scratch/fmw-kubernetes/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/fmw-kubernetes/OracleAccessManagement/dockerfiles/12.2.1.4.0/install/iam.response
---additionalBuildCommands /scratch/fmw-kubernetes/OracleAccessManagement/imagetool/12.2.1.4.0/addtionalBuildCmds.txt
---additionalBuildFiles /scratch/fmw-kubernetes/OracleAccessManagement/dockerfiles/12.2.1.4.0/container-scripts
+--pull
+--installerResponseFile /scratch/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/docker-images/OracleAccessManagement/dockerfiles/12.2.1.4.0/install/iam.response
+--additionalBuildCommands /scratch/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/addtionalBuildCmds.txt
+--additionalBuildFiles /scratch/docker-images/OracleAccessManagement/dockerfiles/12.2.1.4.0/container-scripts
 ```
 
 # 6. Steps to create image
@@ -199,9 +200,10 @@ create
 --type oam
 --version=12.2.1.4.0
 --tag=oam-with-patch
---installerResponseFile /scratch/fmw-kubernetes/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/fmw-kubernetes/OracleAccessManagement/dockerfiles/12.2.1.4.0/install/iam.response
---additionalBuildCommands /scratch/fmw-kubernetes/OracleAccessManagement/imagetool/12.2.1.4.0/addtionalBuildCmds.txt
---additionalBuildFiles /scratch/fmw-kubernetes/OracleAccessManagement/dockerfiles/12.2.1.4.0/container-scripts
+--pull
+--installerResponseFile /scratch/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/docker-images/OracleAccessManagement/dockerfiles/12.2.1.4.0/install/iam.response
+--additionalBuildCommands /scratch/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/addtionalBuildCmds.txt
+--additionalBuildFiles /scratch/docker-images/OracleAccessManagement/dockerfiles/12.2.1.4.0/container-scripts
 --patches 31556630_12.2.1.4.0,31488215_12.2.1.4.0,31470730_12.2.1.4.0,31537019_12.2.1.4.0,31544353_12.2.1.4.0
 --opatchBugNumber=28186730_13.9.4.2.4
 ```
@@ -214,7 +216,7 @@ For example:
 
 ```bash
 $ cd <work directory>/imagetool/bin
-$ ./imagetool.sh @<work directory>/OracleAccessManagement/imagetool/12.2.1.4.0/buildArgs
+$ ./imagetool.sh @<work directory>/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/buildArgs
 ```
 
 ###  vi) View the docker image
@@ -394,3 +396,6 @@ WORKDIR /u01/oracle
 
 ########## END DOCKERFILE ##########
 ```
+
+## Copyright
+Copyright (c) 2020 Oracle and/or its affiliates.

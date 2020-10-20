@@ -1,4 +1,4 @@
-Building an Oracle Access Management Docker Image using Dockerfile Samples
+Building an Oracle Access Management Image using Dockerfile Samples
 ==========================================================================
 Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This Image includes binaries for Oracle Access Management (OAM) Release 12.2.1.4.0 and it has capability to create FMW Infrastructure domain and OAM specific Managed Servers.
 
@@ -17,13 +17,13 @@ Refer to the [Prerequisites](https://oracle.github.io/fmw-kubernetes/oam/prerequ
 ## How to build
 This project offers a sample Dockerfile and scripts to build an Oracle Access Management 12cPS4 (12.2.1.4) image. 
 
-Building your own OAM Docker image involves the following steps:
+Building your own OAM image involves the following steps:
 
 * Pulling the Oracle JDK Base Image
 * Pulling the Oracle FMW Infrastructure 12.2.1.4 image
 * Downloading the OAM Docker files
 * Downloading the 12.2.1.4.0 Identity Management shiphome and Patches
-* Building the OAM Docker image
+* Building the OAM image
 
 
 ### Pulling the Oracle JDK (Server JRE) base image
@@ -189,14 +189,14 @@ Building your own OAM Docker image involves the following steps:
 	$ chmod 644 <work directory>/docker-images/OracleAccessManagement/dockerfiles/12.2.1.4.0/opatch_patch/*
   
   
-### Building the Oracle Access Management 12.2.1.x Docker image
+### Building the Oracle Access Management 12.2.1.x image
 
   1. Run the following to set the proxy server appropriately. This is required so the build process can pull the relevant Linux packages via yum:
 
     $ export http_proxy=http://<proxy_server_hostname>:<proxy_server_port>
     $ export https_proxy=http://<proxy_server_hostname>:<proxy_server_port>
 	
-  2. Run the following command to build the OAM docker image:
+  2. Run the following command to build the OAM image:
 
     $ cd <work directory>/docker-images/OracleAccessManagement/dockerfiles
     $ sh buildDockerImage.sh -v 12.2.1.4.0
