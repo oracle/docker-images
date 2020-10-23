@@ -78,12 +78,6 @@ function _term() {
   /etc/init.d/oracle-xe-18c stop
 }
 
-########### SIGKILL handler ############
-function _kill() {
-   echo "SIGKILL received, shutting down database!"
-   /etc/init.d/oracle-xe-18c stop
-}
-
 ############# Create DB ################
 function createDB {
    # Auto generate ORACLE PWD if not passed on
@@ -162,9 +156,6 @@ EXTPROC_CONNECTION_DATA =
 
 # Set SIGTERM handler
 trap _term SIGTERM
-
-# Set SIGKILL handler
-trap _kill SIGKILL
 
 # Check whether database already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then

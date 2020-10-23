@@ -31,6 +31,8 @@ COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/dockertools/
 RUN chmod a+xr /u01/oracle/dockertools/*.* && \
      chown -R oracle:oracle /u01/oracle/dockertools
 
+RUN sed -i 's|true</ready|false</ready|g' /u01/oracle/idm/server/apps/oim.ear/META-INF/weblogic-application.xml
+
 USER oracle
 WORKDIR $ORACLE_HOME
 CMD ["/u01/oracle/dockertools/createDomainAndStart.sh"]

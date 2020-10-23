@@ -13,11 +13,11 @@ Building an OIG image with WebLogic Image Tool
 
 # 1. Introduction
 
-This README describes the steps involved in building an OIG docker image with the WebLogic Image Tool. 
+This README describes the steps involved in building an OIG image with the WebLogic Image Tool. 
 
 # 2. Prerequisites
 
-The following prerequisites are necessary before building OIG Docker images with Image Tool:
+The following prerequisites are necessary before building OIG images with Image Tool:
 
 * A working installation of Docker 18.03.1 or later
 * Bash version 4.0 or later, to enable the <tab> command complete feature
@@ -27,7 +27,7 @@ The following prerequisites are necessary before building OIG Docker images with
 
 a) Download the latest WebLogic Image Tool version from the release [page](https://github.com/oracle/weblogic-image-tool/releases).
 
-b) Unzip the release ZIP file to a desired \<work directory\>.
+b) Unzip the release ZIP file to a desired \<work directory\> e.g /scratch.
 
 ```
 $ unzip imagetool.zip -d <work directory>
@@ -99,30 +99,40 @@ a) Download the required installers from the [Oracle Software Delivery Cloud](ht
 **Note** : the required list of packages/installers & patches for specific bundled patchsets can be found in the latest manifest file. For example, the list below displays the packages/installers & patches from manifest.oam.july2020.properties:
 
 ```
-JDK
-    jdk-8u241-linux-x64.tar.gz
+[JDK]
+jdk-8u261-linux-x64.tar.gz
 
-FMW INFRA
-    fmw_12.2.1.4.0_infrastructure.jar
+[INFRA]
+fmw_12.2.1.4.0_infrastructure.jar
 
-FMW INFRA PATCHES
-    p28186730_139422_Generic.zip(Opatch)
-    p30432881_122140_Generic.zip(OWSM)
-    p30513324_122140_Linux-x86-64.zip(OSS)
-    p30581253_122140_Generic.zip(ADF)
-    p30689820_122140_Generic.zip(WLS)
-    p30729380_122140_Generic.zip(COH)
+[INFRA_PATCH]
+p28186730_139424_Generic.zip:Opatch
+p31537019_122140_Generic.zip:WLS
+p31544353_122140_Linux-x86-64.zip:WLS
+p31470730_122140_Generic.zip:COH
+p31488215_122140_Generic.zip:JDEV
+p31403376_122140_Generic.zip:OWCC
 
-SOA/OSB
-    fmw_12.2.1.4.0_soa.jar
-    fmw_12.2.1.4.0_osb.jar
+[SOA]
+fmw_12.2.1.4.0_soa.jar
 
-SOA/OSB PATCHES
-    p30749990_122140_Generic.zip(SOA)
-    p30779352_122140_Generic.zip(OSB)
+[SOA_PATCH]
+p31396632_122140_Generic.zip:SOA
+p31287540_122140_Generic.zip:SOA
 
-IDM
-    fmw_12.2.1.4.0_idm.jar
+[OSB]
+fmw_12.2.1.4.0_osb.jar
+
+[OSB_PATCH]
+p30779352_122140_Generic.zip:OSB
+p30680769_122140_Generic.zip:OSB
+
+[IDM]
+fmw_12.2.1.4.0_idm_generic.jar
+
+[IDM_PATCH]
+p31537918_122140_Generic.zip:OIM
+p31497461_12214200624_Generic.zip:OIM
 ```
 
 b) Download any patches listed in the manifest file from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
@@ -130,31 +140,33 @@ b) Download any patches listed in the manifest file from [My Oracle Support](htt
 
 # 5. Required build files
 
-a) The OIG image requires additional files for creating the OIG domain and starting the WebLogic Servers. Download the required files from the FMW [repository](https://github.com/oracle/fmw-kubernetes.git). For example:
+a) The OIG image requires additional files for creating the OIG domain and starting the WebLogic Servers. Download the required files from the FMW [repository](https://github.com/oracle/docker-images). For example:
 
 
 ```  
 $ cd <work directory>
-$ git clone https://github.com/oracle/fmw-kubernetes.git
+$ git clone https://github.com/oracle/docker-images
 ```
 
-This will create the required directories and files under \<work directory\>/fmw-kubernetes.
+This will create the required directories and files under \<work directory\>/docker-images.
 
 
-b) Edit the `<work directory>/fmw-kubernetes/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs` file and change `%DOCKER_REPO%`, `%JDK_VERSION%` & `%BUILDTAG%` appropriately.
+b) Edit the `<work directory>/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs` file and change `%DOCKER_REPO%`, `%JDK_VERSION%` & `%BUILDTAG%` appropriately.
 
 For example:
 
 ```
 create
 --jdkVersion=8u261
---type oam
+--type oig
 --version=12.2.1.4.0
 --tag=oig-with-patch:12.2.1.4.0
---installerResponseFile /scratch/fmw-kubernetes/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/fmw-kubernetes/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/install/iam.response
---additionalBuildCommands /scratch/fmw-kubernetes/OracleIdentityGovernance/imagetool/12.2.1.4.0/addtionalBuildCmds.txt
---additionalBuildFiles /scratch/fmw-kubernetes/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts
+--pull
+--installerResponseFile /scratch/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/docker-images/OracleSOASuite/dockerfiles/12.2.1.4.0/install/soasuite.response,/scratch/docker-images/OracleSOASuite/dockerfiles/12.2.1.4.0/install/osb.response,/scratch/docker-images/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/idmqs.response
+--additionalBuildCommands /scratch/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt
+--additionalBuildFiles /scratch/docker-images/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts
 ```
+
 
 # 6. Steps to create image
 
@@ -178,21 +190,26 @@ $ imagetool cache addInstaller --type idm --version 12.2.1.4.0 --path <work dire
 
 ```
 $ imagetool cache addEntry --key 28186730_13.9.4.2.2 --path <work directory>/stage/p28186730_139422_Generic.zip
-$ imagetool cache addEntry --key 30432881_12.2.1.4.0 --path <work directory>/stage/p30432881_122140_Generic.zip
-$ imagetool cache addEntry --key 30513324_12.2.1.4.0 --path <work directory>/stage/p30513324_122140_Linux-x86-64.zip
-$ imagetool cache addEntry --key 30581253_12.2.1.4.0 --path <work directory>/stage/p30581253_122140_Generic.zip
-$ imagetool cache addEntry --key 30689820_12.2.1.4.0 --path <work directory>/stage/p30689820_122140_Generic.zip
-$ imagetool cache addEntry --key 30729380_12.2.1.4.0 --path <work directory>/stage/p30729380_122140_Generic.zip
-$ imagetool cache addEntry --key 30749990_12.2.1.4.0 --path <work directory>/stage/p30749990_122140_Generic.zip
+$ imagetool cache addEntry --key 31537019_12.2.1.4.0 --path <work directory>/stage/p31537019_122140_Generic.zip
+$ imagetool cache addEntry --key 31544353_12.2.1.4.0 --path <work directory>/stage/p31544353_122140_Linux-x86-64.zip
+$ imagetool cache addEntry --key 31470730_12.2.1.4.0 --path <work directory>/stage/p31470730_122140_Generic.zip
+$ imagetool cache addEntry --key 31488215_12.2.1.4.0 --path <work directory>/stage/p31488215_122140_Generic.zip
+$ imagetool cache addEntry --key 31403376_12.2.1.4.0 --path <work directory>/stage/p31403376_122140_Generic.zip
+$ imagetool cache addEntry --key 31396632_12.2.1.4.0 --path <work directory>/stage/p31396632_122140_Generic.zip
+$ imagetool cache addEntry --key 31287540_12.2.1.4.0 --path <work directory>/stage/p31287540_122140_Generic.zip
 $ imagetool cache addEntry --key 30779352_12.2.1.4.0 --path <work directory>/stage/p30779352_122140_Generic.zip
+$ imagetool cache addEntry --key 30680769_12.2.1.4.0 --path <work directory>/stage/p30680769_122140_Generic.zip
+$ imagetool cache addEntry --key 31537918_12.2.1.4.0 --path <work directory>/stage/p31537918_122140_Generic.zip
+$ imagetool cache addEntry --key 31497461_12.2.1.4.20.06.24 --path <work directory>/stage/p31497461_12214200624_Generic.zip
 ```
+
 
 ### iv) Add patches to the buildArgs file:
 
 Edit the `buildArgs` file and add the patches:
 
 ```
---patches 30432881_12.2.1.4.0,30513324_12.2.1.4.0,30581253_12.2.1.4.0,30689820_12.2.1.4.0,30729380_12.2.1.4.0,30749990_12.2.1.4.0,30779352_12.2.1.4.0
+--patches 31537019_12.2.1.4.0,31544353_12.2.1.4.0,31470730_12.2.1.4.0,31488215_12.2.1.4.0,31403376_12.2.1.4.0,31396632_12.2.1.4.0,31287540_12.2.1.4.0,30779352_12.2.1.4.0,30680769_12.2.1.4.0,31537918_12.2.1.4.0,31497461_12.2.1.4.20.06.24
 --opatchBugNumber=28186730_13.9.4.2.2
 ```
 
@@ -200,12 +217,16 @@ A sample `buildAgs` file is now as follows:
 
 ```
 create
---jdkVersion=8u241
+--jdkVersion=8u261
 --type oig
 --version=12.2.1.4.0
---tag=200506.0000
---additionalBuildCommands /scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt                    
---additionalBuildFiles /scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createDomainAndStart.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/createOIMDomain.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/DBUtils.java,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/oim_soa_integration.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startAdmin.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/startMS.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/update_listenaddress.py,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/wait-for-it.sh,/scratch/anujpand/gitrepo/FMW-DockerImages/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts/xaview.sql
+--tag=oig-with-patch:12.2.1.4.0
+--pull
+--installerResponseFile /scratch/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,/scratch/docker-images/OracleSOASuite/dockerfiles/12.2.1.4.0/install/soasuite.response,/scratch/docker-images/OracleSOASuite/dockerfiles/12.2.1.4.0/install/osb.response,/scratch/docker-images/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/idmqs.response
+--additionalBuildCommands /scratch/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt
+--additionalBuildFiles /scratch/docker-images/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts
+--patches 31537019_12.2.1.4.0,31544353_12.2.1.4.0,31470730_12.2.1.4.0,31488215_12.2.1.4.0,31403376_12.2.1.4.0,31396632_12.2.1.4.0,31287540_12.2.1.4.0,30779352_12.2.1.4.0,30680769_12.2.1.4.0,31537918_12.2.1.4.0,31497461_12.2.1.4.20.06.24
+--opatchBugNumber=28186730_13.9.4.2.2
 ```
 
 ### v) Create the OIG image
@@ -214,10 +235,10 @@ For example:
 
 ```
 $ cd <work directory>/imagetool/bin
-$ ./imagetool.sh @<work directory>/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs
+$ ./imagetool.sh @<work directory>/docker-images/OracleIdentityGovernance/imagetool/12.2.1.4.0/buildArgs
 ```
 
-###  vi) View the docker image
+###  vi) View the image
 
 Run the `docker images` command to ensure the new OIG image is loaded into the repository:
 
@@ -241,7 +262,7 @@ Below is a sample dockerfile created with the imagetool. This can be viewed by i
 ```Dockerfile
 ########## BEGIN DOCKERFILE ##########
 #
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.  All rights reserved.
+# Copyright (c) 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -373,3 +394,6 @@ WORKDIR /u01/oracle
 
 ########## END DOCKERFILE ##########
 ```
+
+## Copyright
+Copyright (c) 2020 Oracle and/or its affiliates.

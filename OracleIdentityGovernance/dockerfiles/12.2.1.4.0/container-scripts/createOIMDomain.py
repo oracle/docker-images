@@ -360,7 +360,7 @@ def usage():
     print sys.argv[0] + ' -oh <oracle_home> -jh <java_home> -parent <domain_parent_dir> [-name <domain-name>] ' + \
           '[-user <domain-user>] [-password <domain-password>] ' + \
           '-rcuDb <rcu-database> [-rcuPrefix <rcu-prefix>] [-rcuSchemaPwd <rcu-schema-password>] ' + \
-          '-domainType <soa|osb|bpm|soaosb> '
+          '-domainType oim '
     sys.exit(0)
 
 

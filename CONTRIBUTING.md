@@ -1,4 +1,5 @@
-# Contributing
+# Contribution guide
+
 Oracle welcomes contributions to this repository from anyone.
 
 If you want to submit a pull request to fix a bug or enhance an existing
@@ -10,27 +11,28 @@ an issue too.
 
 ## Contributing to the Oracle Docker Images repository
 
-Pull requests can be made under
-[The Oracle Contributor Agreement](https://www.oracle.com/technetwork/community/oca-486395.html) (OCA).
+All contributors are expected to adhere to our [code of conduct](CODE_OF_CONDUCT.md).
+
+Pull requests are made under [the Oracle Contributor Agreement](https://www.oracle.com/technetwork/community/oca-486395.html) (OCA).
+Only pull requests from committers that can be verified as having
+signed the OCA can be accepted.
 
 For pull requests to be accepted, the bottom of your commit message must have
 the following line using your name and e-mail address as it appears in the
 OCA Signatories list.
 
-```
+```bash
 Signed-off-by: Your Name <you@example.org>
 ```
 
-This can be automatically added to pull requests by committing with:
+This will be automatically added to pull requests if you using the `signoff`
+parameter when commiting your changes:
 
+```bash
+  git commit [--signoff|-S]
 ```
-  git commit --signoff
-```
 
-Only pull requests from committers that can be verified as having
-signed the OCA can be accepted.
-
-## Oracle Product Ownership and Responsibility
+## Oracle product ownership and responsibility
 
 For any new product content, *you must obtain internal Oracle approvals for the
 distribution of this content prior to submitting a pull request*. If you are
@@ -52,7 +54,6 @@ If you wish to nominate additional or alternative users, they must be a visible
 member of the [Oracle GitHub Organisation](https://github.com/orgs/oracle/people/).
 
 Contact [Avi Miller](https://github.com/Djelibeybi) for more information.
-
 
 ### Pull request process
 
@@ -76,14 +77,15 @@ at any time.
 Most of these are targeted at Oracle employees, but apply to anyone who submits
 a pull request.
 
-### Base Image Rules
+### Base image rules
 
 1. Extend an existing product image wherever possible. For example, if your
 product requires WebLogic, then extend the WebLogic image instead of creating
 your own WebLogic installation.
-1. If you can't extend an existing image, your image must use the
-`oraclelinux:7-slim` base image as this image provides the smallest
-attack surface and is updated whenever a CVE errata is published.
+1. If you can't extend an existing image, your image must use either the
+`oraclelinux:7-slim` or `oraclelinux:8-slim` base image as these images are
+specifically designed to be the smallest possible install size. Both images are
+also updated whenever a security-related errata is published.
 1. Re-use existing scripts wherever possible. If a particular base image or
 script doesn't have the functionality you need, open an issue and work with
 the image owner to implement it.
@@ -97,17 +99,30 @@ The following are common label instructions that should be present in all images
 
 Additional product-specific labels are listed below:
 
+<!-- markdownlint-disable MD033 -->
 | Label   | Value | Applicability |
 | -------- | ----- | ------------- |
 | provider | `Oracle` | All images |
 | issues | `https://github.com/oracle/docker-images/issues` | All images |
 | maintainer | Name of the maintainer | At the discretion of the author. |
-| volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.<br/>If your image has multiple volumes, use qualified names to specify the purpose of each volume, for example `volume.data` for data to be persisted outside the container.<br/>Use hierarchical nesting for multiple volumes of the same type, for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul> | Mandatory for all images that require persistent storage beyond the life of an individual container. |
-| port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If your images has multiple ports, use qualified names to specify the purpose of each port, for example `port.app` for the port on which your application is reachable.<br/>Use hierarchical nesting for multiple ports of the same type, for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> | Mandatory for all images that require externally accessible port mappings. |
+| volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.
+<br/>If your image has multiple volumes, use qualified names to specify the
+purpose of each volume, for example `volume.data` for data to be persisted outside
+the container.<br/>Use hierarchical nesting for multiple volumes of the same type,
+for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul>
+| Mandatory for all images that require persistent storage beyond the life of an
+individual container. |
+| port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If
+ your images has multiple ports, use qualified names to specify the purpose of
+ each port, for example `port.app` for the port on which your application is
+ reachable.<br/>Use hierarchical nesting for multiple ports of the same type,
+ for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> |
+ Mandatory for all images that require externally accessible port mappings. |
+ <!-- markdownlint-enable MD033 -->
 
 For example, for the Oracle Database 18c XE image we use the following labels:
 
-```
+```dockerfile
 LABEL "provider"="Oracle"                                   \
       "issues"="https://github.com/oracle/docker-images/issues"         \
       "volume.data"="/opt/oracle/oradata"                               \
@@ -123,50 +138,74 @@ LABEL "provider"="Oracle"                                   \
 You may also chose to use the [OpenContainer `image-spec`](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
 pre-defined annotation keys:
 
-* **org.opencontainers.image.created** date and time on which the image was built (string, date-time as defined by [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6)).
-* **org.opencontainers.image.authors** contact details of the people or organization responsible for the image (freeform string)
-* **org.opencontainers.image.url** URL to find more information on the image (string)
-* **org.opencontainers.image.documentation** URL to get documentation on the image (string)
-* **org.opencontainers.image.source** URL to get source code for building the image (should be the URL of this repository).
+* **org.opencontainers.image.created** date and time on which the image was
+  built (string, date-time as defined by [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6)).
+* **org.opencontainers.image.authors** contact details of the people or
+  organization responsible for the image (freeform string)
+* **org.opencontainers.image.url** URL to find more information on the image
+  (string)
+* **org.opencontainers.image.documentation** URL to get documentation on the
+  image (string)
+* **org.opencontainers.image.source** URL to get source code for building the
+  image (should be the URL of this repository).
 * **org.opencontainers.image.version** version of the packaged software
-* **org.opencontainers.image.vendor** Name of the distributing entity, organization or individual (should be "Oracle").
-* **org.opencontainers.image.licenses** License(s) under which contained software is distributed as an [SPDX License Expression][spdx-license-expression].
+* **org.opencontainers.image.vendor** Name of the distributing entity,
+  organization or individual (should be "Oracle").
+* **org.opencontainers.image.licenses** License(s) under which contained software
+  is distributed as an [SPDX License Expression](https://spdx.dev/spdx-specification-21-web-version/#h.jxpfx0ykyb60).
 * **org.opencontainers.image.title** Human-readable title of the image (string)
-* **org.opencontainers.image.description** Human-readable description of the software packaged in the image (string)
+* **org.opencontainers.image.description** Human-readable description of the
+  software packaged in the image (string)
 
 The use of these keys is optional and at each image authors' discretion.
 
-### Security-related Rules
+### Security-related rules
 
 1. Do not require the use of the `--privileged` flag when running a container.
-
 1. Do not run an SSH daemon (`sshd`) inside a container.
 1. Do not use host networking mode (`--net=host`) for a container.
 1. Do not hard-code any passwords. If passwords are required, generate them
 on container startup using `openssl rand` or accept a password argument during
 container startup (via `-e`).
 
-### Guidelines and Recommendations
+### Documentation rules
+
+1. No Oracle host or domain names should be included in any code or examples.
+   If an example domain name is required, use `example.com`.
+1. All documentation including `README.md` files needs to meet Oracle
+   documentation standards. For content submitted by internal Oracle teams,
+   it is recommended that your documentation team either write or at least
+   review this content. Externally submitted documentation will be reviewed
+   during the PR process.
+1. Wherever possible, refer to "container images" or just "images" in all
+   documentation, as well as in any script output.
+1. Only refer to Docker when specifically referring to that product.
+1. All build or usage examples should be based on Oracle Linux using either
+   [Container Runtime for Docker](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/)
+   on Oracle Linux 7 or [Podman](https://docs.oracle.com/en/operating-systems/oracle-linux/podman/)
+   on Oracle Linux 8.
+
+### Guidelines and recommendations
 
 The following are some guidelines that will not prevent an image from being
 merged, but are generally frowned upon if breached.
 
-- Always aim to produce the smallest possible image. This means the least amount
-of layers (combine directives wherever possible) and cleaning up as much as
-possible inside a single directive so the layer only stores the binary changes.
-- Don't install all possible required RPMs, even if the product
-documentation says so. Some RPMs aren't applicable inside a container, e.g
-filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
-- Don't install any interactive/user tools, e.g. things like `vim`, `less` or
-`man`. Debugging should be done prior to the image submission.
-- Don't install `wget` as the base images already include `curl`.
-- Always remember to run `rm -rf /var/cache/yum` in the same `RUN` directive as a
-`yum install` so that the yum metadata is not stored in the layer.
-- Always document any inputs (via `--build-arg` or `-e`) required by
-`docker build` or `docker run`. This documentation should also clearly state
-any defaults that are used if no input is provided.
-- If a custom value must be provided by the end-user, the build or run should
-gracefully fail if that value is not provided.
-
+* Always aim to produce the smallest possible image. This means using multi-stage
+  builds with a final stage using the least amount of layers possible. Combine
+  as much as possible within a single directive and be sure to remove any
+  cache created `yum` or other tools.
+* Don't install all possible required RPMs, even if the product
+  documentation says so. Some RPMs aren't applicable inside a container, e.g
+  filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
+* Don't install any interactive/user tools, e.g. things like `vim`, `less` or
+  `man`. Debugging should be done prior to the image submission.
+* Don't install `wget` as the base images already include `curl`.
+* Always remember to run `rm -rf /var/cache/yum` in the same `RUN` directive as a
+  `yum install` so that the yum metadata is not stored in the layer.
+* Always document any inputs (via `--build-arg` or `-e`) required by
+  `docker build` or `docker run`. This documentation should also clearly state
+  any defaults that are used if no input is provided.
+* If a custom value must be provided by the end-user, the build or run should
+  gracefully fail if that value is not provided.
 
 *Copyright (c) 2017, 2020 Oracle and/or its affiliates.*
