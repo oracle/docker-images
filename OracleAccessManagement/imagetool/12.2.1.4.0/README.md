@@ -96,38 +96,15 @@ a) Download the required installers from the [Oracle Software Delivery Cloud](ht
 * Oracle JDK 
 
 
-**Note** : the required list of packages/installers & patches for specific bundled patchsets can be found in the latest manifest file. For example, the list below displays the packages/installers & patches from manifest.oam.july2020.properties:
 
-```
-[JDK]
-jdk-8u261-linux-x64.tar.gz
-
-[INFRA]
-fmw_12.2.1.4.0_infrastructure.jar
-
-[INFRA_PATCH]
-p28186730_139424_Generic.zip:Opatch
-p31537019_122140_Generic.zip:WLS
-p31544353_122140_Linux-x86-64.zip:WLS
-p31470730_122140_Generic.zip:COH
-p31488215_122140_Generic.zip:JDEV
-
-
-[OAM]
-fmw_12.2.1.4.0_idm.jar
-
-[OAM_PATCH]
-p31556630_122140_Generic.zip:OAM
-```
-
-b) Download any patches listed in the manifest file from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
+b) If one wants to build the Oracle Access Management with patches download patches listed from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
 
 
 
 # 5. Required build files
 
 
-a) The OAM image requires additional files for creating the OAM domain and starting the WebLogic Servers. Download the required files from the FMW [repository](https://github.com/oracle/docker-images/). For example:
+a) The OAM image requires additional files for creating the OAM domain and starting the WebLogic Servers. Download the required files from the docker-images [repository](https://github.com/oracle/docker-images/). For example:
 
 
 ```  
@@ -172,7 +149,7 @@ $ ./imagetool.sh cache addInstaller --type fmw --version 12.2.1.4.0 --path <work
 $ ./imagetool.sh cache addInstaller --type OAM --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_idm.jar
 ```
 
-### iii) Add Patches to Imagetool cache
+### iii) In case, patches are required to be included in image, downloaded patches should be added to Imagetool cache.
 
 ```bash
 $ ./imagetool.sh cache addEntry --key 28186730_13.9.4.2.4 --value <work directory>/stage/p28186730_139424_Generic.zip
@@ -183,9 +160,9 @@ $ ./imagetool.sh cache addEntry --key 31470730_12.2.1.4.0 --value <work director
 $ ./imagetool.sh cache addEntry --key 31488215_12.2.1.4.0 --value <work directory>/stage/p31488215_122140_Generic.zip
 ```
 
-### iv) Add patches to the buildArgs file:
+### iv) In case, patches are required to be included in image, add patches to the buildArgs file:
 
-Edit the `buildArgs` file and add the patches:
+Edit the `buildArgs` file and add the patches if required:
 
 ```
 --patches 31556630_12.2.1.4.0,31488215_12.2.1.4.0,31470730_12.2.1.4.0,31537019_12.2.1.4.0,31544353_12.2.1.4.0
@@ -232,169 +209,10 @@ oraclelinux                                                   7-slim            
 
 # 7. Sample Dockerfile generated with imagetool
 
-Below is a sample dockerfile created with the imagetool. This can be viewed by issuing the `imagetool` command with the `--dryRun` option:
+If you want to review a sample dockerfile created with the imagetool issue the `imagetool` command with the `--dryRun` option
 
 ```
 ./imagetool.sh @<work directory/build/buildArgs --dryRun
-```
-
-```
-########## BEGIN DOCKERFILE ##########
-#
-# Copyright (c) 2019, 2020, Oracle and/or its affiliates.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
-#
-FROM oraclelinux:7-slim as OS_UPDATE
-LABEL com.oracle.weblogic.imagetool.buildid="ab22c89a-bc4c-4729-b2b0-c052d22eb7fe"
-USER root
-
-RUN yum -y --downloaddir=/tmp/imagetool install gzip tar unzip libaio \
- && yum -y --downloaddir=/tmp/imagetool clean all \
- && rm -rf /var/cache/yum/* \
- && rm -rf /tmp/imagetool
-
-## Create user and group
-RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
- && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
- && mkdir /u01 \
- && chown oracle:oracle /u01
-
-# Install Java
-FROM OS_UPDATE as JDK_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid="ab22c89a-bc4c-4729-b2b0-c052d22eb7fe"
-
-ENV JAVA_HOME=/u01/jdk
-
-COPY --chown=oracle:oracle jdk-8u261-linux-x64.tar.gz /tmp/imagetool/
-
-USER oracle
-
-
-RUN tar xzf /tmp/imagetool/jdk-8u261-linux-x64.tar.gz -C /u01 \
- && mv /u01/jdk* /u01/jdk \
- && rm -rf /tmp/imagetool \
- && rm -f /u01/jdk/javafx-src.zip /u01/jdk/src.zip
-
-
-# Install Middleware
-FROM OS_UPDATE as WLS_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid="ab22c89a-bc4c-4729-b2b0-c052d22eb7fe"
-
-ENV JAVA_HOME=/u01/jdk \
-    ORACLE_HOME=/u01/oracle \
-    OPATCH_NO_FUSER=true
-
-RUN mkdir -p /u01/oracle \
- && mkdir -p /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle
-
-COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_infrastructure.jar install.file /tmp/imagetool/
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_idm.jar iam.response /tmp/imagetool/
-COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
-
-    COPY --chown=oracle:oracle p28186730_139424_Generic.zip /tmp/imagetool/opatch/
-
-    COPY --chown=oracle:oracle patches/* /tmp/imagetool/patches/
-
-USER oracle
-
-
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/install.file -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_idm.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/iam.response -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-
-RUN cd /tmp/imagetool/opatch \
- && /u01/jdk/bin/jar -xf /tmp/imagetool/opatch/p28186730_139424_Generic.zip \
- && /u01/jdk/bin/java -jar /tmp/imagetool/opatch/6880880/opatch_generic.jar -silent -ignoreSysPrereqs -force -novalidation oracle_home=/u01/oracle
-
-RUN /u01/oracle/OPatch/opatch napply -silent -oh /u01/oracle -phBaseDir /tmp/imagetool/patches \
- && test $? -eq 0 \
- && /u01/oracle/OPatch/opatch util cleanup -silent -oh /u01/oracle \
- || (cat /u01/oracle/cfgtoollogs/opatch/opatch*.log && exit 1)
-
-
-
-FROM OS_UPDATE as FINAL_BUILD
-
-ARG ADMIN_NAME
-ARG ADMIN_HOST
-ARG ADMIN_PORT
-ARG MANAGED_SERVER_PORT
-
-ENV ORACLE_HOME=/u01/oracle \
-    JAVA_HOME=/u01/jdk \
-    LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
-    PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
-
-LABEL com.oracle.weblogic.imagetool.buildid="ab22c89a-bc4c-4729-b2b0-c052d22eb7fe"
-
-    COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-
-COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
-
-
-
-USER oracle
-WORKDIR /u01/oracle
-
-#ENTRYPOINT /bin/bash
-
-
-    ENV FMW_IDM_JAR=fmw_12.2.1.4.0_idm.jar \
-        BASE_DIR=/u01 \
-        ORACLE_HOME=/u01/oracle \
-        SCRIPT_DIR=/u01/oracle/dockertools \
-        PROPS_DIR=/u01/oracle/properties \
-        USER_PROJECTS_DIR=/u01/oracle/user_projects \
-        DOMAIN_ROOT=/u01/oracle/user_projects/domains \
-        DOMAIN_NAME="${DOMAIN_NAME:-oam_domain}" \
-        DOMAIN_HOME="${DOMAIN_ROOT}"/"${DOMAIN_NAME}" \
-        ADMIN_USER="${ADMIN_USER:-}" \
-        ADMIN_PASSWORD="${ADMIN_PASSWORD:-}" \
-        CONNECTION_STRING="${CONNECTION_STRING:-OamDB:1521/orclpdb1.localdomain}" \
-        CONTAINER_DIR=/u01/oracle/user_projects/container \
-        ADMIN_LISTEN_HOST="${ADMIN_LISTEN_HOST:-}" \
-        ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
-        ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}" \
-        DOMAIN_TYPE="${DOMAIN_TYPE:-oam}" \
-        RCUPREFIX=${RCUPREFIX:-OAM01} \
-        DB_USER=${DB_USER:-} \
-        DB_PASSWORD=${DB_PASSWORD:-} \
-        DB_SCHEMA_PASSWORD=${DB_SCHEMA_PASSWORD:-} \
-        USER_MEM_ARGS=${USER_MEM_ARGS:-"-Djava.security.egd=file:/dev/./urandom"} \
-        JAVA_OPTIONS="${JAVA_OPTIONS} -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" \
-        PATH=$PATH:/usr/java/default/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/dockertools
-
-    USER root
-
-    RUN mkdir -p ${USER_PROJECTS_DIR} && \
-        chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 775 ${USER_PROJECTS_DIR} && \
-        mkdir -p ${CONTAINER_DIR} && \
-        chown -R oracle:oracle ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
-        mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-        mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \
-        yum install -y hostname && \
-        rm -rf /var/cache/yum
-
-
-    COPY --chown=oracle:oracle files/container-scripts/ ${SCRIPT_DIR}/
-    RUN chmod a+xr ${SCRIPT_DIR}/* && \
-         chown -R oracle:oracle ${SCRIPT_DIR}
-
-    USER oracle
-    WORKDIR $ORACLE_HOME
-    CMD ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]
-
-
-########## END DOCKERFILE ##########
 ```
 
 ## Copyright

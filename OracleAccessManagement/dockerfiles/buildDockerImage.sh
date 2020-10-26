@@ -15,17 +15,14 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] -d [domain-type] [-s]
+Usage: buildDockerImage.sh -v [version] [-s]
 Builds a Docker Image for Oracle OAM Suite .
 
 Parameters:
    -h: view usage
    -v: Release version to build. Required. E.g 12.2.1.4.0
-   -d: Domain type to be built. Required for building the domain.Value required: oam
-   -s: skips the MD5 check of packages
+   -s: skips the MD5 check of package. Optional.
 
-LICENSE UPL 1.0 + GPL 2.0
-Copyright (c) 2016-2017: Oracle and/or its affiliates.
 EOF
 exit 0
 }
@@ -49,7 +46,7 @@ checksumPackages() {
 #Parameters
 VERSION="12.2.1.4.0"
 SKIPMD5=0
-while getopts "hsdgiv:t:" optname; do
+while getopts "hsv:" optname; do
   case "$optname" in
     "h")
       usage
@@ -57,14 +54,10 @@ while getopts "hsdgiv:t:" optname; do
     "s")
       SKIPMD5=1
       ;;
-    "t")
-      DOMAINTYPE="$OPTARG"
-      echo "Domain Type selected is : "$DOMAINTYPE
-      ;;
     "v")
       VERSION="$OPTARG"
       ;;
-         *)
+      *)
     # Should not occur
       echo "Unknown error while processing options inside buildDockerImage.sh"
       ;;
