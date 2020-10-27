@@ -89,21 +89,7 @@ Download the required installers from the [Oracle Software Delivery Cloud](https
 * Oracle Unified Directory 12.2.1.4.0
 * Oracle JDK 
 
-**Note** : the required list of packages/installers & patches for specific bundled patchsets can be found in the latest manifest file. For example, the list below displays the packages/installers & patches from [manifest.oud.july2020.properties](manifest.oud.july2020.properties):
-
-```
-[JDK]
-jdk-8u261-linux-x64.tar.gz
-
-[OUD]
-fmw_12.2.1.4.0_oud.jar
-
-[OUD_PATCH]
-p28186730_139422_Generic.zip:Opatch
-p31400392_122140_Generic.zip:OUD
-```
-
-Download any patches listed in the manifest file from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
+**Note**: If the image is required to have patched included, download patches from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
 
 # 5. Required build files
 
@@ -210,6 +196,7 @@ $
 ```
 
 ### iii) Add Patches to Imagetool cache
+In case, patches are required to be included in image, downloaded patches should be added to Imagetool cache.
 
 ```bash
 $ ./imagetool.sh cache addEntry --key 28186730_13.9.4.2.2 --value <work directory>/stage/p28186730_139422_Generic.zip
@@ -249,6 +236,7 @@ $ ./imagetool.sh create --jdkVersion=8u261 --type oud --version=12.2.1.4.0 \
     --additionalBuildFiles <work directory>/docker-images/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts \
     --patches <patch_a>,<patch_b>,...
 ```
+> --patches option is required only when image is required to be generated with patches
 
 For example:
 
@@ -259,6 +247,7 @@ $ ./imagetool.sh create --jdkVersion=8u261 --type oud --version=12.2.1.4.0 \
 --additionalBuildFiles /scratch/OUDDockerK8S/docker-images/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts \
 --patches 28186730,31400392
 ```
+> --patches option is required only when image is required to be generated with patches
 
 ### v) View the docker image
 
