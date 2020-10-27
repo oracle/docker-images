@@ -46,7 +46,7 @@ RUN mkdir -p /u01 && \
     mkdir ${OPATCH_PATCH_DIR} && \
     chown -R oracle:oracle /u01 && \
     chown -R oracle:oracle ${PATCH_DIR} && \
-    chown -R oracle:oracle ${OPATCH_PATCH_DIR}
+    chown -R oracle:oracle ${OPATCH_PATCH_DIR}  
 
 #
 # Copy files and packages for install
@@ -114,10 +114,14 @@ RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
     else \
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
     fi
-
+    
 RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
     ln -s  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory && \
-    sed -i 's|true</ready|false</ready|g' /u01/oracle/idm/server/apps/oim.ear/META-INF/weblogic-application.xml
+    if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | grep -q 23855729; then \
+     echo "Ready End Point already Configured."; \
+    else \
+      sed -i 's|true</ready|false</ready|g' /u01/oracle/idm/server/apps/oim.ear/META-INF/weblogic-application.xml; \
+    fi
 
 #
 # Define default command to start bash.

@@ -3,13 +3,13 @@ Building an OIG image with WebLogic Image Tool
 
 ## Contents
 
-1. [Introduction](#1-introduction-1)
-2. [Prerequisites](#2-prerequisites)
-3. [Download and setup the WebLogic Image Tool](#3-download-and-setup-the-weblogic-image-tool)
-4. [Download the required packages/installers&Patches](#4-download-the-required-packagesinstallerspatches)
-5. [Required build files](#5-required-build-files)
-6. [Steps to create image](#6-steps-to-create-image)
-7. [Sample Dockerfile generated with imagetool](#7-sample-dockerfile-generated-with-imagetool)
+1. [Introduction](#1-introduction)
+1. [Prerequisites](#2-prerequisites)
+1. [Download and setup the WebLogic Image Tool](#3-download-and-setup-the-weblogic-image-tool)
+1. [Download the required packages/installers&Patches](#4-download-the-required-packagesinstallerspatches)
+1. [Required build files](#5-required-build-files)
+1. [Steps to create image](#6-steps-to-create-image)
+1. [Generate Sample dockerfile with imagetool](#7-generate-sample-dockerfile-with-imagetool)
 
 # 1. Introduction
 
@@ -87,7 +87,7 @@ $ export WLSIMG_CACHEDIR="/path/to/cachedir"
 
 # 4. Download the required packages/installers&Patches
 
-a) Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice e.g: \<work directory\>/stage:
+Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice e.g: \<work directory\>/stage:
 
 * Oracle Identity and Access Management 12.2.1.4.0
 * Oracle Fusion Middleware 12c Infrastructure 12.2.1.4.0
@@ -95,48 +95,7 @@ a) Download the required installers from the [Oracle Software Delivery Cloud](ht
 * Oracle Service Bus 12.2.1.4.0
 * Oracle JDK 
 
-
-**Note** : the required list of packages/installers & patches for specific bundled patchsets can be found in the latest manifest file. For example, the list below displays the packages/installers & patches from manifest.oam.july2020.properties:
-
-```
-[JDK]
-jdk-8u261-linux-x64.tar.gz
-
-[INFRA]
-fmw_12.2.1.4.0_infrastructure.jar
-
-[INFRA_PATCH]
-p28186730_139424_Generic.zip:Opatch
-p31537019_122140_Generic.zip:WLS
-p31544353_122140_Linux-x86-64.zip:WLS
-p31470730_122140_Generic.zip:COH
-p31488215_122140_Generic.zip:JDEV
-p31403376_122140_Generic.zip:OWCC
-
-[SOA]
-fmw_12.2.1.4.0_soa.jar
-
-[SOA_PATCH]
-p31396632_122140_Generic.zip:SOA
-p31287540_122140_Generic.zip:SOA
-
-[OSB]
-fmw_12.2.1.4.0_osb.jar
-
-[OSB_PATCH]
-p30779352_122140_Generic.zip:OSB
-p30680769_122140_Generic.zip:OSB
-
-[IDM]
-fmw_12.2.1.4.0_idm_generic.jar
-
-[IDM_PATCH]
-p31537918_122140_Generic.zip:OIM
-p31497461_12214200624_Generic.zip:OIM
-```
-
-b) Download any patches listed in the manifest file from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
-
+**Note**: If the image is required to have patches included, download patches from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
 
 # 5. Required build files
 
@@ -179,6 +138,7 @@ $ imagetool cache addInstaller --type jdk --version 8u241 --path <work directory
 ```
 
 ### ii) Add installers to Imagetool cache
+In the event that patches are required to be included in the image, downloaded patches should be added to Imagetool cache.
 
 ```
 $ imagetool cache addInstaller --type fmw --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_infrastructure.jar
@@ -249,151 +209,22 @@ oig-with-patch                                                12.2.1.4.0        
 oraclelinux                                                   7-slim              153f8d73287e        2 weeks ago         131MB
 ```
 
+# 7. Generate Sample dockerfile with imagetool
 
-# 7. Sample Dockerfile generated with imagetool
-
-Below is a sample dockerfile created with the imagetool. This can be viewed by issuing the `imagetool` command with the `--dryRun` option:
+If you want to review a sample dockerfile created with the imagetool issue the `imagetool` command with the `--dryRun` option:
 
 ```
 ./imagetool.sh @<work directory/build/buildArgs --dryRun
 ```
 
+# Licensing & Copyright
 
-```Dockerfile
-########## BEGIN DOCKERFILE ##########
-#
-# Copyright (c) 2020 Oracle and/or its affiliates.
-#
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-#
-#
-FROM oraclelinux:7-slim as OS_UPDATE
-LABEL com.oracle.weblogic.imagetool.buildid="24e2c406-c6fb-4406-9689-d65e0885c004"
-USER root
+## License
+To download and run Oracle Fusion Middleware products, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-RUN yum -y --downloaddir= install gzip tar unzip \
- && yum -y --downloaddir= clean all \
- && rm -rf /var/cache/yum/* \
- && rm -rf 
-
-## Create user and group
-RUN if [ -z "$(getent group oracle)" ]; then hash groupadd &> /dev/null && groupadd oracle || exit -1 ; fi \
- && if [ -z "$(getent passwd oracle)" ]; then hash useradd &> /dev/null && useradd -g oracle oracle || exit -1; fi \
- && mkdir /u01 \
- && chown oracle:oracle /u01
-
-# Install Java
-FROM OS_UPDATE as JDK_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid="24e2c406-c6fb-4406-9689-d65e0885c004"
-
-ENV JAVA_HOME=/u01/jdk
-
-COPY --chown=oracle:oracle JDK-1.8.0-241-07-191216.1.8.0.241.007.0.tar.gz /tmp/imagetool/
-
-USER oracle
-
-
-RUN tar xzf /tmp/imagetool/JDK-1.8.0-241-07-191216.1.8.0.241.007.0.tar.gz -C /u01 \
- && mv /u01/jdk* /u01/jdk \
- && rm -rf /tmp/imagetool
-
-
-# Install Middleware
-FROM OS_UPDATE as WLS_BUILD
-LABEL com.oracle.weblogic.imagetool.buildid="24e2c406-c6fb-4406-9689-d65e0885c004"
-
-ENV JAVA_HOME=/u01/jdk \
-    ORACLE_HOME=/u01/oracle \
-    OPATCH_NO_FUSER=true
-
-RUN mkdir -p /u01/oracle \
- && mkdir -p /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle/oraInventory \
- && chown oracle:oracle /u01/oracle
-
-COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_infrastructure.jar fmw.rsp /tmp/imagetool/
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_soa.jar soa.rsp /tmp/imagetool/
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_osb.jar osb.rsp /tmp/imagetool/
-COPY --chown=oracle:oracle fmw_12.2.1.4.0_idm.jar idm.rsp /tmp/imagetool/
-COPY --chown=oracle:oracle oraInst.loc /u01/oracle/
-
-
-
-USER oracle
-
-
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_infrastructure.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/fmw.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_soa.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/soa.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_osb.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/osb.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-RUN  \
- /u01/jdk/bin/java -Xmx1024m -jar /tmp/imagetool/fmw_12.2.1.4.0_idm.jar -silent ORACLE_HOME=/u01/oracle \
-    -responseFile /tmp/imagetool/idm.rsp -invPtrLoc /u01/oracle/oraInst.loc -ignoreSysPrereqs -force -novalidation
-
-
-
-
-
-FROM OS_UPDATE as FINAL_BUILD
-
-ARG ADMIN_NAME
-ARG ADMIN_HOST
-ARG ADMIN_PORT
-ARG MANAGED_SERVER_PORT
-
-ENV ORACLE_HOME=/u01/oracle \
-    JAVA_HOME=/u01/jdk \
-    LC_ALL=${DEFAULT_LOCALE:-en_US.UTF-8} \
-    PATH=${PATH}:/u01/jdk/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle
-
-LABEL com.oracle.weblogic.imagetool.buildid="24e2c406-c6fb-4406-9689-d65e0885c004"
-
-    COPY --from=JDK_BUILD --chown=oracle:oracle /u01/jdk /u01/jdk/
-
-COPY --from=WLS_BUILD --chown=oracle:oracle /u01/oracle /u01/oracle/
-
-
-
-USER oracle
-WORKDIR /u01/oracle
-
-#ENTRYPOINT /bin/bash
-
-    
-    ENV ORACLE_HOME=/u01/oracle \
-        USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-        PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin \
-        DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
-        DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
-        DOMAIN_HOME="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}"/"${DOMAIN_NAME:-base_domain}" \
-        ADMIN_PORT="${ADMIN_PORT:-7001}" \
-        SOA_PORT="${SOA_PORT:-8001}" \
-        OIM_PORT="${OIM_PORT:-14000}" \
-        OIM_SSL_PORT="${OIM_SSL_PORT:-14002}" \
-        PATH=$PATH:/u01/oracle \
-        DOMAIN_TYPE="oim"
-    
-    USER root
-    
-    RUN mkdir -p /u01/oracle/dockertools 
-        
-    COPY --chown=oracle:oracle files/createDomainAndStart.sh files/createOIMDomain.py files/DBUtils.java files/oim_soa_integration.py files/startAdmin.sh files/startMS.sh files/update_listenaddress.py files/wait-for-it.sh files/xaview.sql /u01/oracle/dockertools/
-    RUN chmod a+xr /u01/oracle/dockertools/*.* && \
-         chown -R oracle:oracle /u01/oracle/dockertools
-    
-    USER oracle
-    WORKDIR $ORACLE_HOME
-    CMD ["/u01/oracle/dockertools/createDomainAndStart.sh"]
-
-########## END DOCKERFILE ##########
-```
+All scripts and files hosted in this project and GitHub [docker-images/OracleIdentityGovernance](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 Copyright (c) 2020 Oracle and/or its affiliates.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+
