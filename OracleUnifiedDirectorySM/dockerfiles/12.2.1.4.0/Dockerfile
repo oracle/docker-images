@@ -20,7 +20,12 @@ FROM oracle/fmw-infrastructure:12.2.1.4.0 as base
 
 # Maintainer
 # ----------
-LABEL maintainer="Oracle Unified Directory team"
+LABEL "maintainer"="Oracle Unified Directory team"                      \
+      "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.user_projects"="/opt/oracle/user_projects"                \
+      "port.admin"="7001"                                               \
+      "port.adminSsl"="7002"                                            
 
 #
 # Environment variables required for this build (do NOT change)

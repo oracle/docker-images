@@ -9,7 +9,8 @@ OUDSM
 tmp*
 pipeline.yaml
 kubernetes
-imagetool/12.2.1.4.0/manifest*.properties
+imagetool/**/manifest*.properties
 CONTRIBUTING.md
 LICENSE.txt
 OCRReadme.md
+CONTRIBUTORS

@@ -89,29 +89,7 @@ Download the required installers from the [Oracle Software Delivery Cloud](https
 * Oracle JDK
 * Oracle Fusion Middleware Infrastructure 12.2.1.4.0
 
-**Note** : the required list of packages/installers & patches for specific bundled patchsets can be found in the latest manifest file. For example, the list below displays the packages/installers & patches from [manifest.oudsm.july2020.properties](manifest.oudsm.july2020.properties):
-
-```
-[JDK]
-jdk-8u261-linux-x64.tar.gz
-
-[INFRA]
-fmw_12.2.1.4.0_infrastructure.jar
-
-[INFRA_PATCH]
-p28186730_139424_Generic.zip:Opatch
-p31537019_122140_Generic.zip:WLS
-p31470730_122140_Generic.zip:COH
-p31488215_122140_Generic.zip:JDEV
-
-[OUDSM]
-fmw_12.2.1.4.0_oud_generic.jar
-
-[OUDSM_PATCH]
-p31400392_122140_Generic.zip:OUD
-```
-
-Download any patches listed in the manifest file from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
+**Note**: If the image is required to have patched included, download patches from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
 
 # 5. Additional build files
 
@@ -219,6 +197,7 @@ $ ./imagetool.sh cache addInstaller --type fmw --version 12.2.1.4.0 --path /scra
 ```
 
 ### iii) Add Patches to Imagetool cache
+In case, patches are required to be included in image, downloaded patches should be added to Imagetool cache.
 
 ```bash
 $ ./imagetool.sh cache addEntry --key 28186730_13.9.4.2.4 --value <work directory>/stage/p28186730_139424_Generic.zip
@@ -266,6 +245,7 @@ $ ./imagetool.sh create --jdkVersion=8u241 --type oud_wls --version=12.2.1.4.0 \
     --additionalBuildFiles <work directory>/docker-image/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts \
     --patches <patch_a>,<patch_b>,...
 ```
+> --patches option is required only when image is required to be generated with patches
 
 For example:
 
@@ -276,6 +256,7 @@ $ ./imagetool.sh create --jdkVersion=8u261 --type oud_wls --version=12.2.1.4.0 \
 --additionalBuildFiles /scratch/OUDDockerK8S/docker-image/OracleUnifiedDirectorySM/dockerfiles/12.2.1.4.0/container-scripts \
 --patches 28186730,31400392,31537019,31470730,31488215
 ```
+> --patches option is required only when image is required to be generated with patches
 
 ### v) View the image
 
@@ -301,7 +282,7 @@ If you want to review a sample dockerfile created with the imagetool issue the `
 ## License
 To download and run Oracle Fusion Middleware products, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectory](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectory](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 Copyright (c) 2020 Oracle and/or its affiliates.
