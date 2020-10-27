@@ -10,7 +10,8 @@ pipeline.yaml
 kubernetes
 samples/oud-add-dir-to-remote.env
 samples/stress-oud-dir.env
-imagetool/12.2.1.4.0/manifest*.properties
+imagetool/**/manifest*.properties
 CONTRIBUTING.md
 LICENSE.txt
 OCRReadme.md
+CONTRIBUTORS
