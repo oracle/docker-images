@@ -19,7 +19,17 @@ FROM oracle/serverjre:8 as base
 
 # Maintainer
 # ----------
-LABEL maintainer="Oracle Unified Directory team"
+LABEL "maintainer"="Oracle Unified Directory team"                      \
+      "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.user_projects"="/opt/oracle/user_projects"                \
+      "port.adminldaps"="1444"                                          \
+      "port.adminhttps"="1888"                                          \
+      "port.ldap"="1389"                                                \
+      "port.ldaps"="1636"                                               \
+      "port.http"="1080"                                                \
+      "port.https"="1081"                                               \
+      "port.replication"="1898"                                         
 
 #
 # Environment variables required for this build (do NOT change)

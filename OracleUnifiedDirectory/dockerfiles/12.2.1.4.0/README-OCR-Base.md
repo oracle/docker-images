@@ -1,11 +1,11 @@
-Building an Oracle Unified Directory Image with Dockerfiles and Scripts
-=======================================================================
+Building an Oracle Unified Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
+========================================================================================================================
 
 ## Contents
 
 1. [Introduction](#1-introduction)
 2. [Hardware and Software Requirements](#2-hardware-and-software-requirements)
-3. [How to Build the Oracle Java image](#3-how-to-build-the-oracle-java-image)
+3. [Pulling the Oracle JDK (Server JRE) base image](#3-pulling-the-oracle-jdk-server-jre-base-image)
 4. [Building Oracle Unified Directory image](#4-building-oracle-unified-directory-image)
 
 # 1. Introduction
@@ -37,9 +37,22 @@ Oracle Unified Directory image has been tested and is known to run on following 
 | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
 | Docker| Docker version 18.03 or higher | docker version            |
 
-# 3. How to Build the Oracle Java image
+# 3. Pulling the Oracle JDK (Server JRE) base image
 
-Please refer to [README.md](../../../OracleJava/README.md) under `docker-images/OracleJava` for details on how to build Oracle Java image.
+You can pull the Oracle Server JRE 8 image from the [Oracle Container Registry](https://container-registry.oracle.com). When pulling the Server JRE 8 image, re-tag the image so that it works with the dependent dockerfile which refer to the JRE 8 image through oracle/serverjre:8.
+
+**IMPORTANT**: Before you pull the image from the registry, please make sure to log-in through your browser with your SSO credentials and ACCEPT "Terms and Restrictions".
+
+1. Sign in to [Oracle Container Registry](https://container-registry.oracle.com). Click the **Sign in** link which is on the top-right of the Web page.
+2. Click **Java** and then click on **serverjre**.
+3. Click **Accept** to accept the license agreement.
+4. Use following commands to pull Oracle Fusion Middleware infrastructure base image from repository :
+
+        
+        $ docker login container-registry.oracle.com
+        $ docker pull container-registry.oracle.com/java/serverjre:8
+        $ docker tag container-registry.oracle.com/java/serverjre:8 oracle/serverjre:8
+
 
 # 4. Building Oracle Unified Directory image
 
