@@ -35,13 +35,11 @@ Oracle Unified Directory Service Manager image has been tested and is known to r
 
 # 3. How to Build the Oracle Java image
 
-Please refer to [README.md](https://github.com/oracle/docker-images/blob/master/OracleJava/README.md) under docker/OracleJava for details on how to build Oracle Database image.
-
-https://github.com/oracle/docker-images/tree/master/OracleJava/README.md
+Please refer to [README.md](../../../OracleJava/README.md) under `docker-images/OracleJava` for details on how to build Oracle Java image.
 
 # 4 How to Build the Oracle Fusion Middleware Infrastructure image
 
-Please refer to [README.md](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md) under docker/OracleFMWInfrastructure for details on how to build Oracle Fusion Middleware Infrastructure image.
+Please refer to [README.md](../../../OracleFMWInfrastructure/README.md) under `docker-images/OracleFMWInfrastructure` for details on how to build Oracle Fusion Middleware Infrastructure image.
 
 # 5. Building Oracle Unified Directory Service Manager image
 
@@ -80,7 +78,7 @@ Note: Copy the **fmw_12.2.1.4.0_oud.jar** under the directory "OracleUnifiedDire
 ## License
 To download and run Oracle Fusion Middleware products, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectorySM](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectorySM](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 Copyright (c) 2020 Oracle and/or its affiliates.
