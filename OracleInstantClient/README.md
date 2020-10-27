@@ -93,7 +93,7 @@ the files to the default Instant Client network configuration file directory,
 for example:
 
 ```
-docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.8/client64/lib/network/admin:Z,ro . . .
+docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.9/client64/lib/network/admin:Z,ro . . .
 ```
 
 You should review which volume options are required.  The `Z` option is needed
