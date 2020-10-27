@@ -1,5 +1,5 @@
-Building an Oracle Identity Governance Image using Dockerfiles and Scripts
-==========================================================================
+Building an Oracle Identity Governance Image using Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
+===========================================================================================================================
 
 Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This image includes binaries for Oracle Identity Governance (OIG) Release 12.2.1.4.0 and it has capability to create FMW Infrastructure domain and OIG specific Managed Servers.
 
@@ -31,11 +31,59 @@ Building your own OIG image involves the following steps:
 
 
 	
-### How to Build the Oracle SOA Image
+### Pulling the Oracle SOA 12.2.1.4 image
 
-Please refer to [README.md](../../../OracleSOASuite/README.md) under `docker-images/OracleSOASuite` for details on how to build Oracle Java image.
+  1. Launch a browser and access the [Oracle Container Registry](https://container-registry.oracle.com/).
+  2. Click **Sign In** and login with your username and password.
+  3. In the **Search** field enter **soasuite** and press Enter.
+  4. Click **soasuite** Oracle SOA Suite.
+  5. In the **Terms and Conditions** box, select Language as **English**. Click **Continue** and ACCEPT "**Terms and Restrictions**".
+  6. On your Docker environment login to the Oracle Container Registry and enter your Oracle SSO username and password when prompted:
+  
+    $ docker login container-registry.oracle.com
+    Username: <username>
+    Password: <password>
+   
+   For example:
+   
+    $ docker login container-registry.oracle.com
+    Username: joe.bloggs@example.com
+    Password:
+    Login Succeeded
 
-You should use the following tag for the Oracle SOA Image: `fmw-soa:12.2.1.4.0`
+  8. Pull the latest soasuite image:
+  
+    $ docker pull container-registry.oracle.com/middleware/soasuite:12.2.1.4
+	
+   The output should look similar to the following:
+   
+    Trying to pull repository container-registry.oracle.com/middleware/soasuite ...
+    12.2.1.4: Pulling from container-registry.oracle.com/middleware/soasuite
+    bce8f778fef0: Already exists
+    22d5d74b4d76: Pull complete
+    666dccc4b57a: Pull complete
+    80745fc9ee3c: Pull complete
+    330be4fba4b8: Pull complete
+    98abb7fffaf5: Pull complete
+    1a4ca5ca35b5: Pull complete
+    67d3ca48ddaf: Pull complete
+    Digest: sha256:6f9b1985e6ce9dbc81f2b9ace210f5ab3e791874ffa9337888f9d788d47a35be
+    Status: Downloaded newer image for container-registry.oracle.com/middleware/soasuite:12.2.1.4
+    container-registry.oracle.com/middleware/soasuite:12.2.1.4
+	
+  9. Run the `docker tag` command to tag the image as follows:
+  
+    docker tag container-registry.oracle.com/middleware/soasuite:12.2.1.4 fmw-soa:12.2.1.4.0
+	
+   No output is returned to the screen.
+
+  10. Run the `docker images` command to show the image is installed into the repository. The output should look similar to this:
+	
+	$ docker images
+	
+    REPOSITORY                                                    TAG                 IMAGE ID            CREATED             SIZE
+    fmw-soa                                                       12.2.1.4.0          6d61b77a1e9c        2 weeks ago         4.55GB
+    container-registry.oracle.com/middleware/soasuite             12.2.1.4            6d61b77a1e9c        2 weeks ago         4.55GB
 
 ### Downloading the OIG Docker files
 
@@ -116,7 +164,7 @@ You should use the following tag for the Oracle SOA Image: `fmw-soa:12.2.1.4.0`
         --> oracle/oig:12.2.1.4.0
 
       Build completed in 746 seconds.
-
+	
   3. Run the `docker images` command to show the OIG image is installed into the repository:
     
 	$ docker images
@@ -131,6 +179,8 @@ You should use the following tag for the Oracle SOA Image: `fmw-soa:12.2.1.4.0`
    The OIG image is now built successfully! 
    
    To create OIG Docker containers refer to the **OIG Docker Container Configuration** below.
+
+
 
 ## OIG Docker Container Configuration
  
