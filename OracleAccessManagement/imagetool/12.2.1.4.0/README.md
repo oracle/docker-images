@@ -89,17 +89,13 @@ $ export WLSIMG_CACHEDIR="/path/to/cachedir"
 
 # 4. Download the required packages/installers&Patches
 
-a) Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice e.g: \<work directory\>/stage:
+Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice e.g: \<work directory\>/stage:
 
 * Oracle Identity and Access Management 12.2.1.4.0
 * Oracle Fusion Middleware 12c Infrastructure 12.2.1.4.0
 * Oracle JDK 
 
-
-
-b) If one wants to build the Oracle Access Management with patches download patches listed from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
-
-
+**Note**: If the image is required to have patches included, download patches from [My Oracle Support](https://support.oracle.com) and copy to \<work directory\>/stage.
 
 # 5. Required build files
 
@@ -215,5 +211,13 @@ If you want to review a sample dockerfile created with the imagetool issue the `
 ./imagetool.sh @<work directory/build/buildArgs --dryRun
 ```
 
+# Licensing & Copyright
+
+## License
+To download and run Oracle Fusion Middleware products, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
+
+All scripts and files hosted in this project and GitHub [docker-images/OracleAccessManagement](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+
 ## Copyright
 Copyright (c) 2020 Oracle and/or its affiliates.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl

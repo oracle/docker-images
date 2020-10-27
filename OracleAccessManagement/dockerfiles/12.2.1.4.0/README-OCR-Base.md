@@ -1,5 +1,5 @@
-Building an Oracle Access Management Image using Dockerfiles and Scripts
-========================================================================
+Building an Oracle Access Management Image using Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
+=========================================================================================================================
 Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This Image includes binaries for Oracle Access Management (OAM) Release 12.2.1.4.0 and it has capability to create FMW Infrastructure domain and OAM specific Managed Servers.
 
 ***Image***: oracle/oam:<version; example:12.2.1.4.0>
@@ -9,13 +9,35 @@ The following prerequisites are necessary before building OAM images:
 
 * A working installation of Docker 18.03 or later
 
-## How to Build the Oracle Java image
+## Pulling the Oracle JDK (Server JRE) base image
+You can pull the Oracle Server JRE 8 image from the [Oracle Container Registry](https://container-registry.oracle.com). When pulling the Server JRE 8 image, re-tag the image so that it works with the dependent Dockerfile which refer to the JRE 8 image through oracle/serverjre:8.
 
-Please refer to [README.md](../../../OracleJava/README.md) under `docker-images/OracleJava` for details on how to build Oracle Java image.
+**IMPORTANT**: Before you pull the image from the registry, please make sure to log-in through your browser with your SSO credentials and ACCEPT "Terms and Restrictions".
 
-## How to Build the Oracle Fusion Middleware Infrastructure image
+1. Sign in to [Oracle Container Registry](https://container-registry.oracle.com). Click the **Sign in** link which is on the top-right of the Web page.
+2. Click **Java** and then click on **serverjre**.
+3. Click **Accept** to accept the license agreement.
+4. Use following commands to pull Oracle Fusion Middleware infrastructure base image from repository :
 
-Please refer to [README.md](../../../OracleFMWInfrastructure/README.md) under `docker-images/OracleFMWInfrastructure` for details on how to build Oracle Fusion Middleware Infrastructure image.
+        
+        $ docker login container-registry.oracle.com
+        $ docker pull container-registry.oracle.com/java/serverjre:8
+        $ docker tag container-registry.oracle.com/java/serverjre:8 oracle/serverjre:8
+
+## Pulling Oracle FMW Infrastructure 12.2.1.4.x image
+You can pull Oracle FMW Infrastructure 12.2.1.4.x image from the [Oracle Container Registry](https://container-registry.oracle.com). When pulling the FMW Infrastructure 12.2.1.4.x image, re-tag the image so that it works with the dependent dockerfile which refer to the FMW Infrastructure 12.2.1.4.x image through oracle/fmw-infrastructure:12.2.1.4.0.
+
+**IMPORTANT**: Before you pull the image from the registry, please make sure to log-in through your browser with your SSO credentials and ACCEPT "Terms and Restrictions". fmw-infrastructure images can be found under Middleware section.
+
+1. Sign in to [Oracle Container Registry](https://container-registry.oracle.com). Click the **Sign in** link which is on the top-right of the Web page.
+2. Click **Middleware** and then click on **fmw-infrastructure**.
+3. Click **Accept** to accept the license agreement.
+4. Use following commands to pull Oracle Fusion Middleware infrastructure base image from repository :
+
+        
+        $ docker login container-registry.oracle.com
+        $ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-191222
+        $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-191222 oracle/fmw-infrastructure:12.2.1.4.0
 
 ## Building a Container Image for Oracle Access Management
 
@@ -45,7 +67,6 @@ Please refer to [README.md](../../../OracleFMWInfrastructure/README.md) under `d
 	$ mkdir -p <work directory>/OracleAccessManagement/dockerfiles/12.2.1.4.0/patches
 	$ mkdir -p <work directory>/OracleAccessManagement/dockerfiles/12.2.1.4.0/opatch_patch
 	
-   
   
   3. If required run the following to set the proxy server appropriately. This is required so the build process can pull the relevant Linux packages via yum:
 
@@ -69,6 +90,8 @@ Please refer to [README.md](../../../OracleFMWInfrastructure/README.md) under `d
    The OAM docker image is now built successfully! 
    
    To create OAM containers refer to the **OAM  Container Configuration** below.
+
+
 
 ## OAM  Container Configuration
  
