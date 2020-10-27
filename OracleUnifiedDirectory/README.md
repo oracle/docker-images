@@ -25,8 +25,9 @@ This image refers to binaries for Oracle Unified Directory Release 12.2.1.4.0 an
 
 An Oracle Unified Directory image can be created and/or made available for deployment in the following ways:
 
-1. Build your own Oracle Unified Directory image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own Oracle Unified Directory 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an Oracle Unified Directory image with WebLogic Image Tool](OracleUnifiedDirectory/imagetool/12.2.1.4.0)
-1. Build your own Oracle Unified Directory image using the dockerfile and scripts. To customize the image for specific use-cases, Oracle provides dockerfile and build scripts. For more information, see [Building an Oracle Unified Directory Image with Dockerfiles and Scripts](OracleUnifiedDirectory/dockerfiles/12.2.1.4.0).
+1. Build your own Oracle Unified Directory image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own Oracle Unified Directory 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an Oracle Unified Directory image with WebLogic Image Tool](imagetool/12.2.1.4.0)
+1. Build your own Oracle Unified Directory image using the dockerfile, scripts and base image from Oracle Container Registry (OCR). To customize the image for specific use-cases, Oracle provides dockerfile and build scripts. For more information, see [Building an Oracle Unified Directory Image with Dockerfile, Scripts and Base Image from OCR](dockerfiles/12.2.1.4.0/README-OCR-Base.md).
+1. Build your own Oracle Unified Directory image using the dockerfile and scripts. To customize the image for specific use-cases, Oracle provides dockerfile and build scripts. For more information, see [Building an Oracle Unified Directory Image with Dockerfiles and Scripts](dockerfiles/12.2.1.4.0/README.md).
 
 ## Running the Oracle Unified Directory image in a container
 
