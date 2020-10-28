@@ -2,6 +2,7 @@
 *                         @Djelibeybi @gvenzl @mriccell
 /GraalVM/                 @mzachh
 /NoSQL/                   @anandchandak
+/OracleAccessManagement/  @pratdash-orcl
 /OracleBI/                @sjvp
 /OracleCoherence/         @thegridman
 /OracleDatabase/SingleInstance/          @gvenzl
@@ -14,10 +15,8 @@
 /OracleJava/              @aureliogrb @Djelibeybi
 /OracleLinuxDevelopers/   @Djelibeybi @mark-au
 /OracleRestDataServices/  @gvenzl
-/OracleSOASuite/          @knvijay
+/OracleSOASuite/          @knvijay @rdas0405
 /OracleWebCenterSites/    @prshshuk
 /OracleWebLogic/          @mriccell
-/OracleSOASuite/          @rdas0405
 /OracleUnifiedDirectory/  @kuldeepbshah @surya902
 /OracleUnifiedDirectorySM/  @kuldeepbshah @surya902
-
