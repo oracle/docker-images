@@ -29,13 +29,12 @@ Building your own OIG image involves the following steps:
 * Downloading the 12.2.1.4.0 Identity Management shiphome and Patches
 * Building the OIG image
 
-
 	
 ### How to Build the Oracle SOA Image
 
 Please refer to [README.md](../../../OracleSOASuite/README.md) under `docker-images/OracleSOASuite` for details on how to build Oracle Java image.
 
-You should use the following tag for the Oracle SOA Image: `fmw-soa:12.2.1.4.0`
+OIG Dockerfile uses the `fmw-soa:12.2.1.4.0` tag for the Oracle SOA image, hence you should use this tag while referring to the Oracle SOA image.
 
 ### Downloading the OIG Docker files
 
