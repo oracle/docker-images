@@ -17,6 +17,8 @@ Please refer to [README.md](../../../OracleJava/README.md) under `docker-images/
 
 Please refer to [README.md](../../../OracleFMWInfrastructure/README.md) under `docker-images/OracleFMWInfrastructure` for details on how to build Oracle Fusion Middleware Infrastructure image.
 
+OAM Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to the Oracle Fusion Middleware (FMW) Infrastructure image, hence you should use this tag for the same.
+
 ## Building a Container Image for Oracle Access Management
 
 ### Downloading the OAM Docker files

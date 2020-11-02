@@ -41,6 +41,8 @@ Oracle Unified Directory image has been tested and is known to run on following 
 
 Please refer to [README.md](../../../OracleJava/README.md) under `docker-images/OracleJava` for details on how to build Oracle Java image.
 
+Oracle Unified Directory Dockerfile uses the `oracle/serverjre:8` tag for the Oracle Java image, hence you should use this tag while referring to the Oracle Java image.
+
 # 4. Building Oracle Unified Directory image
 
 ## Clone and download Oracle Unified Directory scripts and binary file
@@ -80,5 +82,5 @@ To download and run Oracle Fusion Middleware products, regardless whether inside
 All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectory](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
-Copyright (c) 2020 Oracle and/or its affiliates.
+Copyright (c) 2020, Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
