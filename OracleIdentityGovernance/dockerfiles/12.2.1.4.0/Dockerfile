@@ -14,7 +14,7 @@
 #
 # Pull base image
 # ---------------
-FROM fmw-soa:12.2.1.4.0
+FROM fmw-soa:12.2.1.4.0 as base
 #
 #
 # Environment variables required for this build (do NOT change)
@@ -37,7 +37,7 @@ ENV FMW_JAR=fmw_12.2.1.4.0_idm_generic.jar \
     PATH=$PATH:/u01/oracle \
     DOMAIN_TYPE="oim"    
 
-
+FROM base as builder
  
 USER root
 RUN mkdir -p /u01 && \
@@ -122,6 +122,13 @@ RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
     else \
       sed -i 's|true</ready|false</ready|g' /u01/oracle/idm/server/apps/oim.ear/META-INF/weblogic-application.xml; \
     fi
+
+FROM base as FINAL_BUILD
+
+COPY --from=builder --chown=oracle:oracle /u01 /u01
+
+USER oracle
+WORKDIR $ORACLE_HOME
 
 #
 # Define default command to start bash.
