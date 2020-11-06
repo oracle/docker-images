@@ -28,7 +28,6 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Unified Directory](/OracleUnifiedDirectory)
 - [Oracle Unified Directory Service Manager](/OracleUnifiedDirectorySM)
 - [Oracle WebLogic Server](/OracleWebLogic)
-- [Oracle WebCenter Content](/OracleWebCenterContent)
 - [Oracle WebCenter Portal](/OracleWebCenterPortal)
 - [Oracle WebCenter Sites](/OracleWebCenterSites)
 
