@@ -18,10 +18,10 @@ ORAENV_ASK=NO
 source oraenv
 
 # Check Oracle at least one PDB has open_mode "READ WRITE" and store it in status
-status=`sqlplus -s / as sysdba << EOF
+status=`sqlplus -s HEALTHCHECK/HEALTHCHECK << EOF
    set heading off;
    set pagesize 0;
-   SELECT DISTINCT open_mode FROM v\\$pdbs WHERE open_mode = '$OPEN_MODE';
+   SELECT DISTINCT open_mode FROM v\\$database WHERE open_mode = '$OPEN_MODE';
    exit;
 EOF`
 
