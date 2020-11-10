@@ -13,17 +13,17 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] -d [domain-type] [-s]
-Builds a Docker Image for Oracle OIM Suite .
+Usage: buildDockerImage.sh -v [version]
+Builds a Docker Image for Oracle Identity Governance
 
 Parameters:
    -h: view usage
-   -v: Release version to build. Required. E.g 12.2.1.4.0
-   -d: Domain type to be built. Required for building the domain -oim
+   -v: Release version to build. Required. Supported: 12.2.1.4.0
    -s: skips the MD5 check of packages (DEFAULT)
 
-LICENSE CDDL 1.0 + GPL 2.0
-Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
+LICENSE Universal Permissive License (UPL), Version 1.0
+Copyright (c) 2020 Oracle and/or its affiliates.
+
 EOF
 exit 0
 }
@@ -51,16 +51,12 @@ while getopts "hsdgiv:t:" optname; do
     "s")
       SKIPMD5=1
       ;;
-    "t")
-      DOMAINTYPE="$OPTARG"
-      echo "Domain Type selected is : "$DOMAINTYPE
-      ;;
     "v")
       VERSION="$OPTARG"
       ;;
-         *)
-    # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+    *)
+      # Should not occur
+      echo "ERROR: Invalid argument. buildDockerImage.sh"
       ;;
   esac
 done

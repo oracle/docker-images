@@ -9,7 +9,7 @@
 #
 # Execute:
 #      $ docker build --pull -t oracle/instantclient:19 .
-#      $ docker run -ti --rm oracle/instantclient:19 sqlplus hr@example.com/orclpdb1
+#      $ docker run -ti --rm oracle/instantclient:19 sqlplus -l hr@example.com/orclpdb1
 #
 # NOTES
 # -----
@@ -30,7 +30,7 @@
 # cwallet.sso.  You can use a Docker volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.8/client64/lib/network/admin:Z,ro . . .
+#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.9/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -44,7 +44,8 @@
 # ORACLE INSTANT CLIENT PACKAGES
 # ------------------------------
 #
-# Instant Client Packages are available from https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html
+# Instant Client Packages for Oracle Linux 7 are available from
+# https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html
 #
 # Base - one of these packages is required to run applications and tools
 #   oracle-instantclientXX.Y-basic      : Basic Package - All files required to run OCI, OCCI, and JDBC-OCI applications
@@ -66,7 +67,7 @@ LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues" 
 
 ARG release=19
-ARG update=8
+ARG update=9
 
 RUN  yum -y install oracle-release-el7 && \
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \

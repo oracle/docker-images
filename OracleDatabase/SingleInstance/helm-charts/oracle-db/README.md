@@ -3,10 +3,10 @@
 Database 19c is an industry leading relational database server.
 
 ## Getting started
-A Helm chart is used for packaging the deployment yamls to simplify install in Kubernetes. The chart is available at [charts/oracle-db](./) directory.
+A Helm chart is used for packaging the deployment yamls to simplify install in Kubernetes. The chart is available at [helm-charts/oracle-db](./) directory.
 Clone the repo and execute the following command to generate oracle-db-1.0.0.tgz
 ```
-$ helm package charts/oracle-db
+$ helm package helm-charts/oracle-db
 ```
 
 ## Introduction
