@@ -193,7 +193,7 @@ merged, but are generally frowned upon if breached.
 * Always aim to produce the smallest possible image. This means using multi-stage
   builds with a final stage using the least amount of layers possible. Combine
   as much as possible within a single directive and be sure to remove any
-  cache created `yum` or other tools.
+  cache created by `yum` or other tools.
 * Don't install all possible required RPMs, even if the product
   documentation says so. Some RPMs aren't applicable inside a container, e.g
   filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
