@@ -17,7 +17,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.2.1.4-developer
+FROM oracle/weblogic:12.2.1.3
 
 # Maintainer
 # ----------
@@ -62,7 +62,6 @@ RUN chmod +xw /u01/oracle/*.sh && \
     mkdir -p ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
     chown -R oracle:root $DOMAIN_HOME/.. && \
-    chmod -R 775 $DOMAIN_HOME/.. && \
     chown -R oracle:root ${PROPERTIES_FILE_DIR}
 
 
@@ -71,7 +70,7 @@ COPY --chown=oracle:root properties/docker-build/domain*.properties ${PROPERTIES
 # Configuration of WLS Domain
 USER oracle
 RUN /u01/oracle/createWLSDomain.sh && \
-    chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \
+    chmod -R g+w $DOMAIN_HOME && \
     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
     rm ${PROPERTIES_FILE_DIR}/*.properties
 

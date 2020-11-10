@@ -47,8 +47,7 @@
 #
 # Pull base image
 # ---------------
-# FROM store/oracle/weblogic:12.2.1.3
-FROM store/oracle/weblogic:12.2.1.3-dev
+FROM oracle/weblogic:12.2.1.3
 
 # Maintainer
 # ----------
@@ -98,12 +97,12 @@ RUN chmod +xw ${SCRIPT_HOME}/*.sh && \
     chown -R oracle:root $PROPERTIES_FILE_DIR && \
     mkdir -p $DOMAIN_PARENT && \
     chown -R oracle:root $DOMAIN_PARENT && \
-    chmod -R a+xwr $DOMAIN_PARENT && \
+    chmod -R 770 $DOMAIN_PARENT && \
     cd ${WDT_HOME} && \
     $JAVA_HOME/bin/jar xf weblogic-deploy.zip && \
     rm weblogic-deploy.zip && \
     chmod +xw weblogic-deploy/bin/*.sh && \
-    chmod -R +xw weblogic-deploy/lib/python   && \
+    chmod -R g+w weblogic-deploy/lib && \
     chown -R oracle:root weblogic-deploy 
 
 # Persist the WDT tool home location
@@ -137,6 +136,7 @@ RUN if [ -n "$WDT_MODEL" ]; then MODEL_OPT="-model_file $PROPERTIES_FILE_DIR/${W
         $VARIABLE_OPT  \
         $MODEL_OPT \
         $ARCHIVE_OPT && \
+        chmod -R g+w $DOMAIN_HOME && \ 
         echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
         rm -rf $PROPERTIES_FILE_DIR 
 
