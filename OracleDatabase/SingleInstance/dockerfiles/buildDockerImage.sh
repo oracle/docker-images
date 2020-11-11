@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 # 
 # Since: April, 2016
 # Author: gerald.venzl@oracle.com
