@@ -23,6 +23,9 @@
 # -------------------------------------------------------------
 FROM oracle/fmw-infrastructure:12.2.1.4.0 as builder
 
+LABEL "provider"="Oracle"                                          \
+      "maintainer"="Anand Sirasagi <anand.sirasagi@oracle.com>"    \
+      "issues"="https://github.com/oracle/docker-images/issues"
 
 # -------------------------------------------------------------
 # Environment variables required for this build (do NOT change)
@@ -68,21 +71,14 @@ rm /u01/$FMW_PORTAL_JAR /u01/oraInst.loc /u01/install.file /u01/oracle/oracle_co
 #Rebuilding Base image
 FROM oracle/fmw-infrastructure:12.2.1.4.0
 #
-# Maintainer
-# ----------
-LABEL maintainer="Anand Sirasagi <anand.sirasagi@oracle.com>"
-
-#
 # Install the required packages
 # -----------------------------
 USER root
-RUN env && \
-    yum install -y \
-    sudo hostname zip unzip && \
-    yum install -y tar && \
-    yum install -y procps && \
-    yum clean all && \
-    rm -rf /var/cache/yum
+
+ENV PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+
+RUN  yum install -y sudo hostname zip unzip tar procpcs  &&\
+     rm -rf /var/cache/yum
 
 COPY --from=builder --chown=oracle:oracle /u01 /u01
 

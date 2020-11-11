@@ -18,6 +18,8 @@ Oracle WebCenter Portal has been tested and is known to run on the following har
 
 ## 2.2 Software Requirements
 
+You must install and configure [Oracle Container Runtime for Docker](https://docs.oracle.com/cd/E52668_01/E87205/html/index.html) on Oracle Linux 7 to run Oracle WebCenter Portal on Docker.
+
 |       | Version                        | Command to verify version |
 | :---: | :----------------------------: | :-----------------------: |
 | OS    | Oracle Linux 7.3 or higher     | more /etc/oracle-release  |
@@ -59,7 +61,7 @@ $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.
 ```
 
 
-The Oracle Database image can be pulled from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleDatabase).
+The Oracle Database image can be pulled from the  [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts in [GitHub Location](https://github.com/oracle/docker-images/tree/master/OracleDatabase).
 
 # 4. Building Oracle WebCenter Portal Docker Images
 IMPORTANT: To build the Oracle WebCenter Portal image, you must first download the required version of the Oracle WebCenter Portal  binaries these install binaries are required to create the Oracle WebCenter Portal image. These binaries must be downloaded and copied into the folder with the same version for e.g. 12.2.1.4.0 binaries need to be dropped into `../OracleWebCenterPortal/dockerfiles/12.2.1.4`. 

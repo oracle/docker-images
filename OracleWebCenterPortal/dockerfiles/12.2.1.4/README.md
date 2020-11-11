@@ -1,57 +1,4 @@
 # Oracle WebCenter Portal 12.2.1.4.0 on Docker
-
-Before running an Oracle WebCenter Portal image below security configuration are recommended to be followed.
-## Docker Security Configuration
-
-### A. Configuring auditing rules for docker 
-
-Add the following statements to the audit rules file - `/etc/audit/rules.d/audit.rules`
-
-```
--w /usr/bin/docker -p wa
--w /var/lib/docker -p wa
--w /etc/docker -p wa
--w /lib/systemd/system/docker.service -p wa
--w /lib/systemd/system/docker.socket -p wa
--w /etc/default/docker -p wa
--w /etc/docker/daemon.json -p wa
--w /usr/bin/docker-containerd -p wa
--w /usr/bin/docker-runc -p w
-```
-Restart Audit Daemon using below commands
-```
-$ sudo systemctl restart auditd
- ```
-### B. Configuring Docker daemon
-
-Add the following statements to the docker daemon json file - `/etc/docker/daemon.json`
-Change Docker default location using data-root configuration in daemon.json.
-
-Note : For Docker version below v17.05.0 use "graph":"/volumeLocation" to configure docker default location
-Further details can be found at https://docs.docker.com/engine/deprecated/#-g-and---graph-flags-on-dockerd
-
-Note: For configuring centralized logging using syslog driver, syslog server details need to be configured. 
-Further details can be found at https://docs.docker.com/config/containers/logging/configure/
-
-```
-{
-   "data-root":"/scratch/docker"
-    "icc": false,
-    "log-driver": "syslog",
-    "log-opts": {
-        "syslog-address": "Protocol://IpAdressofSysLogserver:port"
-               },
-    "live-restore": true,
-    "userland-proxy": false,
-    "no-new-privileges": true
-}
-```
-Restart docker daemon 
-```
-$ sudo systemctl daemon-reload
-$ sudo systemctl restart docker
-```
-
 ##  Preparing to Run Oracle WebCenter Portal Docker Container
 Configure an environment before running the Oracle WebCenter Portal Docker container. You need to set up a communication network between containers on the same host and a WebCenter Content Server instance.
 
@@ -119,7 +66,7 @@ SEARCH_APP_USER_PASSWORD=<Search User Password>
 Run the following command to create the Admin Server container:
 
 ```
-$ docker run -i -t --name $ADMIN_SERVER_CONTAINER_NAME --network=WCPortalNET -p <Any Free Port>:$ADMIN_PORT -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <directory>/webcenter.env.list $WCPortalImageName /bin/bash -c "/u01/oracle/container-scripts/configureOrStartAdminServer.sh; /bin/bash"
+$ docker run -i -t --name $ADMIN_SERVER_CONTAINER_NAME --network=WCPortalNET -p <Any Free Port>:$ADMIN_PORT -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <directory>/webcenter.env.list $WCPortalImageName
 ```
 **Note:** Replace variables with values configured in webcenter.env.list
 The above command deletes any previous RCU with the same prefix if **DB_DROP_AND_CREATE=true**
@@ -153,7 +100,7 @@ $ docker container start -i WCPAdminContainer
 Run the following command to create the Portal Managed Server container:
 
 ```
-$ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p <Any Free Port>:$MANAGED_SERVER_PORT -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <directory>/webcenter.env.list $WCPortalImageName /bin/bash -c "/u01/oracle/container-scripts/configureOrStartWebCenterPortal.sh; /bin/bash"
+$ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p <Any Free Port>:$MANAGED_SERVER_PORT -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <directory>/webcenter.env.list $WCPortalImageName configureOrStartWebCenterPortal.sh
 
 ```
 **Note:** Replace variables with values configured in webcenter.env.list
@@ -193,7 +140,7 @@ $ sudo chown 1000:1000 /scratch/wcpdocker/volumes/es
 #### B. Creating and Running Elasticsearch Container
 
 ```
-$ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v $ES_DATA_VOLUME:/u01/esHome/esNode/data --env-file <directory>/webcenter.env.list $WCPortalImageName /bin/bash -c "/u01/oracle/container-scripts/configureOrStartElasticsearch.sh; /bin/bash"
+$ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v $ES_DATA_VOLUME:/u01/esHome/esNode/data --env-file <directory>/webcenter.env.list $WCPortalImageName configureOrStartElasticsearch.sh
 ```
 
 #### C. Stopping Elasticsearch Container
@@ -240,13 +187,13 @@ DB_DROP_AND_CREATE=false
 *Run the command to create Container in given Sequence (run as non root user)*
 ```
 # create Admin Container
-$ docker run -i -t --name WCPAdminContainer --network=WCPortalNET -p 7001:7001 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 /bin/bash -c "/u01/oracle/container-scripts/configureOrStartAdminServer.sh; /bin/bash"
+$ docker run -i -t --name WCPAdminContainer --network=WCPortalNET -p 7001:7001 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0
  
 # create Portal Container
-$ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p 8888:8888 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 /bin/bash -c "/u01/oracle/container-scripts/configureOrStartWebCenterPortal.sh; /bin/bash"
+$ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p 8888:8888 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 configureOrStartWebCenterPortal.sh
 
 # create Elasticsearch Container
-$ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v /scratch/wcpdocker/volumes/es:/u01/esHome/esNode/data --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 /bin/bash -c "/u01/oracle/container-scripts/configureOrStartElasticsearch.sh; /bin/bash"
+$ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v /scratch/wcpdocker/volumes/es:/u01/esHome/esNode/data --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 configureOrStartElasticsearch.sh
 
 ```
  
@@ -294,13 +241,13 @@ DB_DROP_AND_CREATE=true
 
 ```
 # create Admin Container
-$ docker run -i -t --name WCPAdminContainer --network=WCPortalNET -p 7001:7001 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 /bin/bash -c "/u01/oracle/container-scripts/configureOrStartAdminServer.sh; /bin/bash"
+$ docker run -i -t --name WCPAdminContainer --network=WCPortalNET -p 7001:7001 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0
  
 # create Portal Container
-$ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p 8888:8888 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 /bin/bash -c "/u01/oracle/container-scripts/configureOrStartWebCenterPortal.sh; /bin/bash"
+$ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p 8888:8888 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 configureOrStartWebCenterPortal.sh 
 
 # create Elasticsearch Container
-$ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v /scratch/wcpdocker/volumes/es:/u01/esHome/esNode/data --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 /bin/bash -c "/u01/oracle/container-scripts/configureOrStartElasticsearch.sh; /bin/bash"
+$ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v /scratch/wcpdocker/volumes/es:/u01/esHome/esNode/data --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4.0 configureOrStartElasticsearch.sh
 
 ```
 
