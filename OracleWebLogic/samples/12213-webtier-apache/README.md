@@ -43,7 +43,7 @@ The values of `WEBLOGIC_CLUSTER` must be valid and correspond to existing contai
 
 ### Administration Server Only Example
 
-First, make sure that you have the WebLogic Server 12.2.1.3 install image. Pull the WebLogic install image from the Oracle Container Registry, `container-registry.oracle.com/middleware/weblogic:12.2.1.3`, or build your own image, `oracle/weblogic:12.2.1.3-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3).
+First, make sure that you have the WebLogic Server 12.2.1.3 or 12.2.1.4 install image. Pull the WebLogic install image from the Oracle Container Registry, `container-registry.oracle.com/middleware/weblogic:<version>`, or build your own image, `oracle/weblogic:<version>-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles).
 
 Start a container from the WebLogic install image on supported versions. During runtime, you can override the default values of the following parameters with the `-e` option:
 
@@ -203,7 +203,7 @@ While it is natural to expose web applications outside a container, exposing adm
 If it is necessary to expose T3 outside the firewall, using two-way SSL and connection filters to ensure that only known clients can connect to T3 ports.
 
 ## License
-To download and run the Oracle WebLogic Server Proxy Plugins 12.2.1.3.0 distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
+To download and run the Oracle WebLogic Server Proxy Plugins, version 12.2.1.3.0 or 12.2.1.4.0 distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
 To download and run the Oracle JDK, regardless of inside or outside a Docker container, you must download the binary from the Oracle website and accept the license indicated on that page.
 
