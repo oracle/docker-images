@@ -58,6 +58,7 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-p <host port>:1521 -p <host port>:5500 \
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
+	-e ORACLE_PDB_COUNT=<number of PDB's> \
 	-e ORACLE_PWD=<your database passwords> \
 	-e INIT_SGA_SIZE=<your database SGA memory in MB> \
 	-e INIT_PGA_SIZE=<your database PGA memory in MB> \
@@ -71,7 +72,8 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	   -p:            The port mapping of the host port to the container port.
 	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express).
 	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
-	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
+	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB).
+	   -e ORACLE_PDB_Count: The number of Oracle Database PDB's that should be installed (default: 1).
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
 	   -e INIT_SGA_SIZE:
 	                  The total memory in MB that should be used for all SGA components (optional).

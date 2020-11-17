@@ -141,6 +141,9 @@ export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 # Github issue # 984
 export ORACLE_PDB=${ORACLE_PDB^^}
 
+# Default for ORACLE PDB count
+export ORACLE_PDB_COUNT=${ORACLE_PDB_COUNT:-1}
+
 # Default for ORACLE CHARACTERSET
 export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
@@ -168,7 +171,7 @@ else
   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
   # Create database
-  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
+  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PDB_COUNT $ORACLE_PWD || exit 1;
 
   # Move database operational files to oradata
   moveFiles;
