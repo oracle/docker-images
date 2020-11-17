@@ -43,7 +43,7 @@ The values of `WEBLOGIC_CLUSTER` must be valid and correspond to existing contai
 
 ### Administration Server Only Example
 
-First, make sure that you have the WebLogic Server 12.2.1.3 install image. Pull the WebLogic install image from the DockerStore, `store/oracle/weblogic:12.2.1.3`, or build your own image, `oracle/weblogic:12.2.1.3-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3).
+First, make sure that you have the WebLogic Server 12.2.1.3 install image. Pull the WebLogic install image from the Oracle Container Registry, `container-registry.oracle.com/middleware/weblogic:12.2.1.3`, or build your own image, `oracle/weblogic:12.2.1.3-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3).
 
 Start a container from the WebLogic install image on supported versions. During runtime, you can override the default values of the following parameters with the `-e` option:
 
@@ -61,7 +61,7 @@ NOTE: To set the `DOMAIN_NAME`, you must set both `DOMAIN_NAME` and `DOMAIN_HOME
                      -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain \
                      -e DOMAIN_NAME=abc_domain \
                      -p 7001:7001 \
-                     store/oracle/weblogic:<version>
+                     container-registry.oracle.com/middleware/weblogic:<version>
 
 Start an Apache container on the default port by calling:
 
