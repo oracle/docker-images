@@ -1,42 +1,51 @@
 Apache HTTP Server with Oracle WebLogic Server Proxy Plugin on Docker
 ===============
-This project includes a quick start Dockerfile and samples for standalone Apache HTTP Server with the 12.2.1.3.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux. The certification of Apache on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Dockerfiles.
+This project includes a Dockerfile and samples for standalone Apache HTTP Server with the 12.2.1.3.0 and 12.2.1.4.0 Oracle WebLogic Server Proxy Plugin based on Oracle Linux. This is a generic Dockerfile and can be used to build Apache images of different versions and to support containers to run on different ports, such as 80 and 8080. The certification of Apache on Docker does not require the use of any file in this repository. Customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Dockerfiles.The only supported versions are 12.2.1.3.0 and 12.2.1.4.0.
 
 ## Build Apache With the Plugin Docker Image
 
-This project offers a Dockerfile for the Apache HTTP Server with the Oracle WebLogic Server Proxy Plugin in standalone mode. To assist in building the images, you can use the  `buildDockerImage.sh` script. See below for instructions and usage.
+This project offers a generic Dockerfile for the Apache HTTP Server with the Oracle WebLogic Server Proxy Plugin in standalone mode to build different versions of the `Apache` image. To assist in building the images, you can use the  `buildDockerImage.sh` script. The only supported versions are 12.2.1.3.0 and 12.2.1.4.0. See below for instructions and usage.
 
-The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
+The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and constructs the build args based on the version of the Apache image to be built; it is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
 
-IMPORTANT: You have to download the `Oracle WebLogic Server Proxy Plugin 12.2.1.3.0` package (see the `.download` file) and place it in this directory.
+IMPORTANT: You have to download the `Oracle WebLogic Server Proxy Plugin`, version 12.2.1.3.0 or 12.2.1.4.0 package, (see the `.download` file) and place it in this directory.
 
-Run the `buildDockerImage.sh` script.
+Run the `buildDockerImage.sh` script with version option `-v`.
 
-        $ sh buildDockerImage.sh
+        $ sh buildDockerImage.sh -v <Verion of the image to be built>
+For Example to built the image for version 12.2.1.4.0 
+        $ sh buildDockerImage.sh -v 12.2.1.4.0
 
 ## Run the Apache HTTP Server in a Container
 
-Run an Apache container to access an Administration Server, or a Managed Server, in a non-clustered environment that is running on `<host>` and listening to `<port>`.
+Run an Apache container on supported versions  to access an Administration Server, or a Managed Server, in a non-clustered environment that is running on `<host>` and listening to `<port>`.
 
-        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -p 80:80 oracle/apache:12.2.1.3
-
+        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -p 80:80 oracle/apache:<version>
+Similarly, Apache container in NonPriviledgedPort (8080) 		
+        $ docker run -d -e WEBLOGIC_HOST=<host> -e WEBLOGIC_PORT=<port> -e NonPriviledgedPorts=true -p 8080:8080 oracle/apache:<version>
+		
 Run an Apache image to proxy and load balance to a list of Managed Servers in a cluster.
 
         Use a list of hosts and ports.
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 oracle/apache:12.2.1.3
+        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -p 80:80 oracle/apache:<version>
 
+Similarly, Apache container in NonPriviledgedPort (8080) 		
+
+        $ docker run -d -e WEBLOGIC_CLUSTER=host1:port,host2:port,host3:port -e NonPriviledgedPorts=true -p 8080:8080 oracle/apache:<version>
         Or use a cluster URL if it is available
 
-        $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> -p 80:80 oracle/apache:12.2.1.3
-
+        $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> -p 80:80 oracle/apache:<version>
+Similarly, Apache container in NonPriviledgedPort (8080) 		
+        $ docker run -d -e WEBLOGIC_CLUSTER=<cluster-url> -e NonPriviledgedPorts=true -p 8080:8080 oracle/apache:<version>
+		
 The values of `WEBLOGIC_CLUSTER` must be valid and correspond to existing containers running WebLogic Servers.
 
 ### Administration Server Only Example
 
-First, make sure that you have the WebLogic Server 12.2.1.3 install image. Pull the WebLogic install image from the DockerStore, `store/oracle/weblogic:12.2.1.3`, or build your own image, `oracle/weblogic:12.2.1.3-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles/12.2.1.3).
+First, make sure that you have the WebLogic Server 12.2.1.3 or 12.2.1.4 install image. Pull the WebLogic install image from the Oracle Container Registry, `container-registry.oracle.com/middleware/weblogic:<version>`, or build your own image, `oracle/weblogic:<version>-developer`, at [https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/dockerfiles).
 
-Start a container from the WebLogic install image. During runtime, you can override the default values of the following parameters with the `-e` option:
+Start a container from the WebLogic install image on supported versions. During runtime, you can override the default values of the following parameters with the `-e` option:
 
         ADMIN_NAME (default: AdminServer)
         ADMIN_PORT (default: 7001)
@@ -52,17 +61,29 @@ NOTE: To set the `DOMAIN_NAME`, you must set both `DOMAIN_NAME` and `DOMAIN_HOME
                      -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain \
                      -e DOMAIN_NAME=abc_domain \
                      -p 7001:7001 \
-                     store/oracle/weblogic:12.2.1.3
+                     container-registry.oracle.com/middleware/weblogic:<version>
 
-Start an Apache container by calling:
+Start an Apache container on the default port by calling:
 
         $ docker run -d --name apache \
                      -e WEBLOGIC_HOST=<admin-host> \
                      -e WEBLOGIC_PORT=7001 \
                      -p 80:80 \
-                     oracle/apache:12.2.1.3
+                     oracle/apache:<version>
 
 Now you can access the WebLogic Server Administration Console under `http://localhost/console` (default to port 80) instead of using port 7001. You can access the Console from a remote machine using the WebLogic Administration Server's `<admin-host>` instead of `localhost`.
+
+Start an Apache container on NonPriviledgedPort by calling:
+
+        $ docker run -d --name apache \
+                     -e WEBLOGIC_HOST=<admin-host> \
+                     -e WEBLOGIC_PORT=7001 \
+                     -e NonPriviledgedPorts=true \
+                     -p 8080:8080 \
+                     oracle/apache:<version>
+
+
+Now you can access the WebLogic Server Administration Console under `http://localhost:8080/console` (NonPriviledgedPort 8080) instead of using port 7001. You can access the Console from a remote machine using the WebLogic Administration Server's `<admin-host>` instead of `localhost`.
 
 ## Provide Your Own Apache Plugin Configuration
 If you want to start the Apache container with some pre-specified `mod_weblogic` configuration:
@@ -71,12 +92,20 @@ If you want to start the Apache container with some pre-specified `mod_weblogic`
 
 * Place the `custom_mod_wl_apache.conf` file in a directory `<host-config-dir>` on the host machine and then mount this directory into the container at the location `/config`. By doing so, the contents of the host directory `<host-config-dir>` (and hence `custom_mod_wl_apache.conf`) will become available in the container at the mount point.
 
-This mounting can be done by using the `-v` option with the `docker run` command as shown below.
+This mounting can be done by using the `-v` option with the `docker run` command on `default port` as shown below.
 
         $ docker run -v <host-config-dir>:/config -w /config \
                      -d -e WEBLOGIC_HOST=<admin-host> \
                      -e WEBLOGIC_PORT=7001 \
-                     -p 80:80 oracle/apache:12.2.1.3
+                     -p 80:80 oracle/apache:<version>
+
+     on NonPriviledgedPort (8080) as shown below
+
+        $ docker run -v <host-config-dir>:/config -w /config \
+                     -d -e WEBLOGIC_HOST=<admin-host> \
+                     -e WEBLOGIC_PORT=7001 \
+                     -e NonPriviledgedPorts=true \
+                     -p 8080:8080 oracle/apache:<version>
 
 **Note**: You can also mount the file directly as follows:
 
@@ -84,7 +113,17 @@ This mounting can be done by using the `-v` option with the `docker run` command
             -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf  \
             -w /config -d -e WEBLOGIC_HOST=<admin-host> \
             -e WEBLOGIC_PORT=7001 \
-            -p 80:80 oracle/apache:12.2.1.3
+            -p 80:80 oracle/apache:<version>
+
+    on NonPriviledgedPort (8080)
+
+        $ docker run \
+            -v <host-config-dir>/custom_mod_wl_apache.conf:/config/custom_mod_wl_apache.conf  \
+            -w /config -d -e WEBLOGIC_HOST=<admin-host> \
+            -e WEBLOGIC_PORT=7001 \
+            -e NonPriviledgedPorts=true \
+            -p 8080:8080 oracle/apache:<version>
+
 
 After the mounting is done, the `custom_mod_wl_apache.conf` file will replace the built-in version of the file.
 
@@ -107,7 +146,8 @@ For demo and quick testing purposes, you could use auto-generation of the certif
                      --volume-driver local \
                      -v <host-config-dir>:/config \
                      -w /config \
-                     oracle/apache:12.2.1.3
+                     oracle/apache:<version>
+
 
 Use `VIRTUAL_HOST_NAME` to specify the `VirtualHostName` of the Apache HTTP server. If `VIRTUAL_HOST_NAME` is not set, SSL will not be enabled.
 
@@ -129,7 +169,7 @@ In production, Oracle strongly recommends that you provide your own certificates
                      -p 4433:4433 \
                      -v <host-config-dir>:/config \
                      -w /config \
-                     oracle/apache:12.2.1.3
+                     oracle/apache:<version>
 
 Use `SSL_CERT_FILE` and `SSL_CERT_KEY_FILE` to specify the name of the certificate and key files, including the path in the container's file system. Both of the environment variables need to be set.
 
@@ -163,7 +203,7 @@ While it is natural to expose web applications outside a container, exposing adm
 If it is necessary to expose T3 outside the firewall, using two-way SSL and connection filters to ensure that only known clients can connect to T3 ports.
 
 ## License
-To download and run the Oracle WebLogic Server Proxy Plugins 12.2.1.3.0 distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
+To download and run the Oracle WebLogic Server Proxy Plugins, version 12.2.1.3.0 or 12.2.1.4.0 distribution, regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
 To download and run the Oracle JDK, regardless of inside or outside a Docker container, you must download the binary from the Oracle website and accept the license indicated on that page.
 
