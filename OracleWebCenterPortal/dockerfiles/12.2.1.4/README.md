@@ -252,4 +252,4 @@ $ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volum
 ```
 
 # Copyright
- Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
