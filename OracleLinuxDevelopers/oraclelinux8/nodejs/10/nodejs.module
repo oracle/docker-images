@@ -1,5 +1,5 @@
 [nodejs]
 name=nodejs
 stream=10
-profiles=s2i
+profiles=common
 state=enabled
