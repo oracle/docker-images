@@ -9,6 +9,8 @@ LABEL "org.opencontainers.image.authors"="Oracle Linux Product Team <ol-ovm-info
       "org.opencontainers.image.description"="Oracle Linux 7 (slim) with Node.js 12 installed."
 
 RUN yum -y install oracle-nodejs-release-el7 && \
+    yum-config-manager --disable ol7_developer_nodejs14 && \
+    yum-config-manager --enable ol7_developer_nodejs12 && \
     yum -y install nodejs && \
     rm -rf /var/cache/yum/*
 
