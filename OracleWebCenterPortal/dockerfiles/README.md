@@ -122,4 +122,4 @@ $ export NO_PROXY=localhost,.yourcompany.com
 ```
 
 ## Copyright
- Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2020, Oracle and/or its affiliates.
