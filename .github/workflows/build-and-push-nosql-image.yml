@@ -1,0 +1,34 @@
+name: Build and publish NoSQL 19.5-ce container image to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'NoSQL/19.5-ce/*'
+
+env:
+  IMAGE_NAME: nosql
+  TAG: 19.5-ce
+
+jobs:
+  push:
+    name: Build and push NoSQL 19.5-ce image
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Log into GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+
+      - name: Build NoSQL 19.5-ce image
+        run: |
+          cd NoSQL/19.5-ce
+          docker build --tag ghcr.io/oracle/$IMAGE_NAME:$TAG .
+
+      - name: Push image to GitHub Container Registry
+        run: |
+          docker push ghcr.io/oracle/$IMAGE_NAME:$TAG
