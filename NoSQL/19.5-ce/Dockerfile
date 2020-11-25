@@ -1,8 +1,6 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.u
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
-# NoSQL Database Release 19.5.19 Community Edition
-#
 FROM openjdk:14-oracle
 
 LABEL "org.opencontainers.image.authors"="Anand Chandak <anand.chandak@oracle.com>" \
