@@ -1,7 +1,7 @@
 # Copyright (c) 2020 Oracle and/or its affiliates.u
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
-FROM openjdk:14-oracle
+FROM openjdk:14-oraclelinux7
 
 LABEL "org.opencontainers.image.authors"="Anand Chandak <anand.chandak@oracle.com>" \
       "org.opencontainers.image.url"="https://github.com/oracle/docker-images" \
