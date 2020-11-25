@@ -7,12 +7,6 @@ DevOps users. For more information about Oracle NoSQL Database please see the
 This project offers sample Dockerfiles for:
 
 * [Oracle NoSQL Database (19.5) Community Edition](19.5/Dockerfile)
-* [Oracle NoSQL Database (4.5.12) Enterprise Edition](4.5.12/Dockerfile)
-* [Oracle NoSQL Database (4.4.6) Enterprise Edition](4.4.6/Dockerfile)
-* [Oracle NoSQL Database (4.3.11) Community Edition](4.3.11/Dockerfile)
-* [Oracle NoSQL Database (4.0.9) Community Edition](4.0.9/Dockerfile)
-* [Oracle NoSQL Database (3.5.2) Community Edition](3.5.2/Dockerfile)
-* [Oracle NoSQL Database (3.4.7) Community Edition](3.4.7/Dockerfile)
 
 ## Quick start: building the Oracle NoSQL Community Edition image
 
