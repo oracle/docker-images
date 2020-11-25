@@ -1,13 +1,8 @@
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+# Copyright (c) 2020 Oracle and/or its affiliates.u
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# NoSQL Database Release 19.5.19 Community Edition
 #
-# ORACLE DOCKERFILES PROJECT
-# --------------------------
-# This is the Dockerfile for Oracle NoSQL Database Release 19.5.19 Community Edition
-
-# Pull base image
-# ---------------
 FROM openjdk:14-oracle
 
 LABEL "org.opencontainers.image.authors"="Anand Chandak <anand.chandak@oracle.com>" \
