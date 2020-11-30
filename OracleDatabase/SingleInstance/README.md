@@ -59,23 +59,31 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_PWD=<your database passwords> \
+	-e INIT_SGA_SIZE=<your database SGA memory in MB> \
+	-e INIT_PGA_SIZE=<your database PGA memory in MB> \
 	-e ORACLE_EDITION=<your database edition> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
 	oracle/database:19.3.0-ee
 	
 	Parameters:
-	   --name:        The name of the container (default: auto generated)
-	   -p:            The port mapping of the host port to the container port. 
-	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
-	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
-	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
-	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+	   --name:        The name of the container (default: auto generated).
+	   -p:            The port mapping of the host port to the container port.
+	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express).
+	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
+	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
+	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
+	   -e INIT_SGA_SIZE:
+	                  The total memory in MB that should be used for all SGA components (optional).
+	                  Supported 19.3 onwards.
+	   -e INIT_PGA_SIZE:
+	                  The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
+	                  Supported 19.3 onwards.
 	   -e ORACLE_EDITION:
 	                  The Oracle Database Edition (enterprise/standard).
 	                  Supported 19.3 onwards.
 	   -e ORACLE_CHARACTERSET:
-	                  The character set to use when creating the database (default: AL32UTF8)
+	                  The character set to use when creating the database (default: AL32UTF8).
 	   -v /opt/oracle/oradata
 	                  The data volume to use for the database.
 	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
@@ -106,6 +114,12 @@ The edition of the database can be changed during runtime by passing the ORACLE_
     ORACLE EDITION:
 
 This parameter modifies the software home binaries but it doesn't have any effect on the datafiles. So, if existing datafiles are reused to bring up the database, the same ORACLE_EDITION must be passed as the one used to create the datafiles for the first time.
+
+#### Setting the SGA and PGA memory (Supported from 19.3.0 release)
+
+The SGA and PGA memory can be set during the first time when database is created by passing the INIT_SGA_SIZE and INIT_PGA_SIZE parameters respectively to the docker run command. The user must provide the values in MB and without any units appended to the values (For example: -e INIT_SGA_SIZE=1536). These parameters are optional and dbca calculates these values if they aren't provided.
+
+In case these parameters are passed to the docker run command while reusing existing datafiles, even though these values would be visible in the container environment, they would not be set inside the database. The values used at the time of database creation will be used.
 
 #### Changing the admin accounts passwords
 
@@ -209,6 +223,9 @@ Once the container has been started you can connect to it just like to any other
 
 	sqlplus sys/<your password>@//localhost:1521/XE as sysdba
 	sqlplus system/<your password>@//localhost:1521/XE
+
+### Deploying Oracle Database on Kubernetes
+Helm is a package manager which uses a packaging format called charts. [helm-charts](helm-charts/) directory contains all the relevant files needed to deploy Oracle Database on Kubernetes. For more information on default configuration, installing/uninstalling the Oracle Database chart on Kubernetes, please refer [helm-charts/oracle-db/README.md](helm-charts/oracle-db/README.md).
 
 ### Running SQL*Plus in a Docker container
 You may use the same Docker image you used to start the database, to run `sqlplus` to connect to it, for example:

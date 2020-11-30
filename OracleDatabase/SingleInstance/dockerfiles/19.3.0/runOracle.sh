@@ -80,16 +80,6 @@ EOF
    lsnrctl stop
 }
 
-########### SIGKILL handler ############
-function _kill() {
-   echo "SIGKILL received, shutting down database!"
-   sqlplus / as sysdba <<EOF
-   shutdown abort;
-   exit;
-EOF
-   lsnrctl stop
-}
-
 ###################################
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ############# MAIN ################
@@ -120,9 +110,6 @@ trap _int SIGINT
 
 # Set SIGTERM handler
 trap _term SIGTERM
-
-# Set SIGKILL handler
-trap _kill SIGKILL
 
 # Default for ORACLE SID
 if [ "$ORACLE_SID" == "" ]; then
@@ -181,7 +168,7 @@ else
   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
   # Create database
-  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD;
+  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
 
   # Move database operational files to oradata
   moveFiles;

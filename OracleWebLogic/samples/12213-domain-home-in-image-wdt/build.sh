@@ -53,7 +53,7 @@
 #
 # WDT_VERSION           - If the weblogic deploy install image does not exist in the script location, 
 #                         the WDT install image is downloaded from the github repository. The downloaded release
-#                         is the current supported version for WebLogic Operator. (see the script constaant 
+#                         is the current supported version for WebLogic Operator. (see the script constant 
 #                         WDT_SUPPORTED_RELEASE) To select a different release, set this environment variable to 
 #                         the desired release tag or to 'LATEST' to get the lastest release.
 #
@@ -96,7 +96,7 @@
 #                         CUSTOM_BUILD_ARG.
 #
 
-WDT_SUPPORTED_RELEASE=0.17
+WDT_SUPPORTED_RELEASE=LATEST
 
 if [ -z "${JAVA_HOME}" ] || [ ! -e "${JAVA_HOME}/bin/jar" ]; then 
    echo "JAVA_HOME must be set to version of a java JDK 1.8 or greater"

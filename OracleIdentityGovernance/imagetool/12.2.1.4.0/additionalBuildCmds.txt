@@ -1,0 +1,44 @@
+[final-build-commands]
+
+ENV ORACLE_HOME=/u01/oracle \
+    USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
+    PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin \
+    DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
+    DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
+    DOMAIN_HOME="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}"/"${DOMAIN_NAME:-base_domain}" \
+    ADMIN_PORT="${ADMIN_PORT:-7001}" \
+    SOA_PORT="${SOA_PORT:-8001}" \
+    OIM_PORT="${OIM_PORT:-14000}" \
+    OIM_SSL_PORT="${OIM_SSL_PORT:-14002}" \
+    PATH=$PATH:/u01/oracle \
+    DOMAIN_TYPE="oim"
+
+USER root
+
+RUN yum install -y hostname && \
+    rm -rf /var/cache/yum
+
+RUN mkdir -p /u01/oracle/dockertools 
+
+RUN mkdir /usr/java
+
+RUN ln -s /u01/jdk /usr/java/latest
+
+
+RUN if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | grep -q 23855729; then \
+     echo "Ready End Point already Configured."; \
+    else \
+      sed -i 's|true</ready|false</ready|g' /u01/oracle/idm/server/apps/oim.ear/META-INF/weblogic-application.xml; \
+    fi
+
+RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
+    ln -s  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory
+
+COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/dockertools/
+RUN chmod a+xr /u01/oracle/dockertools/*.* && \
+     chown -R oracle:oracle /u01/oracle/dockertools
+
+
+USER oracle
+WORKDIR $ORACLE_HOME
+CMD ["/u01/oracle/dockertools/createDomainAndStart.sh"]

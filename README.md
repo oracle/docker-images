@@ -12,22 +12,22 @@ software before installation. If you want commercial software downloaded for you
 
 ### Oracle Commercial Products
 
+- [Oracle Access Management](/OracleAccessManagement)
 - [Oracle BI](/OracleBI)
 - [Oracle Cloud Infrastructure Tools](/OracleCloudInfrastructure)
 - [Oracle Coherence](/OracleCoherence)
 - [Oracle Database](/OracleDatabase)
-- [Oracle Data Integrator](/OracleDataIntegrator)
-- [Oracle Enterprise Data Quality](/OracleEDQ)
 - [Oracle FMW Infrastructure](/OracleFMWInfrastructure)
 - [Oracle GoldenGate](/OracleGoldenGate)
 - [Oracle HTTP Server](/OracleHTTPServer)
+- [Oracle Identity Governance](/OracleIdentityGovernance)
 - [Oracle Instant Client](/OracleInstantClient) (Basic, SDK and SQL*Plus)
 - [Oracle Java](/OracleJava)
 - [Oracle Rest Data Services](OracleRestDataServices) (ORDS)
 - [Oracle SOA Suite](/OracleSOASuite)
-- [Oracle Tuxedo](/OracleTuxedo)
 - [Oracle TSAM Plus](/OracleTuxedo/tsam)
 - [Oracle WebLogic Server](/OracleWebLogic)
+- [Oracle WebCenter Portal](/OracleWebCenterPortal)
 - [Oracle WebCenter Sites](/OracleWebCenterSites)
 
 ### Oracle Sponsored Open Source Projects
@@ -43,6 +43,13 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Forms and Reports](https://github.com/oracle/docker-images/issues/212)
 - [Oracle Unified Directory](Contrib/OracleUnifiedDirectory/)
 
+### Archived Projects
+
+- [ContainerCloud](/Archive/ContainerCloud)
+- [Oracle Data Integrator](/Archive/OracleDataIntegrator)
+- [Oracle Enterprise Data Quality](/Archive/OracleEDQ)
+- [Oracle Tuxedo](/Archive/OracleTuxedo)
+
 ## Pre-Built Images with Commercial Software
 
 These sources already contain Oracle commercial software and require license
@@ -52,8 +59,8 @@ acceptance prior to download:
 
 ## Support
 
-For support and certification information, please consult the documentation f
-or each product.
+For support and certification information, please consult the documentation
+for each product.
 
 For support, bug reporting and feedback about the provided Dockerfiles, please
 open an [issue on GitHub](https://github.com/oracle/docker-images/issues).
