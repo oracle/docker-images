@@ -22,15 +22,17 @@ FROM oracle/fmw-infrastructure:12.2.1.4.0 as builder
 # -------------------------------------------------------------
 USER root
 ENV FMW_JAR1=fmw_12.2.1.4.0_soa.jar \
-    FMW_JAR2=fmw_12.2.1.4.0_osb.jar
+    FMW_JAR2=fmw_12.2.1.4.0_osb.jar \
+    OPATCH_PATCH_DIR="${OPATCH_PATCH_DIR:-/u01/opatch_patch}"  
 
 #
 # Copy installers and patches for install
 # -------------------------------------------
 ADD  $FMW_JAR1 $FMW_JAR2 /u01/
-RUN mkdir /u01/patches && \
+RUN mkdir /u01/patches  ${OPATCH_PATCH_DIR} && \
     chown oracle:oracle -R /u01
 COPY patches/* /u01/patches/ 
+COPY opatch_patch/* ${OPATCH_PATCH_DIR}/ 
 COPY container-scripts/* /u01/oracle/container-scripts/
 RUN  cd /u01 && chmod 755 *.jar && \
      chmod +xr /u01/oracle/container-scripts/*.*
@@ -44,6 +46,27 @@ RUN cd /u01 && \
   $JAVA_HOME/bin/java -jar $FMW_JAR1 -silent -responseFile /u01/soasuite.response -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
   $JAVA_HOME/bin/java -jar $FMW_JAR2 -silent -responseFile /u01/soasuite.response -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="Service Bus" && \
   rm -fr /u01/*.jar /u01/*.response
+
+#
+# Apply OPatch patch
+# ------------------
+#
+RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
+    if [ ! -z "$opatchzip" ]; then \
+      cd ${OPATCH_PATCH_DIR};  \
+      echo -e "\nApplying the below OPatch patch present in ${OPATCH_PATCH_DIR} directory."; \
+      ls p*.zip; \
+      echo -e ""; \
+      echo "Extracting patch: ${opatchzip}"; \
+      $JAVA_HOME/bin/jar xf ${opatchzip} ; \
+      $JAVA_HOME/bin/java -jar ${OPATCH_PATCH_DIR}/6880880/opatch_generic.jar -silent oracle_home=$ORACLE_HOME; \
+      if [ $? -ne 0 ]; then \
+        echo "Applying patch to opatch Failed" ; \
+        exit 1 ; \
+      fi; \
+      rm -rf ${OPATCH_PATCH_DIR}; \
+      echo "OPatch patch applied successfully."; \
+    fi
 
 #
 # Apply SOA Patches
@@ -88,6 +111,7 @@ COPY --from=builder --chown=oracle:oracle /u01 /u01
 # Define default command to start bash.
 # 
 USER oracle
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR $ORACLE_HOME
 CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
 
