@@ -10,9 +10,7 @@ LABEL "org.opencontainers.image.authors"="Oracle Linux Product Team <ol-ovm-info
 
 COPY nodejs.module /etc/dnf/modules.d/nodejs.module
 
-RUN microdnf install nodejs \
-                     nodejs-nodemon \
-                     npm && \
+RUN microdnf install nodejs npm && \
     microdnf clean all
 
 CMD ["/bin/node", "-v"]

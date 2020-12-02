@@ -4,9 +4,9 @@ FROM oraclelinux:8-slim
 
 LABEL "org.opencontainers.image.authors"="Oracle Linux Product Team <ol-ovm-info_ww@oracle.com>" \
       "org.opencontainers.image.url"="https://github.com/oracle/docker-images" \
-      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleLinuxDevelopers/oraclelinux8/nodejs/12" \
+      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleLinuxDevelopers/oraclelinux8/nodejs/14" \
       "org.opencontainers.image.vendor"="Oracle America, Inc" \
-      "org.opencontainers.image.description"="Oracle Linux 8 (slim) with Node.js 12 installed."
+      "org.opencontainers.image.description"="Oracle Linux 8 (slim) with Node.js 14 installed."
 
 COPY nodejs.module /etc/dnf/modules.d/nodejs.module
 
