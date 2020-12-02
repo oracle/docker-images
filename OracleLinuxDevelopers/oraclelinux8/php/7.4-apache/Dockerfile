@@ -4,9 +4,9 @@ FROM oraclelinux:8-slim
 
 LABEL "org.opencontainers.image.authors"="Oracle Linux Product Team <ol-ovm-info_ww@oracle.com>" \
       "org.opencontainers.image.url"="https://github.com/oracle/docker-images" \
-      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleLinuxDevelopers/oraclelinux8/php/7.2-apache" \
+      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleLinuxDevelopers/oraclelinux8/php/7.4-apache" \
       "org.opencontainers.image.vendor"="Oracle America, Inc" \
-      "org.opencontainers.image.description"="Oracle Linux 8 (slim) with PHP 7.2 and Apache 2.4.37 installed."
+      "org.opencontainers.image.description"="Oracle Linux 8 (slim) with PHP 7.4 and Apache 2.4.37 installed."
 
 COPY *.module /etc/dnf/modules.d/
 
