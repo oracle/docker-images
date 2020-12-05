@@ -21,7 +21,7 @@
 #		$ bash build.sh
 #
 
-FROM oraclelinux:7-slim
+FROM oraclelinux:8-slim
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
@@ -36,13 +36,13 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 	
 # Since the files is compressed as tar.gz first yum install gzip and tar
 RUN set -eux; \
-	yum install -y \
+	microdnf install -y \
 		gzip \
 		tar \
 		# JDK assumes freetype is available		
 		freetype fontconfig \
 	; \
-	rm -rf /var/cache/yum ; \
+	microdnf clean all; \
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
