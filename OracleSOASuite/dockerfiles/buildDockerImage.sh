@@ -104,7 +104,7 @@ fi
 versionOK=false
 if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 -o ${VERSION} = 12.2.1.4 ]
 then
-  IMAGE_NAME="oracle/soa:$VERSION"
+  IMAGE_NAME="oracle/soasuite:$VERSION"
   DOCKERFILE_NAME=Dockerfile
   versionOK=true
   THEDIR=${VERSION}

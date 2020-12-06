@@ -32,7 +32,7 @@ The binaries can be downloaded from the [Oracle Software Delivery Cloud](https:/
 
 Extract the downloaded zip files and copy `fmw_12.2.1.4.0_soa.jar`, `fmw_12.2.1.4.0_osb.jar` files under `dockerfiles/12.2.1.4` for building Oracle SOA 12.2.1.4 image.
 
->IMPORTANT: To build the SOA image with patches, you need to download and drop the patch zip files (for e.g. `p29928100_122134_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.4.0` the folder is `12.2.1.4/patches`. Then run the `buildDockerImage.sh` script as mentioned below:
+>IMPORTANT: To build the SOA image with patches, you need to download and drop the patch zip files (for e.g. `p29928100_122134_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.4.0` the folder is `12.2.1.4/patches`. Similarly, to build the image by including the OPatch patch, download and drop the OPatch patch zip file (for e.g. `p28186730_139424_Generic.zip`) into the `opatch_patch/` folder. Then run the `buildDockerImage.sh` script as mentioned below:
 
 Build the Oracle SOA 12.2.1.4 image using:
 
@@ -42,13 +42,13 @@ $ sh buildDockerImage.sh -v 12.2.1.4
    Builds a Docker Image for Oracle SOA Suite.
 
 
-Verify you now have the image `oracle/soa:12.2.1.4` in place with 
+Verify you now have the image `oracle/soasuite:12.2.1.4` in place with 
 
 $ docker images | grep "soa"
 
 If you are building the SOA image with patches, you can verify the patches applied with:
 
-$ docker run oracle/soa:12.2.1.4 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'
+$ docker run oracle/soasuite:12.2.1.4 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'
 
 >IMPORTANT: The image created in above step will NOT have a domain pre-configured. But it has the scripts to create and configure a SOA domain.
 
