@@ -5,7 +5,7 @@
 #
 # Author: OIG Development
 #
-# Description: docker compose yaml to run OIG with containerized DB 
+# Description: docker compose yaml to run OIG with containerized DB
 #
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -28,6 +28,10 @@ services:
       - ORACLE_PDB=${DC_ORCL_PDB}
       - ORACLE_PWD=${DC_ORCL_SYSPWD}
     container_name: oimdb
+    ulimits:
+      nofile:
+        soft: 10240
+        hard: 10240
     volumes:
       - ${DC_ORCL_DBDATA}:/opt/oracle/oradata
 
@@ -48,6 +52,11 @@ services:
       - DB_PASSWORD=${DC_ORCL_SYSPWD}
       - DB_SCHEMA_PASSWORD=${DC_RCU_SCHPWD}
       - RCUPREFIX=${DC_RCU_OIMPFX}
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://oimadmin:7001/console"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     volumes:
       - ${DC_DDIR_OIM}:/u01/oracle/user_projects
 
@@ -68,13 +77,16 @@ services:
     environment:
       - ADMIN_HOST=${DC_HOSTNAME}
       - ADMIN_PORT=7001
-      - adminhostname=${DC_HOSTNAME}
-      - adminport=7001
+      - ADMIN_PASSWORD=${DC_ADMIN_PWD}
       - MANAGED_SERVER=soa_server1
-      - server=soa_server1
+      - MS_HOST=${DC_HOSTNAME}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://soams:8001/soa-infra"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     volumes:
       - ${DC_DDIR_OIM}:/u01/oracle/user_projects
-
 
   #
   # The OIG Managed Server
@@ -94,10 +106,13 @@ services:
       - ADMIN_HOST=${DC_HOSTNAME}
       - ADMIN_PORT=7001
       - ADMIN_PASSWORD=${DC_ADMIN_PWD}
-      - adminhostname=${DC_HOSTNAME}
-      - adminport=7001
       - MANAGED_SERVER=oim_server1
-      - server=oim_server1
+      - MS_HOST=${DC_HOSTNAME}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://oimms:14000/identity"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     volumes:
       - ${DC_DDIR_OIM}:/u01/oracle/user_projects
-      
+
