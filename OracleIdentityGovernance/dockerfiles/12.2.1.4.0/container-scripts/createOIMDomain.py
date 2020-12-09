@@ -291,16 +291,13 @@ class OIMProvisioner:
 
         cd('/')
         cd('/Server/AdminServer')
-        #cmo.setListenAddress('oimadmin')
 
         cd('/')
         cd('/Server/oim_server1')
-        #cmo.setListenAddress('oimms')
 
 
         cd('/')
         cd('/Server/soa_server1')
-        #cmo.setListenAddress('soams')
 
         self.enable_admin_channel('oim_server1', hostName,14002)
         self.enable_admin_channel('soa_server1', hostName,8003)
