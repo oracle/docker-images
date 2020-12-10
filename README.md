@@ -26,6 +26,8 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Rest Data Services](OracleRestDataServices) (ORDS)
 - [Oracle SOA Suite](/OracleSOASuite)
 - [Oracle TSAM Plus](/OracleTuxedo/tsam)
+- [Oracle Unified Directory](/OracleUnifiedDirectory)
+- [Oracle Unified Directory Service Manager](/OracleUnifiedDirectorySM)
 - [Oracle WebLogic Server](/OracleWebLogic)
 - [Oracle WebCenter Portal](/OracleWebCenterPortal)
 - [Oracle WebCenter Sites](/OracleWebCenterSites)
