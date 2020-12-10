@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. 
+# Copyright (c) 2020 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Author: OIG Development
 #
-# Description: script to set environment for running OIG containers 
+# Description: script to set environment for running OIG containers
 #
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -16,7 +16,7 @@
 # MUST: Customize this to your local env
 #===============================================
 #
-# Directory where all domains/db data etc are 
+# Directory where all domains/db data etc are
 # kept. Directories will be created here
 export DC_USERHOME=/scratch/${USER}/docker/OIG
 
@@ -45,7 +45,7 @@ exportComposeEnv() {
   export DC_ORCL_SID=oimdb
   export DC_ORCL_PDB=oimpdb
   export DC_ORCL_SYSPWD=
-  export DC_ORCL_HOST=${DC_HOSTNAME}
+  export DC_ORCL_HOST=oimdb
   #
   export DC_ORCL_DBDATA=${DC_USERHOME}/dbdata
   #

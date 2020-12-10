@@ -2,7 +2,7 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-# Author: OIG Development 
+# Author: OIG Development
 #
 import os
 import sys
@@ -291,16 +291,13 @@ class OIMProvisioner:
 
         cd('/')
         cd('/Server/AdminServer')
-        cmo.setListenAddress('oimadmin')
 
         cd('/')
         cd('/Server/oim_server1')
-        cmo.setListenAddress('oimms')
 
 
         cd('/')
         cd('/Server/soa_server1')
-        cmo.setListenAddress('soams')
 
         self.enable_admin_channel('oim_server1', hostName,14002)
         self.enable_admin_channel('soa_server1', hostName,8003)
@@ -377,8 +374,8 @@ oracleHome = None
 javaHome = None
 #domainParentDir will be passed by command line parameter -parent.
 domainParentDir = None
-#domainName is hard-coded to soa_domain. You can change to other name of your choice. Command line parameter -name.
-domainName = 'soa_domain'
+#domainName is hard-coded to oim_domain. You can change to other name of your choice. Command line parameter -name.
+domainName = 'oim_domain'
 #domainUser is hard-coded to weblogic. You can change to other name of your choice. Command line paramter -user.
 domainUser = 'weblogic'
 #domainPassword is hard-coded to welcome1. You can change to other password of your choice. Command line parameter -password.
@@ -386,7 +383,7 @@ domainPassword = 'welcome1'
 #rcuDb will be passed by command line parameter -rcuDb.
 rcuDb = None
 #change rcuSchemaPrefix to your soainfra schema prefix. Command line parameter -rcuPrefix.
-rcuSchemaPrefix = 'DEV12'
+rcuSchemaPrefix = 'DEV1'
 #change rcuSchemaPassword to your soainfra schema password. Command line parameter -rcuSchemaPwd.
 rcuSchemaPassword = 'welcome1'
 #change hostname to your Host's Name. Command line parameter -hostName.
