@@ -5,7 +5,7 @@ This repository contains sample Docker configurations to facilitate installation
 Oracle Java Server JRE provides the features from Oracle Java JDK commonly required for server-side applications (i.e. Running a Java EE application server). For more information about Server JRE, visit the [Understanding the Server JRE blog entry](https://blogs.oracle.com/java-platform-group/understanding-the-server-jre) from the Java Product Management team.
 
 ## Building the Oracle Java base image
-Download the linux x-64 compressed archive (tar.gz) [JDK or Server JRE] (https://www.oracle.com/in/java/technologies/javase-downloads.html) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
+Download the linux x-64 compressed archive (tar.gz) [JDK or Server JRE](https://www.oracle.com/in/java/technologies/javase-downloads.html) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
 
 e.g. for JDK 14 download jdk-14[X]_linux-x64_bin.tar.gz into OracleJava/14, 
 for ServerJRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8

@@ -23,19 +23,19 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:7-slim as builder
+FROM oraclelinux:8-slim as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 # Since the files is compressed as tar.gz first yum install gzip and tar
 RUN set -eux; \
-	yum install -y \
+	microdnf install -y \
 		gzip \
 		tar \
 	; \
-	rm -rf /var/cache/yum
+	microdnf clean all 
 	
-
+	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
@@ -55,7 +55,7 @@ RUN set -eux; \
 
 ## Get a fresh version of SLIM for the final image
 
-FROM oraclelinux:7-slim
+FROM oraclelinux:8-slim
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
