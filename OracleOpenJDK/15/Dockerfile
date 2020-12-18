@@ -59,7 +59,8 @@ RUN ln -sfT "$JAVA_HOME" /usr/java/default; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
 	java -Xshare:dump; \
 	java --version; \
-	javac --version
+	javac --version; \
+	grep VERSION= /etc/os-release
 
 CMD ["jshell"]
 

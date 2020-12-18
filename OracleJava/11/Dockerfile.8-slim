@@ -1,38 +1,38 @@
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 14
+# This is the Dockerfile for Oracle JDK 11
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) jdk-14.XX_linux-x64_bin.tar.gz
-#     Download from https://www.oracle.com/java/technologies/javase-jdk14-downloads.html
+# (1) jdk-11.XX_linux-x64_bin.tar.gz
+#     Download from https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/jdk:14 .
+#      $ docker build -t oracle/jdk:11 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:7-slim as builder
+FROM oraclelinux:8-slim as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 RUN set -eux; \
-	yum install -y \
+	microdnf install -y \
 		gzip \
 		tar \
 	; \
-	rm -rf /var/cache/yum
+	microdnf clean all
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -41,9 +41,9 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-14.0.2_linux-x64_bin.tar.gz \
-	JAVA_SHA256=cb811a86926cc0f529d16bec7bd2e25fb73e75125bbd1775cdb9a96998593dde \
-	JAVA_HOME=/usr/java/jdk-14
+ENV JAVA_PKG=jdk-11.0.9_linux-x64_bin.tar.gz \
+	JAVA_SHA256=5c149faddf9deb5a2f63438e7cd8f7d21e7300c93ebbc43dc83a6e3b90d554a7 \
+	JAVA_HOME=/usr/java/jdk-11
 
 ##
 COPY $JAVA_PKG /tmp/jdk.tgz
@@ -54,13 +54,13 @@ RUN set -eux; \
 	rm /tmp/jdk.tgz; 
 	
 ## Get a fresh version of SLIM for the final image	
-FROM oraclelinux:7-slim
+FROM oraclelinux:8-slim
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=14.0.2 \
-	JAVA_HOME=/usr/java/jdk-14
+ENV JAVA_VERSION=11.0.9 \
+	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
 
@@ -68,11 +68,11 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
-	yum install -y \
+	microdnf install -y \
 # JDK assumes freetype is available		
 		freetype fontconfig \
 	; \
-	rm -rf /var/cache/yum; \
+	microdnf clean all; \
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
 	for bin in "$JAVA_HOME/bin/"*; do \
@@ -83,6 +83,7 @@ RUN set -eux; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
 	java -Xshare:dump; \
 	java --version; \
-	javac --version
+	javac --version; \
+	grep VERSION= /etc/os-release
 
 CMD ["jshell"]
