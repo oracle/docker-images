@@ -52,7 +52,8 @@ checksumPackages() {
 checkPodmanVersion() {
   # Get Podman version
   echo "Checking Podman version."
-  PODMAN_VERSION=$(docker info --format '{{.host.BuildahVersion}}')
+  PODMAN_VERSION=$(docker info --format '{{.host.BuildahVersion}}' 2>/dev/null ||
+                   docker info --format '{{.Host.BuildahVersion}}')
   # Remove dot in Podman version
   PODMAN_VERSION=${PODMAN_VERSION//./}
 
@@ -73,10 +74,7 @@ checkDockerVersion() {
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
-  if [ -z "$DOCKER_VERSION" ]; then
-    # docker could be aliased to podman and errored out (https://github.com/containers/libpod/pull/4608)
-    checkPodmanVersion
-  elif [ "$DOCKER_VERSION" -lt "${MIN_DOCKER_VERSION//./}" ]; then
+  if [ "$DOCKER_VERSION" -lt "${MIN_DOCKER_VERSION//./}" ]; then
     echo "Docker version is below the minimum required version $MIN_DOCKER_VERSION"
     echo "Please upgrade your Docker installation to proceed."
     exit 1;
@@ -138,7 +136,11 @@ while getopts "hesxiv:o:" optname; do
   esac
 done
 
-checkDockerVersion
+if docker info | grep -i -q buildahversion; then
+  checkPodmanVersion
+else
+  checkDockerVersion
+fi
 
 # Which Edition should be used?
 if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
