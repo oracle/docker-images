@@ -5,7 +5,7 @@ This project offers scripts to build an Oracle WebCenter Content docker image ba
 ## For Building & Running the WebCenter Content Docker images and Using
 
 **IMPORTANT**
-- Refer [Oracle WebCenter Content 12.2.1.4.0](dockerfiles/README.md) for detailed set up.
+- Refer [Oracle WebCenter Content 12.2.1.4.0](dockerfiles/README.MD) for detailed set up.
 
 ## License
 To download and run the WebCenter Content, regardless whether inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle content and accept the license indicated on that page.
