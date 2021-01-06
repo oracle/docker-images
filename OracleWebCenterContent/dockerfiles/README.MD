@@ -1,5 +1,5 @@
-WebCenter Content on Docker
-==========================
+Oracle WebCenter Content on Docker
+==================================
 
 ## Contents
 
@@ -18,7 +18,6 @@ This repository includes quick start dockerfiles for WebCenter Content 12.2.1.4.
 The containers will be connected using a Docker User Defined network.
 More information on Docker and its installation in Oracle Linux can be found here:
 https://community.oracle.com/docs/DOC-914969
-https://docs.oracle.com/cd/E37670_01/E75728/html/index.html
 
 # 2. Hardware and Software Requirements
 Oracle WebCenter Portal has been tested and is known to run on the following hardware and software:
