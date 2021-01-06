@@ -25,7 +25,6 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Java](/OracleJava)
 - [Oracle Rest Data Services](OracleRestDataServices) (ORDS)
 - [Oracle SOA Suite](/OracleSOASuite)
-- [Oracle TSAM Plus](/OracleTuxedo/tsam)
 - [Oracle Unified Directory](/OracleUnifiedDirectory)
 - [Oracle Unified Directory Service Manager](/OracleUnifiedDirectorySM)
 - [Oracle WebLogic Server](/OracleWebLogic)
@@ -34,9 +33,9 @@ software before installation. If you want commercial software downloaded for you
 
 ### Oracle Sponsored Open Source Projects
 
-- [GraalVM CE](/GraalVM)
+- [GraalVM CE](https://github.com/graalvm/container/tree/master/community)
 - [MySQL](https://github.com/mysql/mysql-docker)
-- [OpenJDK](/OpenJDK)
+- [Oracle OpenJDK](/OracleOpenJDK)
 - [Oracle NoSQL Database](/NoSQL)
 - [Oracle Linux](https://github.com/oracle/container-images)
 
@@ -51,6 +50,7 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Data Integrator](/Archive/OracleDataIntegrator)
 - [Oracle Enterprise Data Quality](/Archive/OracleEDQ)
 - [Oracle Tuxedo](/Archive/OracleTuxedo)
+- [Oracle TSAM Plus](/Archive/OracleTuxedo/tsam)
 
 ## Pre-Built Images with Commercial Software
 
@@ -67,5 +67,6 @@ for each product.
 For support, bug reporting and feedback about the provided Dockerfiles, please
 open an [issue on GitHub](https://github.com/oracle/docker-images/issues).
 
-If you need general support with running containers on Oracle Linux, please
-visit the [OTN Community Container Space](https://community.oracle.com/community/server_&_storage_systems/containers).
+If you need general support with running containers on Oracle Linux, you can submit
+a question under the [Containers and Orchestration](https://community.oracle.com/tech/apps-infra/categories/containers-and-orchestration)
+category of the Applications and Infrastructure Community of Oracle Communities.
