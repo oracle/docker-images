@@ -10,7 +10,7 @@ This project offers scripts to build an Oracle WebCenter Content docker image ba
 ## License
 To download and run the WebCenter Content, regardless whether inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle content and accept the license indicated on that page.
 
-All scripts and files hosted in this project and GitHub [`docker/OracleWebCenterContent`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+All scripts and files hosted in this project and GitHub [`docker-images/OracleWebCenterContent`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 Copyright (c) 2021, Oracle and/or its affiliates.
