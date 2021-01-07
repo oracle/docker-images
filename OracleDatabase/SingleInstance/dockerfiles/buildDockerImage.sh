@@ -2,7 +2,7 @@
 # 
 # Since: April, 2016
 # Author: gerald.venzl@oracle.com
-# Description: Build script for building Oracle Database Docker images.
+# Description: Build script for building Oracle Database Container images.
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
@@ -12,8 +12,8 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [Docker build option]
-Builds a Docker Image for Oracle Database.
+Usage: buildDockerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [Container build option]
+Builds a Container Image for Oracle Database.
   
 Parameters:
    -v: version to build
@@ -22,7 +22,7 @@ Parameters:
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
    -i: ignores the MD5 checksums
-   -o: passes on Docker build option
+   -o: passes on Container build option
 
 * select one edition only: -e, -s, or -x
 
@@ -48,12 +48,28 @@ checksumPackages() {
   fi
 }
 
+# Check container runtime
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+
+  if "${CONTAINER_RUNTIME}" info | grep -i -q buildahversion; then
+    checkPodmanVersion
+  else
+    checkDockerVersion
+  fi
+}
+
 # Check Podman version
 checkPodmanVersion() {
   # Get Podman version
   echo "Checking Podman version."
-  PODMAN_VERSION=$(docker info --format '{{.host.BuildahVersion}}' 2>/dev/null ||
-                   docker info --format '{{.Host.BuildahVersion}}')
+  PODMAN_VERSION=$("${CONTAINER_RUNTIME}" info --format '{{.host.BuildahVersion}}' 2>/dev/null ||
+                   "${CONTAINER_RUNTIME}" info --format '{{.Host.BuildahVersion}}')
   # Remove dot in Podman version
   PODMAN_VERSION=${PODMAN_VERSION//./}
 
@@ -70,7 +86,7 @@ checkPodmanVersion() {
 checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
-  DOCKER_VERSION=$(docker version --format '{{.Server.Version | printf "%.5s" }}'|| exit 0)
+  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version | printf "%.5s" }}'|| exit 0)
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
@@ -136,11 +152,8 @@ while getopts "hesxiv:o:" optname; do
   esac
 done
 
-if docker info | grep -i -q buildahversion; then
-  checkPodmanVersion
-else
-  checkDockerVersion
-fi
+# Check that we have a container runtime installed
+checkContainerRuntime
 
 # Which Edition should be used?
 if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
@@ -182,8 +195,8 @@ else
   echo "Ignored MD5 checksum."
 fi
 echo "=========================="
-echo "DOCKER info:"
-docker info
+echo "Container runtime info:"
+"${CONTAINER_RUNTIME}" info
 echo "=========================="
 
 # Proxy settings
@@ -215,17 +228,17 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true \
+"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
        $DOCKEROPS $PROXY_SETTINGS --build-arg DB_EDITION=$EDITION \
        -t $IMAGE_NAME -f $DOCKERFILE . || {
   echo ""
-  echo "ERROR: Oracle Database Docker Image was NOT successfully created."
-  echo "ERROR: Check the output and correct any reported problems with the docker build operation."
+  echo "ERROR: Oracle Database Container Image was NOT successfully created."
+  echo "ERROR: Check the output and correct any reported problems with the build operation."
   exit 1
 }
 
 # Remove dangling images (intermitten images with tag <none>)
-yes | docker image prune > /dev/null
+yes | "${CONTAINER_RUNTIME}" image prune > /dev/null
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
@@ -234,7 +247,7 @@ echo ""
 echo ""
 
 cat << EOF
-  Oracle Database Docker Image for '$EDITION' version $VERSION is ready to be extended: 
+  Oracle Database Container Image for '$EDITION' version $VERSION is ready to be extended: 
     
     --> $IMAGE_NAME
 
