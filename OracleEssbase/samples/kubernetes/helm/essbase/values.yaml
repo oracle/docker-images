@@ -1,0 +1,103 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+
+# Default values for essbase. Please check README for more information about below parameters
+
+domainUID: essbase
+
+image:
+  repository: oracle/essbase
+  tag: "21.1.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+database:
+  type: "oracle"
+  schemaPrefix: "ESS1"
+  # connectString:
+  # adminCredentialsSecret:
+
+idcs:
+  enabled: false
+  port: 443
+  # host:
+  # tenant:
+  # clientTenant:
+  # clientCredentialsSecret:
+
+essbase: {}
+  # Location of the essbase.cfg override file
+  # configOverrideFile: /etc/essbase/essbase_overrides.cfg
+
+#adminCredentialsSecret:
+
+serverStartPolicy: "IF_NEEDED"
+
+adminServer:
+  shutdownTimeoutSeconds: 30
+  # serverStartPolicy: "IF_NEEDED"
+  serverPod:
+    resources: {}
+      # requests:
+      #   cpu: "100m"
+      #   memory: "50Mi"
+      # limits:
+      #   cpu: "300m"
+      #   memory: "150Mi"
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+
+essbaseCluster:
+  serverCount: 1
+  # serverStartPolicy: "IF_NEEDED"
+  shutdownTimeoutSeconds: 120
+  service:
+    annotations: {}
+  serverPod:
+    resources: {}
+      # requests:
+      #   cpu: "100m"
+      #   memory: "50Mi"
+      # limits:
+      #   cpu: "300m"
+      #   memory: "150Mi"
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+
+easServer:
+  enabled: false
+  # serverStartPolicy: "IF_NEEDED"
+  service:
+    annotations: {}
+  serverPod:
+    resources: {}
+      # requests:
+      #   cpu: "100m"
+      #   memory: "50Mi"
+      # limits:
+      #   cpu: "300m"
+      #   memory: "150Mi"
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+

@@ -1,0 +1,45 @@
+{{- if and .Values.easServer.enabled .Values.ingress.enabled -}}
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "essbase.fullname" . }}-eas-server-ingress
+  labels:
+  {{- include "essbase.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+  {{- if .Values.ingress.hosts }} 
+  {{- range .Values.ingress.hosts }}
+  - host: {{ .host | quote }}
+    http:
+      paths:
+      - path: /eas
+        backend:
+          serviceName: {{ .Values.domainUID | replace "_" "-" | lower }}-eas-server1
+          servicePort: 9100
+      - path: /easconsole
+        backend:
+          serviceName: {{ .Values.domainUID | replace "_" "-" | lower }}-eas-server1
+          servicePort: 9100
+  {{- end }}
+  {{- else }}
+  - host: 
+    http:
+      paths:
+      - path: /eas
+        backend:
+          serviceName: {{ .Values.domainUID | replace "_" "-" | lower }}-eas-server1
+          servicePort: 9100
+      - path: /easconsole
+        backend:
+          serviceName: {{ .Values.domainUID | replace "_" "-" | lower }}-eas-server1
+          servicePort: 9100
+  {{- end }}
+{{- end }}

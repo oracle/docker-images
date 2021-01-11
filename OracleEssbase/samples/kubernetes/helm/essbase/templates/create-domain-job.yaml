@@ -1,0 +1,122 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "essbase.fullname" . }}-create-domain
+  labels:
+  {{- include "essbase.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+      {{- include "essbase.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.volumeMounts }}
+      initContainers:
+      {{- range $index,$volumeMount := . }}
+      - name: init-{{ $volumeMount.name }}{{- if $volumeMount.subPath }}-{{ sha1sum $volumeMount.subPath | trunc 7 }}{{- end }}
+        image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+        imagePullPolicy: {{ $.Values.image.pullPolicy }}
+        env:
+        {{- include "essbase.commonEnv" $ | nindent 8 }}
+        command: [ "sh", "/essbase-scripts/fix-mount-path.sh", "{{ $volumeMount.mountPath }}" ]
+        volumeMounts:
+        - name: essbase-scripts
+          mountPath: /essbase-scripts
+          readOnly: true
+        {{- toYaml (list $volumeMount) | nindent 8 }}
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+      {{- end }}
+      {{- end }}
+      containers:
+      - name: create-essbase-domain-job
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        {{- include "essbase.commonEnv" . | nindent 8 }}
+        - name: CREATE_SCHEMA
+          value: "TRUE"
+        - name: DROP_SCHEMA
+          value: "TRUE"
+        {{- if .Values.essbase.configOverrideFile }}
+        - name: ESSBASE_CFG_OVERRIDE
+          value: {{ .Values.essbase.configOverrideFile | quote }}
+        {{- end }}
+        {{- if .Values.idcs.enabled }}
+        - name: SECURITY_MODE
+          value: "IDCS"
+        - name: IDCS_HOST
+          value: {{ .Values.idcs.host | quote }}
+        - name: IDCS_PORT
+          value: {{ .Values.idcs.port | quote }}
+        - name: IDCS_TENANT
+          value: {{ .Values.idcs.tenant | quote }}
+        {{- if .Values.idcs.clientTenant }}
+        - name: IDCS_CLIENT_TENANT
+          value: {{ .Values.idcs.clientTenant | quote }}
+        {{- end }}
+        {{- end }}
+        command: [ "sh", "/essbase-scripts/create-domain.sh" ]
+        volumeMounts:
+        - name: essbase-scripts
+          mountPath: /essbase-scripts
+          readOnly: true
+        - name: admin-secrets
+          mountPath: "/run/secrets/admin"
+          readOnly: true
+        - name: database-admin-secrets
+          mountPath: "/run/secrets/database"
+          readOnly: true
+        {{- with .Values.volumeMounts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+      - name: essbase-scripts
+        configMap:
+          name: {{ include "essbase.fullname" . }}-essbase-scripts
+      - name: admin-secrets
+        secret:
+          secretName: {{ .Values.adminCredentialsSecret }}
+          items:
+          - key: username
+            path: username
+          - key: password
+            path: password
+      - name: database-admin-secrets
+        secret:
+          secretName: {{ .Values.database.adminCredentialsSecret }}
+          items:
+          - key: username
+            path: admin_username
+          - key: password
+            path: admin_password
+      {{- if .Values.idcs.enabled }}
+      - name: idcs-client-secrets
+        secret:
+          secretName: {{ .Values.idcs.clientCredentialsSecret }}
+          items:
+          - key: client_id
+            path: client_id
+          - key: client_secret
+            path: client_secret
+      {{- end }}
+      {{- with .Values.volumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+

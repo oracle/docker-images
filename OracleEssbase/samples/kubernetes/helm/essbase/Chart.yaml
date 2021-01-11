@@ -1,0 +1,16 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+
+apiVersion: v2
+name: essbase
+description: Oracle Essbase
+home: http://www.oracle.com
+type: application
+version: "1.0"
+appVersion: "21.1"
+keywords:
+- oracle
+- essbase
+- database

@@ -1,0 +1,150 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+
+apiVersion: "weblogic.oracle/v8"
+kind: Domain
+metadata:
+  name: {{ include "essbase.fullname" . }}
+  labels:
+  {{- include "essbase.labels" . | nindent 4 }}
+spec:
+  domainUID: {{ .Values.domainUID }}
+  domainHome: "/u01/config/domains/essbase_domain"
+  domainHomeSourceType: PersistentVolume
+  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  imagePullPolicy: {{ .Values.image.pullPolicy }}
+  {{- with .Values.imagePullSecrets }}
+  imagePullSecrets:
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+
+  logHome: "/u01/logs"
+  logHomeEnabled: false
+
+  webLogicCredentialsSecret:
+    name: {{ .Values.adminCredentialsSecret }}
+  serverStartPolicy: {{ .Values.serverStartPolicy }}
+
+  serverPod:
+    env:
+    {{- include "essbase.commonEnv" . | nindent 4 }}
+    volumes:
+    - name: essbase-scripts
+      configMap:
+        name: {{ include "essbase.fullname" . }}-essbase-scripts
+    {{- with .Values.volumes }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    volumeMounts:
+    - name: essbase-scripts
+      mountPath: /essbase-scripts
+      readOnly: true
+    {{- with .Values.volumeMounts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+  adminServer:
+    serverStartState: "RUNNING"
+    serverPod:
+      shutdown:
+        timeoutSeconds: {{ .Values.adminServer.shutdownTimeoutSeconds }}
+      {{- with .Values.adminServer.serverPod.resources }}
+      resources:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.adminServer.serverPod.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.adminServer.serverPod.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.adminServer.serverPod.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+
+  clusters:
+  - clusterName: essbase_cluster
+    {{- with .Values.essbaseCluster.service }}
+    clusterService:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    replicas: {{ .Values.essbaseCluster.serverCount }}
+    serverStartState: "RUNNING"
+    serverPod:
+      initContainers:
+      - name: server-init
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        {{- include "essbase.commonEnv" . | nindent 8 }}
+        command: [ "/bin/sh" ]
+        args: [ "/essbase-scripts/init-managed-server.sh" ]
+        volumeMounts:
+        - name: essbase-scripts
+          mountPath: /essbase-scripts
+          readOnly: true
+        {{- with .Values.volumeMounts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      shutdown:
+        timeoutSeconds: {{ .Values.essbaseCluster.shutdownTimeoutSeconds }}
+      {{- with .Values.essbaseCluster.serverPod.resources }}
+      resources:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.essbaseCluster.serverPod.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.essbaseCluster.serverPod.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.essbaseCluster.serverPod.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+
+  {{- if .Values.easServer.enabled }}
+  managedServers:
+  - serverName: eas_server1
+    serverStartState: "RUNNING"
+    {{- with .Values.easServer.service }}
+    serverService:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    serverPod:
+      initContainers:
+      - name: server-init
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: [ "/bin/sh" ]
+        args: [ "/essbase-scripts/init-managed-server.sh" ]
+        volumeMounts:
+        - name: essbase-scripts
+          mountPath: /essbase-scripts
+          readOnly: true
+        {{- with .Values.volumeMounts }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      env:
+      - name: DISCOVERY_URL_OVERRIDE
+        value: "http://{{ .Values.domainUID | replace "_" "-" | lower }}-cluster-essbase-cluster:9000/essbase/agent"
+      {{- with .Values.easServer.serverPod.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.easServer.serverPod.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.easServer.serverPod.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+  {{- end }}
