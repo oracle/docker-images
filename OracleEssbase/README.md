@@ -34,7 +34,7 @@ The binaries can be downloaded from the [Oracle Software Delivery Cloud](https:/
 
 Extract the downloaded zip files and copy the `essbase_211_installer/essbase-21.1.0.0.0-171-linux64.jar` file to `dockerfiles/21.1.0` for building Oracle Essbase 21.1.0 image.
 
->IMPORTANT: To build the Essbase image with patches, you need to download and drop the patch zip files (for e.g. `p29928100_122134_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `21.1.0.0.0` the folder is `21.1.0/patches`. Then run the `buildDockerImage.sh` script as mentioned below:
+>IMPORTANT: To build the Essbase image with patches, you need to download and drop the patch zip files (for e.g. `p29928100_122134_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `21.1.0.0.0` the folder is `21.1.0/patches`. Then run the `buildContainerImage.sh` script as mentioned below:
 
 If a proxy is needed for the host to access yum.oracle.com during build, then first set up the appropriate environment, e.g.:
 
@@ -44,9 +44,9 @@ If a proxy is needed for the host to access yum.oracle.com during build, then fi
 
 Build the Oracle Essbase 21.1.0 image using:
 
-$ sh buildDockerImage.sh -v 21.1.0
+$ sh buildContainerImage.sh -v 21.1.0
 
-   Usage: buildDockerImage.sh -v [version]
+   Usage: buildContainerImage.sh -v [version]
    Builds a Container Image for Oracle Essbase.
 
 Verify you now have the image `oracle/essbase:21.1.0` in place with 

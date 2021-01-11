@@ -4,14 +4,14 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Author: anil.arora@oracle.com
-# Description: script to build a Container image for Oracle Essbase
+# Description: script to build a container image for Oracle Essbase
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-s] [-c] [-q]
+Usage: buildContainerImage.sh -v [version] [-s] [-c] [-q]
 Builds a Container Image for Oracle Essbase.
 
 Parameters:
