@@ -248,7 +248,7 @@ function startReverseProxy {
         fi
     fi
     getCommand scl
-    ${SCL} enable rh-nginx18 -- nginx
+    ${SCL} enable rh-nginx118 -- nginx
 }
 
 ##
