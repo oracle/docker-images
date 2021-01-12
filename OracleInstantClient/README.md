@@ -24,14 +24,33 @@ create and run applications that connect to a remote (or local) Oracle Database.
 
 Oracle client-server version interoperability is detailed in [Doc ID
 207303.1](https://support.oracle.com/epmos/faces/DocumentDisplay?id=207303.1).
-In summary, applications using Oracle Call Interface (OCI) 19, 18 and 12.2 can
-connect to Oracle Database 11.2 or later.  Some tools may have other
-restrictions.
+In summary, applications using Oracle Call Interface (OCI) 21 can connect to
+Oracle Database 12.1 or later.  Applications using Oracle Call Interface (OCI)
+19, 18 or 12.2 can connect to Oracle Database 11.2 or later.  Some tools may
+have other restrictions.
+
+## Building the Oracle Instant Client 21 Images
+
+Change directory to [`oraclelinux7/21`](oraclelinux7/21) or
+[`oraclelinux8/21`](oraclelinux8/21) and run:
+
+```
+docker build --pull -t oracle/instantclient:21 .
+```
+
+The build process automatically installs Instant Client using RPMs directly from
+the [Oracle Instant Client repository
+(OL8)](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient21/x86_64/)
+or [Oracle Instant Client repository
+(OL7)](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient21/x86_64/).
+
+Applications using Oracle Call Interface (OCI) 21 can connect to Oracle Database
+12.1 or later.  Some tools may have other restrictions.
 
 ## Building the Oracle Instant Client 19 Images
 
 Change directory to [`oraclelinux7/19`](oraclelinux7/19) or
-[`oraclelinux8/19`](oraclelinux8/19)and run:
+[`oraclelinux8/19`](oraclelinux8/19) and run:
 
 ```
 docker build --pull -t oracle/instantclient:19 .
@@ -39,9 +58,9 @@ docker build --pull -t oracle/instantclient:19 .
 
 The build process automatically installs Instant Client using RPMs directly from
 the [Oracle Instant Client repository
-(OL7)](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html)
+(OL8)](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html)
 or [Oracle Instant Client repository
-(OL8)](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html).
+(OL7)](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html).
 
 Applications using Oracle Call Interface (OCI) 19 can connect to
 Oracle Database 11.2 or later.  Some tools may have other
