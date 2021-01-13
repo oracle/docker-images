@@ -1,0 +1,108 @@
+name: Build and publish Oracle Linux developer container images to GitHub Container Registry
+
+# Builds are triggered either by:
+#   - a push on the master branch with changes in this file or in the
+#     OracleLinuxDevelopers directory.
+#     All container images will be (re)built.
+#   - a manual trigger of the workflow using the API.
+#     Subset of OL version / language can be specified; default is to build
+#     all images.
+# Images are build for both amd64 and arm64 architectures, except for
+#   - oracledb images (not available on arm)
+#   - php and nodejs on OL7 (packages not available)
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'OracleLinuxDevelopers/**'
+      - '.github/workflows/build-and-push-dev-images.yml'
+  workflow_dispatch:
+    inputs:
+      ol:
+        description: List of ol versions to build
+        default: 'oraclelinux7, oraclelinux8'
+        required: false
+      lang:
+        description: List of languages to build
+        default: 'golang, nodejs, php, python'
+        required: false
+
+# Default values for the builds triggered by the push event
+env:
+  ol: 'oraclelinux7, oraclelinux8'
+  lang: 'golang, nodejs, php, python'
+
+jobs:
+  build-matrix:
+    name: Build os/language matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Build matrix
+        id: build-matrix
+        working-directory: OracleLinuxDevelopers
+        run: |
+          ol_list=$(echo "${{ github.event.inputs.ol || env.ol}}" | sed -e 's/[ ,]\+/ /g')
+          lang_list=$(echo "${{ github.event.inputs.lang || env.lang}}" | sed -e 's/[ ,]\+/ /g')
+          matrix=$(
+            for ol in ${ol_list}; do
+              pushd "${ol}" >/dev/null
+                for lang in ${lang_list}; do
+                  pushd "${lang}" >/dev/null
+                    for tag in *; do
+                      arch="linux/amd64"
+                      if [[ ! ${tag} =~ oracledb && ! ( ${ol} = "oraclelinux7" && ${lang} =~ ^(nodejs|php)$ ) ]]; then
+                        arch="${arch},linux/arm64"
+                      fi
+                      echo "${ol};${lang};${tag};${arch}"
+                    done
+                  popd >/dev/null
+                done
+              popd >/dev/null
+            done | jq --slurp --raw-input --compact-output '
+              split("\n") |
+              .[:-1] |
+              map(split(";")) |
+              map({"ol": .[0], "lang": .[1], "tag": .[2], "arch": .[3]}) |
+              { "include": .}'
+          )
+          echo "::set-output name=matrix::${matrix}"
+
+  build-images:
+    name: Build and push images
+    needs: build-matrix
+    strategy:
+      matrix: ${{fromJson(needs.build-matrix.outputs.matrix)}}
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log into GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v2
+        with:
+          context: OracleLinuxDevelopers/${{ matrix.ol }}/${{ matrix.lang }}/${{ matrix.tag }}
+          platforms: ${{ matrix.arch }}
+          push: true
+          tags: "ghcr.io/${{ secrets.GHCR_USER }}/${{ matrix.ol }}-${{ matrix.lang }}:${{ matrix.tag }}"
