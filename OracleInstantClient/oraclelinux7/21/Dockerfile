@@ -15,7 +15,7 @@
 # -----
 #
 # Applications using Oracle Call Interface (OCI) 21 can connect to
-# Oracle Database 11.2 or later.  Some tools may have other
+# Oracle Database 12.1 or later.  Some tools may have other
 # restrictions.
 #
 # Oracle Instant Client 21 automatically configures the global library search
