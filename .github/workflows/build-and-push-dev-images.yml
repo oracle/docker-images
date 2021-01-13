@@ -1,0 +1,68 @@
+name: Build and publish Oracle Linux developer container images to GitHub Container Registry
+
+# Builds are triggered either by:
+#   - a push on the master branch with changes in this file or in the
+#     OracleLinuxDevelopers directory.
+#     All container images will be (re)built.
+#   - a manual trigger of the workflow using the API.
+#     Subset of OL version / language can be specified; default is to build
+#     all images.
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'OracleLinuxDevelopers/**'
+      - '.github/workflows/build-and-push-dev-images.yml'
+  workflow_dispatch:
+    inputs:
+      ol:
+        description: List of ol versions to build
+        default: 'oraclelinux7, oraclelinux8'
+        required: false
+      lang:
+        description: List of languages to build
+        default: 'golang, nodejs, php, python'
+        required: false
+
+# Default values for the builds triggered by the push event
+env:
+  ol: 'oraclelinux7, oraclelinux8'
+  lang: 'golang, nodejs, php, python'
+
+jobs:
+  build-matrix:
+    name: Build os/language matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+    steps:
+      - name: Build matrix
+        id: build-matrix
+        run: |
+          ol=$(echo "${{ github.event.inputs.ol || env.ol}}" | jq -R -s -c 'split("[ ,\n]+";"")[:-1]')
+          lang=$(echo "${{ github.event.inputs.lang || env.lang}}" | jq -R -s -c 'split("[ ,\n]+";"")[:-1]')
+          echo "Setting matrix to ol: ${ol}, lang: ${lang}"
+          echo "::set-output name=matrix::{\"ol\":${ol}, \"lang\":${lang}}"
+
+  build-images:
+    name: Build container images
+    needs: build-matrix
+    strategy:
+      matrix: ${{fromJson(needs.build-matrix.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Log into GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+
+      - name: Build images
+        working-directory: OracleLinuxDevelopers/${{ matrix.ol }}/${{ matrix.lang }}
+        run: |
+          for tag in *; do
+            echo "Building ${{ matrix.ol }}-${{ matrix.lang }}:${tag}"
+            docker build --tag "ghcr.io/${{ secrets.GHCR_USER }}/${{ matrix.ol }}-${{ matrix.lang }}:${tag}" "${tag}"
+            docker push "ghcr.io/${{ secrets.GHCR_USER }}/${{ matrix.ol }}-${{ matrix.lang }}:${tag}"
+          done
