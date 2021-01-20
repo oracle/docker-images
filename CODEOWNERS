@@ -1,23 +1,27 @@
-# The last matching pattern has the most precedence.
-*                         @Djelibeybi @gvenzl @mriccell @rjeberhard @mark-au
-/GraalVM/                 @mzachh
-/NoSQL/                   @NoSQLGuy
-/OracleAccessManagement/  @pratdash-orcl
-/OracleBI/                @sjvp
-/OracleCoherence/         @thegridman
-/OracleDatabase/SingleInstance/          @gvenzl
-/OracleDatabase/RAC/      @psaini79
-/OracleFMWInfrastructure/ @mriccell
-/OracleGoldenGate/        @sbalousek
-/OracleHTTPServer/        @Prabhat-Kishore
-/OracleIdentityGovernance/  @rishiagarwal-oracle
-/OracleInstantClient/     @cjbj
-/OracleJava/              @aureliogrb @Djelibeybi
-/OracleLinuxDevelopers/   @Djelibeybi @mark-au @totalamateurhour @AmedeeBulle
-/OracleRestDataServices/  @gvenzl
-/OracleSOASuite/          @knvijay @rdas0405
-/OracleWebCenterSites/    @prshshuk
-/OracleWebLogic/          @mriccell
-/OracleUnifiedDirectory/  @kuldeepbshah @surya902
-/OracleUnifiedDirectorySM/  @kuldeepbshah @surya902
+# The last matching pattern has the most precedence, so the file goes from least
+# specific to most specific file path to assign code ownership.
+#
+*                          @Djelibeybi @gvenzl @mriccell @rjeberhard @mark-au
+/.github/*.yml             @Djelibeybi
+/.github/workflows         @Djelibeybi @AmedeeBulle
+/GraalVM/                  @mzachh
+/NoSQL/                    @NoSQLGuy
+/OracleAccessManagement/   @pratdash-orcl
+/OracleBI/                 @sjvp
+/OracleCoherence/          @thegridman
+/OracleDatabase/           @gvenzl
+/OracleDatabase/RAC/       @psaini79
+/OracleFMWInfrastructure/  @mriccell
+/OracleGoldenGate/         @sbalousek
+/OracleHTTPServer/         @Prabhat-Kishore
+/OracleIdentityGovernance/ @rishiagarwal-oracle
+/OracleInstantClient/      @cjbj
+/OracleJava/               @aureliogrb
+/OracleLinuxDevelopers/    @Djelibeybi @mark-au @totalamateurhour @AmedeeBulle
+/OracleRestDataServices/   @gvenzl
+/OracleSOASuite/           @knvijay @rdas0405
+/OracleUnifiedDirectory/   @kuldeepbshah @surya902
+/OracleUnifiedDirectorySM/ @kuldeepbshah @surya902
+/OracleWebCenterSites/     @prshshuk
+/OracleWebLogic/           @mriccell
 /OracleWebCenterPortal/    @dgothe
