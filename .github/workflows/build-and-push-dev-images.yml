@@ -27,13 +27,13 @@ on:
         required: false
       lang:
         description: List of languages to build
-        default: 'golang, nodejs, php, python'
+        default: 'golang, nodejs, php, python, ruby'
         required: false
 
 # Default values for the builds triggered by the push event
 env:
   ol: 'oraclelinux7, oraclelinux8'
-  lang: 'golang, nodejs, php, python'
+  lang: 'golang, nodejs, php, python, ruby'
 
 jobs:
   prepare:
@@ -84,7 +84,7 @@ jobs:
                       tag=$(dirname "${dockerfile}")
                       arch="linux/amd64"
                       multi=0
-                      if [[ ! ${tag} =~ oracledb && ! ( ${ol} = "oraclelinux7" && ${lang} =~ ^(nodejs|php)$ ) ]]; then
+                      if [[ ! ${tag} =~ oracledb && ! ( ${ol} = "oraclelinux7" && ${lang} =~ ^(nodejs|php|ruby)$ ) ]]; then
                         arch="${arch},linux/arm64"
                         multi=1
                       fi
