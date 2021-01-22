@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019,2021 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -41,8 +41,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-11.0.9_linux-x64_bin.tar.gz \
-	JAVA_SHA256=5c149faddf9deb5a2f63438e7cd8f7d21e7300c93ebbc43dc83a6e3b90d554a7 \
+ENV JAVA_PKG=jdk-11.0.10_linux-x64_bin.tar.gz \
+	JAVA_SHA256=94bd34f85ee38d3ef59e5289ec7450b9443b924c55625661fffe66b03f2c8de2 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ##
@@ -59,7 +59,7 @@ FROM oraclelinux:8-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.9 \
+ENV JAVA_VERSION=11.0.10 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
