@@ -63,12 +63,6 @@
 
 FROM oraclelinux:8-slim
 
-LABEL "org.opencontainers.image.authors"="Oracle Database Development" \
-      "org.opencontainers.image.url"="https://github.com/oracle/docker-images/blob/master/OracleInstantClient/README.md" \
-      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleInstantClient" \
-      "org.opencontainers.image.title"="Oracle Instant Client" \
-      "org.opencontainers.image.description"="Oracle Client libraries and tools for accessing Oracle Database"
-
 ARG release=19
 ARG update=9
 

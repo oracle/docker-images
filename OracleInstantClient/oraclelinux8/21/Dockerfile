@@ -64,12 +64,6 @@
 
 FROM oraclelinux:8-slim
 
-LABEL "org.opencontainers.image.authors"="Oracle Database Development" \
-      "org.opencontainers.image.url"="https://github.com/oracle/docker-images/blob/master/OracleInstantClient/README.md" \
-      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleInstantClient" \
-      "org.opencontainers.image.title"="Oracle Instant Client" \
-      "org.opencontainers.image.description"="Oracle Client libraries and tools for accessing Oracle Database"
-
 RUN  microdnf install oracle-instantclient-release-el8 && \
      microdnf install oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus && \
      microdnf clean all
