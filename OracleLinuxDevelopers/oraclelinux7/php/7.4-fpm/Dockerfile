@@ -3,13 +3,6 @@
 
 FROM oraclelinux:7-slim
 
-LABEL "org.opencontainers.image.authors"="Oracle Linux Product Team <ol-ovm-info_ww@oracle.com>" \
-      "org.opencontainers.image.url"="https://github.com/oracle/docker-images" \
-      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleLinuxDevelopers/oraclelinux7/php/7.4-fpm" \
-      "org.opencontainers.image.vendor"="Oracle America, Inc" \
-      "org.opencontainers.image.description"="Oracle Linux 7 (slim) with PHP 7.4 installed \
-      and FPM enabled."
-
 RUN yum -y install oracle-php-release-el7 && \
     yum -y install php-fpm \
                    php-json \

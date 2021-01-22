@@ -2,12 +2,6 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 FROM oraclelinux:8-slim
 
-LABEL "org.opencontainers.image.authors"="Oracle Linux Product Team <ol-ovm-info_ww@oracle.com>" \
-      "org.opencontainers.image.url"="https://github.com/oracle/docker-images" \
-      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/OracleLinuxDevelopers/oraclelinux8/php/7.2-apache" \
-      "org.opencontainers.image.vendor"="Oracle America, Inc" \
-      "org.opencontainers.image.description"="Oracle Linux 8 (slim) with PHP 7.2 and Apache 2.4.37 installed."
-
 COPY *.module /etc/dnf/modules.d/
 
 RUN microdnf install httpd \

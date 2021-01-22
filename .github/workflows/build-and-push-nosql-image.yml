@@ -3,7 +3,7 @@ name: Build and publish NoSQL 19.5-ce container image to GitHub Container Regist
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'NoSQL/19.5-ce/*'
 
