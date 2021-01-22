@@ -15,7 +15,7 @@ name: Build and publish Oracle Linux developer container images to GitHub Contai
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'OracleLinuxDevelopers/**'
       - '.github/workflows/build-and-push-dev-images.yml'
