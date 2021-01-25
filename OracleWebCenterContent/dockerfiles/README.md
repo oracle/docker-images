@@ -94,7 +94,7 @@ The Oracle Database image can be pulled from [Oracle Container Registry](https:/
 
 ## 3.6. Docker Security Configuration
 
-For detailed instructions of security best practces, please refer to this [documenation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-security.html#docker-security-components).
+For detailed instructions of security best practices, please refer to this [documenation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-security.html#docker-security-components).
 
 # 4. Building Oracle WebCenter Content Docker Image
 
@@ -121,12 +121,12 @@ Alternatively to build this image yourself, please refer [README.md] (https://gi
 ## 4.2. Building Docker Image for WebCenter Content
 
 You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
-Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` files under `dockerfiles/12.2.1.4` .
+Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `dockerfiles/12.2.1.4` .
 Checksum of shiphome binary needs to be mentioned in this [file](dockerfiles/12.2.1.4/Checksum). Set the Proxies in the environment before building the image as required, go to directory located at OracleWebCenterContent/dockerfiles/ and run these commands -
 
 ```
 #To generate checksum
-md5sum <shiphome_binary>.jar
+md5sum fmw_12.2.1.4.0_wccontent.jar
 
 #To build image
 sh buildDockerImage.sh -v 12.2.1.4.0
