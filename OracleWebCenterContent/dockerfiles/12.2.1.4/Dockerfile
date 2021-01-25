@@ -50,13 +50,8 @@ ENV CONTENT_JAR=fmw_12.2.1.4.0_wccontent.jar \
 # -------------------------------------------------------------
 # Install packages and adjust file permissions
 # -------------------------------------------------------------
-RUN env && \
-    mkdir -p /u01 && \
-    yum install -y libaio && \
-    yum install -y tar && \
-    yum install -y procps && \
-    yum install -y sudo hostname wget curl zip unzip && \
-    yum clean all && \
+RUN mkdir -p /u01 && \
+    yum install -y libaio tar procps hostname wget zip unzip && \
     rm -rf /var/cache/yum && \
     mkdir -p $VOLUME_DIR && \
     mkdir -p /u01/oracle/container-scripts && \
@@ -80,7 +75,6 @@ USER oracle
 RUN $JAVA_HOME/bin/java -jar /u01/$CONTENT_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebCenter Content" && \
 rm /u01/$CONTENT_JAR /u01/oraInst.loc /u01/install.file
 
-VOLUME $VOLUME_DIR
 
 # -------------------------------------------------------------
 # Expose all Ports
@@ -107,5 +101,4 @@ RUN chown oracle:oracle -R /u01 && \
 # -------------------------------------------------------------
 # Define default command to start bash
 # -------------------------------------------------------------
-CMD ["/u01/oracle/createDomainandStartAdmin.sh"]
-
+CMD ["/u01/oracle/container-scripts/createDomainandStartAdmin.sh"]
