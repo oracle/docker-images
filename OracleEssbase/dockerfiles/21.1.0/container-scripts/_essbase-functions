@@ -172,8 +172,10 @@ function processParameters() {
   IDENTITY_PROVIDER=$(trimWhitespace ${IDENTITY_PROVIDER^^})
   export IDENTITY_PROVIDER
 
-  SECURE_MODE=${SECURE_MODE:-FALSE}
-  SECURE_MODE=$(trimWhitespace ${SECURE_MODE^^})
+  # Always false
+  SECURE_MODE=FALSE
+  #SECURE_MODE=${SECURE_MODE:-FALSE}
+  #SECURE_MODE=$(trimWhitespace ${SECURE_MODE^^})
   export SECURE_MODE
 
   if [ "${DATABASE_TYPE}" == "ORACLE" ]; then
