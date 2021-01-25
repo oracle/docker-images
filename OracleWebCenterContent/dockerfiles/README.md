@@ -116,13 +116,13 @@ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 
 ```
-Alternatively to build this image yourself, please refer [README.md] (https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
+Alternatively to build this image yourself, please refer this [link](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
 
 ## 4.2. Building Docker Image for WebCenter Content
 
 You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
 Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `dockerfiles/12.2.1.4` .
-Checksum of shiphome binary needs to be mentioned in this [file](dockerfiles/12.2.1.4/Checksum). Set the Proxies in the environment before building the image as required, go to directory located at OracleWebCenterContent/dockerfiles/ and run these commands -
+Checksum of shiphome binary needs to be mentioned in this [file](12.2.1.4/Checksum). Set the Proxies in the environment before building the image as required, go to directory located at OracleWebCenterContent/dockerfiles/ and run these commands -
 
 ```
 #To generate checksum
