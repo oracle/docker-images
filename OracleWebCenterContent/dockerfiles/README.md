@@ -6,8 +6,8 @@ Oracle WebCenter Content Container Image
 ### 1. [Introduction](#1-introduction-1)
 ### 2. [Hardware and Software Requirements](#2-hardware-and-software-requirements-1)
 ### 3. [Pre-requisites](#3-pre-requisites-1)
-### 4. [Building Oracle WebCenter Content Docker Image](#4-building-oracle-webcenter-content-docker-image-1)
-### 5. [Running Oracle WebCenter Content Container](#5-running-oracle-webcenter-content-docker-container-1)
+### 4. [Building Oracle WebCenter Content Image](#4-building-oracle-webcenter-content-image-1)
+### 5. [Running Oracle WebCenter Content Container](#5-running-oracle-webcenter-content-container-1)
 ### 6. [License](#6-license-1)
 ### 7. [Copyright](#7-copyright-1)
 # 1. Introduction
@@ -96,11 +96,11 @@ The Oracle Database image can be pulled from [Oracle Container Registry](https:/
 
 For detailed instructions of security best practices, please refer to this [documenation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-security.html#docker-security-components).
 
-# 4. Building Oracle WebCenter Content Docker Image
+# 4. Building Oracle WebCenter Content Image
 
 To build/use a WebCenter Content image you should have Oracle FMW Infrastrucure image.
 
-## 4.1. Pulling Oracle FMWInfrastructure Docker Install Image
+## 4.1. Pulling Oracle FMWInfrastructure Install Image
 
 Get Oracle FMWInfrastructure Image -
 
