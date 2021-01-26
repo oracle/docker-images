@@ -9,7 +9,7 @@ This project offers scripts to build an Oracle WebCenter Content container image
 - Refer [Oracle WebCenter Content 12.2.1.4.0](dockerfiles/README.md) for detailed set up.
 
 ## License
-To download and run the WebCenter Content, regardless whether inside or outside a container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
+To download and run the WebCenter Content, regardless whether inside or outside a container, and regardless of the distribution, you must download the binaries from the  [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and accept the license indicated on that page.
 
 All scripts and files hosted in this project, required to build the container images are, unless otherwise noted, released under the UPL 1.0 license.
 
