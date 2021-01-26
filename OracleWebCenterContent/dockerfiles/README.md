@@ -1,19 +1,19 @@
-Oracle WebCenter Content Container Image
-========================================
+Oracle WebCenter Content container images
+=========================================
 
 ## Contents
 
 ### 1. [Introduction](#1-introduction-1)
 ### 2. [Hardware and Software Requirements](#2-hardware-and-software-requirements-1)
 ### 3. [Pre-requisites](#3-pre-requisites-1)
-### 4. [Building Oracle WebCenter Content Image](#4-building-oracle-webcenter-content-image-1)
-### 5. [Running Oracle WebCenter Content Container](#5-running-oracle-webcenter-content-container-1)
+### 4. [Building Oracle WebCenter Content image](#4-building-oracle-webcenter-content-image-1)
+### 5. [Running Oracle WebCenter Content containers](#5-running-oracle-webcenter-content-containers-1)
 ### 6. [License](#6-license-1)
 ### 7. [Copyright](#7-copyright-1)
 # 1. Introduction
 This project offers scripts to build an Oracle WebCenter Content container image based on 12.2.1.4.0 release. Use this documentation to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle WebCenter Content, see the [Oracle WebCenter Content 12.2.1.4.0 Online Documentation](https://docs.oracle.com/en/middleware/webcenter/content/12.2.1.4/index.html).
 
-This repository includes quick start Dockerfile for WebCenter Content 12.2.1.4.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle WebLogic Infrastructure 12.2.1.4.0.
+This repository includes quick start `Dockerfile` for WebCenter Content 12.2.1.4.0 based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle WebLogic Infrastructure 12.2.1.4.0.
 
 The containers will be connected using a Docker User Defined network.
 More information on Docker and its installation in Oracle Linux can be found here: [Oracle Container Runtime for Docker User Guide](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/)
@@ -94,13 +94,13 @@ The Oracle Database image can be pulled from [Oracle Container Registry](https:/
 
 ## 3.6. Docker Security Configuration
 
-For detailed instructions of security best practices, please refer to this [documenation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-security.html#docker-security-components).
+For detailed instructions on security best practices, please refer to the [security recommendations chapter](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-security.html#docker-security-components) of the Oracle Container Runtime for Docker User Guide.
 
-# 4. Building Oracle WebCenter Content Image
+# 4. Building Oracle WebCenter Content image
 
-To build/use a WebCenter Content image you should have Oracle FMW Infrastrucure image.
+To build a WebCenter Content image you should have Oracle Fusion Middleware Infrastructure image.
 
-## 4.1. Pulling Oracle FMWInfrastructure Install Image
+## 4.1. Pulling Oracle FMWInfrastructure install image
 
 Get Oracle FMWInfrastructure Image -
 
@@ -116,18 +116,15 @@ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 
 ```
-Alternatively to build this image yourself, please refer this [link](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
+Alternatively to build this image yourself, please refer to this [link](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
 
-## 4.2. Building Docker Image for WebCenter Content
+## 4.2. Building container image for Oracle WebCenter Content
 
 You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
 Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `dockerfiles/12.2.1.4` .
-Checksum of shiphome binary needs to be mentioned in this [file](12.2.1.4/Checksum). Set the Proxies in the environment before building the image as required, go to directory located at OracleWebCenterContent/dockerfiles/ and run these commands -
+Set the proxies in the environment before building the image as required, go to directory located at `OracleWebCenterContent/dockerfiles/` and run these commands -
 
 ```
-#To generate checksum
-md5sum fmw_12.2.1.4.0_wccontent.jar
-
 #To build image
 sh buildDockerImage.sh -v 12.2.1.4.0
 
@@ -135,11 +132,11 @@ sh buildDockerImage.sh -v 12.2.1.4.0
 docker images
 ```
 
-# 5. Running Oracle WebCenter Content Container
+# 5. Running Oracle WebCenter Content containers
  
-To run the Oracle WebCenter Content container, you need to create:
-* Container to manage the Admin Server.
-* Container to manage the Managed Servers.
+To run the Oracle WebCenter Content in containers, you need to create:
+* a container for the Admin Server.
+* at least one Managed Server container.
 
 ## 5.1. Creating containers for WebCenter Content Server
 
@@ -148,7 +145,7 @@ To run the Oracle WebCenter Content container, you need to create:
 Create an environment file `webcenter.env.list` file, to define the parameters.
 
 Update the parameters inside `webcenter.env.list` as per your local setup.
-Please note: all parameters mentioned below are manadatory and shouldn't be omitted or, left blank. 
+Please note: all parameters mentioned below are manadatory and must not be omitted or left blank. 
 
 ```
 #Database Configuration
@@ -182,8 +179,8 @@ HOSTNAME=<provide your host name>
 KEEP_CONTAINER_ALIVE=true
 ```
 
-### 5.1.2. Admin Container (WCCAdminContainer)
-#### A. Creating and Running Admin Container
+### 5.1.2. Admin Server container
+#### A. Creating and running the Admin Server container
 
 Run the following command to create the Admin Server container:
 
@@ -198,8 +195,8 @@ docker run -it --name WCCAdminContainer --network=WCContentNET -p 7001:7001 -v $
 
 The `docker run` command creates the container as well as starts the Admin Server in sequence given below:
 
-* Node Manager
-* Admin Server
+1. Node Manager
+2. Admin Server
 
 When the command is run for the first time, we need to create the domain and configure the content managed servers, so following are done in sequence:
 
@@ -212,17 +209,17 @@ When the command is run for the first time, we need to create the domain and con
 
 #### B. Stopping Admin Container
 ```
-docker stop container WCCAdminContainer
+docker stop WCCAdminContainer
 ```
 
 #### C. Starting Admin Container
 ```
-docker start container -i WCCAdminContainer
+docker start -i WCCAdminContainer
 ```
 
-### 5.1.3. Managed Server Container (WCContentContainer)
+### 5.1.3. Managed Server container
 
-#### A. Creating and Running WCContent Container
+#### A. Creating and running the Managed Server container
 Run the following command to create the WCContent Managed Server container:
 
 ```
@@ -232,29 +229,28 @@ docker run -it --name WCContentContainer --network=WCContentNET -p <UCM_HOST_POR
 
 docker run -it --name WCContentContainer --network=WCContentNET -p 16200:16200 -p 16250:16250 -p 4444:4444 -p 5555:5555 --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4.0 configureOrStartWebCenterContent.sh
 ```
-The docker run command creates the container as well as starts the WebCenter Content managed servers. 
+The `docker run` command creates the container as well as starts the WebCenter Content managed servers. 
 
-Note: 1. If manged servers need to be accessed through host ports different from container ports, then intended host port values needs to be supplied as part of -p option of the `docker run`
-command mentoned above (for ex. -p 16201:16200 and -p 16251:16250). The same port value needs to be updated in the `webcenter.env.list` as `UCM_HOST_PORT` and `IBR_HOST_PORT`.
-If managed servers are going to be accessed via same host port number as the container port, then `UCM_PORT` and `UCM_HOST_PORT` values (and `IBR_PORT` and `IBR_HOST_PORT`) should be same in the `webcenter.env.list`.  
-      2. Intradoc ports are for internal server communications and not meant for browser access. While, intradoc ports on container are configurable (like other parametres like admin credentials, admin port, domain-name, manged server container ports) 
-through `webcenter.env.list`, publishing these to different host ports is not supported. This essentially means one can provide `-p 7777:7777` instead of `-p 4444:4444`, but `-p 6666:7777` is not supported.
+Note:
+
+      1. If manged servers need to be accessed through host ports different from container ports, then intended host port values needs to be supplied as part of -p option of the `docker run` command mentoned above (for ex. -p 16201:16200 and -p 16251:16250). The same port value needs to be updated in the `webcenter.env.list` as `UCM_HOST_PORT` and `IBR_HOST_PORT`. If managed servers are going to be accessed via same host port number as the container port, then `UCM_PORT` and `UCM_HOST_PORT` values (and `IBR_PORT` and `IBR_HOST_PORT`) should be same in the `webcenter.env.list`.  
+      2. Intradoc ports are for internal server communications and not meant for browser access. While, intradoc ports on container are configurable (like other parametres like admin credentials, admin port, domain-name, manged server container ports) through `webcenter.env.list`, publishing these to different host ports is not supported. This essentially means one can provide `-p 7777:7777` instead of `-p 4444:4444`, but `-p 6666:7777` is not supported.
 
 #### B. Stopping WCContent Container
 ```
-docker container stop WCContentContainer
+docker stop WCContentContainer
 ```
 
 #### C. Starting WCContent Container
 ```
-docker container start -i WCContentContainer
+docker start -i WCContentContainer
 ```
 
 #### D. Getting Shell in WCContent Container
 ```
 docker exec -it WCContentContainer /bin/bash
 ```
-Please wait till all the above all `docker run` commands are successfully completed, before you can start Admin and Managed Servers with WebLogic admin credentials.
+Both the Admin and the Managed Server containers must be running before you will be able to start the Admin and Managed Servers using the WebLogic admin credentials.
 
 WebLogic Admin Server
 http://hostname:7001/console/
@@ -267,7 +263,7 @@ http://hostname:16250/ibr/
 
 # 6. License
 
-To download and run Oracle Fusion Middleware, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
+To download and run Oracle Fusion Middleware, regardless whether inside or outside a container, you must download the binaries from the Oracle Software Delivery Cloud and accept the license indicated at that page.
 All scripts and files hosted in this project are, unless otherwise noted, released under UPL 1.0 license.
 
 # 7. Copyright
