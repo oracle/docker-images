@@ -102,12 +102,12 @@ To build a WebCenter Content image you should have Oracle Fusion Middleware Infr
 
 ## 4.1. Pulling Oracle FMWInfrastructure install image
 
-Get Oracle FMWInfrastructure Image -
+Get Oracle Oracle Fusion Middleware Infrastructure image -
 
 > 1. Sign in to Oracle Container Registry. Click the Sign in link which is on the top-right of the Web page.
 > 2. Click Middleware and then click Continue for the fmw-infrastructure repository.
 > 3. Click Accept to accept the license agreement.
-> 4. Use following commands to pull Oracle Fusion Middleware infrastructure base image from repository :
+> 4. Use following commands to pull Oracle Fusion Middleware Infrastructure base image from repository :
 Refer Documentation here: https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure
 ```
 docker login container-registry.oracle.com
@@ -116,7 +116,7 @@ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 
 ```
-Alternatively to build this image yourself, please refer to this [link](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
+Alternatively to build this image yourself, please refer to this [README](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
 
 ## 4.2. Building container image for Oracle WebCenter Content
 
