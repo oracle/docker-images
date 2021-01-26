@@ -191,7 +191,10 @@ docker run -it --name WCCAdminContainer --network=WCContentNET -p <Any Free Port
 
 docker run -it --name WCCAdminContainer --network=WCContentNET -p 7001:7001 -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4.0
 ```
-**Note:** The above command deletes any previous RCU with the same prefix if **DB_DROP_AND_CREATE=true**
+**Note:** 
+
+       1. The above command deletes any previous RCU with the same prefix if **DB_DROP_AND_CREATE=true**
+       2. Please be extremely careful - closing the terminal used to start the Admin Server container as mentioned in sec A and C, will lead to stopping the container.
 
 The `docker run` command creates the container as well as starts the Admin Server in sequence given below:
 
@@ -233,8 +236,9 @@ The `docker run` command creates the container as well as starts the WebCenter C
 
 Note:
 
-      1. If manged servers need to be accessed through host ports different from container ports, then intended host port values needs to be supplied as part of -p option of the `docker run` command mentoned above (for ex. -p 16201:16200 and -p 16251:16250). The same port value needs to be updated in the `webcenter.env.list` as `UCM_HOST_PORT` and `IBR_HOST_PORT`. If managed servers are going to be accessed via same host port number as the container port, then `UCM_PORT` and `UCM_HOST_PORT` values (and `IBR_PORT` and `IBR_HOST_PORT`) should be same in the `webcenter.env.list`.  
+      1. If Managed Servers need to be accessed through host ports different from container ports, then intended host port values needs to be supplied as part of -p option of the `docker run` command mentoned above (for ex. -p 16201:16200 and -p 16251:16250). The same port value needs to be updated in the `webcenter.env.list` as `UCM_HOST_PORT` and `IBR_HOST_PORT`. If managed servers are going to be accessed via same host port number as the container port, then `UCM_PORT` and `UCM_HOST_PORT` values (and `IBR_PORT` and `IBR_HOST_PORT`) should be same in the `webcenter.env.list`.  
       2. Intradoc ports are for internal server communications and not meant for browser access. While, intradoc ports on container are configurable (like other parametres like admin credentials, admin port, domain-name, manged server container ports) through `webcenter.env.list`, publishing these to different host ports is not supported. This essentially means one can provide `-p 7777:7777` instead of `-p 4444:4444`, but `-p 6666:7777` is not supported.
+      3. Please be extremely careful - closing the terminal used to start the Managed Server container as mentioned in sec A and C, will lead to stopping the container. 
 
 #### B. Stopping WCContent Container
 ```
