@@ -12,7 +12,7 @@
 # ----------------------------------
 # (1) fmw_12.2.1.4.0_wccontent_generic.jar
 #
-# Download all dependent binaries from : http://changeiq.oraclecorp.com/fmw-stage/?release=FMW12.2.1.4.0
+# Download required binaries from Oracle Software Delivery Cloud
 # 
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -51,7 +51,7 @@ ENV CONTENT_JAR=fmw_12.2.1.4.0_wccontent.jar \
 # Install packages and adjust file permissions
 # -------------------------------------------------------------
 RUN mkdir -p /u01 && \
-    yum install -y libaio tar procps hostname wget zip unzip && \
+    yum install -y libaio tar procps hostname zip unzip && \
     rm -rf /var/cache/yum && \
     mkdir -p $VOLUME_DIR && \
     mkdir -p /u01/oracle/container-scripts && \
