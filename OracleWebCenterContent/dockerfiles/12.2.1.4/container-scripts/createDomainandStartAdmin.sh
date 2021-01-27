@@ -83,7 +83,6 @@ else
     chown -R oracle:oracle $CONTAINERCONFIG_DOMAIN_DIR
     chown -R oracle:oracle $CONTAINERCONFIG_DIR
     chown -R oracle:oracle $CONTAINERCONFIG_LOG_DIR
-    chmod 777 $CONTAINERCONFIG_DIR/../
 fi
 
 echo ""
@@ -94,7 +93,7 @@ export component=$component
 echo "component=${component}"
 
 # configuring wcc domain
-su oracle -c "sh /$vol_name/oracle/container-scripts/createWCCDomain.sh"
+sh /$vol_name/oracle/container-scripts/createWCCDomain.sh
 
 retval=$?
 
@@ -136,4 +135,4 @@ fi
 
 echo "start admin container"
 # start admin container
-su oracle -c "sh /$vol_name/oracle/container-scripts/startAdminContainer.sh"
+sh /$vol_name/oracle/container-scripts/startAdminContainer.sh
