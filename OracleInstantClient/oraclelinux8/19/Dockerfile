@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates. All rights reserved.
 #
 # Container image template for Oracle Instant Client
 #
@@ -44,7 +44,7 @@
 # ORACLE INSTANT CLIENT PACKAGES
 # ------------------------------
 #
-# Instant Client Packages for Oracle Linux 8 are available from
+# Instant Client 19c Packages for Oracle Linux 8 are available from
 # https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html
 #
 # Base - one of these packages is required to run applications and tools
@@ -62,9 +62,6 @@
 #
 
 FROM oraclelinux:8-slim
-
-LABEL "provider"="Oracle"                                               \
-      "issues"="https://github.com/oracle/docker-images/issues"
 
 ARG release=19
 ARG update=9

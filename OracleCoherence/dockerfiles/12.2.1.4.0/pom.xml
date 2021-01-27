@@ -34,7 +34,7 @@
 
     <!-- library dependency versions -->
     <jackson.version>2.9.10</jackson.version>
-    <jackson.databind.version>2.9.10.5</jackson.databind.version>
+    <jackson.databind.version>2.9.10.7</jackson.databind.version>
     <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
     <jersey.version>2.22.4</jersey.version>
   </properties>

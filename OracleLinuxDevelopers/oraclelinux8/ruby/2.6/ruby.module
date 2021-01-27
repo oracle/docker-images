@@ -1,0 +1,5 @@
+[ruby]
+name=ruby
+stream=2.6
+profiles=common
+state=enabled

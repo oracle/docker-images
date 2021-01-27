@@ -135,30 +135,6 @@ LABEL "provider"="Oracle"                                   \
       "port.apex"="8080"
 ```
 
-You may also chose to use the [OpenContainer `image-spec`](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
-pre-defined annotation keys:
-
-* **org.opencontainers.image.created** date and time on which the image was
-  built (string, date-time as defined by [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6)).
-* **org.opencontainers.image.authors** contact details of the people or
-  organization responsible for the image (freeform string)
-* **org.opencontainers.image.url** URL to find more information on the image
-  (string)
-* **org.opencontainers.image.documentation** URL to get documentation on the
-  image (string)
-* **org.opencontainers.image.source** URL to get source code for building the
-  image (should be the URL of this repository).
-* **org.opencontainers.image.version** version of the packaged software
-* **org.opencontainers.image.vendor** Name of the distributing entity,
-  organization or individual (should be "Oracle").
-* **org.opencontainers.image.licenses** License(s) under which contained software
-  is distributed as an [SPDX License Expression](https://spdx.dev/spdx-specification-21-web-version/#h.jxpfx0ykyb60).
-* **org.opencontainers.image.title** Human-readable title of the image (string)
-* **org.opencontainers.image.description** Human-readable description of the
-  software packaged in the image (string)
-
-The use of these keys is optional and at each image authors' discretion.
-
 ### Security-related rules
 
 1. Do not require the use of the `--privileged` flag when running a container.
