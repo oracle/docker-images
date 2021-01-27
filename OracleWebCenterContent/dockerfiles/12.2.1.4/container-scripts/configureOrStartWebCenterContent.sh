@@ -85,10 +85,10 @@ fi
 
 
 #start UCM Server
-su oracle -c "sh /u01/oracle/container-scripts/startManagedServer.sh $server"
+sh /u01/oracle/container-scripts/startManagedServer.sh $server
 
 #Configure CS after first start up
-su oracle -c "sh /u01/oracle/container-scripts/stopManagedServer.sh $server"
+sh /u01/oracle/container-scripts/stopManagedServer.sh $server
 
 # Replace below static values with  dynamic host value
 
@@ -112,15 +112,15 @@ cp -v /$vol_name/oracle/container-scripts/autoinstall.cfg.cs /$vol_name/oracle/u
 chown oracle:oracle -R /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/cs/bin/autoinstall.cfg
 chmod a+xr /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/cs/bin/autoinstall.cfg
 
-su oracle -c "sh /u01/oracle/container-scripts/startManagedServer.sh $server"
+sh /u01/oracle/container-scripts/startManagedServer.sh $server
 
 export server1=IBR_server1
 
 #start IBR Server
-su oracle -c "sh /u01/oracle/container-scripts/startManagedServer.sh $server1"
+sh /u01/oracle/container-scripts/startManagedServer.sh $server1
 
 #Configure IBR after first start up
-su oracle -c "sh /u01/oracle/container-scripts/stopManagedServer.sh $server1"
+sh /u01/oracle/container-scripts/stopManagedServer.sh $server1
 
 # Replace below static values with  dynamic host value
 
@@ -144,7 +144,7 @@ cp -v /$vol_name/oracle/container-scripts/autoinstall.cfg.ibr /$vol_name/oracle/
 chown oracle:oracle -R /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/ibr/bin/autoinstall.cfg
 chmod a+xr /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/ibr/bin/autoinstall.cfg
 
-su oracle -c "sh /u01/oracle/container-scripts/startManagedServer.sh $server1"
+sh /u01/oracle/container-scripts/startManagedServer.sh $server1
 
 export servers=UCMandIBR
 echo ""
@@ -152,6 +152,6 @@ echo ""
 if [ "$KEEP_CONTAINER_ALIVE" == "true" ]
 then
   # This keeps the container running and alive
-  su oracle -c "sh /$vol_name/oracle/container-scripts/keepContainerAlive.sh $CONTAINERCONFIG_LOG_DIR $hostname $servers"
+  sh /$vol_name/oracle/container-scripts/keepContainerAlive.sh $CONTAINERCONFIG_LOG_DIR $hostname $servers
 fi
 
