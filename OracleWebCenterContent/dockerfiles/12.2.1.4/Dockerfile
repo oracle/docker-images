@@ -3,9 +3,9 @@
 # 
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle WCCONTENT 12.2.1.4.0
+# This is the Dockerfile for Oracle WebCenter Content 12.2.1.4.0
 #
-# Base image of this dockerfile is Oracle FMW INFRASTRUCTURE 12.2.1.4.0 docker image.
+# Base image of this dockerfile is Oracle Fusion Middleware Infrastructure 12.2.1.4.0 docker image.
 # Pull base image from the Oracle Container Registry or Docker Store and tag the name as 'oracle/fmw-infrastructure:12.2.1.4.0'
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
@@ -22,13 +22,12 @@
 # 
 #
 
-# Pull base image from the Oracle Container Registry or Docker Store and tag the name as 'oracle/fmw-infrastructure:12.2.1.4.0'
-# ---------------
-FROM oracle/fmw-infrastructure:12.2.1.4.0
+# ------------------------------------------------------------
+FROM oracle/fmw-infrastructure:12.2.1.4.0 as builder
 
-# Maintainer
-# ----------
-MAINTAINER WBECENTER CONTENT DEV
+LABEL "provider"="Oracle"                     \
+      "maintainer"="WBECENTER CONTENT DEV"    \
+      "issues"="https://github.com/oracle/docker-images/issues"
 
 # -------------------------------------------------------------
 # Environment variables required for this build (do NOT change)
@@ -43,11 +42,6 @@ ENV CONTENT_JAR=fmw_12.2.1.4.0_wccontent.jar \
     PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
     
 # -------------------------------------------------------------
-# Copy Java JDK files
-# -------------------------------------------------------------
-# ADD $JAVA_PKG /usr/java/
-
-# -------------------------------------------------------------
 # Install packages and adjust file permissions
 # -------------------------------------------------------------
 RUN mkdir -p /u01 && \
@@ -57,7 +51,6 @@ RUN mkdir -p /u01 && \
     mkdir -p /u01/oracle/container-scripts && \
     mkdir -p /u01/oracle/silent-install-files-tmp/config && \
     mkdir -p /u01/oracle/logs && \
-    chown oracle:oracle -R /u01 $VOLUME_DIR && \
     chmod a+xr /u01
 
 # -------------------------------------------------------------
@@ -65,6 +58,13 @@ RUN mkdir -p /u01 && \
 # -------------------------------------------------------------
 COPY $CONTENT_JAR install.file oraInst.loc /u01/
 COPY container-scripts/*.* /u01/oracle/container-scripts/
+
+# -------------------------------------------------------------
+# Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
+# -------------------------------------------------------------
+RUN chown oracle:oracle -R /u01 $VOLUME_DIR && \
+    chmod a+xr /u01/oracle/*.*
+
 # -------------------------------------------------------------
 # Install Oracle Fusion Middleware Infrastructure
 # Install Webcenter Content
@@ -75,28 +75,26 @@ USER oracle
 RUN $JAVA_HOME/bin/java -jar /u01/$CONTENT_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebCenter Content" && \
 rm /u01/$CONTENT_JAR /u01/oraInst.loc /u01/install.file
 
+#Rebuilding Base image
+FROM oracle/fmw-infrastructure:12.2.1.4.0
+
+USER root
+
+ENV PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+
+COPY --from=builder --chown=oracle:oracle /u01 /u01
 
 # -------------------------------------------------------------
 # Expose all Ports
 # -------------------------------------------------------------
 EXPOSE $UCM_PORT $UCM_INTRADOC_PORT $IBR_INTRADOC_PORT $IBR_PORT $ADMIN_PORT
 
+USER oracle
+
 # -------------------------------------------------------------
 # Define work directory
 # -------------------------------------------------------------
 WORKDIR ${ORACLE_HOME}
-
-# -------------------------------------------------------------
-# Run the script as root 
-# -------------------------------------------------------------
-USER root
-
-# -------------------------------------------------------------
-# Finally fixing the permissions again
-# -------------------------------------------------------------
-RUN chown oracle:oracle -R /u01 && \
-    chmod a+xr /u01 && \
-    chmod +xr $SCRIPT_FILE
 
 # -------------------------------------------------------------
 # Define default command to start bash
