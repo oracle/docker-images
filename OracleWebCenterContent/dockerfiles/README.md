@@ -100,7 +100,7 @@ For detailed instructions on security best practices, please refer to the [secur
 
 To build a WebCenter Content image you should have Oracle Fusion Middleware Infrastructure image.
 
-## 4.1. Pulling Oracle FMWInfrastructure install image
+## 4.1. Pulling Oracle Fusion Middleware Infrastructure install image
 
 Get Oracle Oracle Fusion Middleware Infrastructure image -
 
@@ -126,7 +126,7 @@ Set the proxies in the environment before building the image as required, go to 
 
 ```
 #To build image
-sh buildDockerImage.sh -v 12.2.1.4.0
+sh buildDockerImage.sh -v 12.2.1.4
 
 #Verify you now have the image
 docker images
