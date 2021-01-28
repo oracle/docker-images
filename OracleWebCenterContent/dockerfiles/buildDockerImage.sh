@@ -38,7 +38,7 @@ checksumPackages() {
 }
 
 #Parameters
-VERSION="12.2.1.4.0"
+VERSION="12.2.1.4"
 SKIPMD5=0
 
 while getopts "hsdgiv:" optname; do
