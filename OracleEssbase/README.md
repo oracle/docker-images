@@ -59,6 +59,54 @@ $ docker run oracle/essbase:21.1.0 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'
 
 >IMPORTANT: The image created in above step will NOT have a domain pre-configured. But it has the scripts to create and configure a Essbase domain.
 
+## Creating an Oracle Essbase Container
+
+The Essbase image provides a script to create and start a single-node Essbase domain.
+
+This script is invoked when a container is started using the image. If the container is subsequently restarted, then the Essbase domain is restarted automatically.
+
+### Starting a new container
+
+The following environment variables are supported when starting the container:
+
+| Name | Required | Default | Description |
+| ---- | -------- | ------- | ----------- |
+| DOMAIN_ROOT | | /u01/config/domains |	|
+| ARBORPATH   | | /u01/data/essbase | |
+| TMP_DIR     | | /u01/tmp | |
+| ADMIN_USERNAME | | admin | |
+| ADMIN_PASSWORD | | welcome1 | |	
+| DATABASE_TYPE  | | oracle | |
+| DATABASE_CONNECT_STRING | | rcu-db:1521/PDBORCL | |
+| DATABASE_ADMIN_USERNAME | | sys | |	
+| DATABASE_ADMIN_PASSWORD | | |
+| DATABASE_ADMIN_ROLE     | | | If not set, the container will use sysdba if the database type is oracle and the user is 'sys' |
+| DATABASE_SCHEMA_PASSWORD | | | If not set, the container will randomly set the value |
+| DATABASE_SCHEMA_PREFIX   | | ESS1 | |
+| DATABASE_SCHEMA_TABLESPACE | | | Tablespace to apply when creating the RCU schemas. If not provided, will use the default for each schema. |
+| DATABASE_SCHEMA_TEMP_TABLESPACE | | | Temp tablespace to apply when creating the schemas. If not provided, will use the default for each schema. |
+| DATABASE_WAIT_TIMEOUT | | 0 | If set to a non-zero value, the container will wait for up to the provided value for the database to be available. |
+| CREATE_SCHEMA | | TRUE | |
+| DROP_SCHEMA | | FALSE	| |
+| ADMIN_SERVER_PORT | | 7001 | Standard listen port of the admin server. This is not the host port. |
+| ADMIN_SERVER_SSL_PORT | | 7002 | Standard ssl listen port of the admin server. This is not the host port. |
+| ADMIN_SERVER_HOSTNAME_ALIAS | | | Defines the network alias with which to connect to the adminserver. Used for composed environments. |
+| MANAGED_SERVER_PORT | | 9000 | Standard listen port for the managed server. This is not the host port. |
+| MANAGED_SERVER_SSL_PORT | | 9001 | Standard ssl listen port for the managed server. This is not the host port. |
+| ESSBASE_CLUSTER_SIZE | | 1 | Number of managed servers to create in the configuration. |
+| MANAGED_SERVER_HOSTNAME_ALIAS | | | Defines the network alias with which to connect to the managed server. Used only at runtime for composed environments to register the "external" hostname for the target server.
+| AGENT_PORT | | 1423 | |
+| AGENT_SSL_PORT | | 6423 | |
+| ESSBASE_SERVER_MIN_PORT | | 30768 | |
+| ESSBASE_SERVER_MAX_PORT | | 31768 | |
+| ENABLE_EAS | | FALSE | | 
+| EAS_SERVER_PORT | | 9100 | |	
+| EAS_SERVER_SSL_PORT | | 9101 | |
+| ESSBASE_CFG_OVERRIDES | | /etc/essbase/essbase_overrides.cfg | Specifies an essbase.cfg file mounted in the container to be used to update the runtime essbase.cfg settings during domain creation. |
+
+
+ORACLE_HOME is fixed to `/u01/oracle`. DOMAIN_NAME is fixed to `essbase_domain`
+
 ## Known Issues
 
 1. If the container is restarted, it requires the same set of environment variables passed in again, even though the domain has already been created.
