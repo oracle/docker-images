@@ -72,8 +72,12 @@ RUN /u01/patches/apply-patches.sh && \
 #
 FROM base
 
+ARG ESSBASE_VERSION=21.1.0
 RUN mkdir /etc/essbase && \
-    chmod 755 /etc/essbase
+    chmod 755 /etc/essbase && \
+    echo "Oracle Essbase Container ${ESSBASE_VERSION}" > /etc/essbase/essbase-version-info && \
+    chmod 644 /etc/essbase/essbase-version-info
+
 
 # Environment variables required for this build (do NOT change)
 # (DOMAIN_NAME/HOME are reset here, to avoid FMW Infra environment leaking through)
