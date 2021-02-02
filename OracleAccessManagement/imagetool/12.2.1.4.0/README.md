@@ -220,5 +220,5 @@ To download and run Oracle Fusion Middleware products, regardless whether inside
 All scripts and files hosted in this project and GitHub [docker-images/OracleAccessManagement](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
-Copyright (c) 2020 Oracle and/or its affiliates.
+Copyright (c) 2020, 2021 Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
