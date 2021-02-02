@@ -113,6 +113,7 @@ This will create the required directories and files under \<work directory\>/doc
 
 b) Edit the `<work directory>/docker-images/OracleAccessManagement/imagetool/12.2.1.4.0/buildArgs` file and change `%DOCKER_REPO%`, `%JDK_VERSION%` & `%BUILDTAG%` appropriately.
 
+c) Edit the `<work directory>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file` and add the parameter INSTALL_TYPE="WebLogic Server" in the [GENERIC] section.
 
 For example:
 

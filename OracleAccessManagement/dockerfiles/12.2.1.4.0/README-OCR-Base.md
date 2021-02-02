@@ -9,21 +9,6 @@ The following prerequisites are necessary before building OAM images:
 
 * A working installation of Docker 18.03 or later
 
-## Pulling the Oracle JDK (Server JRE) base image
-You can pull the Oracle Server JRE 8 image from the [Oracle Container Registry](https://container-registry.oracle.com). When pulling the Server JRE 8 image, re-tag the image so that it works with the dependent Dockerfile which refer to the JRE 8 image through oracle/serverjre:8.
-
-**IMPORTANT**: Before you pull the image from the registry, please make sure to log-in through your browser with your SSO credentials and ACCEPT "Terms and Restrictions".
-
-1. Sign in to [Oracle Container Registry](https://container-registry.oracle.com). Click the **Sign in** link which is on the top-right of the Web page.
-2. Click **Java** and then click on **serverjre**.
-3. Click **Accept** to accept the license agreement.
-4. Use following commands to pull Oracle Fusion Middleware infrastructure base image from repository :
-
-        
-        $ docker login container-registry.oracle.com
-        $ docker pull container-registry.oracle.com/java/serverjre:8
-        $ docker tag container-registry.oracle.com/java/serverjre:8 oracle/serverjre:8
-
 ## Pulling Oracle FMW Infrastructure 12.2.1.4.x image
 You can pull Oracle FMW Infrastructure 12.2.1.4.x image from the [Oracle Container Registry](https://container-registry.oracle.com). When pulling the FMW Infrastructure 12.2.1.4.x image, re-tag the image so that it works with the dependent dockerfile which refer to the FMW Infrastructure 12.2.1.4.x image through oracle/fmw-infrastructure:12.2.1.4.0.
 
