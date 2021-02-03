@@ -40,7 +40,6 @@ services:
       DATABASE_ADMIN_USERNAME: "sa"
       DATABASE_ADMIN_PASSWORD: ${DATABASE_ADMIN_PASSWORD:-StrongPassw0rd}
       DATABASE_WAIT_TIMEOUT: "240"
-      SECURE_MODE: "${SECURE_MODE:-false}"
     command: [ "/u01/container-scripts/createAndStartDomain.sh" ]
 
 networks:

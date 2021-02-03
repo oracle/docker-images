@@ -27,7 +27,6 @@ services:
       DATABASE_ADMIN_USERNAME: "sys"
       DATABASE_ADMIN_PASSWORD: ${DATABASE_ADMIN_PASSWORD:-BEstr0ng_#1234}
       DATABASE_WAIT_TIMEOUT: "3600"
-      SECURE_MODE: "${SECURE_MODE:-false}"
     command: [ "/u01/container-scripts/createAndStartDomain.sh" ]
 
 networks:

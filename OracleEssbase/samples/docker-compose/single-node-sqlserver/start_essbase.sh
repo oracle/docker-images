@@ -11,7 +11,6 @@ export ADMIN_SERVER_PORT=${ADMIN_SERVER_PORT:-7001}
 export ADMIN_SERVER_SSL_PORT=${ADMIN_SERVER_SSL_PORT:-7002}
 export MANAGED_SERVER_PORT=${MANAGED_SERVER_PORT:-9000}
 export MANAGED_SERVER_SSL_PORT=${MANAGED_SERVER_SSL_PORT:-9001}
-export SECURE_MODE=${SECURE_MODE:-false}
 
 STACK_INSTANCE_NAME=${STACK_INSTANCE_NAME:-sample}
 STACK_INSTANCE_NAME=${STACK_INSTANCE_NAME,,}
@@ -37,10 +36,6 @@ echo Waiting for Essbase service to be available
 sleep 300
 readyUrl="http://localhost:$MANAGED_SERVER_PORT/weblogic/ready"
 essbaseUrl="http://localhost:$MANAGED_SERVER_PORT/essbase"
-if [ "${SECURE_MODE}" == "true" ]; then
-   readyUrl="https://localhost:$MANAGED_SERVER_SSL_PORT/weblogic/ready"
-   essbaseUrl="https://localhost:$MANAGED_SERVER_SSL_PORT/essbase"
-fi
 
 echo Pinging $readyUrl
 until $(curl --output /dev/null --insecure --silent --head --fail $readyUrl); do
