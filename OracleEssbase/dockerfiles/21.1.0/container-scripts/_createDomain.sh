@@ -110,6 +110,7 @@ fi
 # Make required directories
 mkdir -p ${ARBORPATH}
 mkdir -p ${TMP_DIR}
+mkdir -p ${CRASHDUMP_LOCATION}
 mkdir -p ${DOMAIN_ROOT}
 mkdir -p /u01/config/logs
 

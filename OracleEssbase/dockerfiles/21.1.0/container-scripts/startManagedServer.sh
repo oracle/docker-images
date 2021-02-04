@@ -56,6 +56,7 @@ fi
 # Make required directories
 mkdir -p ${ARBORPATH}
 mkdir -p ${TMP_DIR}
+mkdir -p ${CRASHDUMP_LOCATION}
 
 # Wait for AdminServer to become available for any subsequent operation
 ${SCRIPT_DIR}/waitForAdminServer.sh
