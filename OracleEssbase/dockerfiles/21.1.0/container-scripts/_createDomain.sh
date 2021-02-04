@@ -285,7 +285,7 @@ fi
 
 # Process essbase.cfg overrides
 updateEssbaseCfgSetting "CRASHDUMP" "TRUE"
-updateEssbaseCfgSetting "CRASHDUMPLOCATION" "${TMP_DIR}"
+updateEssbaseCfgSetting "CRASHDUMPLOCATION" "${CRASHDUMP_LOCATION}"
 
 if [ -n "${ESSBASE_CFG_OVERRIDES}" ]; then
   mergeEssbaseCfgOverrides ${ESSBASE_CFG_OVERRIDES}

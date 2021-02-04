@@ -172,6 +172,11 @@ function processParameters() {
   IDENTITY_PROVIDER=$(trimWhitespace ${IDENTITY_PROVIDER^^})
   export IDENTITY_PROVIDER
 
+  if [ -z "${CRASHDUMP_LOCATION}" ]; then
+    CRASHDUMP_LOCATION=${TMP_DIR}
+    export CRASHDUMP_LOCATION
+  fi
+
   # Always false
   SECURE_MODE=FALSE
   #SECURE_MODE=${SECURE_MODE:-FALSE}
