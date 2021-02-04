@@ -128,6 +128,16 @@ create
 --additionalBuildFiles /scratch/docker-images/OracleAccessManagement/dockerfiles/12.2.1.4.0/container-scripts
 ```
 
+c) Edit the `<work_directory>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file` and under the `GENERIC` section add the line `INSTALL_TYPE="Weblogic Server"`. For example:
+
+```
+[GENERIC]
+INSTALL_TYPE="WebLogic Server"
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+```
+
+
 # 6. Steps to create image
 
 Navigate to the `imagetool/bin` directory and run the following commands. In the below examples substitute `<work directory>/stage` for the directory where the approriate files reside.
@@ -219,5 +229,5 @@ To download and run Oracle Fusion Middleware products, regardless whether inside
 All scripts and files hosted in this project and GitHub [docker-images/OracleAccessManagement](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
-Copyright (c) 2020 Oracle and/or its affiliates.
+Copyright (c) 2020, 2021 Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
