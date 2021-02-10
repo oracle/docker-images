@@ -30,7 +30,7 @@ You must install and configure [Oracle Container Runtime for Docker](https://doc
 
 You need to mount volumes, which are directories stored outside a container’s file system, to store WebLogic domain files and any other configuration files.
 
-To mount a host directory `/scratch/wcpdocker/volumes/wcpportal`($DATA_VOLUME) as a data volume, execute the below command.
+To mount a host directory `/scratch/wcpdocker/volumes/wcpportal`(`DATA_VOLUME`) as a data volume, execute the below command.
 
 > The userid can be anything but it must belong to uid:guid as 1000:1000, which is same as 'oracle' user running in the container.
 
@@ -66,15 +66,15 @@ The Oracle Database image can be pulled from the  [Oracle Container Registry](ht
 # 4. Building Oracle WebCenter Portal Docker Images
 IMPORTANT: To build the Oracle WebCenter Portal image, you must first download the required version of the Oracle WebCenter Portal  binaries these install binaries are required to create the Oracle WebCenter Portal image. These binaries must be downloaded and copied into the folder with the same version for e.g. 12.2.1.4.0 binaries need to be dropped into `../OracleWebCenterPortal/dockerfiles/12.2.1.4`. 
 
-The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com). Search for "Oracle WebCenter Portal" and download the version which is required. 
+The binaries can be downloaded from the [Here](https://www.oracle.com/middleware/technologies/webcenter-portal-download.html#).
 
 Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wcportal.jar` files under `dockerfiles/12.2.1.4` for building Oracle WebCenter Portal 12.2.1.4 image.
 
 To build Oracle WebCenter Portal Docker image, go to folder located at OracleWebCenterPortal/dockerfiles/ and run the following command:
-- Use the resulting image name($WCPortalImageName) to create containers 
+- Use the resulting image name to create containers 
 
 ```
-$ sh buildDockerImage.sh -v 12.2.1.4.0
+$ sh buildDockerImage.sh -v 12.2.1.4
 ```
 
 
@@ -99,18 +99,9 @@ $ sh buildDockerImage.sh -v 12.2.1.4.0
    LICENSE UPL 1.0
  Copyright (c) 2017, 2020, Oracle and/or its affiliates. All rights reserved.
 ```
-##### 2. Alternate download location for Oracle Fusion Middleware Infrastructure? 
-Before you build an Oracle WebCenter Portal image, download the Oracle Fusion Middleware infrastructure from the [Docker Store.](https://store.docker.com/)
-
-If you download Oracle Fusion Middleware infrastructure from Docker Store, then retag using below command:
-
-```
-   $ docker tag store/oracle/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4.0
-```
-
-##### 3. How do I build an Oracle Fusion Middleware Infrastructure 12.2.1.x base image?
-If you want to build your own Oracle Fusion Middleware Infrastructure image, use the Docker files and scripts in the [Oracle FMW Infrastructure](../OracleFMWInfrastructure) GitHub repository.
-##### 4. How to fix yum.oracle.com connectivity error?
+##### 2. How do I build an Oracle Fusion Middleware Infrastructure 12.2.1.x base image?
+If you want to build your own Oracle Fusion Middleware Infrastructure image, use the Docker files and scripts in the [Oracle FMW Infrastructure](https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure) GitHub repository.
+##### 3. How to fix yum.oracle.com connectivity error?
 The errors mean that the host is not able to connect to external registries for update. To access external registries and build a Docker image, set up environment variables for proxy server as below:
 
 ```
@@ -122,4 +113,4 @@ $ export NO_PROXY=localhost,.yourcompany.com
 ```
 
 ## Copyright
- Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2020,2021 Oracle and/or its affiliates. All rights reserved.

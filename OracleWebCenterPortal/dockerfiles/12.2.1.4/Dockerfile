@@ -77,7 +77,7 @@ USER root
 
 ENV PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
-RUN  yum install -y sudo hostname zip unzip tar procpcs  &&\
+RUN  yum install -y sudo hostname zip unzip tar procps  &&\
      rm -rf /var/cache/yum
 
 COPY --from=builder --chown=oracle:oracle /u01 /u01
