@@ -26,30 +26,11 @@ You must install and configure [Oracle Container Runtime for Docker](https://doc
 | Docker| Docker version 17.03 or higher | docker version           |
 
 # 3. Prerequisites
-## 3.1. Mount a host directory as a data volume
-
-You need to mount volumes, which are directories stored outside a container’s file system, to store WebLogic domain files and any other configuration files.
-
-To mount a host directory `/scratch/wcpdocker/volumes/wcpportal`(`DATA_VOLUME`) as a data volume, execute the below command.
-
-> The userid can be anything but it must belong to uid:guid as 1000:1000, which is same as 'oracle' user running in the container.
-
-> This ensures 'oracle' user has access to shared volume.
-
-```
-$ sudo mkdir -p /scratch/wcpdocker/volumes/wcpportal
-$ sudo chown 1000:1000 /scratch/wcpdocker/volumes/wcpportal
-```
-
-All container operations are performed as **'oracle'** user.
-
-**Note**: If a user already exist with **'-u 1000 -g 1000'** then use the same user. Or modify any existing user to have uid-gid as **'-u 1000 -g 1000'**
-
-## 3.2. Database
+## 3.1. Database
 You need to have a running database container or a database running on any machine. 
 The database connection details are required for creating WebCenter Portal specific RCU schemas while configuring WebCenter Portal domain. 
 
-## 3.3 Oracle Fusion Middleware Infrastructure image
+## 3.2. Oracle Fusion Middleware Infrastructure image
 >1. Sign in to Oracle Container Registry. Click the Sign in link which is on the top-right of the Web page.
 > 2. Click Middleware and then click Continue for the fmw-infrastructure repository.
 > 3. Click Accept to accept the license agreement.
