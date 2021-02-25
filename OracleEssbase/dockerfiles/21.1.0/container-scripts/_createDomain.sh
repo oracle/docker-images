@@ -39,6 +39,7 @@ function mergeEssbaseCfgOverrides() {
                             CLIENTPREFERREDMODE \
                             WALLETPATH \
                             AUTHENTICATIONMODULE \
+                            CRASHDUMPLOCATION \
                           )
   local essbaseCfgLineRegex='^([a-zA-Z0-9_]+)[[:space:]]*(.*)$'
   
