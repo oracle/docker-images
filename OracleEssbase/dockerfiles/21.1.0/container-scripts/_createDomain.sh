@@ -315,7 +315,7 @@ fi
 cat >> ${DOMAIN_HOME}/bin/setEssbaseEnvOverrides.sh <<EOF
 
 # Override DISCOVERY_URL to always lookup the host locally
-if [ "${SECURE_MODE}" == "TRUE" ]; then
+if [ "\${SECURE_MODE}" == "TRUE" ]; then
   export DISCOVERY_URL=https://\${HOSTNAME}:${MANAGED_SERVER_SSL_PORT}/essbase/agent
 else
   export DISCOVERY_URL=http://\${HOSTNAME}:${MANAGED_SERVER_PORT}/essbase/agent
