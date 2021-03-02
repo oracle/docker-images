@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020,2021 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -41,8 +41,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-15.0.1_linux-x64_bin.tar.gz \
-	JAVA_SHA256=445a1c5c335b53b030f68aca58493ddedd49f4b53085618bc1ae7aba68156606 \
+ENV JAVA_PKG=jdk-15.0.2_linux-x64_bin.tar.gz \
+	JAVA_SHA256=54b29a3756671fcb4b6116931e03e86645632ec39361bc16ad1aaa67332c7c61 \
 	JAVA_HOME=/usr/java/jdk-15
 
 ##
@@ -59,7 +59,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=15.0.1 \
+ENV JAVA_VERSION=15.0.2 \
 	JAVA_HOME=/usr/java/jdk-15
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
@@ -83,6 +83,7 @@ RUN set -eux; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
 	java -Xshare:dump; \
 	java --version; \
-	javac --version
+	javac --version; \
+	grep VERSION= /etc/os-release
 
 CMD ["jshell"]

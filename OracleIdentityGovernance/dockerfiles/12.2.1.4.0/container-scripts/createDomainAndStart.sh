@@ -3,7 +3,7 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
-# Author: OIG Development 
+# Author: OIG Development
 #
 
 export DOMAIN_HOME=$DOMAIN_ROOT/$DOMAIN_NAME
@@ -42,8 +42,20 @@ function rand_pwd(){
       echo "INFO: Password does not Match the criteria, re-generating..." >&2
     fi
   done
-  echo "INFO: ${s}"
+  echo "${s}"
 }
+
+#==================================================↲
+function updateListenAddress() {
+  mkdir -p ${DOMAIN_HOME}/logs
+
+  export thehost=`hostname -I`
+  echo "INFO: Updating the listen address of Adminserver -> IP->${thehost} DNS->${ADMIN_HOST}"
+  cmd1="${ORACLE_HOME}/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning ${SCRIPT_DIR}/updateListenAddress.py ${thehost} AdminServer ${ADMIN_HOST}"
+  echo ${cmd1}
+  echo "${cmd1}" > ${DOMAIN_HOME}/logs/aslisten.log
+  ${cmd1} >> ${DOMAIN_HOME}/logs/aslisten.log 2>&1
+ }
 
 # Set SIGINT handler
 trap _int SIGINT
@@ -88,6 +100,7 @@ export ADMIN_PASSWORD=$ADMIN_PASSWORD
 export DB_PASSWORD=$DB_PASSWORD
 export DB_SCHEMA_PASSWORD=$DB_SCHEMA_PASSWORD
 export DOMAIN_TYPE=$DOMAIN_TYPE
+export SCRIPT_DIR=${SCRIPT_DIR:-/u01/oracle/dockertools}
 
 export jdbc_url="jdbc:oracle:thin:@"$CONNECTION_STRING
 export vol_name=u01
@@ -128,7 +141,7 @@ if [ "$RUN_RCU" = "true" ]
 then
 
   # Before running RCU, OIM prerequisite script needs to be run.
-  javac -cp $vol_name/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar /$vol_name/oracle/dockertools/DBUtils.java -d /$vol_name/oracle/dockertools/
+  javac -cp $vol_name/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar ${SCRIPT_DIR}/DBUtils.java -d /$vol_name/oracle/dockertools/
   java -cp /$vol_name/oracle/dockertools/:/$vol_name/oracle/oracle_common/modules/oracle.jdbc/ojdbc8.jar DBUtils $jdbc_url sys $DB_PASSWORD file /$vol_name/oracle/dockertools/xaview.sql
 
   # Run the RCU.. it hasnt been loaded before..
@@ -238,6 +251,7 @@ echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/$oimserver/security/boot
 echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc
 echo "export PATH=$PATH:/u01/oracle/common/bin:$DOMAIN_HOME/bin" >> /u01/oracle/.bashrc
 
+updateListenAddress
 # Now we start the Admin server in this container...
 /u01/oracle/dockertools/startAdmin.sh
 

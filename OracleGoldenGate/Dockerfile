@@ -78,9 +78,9 @@ RUN         if [[ -z "${OGG_VERSION}" || -z "${OGG_EDITION}" || -z "${OGG_TARFIL
                 rm -rf /var/cache/yum; \
             fi; \
             if [[ "${OGG_EDITION}" == "microservices" ]]; then \
-                yum -y --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx18 java-1.8.0-openjdk-headless python-requests && \
+                yum -y --enablerepo ol${MAJOR_VERSION}_software_collections install openssl rh-nginx118 java-1.8.0-openjdk-headless python-requests && \
                 rm -rf /var/cache/yum && \
-                ln -s /etc/opt/rh/rh-nginx18/nginx /etc/nginx && \
+                ln -s /etc/opt/rh/rh-nginx118/nginx /etc/nginx && \
                 sh /etc/ssl/certs/make-dummy-cert  /etc/nginx/ogg.pem && \
                 mkdir -p              ${OGG_DEPLOY_BASE} && \
                 chown oracle:oinstall ${OGG_DEPLOY_BASE}; \

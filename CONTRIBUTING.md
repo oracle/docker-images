@@ -80,22 +80,26 @@ a pull request.
 ### Base image rules
 
 1. Extend an existing product image wherever possible. For example, if your
-product requires WebLogic, then extend the WebLogic image instead of creating
-your own WebLogic installation.
+   product requires WebLogic, then extend the WebLogic image instead of creating
+   your own WebLogic installation.
 1. If you can't extend an existing image, your image must use either the
-`oraclelinux:7-slim` or `oraclelinux:8-slim` base image as these images are
-specifically designed to be the smallest possible install size. Both images are
-also updated whenever a security-related errata is published.
+   `oraclelinux:8` (preferred) or `oraclelinux:7-slim` base image as these images are
+   specifically designed to be the smallest possible install size. Both images are
+   also updated whenever a security-related errata is published.
+   _(Updated Februrary 2021)_
+1. The `oraclelinux:8-slim` image is also available. It is half the size of
+   `oraclelinux:8` but requires the use of `microdnf` instead of `dnf`.
 1. Re-use existing scripts wherever possible. If a particular base image or
-script doesn't have the functionality you need, open an issue and work with
-the image owner to implement it.
+   script doesn't have the functionality you need, open an issue and work with
+   the image owner to implement it.
 1. Specify a version in the `FROM` directive, i.e. use
-`FROM oraclelinux:7-slim` or `FROM java/serverjre:8`.
+   `FROM oraclelinux:8` or `FROM java/serverjre:8`.
 1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
-to be extended, then this should output documentation on how to extend the
-image to be useful.
+   to be extended, then this should output documentation on how to extend the
+   image to be useful.
 1. Use `LABEL` instructions for additional information such as ports and volumes.
-The following are common label instructions that should be present in all images where applicable:
+   The following are common label instructions that should be present in all
+   images where applicable:
 
 Additional product-specific labels are listed below:
 
@@ -135,30 +139,6 @@ LABEL "provider"="Oracle"                                   \
       "port.apex"="8080"
 ```
 
-You may also chose to use the [OpenContainer `image-spec`](https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys)
-pre-defined annotation keys:
-
-* **org.opencontainers.image.created** date and time on which the image was
-  built (string, date-time as defined by [RFC 3339](https://tools.ietf.org/html/rfc3339#section-5.6)).
-* **org.opencontainers.image.authors** contact details of the people or
-  organization responsible for the image (freeform string)
-* **org.opencontainers.image.url** URL to find more information on the image
-  (string)
-* **org.opencontainers.image.documentation** URL to get documentation on the
-  image (string)
-* **org.opencontainers.image.source** URL to get source code for building the
-  image (should be the URL of this repository).
-* **org.opencontainers.image.version** version of the packaged software
-* **org.opencontainers.image.vendor** Name of the distributing entity,
-  organization or individual (should be "Oracle").
-* **org.opencontainers.image.licenses** License(s) under which contained software
-  is distributed as an [SPDX License Expression](https://spdx.dev/spdx-specification-21-web-version/#h.jxpfx0ykyb60).
-* **org.opencontainers.image.title** Human-readable title of the image (string)
-* **org.opencontainers.image.description** Human-readable description of the
-  software packaged in the image (string)
-
-The use of these keys is optional and at each image authors' discretion.
-
 ### Security-related rules
 
 1. Do not require the use of the `--privileged` flag when running a container.
@@ -193,19 +173,20 @@ merged, but are generally frowned upon if breached.
 * Always aim to produce the smallest possible image. This means using multi-stage
   builds with a final stage using the least amount of layers possible. Combine
   as much as possible within a single directive and be sure to remove any
-  cache created by `yum` or other tools.
+  cache created by `dnf` or `yum` or other tools.
 * Don't install all possible required RPMs, even if the product
   documentation says so. Some RPMs aren't applicable inside a container, e.g
   filesystem utilities (`btrfs-progs`, `ocfs2-tools`, `nfs-utils`).
 * Don't install any interactive/user tools, e.g. things like `vim`, `less` or
   `man`. Debugging should be done prior to the image submission.
 * Don't install `wget` as the base images already include `curl`.
-* Always remember to run `rm -rf /var/cache/yum` in the same `RUN` directive as a
-  `yum install` so that the yum metadata is not stored in the layer.
+* Always remember to run `rm -rf /var/cache/yum` or `dnf clean all` in the same
+  `RUN` directive as any `yum` or `dnf` command so that the metadata is not
+  stored in the layer.
 * Always document any inputs (via `--build-arg` or `-e`) required by
   `docker build` or `docker run`. This documentation should also clearly state
   any defaults that are used if no input is provided.
 * If a custom value must be provided by the end-user, the build or run should
   gracefully fail if that value is not provided.
 
-*Copyright (c) 2017, 2020 Oracle and/or its affiliates.*
+*Copyright (c) 2017, 2021 Oracle and/or its affiliates.*

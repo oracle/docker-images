@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -26,9 +26,9 @@ FROM oraclelinux:7-slim
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 
-ENV JAVA_PKG=https://download.java.net/java/GA/jdk15.0.1/51f4f36ad4ef43e39d0dfdbaf6549e32/9/GPL/openjdk-15.0.1_linux-x64_bin.tar.gz \
-	JAVA_SHA256=83ec3a7b1649a6b31e021cde1e58ab447b07fb8173489f27f427e731c89ed84a \
-	JAVA_VERSION=15.0.1 \
+ENV JAVA_PKG=https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz \
+	JAVA_SHA256=91ac6fc353b6bf39d995572b700e37a20e119a87034eeb939a6f24356fbcd207 \
+	JAVA_VERSION=15.0.2 \
 	JAVA_HOME=/usr/java/jdk-15 \
 	LANG=en_US.UTF-8
 
@@ -59,7 +59,8 @@ RUN ln -sfT "$JAVA_HOME" /usr/java/default; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
 	java -Xshare:dump; \
 	java --version; \
-	javac --version
+	javac --version; \
+	grep VERSION= /etc/os-release
 
 CMD ["jshell"]
 

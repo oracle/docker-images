@@ -3,15 +3,6 @@
 #
 FROM openjdk:14-oraclelinux7
 
-LABEL "org.opencontainers.image.authors"="Anand Chandak <anand.chandak@oracle.com>" \
-      "org.opencontainers.image.url"="https://github.com/oracle/docker-images" \
-      "org.opencontainers.image.source"="https://github.com/oracle/docker-images/tree/master/NoSQL/19.5" \
-      "org.opencontainers.image.vendor"="Oracle America, Inc" \
-      "org.opencontainers.image.title"="Oracle NoSQL 19.5 Community Edition" \
-      "org.opencontainers.image.description"="Oracle NoSQL Database provides \
-      multi-terabyte distributed storage for key-value pairs, with scalable \
-      throughput and great performance."
-
 ENV VERSION="19.5.19" \
     KVHOME=/kv-19.5.19 \
     PACKAGE="kv-ce" \
