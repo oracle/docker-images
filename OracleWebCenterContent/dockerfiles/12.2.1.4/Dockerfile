@@ -63,7 +63,8 @@ COPY container-scripts/*.* /u01/oracle/container-scripts/
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # -------------------------------------------------------------
 RUN chown oracle:oracle -R /u01 $VOLUME_DIR && \
-    chmod a+xr /u01/oracle/*.*
+    chmod a+xr /u01/oracle/*.* && \
+    chmod a+xr /u01/oracle/container-scripts/*.*
 
 # -------------------------------------------------------------
 # Install Oracle Fusion Middleware Infrastructure

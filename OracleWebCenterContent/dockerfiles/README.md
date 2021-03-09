@@ -78,7 +78,8 @@ To mount a host directory (`$DATA_VOLUME`) as a data volume, execute the below c
 > This ensures 'oracle' user has access to shared volume.
 
 ```
-sudo mkdir -p /<YOUR_HOST_DIRECTTORY_PATH>/wccontent
+sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
+mkdir -p /<YOUR_HOST_DIRECTTORY_PATH>/wccontent
 sudo chown 1000:1000 /<YOUR_HOST_DIRECTTORY_PATH>/wccontent
 ```
 
