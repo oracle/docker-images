@@ -1,4 +1,4 @@
-# Oracle WebCenter Portal 12.2.1.4.0 on Docker
+# Oracle WebCenter Portal 12.2.1.4 on Docker
 
 
 # 1. Introduction
