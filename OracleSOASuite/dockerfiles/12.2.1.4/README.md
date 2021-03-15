@@ -145,7 +145,7 @@ To run the database container to host the RCU schemas:
     ``` bash
     DB_SID=soadb
     DB_PDB=soapdb
-    DB_DOMAIN=us.oracle.com
+    DB_DOMAIN=example.com
     DB_BUNDLE=basic
     ```
 1.  Enter the following command:
@@ -156,7 +156,7 @@ To run the database container to host the RCU schemas:
 
 The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus`. To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container:
 ``` bash
-$ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@soadb:1521/soadb.us.oracle.com AS SYSDBA
+$ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@soadb:1521/soadb.example.com AS SYSDBA
 
 SQL> alter user sys identified by Welcome1 container=all;
 ```
@@ -189,7 +189,7 @@ For Oracle SOA Suite domains, the supported domain types are `soa` and `osb`.
 
 For example:
 ``` bash
-CONNECTION_STRING=soadb:1521/soapdb.us.oracle.com
+CONNECTION_STRING=soadb:1521/soapdb.example.com
 RCUPREFIX=SOA1
 DB_PASSWORD=Welcome1
 DB_SCHEMA_PASSWORD=Welcome1
