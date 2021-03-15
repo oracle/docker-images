@@ -1,4 +1,4 @@
-# Oracle WebCenter Portal 12.2.1.4 on Docker
+# Oracle WebCenter Portal 12.2.1.4 in a container
 
 ## Mount a host directory into container
 
@@ -20,7 +20,7 @@ $ sudo chown 1000:1000 /scratch/wcpdocker/volumes/wcpportal
  
 ##  Preparing to run the Oracle WebCenter Portal container
 
-Configure an environment before running the Oracle WebCenter Portal Docker container.
+Configure an environment before running the Oracle WebCenter Portal container.
 
 ##### A. Creating a user-defined network
 ##### B. WebCenter Content Server (Optional)
@@ -156,7 +156,7 @@ WebCenter Portal   Container start up command explained:
 
 | 		Parameter    	   |     Parameter Name             | 							     		Description			                               |
 | :----------------------: | :-----------------------------:| :---------------------------------------------------------------------------------------: |
-| --name                   | WCP_CONTAINER_NAME                 |  Set to oracle webcenter portal server container name                                                |
+| --name                   | WCP_CONTAINER_NAME                 |  Set to Oracle WebCenter Portal server container name                                                |
 | --network                | NETWORK_NAME                   | User-defined network to connect to; use the one created earlier `WCPortalNET`.             |
 | -p                       | HostFreePort:MANAGED_SERVER_PORT|  Set the mapped port on the host for the managed server.              	   |
 | -v                      | DATA_MOUNT                   | Mounts the host directory into container.      |
@@ -214,10 +214,10 @@ Elasticsearch Container start up command explained:
 
 | 		Parameter    	 |     Parameter Name      | 							     		Description			                               |
 | :--------------------: | :---------------------: | :---------------------------------------------------------------------------------------: |
-| --name                 | ES_CONTAINER_NAME          |  Set to elasticsearch container name                                                |
+| --name                 | ES_CONTAINER_NAME          |  Set to Elasticsearch  container name                                                |
 | --network              | NETWORK_NAME            | User-defined network to connect to; use the one created earlier `WCPortalNET`.             |
 | -p                     | HostFreePort:9200| Elasticsearch default port 9200 as container port , Maps the container port to host's  port.              	   |
-| --volumes-from         | WCP_CONTAINER_NAME  | Set the webcenter portal container name               	   |
+| --volumes-from         | WCP_CONTAINER_NAME  | Set the Oracle WebCenter Portal container name               	   |
 | -v                    | ES_DATA_MOUNT| Mounts the host directory into container.      |
 | --env-file             | webcenter.env.list | `webcenter.env.list`  sets the environment variables.                            |
 | oracle/wcportal:12.2.1.4      | REPOSITORY:TAG      | The (optional) repo, name and tag of the image.   |
