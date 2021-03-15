@@ -214,7 +214,7 @@ Elasticsearch Container start up command explained:
 
 | 		Parameter    	 |     Parameter Name      | 							     		Description			                               |
 | :--------------------: | :---------------------: | :---------------------------------------------------------------------------------------: |
-| --name                 | ES_CONTAINER_NAME          |  Set to Elasticsearch  container name                                                |
+| --name                 | ES_CONTAINER_NAME          |  Set to Elasticsearch container name                                                |
 | --network              | NETWORK_NAME            | User-defined network to connect to; use the one created earlier `WCPortalNET`.             |
 | -p                     | HostFreePort:9200| Elasticsearch default port 9200 as container port , Maps the container port to host's  port.              	   |
 | --volumes-from         | WCP_CONTAINER_NAME  | Set the Oracle WebCenter Portal container name               	   |
