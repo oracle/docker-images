@@ -45,6 +45,7 @@ closeDomain()
 #Set up Node Manager
 #==========================
 connect(admin_name, admin_pass, url)
+grantAppRole(appStripe="webcenter", appRoleName="s8bba98ff_4cbb_40b8_beee_296c916a23ed#-#Administrator", principalClass="weblogic.security.principal.WLSUserImpl", principalName=admin_name)
 nmEnroll(domain_path, nodemanager_path)
 disconnect()
 exit()

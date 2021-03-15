@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 export vol_name=u01
-export $DOMAIN_NAME='wcp-domain'
+export DOMAIN_NAME='wcp-domain'
 
 ########### SIGINT handler ############
 function _int() {
