@@ -42,7 +42,7 @@ ENV LANG en_US.UTF-8
 # Required to validate that you are using the correct file
 
 ENV JAVA_PKG=jdk-16_linux-x64_bin.tar.gz \
-	JAVA_SHA256=a6b00f4af31880be96d367ab5d03c8f9f3005b9baf2fbe43c9effbab8c5a45ff \
+	JAVA_SHA256=ae85ff85fed3b94f1acf3620668abf5a68e3ec6fb6454117faee6d5c32953883 \
 	JAVA_HOME=/usr/java/jdk-16
 
 ##
