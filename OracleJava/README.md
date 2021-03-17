@@ -1,6 +1,6 @@
-Oracle Java on Docker
+Oracle Java on Containers
 =====
-This repository contains sample Docker configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 16, 15, and 11 and for Server JRE 8.
+This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 16, 15, and 11 and for Server JRE 8.
 
 Oracle Java Server JRE provides the features from Oracle Java JDK commonly required for server-side applications (i.e. Running a Java EE application server). For more information about Server JRE, visit the [Understanding the Server JRE blog entry](https://blogs.oracle.com/java-platform-group/understanding-the-server-jre) from the Java Product Management team.
 
@@ -10,7 +10,7 @@ Download the linux x-64 compressed archive (tar.gz) [JDK or Server JRE](https://
 e.g. for JDK 16 download jdk-16[X]_linux-x64_bin.tar.gz into OracleJava/16, 
 for ServerJRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
 
-Navigate to the folder containing the download and run docker build. Tag it with the correct version number.
+Navigate to the folder containing the download and run `docker build`. Tag it with the correct version number.
 
 e.g. For JDK 16 run
 ```
@@ -52,9 +52,9 @@ $ bash build.sh 8-slim
 ```
 
 ## License
-To download and run the Oracle JDK or Server JRE, regardless of inside or outside a Docker container, you must download the binary from the Oracle website and accept the license indicated on that page.
+To download and run the Oracle JDK or Server JRE, regardless of inside or outside a container, you must download the binary from the Oracle website and accept the license indicated on that page.
 
-All scripts and files hosted in this project and GitHub [`docker/OracleJava`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+All scripts and files hosted in this project and GitHub [`docker/OracleJava`](./) repository, required to build the container images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Customer Support
-Oracle offers support for JDK 8 (Server JRE), JDK 11, JDK 15, and JDK 16 when running on certified operating systems in a Docker container. For additional details on the JDK Certified System Configurations, please refer to the [Oracle Java SE Certified System Configuration Pages](https://www.oracle.com/technetwork/java/javaseproducts/documentation/index.html#sysconfig).
+Oracle offers support for JDK 8 (Server JRE), JDK 11, JDK 15, and JDK 16 when running on certified operating systems in a container. For additional details on the JDK Certified System Configurations, please refer to the [Oracle Java SE Certified System Configuration Pages](https://www.oracle.com/technetwork/java/javaseproducts/documentation/index.html#sysconfig).

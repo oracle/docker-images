@@ -1,9 +1,9 @@
-Oracle Java OpenJDK on Docker
+Oracle Java OpenJDK on Containers
 =====
-This repository contains sample Docker configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles for Oracle OpenJDK based on Oracle Linux.
+This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles for Oracle OpenJDK based on Oracle Linux.
 
 ## Building the Oracle Java OpenJDK base image
-Navigate to the folder containing the Dockerfile and run docker build, tagging the image with the version number:
+Navigate to the folder containing the Dockerfile and run `docker build`, tagging the image with the version number:
 
 e.g. for OpenJDK 16 run
 ```
@@ -20,7 +20,7 @@ $ bash build.sh
 
 The Oracle Java images for OpenJDK 16 uses `oraclelinux:8-slim` as the default parent image.
 
-The Oracle Java images for OpenJDK 15 uses `oraclelinux:7-slim` as the default parent image but allow for optionally building on `oraclelinux:8-slim` by using  `Dockerfile.8-slim` rather than `Dockerfile`.
+The Oracle Java images for OpenJDK 15 uses `oraclelinux:7-slim` as the default parent image but allows for optionally building on `oraclelinux:8-slim` by using  `Dockerfile.8-slim` rather than `Dockerfile`.
 
 e.g. to build OpenJDK 15 with Oracle Linux 8 rather than the default Oracle Linux 7 run
 
