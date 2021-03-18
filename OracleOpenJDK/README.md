@@ -1,4 +1,4 @@
-Oracle Java OpenJDK on Containers
+Oracle Java OpenJDK in Containers
 =====
 This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles for Oracle OpenJDK based on Oracle Linux.
 

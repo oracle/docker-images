@@ -1,4 +1,4 @@
-Oracle Java on Containers
+Oracle Java in Containers
 =====
 This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 16, 15, and 11 and for Server JRE 8.
 
