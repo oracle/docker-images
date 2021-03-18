@@ -54,8 +54,8 @@ else
 fi;
 
 # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
-mkdir -p $ORACLE_HOME/network/admin
-echo "NAME.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_HOME/network/admin/sqlnet.ora
+mkdir -p $ORACLE_BASE_HOME/network/admin
+echo "NAME.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_BASE_HOME/network/admin/sqlnet.ora
 
 # Listener.ora
 echo "LISTENER = 
@@ -68,7 +68,7 @@ echo "LISTENER =
 
 DEDICATED_THROUGH_BROKER_LISTENER=ON
 DIAG_ADR_ENABLED = off
-" > $ORACLE_HOME/network/admin/listener.ora
+" > $ORACLE_BASE_HOME/network/admin/listener.ora
 
 # Start LISTENER and run DBCA
 lsnrctl start &&
@@ -76,7 +76,7 @@ dbca -silent -createDatabase -responseFile $ORACLE_BASE/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
 
-echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_HOME/network/admin/tnsnames.ora
+echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_BASE_HOME/network/admin/tnsnames.ora
 echo "$ORACLE_PDB= 
   (DESCRIPTION = 
     (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
@@ -84,7 +84,7 @@ echo "$ORACLE_PDB=
       (SERVER = DEDICATED)
       (SERVICE_NAME = $ORACLE_PDB)
     )
-  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
+  )" >> $ORACLE_BASE_HOME/network/admin/tnsnames.ora
 
 # Remove second control file, fix local_listener, make PDB auto open, enable EM global port
 sqlplus / as sysdba << EOF

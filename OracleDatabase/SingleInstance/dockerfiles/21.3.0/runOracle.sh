@@ -17,12 +17,12 @@ function moveFiles {
       mkdir -p $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    fi;
 
-   mv $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_HOME/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_HOME/network/admin/sqlnet.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_HOME/install/.docker_* $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE_HOME/network/admin/sqlnet.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE_HOME/install/.docker_* $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
 
    # oracle user does not have permissions in /etc, hence cp and not mv
    cp /etc/oratab $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
@@ -33,24 +33,24 @@ function moveFiles {
 ########### Symbolic link DB files ############
 function symLinkFiles {
 
-   if [ ! -L $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
+   if [ ! -L $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora
    fi;
    
-   if [ ! -L $ORACLE_HOME/dbs/orapw$ORACLE_SID ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
+   if [ ! -L $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID
    fi;
    
-   if [ ! -L $ORACLE_HOME/network/admin/sqlnet.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/sqlnet.ora $ORACLE_HOME/network/admin/sqlnet.ora
+   if [ ! -L $ORACLE_BASE_HOME/network/admin/sqlnet.ora ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/sqlnet.ora $ORACLE_BASE_HOME/network/admin/sqlnet.ora
    fi;
 
-   if [ ! -L $ORACLE_HOME/network/admin/listener.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/listener.ora $ORACLE_HOME/network/admin/listener.ora
+   if [ ! -L $ORACLE_BASE_HOME/network/admin/listener.ora ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/listener.ora $ORACLE_BASE_HOME/network/admin/listener.ora
    fi;
 
-   if [ ! -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
+   if [ ! -L $ORACLE_BASE_HOME/network/admin/tnsnames.ora ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_BASE_HOME/network/admin/tnsnames.ora
    fi;
 
    # oracle user does not have permissions in /etc, hence cp and not ln 
@@ -134,6 +134,12 @@ else
    fi;
 fi;
 
+# Read-only Oracle Home
+export ORACLE_BASE_HOME=$(orabasehome)
+
+# Read-only Oracle Home Config
+export ORACLE_BASE_CONFIG=$(orabaseconfig)
+
 # Default for ORACLE PDB
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 
@@ -161,11 +167,11 @@ if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    
 else
   # Remove database config files, if they exist
-  rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
-  rm -f $ORACLE_HOME/dbs/orapw$ORACLE_SID
-  rm -f $ORACLE_HOME/network/admin/sqlnet.ora
-  rm -f $ORACLE_HOME/network/admin/listener.ora
-  rm -f $ORACLE_HOME/network/admin/tnsnames.ora
+  rm -f $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora
+  rm -f $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID
+  rm -f $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+  rm -f $ORACLE_BASE_HOME/network/admin/listener.ora
+  rm -f $ORACLE_BASE_HOME/network/admin/tnsnames.ora
    
   # Create database
   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
