@@ -135,10 +135,10 @@ else
 fi;
 
 # Read-only Oracle Home
-export ORACLE_BASE_HOME=$(orabasehome)
+export ORACLE_BASE_HOME=$($ORACLE_HOME/bin/orabasehome)
 
 # Read-only Oracle Home Config
-export ORACLE_BASE_CONFIG=$(orabaseconfig)
+export ORACLE_BASE_CONFIG=$($ORACLE_HOME/bin/orabaseconfig)
 
 # Default for ORACLE PDB
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
