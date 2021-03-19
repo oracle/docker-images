@@ -31,16 +31,16 @@ fi
 # If datafiles already exists
 if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
     datafiles_edition=$(ls $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/.docker_* | rev | cut -d_ -f1 | rev)
-    if [ "${ORACLE_EDITION}" != "" ] && [ "${ORACLE_EDITION,,}" != $datafiles_edition ]; then
+    if [ -n "${ORACLE_EDITION}" ] && [ "${ORACLE_EDITION,,}" != $datafiles_edition ]; then
         echo "The datafiles being used were created with $datafiles_edition edition software home. Please pass -e ORACLE_EDITION=$datafiles_edition to the docker run cmd.";
         exit 1;
-    elif [ "${ORACLE_EDITION}" == "" ] && [ "${CURRENT_EDITION,,}" != $datafiles_edition ]; then
+    elif [ -z "${ORACLE_EDITION}" ] && [ "${CURRENT_EDITION,,}" != $datafiles_edition ]; then
         echo "The current software home is of ${CURRENT_EDITION,,} edition whereas the datafiles being used were created with $datafiles_edition edition software home. Please pass -e ORACLE_EDITION=$datafiles_edition to the docker run cmd.";
         exit 1;
     fi
 fi
 
-if [ "${ORACLE_EDITION}" != "" ]; then
+if [ -n "${ORACLE_EDITION}" ]; then
     if [ "${CURRENT_EDITION}" != "${ORACLE_EDITION^^}" ]; then
         echo "Relinking oracle binary for edition: ${ORACLE_EDITION}";
         cmd="make -f ${ORACLE_HOME}/rdbms/lib/ins_rdbms.mk edition_${ORACLE_EDITION,,} ioracle";
