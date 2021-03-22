@@ -52,12 +52,18 @@ if [ ! -z $ru_patch ]; then
     echo "Applying Release Update: $ru_patch";
     cmd="${ORACLE_HOME}/OPatch/opatchauto apply -binary -oh $ORACLE_HOME ${PATCH_DIR}/${ru_patch} -target_type rac_database";
     echo "Running: $cmd";
-    $cmd;
+    $cmd || {
+        echo "RU application failed for patchset: ${ru_patch}";
+        exit 1;
+    }
 fi
 
 for patch in ${ONE_OFFS_LIST[@]}; do
     echo "Applying patch: $patch";
     cmd="${ORACLE_HOME}/OPatch/opatchauto apply -binary -oh $ORACLE_HOME ${PATCH_DIR}/${patch} -target_type rac_database";
     echo "Running: $cmd";
-    $cmd;
+    $cmd || {
+        echo "Patch application failed for ${patch}";
+        exit 1;
+    }
 done
