@@ -46,7 +46,7 @@ ENV DATAPATCH_FILE="runDatapatch.sh" \
 ARG EXTENSION_NAME="patching"
 
 # Copying patched oracle_base from previous layer
-COPY --chown=oracle:dba --from=patching $ORACLE_BASE $ORACLE_BASE
+COPY --from=patching $ORACLE_BASE $ORACLE_BASE
 
 # Copy script to run datapatch
 COPY --chown=oracle:dba $DATAPATCH_FILE $ORACLE_BASE/scripts/startup
