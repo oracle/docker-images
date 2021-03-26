@@ -87,11 +87,19 @@ echo "$ORACLE_PDB=
   )" >> $ORACLE_HOME/network/admin/tnsnames.ora
 
 # Remove second control file, fix local_listener, make PDB auto open, enable EM global port
+# Create externally mapped oracle user for health check
 sqlplus / as sysdba << EOF
    ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
    ALTER SYSTEM SET local_listener='';
    ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
    EXEC DBMS_XDB_CONFIG.SETGLOBALPORTENABLED (TRUE);
+
+   ALTER SESSION SET "_oracle_script" = true;
+   CREATE USER OPS\$oracle IDENTIFIED EXTERNALLY;
+   GRANT CREATE SESSION TO OPS\$oracle;
+   GRANT SELECT ON sys.v_\$pdbs TO OPS\$oracle;
+   ALTER USER OPS\$oracle SET container_data=all for sys.v_\$pdbs container = current;
+
    exit;
 EOF
 
