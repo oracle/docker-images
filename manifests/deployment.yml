@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "mykubernetescluster-a55a"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "mykubernetescluster-a55a"
+  template:
+    metadata:
+      labels:
+        app: "mykubernetescluster-a55a"
+    spec:
+      containers:
+        - name: "mykubernetescluster-a55a"
+          image: "makojavanet.azurecr.io/mykubernetescluster"
+          ports:
+          - containerPort: 80
