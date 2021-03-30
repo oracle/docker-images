@@ -74,3 +74,7 @@ echo "DISABLE_OOB=ON" >> ~/.sqlnet.ora
 ```
 
 For more information configuring _sqlnet.ora_ file see [Database Net Services Reference](https://www.oracle.com/pls/topic/lookup?ctx=dblatest&id=GUID-2041545B-58D4-48DC-986F-DCC9D0DEC642), [Instant Client Installation for Linux](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html), [What is DISABLE_OOB (Out Of Band Break)? (Doc ID 373475.1)](https://support.oracle.com/epmos/faces/DocumentDisplay?id=373475.1) and issue #1352
+
+## ORA-01157: cannot identify/lock data file
+
+This error occurs when the database cannot find a data file (used for tablespaces) that was previously present. This is most likely because the data file has been located outside the volume in a previous container and was hence not persisted. Ensure that when you add tablespaces and/or data files that they are located within the volume location, i.e. $ORACLE_BASE/oradata/$ORACLE_SID, (e.g. `/opt/oracle/oradata/XE`).
