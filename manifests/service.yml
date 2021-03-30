@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: "mykubernetescluster-a55a"
+    labels:
+        app: "mykubernetescluster-a55a"
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    selector:
+        app: "mykubernetescluster-a55a"
