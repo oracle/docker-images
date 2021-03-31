@@ -40,14 +40,21 @@ HEALTHCHECK --interval=1m --start-period=30m \
    CMD "$ORACLE_BASE/$CHECK_DB_LOCK_FILE" >/dev/null || exit 1
 
 # backup original runOracle
-RUN mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" && \
+RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
+    mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN" && \
     ln -sf "$ORACLE_BASE/$STARTUP_FILE" /home/oracle/ && \
     ln -sf "$ORACLE_BASE/$SHUT_DB_FILE" /home/oracle/
 
 # Copy updated scripts for k8s support 
 COPY  --chown=oracle:dba $RUN_FILE $START_FILE $STARTUP_FILE $SHUT_DB_FILE $LOCKING_SCRIPT $CHECK_DB_LOCK_FILE $ORACLE_BASE/
+RUN   mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
 COPY  --chown=oracle:dba $SWAP_LOCK_FILE $ORACLE_BASE/scripts/setup/
 
 # Set perms and append a call to main runOracle
 RUN chmod ug+x $ORACLE_BASE/*.sh && sync && \
-    echo -e "\n. $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" >> "$ORACLE_BASE/$RUN_FILE"
+    if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
+        mv "$ORACLE_BASE/$RUN_FILE.extended" "$ORACLE_BASE/$RUN_FILE" ; \
+    else echo ". $ORACLE_BASE/$RUN_FILE.orig" > "$ORACLE_BASE/$RUN_FILE" ; fi ; \
+    if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
+        sed  -i "1i . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
+    fi
