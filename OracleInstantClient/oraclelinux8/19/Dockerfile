@@ -64,7 +64,7 @@
 FROM oraclelinux:8-slim
 
 ARG release=19
-ARG update=9
+ARG update=10
 
 RUN  microdnf install oracle-release-el8 && \
      microdnf install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
