@@ -45,7 +45,7 @@ ENV CONTENT_JAR=fmw_12.2.1.4.0_wccontent.jar \
 # Install packages and adjust file permissions
 # -------------------------------------------------------------
 RUN mkdir -p /u01 && \
-    yum install -y libaio tar procps hostname zip unzip && \
+    yum install -y hostname && \
     rm -rf /var/cache/yum && \
     mkdir -p $VOLUME_DIR && \
     mkdir -p /u01/oracle/container-scripts && \
