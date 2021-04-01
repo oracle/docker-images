@@ -45,7 +45,7 @@
 # ------------------------------
 #
 # Instant Client 19c Packages for Oracle Linux 8 are available from
-# https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html
+#   https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html
 # Also see https://yum.oracle.com/oracle-instant-client.html
 #
 # Base - one of these packages is required to run applications and tools
@@ -61,6 +61,13 @@
 #   oracle-instantclientXX.Y-jdbc       : JDBC Supplement Package - Additional support for Internationalization under JDBC
 #   oracle-instantclientXX.Y-odbc       : ODBC Package - Additional libraries for enabling ODBC applications
 #
+# PREBUILT CONTAINER
+# ------------------
+#
+# A prebuilt container from this Dockerfile is available from
+#   https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient
+# and can be pulled with:
+#   docker pull ghcr.io/oracle/oraclelinux8-instantclient:19
 
 FROM oraclelinux:8-slim
 

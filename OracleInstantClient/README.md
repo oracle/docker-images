@@ -163,3 +163,14 @@ driver installation steps.  The Instant Client libraries are in
 `/usr/include/oracle/<version>/client64/`.
 
 The Instant Client libraries are in the default library search path.
+
+## Prebuilt Containers
+
+Prebuilt containers for Oracle Instant Client are available from:
+
+  https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient
+  https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient
+
+Prebuilt containers for some language images are also available, see:
+
+  https://github.com/orgs/oracle/packages
