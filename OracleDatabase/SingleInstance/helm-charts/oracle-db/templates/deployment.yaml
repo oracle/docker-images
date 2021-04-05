@@ -33,6 +33,9 @@ spec:
         fsGroup: 54321
     {{- if .Values.availabilityDomain }}
       nodeSelector:
+      {{- if .Values.pool}}
+        pool: {{ .Values.pool }}
+      {{- end }}
         failure-domain.beta.kubernetes.io/zone: "{{ .Values.availabilityDomain }}"
     {{- end }}
       containers:
