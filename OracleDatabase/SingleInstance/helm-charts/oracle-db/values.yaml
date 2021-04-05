@@ -49,3 +49,4 @@ imagePullSecrets:
 ## Deploy only on nodes in a particular nodepool having label "pool"
 ## Leave empty if there is no such requirement
 pool:
+
