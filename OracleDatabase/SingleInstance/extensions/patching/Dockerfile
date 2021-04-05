@@ -62,8 +62,7 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='o
 
 # Copy updated runOracle.sh
 COPY  --chown=oracle:dba $RUN_FILE $ORACLE_BASE/
-RUN chmod ug+x $ORACLE_BASE/*.sh && sync && \
-    mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
+RUN mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
 
 # Append a call to main runOracle
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
@@ -71,5 +70,5 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
      else echo ". $ORACLE_BASE/$RUN_FILE.orig" > "$ORACLE_BASE/$RUN_FILE" ; fi ; \
      if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
         sed  -i "1i . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
-     fi
-
+     fi && \
+     chmod ug+x $ORACLE_BASE/*.sh && sync
