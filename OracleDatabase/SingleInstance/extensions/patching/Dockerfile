@@ -72,3 +72,4 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
         sed  -i "1i . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
      fi && \
      chmod ug+x $ORACLE_BASE/*.sh && sync
+
