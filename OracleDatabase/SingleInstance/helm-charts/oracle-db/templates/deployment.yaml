@@ -31,13 +31,15 @@ spec:
       securityContext:
         runAsUser: 54321
         fsGroup: 54321
-    {{- if .Values.availabilityDomain }}
+      {{- if or .Values.availabilityDomain .Values.nodeLables}}
       nodeSelector:
-      {{- if .Values.pool}}
-        pool: {{ .Values.pool }}
+      {{- range $key, $value := .Values.nodeLables }}
+        {{ $key }}: {{ $value | quote }}
       {{- end }}
+      {{- if .Values.availabilityDomain }}
         failure-domain.beta.kubernetes.io/zone: "{{ .Values.availabilityDomain }}"
-    {{- end }}
+      {{- end }}
+      {{- end }}
       containers:
         - name: oracle-db
           image: {{ .Values.image }}
