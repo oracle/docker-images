@@ -46,3 +46,8 @@ imagePullPolicy: Always
 ## container registry login/password
 imagePullSecrets:
 
+## Deploy only on nodes having required labels .
+## Format label_name : label_value . eg pool: sidb
+## Leave empty if there is no such requirement
+nodeLabels:
+#  pool: sidb
