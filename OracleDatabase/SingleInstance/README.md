@@ -68,6 +68,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e INIT_PGA_SIZE=<your database PGA memory in MB> \
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
+    -e ENABLE_ARCHIVELOG=true \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:19.3.0-ee
     
@@ -89,6 +90,8 @@ To run your Oracle Database image use the `docker run` command as follows:
                       Supported 19.3 onwards.
        -e ORACLE_CHARACTERSET:
                       The character set to use when creating the database (default: AL32UTF8).
+       -e ENABLE_ARCHIVELOG:
+                      To enable archive log mode in the database (default: false) 
        -v /opt/oracle/oradata
                       The data volume to use for the database.
                       Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!

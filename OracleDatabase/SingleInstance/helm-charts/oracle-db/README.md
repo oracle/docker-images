@@ -80,6 +80,7 @@ The following tables lists the configurable parameters of the Oracle  Database c
 | image                                | Image to pull                              | container-registry.oracle.com/database/enterprise:19.3.0.0 |
 | imagePullPolicy                      | Image pull policy                          | Always                                                     |
 | imagePullSecrets                     | container registry login/password          |                                                            |
+| enable_archive                       | Set true to enable archive mode in database| false                                                      |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,

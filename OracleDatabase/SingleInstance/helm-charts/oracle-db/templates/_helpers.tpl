@@ -39,6 +39,8 @@ env:
     value: {{ default "ORCLPDB1" .Values.oracle_characterset | quote }}
   - name: ORACLE_EDITION
     value: {{ default "enterprise" .Values.oracle_edition | quote }}
+  - name: ENABLE_ARCHIVELOG
+    value: {{ default false .Values.enable_archive | quote}}
 {{- end }}
 {{/* oracle db labels */}}
 {{- define "oracle-db-labels" }}
