@@ -20,8 +20,8 @@ oracle_characterset: AL32UTF8
 ## The database edition (default: enterprise)
 oracle_edition: enterprise
 
-## Enable archiveLogMode in the database
-enable_archive: false
+## Enable archive log mode when creating the database
+enable_archivelog: false
 
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
