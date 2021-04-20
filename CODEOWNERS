@@ -5,6 +5,7 @@
 /.github/*.yml             @Djelibeybi
 /.github/workflows         @Djelibeybi @AmedeeBulle
 /GraalVM/                  @mzachh
+/NoSQL/                    @Djelibeybi
 /OracleAccessManagement/   @pratdash-orcl
 /OracleBI/                 @sjvp
 /OracleCoherence/          @thegridman
