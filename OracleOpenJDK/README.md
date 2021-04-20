@@ -20,22 +20,6 @@ $ bash build.sh
 
 The Oracle Java images for OpenJDK 16 uses `oraclelinux:8-slim` as the default parent image.
 
-The Oracle Java images for OpenJDK 15 uses `oraclelinux:7-slim` as the default parent image but allows for optionally building on `oraclelinux:8-slim` by using  `Dockerfile.8-slim` rather than `Dockerfile`.
-
-e.g. to build OpenJDK 15 with Oracle Linux 8 rather than the default Oracle Linux 7 run
-
-```
-$ cd ../OracleOpenJDK/15
-$ docker build --file Dockerfile.8-slim --tag oracle/openjdk:15-oraclelinux8 .
-```
-
-The build script on `build.sh` can be used to build with either Oracle Linux 7 or Oracle Linux 8. To build on Oracle Linux 8 pass `8-slim` to the script: 
-
-```
-$ cd ../OracleOpenJDK/15
-$ bash build.sh 8-slim
-```
-
 
 ## License
 The OpenJDK compressed archive used by this Dockerfile is available under the [GNU General Public License, version2, with the Classpath Exception](https://openjdk.java.net/legal/gplv2+ce.html), from the [Oracle OpenJDK website](https://jdk.java.net).
