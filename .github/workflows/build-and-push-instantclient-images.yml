@@ -67,7 +67,8 @@ jobs:
           rm "${changes}"
 
       - name: Log into GitHub Container Registry
-        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u "${GITHUB_ACTOR,,}" --password-stdin ghcr.io
 
       - name: Build Oracle Instant Client
         run: |
@@ -75,7 +76,7 @@ jobs:
           do
             for i in ${{ steps.linux-version.outputs.ic }}
             do
-              docker build --tag ghcr.io/oracle/${o}-instantclient:${i} OracleInstantClient/${o}/${i}
+              docker build --tag "ghcr.io/${{ github.repository_owner }}/${o}-instantclient:${i}" OracleInstantClient/${o}/${i}
             done
           done
 
@@ -85,6 +86,6 @@ jobs:
           do
             for i in ${{ steps.linux-version.outputs.ic }}
             do
-              docker push ghcr.io/oracle/${o}-instantclient:${i}
+              docker push "ghcr.io/${{ github.repository_owner }}/${o}-instantclient:${i}"
             done
           done

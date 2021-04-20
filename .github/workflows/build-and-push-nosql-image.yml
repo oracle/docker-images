@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'NoSQL/19.5-ce/*'
+      - '.github/workflows/build-and-push-nosql-image.yml'
+    workflow_dispatch:
 
 env:
   IMAGE_NAME: nosql
@@ -14,21 +16,19 @@ env:
 jobs:
   push:
     name: Build and push NoSQL 19.5-ce image
-
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Log into GitHub Container Registry
-        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u "${GITHUB_ACTOR,,}" --password-stdin ghcr.io
 
       - name: Build NoSQL 19.5-ce image
         run: |
           cd NoSQL/19.5-ce
-          docker build --tag ghcr.io/oracle/$IMAGE_NAME:$TAG .
+          docker build --tag "ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG" .
 
       - name: Push image to GitHub Container Registry
         run: |
-          docker push ghcr.io/oracle/$IMAGE_NAME:$TAG
+          docker push "ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG"
