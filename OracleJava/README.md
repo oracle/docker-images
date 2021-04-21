@@ -1,6 +1,6 @@
 Oracle Java in Containers
 =====
-This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 16, 15, and 11 and for Server JRE 8.
+This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 16, 11, and for Server JRE 8.
 
 Oracle Java Server JRE provides the features from Oracle Java JDK commonly required for server-side applications (i.e. Running a Java EE application server). For more information about Server JRE, visit the [Understanding the Server JRE blog entry](https://blogs.oracle.com/java-platform-group/understanding-the-server-jre) from the Java Product Management team.
 
@@ -34,7 +34,7 @@ The Oracle Java image for JDK 16 uses `oraclelinux:8-slim` as the parent image.
 
 The build script `build.sh` will tag the JDK 16 image as `16` and also as `16-oraclelinux8`.
 
-JDK 15, JDK 11, and ServerJRE 8 use `oraclelinux:7-slim` as the default parent image but allow for optionally building on `oraclelinux:8-slim` by using `Dockerfile.8-slim` rather than `Dockerfile`.
+JDK 11 and ServerJRE 8 use `oraclelinux:7-slim` as the default parent image but allow for optionally building on `oraclelinux:8-slim` by using `Dockerfile.8-slim` rather than `Dockerfile`.
 
 e.g. to build JDK 11 with Oracle Linux 8 rather than the default Oracle Linux 7 run
 
@@ -57,4 +57,4 @@ To download and run the Oracle JDK or Server JRE, regardless of inside or outsid
 All scripts and files hosted in this project and GitHub [`docker/OracleJava`](./) repository, required to build the container images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Customer Support
-Oracle offers support for JDK 8 (Server JRE), JDK 11, JDK 15, and JDK 16 when running on certified operating systems in a container. For additional details on the JDK Certified System Configurations, please refer to the [Oracle Java SE Certified System Configuration Pages](https://www.oracle.com/technetwork/java/javaseproducts/documentation/index.html#sysconfig).
+Oracle offers support for JDK 16, JDK 11, and JDK 8 (Server JRE) when running on certified operating systems in a container. For additional details on the JDK Certified System Configurations, please refer to the [Oracle Java SE Certified System Configuration Pages](https://www.oracle.com/technetwork/java/javaseproducts/documentation/index.html#sysconfig).
