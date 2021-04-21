@@ -26,7 +26,8 @@ FROM oraclelinux:8-slim
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 
-ENV JAVA_PKG=https://download.java.net/java/GA/jdk16/7863447f0ab643c585b9bdebf67c69db/36/GPL/openjdk-16.0.1_linux-x64_bin.tar.gz \
+
+ENV JAVA_PKG=https://download.java.net/java/GA/jdk16.0.1/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-16.0.1_linux-x64_bin.tar.gz \
 	JAVA_SHA256=b1198ffffb7d26a3fdedc0fa599f60a0d12aa60da1714b56c1defbce95d8b235 \
 	JAVA_VERSION=16.0.1 \
 	JAVA_HOME=/usr/java/jdk-16 \
