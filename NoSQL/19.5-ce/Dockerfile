@@ -3,6 +3,8 @@
 #
 FROM openjdk:14-oraclelinux7
 
+LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
+
 ENV VERSION="19.5.19" \
     KVHOME=/kv-19.5.19 \
     PACKAGE="kv-ce" \

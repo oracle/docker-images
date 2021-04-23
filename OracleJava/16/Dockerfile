@@ -41,8 +41,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-16_linux-x64_bin.tar.gz \
-	JAVA_SHA256=ae85ff85fed3b94f1acf3620668abf5a68e3ec6fb6454117faee6d5c32953883 \
+ENV JAVA_PKG=jdk-16.0.1_linux-x64_bin.tar.gz \
+	JAVA_SHA256=caa0bfc0e9ee52f45c8f8ca803a23f132ef551297c6b9331b091110c5740a9bf \
 	JAVA_HOME=/usr/java/jdk-16
 
 ##
@@ -59,7 +59,7 @@ FROM oraclelinux:8-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=16 \
+ENV JAVA_VERSION=16.0.1 \
 	JAVA_HOME=/usr/java/jdk-16
 
 ENV	PATH $JAVA_HOME/bin:$PATH	

@@ -68,6 +68,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e INIT_PGA_SIZE=<your database PGA memory in MB> \
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
+    -e ENABLE_ARCHIVELOG=true \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:19.3.0-ee
     
@@ -89,6 +90,9 @@ To run your Oracle Database image use the `docker run` command as follows:
                       Supported 19.3 onwards.
        -e ORACLE_CHARACTERSET:
                       The character set to use when creating the database (default: AL32UTF8).
+       -e ENABLE_ARCHIVELOG:
+                      To enable archive log mode when creating the database (default: false).
+                      Supported 19.3 onwards.
        -v /opt/oracle/oradata
                       The data volume to use for the database.
                       Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
@@ -135,6 +139,12 @@ On the first startup of the container a random password will be generated for th
 The password for those accounts can be changed via the `docker exec` command. **Note**, the container has to be running:
 
     docker exec <container name> ./setPassword.sh <your password>
+
+#### Enabling archive log mode while creating the database
+
+Archive mode can be enabled during the first time when database is created by setting ENABLE_ARCHIVELOG to `true` and passing it to `docker run` command. Archive logs are stored at the directory location: `/opt/oracle/oradata/$ORACLE_SID/archive_logs` inside the container.
+
+In case this parameter is set `true` and passed to `docker run` command while reusing existing datafiles, even though this parameter would be visible as set to `true` in the container environment, this would not be set inside the database. The value used at the time of database creation will be used.
 
 #### Running Oracle Database 18c Express Edition in a container
 
