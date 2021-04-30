@@ -21,7 +21,7 @@ ARG BASE_IMAGE=oracle/database:21.3.0-ee
 FROM ${BASE_IMAGE}
 
 # Extn name
-ARG EXTENSION_NAME=k8s
+ARG EXTENSION_NAME=sharding
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -44,11 +44,9 @@ ENV CMD_EXEC="cmdExec" \
 
 # backup original runOracle
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
-    mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN" && \
-    ln -sf "$ORACLE_BASE/$STARTUP_FILE" /home/oracle/ && \
-    ln -sf "$ORACLE_BASE/$SHUT_DB_FILE" /home/oracle/
+    mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN"
 
-# Copy updated scripts for k8s support 
+# Copy updated scripts for sharding support
 COPY  --chown=oracle:dba $CMD_EXEC $DEMO_APP $MAIN_PY $COMMON_PY $ENV_PY $FACTORY_PY $GSM_PY $LOGGER_PY $MACHINE_PY $PCATALOG_PY $SHARD_PY $SCATALOG_PY $SSHARD_PY $RUN_SHARD_FILE $RUN_FILE $ORACLE_BASE/scripts/sharding
 
 # Set perms and append a call to main runOracle
