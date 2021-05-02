@@ -15,8 +15,8 @@
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ###################################
 
-if [ ${SHARD_SETUP,,} = "true" ]
+if [ ${SHARD_SETUP,,} = "true" ]; then
 
-sh $ORACLE_BASE/sharding/scripts/runOra
+sh $ORACLE_BASE/sharding/scripts/runOraShardSetup.sh
 
 fi

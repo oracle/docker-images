@@ -47,7 +47,8 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='o
     mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN"
 
 # Copy updated scripts for sharding support
-COPY  --chown=oracle:dba $CMD_EXEC $DEMO_APP $MAIN_PY $COMMON_PY $ENV_PY $FACTORY_PY $GSM_PY $LOGGER_PY $MACHINE_PY $PCATALOG_PY $SHARD_PY $SCATALOG_PY $SSHARD_PY $RUN_SHARD_FILE $RUN_FILE $ORACLE_BASE/scripts/sharding
+COPY  --chown=oracle:dba $CMD_EXEC $DEMO_APP $MAIN_PY $COMMON_PY $ENV_PY $FACTORY_PY $GSM_PY $LOGGER_PY $MACHINE_PY $PCATALOG_PY $SHARD_PY $SCATALOG_PY $SSHARD_PY $RUN_SHARD_FILE $RUN_FILE $ORACLE_BASE/scripts/sharding/
+RUN mv "$ORACLE_BASE/scripts/sharding/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
 
 # Set perms and append a call to main runOracle
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
@@ -56,4 +57,4 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
     if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
         sed  -i "1i . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
     fi && \
-    chmod ug+x $ORACLE_BASE/*.sh $ORACLE_BASE/*.py && sync
+    chmod ug+x $ORACLE_BASE/$RUN_FILE $ORACLE_BASE/scripts/sharding/*.sh $ORACLE_BASE/scripts/sharding/*.py && sync
