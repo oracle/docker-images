@@ -411,7 +411,7 @@ class OraPCatalog:
              alter system set db_recovery_file_dest=\"{2}\" scope=both;
              alter system set open_links=16 scope=spfile;
              alter system set open_links_per_instance=16 scope=spfile;
-             alter system set db_file_name_convert='*','{0}' scope=spfile;
+             alter system set db_file_name_convert='*','{0}/' scope=spfile;
              alter system set dg_broker_config_file1=\"{6}/oradata/{7}/{8}/dr2{8}.dat\" scope=spfile;
              alter system set dg_broker_config_file2=\"{6}/oradata/{7}/{8}/dr1{8}.dat\" scope=spfile;
              @{6}/rdbms/admin/setCatalogDBPrivs.sql;

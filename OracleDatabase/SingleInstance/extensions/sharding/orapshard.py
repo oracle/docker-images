@@ -442,7 +442,7 @@ class OraPShard:
              alter system set dg_broker_config_file1=\"{6}/oradata/{7}/{8}/dr2{8}.dat\" scope=spfile; 
              alter system set dg_broker_config_file2=\"{6}/oradata/{7}/{8}/dr1{8}.dat\" scope=spfile;
              alter system set open_links_per_instance=16 scope=spfile;
-             alter system set db_file_name_convert='*','{0}' scope=spfile;
+             alter system set db_file_name_convert='*','{0}/' scope=spfile;
              alter user gsmrootuser account unlock;
              grant sysdg to gsmrootuser;
              grant sysbackup to gsmrootuser;

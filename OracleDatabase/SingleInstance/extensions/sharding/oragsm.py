@@ -65,6 +65,7 @@ class OraGSM:
                 self.ocommon.prog_exit("127")
              else:
                 self.deploy_shard()
+                self.setup_gsm_service()
                 sys.exit(0)
           elif self.ocommon.check_key("ADD_SGROUP_PARAMS",self.ora_env_dict):
              self.catalog_checks()
@@ -177,7 +178,6 @@ class OraGSM:
                      self.start_gsm_director()
                      self.status_gsm_director()
                      self.setup_gsm_shardg("SHARD_GROUP")
-                     self.setup_gsm_service()
                      self.gsm_backup_file()
                      self.gsm_completion_message()
                    ### Running Custom Scripts
@@ -196,7 +196,7 @@ class OraGSM:
              status = self.gsm_setup_check()
              if status:
                 self.ocommon.log_info_message("Gsm Setup is already completed on this database",self.file_name)
-                self.ocommon.start_gsm_director(self.ora_env_dict)
+                self.start_gsm_director()
                 self.ocommon.log_info_message("Started GSM",self.file_name)
              else:
                 # if the status = self.gsm_setup_check() return False then shard addition, catalog addition and service creation
@@ -493,7 +493,7 @@ class OraGSM:
 
       def gsm_setup_check(self):
                  """
-                  This function chck if GSM is already setup on this
+                  This function check if GSM is already setup on this
                  """
                  status=True
                  self.ocommon.log_info_message("Inside gsm_setup_check",self.file_name)
@@ -544,10 +544,10 @@ class OraGSM:
                  while counter < end_counter:                 
                        for key in self.ora_env_dict.keys():
                            if(reg_exp.match(key)):
-                              catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name=self.process_clog_vars(key)
+                              catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name,catalog_chunks=self.process_clog_vars(key)
                               catalog_db_status=self.check_setup_status(catalog_host,catalog_db,catalog_pdb,catalog_port)
                               if catalog_db_status == 'completed':
-                                 self.configure_gsm_clog(catalog_host,catalog_db,catalog_pdb,catalog_port,catalog_name,catalog_region)
+                                 self.configure_gsm_clog(catalog_host,catalog_db,catalog_pdb,catalog_port,catalog_name,catalog_region,catalog_chunks)
                                  break 
                               else:
                                  msg='''Catalog Status must return completed but returned value is {0}'''.format(status)
@@ -570,6 +570,7 @@ class OraGSM:
           catalog_region=None
           catalog_host=None
           catalog_name=None
+          catalog_chunks=None
 
           self.ocommon.log_info_message("Inside process_clog_vars()",self.file_name)
           cvar_str=self.ora_env_dict[key]
@@ -587,6 +588,8 @@ class OraGSM:
                  catalog_host = cvar_dict[ckey]
               if ckey == 'catalog_name':
                  catalog_name = cvar_dict[ckey]
+              if ckey == 'catalog_chunks':
+                     catalog_chunks = cvar_dict[ckey]                 
               ## Set the values if not set in above block
           if not catalog_port:
               catalog_port=1521
@@ -595,7 +598,7 @@ class OraGSM:
 
               ### Check values must be set
           if catalog_host and catalog_db and catalog_pdb and catalog_port and catalog_region and catalog_name:
-              return catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name
+              return catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name,catalog_chunks
           else:
               msg1='''catalog_db={0},catalog_pdb={1}'''.format((catalog_db or "Missing Value"),(catalog_pdb or "Missing Value"))
               msg2='''catalog_port={0},catalog_host={1}'''.format((catalog_port or "Missing Value"),(catalog_host or "Missing Value"))
@@ -636,21 +639,25 @@ class OraGSM:
           return re.compile('CATALOG_PARAMS') 
 
       
-      def configure_gsm_clog(self,chost,ccdb,cpdb,cport,catalog_name,catalog_region):
+      def configure_gsm_clog(self,chost,ccdb,cpdb,cport,catalog_name,catalog_region,catalog_chunks):
                  """
                   This function configure the GSM catalog.
                  """
                  self.ocommon.log_info_message("Inside configure_gsm_clog()",self.file_name)
                  gsmhost=self.ora_env_dict["ORACLE_HOSTNAME"]
                  cadmin=self.ora_env_dict["SHARD_ADMIN_USER"]
+                 if catalog_chunks:
+                    chunks="-chunks {0}".format(catalog_chunks)
+                 else:
+                    chunks=""
                  cpasswd="HIDDEN_STRING"
                  self.ocommon.set_mask_str(self.ora_env_dict["ORACLE_PWD"])
                  gsmlogin='''{0}/bin/gdsctl'''.format(self.ora_env_dict["ORACLE_HOME"])
                  gsmcmd='''
-                  create shardcatalog -database \"(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST={0})(PORT={1}))(CONNECT_DATA=(SERVICE_NAME={2})))\" -chunks 12 -user {3}/{4} -sdb {5} -region {6} -agent_port 8080 -agent_password {4} -autovncr off;
+                  create shardcatalog -database \"(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST={0})(PORT={1}))(CONNECT_DATA=(SERVICE_NAME={2})))\" {7} -user {3}/{4} -sdb {5} -region {6} -agent_port 8080 -agent_password {4} -autovncr off;
                   add invitednode {0};
                   exit;
-                  '''.format(chost,cport,cpdb,cadmin,cpasswd,catalog_name,catalog_region)
+                  '''.format(chost,cport,cpdb,cadmin,cpasswd,catalog_name,catalog_region,chunks)
 
                  output,error,retcode=self.ocommon.exec_gsm_cmd(gsmcmd,None,self.ora_env_dict)
                  ### Unsetting the encrypt value to None
@@ -804,7 +811,7 @@ class OraGSM:
                  reg_exp= self.catalog_regex()
                  for key in self.ora_env_dict.keys():
                      if(reg_exp.match(key)):
-                        catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name=self.process_clog_vars(key)
+                        catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name,catalog_chunks=self.process_clog_vars(key)
                  self.ocommon.set_mask_str(self.ora_env_dict["ORACLE_PWD"])
                  gsmcmd='''
                   add gsm -gsm {0}  -listener {1} -pwd {2} -catalog {3}:{4}/{5}  -region {6};
@@ -1695,7 +1702,7 @@ class OraGSM:
           reg_exp= self.catalog_regex()
           for key in self.ora_env_dict.keys():
               if(reg_exp.match(key)):
-                 catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name=self.process_clog_vars(key)
+                 catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name,catalog_chunks=self.process_clog_vars(key)
                  sqlpluslogin='''{0}/bin/sqlplus "sys/HIDDEN_STRING@{1}:{2}/{3} as sysdba"'''.format(self.ora_env_dict["ORACLE_HOME"],catalog_host,catalog_port,catalog_pdb,admuser)
                  self.ocommon.set_mask_str(self.ora_env_dict["ORACLE_PWD"])
                  msg='''Setting host Id null in catalog as auto vncr is disabled'''
@@ -2004,6 +2011,7 @@ class OraGSM:
                  gsmcmd='''
                    connect {1}/{2};
                    add service -service {3} -role {4};
+                   start service -service {3};
                  exit;
                   '''.format("test",cadmin,cpasswd,service_name,service_role)
                  output,error,retcode=self.ocommon.exec_gsm_cmd(gsmcmd,None,self.ora_env_dict)
@@ -2040,7 +2048,7 @@ class OraGSM:
           reg_exp= self.catalog_regex()
           for key in self.ora_env_dict.keys():
               if(reg_exp.match(key)):
-                 catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name=self.process_clog_vars(key)
+                 catalog_db,catalog_pdb,catalog_port,catalog_region,catalog_host,catalog_name,catalog_chunks=self.process_clog_vars(key)
           sqlpluslogin='''{0}/bin/sqlplus "sys/HIDDEN_STRING@{1}:{2}/{3} as sysdba"'''.format(self.ora_env_dict["ORACLE_HOME"],catalog_host,catalog_port,catalog_db)
           if self.ocommon.check_key("SAMPLE_SCHEMA",self.ora_env_dict):
              if self.ora_env_dict["SAMPLE_SCHEMA"] == 'DEPLOY':
