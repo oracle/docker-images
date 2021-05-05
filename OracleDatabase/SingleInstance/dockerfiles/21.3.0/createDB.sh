@@ -31,6 +31,82 @@ fi;
 export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
 echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
+# Standby DB creation path
+if [ "$CREATE_STDBY" = true ]; then
+    # Primary database parameters extration
+    PRIMARY_DB_NAME = echo "${PRIMARY_DB_CONN_STR}" | sed 's/.*\///'
+    PRIMARY_DB_IP = echo "${PRIMARY_DB_CONN_STR}" | sed 's/\(.*\):.*/\1/'
+    PRIMARY_DB_PORT = echo "${PRIMARY_DB_CONN_STR}" | 's/.*:\([0-9]*\)\/.*/\1/'
+
+    # Using primary database name as sid of primary database if not explicitly given
+    if [ -z "${PRIMARY_SID}" ]; then
+      PRIMARY_SID=${PRIMARY_DB_NAME}
+    fi
+
+    # Creating the database using the dbca command
+    dbca -silent -createDuplicateDB -gdbName ${PRIMARY_DB_NAME} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -createAsStandby -dbUniquename ${ORACLE_SID} ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+
+    # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
+    mkdir -p $ORACLE_BASE_HOME/network/admin
+
+    # Creating sqlnet.ora
+    echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+
+    # Creating tnsnames.ora
+    echo "${PRIMARY_DB_NAME} =
+    (DESCRIPTION =
+      (ADDRESS_LIST =
+        (ADDRESS = (PROTOCOL = TCP)(HOST = ${PRIMARY_DB_IP})(PORT = ${PRIMARY_DB_PORT}))
+      )
+      (CONNECT_DATA =
+        (SERVER = DEDICATED)
+        (SID = ${PRIMARY_SID})
+      )
+    )
+
+    ${ORACLE_SID} =
+    (DESCRIPTION =
+      (ADDRESS_LIST =
+        (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+      )
+      (CONNECT_DATA =
+        (SERVER = DEDICATED)
+        (SID = ${ORACLE_SID})
+      )
+    )" > $ORACLE_BASE_HOME/network/admin/tnsnames.ora
+
+    # Re-creating listener.ora
+    echo "LISTENER =
+    (DESCRIPTION_LIST =
+      (DESCRIPTION =
+        (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1))
+        (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+      )
+    )
+
+    SID_LIST_LISTENER =
+      (SID_LIST =
+        (SID_DESC =
+          (GLOBAL_DBNAME=${ORACLE_SID})
+          (SID_NAME = ${ORACLE_SID})
+          (ORACLE_HOME=${ORACLE_HOME})
+        )
+        (SID_DESC =
+          (GLOBAL_DBNAME=${ORACLE_SID}_DGMGRL)
+          (SID_NAME = ${ORACLE_SID})
+          (ORACLE_HOME=${ORACLE_HOME})
+          (ENVS="TNS_ADMIN=${ORACLE_BASE_HOME}/network/admin")
+        )
+      )" > $ORACLE_BASE_HOME/network/admin/listener.ora
+
+    # Reloading the listener
+    lsnrctl reload
+    exit 0
+fi
+
+
 # Replace place holders in response file
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
