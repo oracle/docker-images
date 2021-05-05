@@ -55,7 +55,16 @@ if [ "$CREATE_STDBY" = true ]; then
   echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_BASE_HOME/network/admin/sqlnet.ora
 
   # Creating tnsnames.ora
-  cat > $ORACLE_BASE_HOME/network/admin/listener.ora<<EOF
+  cat > $ORACLE_BASE_HOME/network/admin/tnsnames.ora<<EOF
+ORCLPDB1=
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ORCLPDB1)
+    )
+  )
+
 ${PRIMARY_DB_NAME} =
   (DESCRIPTION =
     (ADDRESS_LIST =
@@ -80,6 +89,9 @@ ${ORACLE_SID} =
 EOF
 
   # Re-creating listener.ora
+  # First stopping the listener
+  lsnrctl stop
+  
   cat > $ORACLE_BASE_HOME/network/admin/listener.ora<<EOF
 LISTENER =
   (DESCRIPTION_LIST =
@@ -105,8 +117,8 @@ SID_LIST_LISTENER =
   )
 EOF
 
-  # Reloading the listener
-  lsnrctl reload
+  # Start the listener once again
+  lsnrctl start
   exit 0
 fi
 

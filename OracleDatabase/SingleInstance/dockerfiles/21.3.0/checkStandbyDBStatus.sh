@@ -21,7 +21,7 @@ status=`sqlplus -s / as sysdba << EOF
    set pagesize 0;
    SELECT database_role, open_mode FROM v\\$database ;
    exit;
-EOF `
+EOF`
 
 # Store return code from SQL*Plus
 ret=$?
