@@ -21,16 +21,16 @@ status=`sqlplus -s / as sysdba << EOF
    set pagesize 0;
    SELECT database_role, open_mode FROM v\\$database ;
    exit;
-EOF`
-
-DB_ROLE=`echo ${status} | tr -s " " | cut -d " " -f 1`
-OPEN_MODE=`echo ${status} | tr -s " " | cut -d " " -f 2`
+EOF `
 
 # Store return code from SQL*Plus
 ret=$?
 
+DB_ROLE="`echo ${status} | tr -s " " | cut -d " " -f 1,2`"
+OPEN_MODE="`echo ${status} | tr -s " " | cut -d " " -f 3,4`"
+
 # SQL Plus execution was successful and DB is in standby mode
-if [ $ret -eq 0 ] && [ "$DB_ROLE" = "STANDBY" ] && [ "$OPEN_MODE" = "READ ONLY" ]; then
+if [ $ret -eq 0 ] && [ "$DB_ROLE" = "PHYSICAL STANDBY" ] && [ "$OPEN_MODE" = "READ ONLY" ]; then
    exit 0;
 # SQL Plus execution was successful and DB is in primary mode
 elif [ $ret -eq 0 ] && [ "$DB_ROLE" = "PRIMARY" ] && [ "$OPEN_MODE" = "READ WRITE" ]; then
