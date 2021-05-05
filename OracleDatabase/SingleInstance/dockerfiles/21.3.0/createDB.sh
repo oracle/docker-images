@@ -34,9 +34,9 @@ echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 # Standby DB creation path
 if [ "$CREATE_STDBY" = true ]; then
     # Primary database parameters extration
-    PRIMARY_DB_NAME = echo "${PRIMARY_DB_CONN_STR}" | sed 's/.*\///'
-    PRIMARY_DB_IP = echo "${PRIMARY_DB_CONN_STR}" | sed 's/\(.*\):.*/\1/'
-    PRIMARY_DB_PORT = echo "${PRIMARY_DB_CONN_STR}" | 's/.*:\([0-9]*\)\/.*/\1/'
+    PRIMARY_DB_NAME="`echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2`"
+    PRIMARY_DB_IP="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 1`"
+    PRIMARY_DB_PORT="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 2 | cut -d '/' -f 1`"
 
     # Using primary database name as sid of primary database if not explicitly given
     if [ -z "${PRIMARY_SID}" ]; then
