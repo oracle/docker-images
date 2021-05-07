@@ -183,28 +183,23 @@ else
   $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/setup
 fi;
 
-# Check whether database/standby database is up and running
-if [ "$CREATE_STDBY" = "true" ]; then
-   $ORACLE_BASE/$CHECK_STDBY_DB_FILE
-else
-   $ORACLE_BASE/$CHECK_DB_FILE
-fi
-
+# Check whether database is up and running
+$ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
-echo "#########################"
-echo "DATABASE IS READY TO USE!"
-echo "#########################"
-
-# Execute custom provided startup scripts
-$ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
-
+  echo "#########################"
+  echo "DATABASE IS READY TO USE!"
+  echo "#########################"
+  
+  # Execute custom provided startup scripts
+  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
+  
 else
-echo "#####################################"
-echo "########### E R R O R ###############"
-echo "DATABASE SETUP WAS NOT SUCCESSFUL!"
-echo "Please check output for further info!"
-echo "########### E R R O R ###############" 
-echo "#####################################"
+  echo "#####################################"
+  echo "########### E R R O R ###############"
+  echo "DATABASE SETUP WAS NOT SUCCESSFUL!"
+  echo "Please check output for further info!"
+  echo "########### E R R O R ###############" 
+  echo "#####################################"
 fi;
 
 # Tail on alert log and wait (otherwise container will exit)

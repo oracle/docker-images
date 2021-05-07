@@ -32,7 +32,12 @@ export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
 echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
 # Standby DB creation path
-if [ "$CREATE_STDBY" = true ]; then
+if [ "${CREATE_STDBY}" = "true" ]; then
+  # Validation: Check if PRIMARY_DB_CONN_STR is provided or not
+  if [ -z "${PRIMARY_DB_CONN_STR}" ]; then
+    echo "ERROR: Please provide PRIMARY_DB_CONN_STR to connect with primary database. Exiting..."
+    exit 1
+  fi
   # Primary database parameters extration
   PRIMARY_DB_NAME="`echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2`"
   PRIMARY_DB_IP="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 1`"
@@ -72,7 +77,7 @@ ${PRIMARY_DB_NAME} =
     )
     (CONNECT_DATA =
       (SERVER = DEDICATED)
-      (SID = ${PRIMARY_SID})
+      (SERVICE_NAME = ${PRIMARY_SID})
     )
   )
 
@@ -83,12 +88,12 @@ ${ORACLE_SID} =
     )
     (CONNECT_DATA =
       (SERVER = DEDICATED)
-      (SID = ${ORACLE_SID})
+      (SERVICE_NAME = ${ORACLE_SID})
     )
   )
 EOF
 
-  # Re-creating listener.ora
+  # Re-creating listener.ora for aiding DG configuration
   # First stopping the listener
   lsnrctl stop
   
