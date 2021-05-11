@@ -124,6 +124,48 @@ EOF
 
   # Start the listener once again
   lsnrctl start
+
+  # Starting the observer
+
+  # First checking if the DG configuration exists or not
+  dg_config=`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME show configuration`
+  echo ${dg_config} | grep -q "ORA-....."
+
+  if [ $? -eq 0]; then
+    # Configuration does not exist
+    # Steps to perform: 1. Connect to primary database using dgmgrl and create a cnfiguration
+    #                   2. Edit required database properties for FSFO
+    #                   3. Enable the configuration
+    #                   4. Start the observer: this observer will be master observer
+
+    sqlplus -s / as sysdba <<EOF
+    ALTER DATABASE FLASHBAK ON;
+EOF
+
+    dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
+CREATE CONFIGURATION dg_config AS PRIMARY DATABASE IS ${PRIMARY_DB_NAME} CONNECT IDENTIFIER IS ${PRIMARY_DB_NAME};
+ADD DATABASE ${ORACLE_SID} AS CONNECT IDENTIFIER IS ${ORACLE_SID} MAINTAINED AS PHYSICAL;
+EDIT DATABASE ${PRIMARY_DB_NAME} SET PROPERTY LogXptMode='ASYNC';
+EDIT DATABASE ${ORACLE_SID} SET PROPERTY LogXptMode='ASYNC';
+ENABLE CONFIGURATION;
+ENABLE FAST_START FAILOVER;
+EOF
+    # Starting observer in background
+    nohup dgmgrl -silent sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER" &
+  
+  else
+    # Configuration exist
+    # First add the database to the configuration and then start observer
+    dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
+DISABLE CONFIGURATION;
+ADD DATABASE ${ORACLE_SID} AS CONNECT IDENTIFIER IS ${ORACLE_SID} MAINTAINED AS PHYSICAL;
+EDIT DATABASE ${ORACLE_SID} SET PROPERTY LogXptMode='ASYNC';
+ENABLE CONFIGURATION;
+EOF
+    # Starting observer in background
+    nohup dgmgrl -silent sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER" &
+  fi
+
   exit 0
 fi
 

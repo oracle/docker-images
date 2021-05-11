@@ -39,7 +39,7 @@ EOF
 }
 
 # Function to check if at least one PDB is open in "READ WRITE" mode for Primary database
-# Or in case of Secondary Database PDBs should be opened only in "RAED ONLY" mode 
+# Or in case of Secondary Database PDBs should be opened only in "READ ONLY" mode 
 checkPDBOpen() {
    # Obtain OPEN_MODE for PDB using SQLPlus
    PDB_OPEN_MODE=`sqlplus -s / as sysdba << EOF
