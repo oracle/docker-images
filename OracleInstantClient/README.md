@@ -29,6 +29,20 @@ Oracle Database 12.1 or later.  Applications using Oracle Call Interface (OCI)
 19, 18 or 12.2 can connect to Oracle Database 11.2 or later.  Some tools may
 have other restrictions.
 
+## Images
+
+Pre-built images for Instant Client are in the [GitHub Package
+Registry](https://github.com/orgs/oracle/packages).  They are built from the
+the Dockerfiles in this repository.
+
+For example, to pull an Oracle Linux 8 image with Instant Client 21c, execute:
+
+```
+docker pull ghcr.io/oracle/oraclelinux8-instantclient:21
+```
+
+Images that include various languages are also available.
+
 ## Building the Oracle Instant Client 21 Images
 
 Change directory to [`oraclelinux7/21`](oraclelinux7/21) or
@@ -138,7 +152,7 @@ the files to the default Instant Client network configuration file directory,
 for example:
 
 ```
-docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.9/client64/lib/network/admin:Z,ro . . .
+docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.11/client64/lib/network/admin:Z,ro . . .
 ```
 
 You should review which volume options are required.  The `Z` option is needed
