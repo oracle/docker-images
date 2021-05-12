@@ -29,7 +29,27 @@ Oracle Database 12.1 or later.  Applications using Oracle Call Interface (OCI)
 19, 18 or 12.2 can connect to Oracle Database 11.2 or later.  Some tools may
 have other restrictions.
 
-## Building the Oracle Instant Client 21 Images
+## Prebuilt Images
+
+Pre-built images for Instant Client are in the [GitHub Container
+Registry](https://github.com/orgs/oracle/packages):
+
+  https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient
+  https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient
+
+They are built from the Dockerfiles in this repository.
+
+For example, to pull an Oracle Linux 8 image with Oracle Instant Client 21c
+already installed, execute:
+
+```
+docker pull ghcr.io/oracle/oraclelinux8-instantclient:21
+```
+
+Prebuilt containers for some language images are also available in the
+registry.
+
+## Building Oracle Instant Client 21 Images
 
 Change directory to [`oraclelinux7/21`](oraclelinux7/21) or
 [`oraclelinux8/21`](oraclelinux8/21) and run:
@@ -47,7 +67,7 @@ or [Oracle Instant Client repository
 Applications using Oracle Call Interface (OCI) 21 can connect to Oracle Database
 12.1 or later.  Some tools may have other restrictions.
 
-## Building the Oracle Instant Client 19 Images
+## Building Oracle Instant Client 19 Images
 
 Change directory to [`oraclelinux7/19`](oraclelinux7/19) or
 [`oraclelinux8/19`](oraclelinux8/19) and run:
@@ -66,7 +86,7 @@ Applications using Oracle Call Interface (OCI) 19 can connect to
 Oracle Database 11.2 or later.  Some tools may have other
 restrictions.
 
-## Building the Oracle Instant Client 18 Image for Oracle Linux 7
+## Building an Oracle Instant Client 18 Image for Oracle Linux 7
 
 Change directory to [`oraclelinux7/18`](oraclelinux7/18) and run:
 
@@ -82,7 +102,7 @@ Applications using Oracle Call Interface (OCI) 18 can connect to
 Oracle Database 11.2 or later.  Some tools may have other
 restrictions.
 
-## Building the Oracle Instant Client 12.2 Image for Oracle Linux 7
+## Building an Oracle Instant Client 12.2 Image for Oracle Linux 7
 
 Download the following three RPMs from the [Instant Client download
 page](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html)
@@ -138,7 +158,7 @@ the files to the default Instant Client network configuration file directory,
 for example:
 
 ```
-docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.9/client64/lib/network/admin:Z,ro . . .
+docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.11/client64/lib/network/admin:Z,ro . . .
 ```
 
 You should review which volume options are required.  The `Z` option is needed
@@ -163,14 +183,3 @@ driver installation steps.  The Instant Client libraries are in
 `/usr/include/oracle/<version>/client64/`.
 
 The Instant Client libraries are in the default library search path.
-
-## Prebuilt Containers
-
-Prebuilt containers for Oracle Instant Client are available from:
-
-  https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient
-  https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient
-
-Prebuilt containers for some language images are also available, see:
-
-  https://github.com/orgs/oracle/packages
