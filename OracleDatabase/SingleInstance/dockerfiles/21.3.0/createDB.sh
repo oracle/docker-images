@@ -127,14 +127,14 @@ EOF
 
   # Enabling flashback database in Standby database
   sqlplus -s / as sysdba <<EOF
-ALTER DATABASE FLASHBAK ON;
+ALTER DATABASE FLASHBACK ON;
 EOF
 
   # Starting the observer
   if [ "${START_OBSERVER}" = "true" ]; then
     # First checking if the DG configuration exists or not
-    dg_config="`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME show configuration`"
-    echo ${dg_config} | grep -q "ORA-....."
+    dg_config=`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME "show configuration"`
+    echo ${dg_config} | grep -q "ORA-16532"
 
     if [ $? -eq 0]; then
       # Configuration does not exist
