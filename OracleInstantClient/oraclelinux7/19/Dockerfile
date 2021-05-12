@@ -9,7 +9,7 @@
 #
 # Execute:
 #      $ docker build --pull -t oraclelinux7-instantclient:19 .
-#      $ docker run -ti --rm oraclelinux7-instantclient:19 sqlplus -l hr@example.com/orclpdb1
+#      $ docker run -ti --rm oraclelinux7-instantclient:19 sqlplus /nolog
 #
 # NOTES
 # -----
@@ -30,7 +30,7 @@
 # cwallet.sso.  You can use a Docker volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.9/client64/lib/network/admin:Z,ro . . .
+#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.11/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -72,7 +72,7 @@
 FROM oraclelinux:7-slim
 
 ARG release=19
-ARG update=10
+ARG update=11
 
 RUN  yum -y install oracle-release-el7 && \
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
