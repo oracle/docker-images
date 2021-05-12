@@ -61,12 +61,12 @@ if [ "${CREATE_STDBY}" = "true" ]; then
 
   # Creating tnsnames.ora
   cat > $ORACLE_BASE_HOME/network/admin/tnsnames.ora<<EOF
-ORCLPDB1=
+${ORACLE_PDB}=
   (DESCRIPTION =
     (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
     (CONNECT_DATA =
       (SERVER = DEDICATED)
-      (SERVICE_NAME = ORCLPDB1)
+      (SERVICE_NAME = ${ORACLE_PDB})
     )
   )
 
@@ -125,24 +125,27 @@ EOF
   # Start the listener once again
   lsnrctl start
 
-  # Starting the observer
-
-  # First checking if the DG configuration exists or not
-  dg_config=`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME show configuration`
-  echo ${dg_config} | grep -q "ORA-....."
-
-  if [ $? -eq 0]; then
-    # Configuration does not exist
-    # Steps to perform: 1. Connect to primary database using dgmgrl and create a cnfiguration
-    #                   2. Edit required database properties for FSFO
-    #                   3. Enable the configuration
-    #                   4. Start the observer: this observer will be master observer
-
-    sqlplus -s / as sysdba <<EOF
-    ALTER DATABASE FLASHBAK ON;
+  # Enabling flashback database in Standby database
+  sqlplus -s / as sysdba <<EOF
+ALTER DATABASE FLASHBAK ON;
 EOF
 
-    dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
+  # Starting the observer
+  if [ "${START_OBSERVER}" = "true" ]; then
+    # First checking if the DG configuration exists or not
+    dg_config="`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME show configuration`"
+    echo ${dg_config} | grep -q "ORA-....."
+
+    if [ $? -eq 0]; then
+      # Configuration does not exist
+      # Steps to perform: 1. Connect to primary database using dgmgrl and create a cnfiguration
+      #                   2. Edit required database properties for FSFO
+      #                   3. Enable the configuration
+      #                   4. Start the observer: this observer will be master observer
+      
+
+      echo "DG Configuration does not exist. Creating one ..."
+      dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
 CREATE CONFIGURATION dg_config AS PRIMARY DATABASE IS ${PRIMARY_DB_NAME} CONNECT IDENTIFIER IS ${PRIMARY_DB_NAME};
 ADD DATABASE ${ORACLE_SID} AS CONNECT IDENTIFIER IS ${ORACLE_SID} MAINTAINED AS PHYSICAL;
 EDIT DATABASE ${PRIMARY_DB_NAME} SET PROPERTY LogXptMode='ASYNC';
@@ -150,20 +153,26 @@ EDIT DATABASE ${ORACLE_SID} SET PROPERTY LogXptMode='ASYNC';
 ENABLE CONFIGURATION;
 ENABLE FAST_START FAILOVER;
 EOF
-    # Starting observer in background
-    nohup dgmgrl -silent sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER" &
-  
-  else
-    # Configuration exist
-    # First add the database to the configuration and then start observer
-    dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
-DISABLE CONFIGURATION;
-ADD DATABASE ${ORACLE_SID} AS CONNECT IDENTIFIER IS ${ORACLE_SID} MAINTAINED AS PHYSICAL;
+      # Setting up directory for Observer configuration and log file
+      OBSERVER_DIR=${ORACLE_BASE}/oradata/observer
+      mkdir -p ${OBSERVER_DIR}
+      # Starting observer in background
+      nohup dgmgrl -echo sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER observer-${ORACLE_SID} FILE IS ${OBSERVER_DIR}/fsfo.dat LOGFILE IS${OBSERVER_DIR}/observer.log" &
+    
+    else
+      # Configuration exist
+      # First add the database to the configuration and then start observer
+      dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
+ADD DATABASE ${ORACLE_SID} AS CONNECT IDENTIFIER IS (DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=${HOSTNAME})(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=${ORACLE_SID}))) MAINTAINED AS PHYSICAL;
 EDIT DATABASE ${ORACLE_SID} SET PROPERTY LogXptMode='ASYNC';
 ENABLE CONFIGURATION;
 EOF
-    # Starting observer in background
-    nohup dgmgrl -silent sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER" &
+      # Setting up directory for Observer configuration and log file
+      OBSERVER_DIR=${ORACLE_BASE}/oradata/observer
+      mkdir -p ${OBSERVER_DIR}
+      # Starting observer in background
+      nohup dgmgrl -silent sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER observer-${ORACLE_SID} FILE IS ${OBSERVER_DIR}/fsfo.dat LOGFILE IS ${OBSERVER_DIR}/observer.log" &
+    fi
   fi
 
   exit 0
