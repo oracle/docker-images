@@ -6,4 +6,4 @@ More information on how to deploy the resulting image using [helm](https://helm.
 
 ## Performing operations that require Database Shutdown/Startup after building k8s extension
 
-To perform operations on the database that require the restart of the database, use the maintenance shutdown/startup scripts, /home/oracle/shutDown.sh and /home/oracle/startUp.sh instead of issuing shutdown immediate and startup commands respectively as the latter would lead to exiting of the container.
+To perform operations on the database that require the restart of the database, use the maintenance shutdown/startup scripts, /home/oracle/shutDown.sh and /home/oracle/startUp.sh instead of issuing shutdown immediate and startup commands respectively as the latter would lead to exiting of the pod.
