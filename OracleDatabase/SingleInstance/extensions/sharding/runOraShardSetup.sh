@@ -118,34 +118,28 @@ function symLinkFiles {
  
    if [ -f $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$OLD_ORACLE_SID.ora
-      ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora $ORACLE_BASE/dbs/spfile$OLD_ORACLE_SID.ora
    fi;
 
    if [ -f $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora 
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora
    else
      if [ ! -z ${CLONE_DB} ]; then
-       if [ ${CLONE_DB} == "true" ]; then
+       if [ ${CLONE_DB^^} == "TRUE" ]; then
           ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
-          ln -s  $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora  $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora
        fi
      fi
    fi;
 
    if [ -f $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID ]; then
           ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_HOME/dbs/orapw$OLD_ORACLE_SID
-          ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_BASE/dbs/orapw$OLD_ORACLE_SID
    fi;
 
    if [ -f $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID ]; then
        ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
-       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_BASE/dbs/orapw$ORACLE_SID
    else
      if [ ! -z ${CLONE_DB} ]; then
-       if [ ${CLONE_DB} == "true" ]; then
+       if [ ${CLONE_DB^^} == "TRUE" ]; then
          ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
-         ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_BASE/dbs/orapw$ORACLE_SID
        fi
      fi
    fi;
@@ -154,7 +148,7 @@ function symLinkFiles {
        ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/sqlnet.ora $ORACLE_HOME/network/admin/sqlnet.ora
    else
      if [ ! -z ${CLONE_DB} ]; then
-       if [ ${CLONE_DB} == "true" ]; then
+       if [ ${CLONE_DB^^} == "TRUE" ]; then
           ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/sqlnet.ora $ORACLE_HOME/network/admin/sqlnet.ora
        fi
      fi
@@ -164,7 +158,7 @@ function symLinkFiles {
        ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/listener.ora $ORACLE_HOME/network/admin/listener.ora
    else
      if [ ! -z ${CLONE_DB} ]; then
-       if [ ${CLONE_DB} == "true" ]; then
+       if [ ${CLONE_DB^^} == "TRUE" ]; then
          ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/listener.ora $ORACLE_HOME/network/admin/listener.ora
        fi
      fi
@@ -174,7 +168,7 @@ function symLinkFiles {
        ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
    else
      if [ ! -z ${CLONE_DB} ]; then
-       if [ ${CLONE_DB} == "true" ]; then
+       if [ ${CLONE_DB^^} == "TRUE" ]; then
          ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
        fi
      fi
@@ -193,7 +187,7 @@ function symLinkFiles {
    fi;
 
  if [ ! -z ${CLONE_DB} ]; then
-  if [ ${CLONE_DB} == "true" ]; then
+  if [ ${CLONE_DB^^} == "TRUE" ]; then
    if [ ! -L $ORACLE_BASE/oradata/$ORACLE_SID/$ORACLE_PDB ]; then
       ln -s $ORACLE_BASE/oradata/$OLD_ORACLE_SID/$OLD_ORACLE_PDB $ORACLE_BASE/oradata/$ORACLE_SID/$ORACLE_PDB 
    fi;
@@ -381,9 +375,3 @@ fi
 
 cd $BASE_DIR
 $EXECUTOR $SCRIPT_NAME
-
-echo "The following output is now a tail of the alert.log:"
-tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
-# tail -f /etc/passwd &
-childPID=$!
-wait $childPID

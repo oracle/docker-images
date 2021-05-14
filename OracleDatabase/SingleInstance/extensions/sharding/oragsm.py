@@ -166,7 +166,7 @@ class OraGSM:
                 status1 = self.gsm_setup_check()
                 if status1:
                    self.ocommon.log_info_message("Gsm Setup is already completed on this database",self.file_name)
-                   self.ocommon.start_gsm_director()
+                   self.start_gsm_director()
                    self.ocommon.log_info_message("Started GSM",self.file_name)
                 else:
                    # Perform Catalog setup after check GSM_MASTER FLAG. IF GSM MASTER FLAG is set then only catalog will be added.
