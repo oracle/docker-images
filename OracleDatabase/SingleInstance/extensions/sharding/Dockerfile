@@ -57,4 +57,5 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
     if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
        sed  -i "\$a . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
     fi && \
+    sed -i '/wait \$childPID/d' "$ORACLE_BASE"/runOracle.sh.orig && \ 
     chmod ug+x $ORACLE_BASE/$RUN_FILE $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME $ORACLE_BASE/scripts/sharding/*.sh $ORACLE_BASE/scripts/sharding/*.py && sync
