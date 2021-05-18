@@ -58,9 +58,7 @@ ENV ORACLE_BASE=/opt/oracle \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
     CREATE_STDBY=false \
-    PRIMARY_DB_CONN_STR="" \
-    PRIMARY_DB_SID="" \
-    START_OBSERVER=false
+    PRIMARY_DB_CONN_STR=""
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \

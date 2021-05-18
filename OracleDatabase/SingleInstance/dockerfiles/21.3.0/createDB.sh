@@ -38,15 +38,15 @@ if [ "${CREATE_STDBY}" = "true" ]; then
     echo "ERROR: Please provide PRIMARY_DB_CONN_STR to connect with primary database. Exiting..."
     exit 1
   fi
+  # Validation: Check if ORACLE_PWD is provided or not
+  if [ -z "${ORACLE_PWD}" ]; then
+    echo "ERROR: Please provide password of sys user as ORACLE_PWD to connect with primary database. Exiting..."
+    exit 1
+  fi
   # Primary database parameters extration
   PRIMARY_DB_NAME="`echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2`"
   PRIMARY_DB_IP="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 1`"
   PRIMARY_DB_PORT="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 2 | cut -d '/' -f 1`"
-
-  # Using primary database name as sid of primary database if not explicitly given
-  if [ -z "${PRIMARY_SID}" ]; then
-    PRIMARY_SID=${PRIMARY_DB_NAME}
-  fi
 
   # Creating the database using the dbca command
   dbca -silent -createDuplicateDB -gdbName ${PRIMARY_DB_NAME} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -createAsStandby -dbUniquename ${ORACLE_SID} ||
@@ -77,7 +77,7 @@ ${PRIMARY_DB_NAME} =
     )
     (CONNECT_DATA =
       (SERVER = DEDICATED)
-      (SERVICE_NAME = ${PRIMARY_SID})
+      (SERVICE_NAME = ${PRIMARY_DB_NAME})
     )
   )
 
@@ -129,51 +129,6 @@ EOF
   sqlplus -s / as sysdba <<EOF
 ALTER DATABASE FLASHBACK ON;
 EOF
-
-  # Starting the observer
-  if [ "${START_OBSERVER}" = "true" ]; then
-    # First checking if the DG configuration exists or not
-    dg_config=`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME "show configuration"`
-    echo ${dg_config} | grep -q "ORA-16532"
-
-    if [ $? -eq 0]; then
-      # Configuration does not exist
-      # Steps to perform: 1. Connect to primary database using dgmgrl and create a cnfiguration
-      #                   2. Edit required database properties for FSFO
-      #                   3. Enable the configuration
-      #                   4. Start the observer: this observer will be master observer
-      
-
-      echo "DG Configuration does not exist. Creating one ..."
-      dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
-CREATE CONFIGURATION dg_config AS PRIMARY DATABASE IS ${PRIMARY_DB_NAME} CONNECT IDENTIFIER IS ${PRIMARY_DB_NAME};
-ADD DATABASE ${ORACLE_SID} AS CONNECT IDENTIFIER IS ${ORACLE_SID} MAINTAINED AS PHYSICAL;
-EDIT DATABASE ${PRIMARY_DB_NAME} SET PROPERTY LogXptMode='ASYNC';
-EDIT DATABASE ${ORACLE_SID} SET PROPERTY LogXptMode='ASYNC';
-ENABLE CONFIGURATION;
-ENABLE FAST_START FAILOVER;
-EOF
-      # Setting up directory for Observer configuration and log file
-      OBSERVER_DIR=${ORACLE_BASE}/oradata/observer
-      mkdir -p ${OBSERVER_DIR}
-      # Starting observer in background
-      nohup dgmgrl -echo sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER observer-${ORACLE_SID} FILE IS ${OBSERVER_DIR}/fsfo.dat LOGFILE IS${OBSERVER_DIR}/observer.log" &
-    
-    else
-      # Configuration exist
-      # First add the database to the configuration and then start observer
-      dgmgrl -echo sys/$ORACLE_PWD@$PRIMARY_DB_NAME << EOF
-ADD DATABASE ${ORACLE_SID} AS CONNECT IDENTIFIER IS (DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=${HOSTNAME})(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=${ORACLE_SID}))) MAINTAINED AS PHYSICAL;
-EDIT DATABASE ${ORACLE_SID} SET PROPERTY LogXptMode='ASYNC';
-ENABLE CONFIGURATION;
-EOF
-      # Setting up directory for Observer configuration and log file
-      OBSERVER_DIR=${ORACLE_BASE}/oradata/observer
-      mkdir -p ${OBSERVER_DIR}
-      # Starting observer in background
-      nohup dgmgrl -silent sys/${ORACLE_PWD}@${PRIMARY_DB_NAME} "START OBSERVER observer-${ORACLE_SID} FILE IS ${OBSERVER_DIR}/fsfo.dat LOGFILE IS ${OBSERVER_DIR}/observer.log" &
-    fi
-  fi
 
   exit 0
 fi
