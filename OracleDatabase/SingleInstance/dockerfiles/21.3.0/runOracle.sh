@@ -111,6 +111,24 @@ trap _int SIGINT
 # Set SIGTERM handler
 trap _term SIGTERM
 
+# Observer only flow
+if [ "${OBSERVER_ONLY}" = "true" ]; then
+   export OBSERVER_BASE_DIR=${ORACLE_BASE}/oradata/
+   $ORACLE_BASE/$CREATE_OBSERVER_FILE $OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $OBSERVER_BASE_DIR || exit 1;
+   if test [ ! -f "$OBSERVER_BASE_DIR/$OBSERVER_NAME/observer.log" ] then
+      # Display the content of nohup.out to show errors
+      cat $OBSERVER_BASE_DIR/$OBSERVER_NAME/nohup.out
+      exit 1
+   else
+      # Tail on observer log and wait (otherwise container will exit)
+      echo "The following output is now a tail of the observer.log:"
+      tail -f $OBSERVER_BASE_DIR/$OBSERVER_NAME/observer.log &
+      childPID=$!
+      wait $childPID
+      exit 0;
+   fi
+fi
+
 # Default for ORACLE SID
 if [ "$ORACLE_SID" == "" ]; then
    export ORACLE_SID=ORCLCDB

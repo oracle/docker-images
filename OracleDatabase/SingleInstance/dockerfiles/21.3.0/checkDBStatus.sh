@@ -10,6 +10,7 @@
 #               1 = Database role is neither PRIMARY nor STANDBY
 #               2 = PDB is not open in required mode
 #               3 = Sql Plus execution failed
+#               4 = Observer is not running
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
@@ -61,10 +62,24 @@ EOF
    fi
 }
 
+# Function to check that observer is running or not
+checkObserver() {
+   dg_observer_status=`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME "show observer"`
+   echo ${dg_observer_status} | grep -q 'Observer ".*"'
+   if [ $? -ne 0 ]; then
+      exit 4
+   fi 
+
+}
+
 #############################################
 ################ MAIN #######################
 #############################################
 
-checkDatabaseRole
-checkPDBOpen
+if [ "$OBSERVER_ONLY" = "true" ]; then
+   checkObserver
+else
+   checkDatabaseRole
+   checkPDBOpen
+fi
 exit 0
