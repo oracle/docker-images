@@ -118,28 +118,40 @@ function symLinkFiles {
  
    if [ -f $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$OLD_ORACLE_SID.ora
+      ## Link based on ORACLE_BASE
+      ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora $ORACLE_BASE/dbs/spfile$OLD_ORACLE_SID.ora
    fi;
 
    if [ -f $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora 
+      ## Link based on ORACLE_BASE
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora
    else
      if [ ! -z ${CLONE_DB} ]; then
        if [ ${CLONE_DB^^} == "TRUE" ]; then
           ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
+          ## Link based on ORACLE_BASE
+          ln -s  $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/spfile$OLD_ORACLE_SID.ora  $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora
        fi
      fi
    fi;
 
    if [ -f $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID ]; then
           ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_HOME/dbs/orapw$OLD_ORACLE_SID
+          ## Link based on ORACLE_BASE
+          ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_BASE/dbs/orapw$OLD_ORACLE_SID
    fi;
 
    if [ -f $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID ]; then
        ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
+       ## Link based on ORACLE_BASE
+       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_BASE/dbs/orapw$ORACLE_SID
    else
      if [ ! -z ${CLONE_DB} ]; then
        if [ ${CLONE_DB^^} == "TRUE" ]; then
          ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
+         ## Link based on ORACLE_BASE
+         ln -s $ORACLE_BASE/oradata/dbconfig/$OLD_ORACLE_SID/orapw$OLD_ORACLE_SID $ORACLE_BASE/dbs/orapw$ORACLE_SID 
        fi
      fi
    fi;
@@ -362,7 +374,7 @@ fi
 
 #This is the main file which calls other file to setup the sharding.
 if [ -z ${BASE_DIR} ]; then
-    BASE_DIR=$ORACLE_BASE/scripts/sharding
+    BASE_DIR=/opt/oracle/scripts/setup
 fi
 
 if [ -z ${MAIN_SCRIPT} ]; then
