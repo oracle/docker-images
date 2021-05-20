@@ -113,18 +113,25 @@ trap _term SIGTERM
 
 # Observer only flow
 if [ "${OBSERVER_ONLY}" = "true" ]; then
-   export OBSERVER_BASE_DIR=${ORACLE_BASE}/oradata/
-   $ORACLE_BASE/$CREATE_OBSERVER_FILE $OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $OBSERVER_BASE_DIR || exit 1;
-   if test [ ! -f "$OBSERVER_BASE_DIR/$OBSERVER_NAME/observer.log" ] then
+   if [ -z "${OBSERVER_NAME}" ]; then
+      # Auto generate the observer name if not given
+      export OBSERVER_NAME="OBSERVER-`openssl rand -hex 4`"
+   fi 
+   export OBSERVER_DIR=${ORACLE_BASE}/oradata/${OBSERVER_NAME}
+   $ORACLE_BASE/$CREATE_OBSERVER_FILE $OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $OBSERVER_DIR || exit 1;
+   if [ ! -f "$OBSERVER_DIR/observer.log" ]; then
       # Display the content of nohup.out to show errors
-      cat $OBSERVER_BASE_DIR/$OBSERVER_NAME/nohup.out
+      cat $OBSERVER_DIR/nohup.out
       exit 1
    else
       # Tail on observer log and wait (otherwise container will exit)
       echo "The following output is now a tail of the observer.log:"
-      tail -f $OBSERVER_BASE_DIR/$OBSERVER_NAME/observer.log &
+      tail -f $OBSERVER_DIR/observer.log &
       childPID=$!
       wait $childPID
+
+      # Show nohup output and exit
+      cat $OBSERVER_DIR/nohup.out
       exit 0;
    fi
 fi
@@ -151,6 +158,11 @@ else
      exit 1;
    fi;
 fi;
+
+# Default for ORACLE_HOSTNAME
+if [ -z "${ORACLE_HOSTNAME}" ]; then
+   export ORACLE_HOSTNAME="`hostname`"
+fi
 
 # Read-only Oracle Home
 export ORACLE_BASE_HOME=$($ORACLE_HOME/bin/orabasehome)
