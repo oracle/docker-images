@@ -14,11 +14,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
-DB_ROLE=""
-ORAENV_ASK=NO
-source oraenv
-
 # Function to check database role: either Primary or Secondary
 checkDatabaseRole() {
    # Obtain DB_ROLE using SQLPlus
@@ -79,6 +74,10 @@ checkObserver() {
 if [ "$OBSERVER_ONLY" = "true" ]; then
    checkObserver
 else
+   ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
+   DB_ROLE=""
+   ORAENV_ASK=NO
+   source oraenv
    checkDatabaseRole
    checkPDBOpen
 fi
