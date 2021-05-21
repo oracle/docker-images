@@ -115,7 +115,7 @@ trap _term SIGTERM
 if [ "${OBSERVER_ONLY}" = "true" ]; then
    if [ -z "${OBSERVER_NAME}" ]; then
       # Auto generate the observer name if not given
-      export OBSERVER_NAME="OBSERVER-`openssl rand -hex 4`"
+      export OBSERVER_NAME="observer-`openssl rand -hex 4`"
    fi 
    export OBSERVER_DIR=${ORACLE_BASE}/oradata/${OBSERVER_NAME}
    $ORACLE_BASE/$CREATE_OBSERVER_FILE $OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $OBSERVER_DIR || exit 1;
@@ -158,11 +158,6 @@ else
      exit 1;
    fi;
 fi;
-
-# Default for ORACLE_HOSTNAME
-if [ -z "${ORACLE_HOSTNAME}" ]; then
-   export ORACLE_HOSTNAME="`hostname`"
-fi
 
 # Read-only Oracle Home
 export ORACLE_BASE_HOME=$($ORACLE_HOME/bin/orabasehome)

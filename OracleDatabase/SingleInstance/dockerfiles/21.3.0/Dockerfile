@@ -59,7 +59,6 @@ ENV ORACLE_BASE=/opt/oracle \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
     CREATE_STDBY=false \
-    ORACLE_HOSTNAME="" \
     PRIMARY_DB_CONN_STR="" \
     OBSERVER_ONLY=false \
     OBSERVER_NAME=""

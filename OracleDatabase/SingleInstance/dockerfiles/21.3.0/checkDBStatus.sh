@@ -64,7 +64,7 @@ EOF
 
 # Function to check that observer is running or not
 checkObserver() {
-   dg_observer_status=`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_NAME "show observer"`
+   dg_observer_status="`dgmgrl sys/$ORACLE_PWD@$PRIMARY_DB_CONN_STR "show observer"`"
    echo ${dg_observer_status} | grep -q 'Observer ".*"'
    if [ $? -ne 0 ]; then
       exit 4
