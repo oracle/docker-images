@@ -9,7 +9,7 @@
 #              $OBSERVER_NAME: Name of the observer
 #              $PRIMARY_DB_CONN_STR: Connection string to connect with primary database
 #              $ORACLE_PWD: The Oracle password for sys user of the primary database
-#              $OBSERVER_DIR: Base directory to store observer data, log files
+#              $OBSERVER_DIR: Directory to store observer data, log files
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
@@ -28,7 +28,7 @@ if [ -z "${ORACLE_PWD}" ]; then
     exit 1
 fi
 
-# Setting up directory for Observer configuration and log file
+# Creating the directory for Observer configuration and log file
 mkdir -p ${OBSERVER_DIR}
 
 # Starting observer in background

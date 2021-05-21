@@ -111,17 +111,25 @@ trap _int SIGINT
 # Set SIGTERM handler
 trap _term SIGTERM
 
-# Observer only flow
+# Creation of Observer only section
 if [ "${OBSERVER_ONLY}" = "true" ]; then
    if [ -z "${OBSERVER_NAME}" ]; then
       # Auto generate the observer name if not given
       export OBSERVER_NAME="observer-`openssl rand -hex 4`"
    fi 
    export OBSERVER_DIR=${ORACLE_BASE}/oradata/${OBSERVER_NAME}
-   $ORACLE_BASE/$CREATE_OBSERVER_FILE $OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $OBSERVER_DIR || exit 1;
+
+   # Calling the script to create observer
+   $ORACLE_BASE/$CREATE_OBSERVER_FILE $OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $OBSERVER_DIR
+
    if [ ! -f "$OBSERVER_DIR/observer.log" ]; then
       # Display the content of nohup.out to show errors
-      cat $OBSERVER_DIR/nohup.out
+      if [ -f "$OBSERVER_DIR/nohup.out" ]; then
+         cat $OBSERVER_DIR/nohup.out
+         echo "Observer is not able to start. Exiting..."
+      else
+         echo "Observer creation and startup fail !! Exiting..."
+      fi
       exit 1
    else
       # Tail on observer log and wait (otherwise container will exit)
@@ -131,6 +139,7 @@ if [ "${OBSERVER_ONLY}" = "true" ]; then
       wait $childPID
 
       # Show nohup output and exit
+      echo "Exiting..."
       cat $OBSERVER_DIR/nohup.out
       exit 0;
    fi
