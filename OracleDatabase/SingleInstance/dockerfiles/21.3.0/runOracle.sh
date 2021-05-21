@@ -112,20 +112,20 @@ trap _int SIGINT
 trap _term SIGTERM
 
 # Creation of Observer only section
-if [ "${OBSERVER_ONLY}" = "true" ]; then
-   if [ -z "${OBSERVER_NAME}" ]; then
+if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
+   if [ -z "${DG_OBSERVER_NAME}" ]; then
       # Auto generate the observer name if not given
-      export OBSERVER_NAME="observer-`openssl rand -hex 4`"
+      export DG_OBSERVER_NAME="observer-`openssl rand -hex 4`"
    fi 
-   export OBSERVER_DIR=${ORACLE_BASE}/oradata/${OBSERVER_NAME}
+   export DG_OBSERVER_DIR=${ORACLE_BASE}/oradata/${DG_OBSERVER_NAME}
 
    # Calling the script to create observer
-   $ORACLE_BASE/$CREATE_OBSERVER_FILE $OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $OBSERVER_DIR
+   $ORACLE_BASE/$CREATE_OBSERVER_FILE $DG_OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $DG_OBSERVER_DIR
 
-   if [ ! -f "$OBSERVER_DIR/observer.log" ]; then
+   if [ ! -f "$DG_OBSERVER_DIR/observer.log" ]; then
       # Display the content of nohup.out to show errors
-      if [ -f "$OBSERVER_DIR/nohup.out" ]; then
-         cat $OBSERVER_DIR/nohup.out
+      if [ -f "$DG_OBSERVER_DIR/nohup.out" ]; then
+         cat $DG_OBSERVER_DIR/nohup.out
          echo "Observer is not able to start. Exiting..."
       else
          echo "Observer creation and startup fail !! Exiting..."
@@ -134,13 +134,13 @@ if [ "${OBSERVER_ONLY}" = "true" ]; then
    else
       # Tail on observer log and wait (otherwise container will exit)
       echo "The following output is now a tail of the observer.log:"
-      tail -f $OBSERVER_DIR/observer.log &
+      tail -f $DG_OBSERVER_DIR/observer.log &
       childPID=$!
       wait $childPID
 
       # Show nohup output and exit
       echo "Exiting..."
-      cat $OBSERVER_DIR/nohup.out
+      cat $DG_OBSERVER_DIR/nohup.out
       exit 0;
    fi
 fi

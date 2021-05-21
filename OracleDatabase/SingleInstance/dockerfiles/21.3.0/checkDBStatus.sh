@@ -71,7 +71,7 @@ checkObserver() {
 ################ MAIN #######################
 #############################################
 
-if [ "$OBSERVER_ONLY" = "true" ]; then
+if [ "$DG_OBSERVER_ONLY" = "true" ]; then
    checkObserver
 else
    ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"

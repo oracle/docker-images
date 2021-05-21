@@ -58,10 +58,10 @@ ENV ORACLE_BASE=/opt/oracle \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
-    CREATE_STDBY=false \
+    STANDBY_DB=false \
     PRIMARY_DB_CONN_STR="" \
-    OBSERVER_ONLY=false \
-    OBSERVER_NAME=""
+    DG_OBSERVER_ONLY=false \
+    DG_OBSERVER_NAME=""
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \

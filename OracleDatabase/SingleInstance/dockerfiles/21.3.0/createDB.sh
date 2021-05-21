@@ -32,7 +32,7 @@ export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
 echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
 # Standby DB creation path
-if [ "${CREATE_STDBY}" = "true" ]; then
+if [ "${STANDBY_DB}" = "true" ]; then
   # Validation: Check if PRIMARY_DB_CONN_STR is provided or not
   if [ -z "${PRIMARY_DB_CONN_STR}" ]; then
     echo "ERROR: Please provide PRIMARY_DB_CONN_STR to connect with primary database. Exiting..."

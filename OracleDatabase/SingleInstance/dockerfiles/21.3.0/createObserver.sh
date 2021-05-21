@@ -6,10 +6,10 @@
 # Since: November, 2016
 # Author: abhishek.by.kumar@oracle.com
 # Description: Creates Data Guard Observer using the following parameters:
-#              $OBSERVER_NAME: Name of the observer
+#              $DG_OBSERVER_NAME: Name of the observer
 #              $PRIMARY_DB_CONN_STR: Connection string to connect with primary database
 #              $ORACLE_PWD: The Oracle password for sys user of the primary database
-#              $OBSERVER_DIR: Directory to store observer data, log files
+#              $DG_OBSERVER_DIR: Directory to store observer data, log files
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
@@ -29,9 +29,9 @@ if [ -z "${ORACLE_PWD}" ]; then
 fi
 
 # Creating the directory for Observer configuration and log file
-mkdir -p ${OBSERVER_DIR}
+mkdir -p ${DG_OBSERVER_DIR}
 
 # Starting observer in background
-nohup dgmgrl -echo sys/${ORACLE_PWD}@${PRIMARY_DB_CONN_STR} "START OBSERVER ${OBSERVER_NAME} FILE IS ${OBSERVER_DIR}/fsfo.dat LOGFILE IS ${OBSERVER_DIR}/observer.log" > ${OBSERVER_DIR}/nohup.out &
+nohup dgmgrl -echo sys/${ORACLE_PWD}@${PRIMARY_DB_CONN_STR} "START OBSERVER ${DG_OBSERVER_NAME} FILE IS ${DG_OBSERVER_DIR}/fsfo.dat LOGFILE IS ${DG_OBSERVER_DIR}/observer.log" > ${DG_OBSERVER_DIR}/nohup.out &
 # Sleep for dgmgrl to start observer in background otherwise container will exit
 sleep 4
