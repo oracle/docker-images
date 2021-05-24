@@ -75,7 +75,7 @@ export ARCHIVELOG_DIR=$ORACLE_BASE/oradata/$ORACLE_SID/$ARCHIVELOG_DIR_NAME
 
 # Start LISTENER and run DBCA
 lsnrctl start &&
-dbca -silent -createDatabase -enableArchive $ENABLE_ARCHIVELOG -archiveLogDest $ARCHIVELOG_DIR_NAME -responseFile $ORACLE_BASE/dbca.rsp ||
+dbca -silent -createDatabase -enableArchive $ENABLE_ARCHIVELOG -archiveLogDest $ARCHIVELOG_DIR -responseFile $ORACLE_BASE/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
 
