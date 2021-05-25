@@ -56,7 +56,7 @@ The character set for the database is set during creating of the database. 11gR2
 
 **NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension. So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
 
-    ./buildContainerImage.sh -i -e -v 19.3.0 -o '--build-arg SLIMMING=false'
+    ./buildContainerImage.sh -e -v 19.3.0 -o '--build-arg SLIMMING=false'
 
 ### Running Oracle Database in a container
 
