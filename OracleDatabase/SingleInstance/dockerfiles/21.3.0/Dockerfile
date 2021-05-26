@@ -41,6 +41,7 @@ ARG SLIMMING=true
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/21c/dbhome_1 \
+    ORACLE_BASE_HOME=/opt/oracle/homes/OraDB21Home1 \
     INSTALL_DIR=/opt/install \
     INSTALL_FILE_1="LINUX.X64_213000_db_home.zip" \
     INSTALL_RSP="db_inst.rsp" \
