@@ -59,6 +59,7 @@ ENV ORACLE_BASE=/opt/oracle \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
+    CLONE_DB=false \
     STANDBY_DB=false \
     PRIMARY_DB_CONN_STR="" \
     DG_OBSERVER_ONLY=false \

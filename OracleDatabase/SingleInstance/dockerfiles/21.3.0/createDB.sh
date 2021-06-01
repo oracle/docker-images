@@ -31,8 +31,8 @@ fi;
 export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
 echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
-# Standby DB creation path
-if [ "${STANDBY_DB}" = "true" ]; then
+# Clone/Standby DB creation path
+if [ "${STANDBY_DB}" = "true" ] || [ "${CLONE_DB}" = "true" ]; then
   # Validation: Check if PRIMARY_DB_CONN_STR is provided or not
   if [ -z "${PRIMARY_DB_CONN_STR}" ]; then
     echo "ERROR: Please provide PRIMARY_DB_CONN_STR to connect with primary database. Exiting..."
@@ -49,9 +49,17 @@ if [ "${STANDBY_DB}" = "true" ]; then
   PRIMARY_DB_PORT="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 2 | cut -d '/' -f 1`"
 
   # Creating the database using the dbca command
-  dbca -silent -createDuplicateDB -gdbName ${PRIMARY_DB_NAME} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -createAsStandby -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
-  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
-  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+  if [ "${STANDBY_DB}" = "true" ]; then
+    # Creating standby database
+    dbca -silent -createDuplicateDB -gdbName ${PRIMARY_DB_NAME} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -createAsStandby -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+  else
+    # Creating clone database after duplicating a primary database; CLONE_DB is set to true here
+    dbca -silent -createDuplicateDB -gdbName ${ORACLE_SID} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -databaseConfigType SINGLE -useOMF true -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+  fi
 
   # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
   mkdir -p $ORACLE_BASE_HOME/network/admin
