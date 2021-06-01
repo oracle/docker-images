@@ -25,12 +25,13 @@ Before you build the image make sure that you have provided the installation bin
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
     
-    Usage: buildContainerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [container build option]
+    Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x] [-i] [-o] [container build option]
     Builds a container image for Oracle Database.
     
     Parameters:
        -v: version to build
            Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  
+       -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
        -x: creates image based on 'Express Edition'
@@ -52,6 +53,10 @@ Before you build the image make sure that you have provided the installation bin
 You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
 The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
+
+**NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension. So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
+
+    ./buildContainerImage.sh -e -v 19.3.0 -o '--build-arg SLIMMING=false'
 
 ### Running Oracle Database in a container
 
