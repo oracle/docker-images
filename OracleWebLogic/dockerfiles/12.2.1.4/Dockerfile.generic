@@ -27,7 +27,7 @@
 # Extend base JRE image
 # You must build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8`
 # ----------------------------------------------------------------------------------------------
-FROM oracle/serverjre:8 as builder
+FROM store/oracle/serverjre:8 as builder
 
 # Labels
 # ------
@@ -70,7 +70,7 @@ RUN cd /u01 && ${JAVA_HOME}/bin/jar xf /u01/$FMW_PKG && cd - && \
     rm -rf /u01/oracle/cfgtoollogs
 
 # Final image stage
-FROM oracle/serverjre:8
+FROM store/oracle/serverjre:8
 
 ENV ORACLE_HOME=/u01/oracle \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
