@@ -53,7 +53,7 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### Go Toolset module
 
-* [`oraclelinux8-go-toolset:ol8`](oraclelinux8/go-toolset/ol8/Dockerfile)
+* [`oraclelinux8-golang:latest`](oraclelinux8/golang/latest/Dockerfile)
 
 ### Node.js module
 
