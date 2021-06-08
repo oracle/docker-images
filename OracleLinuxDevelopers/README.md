@@ -19,8 +19,8 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### Go
 
-* [`oraclelinux7-golang:1.15`](oraclelinux7/golang/1.16/Dockerfile)
-* [`oraclelinux7-golang:1.16`](oraclelinux7/golang/1.15/Dockerfile)
+* [`oraclelinux7-golang:1.15`](oraclelinux7/golang/1.15/Dockerfile)
+* [`oraclelinux7-golang:1.16`](oraclelinux7/golang/1.16/Dockerfile)
 
 ### Node.js
 
@@ -43,19 +43,25 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 * [`oraclelinux7-python:3.6`](oraclelinux7/python/3.6/Dockerfile)
 * [`oraclelinux7-python:3.6-oracledb`](oraclelinux7/python/3.6-oracledb/Dockerfile)
 
+### Ruby
+
+* [`oraclelinux7-ruby:2.6`](oraclelinux7/ruby/2.6/Dockerfile)
+* [`oraclelinux7-ruby:2.7`](oraclelinux7/ruby/2.7/Dockerfile)
+* [`oraclelinux7-ruby:2.7-nodejs`](oraclelinux7/ruby/2.7-nodejs/Dockerfile)
+
 ## Oracle Linux 8 based images
 
-### Go
+### Go Toolset module
 
-* [`oraclelinux8-golang:latest`](oraclelinux8/golang/latest/Dockerfile)
+* [`oraclelinux8-go-toolset:ol8`](oraclelinux8/go-toolset/ol8/Dockerfile)
 
-### Node.js
+### Node.js module
 
 * [`oraclelinux8-nodejs:12`](oraclelinux8/nodejs/12/Dockerfile)
 * [`oraclelinux8-nodejs:14`](oraclelinux8/nodejs/14/Dockerfile)
 * [`oraclelinux8-nodejs:14-oracledb`](oraclelinux8/nodejs/14-oracledb/Dockerfile)
 
-### PHP
+### PHP module
 
 * [`oraclelinux8-php:7.3-apache`](oraclelinux8/php/7.3-apache/Dockerfile)
 * [`oraclelinux8-php:7.3-cli`](oraclelinux8/php/7.3-cli/Dockerfile)
@@ -64,14 +70,18 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 * [`oraclelinux8-php:7.4-cli`](oraclelinux8/php/7.4-cli/Dockerfile)
 * [`oraclelinux8-php:7.4-fpm`](oraclelinux8/php/7.4-fpm/Dockerfile)
 
+### Python modules
 
-### Python
+> **Note**: Each version of Python is provided as a module for Oracle
+> Linux 8 as opposed to other languages which are provided as a single module\
+> with multiple AppStreams.
 
 * [`oraclelinux8-python:3.6`](oraclelinux8/python/3.6/Dockerfile)
 * [`oraclelinux8-python:3.6-oracledb`](oraclelinux8/python/3.6-oracledb/Dockerfile)
 * [`oraclelinux8-python:3.8`](oraclelinux8/python/3.8/Dockerfile)
+* [`oraclelinux8-python:3.9`](oraclelinux8/python/3.9/Dockerfile)
 
-### Ruby
+### Ruby module
 
 * [`oraclelinux8-ruby:2.6`](oraclelinux8/ruby/2.6/Dockerfile)
 * [`oraclelinux8-ruby:2.7`](oraclelinux8/ruby/2.7/Dockerfile)
