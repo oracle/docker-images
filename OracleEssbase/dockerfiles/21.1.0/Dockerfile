@@ -37,6 +37,7 @@ RUN mkdir /u01/config /u01/data /u01/tmp && \
 # Essbase Prerequisites
 RUN yum install -y gcc gcc-c++ \
                    libgcc libgcc.i686 \
+                   numactl \
                    hostname && \
     yum clean all && \
     rm -rf /var/cache/yum /var/tmp/yum-root* /var/lib/yum/history /var/log/yum.log
