@@ -62,16 +62,16 @@ Set up the proxy for docker to connect to the outside world - to access external
 
 In this configuration creation of a user defined network will enable communication between the containers just using container names. User defined network option was preferred over the container linking option as the latter is now deprecated. For this setup we will use a user defined network using bridge driver.Create a user defined network using the bridge driver by executing the following command:
 
-        $ docker network create -d bridge <some name>
+        $ docker network create -d bridge <network_name>
 
 Sample command ...
 
-        $ docker network create -d WCContentNetwork
+        $ docker network create -d bridge WCContentNET
 
 ## 3.4. Mount a host directory as a data volume
-You need to mount volumes, which are directories stored outside a container's file system, to store WebLogic domain files and any other configuration files. 
+Data volumes are designed to persist data, independent of the container’s lifecycle. The default location of the volume in container is under `/var/lib/docker/volumes`. There is an option to mount a host directory into a container as the volume. We will use that option for the data volume, to store WebLogic domain files and any other configuration files. 
 
-To mount a host directory (`$DATA_VOLUME`) as a data volume, execute the below command.
+To mount a host directory `<YOUR_HOST_DIRECTORY_PATH>/wccontent` as `$DATA_VOLUME`, execute the below command.
 
 > The userid can be anything but it must belong to uid:guid as 1000:1000, which is same as 'oracle' user running in the container.
 
@@ -79,13 +79,16 @@ To mount a host directory (`$DATA_VOLUME`) as a data volume, execute the below c
 
 ```
 sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
-mkdir -p /<YOUR_HOST_DIRECTTORY_PATH>/wccontent
-sudo chown 1000:1000 /<YOUR_HOST_DIRECTTORY_PATH>/wccontent
+mkdir -p /<YOUR_HOST_DIRECTORY_PATH>/wccontent
+sudo chown 1000:1000 /<YOUR_HOST_DIRECTORY_PATH>/wccontent
+export DATA_VOLUME=/<YOUR_HOST_DIRECTORY_PATH>/wccontent
 ```
 
 All container operations are performed as **'oracle'** user.
 
-**Note**: If a user already exists with **'-u 1000 -g 1000'** then use the same user. Or modify any existing user to have uid-gid as **'-u 1000 -g 1000'**
+> If a user already exists with **'-u 1000 -g 1000'** then use the same user. Or modify any existing user to have uid-gid as **'-u 1000 -g 1000'**
+
+> Set the path of the `DATA_VOLUME` on all terminals where containers are to be started.
 
 ## 3.5. Database
 You need to have a running database container or a database running on any machine. 
@@ -146,12 +149,13 @@ To run the Oracle WebCenter Content in containers, you need to create:
 Create an environment file `webcenter.env.list` file, to define the parameters.
 
 Update the parameters inside `webcenter.env.list` as per your local setup.
-Please note: all parameters mentioned below are manadatory and must not be omitted or left blank. 
+
+Please note: All parameters mentioned below are manadatory and must not be omitted or left blank. The parameter `component` is meant for future integration of associated products. 
 
 ```
 #Database Configuration
 DB_DROP_AND_CREATE=<true or false>
-DB_CONNECTION_STRING=<Hostname/ContainerName>:<Database Port>:<Database Service>
+DB_CONNECTION_STRING=<Hostname>:<Database Port>/<Database Service>
 DB_RCUPREFIX=<RCU Prefix>
 DB_PASSWORD=<Database Password>
 DB_SCHEMA_PASSWORD=<Schema Password>
@@ -186,11 +190,11 @@ KEEP_CONTAINER_ALIVE=true
 Run the following command to create the Admin Server container:
 
 ```
-docker run -it --name WCCAdminContainer --network=WCContentNET -p <Any Free Port>:<ADMIN_PORT> -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4.0
+docker run -it --name WCCAdminContainer --network=WCContentNET -p <Any Free Port>:<ADMIN_PORT> -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4
 
 # A sample command will look ike this -
 
-docker run -it --name WCCAdminContainer --network=WCContentNET -p 7001:7001 -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4.0
+docker run -it --name WCCAdminContainer --network=WCContentNET -p 7001:7001 -v $DATA_VOLUME:/u01/oracle/user_projects --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4
 ```
 **Note:** 
 
@@ -227,11 +231,11 @@ docker start -i WCCAdminContainer
 Run the following command to create the WCContent Managed Server container:
 
 ```
-docker run -it --name WCContentContainer --network=WCContentNET -p <UCM_HOST_PORT>:<UCM_PORT> -p <IBR_HOST_PORT>:<IBR_PORT> -p <UCM_INTRADOC_PORT>:<UCM_INTRADOC_PORT> -p <IBR_INTRADOC_PORT>:<IBR_INTRADOC_PORT> --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4.0 configureOrStartWebCenterContent.sh
+docker run -it --name WCContentContainer --network=WCContentNET -p <UCM_HOST_PORT>:<UCM_PORT> -p <IBR_HOST_PORT>:<IBR_PORT> -p <UCM_INTRADOC_PORT>:<UCM_INTRADOC_PORT> -p <IBR_INTRADOC_PORT>:<IBR_INTRADOC_PORT> --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartWebCenterContent.sh
 
 # A sample command will look like this -
 
-docker run -it --name WCContentContainer --network=WCContentNET -p 16200:16200 -p 16250:16250 -p 4444:4444 -p 5555:5555 --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4.0 configureOrStartWebCenterContent.sh
+docker run -it --name WCContentContainer --network=WCContentNET -p 16200:16200 -p 16250:16250 -p 4444:4444 -p 5555:5555 --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartWebCenterContent.sh
 ```
 The `docker run` command creates the container as well as starts the WebCenter Content managed servers. 
 

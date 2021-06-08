@@ -49,6 +49,9 @@ spec:
       labels:
         app: oracle-rdbms
     spec:
+      securityContext:
+        runAsUser: 54321
+        fsGroup: 54321
       containers:
         - name: rdbms
           image: local-repo/oracle/database:19.3.0-ee

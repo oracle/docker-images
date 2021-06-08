@@ -1,21 +1,21 @@
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle OpenJDK 15
+# This is the Dockerfile for Oracle OpenJDK 16
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) openjdk-15.xx_linux-x64_bin.tar.gz
-#     Downloaded from https://jdk.java.net/15/
+# (1) openjdk-16.xx_linux-x64_bin.tar.gz
+#     Downloaded from https://jdk.java.net/16/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/openjdk:15 .
+#      $ docker build -t oracle/openjdk:16 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -26,10 +26,11 @@ FROM oraclelinux:8-slim
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 
-ENV JAVA_PKG=https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz \
-	JAVA_SHA256=91ac6fc353b6bf39d995572b700e37a20e119a87034eeb939a6f24356fbcd207 \
-	JAVA_VERSION=15.0.2 \
-	JAVA_HOME=/usr/java/jdk-15 \
+
+ENV JAVA_PKG=https://download.java.net/java/GA/jdk16.0.1/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-16.0.1_linux-x64_bin.tar.gz \
+	JAVA_SHA256=b1198ffffb7d26a3fdedc0fa599f60a0d12aa60da1714b56c1defbce95d8b235 \
+	JAVA_VERSION=16.0.1 \
+	JAVA_HOME=/usr/java/jdk-16 \
 	LANG=en_US.UTF-8
 
 ENV	PATH $JAVA_HOME/bin:$PATH

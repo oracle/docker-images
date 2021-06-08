@@ -46,7 +46,7 @@ ENV DATAPATCH_FILE="runDatapatch.sh" \
 ARG EXTENSION_NAME="patching"
 
 # Copying patched oracle_base from previous layer
-COPY --chown=oracle:dba --from=patching $ORACLE_BASE $ORACLE_BASE
+COPY --from=patching $ORACLE_BASE $ORACLE_BASE
 
 # Copy script to run datapatch
 COPY --chown=oracle:dba $DATAPATCH_FILE $ORACLE_BASE/scripts/startup
@@ -57,11 +57,19 @@ COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/setup
 RUN chmod ug+x $ORACLE_BASE/scripts/setup/*.sh && sync
 
 # backup origin runOracle
-RUN mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
+RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
+    mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN"
 
 # Copy updated runOracle.sh
 COPY  --chown=oracle:dba $RUN_FILE $ORACLE_BASE/
-RUN chmod ug+x $ORACLE_BASE/*.sh && sync
+RUN mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
 
 # Append a call to main runOracle
-RUN echo -e "\n. $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" >> "$ORACLE_BASE/$RUN_FILE"
+RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
+        mv "$ORACLE_BASE/$RUN_FILE.extended" "$ORACLE_BASE/$RUN_FILE" ; \
+     else echo ". $ORACLE_BASE/$RUN_FILE.orig" > "$ORACLE_BASE/$RUN_FILE" ; fi ; \
+     if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
+        sed  -i "1i . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
+     fi && \
+     chmod ug+x $ORACLE_BASE/*.sh && sync
+

@@ -70,9 +70,12 @@ DEDICATED_THROUGH_BROKER_LISTENER=ON
 DIAG_ADR_ENABLED = off
 " > $ORACLE_HOME/network/admin/listener.ora
 
+# Directory for storing archive logs
+export ARCHIVELOG_DIR=$ORACLE_BASE/oradata/$ORACLE_SID/$ARCHIVELOG_DIR_NAME
+
 # Start LISTENER and run DBCA
 lsnrctl start &&
-dbca -silent -createDatabase -responseFile $ORACLE_BASE/dbca.rsp ||
+dbca -silent -createDatabase -enableArchive $ENABLE_ARCHIVELOG -archiveLogDest $ARCHIVELOG_DIR -responseFile $ORACLE_BASE/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
 
@@ -87,11 +90,19 @@ echo "$ORACLE_PDB=
   )" >> $ORACLE_HOME/network/admin/tnsnames.ora
 
 # Remove second control file, fix local_listener, make PDB auto open, enable EM global port
+# Create externally mapped oracle user for health check
 sqlplus / as sysdba << EOF
    ALTER SYSTEM SET control_files='$ORACLE_BASE/oradata/$ORACLE_SID/control01.ctl' scope=spfile;
    ALTER SYSTEM SET local_listener='';
    ALTER PLUGGABLE DATABASE $ORACLE_PDB SAVE STATE;
    EXEC DBMS_XDB_CONFIG.SETGLOBALPORTENABLED (TRUE);
+
+   ALTER SESSION SET "_oracle_script" = true;
+   CREATE USER OPS\$oracle IDENTIFIED EXTERNALLY;
+   GRANT CREATE SESSION TO OPS\$oracle;
+   GRANT SELECT ON sys.v_\$pdbs TO OPS\$oracle;
+   ALTER USER OPS\$oracle SET container_data=all for sys.v_\$pdbs container = current;
+
    exit;
 EOF
 

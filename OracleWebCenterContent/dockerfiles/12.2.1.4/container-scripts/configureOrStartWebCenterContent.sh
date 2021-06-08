@@ -68,9 +68,9 @@ hostalias=`echo $hostname | sed  's/[.]//g'`
 truncatedhostname=${hostalias}
 
 
-if [ ${#truncatedhostname} -gt "20" ]
+if [ ${#truncatedhostname} -ge "15" ]
 then
-    truncatedhostname=${truncatedhostname:0:10}
+    truncatedhostname=${truncatedhostname:0:14}
 fi
 
 if [ -f /$vol_name/oracle//oracle_common/lib/ons.jar ]

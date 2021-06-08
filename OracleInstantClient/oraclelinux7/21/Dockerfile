@@ -8,8 +8,8 @@
 # --------------------------------------------
 #
 # Execute:
-#      $ docker build --pull -t oracle/instantclient:21 .
-#      $ docker run -ti --rm oracle/instantclient:21 sqlplus -l hr@example.com/orclpdb1
+#      $ docker build --pull -t oraclelinux7-instantclient:21 .
+#      $ docker run -ti --rm oraclelinux7-instantclient:21 sqlplus -l hr@example.com/orclpdb1
 #
 # NOTES
 # -----
@@ -45,8 +45,8 @@
 # ------------------------------
 #
 # Instant Client 21 Packages for Oracle Linux 7 are available from
-# https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient21/x86_64/
-# See https://yum.oracle.com/oracle-instant-client.html
+#   https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient21/x86_64/
+# Also see https://yum.oracle.com/oracle-instant-client.html
 #
 # Base - one of these packages is required to run applications and tools
 #   oracle-instantclient-basic      : Basic Package - All files required to run OCI, OCCI, and JDBC-OCI applications
@@ -61,6 +61,13 @@
 #   oracle-instantclient-jdbc       : JDBC Supplement Package - Additional support for Internationalization under JDBC
 #   oracle-instantclient-odbc       : ODBC Package - Additional libraries for enabling ODBC applications
 #
+# PREBUILT CONTAINER
+# ------------------
+#
+# A prebuilt container from this Dockerfile is available from
+#   https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient
+# and can be pulled with:
+#   docker pull ghcr.io/oracle/oraclelinux7-instantclient:21
 
 FROM oraclelinux:7-slim
 

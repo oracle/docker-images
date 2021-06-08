@@ -124,7 +124,6 @@ class WCPortal12214Provisioner:
     def extendDomain(self, domainHome, db, dbPrefix, dbPassword):
         print 'Extending domain at ' + domainHome
         readDomain(domainHome)
-        setOption('AppDir', self.domainParentDir + '/applications')
 
         print 'Applying JRF templates...'
         for extensionTemplate in self.JRF_12214_TEMPLATES['extensionTemplates']:
