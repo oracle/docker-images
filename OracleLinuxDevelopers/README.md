@@ -19,16 +19,15 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### Go
 
-* [`oraclelinux7-golang:1.13`](oraclelinux7/golang/1.13/Dockerfile)
-* [`oraclelinux7-golang:1.14`](oraclelinux7/golang/1.14/Dockerfile)
+* [`oraclelinux7-golang:1.15`](oraclelinux7/golang/1.16/Dockerfile)
+* [`oraclelinux7-golang:1.16`](oraclelinux7/golang/1.15/Dockerfile)
 
 ### Node.js
 
-* [`oraclelinux7-nodejs:10`](oraclelinux7/nodejs/10/Dockerfile)
-* [`oraclelinux7-nodejs:10-oracledb`](oraclelinux7/nodejs/10-oracledb/Dockerfile)
 * [`oraclelinux7-nodejs:12`](oraclelinux7/nodejs/12/Dockerfile)
 * [`oraclelinux7-nodejs:12-oracledb`](oraclelinux7/nodejs/12-oracledb/Dockerfile)
 * [`oraclelinux7-nodejs:14`](oraclelinux7/nodejs/14/Dockerfile)
+* [`oraclelinux7-nodejs:14-oracledb`](oraclelinux7/nodejs/14-oracledb/Dockerfile)
 
 ### PHP
 
@@ -48,25 +47,31 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### Go
 
-* [`oraclelinux8-golang:1.13`](oraclelinux8/golang/1.13/Dockerfile)
+* [`oraclelinux8-golang:latest`](oraclelinux8/golang/latest/Dockerfile)
 
 ### Node.js
 
-* [`oraclelinux8-nodejs:10`](oraclelinux8/nodejs/10/Dockerfile)
 * [`oraclelinux8-nodejs:12`](oraclelinux8/nodejs/12/Dockerfile)
 * [`oraclelinux8-nodejs:14`](oraclelinux8/nodejs/14/Dockerfile)
+* [`oraclelinux8-nodejs:14-oracledb`](oraclelinux8/nodejs/14-oracledb/Dockerfile)
 
 ### PHP
 
-* [`oraclelinux8-php:7.2-apache`](oraclelinux8/php/7.2-apache/Dockerfile)
 * [`oraclelinux8-php:7.3-apache`](oraclelinux8/php/7.3-apache/Dockerfile)
-* [`oraclelinux8-php:7.2-cli`](oraclelinux8/php/7.2-cli/Dockerfile)
 * [`oraclelinux8-php:7.3-cli`](oraclelinux8/php/7.3-cli/Dockerfile)
-* [`oraclelinux8-php:7.2-fpm`](oraclelinux8/php/7.2-fpm/Dockerfile)
 * [`oraclelinux8-php:7.3-fpm`](oraclelinux8/php/7.3-fpm/Dockerfile)
+* [`oraclelinux8-php:7.4-apache`](oraclelinux8/php/7.4-apache/Dockerfile)
+* [`oraclelinux8-php:7.4-cli`](oraclelinux8/php/7.4-cli/Dockerfile)
+* [`oraclelinux8-php:7.4-fpm`](oraclelinux8/php/7.4-fpm/Dockerfile)
 
 
 ### Python
 
 * [`oraclelinux8-python:3.6`](oraclelinux8/python/3.6/Dockerfile)
+* [`oraclelinux8-python:3.6-oracledb`](oraclelinux8/python/3.6-oracledb/Dockerfile)
 * [`oraclelinux8-python:3.8`](oraclelinux8/python/3.8/Dockerfile)
+
+### Ruby
+
+* [`oraclelinux8-ruby:2.6`](oraclelinux8/ruby/2.6/Dockerfile)
+* [`oraclelinux8-ruby:2.7`](oraclelinux8/ruby/2.7/Dockerfile)
