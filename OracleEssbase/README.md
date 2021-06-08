@@ -14,7 +14,9 @@ To build the Essbase image either you can start from building Oracle JDK and Ora
 
 NOTE: If you download the Oracle Fusion Middleware Infrastructure image from the [Oracle Container Registry](https://container-registry.oracle.com) then you need to retag the image with appropriate version. e.g. for the 12.2.1.4.0 version, retag from `container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4` to `oracle/fmw-infrastructure:12.2.1.4`.
 
+```
 $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4
+```
 
 ### Building the Oracle Java (Server JRE) Image
 
@@ -38,24 +40,32 @@ Extract the downloaded zip files and copy the `essbase_211_installer/essbase-21.
 
 If a proxy is needed for the host to access yum.oracle.com during build, then first set up the appropriate environment, e.g.:
 
-        $ export http_proxy=myproxy.example.com:80
-        $ export https_proxy=myproxy.example.com:80
-        $ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
+```
+$ export http_proxy=myproxy.example.com:80
+$ export https_proxy=myproxy.example.com:80
+$ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
+```
 
 Build the Oracle Essbase 21.1.0 image using:
 
+```
 $ sh buildContainerImage.sh -v 21.1.0
 
-   Usage: buildContainerImage.sh -v [version]
-   Builds a Container Image for Oracle Essbase.
+Usage: buildContainerImage.sh -v [version]
+Builds a Container Image for Oracle Essbase.
+```
 
 Verify you now have the image `oracle/essbase:21.1.0` in place with 
 
+```
 $ docker images | grep "essbase"
+```
 
 If you are building the Essbase image with patches, you can verify the patches applied with:
 
+```
 $ docker run oracle/essbase:21.1.0 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'
+```
 
 >IMPORTANT: The image created in above step will NOT have a domain pre-configured. But it has the scripts to create and configure a Essbase domain.
 
@@ -120,4 +130,3 @@ All scripts and files hosted in this project and GitHub [docker/OracleEssbase](.
 ## Copyright
 
 Copyright (c) 2021, Oracle and/or its affiliates.
-
