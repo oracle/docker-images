@@ -62,13 +62,13 @@ if [ "${STANDBY_DB}" = "true" ] || [ "${CLONE_DB}" = "true" ]; then
   fi
 
   # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
-  mkdir -p $ORACLE_BASE_HOME/network/admin
+  mkdir -p $ORACLE_HOME/network/admin
 
   # Creating sqlnet.ora
-  echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+  echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_HOME/network/admin/sqlnet.ora
 
   # Creating tnsnames.ora
-  cat > $ORACLE_BASE_HOME/network/admin/tnsnames.ora<<EOF
+  cat > $ORACLE_HOME/network/admin/tnsnames.ora<<EOF
 ${ORACLE_PDB}=
   (DESCRIPTION =
     (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
@@ -101,7 +101,7 @@ EOF
 
   # Re-creating listener.ora for aiding DG configuration
   
-  cat > $ORACLE_BASE_HOME/network/admin/listener.ora<<EOF
+  cat > $ORACLE_HOME/network/admin/listener.ora<<EOF
 LISTENER =
   (DESCRIPTION_LIST =
     (DESCRIPTION =
@@ -120,7 +120,7 @@ SID_LIST_LISTENER =
       (GLOBAL_DBNAME=${ORACLE_SID}_DGMGRL)
       (SID_NAME = ${ORACLE_SID})
       (ORACLE_HOME=${ORACLE_HOME})
-      (ENVS="TNS_ADMIN=${ORACLE_BASE_HOME}/network/admin")
+      (ENVS="TNS_ADMIN=${ORACLE_HOME}/network/admin")
     )
   )
 EOF
