@@ -31,6 +31,111 @@ fi;
 export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
 echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 
+# Clone/Standby DB creation path
+if [ "${STANDBY_DB}" = "true" ] || [ "${CLONE_DB}" = "true" ]; then
+  # Validation: Check if PRIMARY_DB_CONN_STR is provided or not
+  if [ -z "${PRIMARY_DB_CONN_STR}" ]; then
+    echo "ERROR: Please provide PRIMARY_DB_CONN_STR to connect with primary database. Exiting..."
+    exit 1
+  fi
+  # Validation: Check if ORACLE_PWD is provided or not
+  if [ -z "${ORACLE_PWD}" ]; then
+    echo "ERROR: Please provide password of sys user as ORACLE_PWD to connect with primary database. Exiting..."
+    exit 1
+  fi
+  # Primary database parameters extration
+  PRIMARY_DB_NAME="`echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2`"
+  PRIMARY_DB_IP="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 1`"
+  PRIMARY_DB_PORT="`echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 2 | cut -d '/' -f 1`"
+
+  # Creating the database using the dbca command
+  if [ "${STANDBY_DB}" = "true" ]; then
+    # Creating standby database
+    dbca -silent -createDuplicateDB -gdbName ${PRIMARY_DB_NAME} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -createAsStandby -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+  else
+    # Creating clone database after duplicating a primary database; CLONE_DB is set to true here
+    dbca -silent -createDuplicateDB -gdbName ${ORACLE_SID} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -databaseConfigType SINGLE -useOMF true -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
+    cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+  fi
+
+  # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
+  mkdir -p $ORACLE_BASE_HOME/network/admin
+
+  # Creating sqlnet.ora
+  echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+
+  # Creating tnsnames.ora
+  cat > $ORACLE_BASE_HOME/network/admin/tnsnames.ora<<EOF
+${ORACLE_PDB}=
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ${ORACLE_PDB})
+    )
+  )
+${PRIMARY_DB_NAME} =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = ${PRIMARY_DB_IP})(PORT = ${PRIMARY_DB_PORT}))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ${PRIMARY_DB_NAME})
+    )
+  )
+${ORACLE_SID} =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = ${ORACLE_SID})
+    )
+  )
+EOF
+
+  # Re-creating listener.ora for aiding DG configuration
+  
+  cat > $ORACLE_BASE_HOME/network/admin/listener.ora<<EOF
+LISTENER =
+  (DESCRIPTION_LIST =
+    (DESCRIPTION =
+      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+    )
+  )
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME=${ORACLE_SID})
+      (SID_NAME = ${ORACLE_SID})
+      (ORACLE_HOME=${ORACLE_HOME})
+    )
+    (SID_DESC =
+      (GLOBAL_DBNAME=${ORACLE_SID}_DGMGRL)
+      (SID_NAME = ${ORACLE_SID})
+      (ORACLE_HOME=${ORACLE_HOME})
+      (ENVS="TNS_ADMIN=${ORACLE_BASE_HOME}/network/admin")
+    )
+  )
+EOF
+
+  # Reload the listener
+  lsnrctl reload
+
+  # Enabling flashback database in Standby database
+  sqlplus -s / as sysdba <<EOF
+ALTER DATABASE FLASHBACK ON;
+EOF
+
+  exit 0
+fi
+
 # Replace place holders in response file
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp

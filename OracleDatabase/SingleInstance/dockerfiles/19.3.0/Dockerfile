@@ -49,6 +49,7 @@ ENV ORACLE_BASE=/opt/oracle \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
     CREATE_DB_FILE="createDB.sh" \
+    CREATE_OBSERVER_FILE="createObserver.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
@@ -57,7 +58,12 @@ ENV ORACLE_BASE=/opt/oracle \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
-    ARCHIVELOG_DIR_NAME=archive_logs
+    ARCHIVELOG_DIR_NAME=archive_logs \
+    CLONE_DB=false \
+    STANDBY_DB=false \
+    PRIMARY_DB_CONN_STR="" \
+    DG_OBSERVER_ONLY=false \
+    DG_OBSERVER_NAME=""
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
