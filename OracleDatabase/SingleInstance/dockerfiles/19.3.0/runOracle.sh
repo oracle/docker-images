@@ -88,7 +88,7 @@ EOF
 
 # Check whether container has enough memory
 if [[ -f /sys/fs/cgroup/cgroup.controllers ]]; then
-   memory=$(cat /sys/fs/cgroup/memory.high)
+   memory=$(cat /sys/fs/cgroup/memory.max)
 else
    memory=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
 fi
