@@ -50,11 +50,11 @@ COPY --from=patching $ORACLE_BASE $ORACLE_BASE
 
 # Copy script to run datapatch
 COPY --chown=oracle:dba $DATAPATCH_FILE $ORACLE_BASE/scripts/extensions/startup/
-RUN chmod ug+x $ORACLE_BASE/scripts/startup/*.sh && sync
+RUN chmod ug+x $ORACLE_BASE/scripts/extensinons/startup/*.sh && sync
 
 # Copy script to run lspatches
 COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup/
-RUN chmod ug+x $ORACLE_BASE/scripts/setup/*.sh && sync
+RUN chmod ug+x $ORACLE_BASE/scripts/extensions/setup/*.sh && sync
 
 # backup origin runOracle
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
