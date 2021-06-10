@@ -48,7 +48,7 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='o
 # Copy updated scripts for k8s support 
 COPY  --chown=oracle:dba $RUN_FILE $START_FILE $STARTUP_FILE $SHUT_DB_FILE $LOCKING_SCRIPT $CHECK_DB_LOCK_FILE $ORACLE_BASE/
 RUN   mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
-COPY  --chown=oracle:dba $SWAP_LOCK_FILE $ORACLE_BASE/scripts/setup/
+COPY  --chown=oracle:dba $SWAP_LOCK_FILE $ORACLE_BASE/scripts/extensions/setup/
 
 # Set perms and append a call to main runOracle
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \

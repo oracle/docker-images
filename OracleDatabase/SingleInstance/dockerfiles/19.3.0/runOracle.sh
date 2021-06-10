@@ -172,7 +172,9 @@ else
 
   # Move database operational files to oradata
   moveFiles;
-   
+
+  # Execute setup script for extensions
+  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/extensions/setup
   # Execute custom provided setup scripts
   $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/setup
 fi;
@@ -183,7 +185,9 @@ if [ $? -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
   echo "#########################"
-  
+
+  # Execute startup script for extensions
+  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/extensions/startup
   # Execute custom provided startup scripts
   $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
   
