@@ -57,7 +57,8 @@ ENV ORACLE_BASE=/opt/oracle \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
-    ARCHIVELOG_DIR_NAME=archive_logs
+    ARCHIVELOG_DIR_NAME=archive_logs \
+    DB_CHECKPOINT_FILE=".db_ready"
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \

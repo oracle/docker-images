@@ -148,7 +148,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 . "$ORACLE_BASE/$RELINK_BINARY_FILE"
 
 # Check whether database already exists
-if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
+if [ -f $ORACLE_BASE/oradata/$ORACLE_SID/$DB_CHECKPOINT_FILE ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -167,6 +167,9 @@ else
   rm -f $ORACLE_HOME/network/admin/listener.ora
   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
+  # Remove ORACLE_SID folder to remove datafiles , if it exists
+  rm -rf $ORACLE_BASE/oradata/$ORACLE_SID
+
   # Create database
   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
 
@@ -186,6 +189,8 @@ if [ $? -eq 0 ]; then
   echo "DATABASE IS READY TO USE!"
   echo "#########################"
 
+  # Create a checkfile if database exists
+  touch $ORACLE_BASE/oradata/$ORACLE_SID/$DB_CHECKPOINT_FILE
   # Execute startup script for extensions
   $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/extensions/startup
   # Execute custom provided startup scripts
