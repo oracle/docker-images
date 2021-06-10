@@ -49,11 +49,11 @@ ARG EXTENSION_NAME="patching"
 COPY --from=patching $ORACLE_BASE $ORACLE_BASE
 
 # Copy script to run datapatch
-COPY --chown=oracle:dba $DATAPATCH_FILE $ORACLE_BASE/scripts/extensions/startup
+COPY --chown=oracle:dba $DATAPATCH_FILE $ORACLE_BASE/scripts/extensions/startup/
 RUN chmod ug+x $ORACLE_BASE/scripts/startup/*.sh && sync
 
 # Copy script to run lspatches
-COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup
+COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup/
 RUN chmod ug+x $ORACLE_BASE/scripts/setup/*.sh && sync
 
 # backup origin runOracle
