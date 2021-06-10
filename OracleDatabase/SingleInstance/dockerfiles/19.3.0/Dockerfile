@@ -58,7 +58,7 @@ ENV ORACLE_BASE=/opt/oracle \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
     ARCHIVELOG_DIR_NAME=archive_logs \
-    DB_CHECKPOINT_FILE=".db_ready"
+    CHECKPOINT_FILE=".db_exist"
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
