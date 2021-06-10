@@ -36,7 +36,7 @@ EOF
 done
 
 # startup can get into a wait mode here
-$ORACLE_BASE/scripts/setup/$SWAP_LOCK_FILE
+$ORACLE_BASE/scripts/extensions/setup/$SWAP_LOCK_FILE
 
 # Start Listener
 lsnrctl start
