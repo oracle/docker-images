@@ -182,7 +182,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 . "$ORACLE_BASE/$RELINK_BINARY_FILE"
 
 # Check whether database already exists
-if [ -d $ORACLE_BASE/oradata/$ORACLE_SID/.existdb ]; then
+if [ -f $ORACLE_BASE/oradata/$ORACLE_SID/.exist_db ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -222,7 +222,7 @@ if [ $? -eq 0 ]; then
   echo "#########################"
   
   # Create a checkfile if database exists
-  touch $ORACLE_BASE/oradata/$ORACLE_SID/.existdb
+  touch $ORACLE_BASE/oradata/$ORACLE_SID/.exist_db
 
   # Execute custom provided startup scripts
   $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
