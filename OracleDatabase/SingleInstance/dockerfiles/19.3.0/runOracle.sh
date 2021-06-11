@@ -167,7 +167,7 @@ else
   rm -f $ORACLE_HOME/network/admin/listener.ora
   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
    
-  # Remove incomplete database files
+  # Clean up incomplete database
   rm -rf $ORACLE_BASE/oradata/$ORACLE_SID
 
   # Create database
