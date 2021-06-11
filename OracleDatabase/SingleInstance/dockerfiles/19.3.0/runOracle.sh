@@ -173,6 +173,7 @@ else
   # Create database
   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
 
+  # Check whether database successfully created
   $ORACLE_BASE/$CHECK_DB_FILE
   if [ $? -eq 0 ]; then
     # Create a checkfile if database exists
