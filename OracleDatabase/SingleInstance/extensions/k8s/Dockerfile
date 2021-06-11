@@ -57,4 +57,4 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
     if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
         sed  -i "1i . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
     fi && \
-    chmod ug+x $ORACLE_BASE/*.sh $ORACLE_BASE/*.py && sync
+    chmod ug+x $ORACLE_BASE/*.sh $ORACLE_BASE/scripts/extensions/setup/*.sh $ORACLE_BASE/*.py && sync
