@@ -39,7 +39,6 @@ RUN yum install -y gcc gcc-c++ \
                    libgcc libgcc.i686 \
                    numactl \
                    hostname && \
-    yum clean all && \
     rm -rf /var/cache/yum /var/tmp/yum-root* /var/lib/yum/history /var/log/yum.log
 
 #
@@ -65,7 +64,8 @@ RUN cd /u01 && \
 
 # Apply Patches
 COPY --chown=oracle:oracle patches /u01/patches
-RUN /u01/patches/apply-patches.sh && \
+RUN chmod +x /u01/patches/apply-patches.sh && \
+    /u01/patches/apply-patches.sh && \
     rm -rf /u01/patches
 
 #
@@ -116,6 +116,7 @@ ENV DOMAIN_NAME="${DOMAIN_NAME:-essbase_domain}" \
 USER oracle
 COPY --from=builder --chown=oracle:oracle /u01 /u01
 COPY --chown=oracle:oracle container-scripts /u01/container-scripts
+RUN chmod +x /u01/container-scripts/*.sh
 COPY etc /etc
 
 # Healthcheck
