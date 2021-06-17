@@ -12,12 +12,13 @@
 usage() {
   cat << EOF
 
-Usage: buildContainerImage.sh -v [version] [-e | -s | -x] [-i] [-o] [container build option]
+Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x] [-i] [-o] [container build option]
 Builds a container image for Oracle Database.
 
 Parameters:
    -v: version to build
        Choose one of: $(for i in */; do echo -n "${i%%/}  "; done)
+   -t: image_name:tag for the generated docker image
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
@@ -111,13 +112,14 @@ declare -a BUILD_OPTS
 MIN_DOCKER_VERSION="17.09"
 MIN_PODMAN_VERSION="1.6.0"
 DOCKERFILE="Dockerfile"
+IMAGE_NAME=""
 
 if [ "$#" -eq 0 ]; then
   usage;
   exit 1;
 fi
 
-while getopts "hesxiv:o:" optname; do
+while getopts "hesxiv:t:o:" optname; do
   case "${optname}" in
     "h")
       usage
@@ -137,6 +139,9 @@ while getopts "hesxiv:o:" optname; do
       ;;
     "v")
       VERSION="${OPTARG}"
+      ;;
+    "t")
+      IMAGE_NAME="${OPTARG}"
       ;;
     "o")
       eval "BUILD_OPTS=(${OPTARG})"
@@ -181,7 +186,10 @@ if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERS
 fi;
 
 # Oracle Database image Name
-IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
+# If provided using -t build option then use it; Otherwise, create with version and edition
+if [ -z "${IMAGE_NAME}" ]; then
+  IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
+fi;
 
 # Go into version folder
 cd "${VERSION}" || {

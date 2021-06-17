@@ -1,0 +1,13 @@
+# LICENSE UPL 1.0
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+[ENGINE]
+
+#DO NOT CHANGE THIS.
+Response File Version=1.0.0.0.0
+
+[GENERIC]
+INSTALL_TYPE=B2B
+
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false

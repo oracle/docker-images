@@ -17,6 +17,7 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Cloud Infrastructure Tools](/OracleCloudInfrastructure)
 - [Oracle Coherence](/OracleCoherence)
 - [Oracle Database](/OracleDatabase)
+- [Oracle Essbase](/OracleEssbase)
 - [Oracle FMW Infrastructure](/OracleFMWInfrastructure)
 - [Oracle GoldenGate](/OracleGoldenGate)
 - [Oracle HTTP Server](/OracleHTTPServer)
