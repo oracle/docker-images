@@ -69,7 +69,8 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 ##
-RUN	ln -sfT "$JAVA_HOME" /usr/java/default; \
+RUN	yum -y update; \
+	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
 	for bin in "$JAVA_HOME/bin/"*; do \
 		base="$(basename "$bin")"; \

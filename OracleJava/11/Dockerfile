@@ -68,6 +68,8 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
+# Update the base image
+	yum -y update; \
 	yum install -y \
 # JDK assumes freetype is available		
 		freetype fontconfig \
