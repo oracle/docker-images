@@ -37,6 +37,7 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 	
 # Since the files is compressed as tar.gz first yum install gzip and tar
 RUN set -eux; \
+	microdnf -y update; \
 	microdnf install -y \
 		gzip \
 		tar \
