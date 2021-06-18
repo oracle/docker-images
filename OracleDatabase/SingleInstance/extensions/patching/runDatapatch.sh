@@ -12,6 +12,7 @@
 #
 
 if [ "${SKIP_DATAPATCH}" = "true" ]; then
+  echo "Skipping Datapatch"
   exit 0;
 fi
 
