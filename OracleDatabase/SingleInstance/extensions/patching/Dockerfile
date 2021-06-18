@@ -40,7 +40,8 @@ RUN chmod ug+x $PATCH_DIR/*.sh && \
 ## New stage for minimal layer size
 FROM ${BASE_IMAGE}
 ENV DATAPATCH_FILE="runDatapatch.sh" \
-    LSPATCHES_FILE="savePatchSummary.sh"
+    LSPATCHES_FILE="savePatchSummary.sh" \
+    SKIP_DATAPATCH=false
 
 # Extn name
 ARG EXTENSION_NAME="patching"
