@@ -11,6 +11,10 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
+if [ "${SKIP_DATAPATCH}" = "true" ]; then
+  exit 0;
+fi
+
 # LSPATCHES_FILE will have the patch summary of the datafiles.
 DBCONFIG_DIR="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}"
 LSPATCHES_FILE="${DBCONFIG_DIR}/${ORACLE_SID}.lspatches"
