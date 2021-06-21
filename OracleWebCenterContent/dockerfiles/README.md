@@ -73,20 +73,20 @@ Data volumes are designed to persist data, independent of the container’s life
 
 To mount a host directory `<YOUR_HOST_DIRECTORY_PATH>/wccontent` as `$DATA_VOLUME`, execute the below command.
 
-> The userid can be anything but it must belong to uid:guid as 1000:1000, which is same as 'oracle' user running in the container.
+> The userid can be anything but it must belong to uid:guid as 1000:0, which is same as 'oracle' user running in the container.
 
 > This ensures 'oracle' user has access to shared volume.
 
 ```
-sudo /usr/sbin/useradd -u 1000 -g 1000 <new_userid>
+sudo /usr/sbin/useradd -u 1000 -g 0 oracle
 mkdir -p /<YOUR_HOST_DIRECTORY_PATH>/wccontent
-sudo chown 1000:1000 /<YOUR_HOST_DIRECTORY_PATH>/wccontent
+sudo chown 1000:0 /<YOUR_HOST_DIRECTORY_PATH>/wccontent
 export DATA_VOLUME=/<YOUR_HOST_DIRECTORY_PATH>/wccontent
 ```
 
 All container operations are performed as **'oracle'** user.
 
-> If a user already exists with **'-u 1000 -g 1000'** then use the same user. Or modify any existing user to have uid-gid as **'-u 1000 -g 1000'**
+> If a user already exists with **'-u 1000 -g 0'** then use the same user. Or modify any existing user to have uid-gid as **'-u 1000 -g 0'**
 
 > Set the path of the `DATA_VOLUME` on all terminals where containers are to be started.
 
@@ -94,7 +94,7 @@ All container operations are performed as **'oracle'** user.
 You need to have a running database container or a database running on any machine. 
 The database connection details are required for creating WebCenter Content specific RCU schemas while configuring WebCenter Content domain. 
 
-The Oracle Database image can be pulled from [Oracle Container Registry](https://container-registry.oracle.com) or build your own using the [Oracle Database Dockerfiles and scripts]((https://github.com/oracle/docker-images/tree/master/OracleDatabase)) in this repo.
+The Oracle Database image can be pulled from [Oracle Container Registry](https://container-registry.oracle.com) or build your own using the [Oracle Database Dockerfiles and scripts](https://github.com/oracle/docker-images/tree/main/OracleDatabase) in this repo.
 
 ## 3.6. Docker Security Configuration
 
@@ -115,18 +115,20 @@ Get Oracle Oracle Fusion Middleware Infrastructure image -
 Refer Documentation here: https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure
 ```
 docker login container-registry.oracle.com
-docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
-docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4.0
-docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
+docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
+docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407 oracle/fmw-infrastructure:12.2.1.4.0
+docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
 
 ```
 Alternatively to build this image yourself, please refer to this [README](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
 
 ## 4.2. Building container image for Oracle WebCenter Content
 
-You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
-Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `dockerfiles/12.2.1.4` .
-Set the proxies in the environment before building the image as required, go to directory located at `OracleWebCenterContent/dockerfiles/` and run these commands -
+1. Clone or download the [OraHub repository](https://orahub.oci.oraclecorp.com/paascicd/FMW-DockerImages).
+The repository contains Docker files and scripts to build Docker images for Oracle products.
+2. You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
+Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `../docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4` .
+Set the proxies in the environment before building the image as required, go to directory located at `../docker-images/OracleWebCenterContent/OracleWebCenterContent/dockerfiles/` and run these commands -
 
 ```
 #To build image
