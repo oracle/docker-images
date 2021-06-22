@@ -13,4 +13,4 @@ RUN microdnf install oracle-instantclient-release-el8 oraclelinux-developer-rele
 
 ENV NODE_PATH=/usr/local/lib/node_modules/
 
-CMD ["/bin/node", "v"]
+CMD ["/bin/node", "-v"]
