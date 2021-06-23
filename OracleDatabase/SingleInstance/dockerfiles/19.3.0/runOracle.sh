@@ -169,6 +169,8 @@ else
    
   # Clean up incomplete database
   rm -rf $ORACLE_BASE/oradata/$ORACLE_SID
+  rm -rf /etc/oratab
+  rm -rf /opt/oracle/cfgtoollogs
 
   # Create database
   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
