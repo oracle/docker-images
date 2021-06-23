@@ -112,7 +112,7 @@ Get Oracle Oracle Fusion Middleware Infrastructure image -
 > 2. Click Middleware and then click Continue for the fmw-infrastructure repository.
 > 3. Click Accept to accept the license agreement.
 > 4. Use following commands to pull Oracle Fusion Middleware Infrastructure base image from repository :
-Refer Documentation here: https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure
+
 ```
 docker login container-registry.oracle.com
 docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
@@ -123,7 +123,7 @@ docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-
 
 ## 4.2. Building container image for Oracle WebCenter Content
 
-1. Clone or download the [OraHub repository](https://orahub.oci.oraclecorp.com/paascicd/FMW-DockerImages).
+1. Clone or download the [GitHub repository](https://github.com/oracle/docker-images).
 The repository contains Docker files and scripts to build Docker images for Oracle products.
 2. You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
 Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `../docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4` .
