@@ -73,12 +73,12 @@ Data volumes are designed to persist data, independent of the container’s life
 
 To mount a host directory `<YOUR_HOST_DIRECTORY_PATH>/wccontent` as `$DATA_VOLUME`, execute the below command.
 
-> The userid can be anything but it must belong to uid:guid as 1000:0, which is same as 'oracle' user running in the container.
+> The userid can be anything but it must belong to uid 1000, which is same as 'oracle' user running in the container.
 
 > This ensures 'oracle' user has access to shared volume.
 
 ```
-sudo /usr/sbin/useradd -u 1000 -g 0 oracle
+sudo /usr/sbin/useradd -u 1000 <userid>
 mkdir -p /<YOUR_HOST_DIRECTORY_PATH>/wccontent
 sudo chown 1000:0 /<YOUR_HOST_DIRECTORY_PATH>/wccontent
 export DATA_VOLUME=/<YOUR_HOST_DIRECTORY_PATH>/wccontent
@@ -86,7 +86,7 @@ export DATA_VOLUME=/<YOUR_HOST_DIRECTORY_PATH>/wccontent
 
 All container operations are performed as **'oracle'** user.
 
-> If a user already exists with **'-u 1000 -g 0'** then use the same user. Or modify any existing user to have uid-gid as **'-u 1000 -g 0'**
+> If a user already exists with **'-u 1000'** then use the same user. Or modify any existing user to have uid as **'-u 1000'**
 
 > Set the path of the `DATA_VOLUME` on all terminals where containers are to be started.
 
