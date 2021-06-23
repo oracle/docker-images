@@ -120,7 +120,6 @@ docker tag  container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
 
 ```
-Alternatively to build this image yourself, please refer to this [README](https://github.com/oracle/docker-images/blob/master/OracleFMWInfrastructure/README.md).
 
 ## 4.2. Building container image for Oracle WebCenter Content
 
