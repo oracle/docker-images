@@ -23,7 +23,7 @@ if [ "${LIB_EDITION}" == "std" ]; then
 fi
 
 # If datafiles already exists
-if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
+if [ -f $ORACLE_BASE/oradata/$ORACLE_SID/$CHECKPOINT_FILE ]; then
     datafiles_edition=$(ls $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/.docker_* | rev | cut -d_ -f1 | rev)
     if [ "${ORACLE_EDITION}" != "" ] && [ "${ORACLE_EDITION,,}" != $datafiles_edition ]; then
         echo "The datafiles being used were created with $datafiles_edition edition software home. Please pass -e ORACLE_EDITION=$datafiles_edition to the docker run cmd.";

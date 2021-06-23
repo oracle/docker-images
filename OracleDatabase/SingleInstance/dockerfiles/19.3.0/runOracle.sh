@@ -171,6 +171,7 @@ else
   rm -rf $ORACLE_BASE/oradata/$ORACLE_SID
   cp /etc/oratab oratab.old
   sed "/$ORACLE_SID/d" oratab.old > /etc/oratab
+  rm -f oratab.old
   rm -rf $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID
   rm -rf $ORACLE_BASE/admin/$ORACLE_SID
 
