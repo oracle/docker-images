@@ -148,7 +148,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 . "$ORACLE_BASE/$RELINK_BINARY_FILE"
 
 # Check whether database already exists
-if [ -f $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE} ]; then
+if [ -f $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN} ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -182,7 +182,7 @@ else
   $ORACLE_BASE/$CHECK_DB_FILE
   if [ $? -eq 0 ]; then
     # Create a checkpoint file if database is successfully created
-    touch $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE}
+    touch $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN}
   fi
 
   # Move database operational files to oradata
