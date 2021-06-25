@@ -148,7 +148,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 . "$ORACLE_BASE/$RELINK_BINARY_FILE"
 
 # Check whether database already exists
-if [ -f $ORACLE_BASE/oradata/$ORACLE_SID/$CHECKPOINT_FILE ]; then
+if [ -f $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN} ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -166,9 +166,14 @@ else
   rm -f $ORACLE_HOME/network/admin/sqlnet.ora
   rm -f $ORACLE_HOME/network/admin/listener.ora
   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
-   
+
   # Clean up incomplete database
   rm -rf $ORACLE_BASE/oradata/$ORACLE_SID
+  cp /etc/oratab oratab.bkp
+  sed "/$ORACLE_SID/d" oratab.bkp > /etc/oratab
+  rm -f oratab.bkp
+  rm -rf $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID
+  rm -rf $ORACLE_BASE/admin/$ORACLE_SID
 
   # Create database
   $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
@@ -177,7 +182,7 @@ else
   $ORACLE_BASE/$CHECK_DB_FILE
   if [ $? -eq 0 ]; then
     # Create a checkpoint file if database is successfully created
-    touch $ORACLE_BASE/oradata/$ORACLE_SID/$CHECKPOINT_FILE
+    touch $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN}
   fi
 
   # Move database operational files to oradata
