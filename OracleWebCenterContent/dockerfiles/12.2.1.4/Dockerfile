@@ -62,7 +62,7 @@ COPY container-scripts/*.* /u01/oracle/container-scripts/
 # -------------------------------------------------------------
 # Adjust file permissions, go to /u01 as user 'oracle' to proceed with WLS installation
 # -------------------------------------------------------------
-RUN chown oracle:oracle -R /u01 $VOLUME_DIR && \
+RUN chown oracle:root -R /u01 $VOLUME_DIR && \
     chmod a+xr /u01/oracle/*.* && \
     chmod a+xr /u01/oracle/container-scripts/*.*
 
@@ -83,7 +83,7 @@ USER root
 
 ENV PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
 
-COPY --from=builder --chown=oracle:oracle /u01 /u01
+COPY --from=builder --chown=oracle:root /u01 /u01
 
 # -------------------------------------------------------------
 # Expose all Ports
