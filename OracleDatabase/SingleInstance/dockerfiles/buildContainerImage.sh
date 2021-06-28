@@ -106,7 +106,8 @@ checkDockerVersion() {
 ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
-VERSION="19.3.0"
+# Obtaining the latest version to build
+VERSION="`ls -r | sed -n 2p`"
 SKIPMD5=0
 declare -a BUILD_OPTS
 MIN_DOCKER_VERSION="17.09"
