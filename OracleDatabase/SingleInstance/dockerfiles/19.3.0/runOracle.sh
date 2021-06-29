@@ -196,7 +196,8 @@ fi;
 
 # Check whether database is up and running
 $ORACLE_BASE/$CHECK_DB_FILE
-if [ $? -eq 0 ]; then
+result=$?
+if [ $result -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
   echo "#########################"
@@ -214,6 +215,10 @@ else
   echo "########### E R R O R ###############" 
   echo "#####################################"
 fi;
+
+if [ "$1" = --exit ]; then
+   exit $result
+fi
 
 # Tail on alert log and wait (otherwise container will exit)
 echo "The following output is now a tail of the alert.log:"
