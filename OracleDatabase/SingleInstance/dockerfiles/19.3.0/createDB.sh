@@ -73,13 +73,13 @@ echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
 # Clone DB creation path
 if [[ "${CLONE_DB}" == "true" ]]; then
   # Validation: Check if PRIMARY_DB_CONN_STR is provided or not
-  if [ -z "${PRIMARY_DB_CONN_STR}" ]; then
-    echo "ERROR: Please provide PRIMARY_DB_CONN_STR to connect with primary database. Exiting..."
+  if [[ -z "${PRIMARY_DB_CONN_STR}" ]] || [[ $PRIMARY_DB_CONN_STR != *:*/* ]]; then
+    echo "ERROR: Please provide PRIMARY_DB_CONN_STR in <HOST>:<PORT>/<SERVICE_NAME> format to connect with primary database. Exiting..."
     exit 1
   fi
 
   # Validation: Check if ORACLE_PWD is provided or not
-  if [ -z "${ORACLE_PWD}" ]; then
+  if [[ -z "${ORACLE_PWD}" ]]; then
     echo "ERROR: Please provide password of sys user as ORACLE_PWD to connect with primary database. Exiting..."
     exit 1
   fi
