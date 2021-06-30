@@ -24,27 +24,27 @@ function setupNetworkConfig {
 
   # listener.ora
   echo "LISTENER = 
-  (DESCRIPTION_LIST = 
-    (DESCRIPTION = 
-      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1)) 
-      (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521)) 
-    ) 
+(DESCRIPTION_LIST = 
+  (DESCRIPTION = 
+    (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1)) 
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521)) 
   ) 
+) 
 
-  DEDICATED_THROUGH_BROKER_LISTENER=ON
-  DIAG_ADR_ENABLED = off
-  " > $ORACLE_HOME/network/admin/listener.ora
+DEDICATED_THROUGH_BROKER_LISTENER=ON
+DIAG_ADR_ENABLED = off
+" > $ORACLE_HOME/network/admin/listener.ora
 
   # tnsnames.ora
   echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_HOME/network/admin/tnsnames.ora
   echo "$ORACLE_PDB= 
-  (DESCRIPTION = 
-    (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
-    (CONNECT_DATA =
-      (SERVER = DEDICATED)
-      (SERVICE_NAME = $ORACLE_PDB)
-    )
-  )" >> $ORACLE_HOME/network/admin/tnsnames.ora
+(DESCRIPTION = 
+  (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
+  (CONNECT_DATA =
+    (SERVER = DEDICATED)
+    (SERVICE_NAME = $ORACLE_PDB)
+  )
+)" >> $ORACLE_HOME/network/admin/tnsnames.ora
 
 }
 
