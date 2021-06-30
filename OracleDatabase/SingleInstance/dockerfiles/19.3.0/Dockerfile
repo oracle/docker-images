@@ -58,6 +58,8 @@ ENV ORACLE_BASE=/opt/oracle \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
     ARCHIVELOG_DIR_NAME=archive_logs \
+    CLONE_DB=false \
+    PRIMARY_DB_CONN_STR="" \
     CHECKPOINT_FILE_EXTN=".created"
 
 # Use second ENV so that variable get substituted
