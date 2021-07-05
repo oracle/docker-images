@@ -20,7 +20,7 @@ elif "$ORACLE_BASE/$CHECK_DB_FILE"; then
   exit 0
 elif test -f "$ORACLE_BASE/oradata/.${ORACLE_SID}.nochk"; then
   exit 1 # Skip health check
-elif pgrep -f pmon; then
+elif pgrep -f pmon > /dev/null; then
   # DB procs detected
   exit 1
 else
