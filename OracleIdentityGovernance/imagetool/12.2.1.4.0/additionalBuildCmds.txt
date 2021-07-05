@@ -1,3 +1,6 @@
+[package-manager-packages]
+hostname
+
 [final-build-commands]
 
 ENV ORACLE_HOME=/u01/oracle \
@@ -11,33 +14,32 @@ ENV ORACLE_HOME=/u01/oracle \
     OIM_PORT="${OIM_PORT:-14000}" \
     OIM_SSL_PORT="${OIM_SSL_PORT:-14002}" \
     PATH=$PATH:/u01/oracle \
-    DOMAIN_TYPE="oim"
+    DOMAIN_TYPE="oim" \
+    PATH=$PATH:/usr/java/default/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/dockertools \
+    HEALTH_SCRIPT_FILE=/u01/oracle/dockertools/get_healthcheck_url.sh 
 
 USER root
 
-RUN yum install -y hostname && \
-    rm -rf /var/cache/yum
-
-RUN mkdir -p /u01/oracle/dockertools 
-
-RUN mkdir /usr/java
-
-RUN ln -s /u01/jdk /usr/java/latest
+RUN mkdir -p /u01/oracle/dockertools && \
+	mkdir /usr/java && \
+	ln -s /u01/jdk /usr/java/latest 
 
 RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
     ln -s  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory
 
-COPY --chown=oracle:oracle files/container-scripts/ /u01/oracle/dockertools/
-RUN chmod a+xr /u01/oracle/dockertools/*.* && \
-     chown -R oracle:oracle /u01/oracle/dockertools
+COPY --chown=oracle:root files/container-scripts/ /u01/oracle/dockertools/
 
+RUN chmod a+xr /u01/oracle/dockertools/* && \
+    chown -R oracle:root /u01/oracle/dockertools
 
 USER oracle
-RUN if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | grep -q 23855729; then \
+RUN if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | egrep -q '23855729|24204843'; then \
      echo "Ready End Point already Configured."; \
     else \
       sed -i 's|true</ready|false</ready|g' /u01/oracle/idm/server/apps/oim.ear/META-INF/weblogic-application.xml; \
     fi
+
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 
 WORKDIR $ORACLE_HOME
 CMD ["/u01/oracle/dockertools/createDomainAndStart.sh"]

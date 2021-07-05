@@ -1,6 +1,7 @@
 create
 --jdkVersion=%JDK_VERSION%
 --type oig
+--chown oracle:root
 --version=12.2.1.4.0
 --tag=%BUILDTAG%
 --pull
