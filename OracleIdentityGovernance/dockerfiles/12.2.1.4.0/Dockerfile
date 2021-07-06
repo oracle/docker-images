@@ -25,6 +25,7 @@ ENV FMW_JAR=fmw_12.2.1.4.0_idm_generic.jar \
     PATCH_DIR=/tmp/patches \
     OPATCH_PATCH_DIR=/tmp/opatch \
     OPATCH_NO_FUSER=true \
+    HEALTH_SCRIPT_FILE=/u01/oracle/dockertools/get_healthcheck_url.sh \
     USER_MEM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
     PATH=$PATH:$JAVA_HOME/bin:$ORACLE_HOME/oracle_common/common/bin \
     DOMAIN_NAME="${DOMAIN_NAME:-base_domain}" \
@@ -44,17 +45,17 @@ RUN mkdir -p /u01 && \
     mkdir -p /u01/oracle/dockertools && \
     mkdir ${PATCH_DIR} && \
     mkdir ${OPATCH_PATCH_DIR} && \
-    chown -R oracle:oracle /u01 && \
-    chown -R oracle:oracle ${PATCH_DIR} && \
-    chown -R oracle:oracle ${OPATCH_PATCH_DIR}  
+    chown -R oracle:root /u01 && \
+    chown -R oracle:root ${PATCH_DIR} && \
+    chown -R oracle:root ${OPATCH_PATCH_DIR}  
 
 #
 # Copy files and packages for install
 # -----------------------------------
 COPY *.response oraInst.loc fmw_12.2.1.4.0_idm_generic* /u01/
 COPY container-scripts/* /u01/oracle/dockertools/
-COPY --chown=oracle:oracle Dockerfile patches/* ${PATCH_DIR}/
-COPY --chown=oracle:oracle Dockerfile opatch_patch/* ${OPATCH_PATCH_DIR}/
+COPY --chown=oracle:root Dockerfile patches/* ${PATCH_DIR}/
+COPY --chown=oracle:root Dockerfile opatch_patch/* ${OPATCH_PATCH_DIR}/
 RUN chmod a+xr /u01/oracle/dockertools/*.*
 
 USER oracle
@@ -117,7 +118,7 @@ RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
     
 RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
     ln -s  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory && \
-    if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | grep -q 23855729; then \
+    if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | egrep -q '23855729|24204843' ; then \
      echo "Ready End Point already Configured."; \
     else \
       sed -i 's|true</ready|false</ready|g' /u01/oracle/idm/server/apps/oim.ear/META-INF/weblogic-application.xml; \
@@ -125,9 +126,10 @@ RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
 
 FROM base as FINAL_BUILD
 
-COPY --from=builder --chown=oracle:oracle /u01 /u01
+COPY --from=builder --chown=oracle:root /u01 /u01
 
 USER oracle
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR $ORACLE_HOME
 
 #
