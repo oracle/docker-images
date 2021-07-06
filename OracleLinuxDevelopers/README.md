@@ -48,6 +48,7 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 * [`oraclelinux7-ruby:2.6`](oraclelinux7/ruby/2.6/Dockerfile)
 * [`oraclelinux7-ruby:2.7`](oraclelinux7/ruby/2.7/Dockerfile)
 * [`oraclelinux7-ruby:2.7-nodejs`](oraclelinux7/ruby/2.7-nodejs/Dockerfile)
+* [`oraclelinux7-ruby:3.0`](oraclelinux7/ruby/3.0/Dockerfile)
 
 ## Oracle Linux 8 based images
 
