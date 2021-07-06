@@ -15,7 +15,7 @@
 
 set -e
 
-############## Setting up network related config files (sqlnet.ora, tnsnames.ora, listener.ora) ##############
+############## Setting up network related config files (sqlnet.ora, listener.ora) ##############
 function setupNetworkConfig {
   mkdir -p $ORACLE_HOME/network/admin
 
@@ -34,6 +34,12 @@ function setupNetworkConfig {
 DEDICATED_THROUGH_BROKER_LISTENER=ON
 DIAG_ADR_ENABLED = off
 " > $ORACLE_HOME/network/admin/listener.ora
+
+}
+
+####################### Setting up tnsnames.ora ##############################
+function setupTnsnames {
+  mkdir -p $ORACLE_HOME/network/admin
 
   # tnsnames.ora
   echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_HOME/network/admin/tnsnames.ora
@@ -86,17 +92,23 @@ if [[ "${CLONE_DB}" == "true" ]]; then
 
   # Primary database parameters extration
   PRIMARY_DB_NAME=$(echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2)
-  PRIMARY_DB_IP=$(echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 1)
-  PRIMARY_DB_PORT=$(echo "${PRIMARY_DB_CONN_STR}" | cut -d ':' -f 2 | cut -d '/' -f 1)
 
-  # Setup network related configuration
-  setupNetworkConfig;
-
-  # Starting listener and creating clone database using DBCA after duplicating a primary database
-  lsnrctl start &&
+  # Creating clone database using DBCA after duplicating a primary database
   dbca -silent -createDuplicateDB -gdbName ${ORACLE_SID} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -databaseConfigType SINGLE -useOMF true -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
     cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
     cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+
+  # Setup tnsnames.ora after DBCA command execution, otherwise tnsnames gets overwritten by DBCA
+  setupTnsnames;
+
+  # Stopping the Listener
+  lsnrctl stop;
+
+  # Setup other network related configuration (sqlnet.ora, listener.ora)
+  setupNetworkConfig;
+
+  # Starting the Listener
+  lsnrctl start;
 
   exit 0
 fi
@@ -123,7 +135,7 @@ else
     sed -i -e "s|initParams=.*|&,sga_target=${INIT_SGA_SIZE}M,pga_aggregate_target=${INIT_PGA_SIZE}M|g" $ORACLE_BASE/dbca.rsp
 fi;
 
-# Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
+# Create network related config files (sqlnet.ora, listener.ora)
 setupNetworkConfig;
 
 # Directory for storing archive logs
@@ -134,6 +146,9 @@ lsnrctl start &&
 dbca -silent -createDatabase -enableArchive $ENABLE_ARCHIVELOG -archiveLogDest $ARCHIVELOG_DIR -responseFile $ORACLE_BASE/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+
+# Setup tnsnames.ora after DBCA command execution, otherwise tnsnames gets overwritten by DBCA
+setupTnsnames;
 
 # Remove second control file, fix local_listener, make PDB auto open, enable EM global port
 # Create externally mapped oracle user for health check
