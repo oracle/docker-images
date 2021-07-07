@@ -49,8 +49,10 @@ These images all launch into `irb` unless you specify `/bin/bash` in the `docker
 
 To install Ruby on Rails use one of the images tagged `-nodejs` and run:
 
-`npm install -g yarn`
-`gem install rails`
+```
+npm install -g yarn
+gem install rails
+```
 
 You should then be able to create a new rails application.
 
