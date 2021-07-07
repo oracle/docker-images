@@ -135,6 +135,11 @@ else
     sed -i -e "s|initParams=.*|&,sga_target=${INIT_SGA_SIZE}M,pga_aggregate_target=${INIT_PGA_SIZE}M|g" $ORACLE_BASE/dbca.rsp
 fi;
 
+# Adding additional Database Init Parameters
+if [[ ! -z "${INIT_PARAMS}" ]]; then
+  sed -i -e "s|initParams=.*|&,${INIT_PARAMS}|g" $ORACLE_BASE/dbca.rsp
+fi
+
 # Create network related config files (sqlnet.ora, listener.ora)
 setupNetworkConfig;
 

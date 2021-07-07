@@ -74,6 +74,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
     -e ENABLE_ARCHIVELOG=true \
+    -e INIT_PARAMS=<additional database init parameters of format "key1=value1,key2=value2..."> \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:19.3.0-ee
     
