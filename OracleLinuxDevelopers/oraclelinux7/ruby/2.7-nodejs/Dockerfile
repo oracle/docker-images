@@ -9,7 +9,8 @@ RUN yum -y install oracle-softwarecollection-release-el7 && \
                    rh-ruby27-rubygem-bundler \
                    rh-nodejs14 \
                    rh-nodejs14-npm \
-                   gcc make && \
+                   sqlite-devel \
+                   gcc gcc-c++ make && \
     rm -rf /var/cache/yum
 
 # Enable the Ruby 2.7 SCL via environment modification
