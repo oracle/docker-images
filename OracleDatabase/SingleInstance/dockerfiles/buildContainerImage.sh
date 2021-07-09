@@ -102,11 +102,15 @@ checkDockerVersion() {
 #### MAIN ####
 ##############
 
+# Go into dockerfiles directory
+cd $(dirname $0)
+
 # Parameters
 ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
-VERSION="19.3.0"
+# Obtaining the latest version to build
+VERSION="$(ls -1rd *.*.* | sed -n 1p)"
 SKIPMD5=0
 declare -a BUILD_OPTS
 MIN_DOCKER_VERSION="17.09"

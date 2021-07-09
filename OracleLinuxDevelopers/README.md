@@ -45,10 +45,22 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### Ruby
 
+These images all launch into `irb` unless you specify `/bin/bash` in the `docker run` command.
+
+To install Ruby on Rails use one of the images tagged `-nodejs` and run:
+
+```
+npm install -g yarn
+gem install rails
+```
+
+You should then be able to create a new rails application.
+
 * [`oraclelinux7-ruby:2.6`](oraclelinux7/ruby/2.6/Dockerfile)
 * [`oraclelinux7-ruby:2.7`](oraclelinux7/ruby/2.7/Dockerfile)
 * [`oraclelinux7-ruby:2.7-nodejs`](oraclelinux7/ruby/2.7-nodejs/Dockerfile)
 * [`oraclelinux7-ruby:3.0`](oraclelinux7/ruby/3.0/Dockerfile)
+* [`oraclelinux7-ruby:3.0-nodejs`](oraclelinux7/ruby/3.0-nodejs/Dockerfile)
 
 ## Oracle Linux 8 based images
 
