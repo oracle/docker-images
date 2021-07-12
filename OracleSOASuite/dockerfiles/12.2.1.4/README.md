@@ -1,7 +1,7 @@
 Running Oracle SOA Suite in containers
 ======================================
 
-Sample configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start `Dockerfiles` for Oracle SOA 12.2.1.4.0 based on Oracle Linux 7, Oracle Server JRE 8, and Oracle Fusion Middleware Infrastructure 12.2.1.4.0.
+Sample configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start `Dockerfiles` for Oracle SOA 12.2.1.4 based on Oracle Linux 7, Oracle Server JRE 8, and Oracle Fusion Middleware Infrastructure 12.2.1.4.
 
 At the end of this configuration there will be at least two running containers:
 1. (Optional) Oracle Database container (only when RCU schema is created in a database running in a container)
@@ -20,7 +20,7 @@ To create the Docker network and run containers, follow these steps:
  1. [Create a network](#1-create-a-network)
  2. [Mount a host directory as a data volume](#2-mount-a-host-directory-as-a-data-volume)
  3. [Create the database](#3-create-the-database)
- 4. [Obtain the SOA 12.2.1.4.0 Docker image](#4-obtain-the-soa-12.2.1.4.0-docker-image)
+ 4. [Obtain the SOA 12.2.1.4 container image](#4-obtain-the-soa-122140-container-image)
  5. [Create a container for the Administration Server](#5-create-a-container-for-the-administration-server)
  6. [Create SOA Managed Server containers](#6-create-soa-managed-server-containers)
  7. [Create Oracle Service Bus Managed Server containers](#7-create-oracle-service-bus-managed-server-containers)
@@ -106,7 +106,7 @@ To determine if a user already exists on your node system with uid:gid of 1000, 
 ```
 If this command returns a username (which is the first field), you can skip the following `useradd` command. If not, create the `oracle` user manually:
 ``` bash
-# useradd -u 1000 -g 1000 oracle
+# useradd -u 1000 -g 0 oracle
 ```
 >  **Note**: For a multinode scenario, make sure the `data volume` is accessible from other hosts to be used for running containers.   
 
@@ -114,7 +114,7 @@ Once the `oracle` user is created, run the following commands as a `root` user:
 ``` bash
 # mkdir -p /u01/DockerVolume/SOAVolume/DB
 # mkdir -p /u01/DockerVolume/SOAVolume/SOA
-# chown -R 1000:1000 /u01/DockerVolume/SOAVolume/
+# chown -R 1000:0 /u01/DockerVolume/SOAVolume/
 # chmod -R 777 /u01/DockerVolume/SOAVolume/
 ```
 Set the path of the `data_volume` on all the terminals of the hosts where containers are to be started.
@@ -161,9 +161,9 @@ $ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.
 SQL> alter user sys identified by Welcome1 container=all;
 ```
 
-### 4. Obtain the SOA 12.2.1.4.0 container image
+### 4. Obtain the SOA 12.2.1.4 container image
 
-You can either build the SOA image with the `Dockerfile` provided or use the already available Oracle SOA Suite (12.2.1.4.0) image in the [Oracle Container Registry](https://container-registry.oracle.com).
+You can either build the SOA image with the `Dockerfile` provided or use the already available Oracle SOA Suite (12.2.1.4) image in the [Oracle Container Registry](https://container-registry.oracle.com).
 
 ### 5. Create a container for the Administration Server
 
@@ -177,15 +177,16 @@ DB_PASSWORD=<database_sys_password>
 DB_SCHEMA_PASSWORD=<soa-infra schema password>
 ADMIN_PASSWORD=<admin_password>
 DOMAIN_NAME=soainfra
-DOMAIN_TYPE=<soa/osb>
+DOMAIN_TYPE=<soa/osb/soaosb>
 ADMIN_HOST=<Administration Server hostname>
 ADMIN_PORT=<port number where Administration Server is running>
 PERSISTENCE_STORE=<jdbc | file>
 ```
 >IMPORTANT: `DOMAIN_TYPE` must be carefully chosen and specified depending on the use case. It can't be changed once you proceed.
-For Oracle SOA Suite domains, the supported domain types are `soa` and `osb`.
-    soa       : Deploys an Oracle SOA Suite domain
-    osb       : Deploys an Oracle Service Bus domain
+For Oracle SOA Suite domains, the supported domain types are `soa`, `osb` and `soaosb`. 
+- soa       : Deploys a SOA Domain with Enterprise Scheduler (ESS)
+- osb       : Deploys an OSB Domain (Oracle Service Bus)
+- soaosb    : Deploys a Domain with SOA, OSB and Enterprise Scheduler (ESS)
 
 For example:
 ``` bash
@@ -208,7 +209,7 @@ To start a Docker container with a SOA domain and the WebLogic Server Administra
 
 For example:
 ``` bash
-$ docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v $data_volume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soasuite:12.2.1.4.0
+$ docker run -i -t  --name soaas --network=SOANet -p 7001:7001  -v $data_volume/SOA:/u01/oracle/user_projects   --env-file ./adminserver.env.list oracle/soasuite:12.2.1.4
 ```
 The options `-i -t` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation, and configuration, followed by starting the Administration Server.
 
@@ -226,14 +227,13 @@ $ docker logs -f \<Administration Server container name\>
 ```
 ### 6. Create SOA Managed Server containers
 
-> **Note**: These steps are required only for the `soa` domain type.
+> **Note**: These steps are required only for the  `soa` and `soaosb` domain type.
 
 You can start containers to launch the SOA Managed Servers from the image created.
 
 Create an environment variables file specific to each Managed Server in the cluster in the SOA domain. For example, `soaserver1.env.list` and `soaserver2.env.list` for a SOA cluster:
 ``` bash
 MANAGED_SERVER=<Managed Server name, either soa_server1 or soa_server2>
-DOMAIN_TYPE=<soa>
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
 ADMIN_PORT=<port number where Administration Server is running>
@@ -242,12 +242,11 @@ MANAGED_SERVER_CONTAINER=true
 MANAGEDSERVER_PORT=<port number where Managed Server is running>
 ```
 
->IMPORTANT: In the Managed Servers environment variables file, the `MANAGED_SERVER` value must be `soa_server1` or `soa_server2` for the `soa` domain type. Also, `MANAGEDSERVER_PORT` must be `8001` for `soa_server1` or `8002` for `soa_server2`.
+>IMPORTANT: In the Managed Servers environment variables file, the `MANAGED_SERVER` value must be `soa_server1` or `soa_server2` for the  `soa` and `soaosb` domain type. Also, `MANAGEDSERVER_PORT` must be `8001` for `soa_server1` or `8002` for `soa_server2`.
 
 Example for `soaserver1.env.list`:
 ``` bash
 MANAGED_SERVER=soa_server1
-DOMAIN_TYPE=soa
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
 ADMIN_PORT=7001
@@ -259,7 +258,6 @@ MANAGEDSERVER_PORT=8001
 Example for `soaserver2.env.list`:
 ``` bash
 MANAGED_SERVER=soa_server2
-DOMAIN_TYPE=soa
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
 ADMIN_PORT=7001
@@ -267,17 +265,17 @@ ADMIN_PASSWORD=Welcome1
 MANAGED_SERVER_CONTAINER=true
 MANAGEDSERVER_PORT=8002
 ```
-To start a Docker container for the SOA server (for `soa` domain type), you can use the `docker run` command passing `soaserver1.env.list` with port `8001`.
+To start a Docker container for the SOA server (for `soa_server1`), you can use the `docker run` command passing `soaserver1.env.list` with port `8001`.
 
 For example:
 ``` bash
-$ docker run -i -t  --name soams1 --network=SOANet -p 8001:8001  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./soaserver1.env.list oracle/soasuite:12.2.1.4.0 "/u01/oracle/container-scripts/startMS.sh"
+$ docker run -i -t  --name soams1 --network=SOANet -p 8001:8001  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./soaserver1.env.list oracle/soasuite:12.2.1.4 "/u01/oracle/container-scripts/startMS.sh"
 ```
-Similarly, to start a second Docker container for the SOA server (for `soa` domain type), you can use the `docker run` command passing `soaserver2.env.list` with port `8002`.
+Similarly, to start a second Docker container for the SOA server (for `soa_server2`), you can use the `docker run` command passing `soaserver2.env.list` with port `8002`.
 
 For example:
 ``` bash
-$ docker run -i -t  --name soams2 --network=SOANet -p 8002:8002  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./soaserver2.env.list oracle/soa:12.2.1.4.0 "/u01/oracle/container-scripts/startMS.sh"
+$ docker run -i -t  --name soams2 --network=SOANet -p 8002:8002  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./soaserver2.env.list oracle/soa:12.2.1.4 "/u01/oracle/container-scripts/startMS.sh"
 ```
 
 > **Note**: Using `-v` reuses the volume created by the Administration Server container.
@@ -295,14 +293,13 @@ $ docker logs -f \<Managed Server container name\>
 ```
 ### 7. Create Oracle Service Bus Managed Server containers
 
-> **Note**: These steps are required only for the `osb` domain type.
+> **Note**: These steps are required only for the `osb` and `soaosb` domain type.
 
 You can start containers to launch the Oracle Service Bus Managed Servers from the image created.
 
 Create an environment variables file specific to each Managed Server in the cluster in the SOA domain. For example, `osbserver1.env.list` and `osbserver2.env.list` for an Oracle Service Bus cluster:
 ``` bash
 MANAGED_SERVER=<Managed Server name, either osb_server1 or osb_server2>
-DOMAIN_TYPE=<osb>
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
 ADMIN_PORT=<port number where Administration Server is running>
@@ -311,12 +308,11 @@ MANAGED_SERVER_CONTAINER=true
 MANAGEDSERVER_PORT=<port number where Managed Server is running>
 ```
 
->IMPORTANT: In the Managed Servers environment variables file the `MANAGED_SERVER` value must be `osb_server1` or `osb_server2` for the `osb` domain type. Also, `MANAGEDSERVER_PORT` must be `9001` for `osb_server1` or `9002` for `osb_server2`.
+>IMPORTANT: In the Managed Servers environment variables file the `MANAGED_SERVER` value must be `osb_server1` or `osb_server2` for the `osb` and `soaosb` domain type. Also, `MANAGEDSERVER_PORT` must be `9001` for `osb_server1` or `9002` for `osb_server2`.
 
 Example for `osbserver1.env.list`:
 ``` bash
 MANAGED_SERVER=osb_server1
-DOMAIN_TYPE=osb
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
 ADMIN_PORT=7001
@@ -327,7 +323,6 @@ MANAGEDSERVER_PORT=9001
 Example for `osbserver2.env.list`:
 ```bash
 MANAGED_SERVER=osb_server2
-DOMAIN_TYPE=osb
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
 ADMIN_PORT=7001
@@ -336,17 +331,17 @@ MANAGED_SERVER_CONTAINER=true
 MANAGEDSERVER_PORT=9002
 ```
 
-To start a Docker container for the Oracle Service Bus server (for `osb` domain type), you can use the `docker run` command passing `osbserver1.env.list`.
+To start a Docker container for the Oracle Service Bus server (for `osb_server1`), you can use the `docker run` command passing `osbserver1.env.list`.
 
 For example:
 ``` bash
-$ docker run -i -t  --name soams1 --network=SOANet -p 9001:9001  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./osbserver1.env.list oracle/soasuite:12.2.1.4.0 "/u01/oracle/container-scripts/startMS.sh"
+$ docker run -i -t  --name osbms1 --network=SOANet -p 9001:9001  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./osbserver1.env.list oracle/soasuite:12.2.1.4 "/u01/oracle/container-scripts/startMS.sh"
 ```
-Similarly, to start a second Docker container for the Oracle Service Bus server (for `osb_server2` of `osb` domain type), you can use the `docker run` command passing `osbserver2.env.list`.
+Similarly, to start a second Docker container for the Oracle Service Bus server (for `osb_server2`), you can use the `docker run` command passing `osbserver2.env.list`.
 
 For example:
 ``` bash
-$ docker run -i -t  --name soams2 --network=SOANet -p 9002:9002  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./osbserver2.env.list oracle/soa:12.2.1.4.0 "/u01/oracle/container-scripts/startMS.sh"
+$ docker run -i -t  --name osbms2 --network=SOANet -p 9002:9002  -v $data_volume/SOA:/u01/oracle/user_projects  --env-file ./osbserver2.env.list oracle/soa:12.2.1.4 "/u01/oracle/container-scripts/startMS.sh"
 ```
 The following lines indicate when the Oracle Service Bus Managed Server is ready to be used: 
 ``` bash   
@@ -369,6 +364,7 @@ Now you can access the following Consoles:
 * SOA infra Console at http://\<hostname\>:8002/soa-infra with weblogic/Welcome1 credentials.
 * Service Bus Console at http://\<hostname\>:7001/servicebus with weblogic/Welcome1 credentials.
 
+
 > **Note**: `hostname` is the FQDN of the host name where the container is running. Do not use 'localhost' for `ADMIN_HOST`. Use the actual FQDN name of the host as `ADMIN_HOST`.
 
 > **Note**: In a multinode scenario, you cannot access the `SOA Composer` and `BPM Worklist` application URLs from the `soa-infra` application page.
@@ -381,7 +377,7 @@ Now you can access the following Consoles:
 
     $ docker rm \<container name\>
     ```
-    where containers are `soadb`, `soaas`, `soams1`, and `soams2`.
+    where containers are `soadb`, `soaas`, `soams1`, `soams2`, `osbms1` and `osbms2`.
 
 2. Clear the data volume:
     ``` bash
