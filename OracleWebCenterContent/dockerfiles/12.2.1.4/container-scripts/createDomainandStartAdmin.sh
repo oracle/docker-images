@@ -73,16 +73,16 @@ echo ""
 
 # Persistence volume location mapped to this location will need permission fixup
 if [ -d $CONTAINERCONFIG_DIR ]; then
-    chown -R oracle:oracle $CONTAINERCONFIG_DOMAIN_DIR
-    chown -R oracle:oracle $CONTAINERCONFIG_DIR
-    chown -R oracle:oracle $CONTAINERCONFIG_LOG_DIR
+    chown -R oracle:root $CONTAINERCONFIG_DOMAIN_DIR
+    chown -R oracle:root $CONTAINERCONFIG_DIR
+    chown -R oracle:root $CONTAINERCONFIG_LOG_DIR
 else
     mkdir -p $CONTAINERCONFIG_DIR
     mkdir -p $CONTAINERCONFIG_LOG_DIR
     mkdir -p $CONTAINERCONFIG_DOMAIN_DIR
-    chown -R oracle:oracle $CONTAINERCONFIG_DOMAIN_DIR
-    chown -R oracle:oracle $CONTAINERCONFIG_DIR
-    chown -R oracle:oracle $CONTAINERCONFIG_LOG_DIR
+    chown -R oracle:root $CONTAINERCONFIG_DOMAIN_DIR
+    chown -R oracle:root $CONTAINERCONFIG_DIR
+    chown -R oracle:root $CONTAINERCONFIG_LOG_DIR
 fi
 
 echo ""

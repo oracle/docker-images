@@ -2,7 +2,7 @@
 
 This repository contains [Dockerfiles](https://docs.docker.com/engine/reference/builder/)
 and samples to build [Docker](https://www.docker.com/what-docker) images for
-Oracle commercial products and [Oracle sponsored open source projects](https://oss.oracle.com).
+Oracle commercial products and [Oracle sponsored open source projects](https://opensource.oracle.com).
 
 ## Container Images on GitHub
 
@@ -17,6 +17,7 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Cloud Infrastructure Tools](/OracleCloudInfrastructure)
 - [Oracle Coherence](/OracleCoherence)
 - [Oracle Database](/OracleDatabase)
+- [Oracle Essbase](/OracleEssbase)
 - [Oracle FMW Infrastructure](/OracleFMWInfrastructure)
 - [Oracle GoldenGate](/OracleGoldenGate)
 - [Oracle HTTP Server](/OracleHTTPServer)

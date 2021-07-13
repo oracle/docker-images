@@ -1,0 +1,5 @@
+[python39]
+name=python39
+stream=3.9
+profiles=common
+state=enabled

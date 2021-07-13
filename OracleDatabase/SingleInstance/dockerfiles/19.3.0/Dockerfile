@@ -55,7 +55,14 @@ ENV ORACLE_BASE=/opt/oracle \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
-    SLIMMING=$SLIMMING
+    SLIMMING=$SLIMMING \
+    ENABLE_ARCHIVELOG=false \
+    ARCHIVELOG_DIR_NAME=archive_logs \
+    # To clone a database referred by PRIMARY_DB_CONN_STR
+    CLONE_DB=false \
+    # Env var below should be in <HOST>:<PORT>/<SERVICE_NAME> format
+    PRIMARY_DB_CONN_STR="" \
+    CHECKPOINT_FILE_EXTN=".created"
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \

@@ -68,9 +68,9 @@ hostalias=`echo $hostname | sed  's/[.]//g'`
 truncatedhostname=${hostalias}
 
 
-if [ ${#truncatedhostname} -gt "20" ]
+if [ ${#truncatedhostname} -ge "15" ]
 then
-    truncatedhostname=${truncatedhostname:0:10}
+    truncatedhostname=${truncatedhostname:0:14}
 fi
 
 if [ -f /$vol_name/oracle//oracle_common/lib/ons.jar ]
@@ -109,7 +109,7 @@ sed -i "s/@UCM_INTRADOC_PORT@/$UCM_INTRADOC_PORT/g" /$vol_name/oracle/container-
 
 cp -v /$vol_name/oracle/container-scripts/autoinstall.cfg.cs /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/cs/bin/autoinstall.cfg
 
-chown oracle:oracle -R /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/cs/bin/autoinstall.cfg
+chown oracle:root -R /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/cs/bin/autoinstall.cfg
 chmod a+xr /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/cs/bin/autoinstall.cfg
 
 sh /u01/oracle/container-scripts/startManagedServer.sh $server
@@ -141,7 +141,7 @@ sed -i "s/@IBR_INTRADOC_PORT@/$IBR_INTRADOC_PORT/g" /$vol_name/oracle/container-
 
 cp -v /$vol_name/oracle/container-scripts/autoinstall.cfg.ibr /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/ibr/bin/autoinstall.cfg
 
-chown oracle:oracle -R /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/ibr/bin/autoinstall.cfg
+chown oracle:root -R /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/ibr/bin/autoinstall.cfg
 chmod a+xr /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/ucm/ibr/bin/autoinstall.cfg
 
 sh /u01/oracle/container-scripts/startManagedServer.sh $server1

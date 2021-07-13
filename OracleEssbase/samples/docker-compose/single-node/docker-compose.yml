@@ -1,0 +1,35 @@
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+version: '3.6'
+services:
+  database:
+    image: "${ORACLE_DATABASE_DOCKER_IMAGE:-oracle/database:19.3.0-se2}"
+    networks:
+      oracle_net: {}
+    environment:
+      ORACLE_PWD: ${DATABASE_ADMIN_PASSWORD:-BEstr0ng_#1234}
+  essbase:
+    image: "${ESSBASE_DOCKER_IMAGE:-oracle/essbase:21.1.0}"
+    depends_on:
+    - database
+    stop_grace_period: 2m
+    networks:
+      oracle_net: {}
+    ports:
+    - "${ADMIN_SERVER_PORT:-7001}:7001"
+    - "${ADMIN_SERVER_SSL_PORT:-7002}:7002"
+    - "${MANAGED_SERVER_PORT:-9000}:9000"
+    - "${MANAGED_SERVER_SSL_PORT:-9001}:9001"
+    environment:
+      DATABASE_CONNECT_STRING: "database:1521/ORCLPDB1"
+      DATABASE_ADMIN_USERNAME: "sys"
+      DATABASE_ADMIN_PASSWORD: ${DATABASE_ADMIN_PASSWORD:-BEstr0ng_#1234}
+      DATABASE_WAIT_TIMEOUT: "3600"
+    command: [ "/u01/container-scripts/createAndStartDomain.sh" ]
+
+networks:
+  oracle_net:
+    {}
+

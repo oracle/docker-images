@@ -1,0 +1,336 @@
+#!/bin/bash
+#
+# Copyright (c) 2021, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+
+function get_time() {
+  date "+%F %T,%3N"
+}
+
+function log() {
+  log_info "$*"
+}
+
+function log_info() {
+  echo "$*"
+}
+
+function log_debug() {
+  echo "$*" > /dev/null
+}
+
+function log_error() {
+  echo "$*" >&2
+}
+
+function novalueIfEmpty() {
+  val=$1
+  echo ${val:-NO_VALUE}
+}
+
+function checkNonRoot() {
+  local filename=$1
+  if [ -z $filename ]; then
+     filename="this image"
+  fi
+  if [ "$(id -u)" -eq "0" ]; then 
+    log_error "Cannot run $filename as root user"
+    exit 1 
+  fi
+}
+
+function printVersionInfo() {
+
+  if [ -e "/etc/essbase-version-info" ]; then
+    while read -r line
+    do
+      log "${line}"
+    done < "/etc/essbase-version-info"
+  fi
+
+}
+
+function trimWhitespace() {
+  echo -e "$1" | tr -d '[[:space:]]'
+}
+
+# Parameter handling
+sensitiveParameters=("ADMIN_USERNAME" "ADMIN_PASSWORD" "DATABASE_ADMIN_USERNAME" "DATABASE_ADMIN_PASSWORD" "DATABASE_SCHEMA_PASSWORD" "IDCS_CLIENT_ID" "IDCS_CLIENT_SECRET" "OPSS_WALLET_PASSWORD")
+hiddenParameters=("ADMIN_PASSWORD" "DATABASE_ADMIN_PASSWORD" "DATABASE_SCHEMA_PASSWORD" "IDCS_CLIENT_SECRET" "OPSS_WALLET_PASSWORD")
+
+# validate that all required parameters have been set somehow
+function validateMandatoryParameter() {
+  key=$1
+  if [ -z "${!key}" ]; then
+    echo $key
+  fi
+}
+
+function checkMandatoryParameters() {
+  missingMandatoryParameters=()
+  for mandatoryParameter in $@; do
+     missingMandatoryParameters+=($(validateMandatoryParameter $mandatoryParameter))
+  done
+
+  if (( ${#missingMandatoryParameters[@]} != 0 )); then
+     missingParametersJoin=$(IFS="," ; echo "${missingMandatoryParameters[*]}")
+     log_error "The following mandatory parameters are not set: $missingParametersJoin"
+     exit 1
+  fi
+  
+  for parameter in $@; do
+  
+    isHidden=0
+    for hiddenParameter in "${hiddenParameters[@]}"; do
+       if [ "${hiddenParameter^^}" == "${parameter^^}" ]; then
+          isHidden=1
+          break
+       fi
+    done
+    
+    if [ $isHidden -eq 1 ]; then
+      log "Parameter: $parameter=********"
+    else
+      log "Parameter: $parameter=${!parameter}"
+    fi
+  done
+}
+
+function loadParametersFile() {
+  file=$1/$2
+  if [ -f $file ]; then
+    if [ "txt" == "${file##*.}" ]; then
+      parameters=$(cat ${file} | xargs) 
+      eval $(cat $file | sed -e "s/=\(.*\)/='\1'/g")
+    else
+      parameterKey=$(echo $2 | tr /a-z/ /A-Z/ | tr / _)
+      parameterValue=$(cat ${file})
+      eval "${parameterKey}=${parameterValue}"
+    fi
+  fi  
+}
+
+function processParameters() {
+
+  # Load parameters from various files, overriding any environment variables.
+  # Note we take care to not export these, so they are not visible to child processes
+  local parameterFileDir=/run/secrets
+  local parameterFiles=(config.txt admin.txt database.txt idcs.txt admin/username admin/password database/admin_username database/admin_password database/schema_password idcs/client_id idcs/client_secret opss/wallet_secret)
+  for parameterFile in "${parameterFiles[@]}"; do
+    loadParametersFile ${parameterFileDir} ${parameterFile}
+  done
+
+  # Save sensitive variables in local variables, removing them from the environment
+  for parameterKey in "${sensitiveParameters[@]}"; do
+     eval "backupValue=${!parameterKey}"
+     eval "unset ${parameterKey}"
+     eval "export -n ${parameterKey}"
+     eval "${parameterKey}=${backupValue}"
+  done
+  unset backupValue
+  
+  # Domain home check
+  local DOMAIN_NAME_VALUE=$(basename ${DOMAIN_HOME})
+  local DOMAIN_ROOT_VALUE=$(dirname  ${DOMAIN_HOME})
+  if [ -n "${DOMAIN_NAME}" ] && [ "${DOMAIN_NAME_VALUE}" != "${DOMAIN_NAME}" ]; then
+    log_error "Mismatch with DOMAIN_NAME"
+    exit 1
+  fi
+  
+  DOMAIN_NAME=${DOMAIN_NAME_VALUE}
+  DOMAIN_ROOT=${DOMAIN_ROOT_VALUE}
+  export DOMAIN_NAME DOMAIN_ROOT
+  
+  # Fix defaults
+  DATABASE_TYPE=${DATABASE_TYPE:-ORACLE}
+  DATABASE_TYPE=$(trimWhitespace ${DATABASE_TYPE^^})
+  export DATABASE_TYPE
+  
+  ESSBASE_CLUSTER_SIZE=${ESSBASE_CLUSTER_SIZE:-1}
+  export ESSBASE_CLUSTER_SIZE
+
+  DROP_SCHEMA=${DROP_SCHEMA:-FALSE}
+  DROP_SCHEMA=$(trimWhitespace ${DROP_SCHEMA^^})
+  export DROP_SCHEMA
+
+  CREATE_SCHEMA=${CREATE_SCHEMA:-TRUE}
+  CREATE_SCHEMA=$(trimWhitespace ${CREATE_SCHEMA^^})
+  if [ "${DROP_SCHEMA}" == "TRUE" ]; then
+     CREATE_SCHEMA=TRUE
+  fi
+  export CREATE_SCHEMA
+  
+  DATABASE_WAIT_TIMEOUT=${DATABASE_WAIT_TIMEOUT:-0}
+  export DATABASE_WAIT_TIMEOUT
+
+  ENABLE_EAS=${ENABLE_EAS:-FALSE}
+  ENABLE_EAS=$(trimWhitespace ${ENABLE_EAS^^})
+  export ENABLE_EAS
+  
+  IDENTITY_PROVIDER=${IDENTITY_PROVIDER:-EMBEDDED}
+  IDENTITY_PROVIDER=$(trimWhitespace ${IDENTITY_PROVIDER^^})
+  export IDENTITY_PROVIDER
+
+  if [ -z "${CRASHDUMP_LOCATION}" ]; then
+    CRASHDUMP_LOCATION=${TMP_DIR}
+    export CRASHDUMP_LOCATION
+  fi
+
+  # Always false
+  SECURE_MODE=FALSE
+  #SECURE_MODE=${SECURE_MODE:-FALSE}
+  #SECURE_MODE=$(trimWhitespace ${SECURE_MODE^^})
+  export SECURE_MODE
+
+  if [ "${DATABASE_TYPE}" == "ORACLE" ]; then
+
+    local DATABASE_ADMIN_ROLE_VALUE=$(trimWhitespace ${DATABASE_ADMIN_ROLE})
+    if [ -z "${DATABASE_ADMIN_ROLE_VALUE}" ]; then
+      if [ "${DATABASE_ADMIN_USERNAME,,}" == "sys" ] || [ "${DATABASE_ADMIN_USERNAME,,}" == "system" ]; then
+        DATABASE_ADMIN_ROLE_VALUE=sysdba
+      fi
+    fi
+    
+    DATABASE_ADMIN_ROLE=${DATABASE_ADMIN_ROLE_VALUE}
+    export DATABASE_ADMIN_ROLE
+  fi
+  
+}
+
+function calculateAdminServerHostname() {
+  local adminServerHostname=${ADMIN_SERVER_HOSTNAME_ALIAS}
+  adminServerHostname=${adminServerHostname:-$HOSTNAME}
+  echo ${adminServerHostname}
+}
+
+function calculateAdminServerT3Url() {
+  local adminServerHostname=$1
+  if [ -z "${adminServerHostname}" ]; then
+    adminServerHostname=$(calculateAdminServerHostname)
+  fi
+  if [ "${SECURE_MODE}" == "TRUE" ]; then
+     echo "t3s://${adminServerHostname}:${ADMIN_SERVER_SSL_PORT}"
+  else 
+     echo "t3://${adminServerHostname}:${ADMIN_SERVER_PORT}"
+  fi
+}
+
+function calculateAdminServerUrl() {
+  local adminServerHostname=$1
+  if [ -z "${adminServerHostname}" ]; then
+    adminServerHostname=$(calculateAdminServerHostname)
+  fi
+  if [ "${SECURE_MODE}" == "TRUE" ]; then
+     echo "https://${adminServerHostname}:${ADMIN_SERVER_SSL_PORT}"
+  else 
+     echo "http://${adminServerHostname}:${ADMIN_SERVER_PORT}"
+  fi
+}
+
+function ping_adminserver() {
+  local adminServerUrl=$(calculateAdminServerUrl $1)
+  local adminServerReadyUrl="${adminServerUrl}/weblogic/ready"
+  log "Pinging ${adminServerReadyUrl}..."
+  status=$(curl --insecure --silent --noproxy '*' \
+                --output /dev/null \
+                --write-out '%{http_code}' \
+                -X GET ${adminServerReadyUrl})
+  return $status 
+}
+
+
+function calculateManagedServerHostname() {
+  local managedServerHostname=${MANAGED_SERVER_HOSTNAME_ALIAS}
+  managedServerHostname=${managedServerHostname:-$HOSTNAME}
+  echo ${managedServerHostname}
+}
+
+function calculateManagedServerT3Url() {
+  local managedServerHostname=$1
+  if [ -z "${managedServerHostname}" ];then
+     managedServerHostname=$(calculateManagedServerHostname)
+  fi
+  if [ "${SECURE_MODE}" == "TRUE" ]; then
+    echo "t3s://${managedServerHostname}:${MANAGED_SERVER_SSL_PORT}"
+  else
+    echo "t3://${managedServerHostname}:${MANAGED_SERVER_PORT}"
+  fi
+}
+
+function calculateManagedServerUrl() {
+  local managedServerHostname=$1
+  if [ -z "${managedServerHostname}" ];then
+     managedServerHostname=$(calculateManagedServerHostname)
+  fi
+  if [ "${SECURE_MODE}" == "TRUE" ]; then
+    echo "https://${managedServerHostname}:${MANAGED_SERVER_SSL_PORT}"
+  else
+    echo "http://${managedServerHostname}:${MANAGED_SERVER_PORT}"
+  fi
+}
+
+function ping_managedserver() {
+  local managedServerUrl=$(calculateManagedServerUrl $1)
+  local managedServerReadyUrl="${managedServerUrl}/weblogic/ready"
+  log "Pinging ${managedServerReadyUrl}..."
+  status=$(curl --insecure --silent --noproxy '*' \
+                --output /dev/null \
+                --write-out '%{http_code}' \
+                -X GET ${managedServerReadyUrl})
+  return $status 
+}
+
+
+function calculateEASServerHostname() {
+  local easServerHostname=${EAS_SERVER_HOSTNAME_ALIAS}
+  easServerHostname=${easServerHostname:-$HOSTNAME}
+  echo ${easServerHostname}
+}
+
+function calculateEASServerT3Url() {
+  local easServerHostname=$1
+  if [ -z "${easServerHostname}" ]; then
+    easServerHostname=$(calculateEASServerHostname)
+  fi
+  if [ "${SECURE_MODE}" == "TRUE" ]; then
+    echo "t3s://${easServerHostname}:${EAS_SERVER_SSL_PORT}"
+  else
+    echo "t3://${easServerHostname}:${EAS_SERVER_PORT}"
+  fi
+}
+
+function calculateEASServerUrl() {
+  local easServerHostname=$1
+  if [ -z "${easServerHostname}" ]; then
+    easServerHostname=$(calculateEASServerHostname)
+  fi
+  if [ "${SECURE_MODE}" == "TRUE" ]; then
+    echo "https://${easServerHostname}:${EAS_SERVER_SSL_PORT}"
+  else
+    echo "http://${easServerHostname}:${EAS_SERVER_PORT}"
+  fi
+}
+
+function ping_easserver() {
+  local easServerUrl=$(calculateEASServerUrl $1)
+  local easServerReadyUrl="${easServerUrl}/weblogic/ready"
+  log "Pinging ${easServerReadyUrl}..."
+  status=$(curl --insecure --silent --noproxy '*' \
+                --output /dev/null \
+                --write-out '%{http_code}' \
+                -X GET ${easServerReadyUrl})
+  return $status 
+}
+
+
+function generatePassword() {
+  local pass0=$(tr -dc 'a-zA-Z' </dev/urandom | head -c 1)
+  local pass1=$(tr -dc '0-9' </dev/urandom | head -c 2)
+  local pass2=$(tr -dc 'A-Z' </dev/urandom | head -c 2)
+  local pass3=$(tr -dc 'a-z' </dev/urandom | head -c 2)
+  local pass4=$(tr -dc '#_'  </dev/urandom | head -c 2)
+  local pass5=$(tr -dc '0-9A-Za-z#_' </dev/urandom | head -c 14)
+  local shufpass=$(echo "${pass1}${pass2}${pass3}${pass4}${pass5}" | sed 's/./&\n/g' | shuf | tr -d "\n")
+  echo "${pass0}${shufpass}"
+}

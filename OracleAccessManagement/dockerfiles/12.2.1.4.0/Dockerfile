@@ -1,4 +1,4 @@
-# # Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# # Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
 # #
 # # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # #
@@ -30,6 +30,7 @@ ENV FMW_IDM_JAR=fmw_12.2.1.4.0_idm_generic.jar \
     OPATCH_PATCH_DIR=/tmp/opatch \
     OPATCH_NO_FUSER=true \
     SCRIPT_DIR=/u01/oracle/dockertools \
+    HEALTH_SCRIPT_FILE=/u01/oracle/dockertools/get_healthcheck_url.sh \
     PROPS_DIR=/u01/oracle/properties \
     USER_PROJECTS_DIR=/u01/oracle/user_projects \
     DOMAIN_ROOT=/u01/oracle/user_projects/domains \
@@ -56,25 +57,25 @@ ENV FMW_IDM_JAR=fmw_12.2.1.4.0_idm_generic.jar \
 # ----------------------------------------------------------------
 USER root
 RUN mkdir -p ${BASE_DIR} && \
-    chmod a+xr ${BASE_DIR} && chown oracle:oracle ${BASE_DIR} && \
-    mkdir -p ${USER_PROJECTS_DIR} && \
-    chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 775 ${USER_PROJECTS_DIR} && \
+    chmod a+xr ${BASE_DIR} && chown oracle:root ${BASE_DIR} && \
+mkdir -p ${USER_PROJECTS_DIR} && \
+    chown -R oracle:root ${USER_PROJECTS_DIR} && chmod -R 775 ${USER_PROJECTS_DIR} && \
     mkdir -p ${CONTAINER_DIR} && \
-    chown -R oracle:oracle ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-    mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \ 
+    chown -R oracle:root ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:root ${SCRIPT_DIR} && \
+    mkdir -p ${PROPS_DIR} && chown oracle:root ${PROPS_DIR} && \ 
     mkdir ${PATCH_DIR} && \
     mkdir ${OPATCH_PATCH_DIR} && \
-    chown -R oracle:oracle ${BASE_DIR} && \
-    chown -R oracle:oracle ${PATCH_DIR} && \
-    chown -R oracle:oracle ${OPATCH_PATCH_DIR}
+    chown -R oracle:root ${BASE_DIR} && \
+    chown -R oracle:root ${PATCH_DIR} && \
+    chown -R oracle:root ${OPATCH_PATCH_DIR}
 
 #
 FROM base as builder
 # Copy packages and scripts
 # -------------------------
-COPY --chown=oracle:oracle Dockerfile patches/* ${PATCH_DIR}/
-COPY --chown=oracle:oracle Dockerfile opatch_patch/* ${OPATCH_PATCH_DIR}/  
+COPY --chown=oracle:root Dockerfile patches/* ${PATCH_DIR}/
+COPY --chown=oracle:root Dockerfile opatch_patch/* ${OPATCH_PATCH_DIR}/  
 COPY container-scripts/* ${SCRIPT_DIR}/
 COPY install/* ${BASE_DIR}/
 ADD  $FMW_IDM_JAR ${BASE_DIR}/
@@ -84,8 +85,8 @@ ADD  $FMW_IDM_JAR ${BASE_DIR}/
 # --------------------------------------------
 RUN cd ${BASE_DIR} && chmod 755 *.jar && \
      chmod a+xr ${SCRIPT_DIR}/* && \
-     chown -R oracle:oracle ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
-     chown oracle:oracle ${SCRIPT_DIR}/*
+     chown -R oracle:root ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
+     chown oracle:root ${SCRIPT_DIR}/*
 
 # 
 # Installation of IDM Binaries
@@ -155,12 +156,13 @@ FROM base as FINAL_BUILD
 
 RUN yum install -y libaio hostname && \
     rm -rf /var/cache/yum
-COPY --from=builder --chown=oracle:oracle $BASE_DIR $BASE_DIR
-COPY --from=builder --chown=oracle:oracle $JAVA_HOME $JAVA_HOME
-
+COPY --from=builder --chown=oracle:root  $BASE_DIR $BASE_DIR 
+RUN sed -i '/@@audit\/createCASBAudit.sql/s/@@audit\/createCASBAudit.sql/--@@audit\/createCASBAudit.sql/g' /u01/oracle/idm/common/sql/oam/sql/oam.sql && \
+    sed -i '/@@diagnostic\/createIdmDiagnosticLogRecord.sql/s/@@diagnostic\/createIdmDiagnosticLogRecord.sql/--@@diagnostic\/createIdmDiagnosticLogRecord.sql/g' /u01/oracle/idm/common/sql/oam/sql/oam.sql
 
 # Define default command to start script.
 USER oracle
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR $ORACLE_HOME
 # Define default command to start bash.
 CMD ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]

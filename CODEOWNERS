@@ -5,12 +5,13 @@
 /.github/*.yml             @Djelibeybi
 /.github/workflows         @Djelibeybi @AmedeeBulle
 /GraalVM/                  @mzachh
-/NoSQL/                    @NoSQLGuy
+/NoSQL/                    @Djelibeybi
 /OracleAccessManagement/   @pratdash-orcl
 /OracleBI/                 @sjvp
 /OracleCoherence/          @thegridman
 /OracleDatabase/           @gvenzl
 /OracleDatabase/RAC/       @psaini79
+/OracleEssbase/            @anilarora
 /OracleFMWInfrastructure/  @mriccell
 /OracleGoldenGate/         @sbalousek
 /OracleHTTPServer/         @Prabhat-Kishore

@@ -41,8 +41,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-11.0.10_linux-x64_bin.tar.gz \
-	JAVA_SHA256=94bd34f85ee38d3ef59e5289ec7450b9443b924c55625661fffe66b03f2c8de2 \
+ENV JAVA_PKG=jdk-11.0.11_linux-x64_bin.tar.gz \
+	JAVA_SHA256=6deb05dca04bdc5cba6c49a1b954c06c13fbf95c467a61918d4e8c37e4817bee \
 	JAVA_HOME=/usr/java/jdk-11
 
 ##
@@ -59,7 +59,7 @@ FROM oraclelinux:8-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.10 \
+ENV JAVA_VERSION=11.0.11 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
@@ -68,6 +68,7 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
+	microdnf -y update; \
 	microdnf install -y \
 # JDK assumes freetype is available		
 		freetype fontconfig \

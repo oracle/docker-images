@@ -42,8 +42,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=server-jre-8u281-linux-x64.tar.gz \
-	JAVA_SHA256=e452da44875d72b237860214f943af94eb3cbb76140a8df9b0f23cb65cb06cef \
+ENV JAVA_PKG=server-jre-8u291-linux-x64.tar.gz \
+	JAVA_SHA256=21e567a9f71954bf2066e9a7e740dae08b212fd159311f2de7b628cf042ef057 \
 	JAVA_HOME=/usr/java/jdk-8
 
 COPY $JAVA_PKG /tmp/jdk.tgz
@@ -60,7 +60,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=1.8.0_281 \
+ENV JAVA_VERSION=1.8.0_291 \
 	JAVA_HOME=/usr/java/jdk-8 
 	
 ENV	PATH $JAVA_HOME/bin:$PATH
@@ -69,7 +69,8 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 ##
-RUN	ln -sfT "$JAVA_HOME" /usr/java/default; \
+RUN	yum -y update; \
+	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
 	for bin in "$JAVA_HOME/bin/"*; do \
 		base="$(basename "$bin")"; \

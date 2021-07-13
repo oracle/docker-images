@@ -118,6 +118,7 @@ For example:
 create
 --jdkVersion=8u261
 --type oig
+--chown oracle:root
 --version=12.2.1.4.0
 --tag=oig-with-patch:12.2.1.4.0
 --pull
@@ -126,6 +127,14 @@ create
 --additionalBuildFiles /scratch/docker-images/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts
 ```
 
+c) Edit the `<work_directory>/docker-images/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file` and under the `GENERIC` section add the line `INSTALL_TYPE="Weblogic Server"`. For example:
+
+```
+[GENERIC]
+INSTALL_TYPE="WebLogic Server"
+DECLINE_SECURITY_UPDATES=true
+SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+```
 
 # 6. Steps to create image
 
@@ -149,18 +158,18 @@ $ imagetool cache addInstaller --type idm --version 12.2.1.4.0 --path <work dire
 ### iii) Add Patches to Imagetool cache
 
 ```
-$ imagetool cache addEntry --key 28186730_13.9.4.2.2 --path <work directory>/stage/p28186730_139422_Generic.zip
-$ imagetool cache addEntry --key 31537019_12.2.1.4.0 --path <work directory>/stage/p31537019_122140_Generic.zip
-$ imagetool cache addEntry --key 31544353_12.2.1.4.0 --path <work directory>/stage/p31544353_122140_Linux-x86-64.zip
-$ imagetool cache addEntry --key 31470730_12.2.1.4.0 --path <work directory>/stage/p31470730_122140_Generic.zip
-$ imagetool cache addEntry --key 31488215_12.2.1.4.0 --path <work directory>/stage/p31488215_122140_Generic.zip
-$ imagetool cache addEntry --key 31403376_12.2.1.4.0 --path <work directory>/stage/p31403376_122140_Generic.zip
-$ imagetool cache addEntry --key 31396632_12.2.1.4.0 --path <work directory>/stage/p31396632_122140_Generic.zip
-$ imagetool cache addEntry --key 31287540_12.2.1.4.0 --path <work directory>/stage/p31287540_122140_Generic.zip
-$ imagetool cache addEntry --key 30779352_12.2.1.4.0 --path <work directory>/stage/p30779352_122140_Generic.zip
-$ imagetool cache addEntry --key 30680769_12.2.1.4.0 --path <work directory>/stage/p30680769_122140_Generic.zip
-$ imagetool cache addEntry --key 31537918_12.2.1.4.0 --path <work directory>/stage/p31537918_122140_Generic.zip
-$ imagetool cache addEntry --key 31497461_12.2.1.4.20.06.24 --path <work directory>/stage/p31497461_12214200624_Generic.zip
+$ imagetool cache addEntry --key 28186730_13.9.4.2.2 --value <work directory>/stage/p28186730_139422_Generic.zip
+$ imagetool cache addEntry --key 31537019_12.2.1.4.0 --value <work directory>/stage/p31537019_122140_Generic.zip
+$ imagetool cache addEntry --key 31544353_12.2.1.4.0 --value <work directory>/stage/p31544353_122140_Linux-x86-64.zip
+$ imagetool cache addEntry --key 31470730_12.2.1.4.0 --value <work directory>/stage/p31470730_122140_Generic.zip
+$ imagetool cache addEntry --key 31488215_12.2.1.4.0 --value <work directory>/stage/p31488215_122140_Generic.zip
+$ imagetool cache addEntry --key 31403376_12.2.1.4.0 --value <work directory>/stage/p31403376_122140_Generic.zip
+$ imagetool cache addEntry --key 31396632_12.2.1.4.0 --value <work directory>/stage/p31396632_122140_Generic.zip
+$ imagetool cache addEntry --key 31287540_12.2.1.4.0 --value <work directory>/stage/p31287540_122140_Generic.zip
+$ imagetool cache addEntry --key 30779352_12.2.1.4.0 --value <work directory>/stage/p30779352_122140_Generic.zip
+$ imagetool cache addEntry --key 30680769_12.2.1.4.0 --value <work directory>/stage/p30680769_122140_Generic.zip
+$ imagetool cache addEntry --key 31537918_12.2.1.4.0 --value <work directory>/stage/p31537918_122140_Generic.zip
+$ imagetool cache addEntry --key 31497461_12.2.1.4.20.06.24 --value <work directory>/stage/p31497461_12214200624_Generic.zip
 ```
 
 
@@ -179,6 +188,7 @@ A sample `buildAgs` file is now as follows:
 create
 --jdkVersion=8u261
 --type oig
+--chown oracle:root
 --version=12.2.1.4.0
 --tag=oig-with-patch:12.2.1.4.0
 --pull

@@ -1,22 +1,22 @@
-# Copyright (c) 2020,2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020,2021 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 15
+# This is the Dockerfile for Oracle JDK 16
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) jdk-15.XX_linux-x64_bin.tar.gz
-#     Download from https://www.oracle.com/java/technologies/javase-jdk15-downloads.html
+# (1) jdk-16.XX_linux-x64_bin.tar.gz
+#     Download from https://www.oracle.com/java/technologies/javase-jdk16-downloads.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/jdk:15 .
+#      $ docker build -t oracle/jdk:16 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -41,9 +41,9 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-15.0.2_linux-x64_bin.tar.gz \
-	JAVA_SHA256=54b29a3756671fcb4b6116931e03e86645632ec39361bc16ad1aaa67332c7c61 \
-	JAVA_HOME=/usr/java/jdk-15
+ENV JAVA_PKG=jdk-16.0.1_linux-x64_bin.tar.gz \
+	JAVA_SHA256=caa0bfc0e9ee52f45c8f8ca803a23f132ef551297c6b9331b091110c5740a9bf \
+	JAVA_HOME=/usr/java/jdk-16
 
 ##
 COPY $JAVA_PKG /tmp/jdk.tgz
@@ -59,8 +59,8 @@ FROM oraclelinux:8-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=15.0.2 \
-	JAVA_HOME=/usr/java/jdk-15
+ENV JAVA_VERSION=16.0.1 \
+	JAVA_HOME=/usr/java/jdk-16
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
 
@@ -68,6 +68,7 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
+	microdnf -y update; \
 	microdnf install -y \
 # JDK assumes freetype is available		
 		freetype fontconfig \
