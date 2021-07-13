@@ -22,7 +22,7 @@ fi
 if [ -z ${CONFIGURE_ES_CONNECTION} ]
 then
    # by default we always keep this flag OFF
-   export CONFIGURE_ES_CONNECTION="false"
+   export CONFIGURE_ES_CONNECTION="true"
 fi
 
 # validate admin server parameters

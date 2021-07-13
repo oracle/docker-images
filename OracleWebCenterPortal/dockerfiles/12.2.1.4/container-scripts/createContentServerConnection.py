@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Copyright (c)  2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c)  2020,2021, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 import sys
 
@@ -40,7 +40,7 @@ print('UCM Client Security Policy :' + ucmClientSecurityPolicy);
 print('')
 print('')
 
-ucmUrl= "http://" +  ucmHost + ":" + ucmPort + "/" + "idcnativews"
+ucmUrl= ucmHost + ":" + ucmPort + "/" + "idcnativews"
 url = adminHost + ":" + adminPort
 connect(adminName, adminPassword, url)
 

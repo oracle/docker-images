@@ -71,7 +71,8 @@ MANAGED_SERVER_PORT=<Managed Server Port>
 CONFIGURE_UCM_CONNECTION=<true or false>
 #Valid option for socket type are socket,jaxws 
 UCM_SOCKET_TYPE=<UCM Socket Type >
-#Required if UCM_SOCKET_TYPE is jaxws
+#If UCM_SOCKET_TYPE is socket configure UCM_HOST=(hostname or IPAddress) of UCM machine
+#If UCM_SOCKET_TYPE is jaxws configure UCM_HOST=(protocol://hostname or IPAddress) of UCM machine
 UCM_HOST=<UCM Host>
 UCM_PORT=<UCM Port>
 UCM_ADMIN_USER=<UCM Admin User>
