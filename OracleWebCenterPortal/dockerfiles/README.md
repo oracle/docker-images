@@ -45,18 +45,18 @@ $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.
 The Oracle Database image can be pulled from the  [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts from the [Oracle Database section of this repo](https://github.com/oracle/docker-images/tree/master/OracleDatabase).
 
 # 4. Building Oracle WebCenter Portal Images
-Clone or download the [Github repository](https://github.com/oracle/docker-images).The repository contains Docker files and scripts to build Docker images for Oracle products.
+1. Clone or download the [Github repository](https://github.com/oracle/docker-images).The repository contains Docker files and scripts to build Docker images for Oracle products.
 
-Download Oracle WebCenter Portal 12.2.1.4 binary from [Oracle Technology Network](https://www.oracle.com/middleware/technologies/webcenter-portal-download.html#).  
+2. Download Oracle WebCenter Portal 12.2.1.4 binary from [Oracle Technology Network](https://www.oracle.com/middleware/technologies/webcenter-portal-download.html#).  
 
-Save the Oracle WebCenter Portal 12.2.1.4 binary into the cloned repository folder located at: ../docker-images/OracleWebCenterPortal/dockerfiles/12.2.1.4/ and extract the downloaded zip.
+3. Save the Oracle WebCenter Portal 12.2.1.4 binary into the cloned repository folder located at ../docker-images/OracleWebCenterPortal/dockerfiles/12.2.1.4/ and extract the downloaded zip.
 
-To build Oracle WebCenter Portal Docker image, go to folder located at OracleWebCenterPortal/dockerfiles/ and run the following command:
-- Use the resulting image name to create containers 
+To build Oracle WebCenter Portal Docker image, go to folder located at ../docker-images/OracleWebCenterPortal/dockerfiles/ and run the following command:
 
 ```
 $ sh buildDockerImage.sh -v 12.2.1.4
 ```
+- Use the resulting image name to create containers 
 
 
 **IMPORTANT**: The resulting image has automated scripts to:
