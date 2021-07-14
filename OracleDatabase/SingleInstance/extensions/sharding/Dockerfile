@@ -22,12 +22,13 @@ ARG BASE_IMAGE=oracle/database:${BASE_IMAGE_VERSION}-ee
 ARG BASE_REPO=https://github.com/oracle/db-sharding
 
 # Creating stage for downloading necessary script files
-FROM ${BASE_IMAGE} as downloader
+FROM oraclelinux:7-slim as downloader
 ARG BASE_REPO
 ENV BASE_REPO=$BASE_REPO
 WORKDIR /tmp
 
-RUN curl -L -o master.tar.gz ${BASE_REPO}/archive/master.tar.gz && \
+RUN yum -y install gzip tar && \
+    curl -L -o master.tar.gz ${BASE_REPO}/archive/master.tar.gz && \
     tar -xvf master.tar.gz
 
 # Creating another stage for sharding extension creation
