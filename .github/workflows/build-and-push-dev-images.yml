@@ -27,13 +27,13 @@ on:
         required: false
       lang:
         description: List of languages to build
-        default: 'golang, nodejs, php, python, ruby'
+        default: 'compat, golang, nodejs, php, python, ruby'
         required: false
 
 # Default values for the builds triggered by the push event
 env:
   ol: 'oraclelinux7, oraclelinux8'
-  lang: 'golang, nodejs, php, python, ruby'
+  lang: 'compat, golang, nodejs, php, python, ruby'
 
 jobs:
   prepare:
