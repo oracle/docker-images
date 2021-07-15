@@ -1,6 +1,6 @@
 # Copyright (c) 2021 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-FROM oraclelinux:8-slim
+FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 
 COPY ruby.module  /etc/dnf/modules.d/ruby.module
 
