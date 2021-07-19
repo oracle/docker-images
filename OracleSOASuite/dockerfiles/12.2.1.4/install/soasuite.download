@@ -1,11 +1,12 @@
 #
-# Oracle SOA Suite for Oracle Middleware (BPM, FMW, SOA)
+# Oracle SOA Suite for Oracle Middleware (SOA, OSB, B2B)
 # OTN      : http://www.oracle.com/technetwork/middleware/soasuite/overview
 # Download : http://edelivery.oracle.com
 #
-#  - V886440-01.zip - Oracle Fusion Middleware 12c (12.2.1.4.0) SOA Suite
+#  - V983383-01.zip - Oracle Fusion Middleware 12c (12.2.1.4.0) SOA Suite
 #                     and Business Process Management
-#  - V886445-01.zip - Oracle Fusion Middleware 12c (12.2.1.4.0) Service Bus
-#
-0028f065488979dccea599d56b4db458  fmw_12.2.1.4.0_soa.jar
-9d53300c41d7c47873be515b80df6e87  fmw_12.2.1.4.0_osb.jar
+#  - V983387-01.zip - Oracle Fusion Middleware 12c (12.2.1.4.0) Service Bus
+#  - V983384-01.zip - Oracle Fusion Middleware 12c (12.2.1.4.0) B2B and Healthcare
+517dab87766549c65d331ded4cb1bde4  fmw_12.2.1.4.0_soa.jar
+89f1ea92d899a0484a7c4e0927e0235c  fmw_12.2.1.4.0_osb.jar
+36463fe0d21cd4dd9ad7ffb78eb8fadf  fmw_12.2.1.4.0_b2bhealthcare.jar

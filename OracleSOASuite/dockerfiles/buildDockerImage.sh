@@ -3,7 +3,7 @@
 # Script to build a Docker image for Oracle SOA suite.
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016, 2020 Oracle and/or its affiliates.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -14,11 +14,10 @@ cat << EOF
 
 Usage: buildDockerImage.sh -v [version]
 
-Builds a Docker Image for Oracle SOA/OSB/BPM
+Builds a Docker Image for Oracle SOA/OSB
 Parameters:
    -h: view usage
-   -v: Release version to build. Required. Allowed values are
-       12.2.1.2, 12.2.1.3, 12.2.1.4
+   -v: Release version to build. Required.
    -s: Skip checksum verification
 
 LICENSE Universal Permissive License (UPL), Version 1.0
@@ -101,24 +100,13 @@ fi
 
 . ../setenv.sh
 
-versionOK=false
-if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 -o ${VERSION} = 12.2.1.4 ]
-then
-  IMAGE_NAME="oracle/soasuite:$VERSION"
-  DOCKERFILE_NAME=Dockerfile
-  versionOK=true
-  THEDIR=${VERSION}
-fi
+IMAGE_NAME="oracle/soasuite:$VERSION"
+DOCKERFILE_NAME=Dockerfile
+THEDIR=${VERSION}
 
-
-if [ "${versionOK}" = "false" ]; then
-  echo "ERROR: Incorrect version ${VERSION} specified"
+if [ ! -d ${THEDIR} ]; then
+  echo "ERROR: Incorrect version ${THEDIR} . Directory with product version not found"
   usage
-else
-  if [ ! -d ${THEDIR} ]; then
-    echo "ERROR: Incorrect version ${THEDIR} directory not found"
-    usage
-  fi
 fi
 
 # Go into version folder
