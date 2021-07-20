@@ -49,15 +49,19 @@ declare -r TRUE=0
 
 print_message "Process id of the program : $TOP_ID"
 # Check whether container has enough memory
+if [[ -f /sys/fs/cgroup/cgroup.controllers ]]; then
+   memory=$(cat /sys/fs/cgroup/memory.max)
+else
+   memory=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
+fi
+
 # Github issue #219: Prevent integer overflow,
 # only check if memory digits are less than 11 (single GB range and below)
-if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes | wc -c` -lt 11 ]; then
-   if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes` -lt 8589934592  ]; then
-      print_message "Error: The container doesn't have enough memory allocated."
-      print_message "A database container needs at least 8 GB of memory."
-      print_message "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
-      error_exit "Existing..";
-   fi
+if [[ ${memory} != "max" && ${#memory} -lt 11 && ${memory} -lt 8589934592 ]]; then
+   echo "Error: The container doesn't have enough memory allocated."
+   echo "A database container needs at least 8 GB of memory."
+   echo "You currently only have $((memory/1024/1024/1024)) GB allocated to the container."
+   exit 1;
 fi
 
 print_message "#################################################"

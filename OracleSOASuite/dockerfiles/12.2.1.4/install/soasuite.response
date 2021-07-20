@@ -9,7 +9,7 @@ Response File Version=1.0.0.0.0
 [GENERIC]
 #INSTALL_TYPE=JDeveloper with Business Process Management
 #INSTALL_TYPE=Service Bus
-INSTALL_TYPE=BPM
+INSTALL_TYPE=SOA Suite
 
 DECLINE_SECURITY_UPDATES=true
 SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
