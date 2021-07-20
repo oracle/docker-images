@@ -49,9 +49,9 @@ The Oracle Database image can be pulled from the  [Oracle Container Registry](ht
 
 2. Download Oracle WebCenter Portal 12.2.1.4 binary from [Oracle Technology Network](https://www.oracle.com/middleware/technologies/webcenter-portal-download.html#).  
 
-3. Save the Oracle WebCenter Portal 12.2.1.4 binary into the cloned repository folder located at ../docker-images/OracleWebCenterPortal/dockerfiles/12.2.1.4/ and extract the downloaded zip.
+3. Save the Oracle WebCenter Portal 12.2.1.4 binary into the cloned repository folder located at $DIR/docker-images/OracleWebCenterPortal/dockerfiles/12.2.1.4/ and extract the downloaded zip.
 
-To build Oracle WebCenter Portal Docker image, go to folder located at ../docker-images/OracleWebCenterPortal/dockerfiles/ and run the following command:
+To build Oracle WebCenter Portal Docker image, go to folder located at $DIR/docker-images/OracleWebCenterPortal/dockerfiles/ and run the following command:
 
 ```
 $ sh buildDockerImage.sh -v 12.2.1.4

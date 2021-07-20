@@ -22,6 +22,7 @@ ucmAdminUserName = os.environ.get("UCM_ADMIN_USER")
 ucmsocketType    = os.environ.get("UCM_SOCKET_TYPE")
 ucmIntraDocServerPort = os.environ.get("UCM_INTRADOC_SERVER_PORT")
 ucmClientSecurityPolicy = os.environ.get("UCM_CLIENT_SECURITY_POLICY")
+ucmUsingSSL = os.environ.get("UCM_USING_SSL")
 
 print('')
 print('Configuring Content Server Connection');
@@ -40,7 +41,11 @@ print('UCM Client Security Policy :' + ucmClientSecurityPolicy);
 print('')
 print('')
 
-ucmUrl= ucmHost + ":" + ucmPort + "/" + "idcnativews"
+if (ucmUsingSSL == 'true'):
+    ucmUrl = "https://" +ucmHost + ":" + ucmPort + "/" + "idcnativews"
+else:
+    ucmUrl = "http://" +ucmHost + ":" + ucmPort + "/" + "idcnativews"
+
 url = adminHost + ":" + adminPort
 connect(adminName, adminPassword, url)
 

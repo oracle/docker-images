@@ -53,33 +53,33 @@ Create an environment file `webcenter.env.list` file, to define the parameters.
 Update the parameters inside `webcenter.env.list` as per your local setup.
 
 ```
-#Database Configuration
+# Database Configuration details
 DB_DROP_AND_CREATE=<true or false>
 DB_CONNECTION_STRING=<Hostname/ContainerName>:<Database Port>/<DB_PDB>.<DB_DOMAIN>
 DB_RCUPREFIX=<RCU Prefix>
 DB_PASSWORD=<Database Password>
 DB_SCHEMA_PASSWORD=<Schema Password>
 
-#configure container
+# Admin Server Configuration details
 ADMIN_SERVER_CONTAINER_NAME=<Admin Server Container Name>
 ADMIN_PORT=<Admin Server Port>
 ADMIN_PASSWORD=<Admin Server Password>
 ADMIN_USERNAME=<Admin Server User Name>
 MANAGED_SERVER_PORT=<Managed Server Port>
 
-# Configure Content Server
+# Content Server Connection Configuration details
 CONFIGURE_UCM_CONNECTION=<true or false>
-#Valid option for socket type are socket,jaxws 
+# Valid option for connection type are socket,jaxws 
 UCM_SOCKET_TYPE=<UCM Socket Type >
-#If UCM_SOCKET_TYPE is socket configure UCM_HOST=(hostname or IPAddress) of UCM machine
-#If UCM_SOCKET_TYPE is jaxws configure UCM_HOST=(protocol://hostname or IPAddress) of UCM machine
+# Set to true if UCM is using SSL or else false
+UCM_USING_SSL=<true or false>
 UCM_HOST=<UCM Host>
 UCM_PORT=<UCM Port>
 UCM_ADMIN_USER=<UCM Admin User>
 UCM_INTRADOC_SERVER_PORT=<required if socket>
 UCM_CLIENT_SECURITY_POLICY=<required if jaxws>
 
-# Configure Elasticsearch Server
+# Elasticsearch Server Configuration details
 SEARCH_APP_USERNAME=<Search User Name>
 SEARCH_APP_USER_PASSWORD=<Search User Password>
 ```
