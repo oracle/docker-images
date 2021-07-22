@@ -45,18 +45,18 @@ $ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.
 The Oracle Database image can be pulled from the  [Oracle Container Registry](https://container-registry.oracle.com) or you can build your own using the Dockerfiles and scripts from the [Oracle Database section of this repo](https://github.com/oracle/docker-images/tree/master/OracleDatabase).
 
 # 4. Building Oracle WebCenter Portal Images
-IMPORTANT: To build the Oracle WebCenter Portal image, you must first download the required version of the Oracle WebCenter Portal  binaries these install binaries are required to create the Oracle WebCenter Portal image. These binaries must be downloaded and copied into the folder with the same version for e.g. 12.2.1.4.0 binaries need to be dropped into `../OracleWebCenterPortal/dockerfiles/12.2.1.4`. 
+1. Clone or download the [Github repository](https://github.com/oracle/docker-images).The repository contains Docker files and scripts to build Docker images for Oracle products.
 
-The binaries can be downloaded from the [Here](https://www.oracle.com/middleware/technologies/webcenter-portal-download.html#).
+2. Download Oracle WebCenter Portal 12.2.1.4 binary from [Oracle Technology Network](https://www.oracle.com/middleware/technologies/webcenter-portal-download.html#).  
 
-Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wcportal.jar` files under `dockerfiles/12.2.1.4` for building Oracle WebCenter Portal 12.2.1.4 image.
+3. Save the Oracle WebCenter Portal 12.2.1.4 binary into the cloned repository folder located at $DIR/docker-images/OracleWebCenterPortal/dockerfiles/12.2.1.4/ and extract the downloaded zip.
 
-To build Oracle WebCenter Portal Docker image, go to folder located at OracleWebCenterPortal/dockerfiles/ and run the following command:
-- Use the resulting image name to create containers 
+To build Oracle WebCenter Portal Docker image, go to folder located at $DIR/docker-images/OracleWebCenterPortal/dockerfiles/ and run the following command:
 
 ```
 $ sh buildDockerImage.sh -v 12.2.1.4
 ```
+- Use the resulting image name to create containers 
 
 
 **IMPORTANT**: The resulting image has automated scripts to:
