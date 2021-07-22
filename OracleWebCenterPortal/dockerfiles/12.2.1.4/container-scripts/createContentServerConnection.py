@@ -42,9 +42,9 @@ print('')
 print('')
 
 if (ucmUsingSSL == 'true'):
-    ucmUrl = "https://" +ucmHost + ":" + ucmPort + "/" + "idcnativews"
+    ucmUrl = "https://" + ucmHost + ":" + ucmPort + "/" + "idcnativews"
 else:
-    ucmUrl = "http://" +ucmHost + ":" + ucmPort + "/" + "idcnativews"
+    ucmUrl = "http://" + ucmHost + ":" + ucmPort + "/" + "idcnativews"
 
 url = adminHost + ":" + adminPort
 connect(adminName, adminPassword, url)
