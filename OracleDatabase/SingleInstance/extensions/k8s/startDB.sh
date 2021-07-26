@@ -20,7 +20,9 @@ fi;
 
 export ORACLE_SID=$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)
 
-# Start database in nomount mode, shutdown first to abort any zombie procs on restart
+# Clean up any left over zombie procs from container crash, start database in nomount mode
+ipcs -m | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -m 2> /dev/null
+ipcs -s | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -s 2> /dev/null
 for i in {1..10}; do
   sqlplus / as sysdba << EOF
    shutdown abort;
