@@ -34,6 +34,7 @@ def acquire_lock(lock_file, sock_file, block, heartbeat):
     :return:
     """
 
+    # create an empty lock file first
     open(lock_file, 'a').close()
     lock_handle = open(lock_file)
     print('[%s]: Acquiring lock %s with heartbeat %s secs' %
