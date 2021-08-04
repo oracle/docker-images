@@ -87,8 +87,10 @@ a pull request.
    specifically designed to be the smallest possible install size. Both images are
    also updated whenever a security-related errata is published.
    _(Updated Februrary 2021)_
-1. The `oraclelinux:8-slim` image is also available. It is half the size of
-   `oraclelinux:8` but requires the use of `microdnf` instead of `dnf`.
+1. There is an `oraclelinux:8-slim` image available for use with statically built
+   microservices. It is half the size of `oraclelinux:8` but does not have native
+   support for modularity or `dnf`. _Do not use this image if you need to install_
+   _any additional packages. (Updated August 2021)._
 1. Re-use existing scripts wherever possible. If a particular base image or
    script doesn't have the functionality you need, open an issue and work with
    the image owner to implement it.
