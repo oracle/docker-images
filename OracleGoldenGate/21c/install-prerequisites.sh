@@ -7,7 +7,7 @@ set -e
 ##  Installation of prerequisite software
 ##
 
-packages=(java-1.8.0-openjdk jq libaio libnsl python3-requests python3-psutil tar unzip)
+packages=(java-1.8.0-openjdk jq libaio libnsl python39-requests python39-psutil tar unzip)
 
 function success() {
     echo "Packages installed after ${sequence} attempts"
@@ -16,8 +16,10 @@ function success() {
     exit 0
 }
 
+##  Attempt the module and package installation up to three times
+##  in case there are network issues that cause failures.
 for sequence in $(seq 3); do
-    dnf -y module install nginx python36 && \
+    dnf -y module install nginx python39 && \
     dnf -y install "${packages[@]}"      && success "${sequence}"
 done
 exit 1
