@@ -1,5 +1,5 @@
 ## Copyright (c) 2021, Oracle and/or its affiliates.
-FROM          oraclelinux:8-slim
+FROM          oraclelinux:8
 LABEL         maintainer="Stephen Balousek<stephen.balousek@oracle.com>"
 
 ARG           INSTALLER

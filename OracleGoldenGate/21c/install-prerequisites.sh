@@ -7,8 +7,7 @@ set -e
 ##  Installation of prerequisite software
 ##
 
-packages=(findutils java-1.8.0-openjdk jq libaio libnsl nginx procps-ng python3 python3-requests python3-psutil tar unzip)
-manager=$(command -v microdnf || command -v dnf || command -v yum)
+packages=(java-1.8.0-openjdk jq libaio libnsl python3-requests python3-psutil tar unzip)
 
 function success() {
     echo "Packages installed after ${sequence} attempts"
@@ -18,6 +17,7 @@ function success() {
 }
 
 for sequence in $(seq 3); do
-    "${manager}" -y install "${packages[@]}" && success "${sequence}"
+    dnf -y module install nginx python36 && \
+    dnf -y install "${packages[@]}"      && success "${sequence}"
 done
 exit 1

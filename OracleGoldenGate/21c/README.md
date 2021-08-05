@@ -34,26 +34,30 @@ For more information about Oracle GoldenGate please see the [Oracle GoldenGate 2
 Once you have downloaded the Oracle GoldenGate software, a Docker image is created using the standard Docker command line.
 A single `--build-arg` is needed to indicate the GoldenGate installer which was downloaded.
 
-    $ docker build --tag=oracle/goldengate:21.3.0.0.0 \
-                   --build-arg INSTALLER=fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
-    Sending build context to Docker daemon
-    ...
-    Successfully tagged oracle/goldengate:21.3.0.0.0
+```sh
+$ docker build --tag=oracle/goldengate:21.3.0.0.0 \
+                --build-arg INSTALLER=fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
+Sending build context to Docker daemon
+...
+Successfully tagged oracle/goldengate:21.3.0.0.0
+```
 
 ## Running Oracle GoldenGate in a Docker container
 
 To run your Oracle GoldenGate Docker image use the `docker run` command as follows:
 
-    $ docker run \
-        --name <container name> \
-        -p <host port>:443 \
-        -e OGG_ADMIN=<admin user name> \
-        -e OGG_ADMIN_PWD=<admin password> \
-        -e OGG_DEPLOYMENT=<deployment name> \
-        -v [<host mount point>:]/u02 \
-        -v [<host mount point>:]/u03 \
-        -v [<host mount point>:]/etc/nginx/cert \
-        oracle/goldengate:21.3.0.0.0
+```sh
+$ docker run \
+    --name <container name> \
+    -p <host port>:443 \
+    -e OGG_ADMIN=<admin user name> \
+    -e OGG_ADMIN_PWD=<admin password> \
+    -e OGG_DEPLOYMENT=<deployment name> \
+    -v [<host mount point>:]/u02 \
+    -v [<host mount point>:]/u03 \
+    -v [<host mount point>:]/etc/nginx/cert \
+    oracle/goldengate:21.3.0.0.0
+```
 
 Parameters:
 
@@ -68,11 +72,13 @@ Parameters:
 
 All parameters are optional, so the following command will work, too:
 
-    $ docker run oracle/goldengate:21.3.0.0.0
-    ----------------------------------------------------------------------------------
-    --  Password for OGG administrative user 'oggadmin' is 'XU2k7cMastmt-DJKs'
-    ----------------------------------------------------------------------------------
-    ...
+```sh
+$ docker run oracle/goldengate:21.3.0.0.0
+----------------------------------------------------------------------------------
+--  Password for OGG administrative user 'oggadmin' is 'XU2k7cMastmt-DJKs'
+----------------------------------------------------------------------------------
+...
+```
 
 See the following sections for additional details.
 
@@ -80,10 +86,12 @@ See the following sections for additional details.
 
 On the first startup of the container, a random password will be generated for the Oracle GoldenGate administrative user if not provided by the `OGG_ADMIN_PWD` environment variable. You can find this password at the start of the Docker container log:
 
-    $ docker logs <container name> | head -3
-    ----------------------------------------------------------------------------------
-    --  Password for OGG administrative user 'oggadmin' is 'ujX7sqQ430G9-xSlr'
-    ----------------------------------------------------------------------------------
+```sh
+$ docker logs <container name> | head -3
+----------------------------------------------------------------------------------
+--  Password for OGG administrative user 'oggadmin' is 'ujX7sqQ430G9-xSlr'
+----------------------------------------------------------------------------------
+```
 
 ### SSL Certificate
 
@@ -94,33 +102,39 @@ When bringing your own SSL certificate to an Oracle GoldenGate Docker container,
 
 If these files are located in a directory called `cert`, they can be used in the GoldenGate Docker container with a volume mount as shown here:
 
-    $ docker run -v ${PWD}/cert:/etc/nginx/cert:ro -p 8443:443 ogg-21c
-    ...
+```sh
+$ docker run -v ${PWD}/cert:/etc/nginx/cert:ro -p 8443:443 ogg-21c
+...
+```
 
 The certificate file, `ogg.pem`, must contain a full certificate chain starting with the leaf certificate, and followed by all other certificates in the Certificate Authority chain.
 
-    -----BEGIN CERTIFICATE-----
-    MIIFBTCCA+2gAwIBAgISBJSzNXE+Ha5eDw76N5lgHhTpMA0GCSqGSIb3DQEBCwUA
-    MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
-    ...
-    dr7wTE+AQwcOLAGjIvFOL7GK8JrhKvuFvnSoys/1O2CK3vVhBgS+mEF6D+QjIGTv
-    VC01LCPT51q58INy4RtDBPSqlJwrzz+pOOWd5rBWhu2UPktVHz3AtYE=
-    -----END CERTIFICATE-----
-    -----BEGIN CERTIFICATE-----
-    MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/
-    MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT
-    ...
-    PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6
-    KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
-    -----END CERTIFICATE-----
+```pem
+-----BEGIN CERTIFICATE-----
+MIIFBTCCA+2gAwIBAgISBJSzNXE+Ha5eDw76N5lgHhTpMA0GCSqGSIb3DQEBCwUA
+MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+...
+dr7wTE+AQwcOLAGjIvFOL7GK8JrhKvuFvnSoys/1O2CK3vVhBgS+mEF6D+QjIGTv
+VC01LCPT51q58INy4RtDBPSqlJwrzz+pOOWd5rBWhu2UPktVHz3AtYE=
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/
+MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT
+...
+PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6
+KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
+-----END CERTIFICATE-----
+```
 
 ### Running the Administration Client
 
 The **Administration Client** utility can be run with this command:
 
-    $ docker exec -ti --user ogg <container name> adminclient
-    Oracle GoldenGate Administration Client for Oracle
-    Version 21.3.0.0.0 ...
+```sh
+$ docker exec -ti --user ogg <container name> adminclient
+Oracle GoldenGate Administration Client for Oracle
+Version 21.3.0.0.0 ...
+```
 
 ## Known Issues
 
