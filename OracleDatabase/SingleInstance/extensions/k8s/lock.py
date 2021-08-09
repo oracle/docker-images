@@ -34,13 +34,8 @@ def acquire_lock(lock_file, sock_file, block, heartbeat):
     :return:
     """
 
-    # get dir lock first to check lock file existence
-    with open(os.path.dirname(lock_file) + DIR_LOCK_FILE, 'w') as dir_lh:
-        fcntl.flock(dir_lh, fcntl.LOCK_EX)
-        if not os.path.exists(lock_file):
-            print('[%s]: Creating %s' % (time.strftime('%Y:%m:%d %H:%M:%S'), os.path.basename(lock_file)))
-            open(lock_file, 'w').close()
-
+    # create an empty lock file first
+    open(lock_file, 'a').close()
     lock_handle = open(lock_file)
     print('[%s]: Acquiring lock %s with heartbeat %s secs' %
          (time.strftime('%Y:%m:%d %H:%M:%S'), os.path.basename(lock_file), heartbeat))
@@ -48,10 +43,8 @@ def acquire_lock(lock_file, sock_file, block, heartbeat):
         try:
             fcntl.flock(lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
             print('[%s]: Lock acquired' % (time.strftime('%Y:%m:%d %H:%M:%S')))
-            with open(os.path.dirname(lock_file) + DIR_LOCK_FILE, 'w') as dir_lh:
-                fcntl.flock(dir_lh, fcntl.LOCK_EX)
-                print('[%s]: Starting heartbeat' % (time.strftime('%Y:%m:%d %H:%M:%S')))
-                os.utime(lock_file, None)
+            print('[%s]: Starting heartbeat' % (time.strftime('%Y:%m:%d %H:%M:%S')))
+            os.utime(lock_file, None)
             break
         except IOError as e:
             if not block:
