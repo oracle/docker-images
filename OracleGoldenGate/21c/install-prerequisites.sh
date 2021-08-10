@@ -7,7 +7,11 @@ set -e
 ##  Installation of prerequisite software
 ##
 
-packages=(java-1.8.0-openjdk jq libaio libnsl python39-requests python39-psutil tar unzip)
+packages=(java-1.8.0-openjdk jq libaio libnsl python39-requests python39-psutil tar unzip xz)
+
+packages+=(unixODBC)                            ## Required only for Microsoft SQL Server
+packages+=(compat-openssl10 mariadb-common)     ## Required only for MySQL
+packages+=(libpq)                               ## Required only for PostgreSQL
 
 function success() {
     echo "Packages installed after ${sequence} attempts"

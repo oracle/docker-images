@@ -121,8 +121,7 @@ def reset_servicemanager_configuration():
         configData = json.load(config)
 
     if configData:
-        serviceListeningPort = configData['config']['network']['serviceListeningPort']
-        configData['config']['network'] = get_network_config(serviceListeningPort)
+        configData['config']['network'] = get_network_config(service_ports['ServiceManager'])
         configContent = json.dumps(configData, sort_keys=True, indent=4)
         config = os.open(configFileName, os.O_WRONLY|os.O_TRUNC, 0o660)
         os.write(config, configContent.encode('utf-8'))
