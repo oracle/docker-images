@@ -1,0 +1,10 @@
+create
+--jdkVersion=%JDK_VERSION%
+--type oig
+--version=12.2.1.4.0
+--tag=%BUILDTAG%
+--pull
+--installerResponseFile %DOCKER_REPO%/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,%DOCKER_REPO%/OracleSOASuite/dockerfiles/12.2.1.4.0/install/soasuite.response,%DOCKER_REPO%/OracleSOASuite/dockerfiles/12.2.1.4.0/install/osb.response,%DOCKER_REPO%/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/idmqs.response
+--additionalBuildCommands %DOCKER_REPO%/OracleIdentityGovernance/imagetool/12.2.1.4.0/additionalBuildCmds.txt
+--additionalBuildFiles %DOCKER_REPO%/OracleIdentityGovernance/dockerfiles/12.2.1.4.0/container-scripts
+

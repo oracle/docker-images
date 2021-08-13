@@ -47,8 +47,7 @@
 #
 # Pull base image
 # ---------------
-# FROM store/oracle/weblogic:12.2.1.3
-FROM store/oracle/weblogic:12.2.1.3-dev
+FROM oracle/weblogic:12.2.1.3-dev
 
 # Maintainer
 # ----------
@@ -93,18 +92,18 @@ COPY container-scripts/* ${SCRIPT_HOME}/
 # Unzip and install the WDT image and change the permissions / owner.
 USER root
 RUN chmod +xw ${SCRIPT_HOME}/*.sh && \ 
-    chown -R oracle:oracle ${SCRIPT_HOME} && \
+    chown -R oracle:root ${SCRIPT_HOME} && \
     mkdir -p +xwr $PROPERTIES_FILE_DIR && \
-    chown -R oracle:oracle $PROPERTIES_FILE_DIR && \
+    chown -R oracle:root $PROPERTIES_FILE_DIR && \
     mkdir -p $DOMAIN_PARENT && \
-    chown -R oracle:oracle $DOMAIN_PARENT && \
-    chmod -R a+xwr $DOMAIN_PARENT && \
+    chown -R oracle:root $DOMAIN_PARENT && \
+    chmod -R 770 $DOMAIN_PARENT && \
     cd ${WDT_HOME} && \
     $JAVA_HOME/bin/jar xf weblogic-deploy.zip && \
     rm weblogic-deploy.zip && \
     chmod +xw weblogic-deploy/bin/*.sh && \
-    chmod -R +xw weblogic-deploy/lib/python   && \
-    chown -R oracle:oracle weblogic-deploy 
+    chmod -R g+w weblogic-deploy/lib && \
+    chown -R oracle:root weblogic-deploy 
 
 # Persist the WDT tool home location
 ENV WDT_HOME=$WDT_HOME/weblogic-deploy 
@@ -114,8 +113,8 @@ ENV WDT_HOME=$WDT_HOME/weblogic-deploy
 # Be sure to build with --force-rm to eliminate this container layer
 
 COPY ${WDT_MODEL} ${WDT_ARCHIVE} ${WDT_VARIABLE} properties/docker-build/*.properties ${PROPERTIES_FILE_DIR}/
-# --chown for COPY is available in docker version 18 'COPY --chown oracle:oracle'
-RUN chown -R oracle:oracle ${PROPERTIES_FILE_DIR}
+# --chown for COPY is available in docker version 18 'COPY --chown oracle:root'
+RUN chown -R oracle:root ${PROPERTIES_FILE_DIR}
          
 # Create the domain home in the docker image.
 #
@@ -137,6 +136,7 @@ RUN if [ -n "$WDT_MODEL" ]; then MODEL_OPT="-model_file $PROPERTIES_FILE_DIR/${W
         $VARIABLE_OPT  \
         $MODEL_OPT \
         $ARCHIVE_OPT && \
+        chmod -R g+w $DOMAIN_HOME && \ 
         echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
         rm -rf $PROPERTIES_FILE_DIR 
 

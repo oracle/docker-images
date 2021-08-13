@@ -17,7 +17,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.2.1.3-developer
+FROM oracle/weblogic:12.2.1.3-dev
 
 # Maintainer
 # ----------
@@ -53,25 +53,25 @@ ENV ORACLE_HOME=/u01/oracle \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:${DOMAIN_HOME}:${DOMAIN_HOME}/bin:/u01/oracle
 
 # Add files required to build this image
-COPY --chown=oracle:oracle container-scripts/* /u01/oracle/
+COPY --chown=oracle:root container-scripts/* /u01/oracle/
 
 #Create directory where domain will be written to
 USER root
 RUN chmod +xw /u01/oracle/*.sh && \
     chmod +xw /u01/oracle/*.py && \
     mkdir -p ${PROPERTIES_FILE_DIR} && \
-    chown -R oracle:oracle ${PROPERTIES_FILE_DIR} && \
     mkdir -p $DOMAIN_HOME && \
-    chown -R oracle:oracle $DOMAIN_HOME/.. && \
-    chmod -R a+xwr $DOMAIN_HOME/..
+    chown -R oracle:root $DOMAIN_HOME/.. && \
+    chown -R oracle:root ${PROPERTIES_FILE_DIR}
 
-COPY --chown=oracle:oracle properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
+
+COPY --chown=oracle:root properties/docker-build/domain*.properties ${PROPERTIES_FILE_DIR}/
 
 # Configuration of WLS Domain
 USER oracle
 RUN /u01/oracle/createWLSDomain.sh && \
+    chmod -R g+w $DOMAIN_HOME && \
     echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc && \
-    chmod -R a+x $DOMAIN_HOME/bin/*.sh  && \
     rm ${PROPERTIES_FILE_DIR}/*.properties
 
 # Expose ports for admin, managed server, and debug

@@ -60,6 +60,7 @@ if [ $ADD_DOMAIN -eq 0 ]; then
    # Create an empty domain
    wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE  /u01/oracle/create-wls-domain.py
    mkdir -p ${DOMAIN_HOME}/servers/AdminServer/security/
+   chmod -R  g+w  ${DOMAIN_HOME}
    echo "username=${USER}" >> $DOMAIN_HOME/servers/AdminServer/security/boot.properties
    echo "password=${PASS}" >> $DOMAIN_HOME/servers/AdminServer/security/boot.properties
    ${DOMAIN_HOME}/bin/setDomainEnv.sh

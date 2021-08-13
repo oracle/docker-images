@@ -47,7 +47,7 @@ Before you build the image make sure that you have provided the installation bin
 
 You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
-The character set for the database is set during creating of the database. 11g Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
+The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
 
 ### Running Oracle Database in a Docker container
 
@@ -59,19 +59,31 @@ To run your Oracle Database Docker image use the **docker run** command as follo
 	-e ORACLE_SID=<your SID> \
 	-e ORACLE_PDB=<your PDB name> \
 	-e ORACLE_PWD=<your database passwords> \
+	-e INIT_SGA_SIZE=<your database SGA memory in MB> \
+	-e INIT_PGA_SIZE=<your database PGA memory in MB> \
+	-e ORACLE_EDITION=<your database edition> \
 	-e ORACLE_CHARACTERSET=<your character set> \
 	-v [<host mount point>:]/opt/oracle/oradata \
 	oracle/database:19.3.0-ee
 	
 	Parameters:
-	   --name:        The name of the container (default: auto generated)
-	   -p:            The port mapping of the host port to the container port. 
-	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express)
-	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB)
-	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1)
-	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+	   --name:        The name of the container (default: auto generated).
+	   -p:            The port mapping of the host port to the container port.
+	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express).
+	   -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
+	   -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
+	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
+	   -e INIT_SGA_SIZE:
+	                  The total memory in MB that should be used for all SGA components (optional).
+	                  Supported 19.3 onwards.
+	   -e INIT_PGA_SIZE:
+	                  The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
+	                  Supported 19.3 onwards.
+	   -e ORACLE_EDITION:
+	                  The Oracle Database Edition (enterprise/standard).
+	                  Supported 19.3 onwards.
 	   -e ORACLE_CHARACTERSET:
-	                  The character set to use when creating the database (default: AL32UTF8)
+	                  The character set to use when creating the database (default: AL32UTF8).
 	   -v /opt/oracle/oradata
 	                  The data volume to use for the database.
 	                  Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
@@ -94,6 +106,20 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 	https://localhost:5500/em/
 
 **NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
+
+#### Selecting the Edition (Supported from 19.3.0 release)
+
+The edition of the database can be changed during runtime by passing the ORACLE_EDITION parameter to the docker run command. Therefore, an enterprise docker image can be used to run standard edition database and vice-versa. You can find the edition of the running database in the output line:
+
+    ORACLE EDITION:
+
+This parameter modifies the software home binaries but it doesn't have any effect on the datafiles. So, if existing datafiles are reused to bring up the database, the same ORACLE_EDITION must be passed as the one used to create the datafiles for the first time.
+
+#### Setting the SGA and PGA memory (Supported from 19.3.0 release)
+
+The SGA and PGA memory can be set during the first time when database is created by passing the INIT_SGA_SIZE and INIT_PGA_SIZE parameters respectively to the docker run command. The user must provide the values in MB and without any units appended to the values (For example: -e INIT_SGA_SIZE=1536). These parameters are optional and dbca calculates these values if they aren't provided.
+
+In case these parameters are passed to the docker run command while reusing existing datafiles, even though these values would be visible in the container environment, they would not be set inside the database. The values used at the time of database creation will be used.
 
 #### Changing the admin accounts passwords
 
@@ -118,7 +144,7 @@ To run your Oracle Database 18c Express Edition Docker image use the **docker ru
 	Parameters:
 	   --name:        The name of the container (default: auto generated)
 	   -p:            The port mapping of the host port to the container port.
-	                  Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
+	                  Two ports are exposed: 1521 (Oracle Listener), 5500 (EM Express)
 	   -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
 	   -e ORACLE_CHARACTERSET:
 	                  The character set to use when creating the database (default: AL32UTF8)
@@ -198,6 +224,9 @@ Once the container has been started you can connect to it just like to any other
 	sqlplus sys/<your password>@//localhost:1521/XE as sysdba
 	sqlplus system/<your password>@//localhost:1521/XE
 
+### Deploying Oracle Database on Kubernetes
+Helm is a package manager which uses a packaging format called charts. [helm-charts](helm-charts/) directory contains all the relevant files needed to deploy Oracle Database on Kubernetes. For more information on default configuration, installing/uninstalling the Oracle Database chart on Kubernetes, please refer [helm-charts/oracle-db/README.md](helm-charts/oracle-db/README.md).
+
 ### Running SQL*Plus in a Docker container
 You may use the same Docker image you used to start the database, to run `sqlplus` to connect to it, for example:
 
@@ -220,7 +249,7 @@ SQL scripts will be executed as sysdba, shell scripts will be executed as the cu
 recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
 
 **Note:** The startup scripts will also be executed after the first time database setup is complete.  
-**Note:** Use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/` for Express Edition.  
+**Note:** For 11gR2 Express Edition only, use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/`.
 
 The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
 

@@ -1,274 +1,147 @@
-# Oracle Unified Directory on Docker
-Docker build files to facilitate installation, configuration, and environment setup for Docker DevOps users. For more information about Oracle Unified Directory please see the [Oracle Unified Directory 12.2.1.3.0 Online Documentation](https://docs.oracle.com/middleware/12213/oud/).
+Oracle Unified Directory 
+========================
 
-Just to clarify these Docker build scripts are **unofficial Oracle Build scripts**. 
+## Contents
 
-### Docker Images Content
-The resulting Docker images are based on the official Oracle Java image for Java 8 u172 (_oracle/serverjre:8_). It has either be build manually using the [official](https://github.com/oracle/docker-images/tree/master/OracleJava) or [my unofficial](https://github.com/oehrlis/docker/tree/master/OracleJava) Oracle Docker build scripts or pulled from [Docker Store](https://store.docker.com/images/oracle-serverjre-8). See [Building the Oracle JDK base image](#building-the-oracle-jdk-base-image)
+1. [Introduction](#introduction)
+1. [Installing the Oracle Unified Directory image](#installing-the-oracle-unified-directory-image)
+1. [Running the Oracle Unified Directory image in a container](#running-the-oracle-unified-directory-image-in-a-container)
+1. [Oracle Unified Directory Docker container configuration](#oracle-unified-directory-docker-container-configuration)
+1. [Oracle Unified Directory Kubernetes Configuration](#oracle-unified-directory-kubernetes-configuration)
 
-They base image will be extended to provide some additional Linux packages and configuration:
-* Install the following additional packages including there dependencies:
-    * *libaio* Linux-native asynchronous I/O access library
-    * *tar* A GNU file archiving program
-    * *gzip* The GNU data compression program
-* Operating system user *oracle* (uid 1000)
-* Dedicated groups for user *oracle*, oracle (gid 1000), oinstall (gid 1010)
-* [OUD Base](https://github.com/oehrlis/oudbase) environment developed by [ORAdba](www.oradba.ch)
-* Oracle OFA Directories see below
-* Install Oracle Unified Directory 12c 12.2.1.3.0 (standalone) or Oracle Unified Directory 11g 11.1.2.3.0
+## Introduction
 
-### Environment Variable and Directories
-Based on the idea of OFA (Oracle Flexible Architecture) we try to separate the data from the binaries. This means that the OUD instance as well as configuration files are explicitly stored in a separate directory. Ideally, a volume is assigned to this directory when a container is created. This ensures data persistence over the lifetime of a container. OUD Base supports the setup and operation of the environment based on OFA. See also [OraDBA](http://www.oradba.ch/category/oudbase/).
+Oracle Unified Directory provides comprehensive directory solution for robust identity management.
 
-The following environment variables have been used for the installation. In particular it is possible to modify the variables ORACLE_ROOT, ORACLE_DATA and ORACLE_BASE via *build-arg* during image build to have a different directory structure. All other parameters are only relevant for the creation of the container. They may be modify via ```docker run``` environment variables.
+Oracle Unified Directory is an all-in-one directory solution with storage, proxy, synchronization and virtualization capabilities. While unifying the approach, it provides all the services required for high-performance Enterprise and carrier-grade environments. Oracle Unified Directory ensures scalability to billions of entries, ease of installation, elastic deployments, enterprise manageability and effective monitoring.
 
-Environment variable | Value / Directories                    | Modifiable   | Comment
--------------------- | -------------------------------------- | -------------| ---------------
-ORACLE_ROOT          | ```/u00```                             | docker build | Root directory for all the Oracle software
-ORACLE_BASE          | ```$ORACLE_ROOT/app/oracle```          | docker build | Oracle base directory
-n/a                  | ```$ORACLE_BASE/product```             | no           | Oracle product base directory
-ORACLE_HOME_NAME     | ```fmw12.2.1.3.0```                    | no           | Name of the Oracle Home, used to create to PATH to ORACLE_HOME eg. *$ORACLE_BASE/product/$ORACLE_HOME_NAME*
-ORACLE_DATA          | ```/u01```                             | docker build | Root directory for the persistent data eg. OUD instances, etc. A docker volumes must be defined for */u01*
-INSTANCE_BASE        | ```$ORACLE_DATA/instances```           | no           | Base directory for OUD instances
-OUD_INSTANCE         | ```oud_docker```                       | docker run   | Default name for OUD instance
-OUD_INSTANCE_HOME    | ```$INSTANCE_BASE/$OUD_INSTANCE```     | docker run   |
-OUD_INSTANCE_ADMIN   | ```$ORACLE_DATA/admin/$OUD_INSTANCE``` | no           | Instance admin directory for custom scripts, config and logs
-CREATE_INSTANCE      | ```TRUE```                             | docker run   | Flag to create OUD instance on first start of the container
-OUD_PROXY            | ```FALSE```                            | docker run   | Flag to create proxy instance. Not yet implemented.
-OUD_INSTANCE_INIT    | ```$ORACLE_DATA/scripts```             | docker run   | Directory for the instance configuration scripts
-PORT                 | ```1389```                             | docker run   | Default LDAP port for the OUD instance
-PORT_SSL             | ```1636```                             | docker run   | Default LDAPS port for the OUD instance
-PORT_REP             | ```8989```                             | docker run   | Default replication port for the OUD instance
-PORT_ADMIN           | ```4444```                             | docker run   | Default admin port for the OUD instance (4444)
-ADMIN_USER           | ```cn=Directory Manager```             | docker run   | Default admin user for OUD instance
-ADMIN_PASSWORD       |  n/a                                   | docker run   | No default password. Password will be autogenerated when not defined.
-BASEDN               | ```dc=example,dc=com```                | docker run   | Default directory base DN
-SAMPLE_DATA          | ```TRUE```                             | docker run   | Flag to load sample data. Not yet implemented.
-ETC_BASE             | ```$ORACLE_DATA/etc```                 | no           | Oracle etc directory with configuration files
-LOG_BASE             | ```$ORACLE_DATA/log```                 | no           | Oracle log directory with log files
-DOWNLOAD             | ```/tmp/download```                    | no           | Temporary download directory, will be removed after build
-DOCKER_BIN           | ```/opt/docker/bin```                  | no           | Docker build and setup scripts
-JAVA_DIR             | ```/usr/java```                        | no           | Base directory for java home location
-JAVA_HOME            | ```$JAVA_DIR/jdk1.8.0_162```           | no           | Java home directory when build manually. The official docker image may have an other minor release.
+This project offers dockerfile and scripts to build and configure an Oracle Unified Directory image based on 12cPS4 (12.2.1.4.0) release. Use this image to facilitate installation, configuration, and environment setup for DevOps users. 
 
-In general it does not make sense to change all possible variables. Although *BASEDN* and *ADMIN_PASSWORD* are good candidates for customization. all other variables can generally easily be ignored.
+This image refers to binaries for Oracle Unified Directory Release 12.2.1.4.0 and it has the capability to create different types of Oracle Unified Directory Instances (Directory Service, Proxy, Replication) on containers targeted for development and testing.
 
-### Scripts to Build and Setup
-The following scripts are used either during Docker image build or while setting up and starting the container.
+***Image***: `oracle/oud:12.2.1.4.0`
 
-| Script                       | Purpose
-| ---------------------------- | ----------------------------------------------------------------------------
-| ```check_oud_instance.sh```  | Check the status of the OUD instance for Docker HEALTHCHECK
-| ```config_oud_instance.sh``` | Configure OUD instance using custom scripts
-| ```create_oud_instance.sh``` | Script to create the OUD instance
-| ```start_oud_instance.sh```  | Script to start the OUD instance
-| ```setup_oud.sh```           | Script to install OUD binaries and patch
-| ```setup_oudbase.sh```       | Script to install OUD base
+## Installing the Oracle Unified Directory image
 
-## Installation and Build
-The required software has to be downloaded prior image build and must be part of the build context or made available in a local HTTP server. See [Build with local HTTP server](#build-with-local-http-server) below. Providing a local HTTP server to download the required software during image build will lead into smaller images, since the software will not be part of an intermediate intermediate container. The docker build parameter _--squash_ is not required. The procedure was briefly described in the blog post [Smaller Oracle Docker images](http://www.oradba.ch/2018/03/smaller-oracle-docker-images/).
+An Oracle Unified Directory image can be created and/or made available for deployment in the following ways:
 
-### Obtaining Product Distributions
-The Oracle Software required to setup an Oracle Unified Directory Docker image is basically not public available. It is subject to Oracle's license terms. For this reason a valid license is required (eg. [OTN Developer License Terms](http://www.oracle.com/technetwork/licenses/standard-license-152015.html)). In addition, Oracle's license terms and conditions must be accepted before downloading.
+1. Build your own Oracle Unified Directory image using the WebLogic Image Tool. Oracle recommends using the Weblogic Image Tool to build your own Oracle Unified Directory 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an Oracle Unified Directory image with WebLogic Image Tool](imagetool/12.2.1.4.0)
+1. Build your own Oracle Unified Directory image using the dockerfile, scripts and base image from Oracle Container Registry (OCR). To customize the image for specific use-cases, Oracle provides dockerfile and build scripts. For more information, see [Building an Oracle Unified Directory Image with Dockerfile, Scripts and Base Image from OCR](dockerfiles/12.2.1.4.0/README-OCR-Base.md).
+1. Build your own Oracle Unified Directory image using the dockerfile and scripts. To customize the image for specific use-cases, Oracle provides dockerfile and build scripts. For more information, see [Building an Oracle Unified Directory Image with Dockerfiles and Scripts](dockerfiles/12.2.1.4.0/README.md).
 
-The following software is required for the Oracle Unified Directory Docker image:
-* Oracle Unified Directory 12.2.1.3.0
+## Running the Oracle Unified Directory image in a container
 
-The software can either be downloaded from [My Oracle Support (MOS)](https://support.oracle.com), [Oracle Technology Network (OTN)](http://www.oracle.com/technetwork/index.html) or [Oracle Software Delivery Cloud (OSDC)](http://edelivery.oracle.com). The following links refer to the MOS software download to simplify the build process.
+The Oracle Unified Directory image supports running the following services in a container:
 
-The corresponding links and checksum can be found in `*.download` files. Alternatively the Oracle Support Download Links:
-* Oracle Unified Directory 12.2.1.3.0 [Patch 26270957](https://updates.oracle.com/ARULink/PatchDetails/process_form?patch_num=26270957) or [direct](https://updates.oracle.com/Orion/Services/download/p26270957_122130_Generic.zip?aru=21504981&patch_file=p26270957_122130_Generic.zip)
+*  Directory Server/Service [instanceType=Directory]
+*  Directory Proxy Server/Service [instanceType=Proxy]
+*  Replication Server/Service [instanceType=Replication]
+*  Directory Server/Service added to existing Directory or Replication Server/Service [instanceType=AddDS2RS]
+*  Directory Client to run CLIs like ldapsearch, dsconfig, and dsreplication.
 
-### Building-the-Oracle-JDK-base-image
-You must first download the Oracle Server JRE binary, locate it in the folder, `../OracleJava/java-8`, and build that image. For more information, see the [`OracleJava`](../OracleJava) folder's [README](../OracleJava/README.md) file.
+The functionality and features available from the Oracle Unified Directory image will depend on the environment variables passed when setting up/starting the container. Configuration of instances with support for Proxy and Replication require invocation of `dsconfig` and `dsreplication` commands following the execution of `oud-setup`. The Oracle Unified Directory 12c image is designed to support passing `dsconfig` and `dsreplication` parameters as required, to be used with commands after instance creation using `oud-setup` or `oud-proxy-setup`.  This provides flexibility in the types of Oracle Unified Directory service that can be configured to run in a container.
 
-        $ cd ../OracleJava/java-8
-        $ sh build.sh
-
-You can also pull the Oracle Server JRE 8 image from the [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8). When pulling the Server JRE 8 image, re-tag the image so that it works with the existing Dockerfiles.
-
-        $ docker tag container-registry.oracle.com/java/serverjre:8 oracle/serverjre:8
-        $ docker tag store/oracle/serverjre:8 oracle/serverjre:8
-        
-### Build using COPY
-Simplest method to build the OUD image is to manually download the required software and put it into the build folder respectively context. However this will lead to bigger Docker images, since the software is copied during build, which temporary blow up the container file-system.
-
-Copy all files to the `OracleUnifiedDirectory/12.2.1.3` folder.
+Commands and parameters to create and start a container running an Oracle Unified Directory instance, based on the Oracle Unified Directory image are shown below. The command to create and start a container is as follows:
 
 ```
-cp p26270957_122130_Generic.zip OracleUnifiedDirectory/12.2.1.3
+$ docker run -d -P \
+--network=OUDNet \
+--name=<container name> \
+--volume <Path for the directory on Host which is to be mounted in container for user_projects>:/u01/oracle/user_projects \
+--env OUD_INSTANCE_NAME=<name for the instance> \
+--env instanceType=<Type of OUD instance to create and start>
+--env hostname=<hostname for the instance in container> \
+--env-file <Path for the file containing environment variables> \
+oracle/oud:12.2.1.4.0
 ```
 
-Build the docker image using `docker build`.
+The parameters used in the example above are described in the table below:
 
-```
-cd OracleUnifiedDirectory/dockerfiles/12.2.1.3
-docker build -t oracle/oud:12.2.1.3 .
-```
+| **Parameter** | **Description** | **Default Value** |
+| ------ | ------ | ------ |
+| --name | Name for the container. When configuring multiple containers, this name is useful for referencing. | ------ |
+| --volume | Location of Oracle Unified Directory configuration and data outside the container. Path for the directory on Host which is to be mounted in container for user_projects : `/u01/oracle/user_projects` | ------ |
+| --network | Connect a container to a network.  This specifies the networking layer to which the container will connect.  | ------ |
+| --env OUD_INSTANCE_NAME | Name for the Oracle Unified Directory instance.  This decides the directory location for the Oracle Unified Directory instance configuration files.  If the Oracle Unified Directory instance name is 'myoudasinst_1', the location for the Oracle Unified Directory instance would be /u01/oracle/user_projects/myoudasinst_1 When user_projects directory is shared and outside container, avoid having same name for multiple instances. | asinst_1 |
+| --env instanceType | Type of Oracle Unified Directory instance to create and start.  Takes one of the following values: Directory, Proxy, Replication, AddDS2RS| Directory |
+| --env hostname | Hostname to be used while invoking `oud-setup`, `oud-proxy-setup`, `dsconfig`, and `dsreplication` commands. | localhost |
+| --env-file | Parameter file.  This can be used to list and store parameters and pass them to the container command, as an alternative to specifying the parameters on the command line. | ------ |
 
-### Build with local HTTP server
-Alternatively the software can also be downloaded from a local HTTP server during build. For this a Docker image for an HTTP server is required eg. official Apache HTTP server Docker image based on alpine. See also [Smaller Oracle Docker images](http://www.oradba.ch/2018/03/smaller-oracle-docker-images/).
+Additional parameters supported by the Oracle Unified Directory image are listed below.  These parameters are all passed to the container command using the --env or --env-file arguments:
 
-Start a local HTTP server. httpd:alpine will be pulled from Docker Hub:
+| **Environment Variable** (To be passed through --env or --env-file) | **Description** | **Default Value** |
+| ------ | ------ | ------ |
+| ldapPort | Port on which the Oracle Unified Directory instance in the container should listen for LDAP communication. Use 'disabled' if you do not want to enable it. | 1389 |
+| ldapsPort | Port on which the Oracle Unified Directory instance in the container should listen for LDAPS communication. Use 'disabled' if you do not want to enable it. | 1636 |
+| rootUserDN | DN for the Oracle Unified Directory instance root user. | ------ |
+| rootUserPassword | Password for the Oracle Unified Directory instance root user. | ------ |
+| adminConnectorPort | Port on which the Oracle Unified Directory instance in the container should listen for administration communication over LDAPS. Use 'disabled' if you do not want to enable it. Note that at least one of the LDAP or the HTTP administration ports must be enabled. | 1444 |
+| httpAdminConnectorPort | Port on which the Oracle Unified Directory Instance in the container should listen for Administration Communication over HTTPS Protocol. Use 'disabled' if you do not want to enable it. Note that at least one of the LDAP or the HTTP administration ports must be enabled. | 1888 |
+| httpPort | Port on which the Oracle Unified Directory Instance in the container should listen for HTTP Communication. Use 'disabled' if you do not want to enable it. | 1080 |
+| httpsPort | Port on which the Oracle Unified Directory Instance in the container should listen for HTTPS Communication. Use 'disabled' if you do not want to enable it. | 1081 |
+| sampleData | Specifies the number of sample entries to populate the Oracle Unified Directory instance with on creation. If this parameter has a non-numeric value, the parameter addBaseEntry is added to the command instead of sampleData.  Similarly, when the ldifFile_n parameter is specified sampleData will not be considered and ldifFile entries will be populated.| 0 |
+| adminUID | User ID of the Global Administrator to use to bind to the server. This parameter is primarily used with the dsreplication command. | ------ |
+| adminPassword | Password for adminUID | ------ |
+| bindDN1 | BindDN to be used while setting up replication using `dsreplication` to connect to First Directory/Replication Instance. | ------ |
+| bindPassword1 | Password for bindDN1 | ------ |
+| bindDN2 | BindDN to be used while setting up replication using `dsreplication` to connect to Second Directory/Replication Instance. | ------ |
+| bindPassword2 | Password for bindDN2 | ------ |
+| replicationPort | Port value to be used while setting up a replication server. This variable is used to substitute values in `dsreplication` parameters. | 1898 |
+| sourceHost | Value for the hostname to be used while setting up a replication server. This variable is used to substitute values in `dsreplication` parameters. | ------ |
+| initializeFromHost | Value for the hostname to be used while initializing data on a new Oracle Unified Directory instance replicated  from an existing instance. This variable is used to substitute values in `dsreplication` parameters. It is possible to have a different value for sourceHost and initializeFromHost while setting up replication with Replication Server, sourceHost can be used for the Replication Server and initializeFromHost can be used for an existing Directory instance from which data will be initialized.| $sourceHost |
+| serverTuning | Values to be used to tune JVM settings. The default value is jvm-default.  If specific tuning parameters are required, they can be added using this variable.  | jvm-default |
+| offlineToolsTuning | Values to be used to specify the tuning for offline tools. This variable if not specified will consider jvm-default as the default or specify the complete set of values with options if wanted to set to specific tuning | jvm-default|
+| generateSelfSignedCertificate | Set to "true" if the requirement is to generate a self signed certificate when creating an Oracle Unified Directory instance using `oud-setup`. If no value is provided this value takes the default, "true". If using a certificate generated separately from oud-setup this value should be set to "false". | true |
+| usePkcs11Keystore | Use a certificate in a PKCS#11 token that the replication gateway will use as servercertificate when accepting encrypted connections from the Oracle Directory Server Enterprise Edition server. Set to "true" if the requirement is to use the usePkcs11Keystore parameter when creating an Oracle Unified Directory instance using `oud-setup`. By default this parameter is not set. To use this option generateSelfSignedCertificate should be set to "false".| ------ |
+| enableStartTLS | Enable StartTLS to allow secure communication with the directory server by using the LDAP port. By default this parameter is not set. To use this option generateSelfSignedCertificate should be set to "false". | ------ |
+| useJCEKS | Specifies the path of a JCEKS that contains a certificate that the replication gateway will use as server certificate when accepting encrypted connections from the Oracle Directory Server Enterprise Edition server.  If required this should specify the keyStorePath, for example, `/u01/oracle/config/keystore`. | ------ |
+| useJavaKeystore | Specify the path to the Java Keystore (JKS) that contains the server certificate. If required this should specify the path to the JKS, for example, `/u01/oracle/config/keystore`. By default this parameter is not set. To use this option generateSelfSignedCertificate should be set to "false". | ------ |
+| usePkcs12keyStore | Specify the path to the PKCS#12 keystore that contains the server certificate. If required this should specify the path, for example, `/u01/oracle/config/keystore.p12`. By default this parameter is not set. | ------ |
+| keyStorePasswordFile | Use the password in the specified file to access the certificate keystore. A password is required when you specify an existing certificate (JKS, JCEKS, PKCS#11, orPKCS#12) as a server certificate. If required this should specify the path of the password file, for example, `/u01/oracle/config/keystorepassword.txt`. By default this parameter is not set. | ------ |
+| eusPasswordScheme | Set password storage scheme, if configuring Oracle Unified Directory for Enterprise User Security.  Set this to a value of either "sha1" or "sha2". By default this parameter is not set. | ------ |
+| jmxPort | Port on which the Directory Server should listen for JMX communication.  Use 'disabled' if you do not want to enable it. | disabled |
+| javaSecurityFile | Specify the path to the Java security file. If required this should specify the path, for example, `/u01/oracle/config/new_security_file`. By default this parameter is not set. | ------ |
+| schemaConfigFile_n | 'n' in the variable name represents a numeric value between 1 and 50. This variable is used to set the full path of LDIF files that need to be passed to the Oracle Unified Directory instance for schema configuration/extension. If required this should specify the path, for example, `schemaConfigFile_1=/u01/oracle/config/00_test.ldif`. | ------ |
+| ldifFile_n | 'n' in the variable name represents a numeric value between 1 and 50. This variable is used to set the full path of LDIF files that need to be passed to the Oracle Unified Directory instance for initial data population. If required this should specify the path, for example, `ldifFile_1=/u01/oracle/config/test1.ldif`. | ------ |
+| dsconfigBatchFile_n | 'n' in the variable name represents a numeric value between 1 and 50. This variable is used to set the full path of LDIF files that need to be passed to the Oracle Unified Directory instance for batch processing by the `dsconfig` command. If required this should specify the path, for example, `dsconfigBatchFile_1=/u01/oracle/config/dsconfig_1.txt`.  When executing the `dsconfig` command the following values are added implicitly to the arguments contained in the batch file : ${hostname}, ${adminConnectorPort}, ${bindDN} and ${bindPasswordFile} | ------ |
+| dstune_n | 'n' in the variable name represents a numeric value between 1 and 50. Allows commands and options to be passed to the `dstune` utility as a full command. | ------ |
+| dsconfig_n | 'n' in the variable name represents a numeric value between 1 and 300. Each file represents a set of execution parameters for the `dsconfig` command.  For each `dsconfig` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| dsreplication_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `dsreplication` command.  For each `dsreplication` execution, the following variables are added implicitly : ${hostname}, ${ldapPort}, ${ldapsPort}, ${adminConnectorPort}, ${replicationPort}, ${sourceHost}, ${initializeFromHost}, and ${baseDN}.  Depending on the dsreplication sub-command, the following variables are added implicitly : ${bindDN1}, ${bindPasswordFile1}, ${bindDN2}, ${bindPasswordFile2}, ${adminUID}, and ${adminPasswordFile}. | ------ |
+| post_dsreplication_dsconfig_n | 'n' in the variable name represents a numeric value between 1 and 300. Each file represents a set of execution parameters for the `dsconfig` command to be run following execution of the `dsreplication` command. For each `dsconfig` execution, the following variables/values are added implicitly : --provider-name "Multimaster Synchronization", ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| rebuildIndex_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `rebuild-index` command. For each `rebuild-index` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}, and ${baseDN}. | ------ |
+| manageSuffix_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `manage-suffix` command. For each `manage-suffix` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| importLdif_n | 'n' in the variable name represents a numeric value between 1 and 50. Each file represents a set of execution parameters for the `import-ldif` command. For each `import-ldif` execution, the following variables are added implicitly : ${hostname}, ${adminConnectorPort}, ${bindDN}, ${bindPasswordFile}. | ------ |
+| execCmd_n | 'n' in the variable name represents a numeric value between 1 and 300. Each file represents a command to be executed in the container. For each command execution, the following variables are replaced, if present in the command : ${hostname}, ${ldapPort}, ${ldapsPort}, ${adminConnectorPort}. | ------ |
 
-```
-docker pull httpd:alpine
-docker run -dit --hostname orarepo --name orarepo \
-    -p 8080:80 \
-    -v /Volumes/orarepo:/usr/local/apache2/htdocs/ \
-    httpd:alpine
-```
-Make sure, that the software is know copied to the volume folder not part of the build context any more:
+**Note** For the following parameters above the following statement applies:
 
-```
-cd OracleUnifiedDirectory/dockerfiles/12.2.1.3
-cp p26270957_122130_Generic.zip /Volumes/orarepo
-rm p26270957_122130_Generic.zip
-```
+* dsconfig_n
+* dsreplication_n
+* post_dsreplication_dsconfig_n
+* rebuildIndex_n
+* manageSuffix_n
+* importLdif_n
+* execCmd_n
 
-Get the IP address of the local HTTP server:
+If values are provided the following variables will be substituted with their values: ${hostname},${ldapPort},${ldapsPort},${adminConnectorPort},${replicationPort},${sourceHost},${initializeFromHost},${sourceAdminConnectorPort},${sourceReplicationPort},${baseDN},${rootUserDN},${adminUID},${rootPwdFile},${bindPasswordFile},${adminPwdFile},${bindPwdFile1},${bindPwdFile2}
 
-```
-orarepo_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' orarepo)
-```
-Build the docker image using `docker build` and provide the HTTP server.
+## Oracle Unified Directory Docker container Configuration
 
-```
-cd OracleUnifiedDirectory/dockerfiles/12.2.1.3
-docker build --add-host=orarepo:${orarepo_ip} -t oracle/oud:12.2.1.3.0 .
-```
+To configure the Oracle Unified Directory containers on Docker only, see the tutorial [Creating Oracle Unified Directory Docker containers](https://docs.oracle.com/en/middleware/idm/unified-directory/12.2.1.4/tutorial-oud-docker/).
 
-The _RUN_ command in the Dockerfile will check if the software is part of the build context. If not, it will use the host _orarepo_ to download the software. This way the OUD Docker image will be about 400MB smaller.
+## Oracle Unified Directory Kubernetes Configuration
 
-## Running the Docker Images
-### Setup an Oracle Unified Directory Container
-Creating a OUD container is straight forward with **docker run** command. The script `start_oud_instance.sh` will make sure, that a new OUD instance is created, when the container is started the first time. The instance is created using predefined values. (see below). If an OUD instance already exists, the script simply starts it.
+To configure the Oracle Unified Directory containers with Kubernetes see the [Oracle Unified Directory on Kubernetes](https://oracle.github.io/fmw-kubernetes/oud/) documentation.
 
-The creation of the OUD instance can be influenced by the following environment variables. You only have to set them with option -e when executing "docker run".
-
-* **ADMIN_PASSWORD** OUD admin password (default *autogenerated*)
-* **ADMIN_USER**  OUD admin user name (default *cn=Directory Manager*)
-* **BASEDN** Directory base DN (default *dc=example,dc=com*)
-* **CREATE_DOMAIN** Flag to create OUDS instance on first startup (default *TRUE*)
-* **PORT** Regular LDAP port (default *1389*). Will also require to update the Dockerfile to expose a different port.
-* **PORT_SSL** SSL LDAP port (default *1636*). Will also require to update the Dockerfile to expose a different port.
-* **PORT_ADMIN** OUD admin port (default *4444*). Will also require to update the Dockerfile to expose a different port.
-* **PORT_REP** OUD replication port (default *8989*). Will also require to update the Dockerfile to expose a different port.
-* **OUD_INSTANCE** OUD instance name (default *oud_docker*)
-* **OUD_INSTANCE_HOME** OUD home path (default */u01/instances/oud_docker*)
-* **OUD_INSTANCE_INIT** default folder for OUD instance init scripts. These scripts are used to modify and adjust the new OUD instance.
-* **OUD_PROXY** Flag to create proxy instance (default *FALSE*) Not yet implemented.
-* **SAMPLE_DATA** Flag to load sample data (default *TRUE*) Not yet implemented.
-
-Run your Oracle Unified Directory Docker image use the **docker run** command as follows:
-
-```
-docker run --name <container name> \
---hostname <container hostname> \
--p 1389:1389 -p 1636:1636 -p 4444:4444 \
--e OUD_INSTANCE=<your oud instance name> \
---volume [<host mount point>:]/u01 \
---volume [<host mount point>:]/u01/scripts \
-oracle/oud:12.2.1.3.0
-
-Parameters:
---name:           The name of the container (default: auto generated)
--p:               The port mapping of the host port to the container port.
-                  for ports are exposed: 1389 (LDAP), 1636 (LDAPS), 4444 (Admin Port), 8989 (Replication Port)
--e OUD_INSTANCE:  The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
--e <Variables>    Other environment variable according "Environment Variable and Directories"
--v /u01
-                  The data volume to use for the OUD instance.
-                  Has to be writable by the Unix "oracle" (uid: 1000) user inside the container!
-                  If omitted the OUD instance will not be persisted over container recreation.
--v /u01/app/oracle/scripts | /docker-entrypoint-initdb.d
-                  Optional: A volume with custom scripts to be run after OUD instance setup.
-                  For further details see the "Running scripts after setup" section below.
-```
-
-There are four ports that are exposed in this image:
-* 1389 which is the regular LDAP port to connect to the OUD instance.
-* 1636 which is the SSL LDAP port to connect to the OUD instance.
-* 4444 which is the admin port to connect and configure the OUD instance using dsconfig.
-* 8989 which is the replication port of the OUD instance.
-
-On the first startup of the container a random password will be generated for the OUD instance if not provided. You can find this password in the output line. If you need to find the passwords at a later time, grep for "password" in the Docker logs generated during the startup of the container. To look at the Docker Container logs run:
-
-```
-docker logs --details oud|grep -i password
-```
-
-Alternatively you can check the OUD Base environment for the instance ($OUD_INSTANCE) and look for the password file. It is located under _$PWD_FILE_ respectively _${OUD_INSTANCE_ADMIN}/etc/${OUD_INSTANCE}_pwd.txt_.
-
-```
-cat $PWD_FILE
-
-cat ${OUD_INSTANCE_ADMIN}/etc/${OUD_INSTANCE}_pwd.txt
-```
-
-Create a simple OUD container with an example instance. Define the ports to expose and a local volume `/Data/vm/docker/volumes/oudtest`.
-
-```
-docker run --detach --name oudtest \
---hostname oudtest \
--p 1389:1389 -p 1636:1636 -p 4444:4444 \
---volume /Data/vm/docker/volumes/oudtest:/u01 \
-oracle/oud:12.2.1.3
-```
-
-Check progress of initial startup and customization.
-
-```
-docker logs -f oudtest
-```
-
-Login using bash to access OUD instance localy via commandline.
-
-```
-user@host:/Data/ [ic12201] docker exec -it oudtest bash --login
-Source environment for OUD Instance oud_docker
---------------------------------------------------------------
- Instance Name      : oud_docker
- Instance Home (ok) : /u01/instances/oud_docker
- Oracle Home        : /u00/app/oracle/product/fmw12.2.1.3.0
- Instance Status    : up
- LDAP Port          : 1389
- LDAPS Port         : 1636
- Admin Port         : 4444
- Replication Port   : 8989
---------------------------------------------------------------
-oracle@oudtest:/u00/app/oracle/ [oud_docker]  
-```
-
-#### Running Bash in a Docker container
-Access your OUD container via bash.
-
-```
-docker exec -u oracle -it oud bash --login
-```
-
-#### Running dsconfig in a Docker container
-Execute `dsconfig` within the OUD container.
-
-```
-docker exec -u oracle -it oud dsconfig
-```
-#### Running scripts after setup
-The OUD Docker image can be configured to run scripts after setup. Currently `sh`, `ldif` and `conf` extensions are supported. For post-setup scripts just create a folder `scripts/setup` in generic volume `/u01`, mount a dedicated volume `/u01/scripts/setup` or extend the image to include scripts in this directory. The location is also represented under the symbolic link `/docker-entrypoint-initdb.d`. This is done to provide synergy with other Docker images. The user is free to decide whether to put the setup scripts under `/u01/scripts/setup` or `/docker-entrypoint-initdb.d`. Alternatively it is also possible to specify the scripts in the create folder of the instance admin directory `/u01/admin/$OUD_INSTANCE/create`.
-
-After the OUD instance is created by `create_oud_instance.sh` the scripts in those folders will be executed against the instance in the container. LDIF files (`ldif`) will be loaded using `ldapmodify` as *cn=Directory Manager* (ADMIN_USER). CONF files ( `conf` ) are interpreted as `dsconfig` batch files and will be executed accordingly. Shell scripts will be executed as the current user (oracle). To ensure proper order it is recommended to prefix your scripts with a number. For example `01_instance.conf`, `02_schema_extention.ldif`, etc. If files with the same name do exits eg. `02_schema_extention.ldif` and `02_schema_extention.sh` just the .sh file will be executed.
-
-* **Note:** The config scripts will only be executed when an instance is created on first startup or when using `create_oud_instance.sh`.
-* **Note:** If files with the same name do exits eg. `02_schema_extention.ldif` and `02_schema_extention.sh` just the .sh file will be executed.
-* **Note:** If `/u01/admin/$OUD_INSTANCE/create` folder exists, it is used instead of `/u01/scripts/setup`.
-
-## Frequently asked questions
-Please see [FAQ.md](./FAQ.md) for frequently asked questions.
+# Licensing & Copyright
 
 ## License
-To download and run Oracle Unified Directory, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
+To download and run Oracle Fusion Middleware products, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectory](./) repository required to build the Docker images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+All scripts and files hosted in this project and GitHub [docker-images/OracleUnifiedDirectory](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2020 Oracle and/or its affiliates.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+
+

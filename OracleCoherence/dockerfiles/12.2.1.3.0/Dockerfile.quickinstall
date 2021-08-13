@@ -38,9 +38,8 @@ ENV FMW_PKG=fmw_12.2.1.3.0_coherence_quick_Disk1_1of1.zip \
     FMW_JAR=fmw_12.2.1.3.0_coherence_quick.jar \
     ORACLE_HOME=/u01/oracle/oracle_home \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_home/oracle_common/common/bin \
+    COHERENCE_HOME=/u01/oracle/oracle_home/coherence \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
-
-ENV COHERENCE_HOME=$ORACLE_HOME/coherence
 
 RUN mkdir -p /u01 && \
    useradd -b /u01 -d /u01/oracle -m -s /bin/bash -u 1000 -g 0 oracle
@@ -59,6 +58,17 @@ RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
     $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
     rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/oraInst.loc /u01/install.file
 
+USER root
+
+COPY start.sh                      /start.sh
+COPY extend-cache-config.xml       $COHERENCE_HOME/conf/extend-cache-config.xml
+
+RUN chgrp -R root /u01 && \
+    chmod -R g=u /u01 && \
+    chmod 755 /start.sh && \
+    chgrp -R root /start.sh && \
+    chmod -R g=u /start.sh
+
 # ---------------------------------------------------------------------------
 # Final stage image containing the installed Oracle Home
 FROM oracle/serverjre:8
@@ -66,8 +76,7 @@ FROM oracle/serverjre:8
 ENV ORACLE_HOME=/u01/oracle/oracle_home \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_home/oracle_common/common/bin \
     CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom" \
-    COHERENCE_HOME=/u01/oracle/oracle_home/coherence \
-    DEPENDENCY_MODULES=/u01/coherence/thirdparty/lib
+    COHERENCE_HOME=/u01/oracle/oracle_home/coherence
 
 # Create the oracle user with the uid 1000
 # Allow the start script to dynamically modify the /etc/passwd file when
@@ -75,25 +84,21 @@ ENV ORACLE_HOME=/u01/oracle/oracle_home \
 # see: https://docs.okd.io/latest/creating_images/guidelines.html
 RUN mkdir -p /u01 && \
     mkdir -p /logs && \
-    useradd -b /u01 -d /u01/oracle -m -s /bin/bash -u 1000 -g 0 oracle &&\
-    chmod g=u /etc/passwd
-
-COPY --from=builder /u01/oracle    /u01/oracle
-COPY start.sh                      /start.sh
-COPY extend-cache-config.xml       $COHERENCE_HOME/conf/extend-cache-config.xml
+    chgrp -R root /logs && \
+    chmod -R g=u /logs && \
+    useradd -b /u01 -d /u01/oracle -m -s /bin/bash -u 1000 -g 0 oracle && \
+    chmod g=u /etc/passwd && \
+    chown root /u01/oracle && \
+    chgrp -R root /u01 && \
+    chmod -R g=u /u01
 
 # The directories created below are created with the owner oracle and the group 0 (root)
 # This ensures that the image is compatible with OpenShift which runs containers with a
 # random user that is a member of the root group regardless of the user configured in
 # this Dockerfile.
 # see: https://docs.okd.io/latest/creating_images/guidelines.html
-RUN chgrp -R 0 /u01 && \
-    chmod -R g=u /u01 && \
-    chmod 755 /start.sh && \
-    chgrp -R 0 /start.sh && \
-    chmod -R g=u /start.sh && \
-    chgrp -R 0 /logs && \
-    chmod -R g=u /logs
+COPY --from=builder --chown=oracle:root /u01/oracle    /u01/oracle
+COPY --from=builder --chown=oracle:root /start.sh      /start.sh
 
 # The oracle user was added with the uid 1000. We use the uid here rather than the username
 # for OpenShift best practice - see https://docs.okd.io/latest/creating_images/guidelines.html
