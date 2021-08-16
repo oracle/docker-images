@@ -17,8 +17,8 @@ function moveFiles {
       mkdir -p $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    fi;
 
-   mv $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_HOME/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv $ORACLE_BASE/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    mv $ORACLE_HOME/network/admin/sqlnet.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    mv $ORACLE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
    mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
@@ -33,12 +33,12 @@ function moveFiles {
 ########### Symbolic link DB files ############
 function symLinkFiles {
 
-   if [ ! -L $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
+   if [ ! -L $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora
    fi;
    
-   if [ ! -L $ORACLE_HOME/dbs/orapw$ORACLE_SID ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
+   if [ ! -L $ORACLE_BASE/dbs/orapw$ORACLE_SID ]; then
+      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_BASE/dbs/orapw$ORACLE_SID
    fi;
    
    if [ ! -L $ORACLE_HOME/network/admin/sqlnet.ora ]; then
@@ -161,8 +161,8 @@ if [ -d $ORACLE_BASE/oradata/$ORACLE_SID ]; then
    
 else
   # Remove database config files, if they exist
-  rm -f $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
-  rm -f $ORACLE_HOME/dbs/orapw$ORACLE_SID
+  rm -f $ORACLE_BASE/dbs/spfile$ORACLE_SID.ora
+  rm -f $ORACLE_BASE/dbs/orapw$ORACLE_SID
   rm -f $ORACLE_HOME/network/admin/sqlnet.ora
   rm -f $ORACLE_HOME/network/admin/listener.ora
   rm -f $ORACLE_HOME/network/admin/tnsnames.ora
