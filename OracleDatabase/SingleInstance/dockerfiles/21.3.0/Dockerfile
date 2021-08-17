@@ -8,7 +8,7 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) db_home.zip
+# (1) LINUX.X64_213000_db_home.zip
 #     Download Oracle Database 21c Enterprise Edition or Standard Edition 2 for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
