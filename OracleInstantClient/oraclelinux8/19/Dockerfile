@@ -72,7 +72,7 @@
 FROM oraclelinux:8
 
 ARG release=19
-ARG update=11
+ARG update=12
 
 RUN  dnf -y install oracle-release-el8 && \
      dnf -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \

@@ -72,7 +72,7 @@
 FROM oraclelinux:7-slim
 
 ARG release=19
-ARG update=11
+ARG update=12
 
 RUN  yum -y install oracle-release-el7 && \
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
