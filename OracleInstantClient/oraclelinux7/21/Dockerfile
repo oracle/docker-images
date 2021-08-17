@@ -9,7 +9,7 @@
 #
 # Execute:
 #      $ docker build --pull -t oraclelinux7-instantclient:21 .
-#      $ docker run -ti --rm oraclelinux7-instantclient:21 sqlplus -l hr@example.com/orclpdb1
+#      $ docker run -ti --rm oraclelinux7-instantclient:21 sqlplus /nolog
 #
 # NOTES
 # -----
