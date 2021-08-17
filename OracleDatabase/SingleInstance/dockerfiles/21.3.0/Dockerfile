@@ -16,11 +16,11 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/database:19.3.0-${EDITION} . 
+#      $ docker build -t oracle/database:21.3.0-${EDITION} . 
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:8-slim as base
+FROM oraclelinux:7-slim as base
 
 # Labels
 # ------
