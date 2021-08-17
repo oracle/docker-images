@@ -9,7 +9,7 @@
 #
 # Execute:
 #      $ docker build --pull -t oraclelinux8-instantclient:21 .
-#      $ docker run -ti --rm oraclelinux8-instantclient:21 sqlplus hr@example.com/orclpdb1
+#      $ docker run -ti --rm oraclelinux8-instantclient:21 sqlplus /nolog
 #
 # NOTES
 # -----
@@ -69,11 +69,11 @@
 # and can be pulled with:
 #   docker pull ghcr.io/oracle/oraclelinux8-instantclient:21
 
-FROM oraclelinux:8-slim
+FROM oraclelinux:8
 
-RUN  microdnf install oracle-instantclient-release-el8 && \
-     microdnf install oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus && \
-     microdnf clean all
+RUN  dnf -y install oracle-instantclient-release-el8 && \
+     dnf -y install oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus && \
+     rm -rf /var/cache/dnf
 
 # Uncomment if the tools package is added
 # ENV PATH=$PATH:/usr/lib/oracle/21/client64/bin
