@@ -69,7 +69,7 @@
 # and can be pulled with:
 #   docker pull ghcr.io/oracle/oraclelinux7-instantclient:19
 
-FROM oraclelinux:7-slim
+FROM oraclelinux:7
 
 ARG release=19
 ARG update=11

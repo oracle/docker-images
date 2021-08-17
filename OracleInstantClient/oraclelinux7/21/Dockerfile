@@ -9,7 +9,7 @@
 #
 # Execute:
 #      $ docker build --pull -t oraclelinux7-instantclient:21 .
-#      $ docker run -ti --rm oraclelinux7-instantclient:21 sqlplus -l hr@example.com/orclpdb1
+#      $ docker run -ti --rm oraclelinux7-instantclient:21 sqlplus /nolog
 #
 # NOTES
 # -----
@@ -69,7 +69,7 @@
 # and can be pulled with:
 #   docker pull ghcr.io/oracle/oraclelinux7-instantclient:21
 
-FROM oraclelinux:7-slim
+FROM oraclelinux:7
 
 RUN  yum -y install oracle-instantclient-release-el7 && \
      yum -y install oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus && \

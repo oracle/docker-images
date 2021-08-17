@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014, 2020 Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021 Oracle and/or its affiliates.
 #
 #
 # Container image template for Oracle Instant Client
@@ -18,10 +18,11 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build --pull -t oracle/instantclient:12.2.0.1 .
+#      $ docker build --pull -t oraclelinux7-instantclient:12.2 .
+#      $ docker run -ti --rm oraclelinux7-instantclient:12.2 sqlplus -l /nolog
 #
-#
-FROM oraclelinux:7-slim
+
+FROM oraclelinux:7
 
 ADD oracle-instantclient*.rpm /tmp/
 
