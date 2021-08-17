@@ -19,7 +19,7 @@ These instructions apply to building container images for Oracle GoldenGate vers
 
 This project was tested with:
 
-* Oracle GoldenGate 21.3.0.0.0 Microservices for Oracle
+* Oracle GoldenGate 21.3.0.0.0 Microservices for Oracle on Linux x86-64
 
 Support for Oracle GoldenGate Classic Architecture is not provided.
 
@@ -36,7 +36,7 @@ A single `--build-arg` is needed to indicate the GoldenGate installer which was 
 
 ```sh
 $ docker build --tag=oracle/goldengate:21.3.0.0.0 \
-                --build-arg INSTALLER=fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
+                --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
 Sending build context to Docker daemon
 ...
 Successfully tagged oracle/goldengate:21.3.0.0.0
