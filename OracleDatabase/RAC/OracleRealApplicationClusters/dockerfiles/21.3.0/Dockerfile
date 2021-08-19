@@ -35,7 +35,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
 # Grid Env variables
     GRID_BASE=/u01/app/grid \
     GRID_HOME=/u01/app/21.3.0/grid \
-    INSTALL_FILE_1="grid_home.zip" \
+    INSTALL_FILE_1="LINUX.X64_213000_grid_home.zip" \
     GRID_INSTALL_RSP="gridsetup_21c.rsp" \
     GRID_SW_INSTALL_RSP="grid_sw_install_21c.rsp" \
     GRID_SETUP_FILE="setupGrid.sh" \
@@ -57,7 +57,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
 # RAC DB Env Variables
     DB_BASE=/u01/app/oracle \
     DB_HOME=/u01/app/oracle/product/21.3.0/dbhome_1 \
-    INSTALL_FILE_2="db_home.zip" \
+    INSTALL_FILE_2="LINUX.X64_213000_db_home.zip" \
     DB_INSTALL_RSP="db_sw_install_21c.rsp" \
     DBCA_RSP="dbca_21c.rsp" \
     DB_SETUP_FILE="setupDB.sh" \
