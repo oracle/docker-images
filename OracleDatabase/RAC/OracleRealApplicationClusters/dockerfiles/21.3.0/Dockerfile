@@ -106,7 +106,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$GRID_SETUP_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE && \
-    sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+    sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
     su  $GRID_USER -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
     $INVENTORY/orainstRoot.sh && \
     $GRID_HOME/root.sh && \
@@ -124,7 +124,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     chmod 755 $SCRIPT_DIR/*.expect && \
     chmod 666 $SCRIPT_DIR/*.rsp && \
     echo "nohup $SCRIPT_DIR/runOracle.sh &" >> /etc/rc.local && \
-    rm -f /etc/rc.d/init.d/oracle-database-preinstall-19c-firstboot && \
+    rm -f /etc/rc.d/init.d/oracle-database-preinstall-21c-firstboot && \
     mkdir -p $GRID_HOME/dockerinit && \
     cp $GRID_HOME/bin/$DOCKERORACLEINIT $GRID_HOME/dockerinit/ && \
     chown $GRID_USER:oinstall $GRID_HOME/dockerinit && \
@@ -132,7 +132,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     chmod 4755 $GRID_HOME/dockerinit/$DOCKERORACLEINIT && \
     ln -s $GRID_HOME/dockerinit/$DOCKERORACLEINIT /usr/sbin/oracleinit && \
     chmod +x /etc/rc.d/rc.local  && \
-    rm -f /etc/sysctl.d/99-oracle-database-preinstall-19c-sysctl.conf && \
+    rm -f /etc/sysctl.d/99-oracle-database-preinstall-21c-sysctl.conf && \
     rm -f /etc/sysctl.d/99-sysctl.conf && \
     sync
 
