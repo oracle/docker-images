@@ -2,18 +2,19 @@
 
 Oracle Real Application Clusters (RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (ASM) to provide simplified storage management that is consistent across all server and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
-For more information on Oracle RAC Database 19c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
 ## How to build and run
 
 This project offers sample Docker files for Oracle Grid Infrastructure and Real Application Cluster Database:
+ * Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
+ * Oracle Database 21c (21.3) for Linux x86-64 
  * Oracle Database 19c Grid Infrastructure (19.3) for Linux x86-64
- * Oracle Database 19c (19.3) for Linux x86-64 
+ * Oracle Database 19c (19.3) for Linux x86-64
  * Oracle Database 18c Grid Infrastructure (18.3) for Linux x86-64
  * Oracle Database 18c (18.3) for Linux x86-64
  * Oracle Database 12c Release 2 Grid Infrastructure (12.2.0.1.0) for Linux x86-64
  * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
-
 
 IMPORTANT: You can build and run RAC containers on a single host or multiple hosts. To access the RAC DB on your network either use the Docker MACVLAN driver or use Oracle Connection Manager. To Run RAC containers on Multi-Host, you must use the Docker MACVLAN driver and your network must be reachable on all the nodes for RAC containers.
 
@@ -43,7 +44,7 @@ All data files, control files, redo log files, and the server parameter file (`S
 
 You must provide block devices shared across the hosts.  If you don't have shared block storage, you can use an NFS volume.
 
-Please refer Oracle Database 19c Release documentation [Oracle Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/cwlin/index.html) and allocate following resource as per the Oracle documentation.
+Please refer Oracle Database 21c Release documentation [Oracle Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html) and allocate following resource as per the Oracle documentation.
 
 1. You must configure the following addresses manually in your DNS.
    * Public IP address for each container
@@ -99,16 +100,14 @@ Once you have edited the `/etc/sysconfig/docker`, execute following commands:
 # systemctl start docker
 ```
 
-Verify you have enough memory and cpu resources available for container. For details, Please refer to [Oracle 19c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/cwlin/index.html)
+Verify you have enough memory and cpu resources available for container. For details, Please refer to [Oracle 21c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html)
 
 The Oracle RAC dockerfiles, does not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under dockerfiles/<version> folder.
 
-    Oracle Database 19c Grid Infrastructure (19.3) for Linux x86-64
-    Oracle Database 19c (19.3) for Linux x86-64
+    Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
+    Oracle Database 21c (21.3) for Linux x86-64
 
 ### Notes
-
-* SELINUX must be in permissive mode.
 * If the docker bridge network is not available outside your host, you can use the Oracle Connection Manager (CMAN) image to access the RAC Database from outside the host.
 * If you are planing to build and deploy Oracle RAC 18.3.0, you need to download Oracle 18.3.0 Grid Infrastructure and Oracle Database 18.3.0 Database. You also need to download Patch# p28322130_183000OCWRU_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/18.3.0 folder.
 * If you are planing to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/12.2.0.1 folder.
@@ -122,7 +121,7 @@ To assist in building the images, you can use the [buildDockerImage.sh](https://
 
 ```
 ./buildDockerImage.sh -v (Software Version)
-#  e.g., ./buildDockerImage.sh -v 19.3.0
+#  e.g., ./buildDockerImage.sh -v 21.3.0
 ```
 
 For detailed usage of command, please execute following command:
@@ -200,7 +199,8 @@ Now create the Docker container using the image. For the details of environment 
   --tmpfs /dev/shm:rw,exec,size=4G \
   --volume /opt/containers/rac_host_file:/etc/hosts  \
   --volume /opt/.secrets:/run/secrets \
-  --dns-search=example.com \
+  --dns=172.16.1.25 \
+  --dns-search=internal.us.oracle.com \
   --device=/dev/xvde:/dev/asm_disk1  \
   --device=/dev/xvdf:/dev/asm_disk2 \
   --privileged=false  \
@@ -214,9 +214,9 @@ Now create the Docker container using the image. For the details of environment 
   -e PUBLIC_IP=172.16.1.150 \
   -e PUBLIC_HOSTNAME=racnode1  \
   -e SCAN_NAME=racnode-scan \
-  -e SCAN_IP=172.16.1.70  \
+  -e SCAN_IP=172.16.1.70  \ 
   -e OP_TYPE=INSTALL \
-  -e DOMAIN=example.com \
+  -e DOMAIN=internal.us.oracle.com \
   -e ASM_DEVICE_LIST=/dev/asm_disk1,/dev/asm_disk2 \
   -e ASM_DISCOVERY_DIR=/dev \
   -e CMAN_HOSTNAME=racnode-cman1 \
@@ -226,7 +226,7 @@ Now create the Docker container using the image. For the details of environment 
   --restart=always --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cpu-rt-runtime=95000 --ulimit rtprio=99  \
   --name racnode1 \
-  oracle/database-rac:19.3.0
+  oracle/database-rac:21.3.0
 ```
 
 **Note:** Change environment variable such as IPs, ASM_DEVICE_LIST, PWD_FILE and PWD_KEY based on your env. Also, change the devices based on your env.
@@ -243,7 +243,8 @@ Now create the Docker container using the image. For the details of environment 
   --tmpfs /dev/shm:rw,exec,size=4G \
   --volume /opt/containers/rac_host_file:/etc/hosts  \
   --volume /opt/.secrets:/run/secrets \
-  --dns-search=example.com \
+  --dns=172.16.1.25 \
+  --dns-search=internal.us.oracle.com \
   --privileged=false \
   --volume racstorage:/oradata \
   --cap-add=SYS_NICE \
@@ -258,7 +259,7 @@ Now create the Docker container using the image. For the details of environment 
   -e SCAN_NAME=racnode-scan \
   -e SCAN_IP=172.16.1.70  \
   -e OP_TYPE=INSTALL \
-  -e DOMAIN=example.com \
+  -e DOMAIN=internal.us.oracle.com \
   -e ASM_DISCOVERY_DIR=/oradata \
   -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
   -e CMAN_HOSTNAME=racnode-cman1 \
@@ -270,7 +271,7 @@ Now create the Docker container using the image. For the details of environment 
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
   --name racnode1 \
-  oracle/database-rac:19.3.0
+  oracle/database-rac:21.3.0
 ```
 
 **Notes:**
@@ -365,6 +366,8 @@ To create additional nodes, use following command:
   --dns-search=example.com  \
   --volume /opt/containers/rac_host_file:/etc/hosts \
   --volume /opt/.secrets:/run/secrets \
+  --dns=172.16.1.25 \
+  --dns-search=internal.us.oracle.com \
   --device=/dev/xvde:/dev/asm_disk1 \
   --device=/dev/zvdf:/dev/asm_disk2 \
   --privileged=false \
@@ -378,7 +381,7 @@ To create additional nodes, use following command:
   -e PRIV_HOSTNAME=racnode2-priv \
   -e PUBLIC_IP=172.16.1.151  \
   -e PUBLIC_HOSTNAME=racnode2  \
-  -e DOMAIN=example.com \
+  -e DOMAIN=internal.us.oracle.com \
   -e SCAN_NAME=racnode-scan \
   -e SCAN_IP=172.16.1.70 \
   -e ASM_DISCOVERY_DIR=/dev \
@@ -392,7 +395,7 @@ To create additional nodes, use following command:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  oracle/database-rac:19.3.0
+  oracle/database-rac:21.3.0
 ```
 
 For details of all environment variables and parameters, please refer to section 6.
@@ -414,6 +417,8 @@ For example:
   --dns-search=example.com  \
   --volume /opt/containers/rac_host_file:/etc/hosts \
   --volume /opt/.secrets:/run/secrets \
+  --dns=172.16.1.25 \
+  --dns-search=internal.us.oracle.com \
   --privileged=false \
   --volume racstorage:/oradata \
   --cap-add=SYS_NICE \
@@ -426,11 +431,11 @@ For example:
   -e PRIV_HOSTNAME=racnode2-priv \
   -e PUBLIC_IP=172.16.1.151  \
   -e PUBLIC_HOSTNAME=racnode2  \
-  -e DOMAIN=example.com \
+  -e DOMAIN=internal.us.oracle.com \
   -e SCAN_NAME=racnode-scan \
   -e SCAN_IP=172.16.1.70 \
   -e ASM_DISCOVERY_DIR=/oradata \
-  -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img  ,/oradata/asm_disk04.img,/oradata/asm_disk05.img \
+  -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.imgv,/oradata/asm_disk04.img,/oradata/asm_disk05.img \
   -e ORACLE_SID=ORCLCDB \
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
@@ -440,7 +445,7 @@ For example:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  container-registry.oracle.com/database/rac:19.3.0
+  oracle/database-rac:21.3.0
 ```
 
 **Notes:**
