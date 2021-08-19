@@ -1,0 +1,13 @@
+zone "###DOMAIN_NAME###" IN {
+        type master;
+        file "###DOMAIN_NAME###.zone";
+        allow-query { localnets; };
+        allow-update { none; };
+};
+
+zone "###RAC_PUBLIC_SUBNET###-addr.arpa" IN {
+      type master;
+      file "###RAC_PUBLIC_SUBNET###.in-addr.arpa";
+      allow-query { localnets; };
+      allow-update { none; };
+};

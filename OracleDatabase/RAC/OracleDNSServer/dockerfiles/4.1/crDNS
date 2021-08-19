@@ -1,0 +1,2 @@
+ /usr/bin/docker run -d --hostname racdns-L --dns-search=us.oracle.com --network=rac_pub1_nw --ip=172.16.1.40 -e DOMAIN_NAME="internal.us.oracle.com" -e PRIVATE_DOMAIN_NAME="internal-priv.us.oracle.com" -e WEBMIN_ENABLED=false -e RAC_NODE_NAME_PREFIX="racnode" -e SETUP_DNS_CONFIG_FILES="setup_true" -e CORP_DNS_DOMAIN_1="us.oracle.com" -e CORP_DNS_DOMAIN_2="dbdevtestphx.oraclevcn.com" -e CORP_DNS_SERVERS="100.96.241.2,100.96.241.194" --privileged=false --name rac-dnsserver-L oracle/rac-dns-server:21.3.0-large
+
