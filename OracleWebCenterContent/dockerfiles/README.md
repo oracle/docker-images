@@ -122,13 +122,10 @@ docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-
 
 ## 4.2. Building container image for Oracle WebCenter Content
 
-1. Clone or download the [OraHub repository](https://orahub.oci.oraclecorp.com/paascicd/FMW-DockerImages).
+1. Clone or download the [GitHub repository](https://github.com/oracle/docker-images).
 The repository contains Docker files and scripts to build Docker images for Oracle products.
 2. You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
-Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `../docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4.0` .
-
->IMPORTANT: To build the Oracle WebCenter Content image with patches, you need to download and drop the patch zip files (for e.g. `p32452737_122140_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.4.0` the folder is `12.2.1.4.0/patches`. Also, to include the OPatch patch, download and drop the OPatch patch zip file (for e.g. `p28186730_139424_Generic.zip`) into the `opatch_patch/` folder. Then run the `buildDockerImage.sh` script as mentioned below.
-
+Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `../docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4` .
 Set the proxies in the environment before building the image as required, go to directory located at `../docker-images/OracleWebCenterContent/dockerfiles/` and run these commands -
 
 ```
