@@ -88,7 +88,7 @@ COPY --from=builder --chown=oracle:root /u01 /u01
 # -------------------------------------------------------------
 # Expose all Ports
 # -------------------------------------------------------------
-EXPOSE $UCM_PORT $UCM_INTRADOC_PORT $IBR_INTRADOC_PORT $IBR_PORT $ADMIN_PORT
+EXPOSE $UCM_PORT $UCM_INTRADOC_PORT $IBR_INTRADOC_PORT $IBR_PORT $ADMIN_PORT $IPM_PORT $WCCADF_PORT $CAPTURE_PORT
 
 USER oracle
 

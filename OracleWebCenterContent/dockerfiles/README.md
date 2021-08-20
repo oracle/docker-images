@@ -111,7 +111,6 @@ Get Oracle Oracle Fusion Middleware Infrastructure image -
 > 1. Sign in to Oracle Container Registry. Click the Sign in link which is on the top-right of the Web page.
 > 2. Click Middleware and then click Continue for the fmw-infrastructure repository.
 > 3. Click Accept to accept the license agreement.
-> 4. Use following commands to pull Oracle Fusion Middleware Infrastructure base image from repository :
 
 ```
 docker login container-registry.oracle.com
@@ -123,11 +122,14 @@ docker rmi container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-
 
 ## 4.2. Building container image for Oracle WebCenter Content
 
-1. Clone or download the [GitHub repository](https://github.com/oracle/docker-images).
+1. Clone or download the [OraHub repository](https://orahub.oci.oraclecorp.com/paascicd/FMW-DockerImages).
 The repository contains Docker files and scripts to build Docker images for Oracle products.
 2. You have to download the binary for WebCenter Content shiphome and put it in place. The binaries can be downloaded from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/). Search for "Oracle WebCenter Content" and download the version which is required.
-Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `../docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4` .
-Set the proxies in the environment before building the image as required, go to directory located at `../docker-images/OracleWebCenterContent/OracleWebCenterContent/dockerfiles/` and run these commands -
+Extract the downloaded zip files and copy `fmw_12.2.1.4.0_wccontent.jar` file under `../docker-images/OracleWebCenterContent/dockerfiles/12.2.1.4.0` .
+
+>IMPORTANT: To build the Oracle WebCenter Content image with patches, you need to download and drop the patch zip files (for e.g. `p32452737_122140_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for `12.2.1.4.0` the folder is `12.2.1.4.0/patches`. Also, to include the OPatch patch, download and drop the OPatch patch zip file (for e.g. `p28186730_139424_Generic.zip`) into the `opatch_patch/` folder. Then run the `buildDockerImage.sh` script as mentioned below.
+
+Set the proxies in the environment before building the image as required, go to directory located at `../docker-images/OracleWebCenterContent/dockerfiles/` and run these commands -
 
 ```
 #To build image
@@ -151,7 +153,7 @@ Create an environment file `webcenter.env.list` file, to define the parameters.
 
 Update the parameters inside `webcenter.env.list` as per your local setup.
 
-Please note: All parameters mentioned below are manadatory and must not be omitted or left blank. The parameter `component` is meant for future integration of associated products. 
+Please note: All parameters mentioned below are manadatory and must not be omitted or left blank. The parameter `component` is meant for integration of associated products. 
 
 ```
 #Database Configuration
@@ -174,6 +176,12 @@ UCM_HOST_PORT=<host port to access UCM managed server - this is the port value t
 IBR_HOST_PORT=<host port to access IBR managed server - this is the port value to be used for -p option (left of the colon) sec. ### 5.1.3>
 UCM_INTRADOC_PORT=<UCM intradoc port on container>
 IBR_INTRADOC_PORT=<IBR intradoc port on container>
+IPM_PORT=<port to be used for IPM managed server on container>
+IPM_HOST_PORT=<host port to access IPM managed server - this is the port value to be used for -p option (left of the colon) sec. ### 5.1.3>
+CAPTURE_PORT=<port to be used for Capture managed server on container>
+CAPTURE_HOST_PORT=<host port to access Capture managed server - this is the port value to be used for -p option (left of the colon) sec. ### 5.1.3>
+WCCADF_PORT=<port to be used for WCC ADFUI managed server on container>
+WCCADF_HOST_PORT=<host port to access WCC ADFUI managed server - this is the port value to be used for -p option (left of the colon) sec. ### 5.1.3>
 
 #component
 component=IPM,Capture,ADFUI
@@ -211,7 +219,7 @@ When the command is run for the first time, we need to create the domain and con
 
 * Loading WebCenter Content schemas into the database
 * Creating WebCenter Content domain
-* Extending WebCenter Content domain for associated products (e.g. IPM, ADFUI etc.) - based on **component** env varibale. 
+* Extending WebCenter Content domain for associated products (e.g. Oracle WebCenter Imaging, Oracle WebCenter Capture, Oracle WebCenter ADFUI) - based on **component** env variable. 
 * Configuring Node Manager
 * Starting Node Manager
 * Starting Admin Server
@@ -240,25 +248,69 @@ docker run -it --name WCContentContainer --network=WCContentNET -p 16200:16200 -
 ```
 The `docker run` command creates the container as well as starts the WebCenter Content managed servers. 
 
+Run the following command to create the WebCenter Imaging Managed Server container:
+
+```
+docker run -it --name IPMContainer --network=WCContentNET -p <IPM_HOST_PORT>:<IPM_PORT> --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartIPM.sh
+
+# A sample command will look like this -
+
+docker run -it --name IPMContainer --network=WCContentNET -p 16000:16000 --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartIPM.sh
+```
+The `docker run` command creates the container as well as starts the WebCenter Imaging managed server container. 
+
+Run the following command to create the WebCenter Capture Managed Server container:
+
+```
+docker run -it --name CaptureContainer --network=WCContentNET -p <CAPTURE_HOST_PORT>:<CAPTURE_PORT> --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartCapture.sh
+
+# A sample command will look like this -
+
+docker run -it --name CaptureContainer --network=WCContentNET -p 16400:16400 --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartCapture.sh
+```
+The `docker run` command creates the container as well as starts the WebCenter Capture managed server container. 
+
+Run the following command to create the WebCenter ADFUI Managed Server container:
+
+```
+docker run -it --name WCCADFContainer --network=WCContentNET -p <WCCADF_HOST_PORT>:<WCCADF_PORT> --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartWCCADF.sh
+
+# A sample command will look like this -
+
+docker run -it --name WCCADFContainer --network=WCContentNET -p 16225:16225 --volumes-from WCCAdminContainer --env-file <PATH_TO_ENV_FILE>/webcenter.env.list oracle/wccontent:12.2.1.4 configureOrStartWCCADF.sh
+```
+The `docker run` command creates the container as well as starts the WebCenter ADFUI managed server container. 
+
 Note:
 
       1. If Managed Servers need to be accessed through host ports different from container ports, then intended host port values needs to be supplied as part of -p option of the `docker run` command mentoned above (for ex. -p 16201:16200 and -p 16251:16250). The same port value needs to be updated in the `webcenter.env.list` as `UCM_HOST_PORT` and `IBR_HOST_PORT`. If managed servers are going to be accessed via same host port number as the container port, then `UCM_PORT` and `UCM_HOST_PORT` values (and `IBR_PORT` and `IBR_HOST_PORT`) should be same in the `webcenter.env.list`.  
       2. Intradoc ports are for internal server communications and not meant for browser access. While, intradoc ports on container are configurable (like other parametres like admin credentials, admin port, domain-name, manged server container ports) through `webcenter.env.list`, publishing these to different host ports is not supported. This essentially means one can provide `-p 7777:7777` instead of `-p 4444:4444`, but `-p 6666:7777` is not supported.
-      3. Using `docker run` command with options `-i` and `-t` makes the container run in the foreground and any changes to the shell or terminal impacts the container. If required, one can use a terminal-multiplexer (like tmux or screen) to be able to place the shell instance in the background. Please be extremely careful - closing the terminal used to start the Managed Server container as mentioned in sec A and C, will lead to stopping the container. 
+      3. Using `docker run` command with options `-i` and `-t` makes the container run in the foreground and any changes to the shell or terminal impacts the container. If required, one can use a terminal-multiplexer (like tmux or screen) to be able to place the shell instance in the background. Please be extremely careful - closing the terminal used to start the Managed Server container as mentioned in sec A and C, will lead to stopping the container.
+      4. Start only those containers that you would like to use. There are 4 possible containers : WCContent, WebCenter Imaging, WebCenter Capture and WebCenter ADFUI.
+      5. If using WebCenter Imaging (IPM), then "localhost" cannot be used to connect to WebCenter Content Server. Use the machine name or the IP address while creating the connection to WebCenter Content Server.
 
-#### B. Stopping WCContent Container
+#### B. Stopping Container
 ```
 docker stop WCContentContainer
+docker stop IPMContainer
+docker stop CaptureContainer
+docker stop WCCADFContainer
 ```
 
-#### C. Starting WCContent Container
+#### C. Starting Container
 ```
 docker start -i WCContentContainer
+docker start -i IPMContainer
+docker start -i CaptureContainer
+docker start -i WCCADFContainer
 ```
 
-#### D. Getting Shell in WCContent Container
+#### D. Getting Shell in Container
 ```
 docker exec -it WCContentContainer /bin/bash
+docker exec -it IPMContainer /bin/bash
+docker exec -it CaptureContainer /bin/bash
+docker exec -it WCCADFContainer /bin/bash
 ```
 Both the Admin and the Managed Server containers must be running before you will be able to start the Admin and Managed Servers using the WebLogic admin credentials.
 
@@ -270,6 +322,15 @@ http://hostname:16200/cs/
 
 IBR Server
 http://hostname:16250/ibr/
+
+IPM Server
+http://hostname:16000/imaging/
+
+Capture Server
+http://hostname:16400/dc-console/
+
+WCC ADFUI Server
+http://hostname:16225/wcc
 
 # 6. License
 
