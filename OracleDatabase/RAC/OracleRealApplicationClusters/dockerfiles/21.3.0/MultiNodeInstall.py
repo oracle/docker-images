@@ -6,7 +6,7 @@
 
 # stig.py
 #
-# Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2021, Oracle and/or its affiliates. All rights reserved.
 #
 # NAME
 #      buildImage.py - <Build the Image>

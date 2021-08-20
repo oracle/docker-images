@@ -1,4 +1,0 @@
-docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub2_nw
-# docker network create -d ipvlan --subnet=10.0.20.0/24 --gateway=10.0.20.1 -o parent=eno1 rac_pub2_nw
-docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
-

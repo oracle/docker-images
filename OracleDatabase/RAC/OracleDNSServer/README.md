@@ -1,77 +1,55 @@
-# Build the OracleDNSServer Docker image
+IMPORTANT: This image can be used to the setup DNS server for RAC. You can skip if you have already a DNS server configured and can be used for Oracle RAC. You need to make sure that the DNS server container must be up and running for RAC functioning. This image is for only testing purposes.
 
-1. Clone the repository from the [DNS GIT repository](https://github.com/tthathac/docker-images/tree/patch-1)
-2. cd OracleDatabase/RAC/OracleDNSServer/dockerfiles
-3. export https_proxy=http://www-proxy-hqdc.us.oracle.com:80/
-4. export https_proxy=http://www-proxy-hqdc.us.oracle.com:80/
-5. ./buildDockerImage.sh -v 4.1
-6. docker images
+## How to build and run
+You need to make sure that you have atleast 1GB of space available for the container to create the files for RAC DNSServer.
 
-   You should see that oracle/rac-dns-server:4.1 is created. You can name it anything based on your requirement.
+IMPORTANT: If you are behind the proxy, you need to set the http_proxy env variable based on your environment before building the image.
 
-# Create the DNS container
-Use the following command ( replace appropriately if needed ) to create the DNS container.
+To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage.
 
-/usr/bin/docker run -d --hostname racdns --dns-search=us.oracle.com \\
+The buildDockerImage.sh script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their preferred set of parameters. Go into the dockerfiles folder and run the buildDockerImage.sh script:
 
---network=rac_pub1_nw --ip=172.16.1.25 \\
+./buildDockerImage.sh -v (Software Version)
+./buildDockerImage.sh -v latest
+NOTE: To build DNS server Image, pass the version latest to buildDockerImage.sh. The RAC DNSServer image is not tied to any release of the RAC release, you can use `latest` version to build the image.
 
--e DOMAIN_NAME="internal.us.oracle.com" \\
+For detailed usage of command, please execute folowing command:
 
--e PRIVATE_DOMAIN_NAME="internal-priv.us.oracle.com" \\
+./buildDockerImage.sh -h
 
--e WEBMIN_ENABLED=false \\
+## Create Bridge
+Before creating the container, create the bridge for RACDNSServer container.
 
--e RAC_NODE_NAME_PREFIX="racnode" \\
+```
+docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
+```
+**Note:** You can change the subnet according to your environment.
 
--e SETUP_DNS_CONFIG_FILES="setup_true" \\
+### Running RACDNSServer Docker container
+Execute following command to create the container:
 
--e CORP_DNS_DOMAIN_1="us.oracle.com" \\
+/usr/bin/docker run -d --hostname racdns --dns-search=example.com \
+ --network=rac_pub1_nw --ip=172.16.1.25 \
+ -e DOMAIN_NAME="internal.example.com" \
+ -e PRIVATE_DOMAIN_NAME="internal-priv.example.com" \
+ -e WEBMIN_ENABLED=false \
+ -e RAC_NODE_NAME_PREFIX="racnode" \
+ -e SETUP_DNS_CONFIG_FILES="setup_true" \
+ --privileged=false \
+ --name rac-dnsserver oracle/rac-dns-server:latest
 
--e CORP_DNS_DOMAIN_2="dbdevtestphx.oraclevcn.com" \\
+In the above example, we used **172.16.1.0/24** subnet for the DNS server. You can change the subnet values according to your environment.
 
--e CORP_DNS_SERVERS="100.96.241.2,100.96.241.194" \\
+To check the DNSServer container/services creation logs, please tail docker logs. It will take 5 minutes to create the racdns container service.
 
---privileged=false \\
+```
+docker logs -f racdns
+```
 
---name rac-dnsserver oracle/rac-dns-server:4.1
+you should see the following in docker logs output:
 
-# Network Details
-The subnet mask used is : 255.255.192.0. So the CIDR is /18.
-The network and the hostname resolution is :
-
-CIDR=18
-
-EXTERNAL_NETWORK=172.16.1
-
-PUBLIC_SUBNET="192.168.17" : racnode1-racnode250
-
-PRIVATE_SUBNET="192.168.150" : racnode1-priv - racnode250-priv
-
-PRIVATE_SUBNET2="192.168.200" : racnode-priv2 - racnode250-priv2
-
-PUBLIC_VIP_SUBNET="192.168.18" : racnode1-vip - racnode250-vip
-
-PUBLIC_SVIP_SUBNET="192.168.19" : racnode1-svip[1-4] - racnode63-svip[1-4]
-
-SCAN3_SUBNET="192.168.16" : racnode-scan1  - racnode-scan250
-
-SCAN2_SUBNET="192.168.15" : racnode-scan1  - racnode-scan250
-
-SCAN1_SUBNET="192.168.14" : racnode-scan1  - racnode-scan250
-
-GNS_SUBNET="192.168.13" : racnode-gns1 - racnode-gns250
-
-GNS_VIP_SUBNET="192.168.12" : racnode-gns1-vip - racnode-gns250-vip
-
-CMAN_SUBNET="192.168.100" : racnode-cman1 - racnode-cman250
-
-# Create Networks
-docker network create --driver=bridge --subnet=$EXTERNAL_NETWORK.0/24 --gateway=$EXTERNAL_NETWORK.1 rac_eth3ext1_nw
-
-docker network create --driver=bridge --subnet=$PUBLIC_NETWORK.0/$CIDR rac_eth0pub1_nw
-
-docker network create --driver=bridge --subnet=$PRIVATE_NETWORK.0/$CIDR rac_eth1priv1_nw
-
-docker network create --driver=bridge --subnet=$PRIVATE_NETWORK2.0/$CIDR rac_eth2priv2_nw
-
+```
+#################################################
+runOracle.sh: RACDNSServer is up and running!
+#################################################
+```
