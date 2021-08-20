@@ -1,0 +1,64 @@
+$TTL 86400
+@       IN SOA  example.com.   root (
+        2014090401    ; serial
+        3600    ; refresh
+        1800    ; retry
+        604800    ; expire
+        86400 )  ; minimum
+; Name server's
+                IN NS      example.com.
+; Name server hostname to IP resolve.
+                IN A    172.16.1.2 
+; Hosts in this Domain
+racserver-dns   IN A    172.16.1.2
+racnode1        IN A    172.16.1.150
+racnode2        IN A    172.16.1.151
+racnode3        IN A    172.16.1.152
+racnode4        IN A    172.16.1.153
+racnode1-vip    IN A    172.16.1.160
+racnode2-vip    IN A    172.16.1.161
+racnode3-vip    IN A    172.16.1.162
+racnode4-vip    IN A    172.16.1.163
+racnode-scan    IN A    172.16.1.170
+racnode-scan    IN A    172.16.1.171
+racnode-scan    IN A    172.16.1.172
+racnode-gns1    IN A    172.16.1.175
+racnode-gns2    IN A    172.16.1.176
+
+; IPs for second RAC Cluster
+; Hosts in this Domain
+racnode11        IN A    172.16.1.50
+racnode12        IN A    172.16.1.51
+racnode13        IN A    172.16.1.52
+racnode14        IN A    172.16.1.53
+racnode11-vip    IN A    172.16.1.60
+racnode12-vip    IN A    172.16.1.61
+racnode13-vip    IN A    172.16.1.62
+racnode14-vip    IN A    172.16.1.63
+racnode1-scan    IN A    172.16.1.70
+racnode1-scan    IN A    172.16.1.71
+racnode1-scan    IN A    172.16.1.72
+racnode1-gns1    IN A    172.16.1.75
+racnode1-gns2    IN A    172.16.1.76
+
+; IPs for thrid RAC Cluster
+; Hosts in this Domain
+racnode21        IN A    172.16.1.100
+racnode22        IN A    172.16.1.101
+racnode23        IN A    172.16.1.102
+racnode24        IN A    172.16.1.103
+racnode21-vip    IN A    172.16.1.104
+racnode22-vip    IN A    172.16.1.105
+racnode23-vip    IN A    172.16.1.106
+racnode24-vip    IN A    172.16.1.107
+racnode2-scan    IN A    172.16.1.108
+racnode2-scan    IN A    172.16.1.109
+racnode2-scan    IN A    172.16.1.110
+racnode2-gns1    IN A    172.16.1.111
+racnode2-gns2    IN A    172.16.1.112
+
+; CMAN Server Entry
+;racnode-cman1         IN A    172.16.1.2
+racnode-cman2         IN A    172.16.1.3
+racnode-cman3         IN A    172.16.1.4
+racnode-cman4         IN A    172.16.1.5

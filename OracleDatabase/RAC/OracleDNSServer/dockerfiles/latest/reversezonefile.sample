@@ -1,0 +1,62 @@
+$TTL 86400
+@       IN SOA  example.com. root.example.com. (
+        2014090402      ; serial
+        3600      ; refresh
+        1800      ; retry
+        604800      ; expire
+        86400 )    ; minimum
+; Name server's
+       IN      NS     example.com.
+; Name server hostname to IP resolve.
+2       IN PTR  racserver-dns.example.com.
+; Second RAC Cluster on Same Subnet on Docker
+150     IN PTR  racnode1.example.com.
+151     IN PTR  racnode2.example.com.
+152     IN PTR  racnode3.example.com.
+153     IN PTR  racnode4.example.com.
+160     IN PTR  racnode1-vip.example.com.
+161     IN PTR  racnode2-vip.example.com.
+162     IN PTR  racnode3-vip.example.com.
+163     IN PTR  racnode4-vip.example.com.
+170     IN PTR  racnode-scan.example.com.
+171     IN PTR  racnode-scan.example.com.
+172     IN PTR  racnode-scan.example.com.
+175     IN PTR  racnode-gns1.example.com.
+176     IN PTR  racnode-gns2.example.com.
+
+; Second RAC Cluster on Same Subnet on Docker
+50     IN PTR  racnode11.example.com.
+51     IN PTR  racnode12.example.com.
+52     IN PTR  racnode13.example.com.
+53     IN PTR  racnode14.example.com.
+60     IN PTR  racnode11-vip.example.com.
+61     IN PTR  racnode12-vip.example.com.
+62     IN PTR  racnode13-vip.example.com.
+63     IN PTR  racnode14-vip.example.com.
+70     IN PTR  racnode1-scan.example.com.
+71     IN PTR  racnode1-scan.example.com.
+72     IN PTR  racnode1-scan.example.com.
+75     IN PTR  racnode1-gns1.example.com.
+76     IN PTR  racnode1-gns2.example.com.
+
+; Second RAC Cluster on Same Subnet on Docker
+100     IN PTR  racnode21.example.com.
+101     IN PTR  racnode22.example.com.
+102     IN PTR  racnode23.example.com.
+103     IN PTR  racnode24.example.com.
+104     IN PTR  racnode21-vip.example.com.
+105     IN PTR  racnode22-vip.example.com.
+106     IN PTR  racnode23-vip.example.com.
+107     IN PTR  racnode24-vip.example.com.
+108     IN PTR  racnode2-scan.example.com.
+109     IN PTR  racnode2-scan.example.com.
+110     IN PTR  racnode2-scan.example.com.
+111     IN PTR  racnode2-gns1.example.com.
+112     IN PTR  racnode2-gns2.example.com.
+
+
+; CMAN Server Entry
+;#2       IN PTR  racnode-cman1.example.com.
+3       IN PTR  racnode-cman2.example.com.
+4       IN PTR  racnode-cman3.example.com.
+5       IN PTR  racnode-cman4.example.com.
