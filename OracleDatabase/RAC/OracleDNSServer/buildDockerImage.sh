@@ -1,13 +1,13 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 # 
-# Since: January, 2018
+# Since: January, 2021
 # Author: Paramdeep saini <paramdeep.saini@oracle.com>
 # Description: Build script for building Oracle RAC Storage Server Docker images.
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2021 Oracle and/or its affiliates. All rights reserved.
 # 
 
 usage() {
