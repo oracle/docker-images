@@ -76,8 +76,8 @@ do
    systemctl reset-failed
 done
 systemctl reset-failed
-# print_message "Sleeping for 60 seconds"
-# sleep 60
+print_message "Sleeping for 60 seconds"
+sleep 60
 
 systemctl_state=$(systemctl status | awk '/State:/{ print $0 }' | grep -v 'awk /State:/' | awk '{ print $2 }')
 
@@ -322,5 +322,5 @@ setupResolvconf
 print_message "#####################################################################"
 print_message " RAC setup will begin in 2 minutes                                   "
 print_message "####################################################################"
-sleep 2
+sleep 30
 echo $TRUE
