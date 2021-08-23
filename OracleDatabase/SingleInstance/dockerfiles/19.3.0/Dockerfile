@@ -62,7 +62,9 @@ ENV ORACLE_BASE=/opt/oracle \
     CLONE_DB=false \
     # Env var below should be in <HOST>:<PORT>/<SERVICE_NAME> format
     PRIMARY_DB_CONN_STR="" \
-    CHECKPOINT_FILE_EXTN=".created"
+    CHECKPOINT_FILE_EXTN=".created" \
+    # Directory for keeping Oracle Wallet
+    WALLET_DIR=""
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
