@@ -111,6 +111,7 @@ Get Oracle Oracle Fusion Middleware Infrastructure image -
 > 1. Sign in to Oracle Container Registry. Click the Sign in link which is on the top-right of the Web page.
 > 2. Click Middleware and then click Continue for the fmw-infrastructure repository.
 > 3. Click Accept to accept the license agreement.
+> 4. Use following commands to pull Oracle Fusion Middleware Infrastructure base image from repository :
 
 ```
 docker login container-registry.oracle.com
