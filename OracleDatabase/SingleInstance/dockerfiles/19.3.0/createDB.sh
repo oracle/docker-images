@@ -74,7 +74,24 @@ fi;
 
 # Auto generate ORACLE PWD if not passed on
 export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
-echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
+
+# If wallet is present for database credentials then prepare dbca options to use
+if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
+  # Oracle Wallet is present
+  export DBCA_CRED_OPTIONS="-useWalletForDBCredentials true  -dbCredentialsWalletLocation ${WALLET_DIR}"
+else
+  if [[ "${CLONE_DB}" == "true" ]]; then
+    # Creating temporary response file containing sysPassword for clone database cases
+    echo "sysPassword=${ORACLE_PWD}" > $ORACLE_BASE/dbca.rsp
+    export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
+  fi
+
+  # Displaying password only when password is auto-generated and Oracle wallet is not used
+  if [[ -z "${3+x}" ]]; then
+    echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
+  fi
+
+fi
 
 # Clone DB creation path
 if [[ "${CLONE_DB}" == "true" ]]; then
@@ -84,17 +101,11 @@ if [[ "${CLONE_DB}" == "true" ]]; then
     exit 1
   fi
 
-  # Validation: Check if ORACLE_PWD is provided or not
-  if [[ -z "${ORACLE_PWD}" ]]; then
-    echo "ERROR: Please provide password of sys user as ORACLE_PWD to connect with primary database. Exiting..."
-    exit 1
-  fi
-
   # Primary database parameters extration
   PRIMARY_DB_NAME=$(echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2)
 
   # Creating clone database using DBCA after duplicating a primary database
-  dbca -silent -createDuplicateDB -gdbName ${ORACLE_SID} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} -sysPassword ${ORACLE_PWD} -sid ${ORACLE_SID} -databaseConfigType SINGLE -useOMF true -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
+  dbca -silent -createDuplicateDB -gdbName ${ORACLE_SID} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} ${DBCA_CRED_OPTIONS} -sid ${ORACLE_SID} -databaseConfigType SINGLE -useOMF true -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
     cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
     cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
 
@@ -110,6 +121,11 @@ if [[ "${CLONE_DB}" == "true" ]]; then
   # Starting the Listener
   lsnrctl start;
 
+  # Remove temporary response file
+  if [ -f $ORACLE_BASE/dbca.rsp ]; then
+    rm $ORACLE_BASE/dbca.rsp
+  fi
+
   exit 0
 fi
 
@@ -117,7 +133,12 @@ fi
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
-sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
+if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
+  # Deleting password options from dbca response file as wallet will be used for credentials
+  sed -i -e "/###ORACLE_PWD###/d" $ORACLE_BASE/dbca.rsp
+else
+  sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
+fi
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
 
 # If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user
@@ -143,7 +164,7 @@ export ARCHIVELOG_DIR=$ORACLE_BASE/oradata/$ORACLE_SID/$ARCHIVELOG_DIR_NAME
 
 # Start LISTENER and run DBCA
 lsnrctl start &&
-dbca -silent -createDatabase -enableArchive $ENABLE_ARCHIVELOG -archiveLogDest $ARCHIVELOG_DIR -responseFile $ORACLE_BASE/dbca.rsp ||
+dbca -silent -createDatabase -enableArchive $ENABLE_ARCHIVELOG -archiveLogDest $ARCHIVELOG_DIR ${DBCA_CRED_OPTIONS} -responseFile $ORACLE_BASE/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
  cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
 
