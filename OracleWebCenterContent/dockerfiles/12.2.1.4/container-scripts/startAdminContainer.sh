@@ -31,6 +31,41 @@ then
   # assign machines and clusters to managed servers
   /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/setTopology.py $HOSTNAME
 
+  # assign machines and clusters to managed servers for additional components
+  echo "isIPM=${isIPM}"
+  echo "isCAPTURE=${isCAPTURE}"
+  echo "isADFUI=${isADFUI}"
+
+  if [ "$isIPM" == "true" ]
+  then
+     echo "Call setIPMTopology.py file"
+     # assign machines and clusters to IPM managed server
+        echo "Assigning machines and clusters to the IPM managed server"
+        echo "========================================================="
+        echo ""
+        /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/setIPMTopology.py
+  fi
+
+  if [ "$isCAPTURE" == "true" ]
+  then
+     echo "Call setCaptureTopology.py file"
+     # assign machines and clusters to capture managed server
+        echo "Assigning machines and clusters to the Capture managed server"
+        echo "============================================================="
+        echo ""
+        /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/setCaptureTopology.py
+  fi
+
+  if [ "$isADFUI" == "true" ]
+  then
+     echo "Call setWCCADFTopology.py file"
+     # assign machines and clusters to WCCADF managed server
+        echo "Assigning machines and clusters to the WCCADF managed server"
+        echo "============================================================"
+        echo ""
+        /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/setWCCADFTopology.py  
+  fi 
+
  # Configure Node Manager
   /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/configureNodeManager.py $HOSTNAME $vol_name
 
