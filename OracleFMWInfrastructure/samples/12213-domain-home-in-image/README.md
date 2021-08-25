@@ -34,7 +34,7 @@ The format of the `rcu_security.properties` file is key=value pair:
 
         db_user=sys
         db_pass=Oradoc_db1
-        db_schema=Oradoc_db1
+        db_schema=InfraPDB1
 
 **Note**: Oracle recommends that the `domain_securtity.properties` and the `rcu_security.properties` files be deleted or secured after the container and WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
