@@ -8,7 +8,8 @@ FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 # Enable the right module stream for microdnf
 COPY nodejs.module /etc/dnf/modules.d/nodejs.module
 
-RUN dnf -y module install nodejs:14 && \
+RUN dnf -y module enable nodejs:14 && \
+    dnf -y install nodejs npm && \
     rm -rf /var/cache/dnf
 
 CMD ["/bin/node", "-v"]

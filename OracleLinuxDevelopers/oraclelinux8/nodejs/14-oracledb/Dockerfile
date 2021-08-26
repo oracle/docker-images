@@ -8,8 +8,9 @@ FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 # Enable the right module stream for microdnf
 COPY nodejs.module /etc/dnf/modules.d/nodejs.module
 
-RUN dnf -y install oracle-instantclient-release-el8 oraclelinux-developer-release-el8 && \
-    dnf -y install oracle-instantclient-basic node-oracledb-node14 && \
+RUN dnf -y module enable nodejs:14 && \
+    dnf -y install oracle-instantclient-release-el8 oraclelinux-developer-release-el8 && \
+    dnf -y install oracle-instantclient-basic node-oracledb-node14 nodejs npm && \
     rm -rf /var/cache/dnf
 
 ENV NODE_PATH=/usr/local/lib/node_modules/
