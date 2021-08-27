@@ -67,7 +67,7 @@ done
 
 # Creating wcs-wls-docker-install.jar
 cd $VERSION/wcs-wls-docker-install
-docker run --rm -u root -v ${PWD}:/wcs-wls-docker-install groovy:2.4.8-jdk8 /wcs-wls-docker-install/packagejar.sh
+docker run --rm -u root -v `pwd`:/wcs-wls-docker-install:z groovy:2.4.8-jdk8 /wcs-wls-docker-install/packagejar.sh
 cd ..
 
 # WebCenterSites Image Name

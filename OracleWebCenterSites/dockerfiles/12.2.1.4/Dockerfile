@@ -27,6 +27,11 @@ FROM oracle/fmw-infrastructure:12.2.1.4 as builder
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 USER root
+
+# Create the oracle user and group if they don't exist yet
+RUN getent group oracle || groupadd oracle 
+RUN id -u oracle &>/dev/null || useradd -m -g oracle -d /home/oracle -s /bin/bash oracle
+
 ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 	SITES_INSTALLER_PKG=wcs-wls-docker-install \
 	SITES_PKG=V983400-01.zip \
@@ -86,6 +91,7 @@ RUN export OPATCH_NO_FUSER=true && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
     fi
 
+USER root
 RUN	rm -rf /u01/oraInst.loc /u01/install.file && \
 	chown oracle:oracle -R /u01
 
@@ -98,6 +104,8 @@ FROM oracle/fmw-infrastructure:12.2.1.4
 # Install the required packages
 # -----------------------------
 USER root
+RUN getent group oracle || groupadd oracle
+RUN id -u oracle &>/dev/null || useradd -m -g oracle -d /home/oracle -s /bin/bash oracle
 ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 	SITES_INSTALLER_PKG=wcs-wls-docker-install \
 	DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
