@@ -6,6 +6,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
+* Oracle Database 21c (21.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
 * Oracle Database 18c (18.3.0) Enterprise Edition and Standard Edition 2
@@ -30,7 +31,7 @@ Before you build the image make sure that you have provided the installation bin
     
     Parameters:
        -v: version to build
-           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  
+           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0
        -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
@@ -56,7 +57,7 @@ The character set for the database is set during creating of the database. 11gR2
 
 **NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension. So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
 
-    ./buildContainerImage.sh -e -v 19.3.0 -o '--build-arg SLIMMING=false'
+    ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
 
 ### Running Oracle Database in a container
 
@@ -75,7 +76,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e ORACLE_CHARACTERSET=<your character set> \
     -e ENABLE_ARCHIVELOG=true \
     -v [<host mount point>:]/opt/oracle/oradata \
-    oracle/database:19.3.0-ee
+    oracle/database:21.3.0-ee
     
     Parameters:
        --name:        The name of the container (default: auto generated).
