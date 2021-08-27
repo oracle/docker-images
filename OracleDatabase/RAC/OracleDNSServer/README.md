@@ -11,7 +11,9 @@ The `buildDockerImage.sh` script is just a utility shell script that performs MD
 ./buildDockerImage.sh -v (Software Version)
 ./buildDockerImage.sh -v latest
 ```
-**NOTE:** To build DNS server Image, pass the version latest to `buildDockerImage.sh`. The RAC DNSServer image is not tied to any release of the RAC release, you can use `latest` version to build the image.
+**NOTES:** 
+ * To build DNS server Image, pass the version latest to `buildDockerImage.sh`. The RAC DNSServer image is not tied to any release of the RAC release, you can use `latest` version to build the image.
+ * This image can be used to the setup DNS server for RAC. You can skip if you have already a DNS server configured and can be used for Oracle RAC. You need to make sure that the DNS server container must be up and running for RAC functioning. This image is for only testing purposes.
 
 For detailed usage of command, please execute folowing command:
 
