@@ -1,5 +1,5 @@
 ## How to build and run
-You need to make sure that you have atleast 1GB of space available for the container to create the files for RAC DNSServer.
+You need to make sure that you have atleast 100MB of space available for the container to create the files for RAC DNSServer.
 
 **IMPORTANT:** If you are behind the proxy, you need to set the http_proxy env variable based on your environment before building the image.
 
