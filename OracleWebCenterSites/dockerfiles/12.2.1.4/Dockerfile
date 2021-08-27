@@ -29,8 +29,8 @@ FROM oracle/fmw-infrastructure:12.2.1.4 as builder
 USER root
 
 # Create the oracle user and group if they don't exist yet
-RUN getent group oracle || groupadd oracle 
-RUN id -u oracle &>/dev/null || useradd -m -g oracle -d /home/oracle -s /bin/bash oracle
+RUN getent group oracle || groupadd -g 1000 oracle 
+RUN id -u oracle &>/dev/null || useradd -m -u 1000 -g oracle -d /home/oracle -s /bin/bash oracle
 
 ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 	SITES_INSTALLER_PKG=wcs-wls-docker-install \
@@ -104,8 +104,8 @@ FROM oracle/fmw-infrastructure:12.2.1.4
 # Install the required packages
 # -----------------------------
 USER root
-RUN getent group oracle || groupadd oracle
-RUN id -u oracle &>/dev/null || useradd -m -g oracle -d /home/oracle -s /bin/bash oracle
+RUN getent group oracle || groupadd -g 1000 oracle
+RUN id -u oracle &>/dev/null || useradd -m -u 1000 -g oracle -d /home/oracle -s /bin/bash oracle
 ENV SITES_CONTAINER_SCRIPTS=/u01/oracle/sites-container-scripts \
 	SITES_INSTALLER_PKG=wcs-wls-docker-install \
 	DOMAIN_ROOT="${DOMAIN_ROOT:-/u01/oracle/user_projects/domains}" \
