@@ -218,7 +218,6 @@ Now create the Docker container using the image. For the details of environment 
   -e PUBLIC_IP=172.16.1.150 \
   -e PUBLIC_HOSTNAME=racnode1  \
   -e SCAN_NAME=racnode-scan \
-  -e SCAN_IP=172.16.1.70  \
   -e OP_TYPE=INSTALL \
   -e DOMAIN=example.com \
   -e ASM_DEVICE_LIST=/dev/asm_disk1,/dev/asm_disk2 \
@@ -262,7 +261,6 @@ Now create the Docker container using the image. For the details of environment 
   -e PUBLIC_IP=172.16.1.150 \
   -e PUBLIC_HOSTNAME=racnode1  \
   -e SCAN_NAME=racnode-scan \
-  -e SCAN_IP=172.16.1.70  \
   -e OP_TYPE=INSTALL \
   -e DOMAIN=example.com \
   -e ASM_DISCOVERY_DIR=/oradata \
@@ -389,7 +387,6 @@ To create additional nodes, use the following command:
   -e PUBLIC_HOSTNAME=racnode2  \
   -e DOMAIN=example.com \
   -e SCAN_NAME=racnode-scan \
-  -e SCAN_IP=172.16.1.70 \
   -e ASM_DISCOVERY_DIR=/dev \
   -e ASM_DEVICE_LIST=/dev/asm_disk1,/dev/asm_disk2 \
   -e ORACLE_SID=ORCLCDB \
@@ -440,7 +437,6 @@ For example:
   -e PUBLIC_HOSTNAME=racnode2  \
   -e DOMAIN=example.com \
   -e SCAN_NAME=racnode-scan \
-  -e SCAN_IP=172.16.1.70 \
   -e ASM_DISCOVERY_DIR=/oradata \
   -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.imgv,/oradata/asm_disk04.img,/oradata/asm_disk05.img \
   -e ORACLE_SID=ORCLCDB \
