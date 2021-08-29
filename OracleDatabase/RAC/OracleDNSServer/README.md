@@ -1,7 +1,7 @@
 **IMPORTANT:** This image can be used to the setup DNS server for RAC. You can skip if you have already a DNS server configured and can be used for Oracle RAC. You need to make sure that the DNS server container must be up and running for RAC functioning. This image is for only testing purposes.
 
 ## How to build and run
-You need to make sure that you have atleast 1GB of space available for the container to create the files for RAC DNSServer.
+You need to make sure that you have atleast 100MB of space available for the container to create the files for RAC DNSServer.
 
 **IMPORTANT:** If you are behind the proxy, you need to set the http_proxy env variable based on your environment before building the image.
 
