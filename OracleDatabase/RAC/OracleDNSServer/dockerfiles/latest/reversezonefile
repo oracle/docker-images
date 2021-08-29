@@ -1,0 +1,62 @@
+$TTL 86400
+@       IN SOA  ###DOMAIN_NAME###. root.###DOMAIN_NAME###. (
+        2014090402      ; serial
+        3600      ; refresh
+        1800      ; retry
+        604800      ; expire
+        86400 )    ; minimum
+; Name server's
+ ###HOSTNAME_IP_LAST_DIGITS###       IN      NS     ###DOMAIN_NAME###.
+; Name server hostname to IP resolve.
+       IN PTR  ###HOSTNAME###.###DOMAIN_NAME###.
+; Second RAC Cluster on Same Subnet on Docker
+150     IN PTR  ###RAC_NODE_NAME_PREFIX###1.###DOMAIN_NAME###.
+151     IN PTR  ###RAC_NODE_NAME_PREFIX###2.###DOMAIN_NAME###.
+152     IN PTR  ###RAC_NODE_NAME_PREFIX###3.###DOMAIN_NAME###.
+153     IN PTR  ###RAC_NODE_NAME_PREFIX###4.###DOMAIN_NAME###.
+160     IN PTR  ###RAC_NODE_NAME_PREFIX###1-vip.###DOMAIN_NAME###.
+161     IN PTR  ###RAC_NODE_NAME_PREFIX###2-vip.###DOMAIN_NAME###.
+162     IN PTR  ###RAC_NODE_NAME_PREFIX###3-vip.###DOMAIN_NAME###.
+163     IN PTR  ###RAC_NODE_NAME_PREFIX###4-vip.###DOMAIN_NAME###.
+170     IN PTR  ###RAC_NODE_NAME_PREFIX###-scan.###DOMAIN_NAME###.
+171     IN PTR  ###RAC_NODE_NAME_PREFIX###-scan.###DOMAIN_NAME###.
+172     IN PTR  ###RAC_NODE_NAME_PREFIX###-scan.###DOMAIN_NAME###.
+175     IN PTR  ###RAC_NODE_NAME_PREFIX###-gns1.###DOMAIN_NAME###.
+176     IN PTR  ###RAC_NODE_NAME_PREFIX###-gns2.###DOMAIN_NAME###.
+
+; Second RAC Cluster on Same Subnet on Docker
+50     IN PTR  ###RAC_NODE_NAME_PREFIX###11.###DOMAIN_NAME###.
+51     IN PTR  ###RAC_NODE_NAME_PREFIX###12.###DOMAIN_NAME###.
+52     IN PTR  ###RAC_NODE_NAME_PREFIX###13.###DOMAIN_NAME###.
+53     IN PTR  ###RAC_NODE_NAME_PREFIX###14.###DOMAIN_NAME###.
+60     IN PTR  ###RAC_NODE_NAME_PREFIX###11-vip.###DOMAIN_NAME###.
+61     IN PTR  ###RAC_NODE_NAME_PREFIX###12-vip.###DOMAIN_NAME###.
+62     IN PTR  ###RAC_NODE_NAME_PREFIX###13-vip.###DOMAIN_NAME###.
+63     IN PTR  ###RAC_NODE_NAME_PREFIX###14-vip.###DOMAIN_NAME###.
+70     IN PTR  ###RAC_NODE_NAME_PREFIX###1-scan.###DOMAIN_NAME###.
+71     IN PTR  ###RAC_NODE_NAME_PREFIX###1-scan.###DOMAIN_NAME###.
+72     IN PTR  ###RAC_NODE_NAME_PREFIX###1-scan.###DOMAIN_NAME###.
+75     IN PTR  ###RAC_NODE_NAME_PREFIX###1-gns1.###DOMAIN_NAME###.
+76     IN PTR  ###RAC_NODE_NAME_PREFIX###1-gns2.###DOMAIN_NAME###.
+
+; Second RAC Cluster on Same Subnet on Docker
+100     IN PTR  ###RAC_NODE_NAME_PREFIX###21.###DOMAIN_NAME###.
+101     IN PTR  ###RAC_NODE_NAME_PREFIX###22.###DOMAIN_NAME###.
+102     IN PTR  ###RAC_NODE_NAME_PREFIX###23.###DOMAIN_NAME###.
+103     IN PTR  ###RAC_NODE_NAME_PREFIX###24.###DOMAIN_NAME###.
+104     IN PTR  ###RAC_NODE_NAME_PREFIX###21-vip.###DOMAIN_NAME###.
+105     IN PTR  ###RAC_NODE_NAME_PREFIX###22-vip.###DOMAIN_NAME###.
+106     IN PTR  ###RAC_NODE_NAME_PREFIX###23-vip.###DOMAIN_NAME###.
+107     IN PTR  ###RAC_NODE_NAME_PREFIX###24-vip.###DOMAIN_NAME###.
+108     IN PTR  ###RAC_NODE_NAME_PREFIX###2-scan.###DOMAIN_NAME###.
+109     IN PTR  ###RAC_NODE_NAME_PREFIX###2-scan.###DOMAIN_NAME###.
+110     IN PTR  ###RAC_NODE_NAME_PREFIX###2-scan.###DOMAIN_NAME###.
+111     IN PTR  ###RAC_NODE_NAME_PREFIX###2-gns1.###DOMAIN_NAME###.
+112     IN PTR  ###RAC_NODE_NAME_PREFIX###2-gns2.###DOMAIN_NAME###.
+
+
+; CMAN Server Entry
+2       IN PTR  ###RAC_NODE_NAME_PREFIX###-cman1.###DOMAIN_NAME###.
+3       IN PTR  ###RAC_NODE_NAME_PREFIX###-cman2.###DOMAIN_NAME###.
+4       IN PTR  ###RAC_NODE_NAME_PREFIX###-cman3.###DOMAIN_NAME###.
+5       IN PTR  ###RAC_NODE_NAME_PREFIX###-cman4.###DOMAIN_NAME###.
