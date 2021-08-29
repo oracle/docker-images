@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2021 Oracle and/or its affiliates. All rights reserved.
 # 
 
 usage() {
@@ -18,7 +18,6 @@ Builds a Docker Image for Oracle Database.
 Parameters:
    -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
-   -i: ignores the MD5 checksums
    -o: passes on Docker build option
 
 LICENSE UPL 1.0
@@ -88,11 +87,6 @@ IMAGE_NAME="oracle/rac-dnsserver:$VERSION"
 # Go into version folder
 cd $VERSION
 
-if [ ! "$SKIPMD5" -eq 1 ]; then
-  checksumPackages
-else
-  echo "Ignored MD5 checksum."
-fi
 echo "=========================="
 echo "DOCKER info:"
 docker info
