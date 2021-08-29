@@ -201,13 +201,14 @@ Now create the Docker container using the image. For the details of environment 
   --volume /opt/containers/rac_host_file:/etc/hosts  \
   --volume /opt/.secrets:/run/secrets \
   --dns=172.16.1.25 \
-  --dns-search=internal.example.com \
+  --dns-search=example.com \
   --device=/dev/xvde:/dev/asm_disk1  \
   --device=/dev/xvdf:/dev/asm_disk2 \
   --privileged=false  \
   --cap-add=SYS_NICE \
   --cap-add=SYS_RESOURCE \
   --cap-add=NET_ADMIN \
+  -e DNS_SERVERS="172.16.1.25" \
   -e NODE_VIP=172.16.1.160 \
   -e VIP_HOSTNAME=racnode1-vip  \
   -e PRIV_IP=192.168.17.150 \
@@ -217,7 +218,7 @@ Now create the Docker container using the image. For the details of environment 
   -e SCAN_NAME=racnode-scan \
   -e SCAN_IP=172.16.1.70  \
   -e OP_TYPE=INSTALL \
-  -e DOMAIN=internal.example.com \
+  -e DOMAIN=example.com \
   -e ASM_DEVICE_LIST=/dev/asm_disk1,/dev/asm_disk2 \
   -e ASM_DISCOVERY_DIR=/dev \
   -e CMAN_HOSTNAME=racnode-cman1 \
@@ -245,12 +246,13 @@ Now create the Docker container using the image. For the details of environment 
   --volume /opt/containers/rac_host_file:/etc/hosts  \
   --volume /opt/.secrets:/run/secrets \
   --dns=172.16.1.25 \
-  --dns-search=internal.example.com \
+  --dns-search=example.com \
   --privileged=false \
   --volume racstorage:/oradata \
   --cap-add=SYS_NICE \
   --cap-add=SYS_RESOURCE \
   --cap-add=NET_ADMIN \
+  -e DNS_SERVERS="172.16.1.25" \
   -e NODE_VIP=172.16.1.160  \
   -e VIP_HOSTNAME=racnode1-vip  \
   -e PRIV_IP=192.168.17.150  \
@@ -260,7 +262,7 @@ Now create the Docker container using the image. For the details of environment 
   -e SCAN_NAME=racnode-scan \
   -e SCAN_IP=172.16.1.70  \
   -e OP_TYPE=INSTALL \
-  -e DOMAIN=internal.example.com \
+  -e DOMAIN=example.com \
   -e ASM_DISCOVERY_DIR=/oradata \
   -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
   -e CMAN_HOSTNAME=racnode-cman1 \
@@ -368,13 +370,14 @@ To create additional nodes, use the following command:
   --volume /opt/containers/rac_host_file:/etc/hosts \
   --volume /opt/.secrets:/run/secrets \
   --dns=172.16.1.25 \
-  --dns-search=internal.example.com \
+  --dns-search=example.com \
   --device=/dev/xvde:/dev/asm_disk1 \
   --device=/dev/zvdf:/dev/asm_disk2 \
   --privileged=false \
   --cap-add=SYS_NICE \
   --cap-add=SYS_RESOURCE \
   --cap-add=NET_ADMIN \
+  -e DNS_SERVERS="172.16.1.25" \
   -e EXISTING_CLS_NODES=racnode1 \
   -e NODE_VIP=172.16.1.161  \
   -e VIP_HOSTNAME=racnode2-vip  \
@@ -382,7 +385,7 @@ To create additional nodes, use the following command:
   -e PRIV_HOSTNAME=racnode2-priv \
   -e PUBLIC_IP=172.16.1.151  \
   -e PUBLIC_HOSTNAME=racnode2  \
-  -e DOMAIN=internal.example.com \
+  -e DOMAIN=example.com \
   -e SCAN_NAME=racnode-scan \
   -e SCAN_IP=172.16.1.70 \
   -e ASM_DISCOVERY_DIR=/dev \
@@ -419,12 +422,13 @@ For example:
   --volume /opt/containers/rac_host_file:/etc/hosts \
   --volume /opt/.secrets:/run/secrets \
   --dns=172.16.1.25 \
-  --dns-search=internal.example.com \
+  --dns-search=example.com \
   --privileged=false \
   --volume racstorage:/oradata \
   --cap-add=SYS_NICE \
   --cap-add=SYS_RESOURCE \
   --cap-add=NET_ADMIN \
+  -e DNS_SERVERS="172.16.1.25" \
   -e EXISTING_CLS_NODES=racnode1 \
   -e NODE_VIP=172.16.1.161  \
   -e VIP_HOSTNAME=racnode2-vip  \
@@ -432,7 +436,7 @@ For example:
   -e PRIV_HOSTNAME=racnode2-priv \
   -e PUBLIC_IP=172.16.1.151  \
   -e PUBLIC_HOSTNAME=racnode2  \
-  -e DOMAIN=internal.example.com \
+  -e DOMAIN=example.com \
   -e SCAN_NAME=racnode-scan \
   -e SCAN_IP=172.16.1.70 \
   -e ASM_DISCOVERY_DIR=/oradata \

@@ -35,7 +35,7 @@ docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
 Execute following command to create the container:
 
 ```
-docker create --name racdns \
+docker run -d  --name racdns \
  --hostname rac-dns  \
  --dns-search="example.com" \
  --cap-add=SYS_ADMIN  \
