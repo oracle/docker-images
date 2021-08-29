@@ -66,46 +66,46 @@ net.core.wmem_default = 262144
 net.core.rmem_default = 262144
 ```
 
-6. Execute the following once the file is modified.
+ * Execute the following once the file is modified.
 
-```
-# sysctl -a
-# sysctl -p
-```
+  ```
+  # sysctl -a
+  # sysctl -p
+  ```
 
-You need to plan your private and public network for containers before you start the installation. You can create a network bridge on every host so containers running within that host can communicate with each other.  For example, create `rac_pub1_nw` for the public network (`172.16.1.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing however in this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
+7. You need to plan your private and public network for containers before you start the installation. You can create a network bridge on every host so containers running within that host can communicate with each other.  For example, create `rac_pub1_nw` for the public network (`172.16.1.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing however in this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
 
 ```
 # docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
 # docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
 ```
 
-You must run Oracle RAC on Docker on multi-host using the [Docker MACVLAN Driver](https://docs.docker.com/network/macvlan/). To create a network bridge using MACVLAN docker driver using the following commands:
+ * You must run Oracle RAC on Docker on multi-host using the [Docker MACVLAN Driver](https://docs.docker.com/network/macvlan/). To create a network bridge using MACVLAN docker driver using the following commands:
 
-```
-# docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
-# docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
-```
+  ```
+  # docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
+  # docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
+  ```
 
-Oracle RAC needs to run certain processes in real-time mode. To run processes inside a container in real-time mode, you need to make changes to the Docker configuration files. For details, please refer to the [`dockerd` documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples). and  update the `OPTIONS` value in `/etc/sysconfig/docker` to following:
+8.  Oracle RAC needs to run certain processes in real-time mode. To run processes inside a container in real-time mode, you need to make changes to the Docker configuration files. For details, please refer to the [`dockerd` documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples). and  update the `OPTIONS` value in `/etc/sysconfig/docker` to following:
 
 ```
 OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
 ```
 
-Once you have edited the `/etc/sysconfig/docker`, execute following commands:
+ * Once you have edited the `/etc/sysconfig/docker`, execute following commands:
 
-```
-# systemctl daemon-reload
-# systemctl stop docker
-# systemctl start docker
-```
+  ```
+  # systemctl daemon-reload
+  # systemctl stop docker
+  # systemctl start docker
+  ```
 
-Verify you have enough memory and cpu resources available for container. For details, please refer to [Oracle 21c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html)
+9. Verify you have enough memory and cpu resources available for container. For details, please refer to [Oracle 21c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html)
 
-To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Docker Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment.
+10. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Docker Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment.
  
-The Oracle RAC dockerfiles, do not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under dockerfiles/<version> folder.
+11. The Oracle RAC dockerfiles, do not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under dockerfiles/<version> folder.
 
     Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
     Oracle Database 21c (21.3) for Linux x86-64
