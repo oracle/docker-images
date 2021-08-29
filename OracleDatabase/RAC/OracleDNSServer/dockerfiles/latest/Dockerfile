@@ -42,6 +42,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     SUDO_SETUP_FILE="setupSudo.sh" \ 
     BIN="/usr/sbin" \
     ORADATA="/oradata" \
+    WEBMIN_ENABLED="false" \
     container="true" 
 # Use second ENV so that variable get substituted
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install  \

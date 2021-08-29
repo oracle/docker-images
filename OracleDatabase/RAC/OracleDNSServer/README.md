@@ -36,18 +36,16 @@ Execute following command to create the container:
 
 ```
 docker create --name racdns \
---hostname rac-dns  \
---dns-search="example.com" \
---cap-add=SYS_ADMIN  \
---network  rac_pub1_nw \
---ip 172.16.1.25 \
---sysctl net.ipv6.conf.all.disable_ipv6=1 \
---env SETUP_DNS_CONFIG_FILES="setup_true" \
---env WEBMIN_ENABLED=false \
---env DOMAIN_NAME="example.com" \
---env RAC_NODE_NAME_PREFIX="racnode" \
---env "container=docker"  \
-oracle/dns-rac:latest
+ --hostname rac-dns  \
+ --dns-search="example.com" \
+ --cap-add=SYS_ADMIN  \
+ --network  rac_pub1_nw \
+ --ip 172.16.1.25 \
+ --sysctl net.ipv6.conf.all.disable_ipv6=1 \
+ --env SETUP_DNS_CONFIG_FILES="setup_true" \
+ --env DOMAIN_NAME="example.com" \
+ --env RAC_NODE_NAME_PREFIX="racnode" \
+ oracle/rac-dnsserver:latest
 ```
 
 In the above example, we used **172.16.1.0/24** subnet for the DNS server. You can change the subnet values according to your environment.
