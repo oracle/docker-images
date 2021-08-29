@@ -1,3 +1,4 @@
+# DNS Server 
 **IMPORTANT:** This image can be used to the setup DNS server for RAC. You can skip if you have already a DNS server configured and can be used for Oracle RAC. You need to make sure that the DNS server container must be up and running for RAC functioning. This image is for only testing purposes.
 
 ## How to build and run
