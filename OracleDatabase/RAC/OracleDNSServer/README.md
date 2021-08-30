@@ -33,7 +33,7 @@ docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
 ```
 **Note:** You can change the subnet according to your environment.
 
-### Running RACDNSServer Docker container
+### Running RAC DNS server container
 Execute following command to create the container:
 
 ```
@@ -52,7 +52,7 @@ docker run -d  --name racdns \
 
 In the above example, we used **172.16.1.0/24** subnet for the DNS server. You can change the subnet values according to your environment.
 
-To check the DNSServer container/services creation logs, please tail docker logs. It will take 5 minutes to create the racdns container service.
+To check the DNS server container/services creation logs, please tail the Docker logs. It may take up to 2 minutes for the racdns container to start completely.
 
 ```
 docker logs -f racdns
