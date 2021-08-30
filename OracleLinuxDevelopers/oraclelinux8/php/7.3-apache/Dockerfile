@@ -5,7 +5,7 @@ FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 # Enable the right module streams for microdnf
 COPY *.module /etc/dnf/modules.d/
 
-RUN dnf -y module enable php:7.4 httpd:2.4 && \
+RUN dnf -y module enable php:7.3 httpd:2.4 && \
     dnf -y install httpd httpd-filesystem httpd-tools \
                    mod_http2 mod_ssl openssl \
                    php php-cli php-common php-json php-mbstring php-mysqlnd php-pdo php-xml && \
