@@ -1,30 +1,32 @@
 # Oracle DNS Server to resolve RAC IPs
 
-Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users.
+Sample container build files to facilitate installation, configuration, and environment setup for DevOps users.
 
-**IMPORTANT:** This image can be used to the setup DNS server for RAC. You can skip if you have already a DNS server configured and can be used for Oracle RAC. You need to make sure that the DNS server container must be up and running for RAC functioning. This image is for only testing purposes.
+**IMPORTANT:** This image can be used to setup DNS server for RAC. You can skip this step if you already have a DNS server configure and which can be used for Oracle RAC. You should ensure that the DNS server container is up before starting RAC. This image is provided for test purposes only.
 
 ## How to build and run
-You need to make sure that you have atleast 100MB of space available for the container to create the files for RAC DNSServer.
+You need to make sure that you have at least 350MB of space available for the container to create the files for RAC DNS server.
 
-**IMPORTANT:** If you are behind the proxy, you need to set the http_proxy env variable based on your environment before building the image.
+**IMPORTANT:** If you are behind a proxy, you need to set the `http_proxy or https_proxy` env variable based on your environment before building the image.
 
-To assist in building the images, you can use the `buildDockerImage.sh` script. See below for instructions and usage.
+The `buildContainerImage.sh` script can assist with building the images. See below for instructions and usage.
 
-The buildDockerImage.sh script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call docker build with their preferred set of parameters. Go into the dockerfiles folder and run the buildDockerImage.sh script:
+The `buildContainerImage.sh` script is a utility shell script that performs MD5 checks and is an easy way to get started. Users can also use the docker build command to build an image with custom configuration parameters. To run the script, go into the `dockerfiles` folder and run the `buildContainerImage.sh` script:
 
 ```
-./buildDockerImage.sh -v (Software Version)
-./buildDockerImage.sh -v latest
+./buildContainerImage.sh-v <Software Version>
+./buildContainerImage.sh -v latest
 ```
-NOTE: To build DNS server Image, pass the version latest to `buildDockerImage.sh`. The RAC DNSServer image is not tied to any release of the RAC release, you can use `latest` version to build the image.
+NOTE: To build the DNS server image, pass the version latest to `buildContainerImage.sh`. The RAC DNS server image is not tied to any release of the RAC release, you can use `latest` version to build the image.
 
-For detailed usage of command, please execute folowing command:
+For detailed usage instructions, please execute the following command:
 
-`./buildDockerImage.sh -h`
+```
+./buildContainerImage.sh -h
+```
 
-## Create Bridge
-Before creating the container, create the bridge for RACDNSServer container.
+## Create bridge
+Before you create the DNS server container, ensure you have created the required network bridges so you can attach the DNS server to the correct bridge.
 
 ```
 docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
