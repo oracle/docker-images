@@ -1,4 +1,4 @@
-# Oracle RAC Database on Docker
+# Oracle RAC Database on Container
 
 Oracle Real Application Clusters (RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
@@ -6,7 +6,7 @@ For more information on Oracle RAC Database 21c refer to the [Oracle Database do
 
 ## How to build and run
 
-This project offers sample Docker files for Oracle Grid Infrastructure and Real Application Cluster Database:
+This project offers sample container files for Oracle Grid Infrastructure and Real Application Cluster Database:
  * Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
  * Oracle Database 21c (21.3) for Linux x86-64
  * Oracle Database 19c Grid Infrastructure (19.3) for Linux x86-64
@@ -120,17 +120,17 @@ OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
 
 **IMPORTANT :** This section assumes that you have gone through all the pre-requisites in Section 1 and executed all the steps based on your environment. Do not uncompress the binaries and patches.
 
-To assist in building the images, you can use the [buildDockerImage.sh](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+To assist in building the images, you can use the [buildContainerImage.sh](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildContainerImage.sh) script. See below for instructions and usage.
 
 ```
-./buildDockerImage.sh -v (Software Version)
-#  e.g., ./buildDockerImage.sh -v 21.3.0
+./buildContainerImage.sh -v <Software Version>
+#  e.g., ./buildContainerImage.sh -v 21.3.0
 ```
 
 For detailed usage of the command, please execute the following command:
 
 ```
-#  ./buildDockerImage.sh -h
+#  ./buildContainerImage.sh -h
 ```
 
 ### Notes
