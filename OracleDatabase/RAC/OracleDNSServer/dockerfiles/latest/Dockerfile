@@ -1,10 +1,10 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018,2021 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 19c RAC Storage Server. This file create DNS Server for RAC. 
+# This is the Dockerfile  for Oracle DNS server. This file create DNS Server for RAC. 
 # 
 # HOW TO BUILD THIS IMAGE
 # -----------------------

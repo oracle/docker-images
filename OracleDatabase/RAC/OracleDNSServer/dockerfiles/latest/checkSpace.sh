@@ -1,17 +1,17 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020,2021 Oracle and/or its affiliates.
 #
-# Since: January, 2021
+# Since: January, 2020
 # Author: paramdeep.saini@oracle.com, sanjay.singh@oracle.com
 # Description: Checks the available space of the system.
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-REQUIRED_SPACE_MB=100
-AVAILABLE_SPACE_MB=`df -PB 100M / | tail -n 1 | awk '{print $4}'`
+REQUIRED_SPACE_MB=300
+AVAILABLE_SPACE_MB=`df -PB 300M / | tail -n 1 | awk '{print $4}'`
 
 if [ $AVAILABLE_SPACE_MB -lt $REQUIRED_SPACE_MB ]; then
   script_name=`basename "$0"`

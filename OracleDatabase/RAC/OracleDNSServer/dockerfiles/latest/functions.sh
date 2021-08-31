@@ -1,11 +1,11 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2017,2021 Oracle and/or its affiliates.
 #
-# Since: January, 2021
-# Author: paramdeep.saini@oracle.com
-# Description: Common functions for CMAN 
+# Since: January, 2017
+# Author: sanjay.singh@oracle.com,  paramdeep.saini@oracle.com
+# Description: 
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
