@@ -1,4 +1,4 @@
-# Oracle DNS Server to resolve RAC IPs
+# Oracle DNS Server to resolve Oracle RAC IPs
 
 Sample container build files to facilitate installation, configuration, and environment setup for DevOps users.
 
