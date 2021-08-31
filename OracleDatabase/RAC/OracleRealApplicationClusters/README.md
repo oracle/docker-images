@@ -640,4 +640,4 @@ All scripts and files hosted in this project and GitHub docker-images/OracleData
 
 ## Section 10 : Copyright
 
-Copyright (c) 2014-2021 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2021 Oracle and/or its affiliates.
