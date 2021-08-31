@@ -20,7 +20,7 @@ IMPORTANT: You can build and run Oracle RAC containers on a single host or multi
 
 
 ## Using this Image
-To create a Oracle RAC cluster, please execute the steps in the following sections below:
+To create a Oracle RAC cluster, execute the steps in the following sections:
 
 1.  Prerequisites for running Oracle RAC in containers
 2.  Building the Oracle Oracle RAC Database container Images
@@ -44,16 +44,16 @@ All data files, control files, redo log files, and the server parameter file (`S
 
 You must provide block devices shared across the hosts.  If you don't have shared block storage, you can use an NFS volume.
 
-Please refer Oracle Database 21c Release documentation [Oracle Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html) and allocate the following resource as per the Oracle documentation.
+Refer Oracle Database 21c Release documentation [Oracle Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html) and allocate the following resource as per the Oracle documentation.
 
 1. You must configure the following addresses manually in your DNS.
    * Public IP address for each container
    * Private IP address for each container
    * Virtual IP address for each container
    * Three single client access name (SCAN) addresses for the cluster.
-2. If you are planning to use block devices for shared storage, please allocate block devices for OCR/voting and database files.
-3. If you are planning to use NFS storage for OCR/Voting and database files, please configure NFS storage and export at least one NFS mount. For testing purposes only, use the Oracle rac-storage-server image to deploy a docker container providing NFS-based sharable storage.
-4. If you are planning to use DNSServer container for SCAN, IPs, VIPs resolution, please configure DNSServer. For testing purposes only, use the Oracle rac-dns-server image to deploy a docker container providing DNS resolutions.
+2. If you are planning to use block devices for shared storage, allocate block devices for Oracle Cluster Registry (OCR)/voting and database files.
+3. If you are planning to use NFS storage for OCR/Voting and database files, configure NFS storage and export at least one NFS mount. For testing purposes only, use the Oracle rac-storage-server image to deploy a docker container providing NFS-based sharable storage. This applies also to domain name server (DNS) server.
+4. If you are planning to use DNSServer container for SCAN, IPs, VIPs resolution, configure DNSServer. For testing purposes only, use the Oracle rac-dns-server image to deploy a docker container providing DNS resolutions.
 5. Verify you have enough memory and CPU resources available for all containers. Each container for Oracle RAC requires 8GB memory and 16GB swap.
 6. For Oracle RAC, you must set the following parameters at the host level in `/etc/sysctl.conf`:
 
@@ -87,7 +87,7 @@ net.core.rmem_default = 262144
   # docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
   ```
 
-8.  Oracle RAC needs to run certain processes in real-time mode. To run processes inside a container in real-time mode, you need to make changes to the Docker configuration files. For details, please refer to the [`dockerd` documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples). and  update the `OPTIONS` value in `/etc/sysconfig/docker` to following:
+8.  Oracle RAC needs to run certain processes in real-time mode. To run processes inside a container in real-time mode, you need to make changes to the Docker configuration files. For details, refer to the [`dockerd` documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples). and  update the `OPTIONS` value in `/etc/sysconfig/docker` to following:
 
 ```
 OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
@@ -101,7 +101,7 @@ OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
   # systemctl start docker
   ```
 
-9. Verify you have enough memory and cpu resources available for container. For details, please refer to [Oracle 21c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html)
+9. Verify you have enough memory and cpu resources available for container. For details, refer to [Oracle 21c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html)
 
 10. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Docker Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment.
  
@@ -120,14 +120,14 @@ OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
 
 **IMPORTANT :** This section assumes that you have gone through all the pre-requisites in Section 1 and executed all the steps based on your environment. Do not uncompress the binaries and patches.
 
-To assist in building the images, you can use the [buildContainerImage.sh](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildContainerImage.sh) script. See below for instructions and usage.
+To assist in building the images, you can use the [buildContainerImage.sh](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildContainerImage.sh) script. See the following for instructions and usage.
 
 ```
 ./buildContainerImage.sh -v <Software Version>
 #  e.g., ./buildContainerImage.sh -v 21.3.0
 ```
 
-For detailed usage of the command, please execute the following command:
+For detailed usage of the command, execute the following command:
 
 ```
 #  ./buildContainerImage.sh -h
@@ -182,7 +182,7 @@ rm -f /opt/.secrets/common_os_pwdfile
 
 ### Deploying Oracle RAC on Container With Block Devices:
 
-If you are using an NFS volume, skip to the section below "Deploying Oracle RAC on Container with NFS Volume".
+If you are using an NFS volume, skip to the section "Deploying Oracle RAC on Container with NFS Volume".
 
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
@@ -190,9 +190,9 @@ Make sure the ASM devices do not have any existing file system. To clear any oth
 # dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
 ```
 
-Repeat for each shared block device. In the example above, `/dev/xvde` is a shared Xen virtual block device.
+Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
 
-Now create the Oracle RAC container using the image. For the details of environment variables, please refer to section 5. You can use the following example to create a container:
+Now create the Oracle RAC container using the image. For the details of environment variables, refer to section 5. You can use the following example to create a container:
 
 ```
 # docker create -t -i \
@@ -236,7 +236,7 @@ Now create the Oracle RAC container using the image. For the details of environm
 
 ### Deploying Oracle RAC on Container  With Oralce RAC Storage Container
 
-Now create the Oracle RAC container using the image. For the details of environment variables, please refer to section 6. You can use the following example to create a container:
+Now create the Oracle RAC container using the image. For the details of environment variables, refer to section 6. You can use the following example to create a container:
 
 ```
 # docker create -t -i \
@@ -280,11 +280,11 @@ Now create the Oracle RAC container using the image. For the details of environm
 **Notes:**
 
 * Change environment variables such as IPs, ASM_DEVICE_LIST, PWD_FILE, and PWD_KEY based on your env. Also, change the devices based on your env.
-* You must have created the `racstorage` volume before the creation of the Oracle RAC Container. For details about the env variables, please refer the section 6.
+* You must have created the `racstorage` volume before the creation of the Oracle RAC Container. For details about the env variables, refer the section 6.
 
 ### Assign networks to Oracle RAC containers
 
-You need to assign the Docker networks created in section 1 to containers. Please execute the following commands:
+You need to assign the Docker networks created in section 1 to containers.Eexecute the following commands:
 
 ```
 # docker network disconnect bridge racnode1
@@ -293,7 +293,7 @@ You need to assign the Docker networks created in section 1 to containers. Pleas
 ```
 
 ### Start the first container
-You need to start the container. Please execute the following command:
+You need to start the container.Execute the following command:
 
 ```
 # docker start racnode1
@@ -319,11 +319,11 @@ To connect to the container execute the following command:
 # docker exec -i -t racnode1 /bin/bash
 ```
 
-If the install fails for any reason, log in to the container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
+If the install fails for any reason, log in to the container using the preceding command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
 
 ## Section 4: Adding a Oracle RAC Node using a container
 
-Before proceeding to the next step, please ensure Oracle Grid Infrastructure is running and the Oracle RAC Database is open as per instructions in section 3. Otherwise, the node addition process will fail.
+Before proceeding to the next step, ensure Oracle Grid Infrastructure is running and the Oracle RAC Database is open as per instructions in section 3. Otherwise, the node addition process will fail.
 
 ### Password management
 Specify the secret volume for resetting grid/oracle and database passwords during node creation or node addition. It can be shared volume among all the containers
@@ -356,7 +356,7 @@ sh /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_fil
 
 ### Deploying with Block Devices:
 
-If you are using an NFS volume, skip to the section below "Deploying with the Oracle RAC Storage Container".
+If you are using an NFS volume, skip to the section "Deploying with the Oracle RAC Storage Container".
 
 To create additional nodes, use the following command:
 
@@ -401,7 +401,7 @@ To create additional nodes, use the following command:
   oracle/database-rac:21.3.0
 ```
 
-For details of all environment variables and parameters, please refer to section 6.
+For details of all environment variables and parameters, refer to section 6.
 
 ### Deploying Oracle RAC on Container with Oracle RAC Storage Container
 
@@ -453,7 +453,7 @@ For example:
 
 **Notes:**
 * You must have created **racstorage** volume before the creation of the Oracle RAC container.
-* You can change env variables such as IPs and ORACLE_PWD based on your env. For details about the env variables, please refer the section 6.
+* You can change env variables such as IPs and ORACLE_PWD based on your env. For details about the env variables, refer the section 6.
 
 ### Assign Network to additional Oracle RAC container
 
@@ -473,7 +473,7 @@ Start the container
 # docker start racnode2
 ```
 
-To check the DB logs, please tail the logs using the following command:
+To check the DB logs, tail the logs using the following command:
 
 ```
 # docker logs -f racnode2
@@ -495,11 +495,11 @@ To connect to the container execute the following command:
 # docker exec -i -t racnode2 /bin/bash
 ```
 
-If the node addition fails, log in to the container using the above command and review `/tmp/orod.log`. You can also review the Grid Infrastructure logs i.e. `$GRID_BASE/diag/crs` and check for failure logs. If the node creation has failed during the database creation process, then check DB logs.
+If the node addition fails, log in to the container using the preceding command and review `/tmp/orod.log`. You can also review the Grid Infrastructure logs i.e. `$GRID_BASE/diag/crs` and check for failure logs. If the node creation has failed during the database creation process, then check DB logs.
 
 ## Section 5: Connecting to Oracle RAC Database
 
-**IMPORTANT:** This section assumes that you have successfully created a Oracle RAC cluster using the steps above.
+**IMPORTANT:** This section assumes that you have successfully created a Oracle RAC cluster.
 
 If you are using connection manager and exposed port 1521 on the host, connect from an external client using the following connection string:
 
