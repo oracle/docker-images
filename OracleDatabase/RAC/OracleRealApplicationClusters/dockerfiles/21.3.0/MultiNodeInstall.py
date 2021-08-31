@@ -3,11 +3,9 @@
 
 ###########################################################################################################
 
-
-# stig.py
-#
-# Copyright (c) 1982-2021, Oracle and/or its affiliates. All rights reserved.
-#
+# LICENSE UPL 1.0
+# Copyright (c) 2019,2021, Oracle and/or its affiliates.
+# Since: January, 2019
 # NAME
 #      buildImage.py - <Build the Image>
 #

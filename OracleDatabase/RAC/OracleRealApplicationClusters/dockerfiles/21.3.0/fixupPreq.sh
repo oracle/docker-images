@@ -1,11 +1,11 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018,2021 Oracle and/or its affiliates.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
-# Description: Setup the Linux kernel parameter inside the container. Note that some parameter need to be set on Docker host.
+# Description: Setup the Linux kernel parameter inside the container. Note that some parameter need to be set on container  host.
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 

@@ -1,11 +1,10 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019,2021 Oracle and/or its affiliates.
 #
 # Since: January, 2019
-# Author: paramdeep.saini@oracle.com
-# Description: Cleanup the $ORACLE_HOME and ORACLE_BASE after Grid confguration in the image
+# Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #

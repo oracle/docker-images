@@ -1,10 +1,10 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018,2021 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 21c Release 3 Real Application Clusters
+# This is the Dockerfile for Oracle Database 21c Release 3 Real Application Clusters to build the container image
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
