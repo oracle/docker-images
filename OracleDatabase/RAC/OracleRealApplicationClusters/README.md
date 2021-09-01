@@ -636,7 +636,7 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
   
 ## Section 9 : Support
 
-Oracle RAC Database is supported for Oracle Linux 7.
+At the time of this release, Oracle RAC is supported for Oracle Linux 7. To see current Linux support certifications, see:
 
 ## Section 10 : License
 
