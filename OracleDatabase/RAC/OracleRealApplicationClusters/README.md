@@ -201,7 +201,7 @@ Now create the Oracle RAC container using the image. For the details of environm
   --volume /dev/shm \
   --tmpfs /dev/shm:rw,exec,size=4G \
   --volume /opt/containers/rac_host_file:/etc/hosts  \
-  --volume /opt/.secrets:/run/secrets \
+  --volume /opt/.secrets:/run/secrets:ro \
   --dns=172.16.1.25 \
   --dns-search=example.com \
   --device=/dev/xvde:/dev/asm_disk1  \
@@ -245,7 +245,7 @@ Now create the Oracle RAC container using the image. For the details of environm
   --volume /dev/shm \
   --tmpfs /dev/shm:rw,exec,size=4G \
   --volume /opt/containers/rac_host_file:/etc/hosts  \
-  --volume /opt/.secrets:/run/secrets \
+  --volume /opt/.secrets:/run/secrets:ro \
   --dns=172.16.1.25 \
   --dns-search=example.com \
   --privileged=false \
@@ -368,7 +368,7 @@ To create additional nodes, use the following command:
   --volume /boot:/boot:ro \
   --dns-search=example.com  \
   --volume /opt/containers/rac_host_file:/etc/hosts \
-  --volume /opt/.secrets:/run/secrets \
+  --volume /opt/.secrets:/run/secrets:ro \
   --dns=172.16.1.25 \
   --dns-search=example.com \
   --device=/dev/xvde:/dev/asm_disk1 \
@@ -419,7 +419,7 @@ For example:
   --volume /boot:/boot:ro \
   --dns-search=example.com  \
   --volume /opt/containers/rac_host_file:/etc/hosts \
-  --volume /opt/.secrets:/run/secrets \
+  --volume /opt/.secrets:/run/secrets:ro \
   --dns=172.16.1.25 \
   --dns-search=example.com \
   --privileged=false \
