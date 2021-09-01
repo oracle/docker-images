@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2021 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -61,7 +61,7 @@ export managed_host=`hostname`
 # Update Listen Address for the Managed Server
 export thehost=`hostname -I`
 echo "INFO: Updating the listen address - ${thehost} ${server_host} for server ${server}"
-cmd="${ORACLE_HOME}/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning ${SCRIPT_DIR}/updateListenAddressMS.py ${thehost} ${server} ${server_host} ${server_host} 7001 weblogic $ADMIN_PWD"
+cmd="${ORACLE_HOME}/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning ${SCRIPT_DIR}/updateListenAddressMS.py ${thehost} ${server} ${server_host} ${server_host} ${adminport} weblogic $ADMIN_PWD"
 echo ${cmd}
 ${cmd} > ${DOMAIN_HOME}/logs/${server}-mslisten-${server_host}.log 2>&1
 
@@ -98,6 +98,7 @@ if [ -f ${LOGDIR}/ms.status ]; then
   echo "INFO: Managed server has been started"
 fi
 
+CTR_DIR=/$vol_name/oracle/user_projects/container
 RUN_MBEAN="true"
 if [ "$server" = "oim_server1" ]
 then
@@ -110,12 +111,12 @@ then
   if [ "$RUN_MBEAN" = "true" ]
   then
       echo "INFO: Running SOA Mbean"
-      /u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning $SCRIPT_DIR/oim_soa_integration.py weblogic $ADMIN_PWD $MS_HOST 14000 $adminhostname $adminport > ${LOGDIR}/oimsoaintegration.log 2>&1
+      /u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning $SCRIPT_DIR/oim_soa_integration.py weblogic $ADMIN_PWD  ${MS_HOST}:14000 ${MS_HOST}:14000 ${MS_HOST}:8001 ${adminhostname}:${adminport} > ${LOGDIR}/oimsoaintegration.log 2>&1
       retval=$?
       if [ $retval -ne 0 ];
       then
           echo "ERROR: SOA OIM Integration Mbean Execution Failed. Check the logs at oimsoaintegration.log located in $DOMAIN_HOME/logs directory"
-          exit
+       #   exit
       else
           # Write the Mbean suc file...
           touch $CTR_DIR/MBEAN.suc
