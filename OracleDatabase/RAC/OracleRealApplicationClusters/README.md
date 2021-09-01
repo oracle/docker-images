@@ -10,8 +10,7 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
  * Oracle Database 21c Oracle Grid Infrastructure (21.3) for Linux x86-64
  * Oracle Database 21c (21.3) for Linux x86-64
 
-
-IMPORTANT: You can build and run Oracle RAC containers on a single host or multiple hosts. To access the Oracle RAC DB on your network either use the Docker MACVLAN driver or use Oracle Connection Manager. To Run Oracle RAC containers on Multi-Host, you must use the Docker MACVLAN driver and your network must be reachable on all the nodes for Oracle RAC containers.
+IMPORTANT: To access the Oracle RAC DB on your network either use the Docker MACVLAN driver or use Oracle Connection Manager. To Run Oracle RAC containers on Multi-Host, you must use the Docker MACVLAN driver and your network must be reachable on all the nodes for Oracle RAC containers.
 
 
 ## Using this Image
@@ -108,8 +107,6 @@ OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
 
 ### Notes
 * If the docker bridge network is not available outside your host, you can use the Oracle Connection Manager (CMAN) image to access the Oracle RAC Database from outside the host.
-* If you are planning to build and deploy Oracle RAC 18.3.0, you need to download Oracle 18.3.0 Grid Infrastructure and Oracle Database 18.3.0 Database. You also need to download Patch# p28322130_183000OCWRU_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/18.3.0 folder.
-* If you are planning to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/12.2.0.1 folder.
 * To understand the Oracle RAC on Docker setup in detail, you can refer [Best Practices for Deploying Oracle RAC on Docker](https://www.oracle.com/technetwork/database/options/clustering/rac-ondocker-bp-wp-5458685.pdf) white paper published on OTN.
 
 ## Section 2: Building Oracle RAC Database Container Images
@@ -632,11 +629,14 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
  * Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
  * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
   
+ **Notes:** 
+ * Note that the Oracle RAC on Docker Container releases are supported only for test and development environments, but not for production environments.
+ * If you are planning to build and deploy Oracle RAC 18.3.0, you need to download Oracle 18.3.0 Grid Infrastructure and Oracle Database 18.3.0 Database. You also need to download Patch# p28322130_183000OCWRU_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/18.3.0 folder.
+ * If you are planning to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/12.2.0.1 folder.
+  
 ## Section 9 : Support
 
 Oracle RAC Database is supported for Oracle Linux 7.
-
-IMPORTANT: Note that the current version of Oracle RAC on Container is only supported for test and development environments, but not for production environments.
 
 ## Section 10 : License
 
