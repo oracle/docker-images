@@ -1,20 +1,15 @@
 # Oracle RAC Database on Container
 
-Oracle Real Application Clusters (RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
+Oracle Real Application Clusters (Oracle RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
 For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
 ## How to build and run
 
-This project offers sample container files for Oracle Grid Infrastructure and Real Application Cluster Database:
- * Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
+This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters:
+ * Oracle Database 21c Oracle Grid Infrastructure (21.3) for Linux x86-64
  * Oracle Database 21c (21.3) for Linux x86-64
- * Oracle Database 19c Grid Infrastructure (19.3) for Linux x86-64
- * Oracle Database 19c (19.3) for Linux x86-64
- * Oracle Database 18c Grid Infrastructure (18.3) for Linux x86-64
- * Oracle Database 18c (18.3) for Linux x86-64
- * Oracle Database 12c Release 2 Grid Infrastructure (12.2.0.1.0) for Linux x86-64
- * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
+
 
 IMPORTANT: You can build and run Oracle RAC containers on a single host or multiple hosts. To access the Oracle RAC DB on your network either use the Docker MACVLAN driver or use Oracle Connection Manager. To Run Oracle RAC containers on Multi-Host, you must use the Docker MACVLAN driver and your network must be reachable on all the nodes for Oracle RAC containers.
 
@@ -29,9 +24,10 @@ To create an Oracle RAC environment, execute the steps in the following sections
 5.  [Connecting to the Oracle RAC database](#section-5-connecting-to-oracle-rac-database)
 6.  [Environment variables for the first node](#section-6-environment-variables-for-the-first-node)
 7.  [Environment variables for the second and subsequent nodes](#section-7-environment-variables-for-the-second-and-subsequent-nodes)
-8.  [Support](#section-8)
-9.  [License](#section-9-license)
-10. [Copyright](#section-10-copyright)
+8.  [Sample Container files for older releases](#sample-container-files-for-older-releases)
+9.  [Support](#section-9)
+10. [License](#section-10-license)
+11. [Copyright](#section-11-copyright)
 
 
 ## Section 1: Prerequisites for Oracle RAC on Containers
@@ -626,18 +622,28 @@ DB_PWD_FILE=###You need to pass the file name to set the password for DB user i.
 REMOVE_OS_PWD_FILES=###You need to set this to true to remove pwd key file and password file after resetting password.###
 ```
 
-## Section 8 : Support
+## Sample Container Files for Older Releases
+This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
+  
+ * Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
+ * Oracle Database 19c (19.3) for Linux x86-64
+ * Oracle Database 18c Oracle Grid Infrastructure (18.3) for Linux x86-64
+ * Oracle Database 18c (18.3) for Linux x86-64
+ * Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
+ * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
+  
+## Section 9 : Support
 
 Oracle RAC Database is supported for Oracle Linux 7.
 
 IMPORTANT: Note that the current version of Oracle RAC on Container is only supported for test and development environments, but not for production environments.
 
-## Section 9 : License
+## Section 10 : License
 
 To download and run Oracle Grid and Database, regardless of whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
 All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the container  images are unless otherwise noted, released under UPL 1.0 license.
 
-## Section 10 : Copyright
+## Section 11 : Copyright
 
 Copyright (c) 2014-2021 Oracle and/or its affiliates.
