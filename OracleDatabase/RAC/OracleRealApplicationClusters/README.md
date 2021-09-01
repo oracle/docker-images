@@ -23,7 +23,7 @@ IMPORTANT: You can build and run Oracle RAC containers on a single host or multi
 To create an Oracle RAC environment, execute the steps in the following sections:
 
 1.  [Prerequisites for running Oracle RAC in containers](#section-1-:-prerequisites-for-oracle-rac-on-containers)
-2.  [Building the Oracle RAC Database container Images](#building-oracle-rac-database-container-images)
+2.  [Building the Oracle RAC Database container Images](#section-2-:-building-oracle-rac-database-container-images)
 3.  [Creating the first Grid Infrastructure and Oracle RAC container](#creating-the-oracle-gi-and-rac-container)
 4.  [Adding additional node containers](#adding-a-oracle-rac-node-using-a-container)
 5.  [Connecting to the Oracle RAC database](#connecting-to-oracle-rac-database)
