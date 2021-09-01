@@ -23,15 +23,15 @@ IMPORTANT: You can build and run Oracle RAC containers on a single host or multi
 To create an Oracle RAC environment, execute the steps in the following sections:
 
 1.  [Prerequisites for running Oracle RAC in containers](#section-1-prerequisites-for-oracle-rac-on-containers)
-2.  [Building the Oracle RAC Database container Images](#section-2-:-building-oracle-rac-database-container-images)
-3.  [Creating the first Grid Infrastructure and Oracle RAC container](#creating-the-oracle-gi-and-rac-container)
-4.  [Adding additional node containers](#adding-a-oracle-rac-node-using-a-container)
-5.  [Connecting to the Oracle RAC database](#connecting-to-oracle-rac-database)
-6.  [Environment variables for the first node](#environment-variables-for-the-first-node)
-7.  [Environment variables for the second and subsequent nodes](#environment-variables-for-the-second-and-subsequent-nodes)
-8.  [Support](#support)
-9.  [License](#license)
-10. [Copyright](#copyright)
+2.  [Building the Oracle RAC Database container Images](#section-2-building-oracle-rac-database-container-images)
+3.  [Creating the first Grid Infrastructure and Oracle RAC container](#section-3-creating-the-oracle-gi-and-rac-container)
+4.  [Adding additional node containers](#section-4-adding-a-oracle-rac-node-using-a-container)
+5.  [Connecting to the Oracle RAC database](#section-5-connecting-to-oracle-rac-database)
+6.  [Environment variables for the first node](#section-6-environment-variables-for-the-first-node)
+7.  [Environment variables for the second and subsequent nodes](#section-7-environment-variables-for-the-second-and-subsequent-nodes)
+8.  [Support](#section-8-support)
+9.  [License](#section-9-license)
+10. [Copyright](#section-10-copyright)
 
 
 ## Section 1: Prerequisites for Oracle RAC on Containers
