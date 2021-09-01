@@ -29,7 +29,7 @@ To create an Oracle RAC environment, execute the steps in the following sections
 5.  [Connecting to the Oracle RAC database](#section-5-connecting-to-oracle-rac-database)
 6.  [Environment variables for the first node](#section-6-environment-variables-for-the-first-node)
 7.  [Environment variables for the second and subsequent nodes](#section-7-environment-variables-for-the-second-and-subsequent-nodes)
-8.  [Support](#section-8-support)
+8.  [Support](#section-8support)
 9.  [License](#section-9-license)
 10. [Copyright](#section-10-copyright)
 
