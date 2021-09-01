@@ -1,5 +1,0 @@
-[php]
-name=php
-stream=7.4
-profiles=common
-state=enabled

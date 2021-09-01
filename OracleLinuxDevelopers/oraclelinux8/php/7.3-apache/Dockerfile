@@ -2,9 +2,6 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 
-# Enable the right module streams for microdnf
-COPY *.module /etc/dnf/modules.d/
-
 RUN dnf -y module enable php:7.3 httpd:2.4 && \
     dnf -y install httpd httpd-filesystem httpd-tools \
                    mod_http2 mod_ssl openssl \
