@@ -69,7 +69,7 @@ COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 ##
 RUN	microdnf -y update; \
-	rm -rf /var/cache/yum; \
+	rm -rf /var/cache/dnf; \
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
 	for bin in "$JAVA_HOME/bin/"*; do \

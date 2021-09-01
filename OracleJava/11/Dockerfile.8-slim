@@ -72,7 +72,7 @@ RUN set -eux; \
 # JDK assumes freetype is available		
 		freetype fontconfig \
 	; \
-	rm -rf /var/cache/yum; \
+	rm -rf /var/cache/dnf; \
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
 	for bin in "$JAVA_HOME/bin/"*; do \

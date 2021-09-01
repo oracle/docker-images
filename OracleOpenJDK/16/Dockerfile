@@ -44,7 +44,7 @@ RUN set -eux; \
 		# JDK assumes freetype is available		
 		freetype fontconfig \
 	; \
-	rm -rf /var/cache/yum; \
+	rm -rf /var/cache/dnf; \
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
