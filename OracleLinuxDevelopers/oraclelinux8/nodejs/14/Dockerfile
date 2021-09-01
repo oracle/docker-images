@@ -5,9 +5,6 @@
 # so that any automation that relied on microdnf continues to work
 FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 
-# Enable the right module stream for microdnf
-COPY nodejs.module /etc/dnf/modules.d/nodejs.module
-
 RUN dnf -y module enable nodejs:14 && \
     dnf -y install nodejs npm && \
     rm -rf /var/cache/dnf

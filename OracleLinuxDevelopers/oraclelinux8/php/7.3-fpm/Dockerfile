@@ -5,9 +5,6 @@
 # so that any automation that relied on microdnf continues to work
 FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 
-# Enable the right module stream for microdnf
-COPY php.module /etc/dnf/modules.d/php.module
-
 RUN dnf -y module enable php:7.3 && \
     dnf -y install php-cli \
                    php-common \
