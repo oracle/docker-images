@@ -30,9 +30,7 @@ MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 RUN set -eux; \
 	yum install -y \
 		gzip \
-		tar \
-	; \
-	rm -rf /var/cache/yum
+		tar;
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -50,8 +48,7 @@ COPY $JAVA_PKG /tmp/jdk.tgz
 RUN set -eux; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
-	rm /tmp/jdk.tgz; 
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 	
 ## Get a fresh version of SLIM for the final image	
 FROM oraclelinux:7-slim
@@ -83,9 +80,6 @@ RUN set -eux; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-	java -Xshare:dump; \
-	java --version; \
-	javac --version; \
-	grep VERSION= /etc/os-release
+	java -Xshare:dump; 
 
 CMD ["jshell"]
