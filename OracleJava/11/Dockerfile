@@ -30,9 +30,7 @@ MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 RUN set -eux; \
 	yum install -y \
 		gzip \
-		tar \
-	; \
-	rm -rf /var/cache/yum
+		tar;
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -82,9 +80,6 @@ RUN set -eux; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-	java -Xshare:dump; \
-	java --version; \
-	javac --version; \
-	grep VERSION= /etc/os-release
+	java -Xshare:dump; 
 
 CMD ["jshell"]

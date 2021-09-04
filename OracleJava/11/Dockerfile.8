@@ -4,71 +4,70 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Server JRE 8
+# This is the Dockerfile for Oracle JDK 11
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) server-jre-8uXX-linux-x64.tar.gz
-#     Download from https://www.oracle.com/java/technologies/javase-server-jre8-downloads.html
+# (1) jdk-11.XX_linux-x64_bin.tar.gz
+#     Download from https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/serverjre:8 .
+#      $ docker build -t oracle/jdk:11 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:8-slim as builder
+FROM ghcr.io/oracle/oraclelinux8-compat:8-slim as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-# Since the files is compressed as tar.gz first yum install gzip and tar
 RUN set -eux; \
-	microdnf install -y \
-		gzip \
-		tar \
-	; \
-	microdnf clean all 
-	
+	dnf install -y tar;
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
+
 
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=server-jre-8u301-linux-x64.tar.gz \
-	JAVA_SHA256=fe1cbfbb4d67a3bd5a9491de3c13ab2870043bad8b5e6654b22432126231f482 \
-	JAVA_HOME=/usr/java/jdk-8
+ENV JAVA_PKG=jdk-11.0.12_linux-x64_bin.tar.gz \
+	JAVA_SHA256=d5d45826f835bd1ea069f9ff8bcd0f23c9f05c8d063b7df821960cfa765ed2cb \
+	JAVA_HOME=/usr/java/jdk-11
 
+##
 COPY $JAVA_PKG /tmp/jdk.tgz
 RUN set -eux; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; 
-
-## Get a fresh version of SLIM for the final image
-
-FROM oraclelinux:8-slim
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
+	
+## Get a fresh version of OL8 for the final image	
+FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=1.8.0_301 \
-	JAVA_HOME=/usr/java/jdk-8 
-	
-ENV	PATH $JAVA_HOME/bin:$PATH
+ENV JAVA_VERSION=11.0.12 \
+	JAVA_HOME=/usr/java/jdk-11
+
+ENV	PATH $JAVA_HOME/bin:$PATH	
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
-##
-RUN	microdnf -y update; \
+RUN set -eux; \
+	dnf -y update; \
+	dnf install -y \
+# JDK assumes freetype is available		
+		freetype fontconfig \
+	; \
 	rm -rf /var/cache/dnf; \
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
@@ -78,10 +77,6 @@ RUN	microdnf -y update; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-# the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
-# See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
-	java -Xshare:dump; \
-	java -version; \
-	javac -version; \
-	grep VERSION= /etc/os-release
-	
+	java -Xshare:dump; 
+
+CMD ["jshell"]

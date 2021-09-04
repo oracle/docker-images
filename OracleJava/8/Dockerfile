@@ -34,7 +34,6 @@ RUN set -eux; \
 		tar \
 	; \
 	rm -rf /var/cache/yum
-	
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -80,8 +79,5 @@ RUN	yum -y update; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
 # the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
-	java -Xshare:dump; \
-	java -version; \
-	javac -version; \
-	grep VERSION= /etc/os-release
+	java -Xshare:dump;
 	

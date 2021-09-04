@@ -23,20 +23,17 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:8-slim as builder
+FROM ghcr.io/oracle/oraclelinux8-compat:8-slim as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
+# Since the files are compressed as tar.gz first yum install tar.  gzip is already in ghcr.io/oracle/oraclelinux8-compat:8-slim
 RUN set -eux; \
-	microdnf install -y \
-		gzip \
-		tar \
-	; \
-	microdnf clean all
+	dnf install -y tar; 
+	
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
-
 
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
@@ -52,8 +49,8 @@ RUN set -eux; \
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 	
-## Get a fresh version of SLIM for the final image	
-FROM oraclelinux:8-slim
+## Get a fresh version of OL8 for the final image	
+FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -67,8 +64,8 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
-	microdnf -y update; \
-	microdnf install -y \
+	dnf -y update; \
+	dnf install -y \
 # JDK assumes freetype is available		
 		freetype fontconfig \
 	; \
@@ -81,9 +78,6 @@ RUN set -eux; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-	java -Xshare:dump; \
-	java --version; \
-	javac --version; \
-	grep VERSION= /etc/os-release
+	java -Xshare:dump; 
 
 CMD ["jshell"]
