@@ -1,5 +1,0 @@
-[python36]
-name=python36
-stream=3.6
-profiles=common
-state=enabled

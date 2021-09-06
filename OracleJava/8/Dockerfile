@@ -34,7 +34,6 @@ RUN set -eux; \
 		tar \
 	; \
 	rm -rf /var/cache/yum
-	
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -50,8 +49,7 @@ COPY $JAVA_PKG /tmp/jdk.tgz
 RUN set -eux; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
-	rm /tmp/jdk.tgz
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; 
 
 ## Get a fresh version of SLIM for the final image
 
@@ -70,6 +68,7 @@ COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 ##
 RUN	yum -y update; \
+	rm -rf /var/cache/yum; \
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
 	for bin in "$JAVA_HOME/bin/"*; do \
@@ -80,8 +79,5 @@ RUN	yum -y update; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
 # the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
-	java -Xshare:dump; \
-	java -version; \
-	javac -version; \
-	grep VERSION= /etc/os-release
+	java -Xshare:dump;
 	

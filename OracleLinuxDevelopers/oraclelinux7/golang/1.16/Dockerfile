@@ -3,6 +3,8 @@
 FROM oraclelinux:7-slim
 
 RUN yum -y install oracle-golang-release-el7 && \
+    yum-config-manager --disable ol7_developer_golang\* && \
+    yum-config-manager --enable ol7_developer_golang116 && \
     yum -y install golang && \
     rm -rf /var/cache/yum/*
 

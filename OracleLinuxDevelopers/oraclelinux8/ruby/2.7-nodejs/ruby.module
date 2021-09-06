@@ -1,5 +1,0 @@
-[ruby]
-name=ruby
-stream=2.7
-profiles=common
-state=enabled
