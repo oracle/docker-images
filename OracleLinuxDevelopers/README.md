@@ -4,16 +4,33 @@ These are developer-oriented images designed to be used as the base image and
 extended to include application code.
 
 Each of the language and version variants are based off either the
-`oraclelinux:7-slim` or `oraclelinux:8-slim` base images with as minimal a
+`oraclelinux:7-slim` or `oraclelinux:8` base images with as minimal a
 package set as possible. If your application requires additional modules or
 packages, they should be installed as part of your downstream `Dockerfile`.
 
-All images use the available language packages from the
-[Oracle Linux yum server](https://yum.oracle.com). There are no external
-dependencies.
+## Change to Oracle Linux 8 images
+
+Originally, the images based on Oracle Linux 8 used the `8-slim` variant which
+required the use of `microdnf` for package management. The current images are
+based on an intermediate base image that is based on `oraclelinux:8` for full
+access to `dnf` to support AppStreams and modularity, but which also has 
+`microdnf` installed and configured to ensure any existing automation continues
+to work.
+
+> **Deprecation of `microdnf`:** 
+> Existing users are strongly encouraged to switch from `microdnf` to `dnf` as
+> it we intend to remove it from the Oracle Linux Developer images when Oracle Linux 8.5 is released.
+
+## Usage of the binary images
+
+All the [published Oracle Linux Developer images](https://github.com/orgs/oracle/packages?repo_name=docker-images)
+use publicly available packages from the [Oracle Linux yum server](https://yum.oracle.com).
+No login, Oracle SSO account or permission is required to build, extend, use or distribute these images.
+
+## Oracle Database support
 
 The `-oracledb` variants include the language-specific driver for connecting to
-and Oracle Database along with the appropriate Oracle Instant Client packages.
+Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ## Oracle Linux 7 based images
 
@@ -45,16 +62,15 @@ and Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### Ruby
 
-These images all launch into `irb` unless you specify `/bin/bash` in the `docker run` command.
+To install Ruby on Rails, extend one of the images tagged `-nodejs` and add the
+following directive to your `Dockerfile`:
 
-To install Ruby on Rails use one of the images tagged `-nodejs` and run:
-
+```dockerfile
+RUN npm install -g yarn && \
+    gem install rails
 ```
-npm install -g yarn
-gem install rails
-```
 
-You should then be able to create a new rails application.
+You should then be able to create a new Ruby on Rails application.
 
 * [`oraclelinux7-ruby:2.6`](oraclelinux7/ruby/2.6/Dockerfile)
 * [`oraclelinux7-ruby:2.7`](oraclelinux7/ruby/2.7/Dockerfile)
@@ -66,7 +82,7 @@ You should then be able to create a new rails application.
 
 ### Go Toolset module
 
-* [`oraclelinux8-golang:latest`](oraclelinux8/golang/latest/Dockerfile)
+* [`oraclelinux8-golang:ol8`](oraclelinux8/golang/ol8/Dockerfile)
 
 ### Node.js module
 
@@ -86,7 +102,7 @@ You should then be able to create a new rails application.
 ### Python modules
 
 > **Note**: Each version of Python is provided as a module for Oracle
-> Linux 8 as opposed to other languages which are provided as a single module\
+> Linux 8 as opposed to other languages which are provided as a single module
 > with multiple AppStreams.
 
 * [`oraclelinux8-python:3.6`](oraclelinux8/python/3.6/Dockerfile)
@@ -96,16 +112,15 @@ You should then be able to create a new rails application.
 
 ### Ruby module
 
-These images all launch into `irb` unless you specify `/bin/bash` in the `docker run` command.
+To install Ruby on Rails, extend one of the images tagged `-nodejs` and add the
+following directive to your `Dockerfile`:
 
-To install Ruby on Rails use an image tagged `-nodejs` and run:
-
+```dockerfile
+RUN npm install -g yarn && \
+    gem install rails
 ```
-npm install -g yarn
-gem install rails
-```
 
-You should then be able to create a new rails application.
+You should then be able to create a new Ruby on Rails application.
 
 * [`oraclelinux8-ruby:2.6`](oraclelinux8/ruby/2.6/Dockerfile)
 * [`oraclelinux8-ruby:2.7`](oraclelinux8/ruby/2.7/Dockerfile)

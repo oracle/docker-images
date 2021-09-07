@@ -1,5 +1,0 @@
-[go-toolset]
-name=go-toolset
-stream=ol8
-profiles=common
-state=enabled

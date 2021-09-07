@@ -30,25 +30,25 @@ $ bash build.sh
 ```
 ### Parent image OS version
 
-The Oracle Java image for JDK 16 uses `oraclelinux:8-slim` as the parent image.
+The Oracle Java image for JDK 16 uses `ghcr.io/oracle/oraclelinux8-compat:8-slim` as the parent image.
 
 The build script `build.sh` will tag the JDK 16 image as `16` and also as `16-oraclelinux8`.
 
-JDK 11 and ServerJRE 8 use `oraclelinux:7-slim` as the default parent image but allow for optionally building on `oraclelinux:8-slim` by using `Dockerfile.8-slim` rather than `Dockerfile`.
+JDK 11 and ServerJRE 8 use `oraclelinux:7-slim` as the default parent image but allow for optionally building on `ghcr.io/oracle/oraclelinux8-compat:8-slim` by using `Dockerfile.8` rather than `Dockerfile`.
 
 e.g. to build JDK 11 with Oracle Linux 8 rather than the default Oracle Linux 7 run
 
 ```
 $ cd ../OracleJava/11
-$ docker build --file Dockerfile.8-slim --tag oracle/jdk:11-oraclelinux8 .
+$ docker build --file Dockerfile.8 --tag oracle/jdk:11-oraclelinux8 .
 ```
-On releases prior to JDK 16 `build.sh` can be used to build on Oracle Linux 7 or on Oracle Linux 8, by passing `8-slim`.
+On releases prior to JDK 16 `build.sh` can be used to build on Oracle Linux 7 or on Oracle Linux 8, by passing `8`.
 
 e.g. 
 
 ```
 $ cd ../OracleJava/11
-$ bash build.sh 8-slim
+$ bash build.sh 8
 ```
 
 ## License
