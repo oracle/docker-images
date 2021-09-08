@@ -16,14 +16,14 @@ declare -A Ports=([nginx]=443
 function service_healthy() {
     local serviceName="${1}" health healthy
     pgrep "${serviceName}" &>/dev/null || return 1
-    health="$(curl -sf "http://127.0.0.1:${Ports[$serviceName}]}/services/v2/health/check")" || return 1
-    healthy="$(echo "${health}" | jq .isHealthy)" || return 1
+    health="$(curl -sf "http://127.0.0.1:${Ports[$serviceName}]}/services/v2/config/health/check")" || return 1
+    healthy="$(echo "${health}" | jq -r .response.healthy)" || return 1
     [[ "${healthy}" == "true" ]]
 }
 
 function deployment_healthy() {
     for key in "${!Ports[@]}"; do
-        service_healthy "${key}" || break
+        service_healthy "${key}" || return 1
     done
 }
 
