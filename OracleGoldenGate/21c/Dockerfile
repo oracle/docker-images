@@ -20,7 +20,7 @@ RUN           bash -c  /tmp/install-prerequisites.sh && \
 
 COPY          nginx/            /etc/nginx/
 
-EXPOSE        443
+EXPOSE        80 443
 VOLUME      [ "${OGG_DEPLOYMENT_HOME}", "${OGG_TEMPORARY_FILES}" ]
 HEALTHCHECK   --start-period=90s --retries=1 \
         CMD [ "/usr/local/bin/healthcheck" ]
