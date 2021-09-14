@@ -85,10 +85,10 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
    container="true"
 # Use second ENV so that variable get substituted
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
      SCRIPT_DIR=$INSTALL_DIR/startup \
-     GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:$PATH  \
-     DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:$PATH \
+     GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \
+     DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
      GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
      DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
 
