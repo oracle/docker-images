@@ -141,7 +141,7 @@ if [ -z "${EXISTING_CLS_NODES}" ]; then
 	error_exit "For Node Addition, please provide the existing clustered node name."
 else
 	
-   if isStringExist ${EXISTING_CLS_NODES} ${PUBLIC_HOSTNAME}; then
+   if isStringExist "${EXISTING_CLS_NODES}" "${PUBLIC_HOSTNAME}"; then
 	  error_exit "EXISTING_CLS_NODES ${EXISTING_CLS_NODES} contains new node name ${PUBLIC_HOSTNAME}"
    fi
 
@@ -154,7 +154,7 @@ if [ -z "${EXISTING_CLS_NODE}" ]; then
 else
    print_message "Existing Node Name of the cluster is set to ${EXISTING_CLS_NODE}"
 
-if resolveip ${EXISTING_CLS_NODE}; then
+if resolveip "${EXISTING_CLS_NODE}"; then
  print_message "Existing Cluster node resolved to IP. Check passed"
 else
   error_exit "Existing Cluster node does not resolved to IP. Check Failed"
@@ -182,19 +182,19 @@ else
    print_message "RAC Node VIP hostname is set to ${VIP_HOSTNAME} "
 fi
 
-if [ -z ${SCAN_NAME} ]; then
+if [ -z "${SCAN_NAME}" ]; then
   print_message "SCAN_NAME set to the empty string"
 else
   print_message "SCAN_NAME name is ${SCAN_NAME}"
 fi
 
-if resolveip ${SCAN_NAME}; then
+if resolveip "${SCAN_NAME}"; then
  print_message "SCAN Name resolving to IP. Check Passed!"
 else
   error_exit "SCAN Name not resolving to IP. Check Failed!"
 fi
 
-if [ -z ${SCAN_IP} ]; then
+if [ -z "${SCAN_IP}" ]; then
    print_message "SCAN_IP set to the empty string"
 else
   print_message "SCAN_IP name is ${SCAN_IP}"
@@ -219,13 +219,13 @@ else
 fi
 
 
-if [ -z ${CMAN_HOSTNAME} ]; then
+if [ -z "${CMAN_HOSTNAME}" ]; then
   print_message  "CMAN_NAME set to the empty string"
 else
   print_message "CMAN_HOSTNAME name is ${CMAN_HOSTNAME}"
 fi
 
-if [ -z ${CMAN_IP} ]; then
+if [ -z "${CMAN_IP}" ]; then
    print_message "CMAN_IP set to the empty string"
 else
   print_message "CMAN_IP name is ${CMAN_IP}"
@@ -266,8 +266,8 @@ else
 error_exit "Error occurred during Grid password file generation"
 fi
 
-read GRID_PASSWORD < /tmp/${GRID_PWD_FILE}
-rm -f /tmp/${GRID_PWD_FILE}
+read GRID_PASSWORD < /tmp/"${GRID_PWD_FILE}"
+rm -f /tmp/"${GRID_PWD_FILE}"
 else
   GRID_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for Grid user"
@@ -284,16 +284,16 @@ else
 error_exit "Error occurred during Oracle  password file generation"
 fi
 
-read ORACLE_PASSWORD < /tmp/${ORACLE_PWD_FILE}
-rm -f /tmp/${GRID_PWD_FILE}
+read ORACLE_PASSWORD < /tmp/"${ORACLE_PWD_FILE}"
+rm -f /tmp/"${GRID_PWD_FILE}"
 else
   ORACLE_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for  Oracle user"
 fi
 
 if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
-rm -f  ${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}
-rm -f ${SECRET_VOLUME}/${PWD_KEY}
+rm -f  "${SECRET_VOLUME}"/"${COMMON_OS_PWD_FILE}"
+rm -f "${SECRET_VOLUME}"/"${PWD_KEY}"
 fi
 
 }
@@ -306,15 +306,15 @@ check_rspfile_env_vars ()
 if [ -z "${GRID_RESPONSE_FILE}" ];then
 print_message "GRID_RESPONSE_FILE env variable set to empty. $progname will use standard cluster responsefile"
 else
-if [ -f $COMMON_SCRIPTS/$GRID_RESPONSE_FILE ];then
-cp $COMMON_SCRIPTS/$GRID_RESPONSE_FILE $logdir/$GRID_RESPONSE_FILE
+if [ -f "$COMMON_SCRIPTS"/"$GRID_RESPONSE_FILE" ];then
+cp "$COMMON_SCRIPTS"/"$GRID_RESPONSE_FILE" "$logdir"/"$GRID_RESPONSE_FILE"
 else
 error_exit "$COMMON_SCRIPTS/$GRID_RESPONSE_FILE does not exist"
 fi
 fi
 
 if [ -z "${SCRIPT_ROOT}" ]; then
-SCRIPT_ROOT=$COMMON_SCRIPTS
+SCRIPT_ROOT="$COMMON_SCRIPTS"
 print_message "Location for User script SCRIPT_ROOT set to $COMMON_SCRIPTS"
 else
 print_message "Location for User script SCRIPT_ROOT set to $SCRIPT_ROOT"
@@ -357,14 +357,14 @@ local password
 local ssh_pid
 local stat
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CRS_NODES=$PUBLIC_HOSTNAME
 fi
 
 
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$CRS_NODES"
-CLUSTER_NODES=$(echo $EXISTING_CLS_NODES | tr ',' ' ')
+CLUSTER_NODES=$(echo "$EXISTING_CLS_NODES" | tr ',' ' ')
 
 print_message "Cluster Nodes are $CLUSTER_NODES"
 print_message "Running SSH setup for $GRID_USER user between nodes ${CLUSTER_NODES}"
@@ -393,14 +393,13 @@ fi
 checkSSH ()
 {
 
-local password
 local ssh_pid
 local stat
 local status
 
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$PUBLIC_HOSTNAME"
-CLUSTER_NODES=$(echo $EXISTING_CLS_NODES | tr ',' ' ')
+CLUSTER_NODES=$(echo "$EXISTING_CLS_NODES" | tr ',' ' ')
 
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
 echo $cmd
@@ -446,7 +445,7 @@ done
 ######################Add Node Functions ####################################
 runorainstroot()
 {
-$INVENTORY/orainstRoot.sh
+"$INVENTORY"/orainstRoot.sh
 }
 
 runrootsh ()
@@ -455,7 +454,7 @@ runrootsh ()
 local ORACLE_HOME=$1
 local USER=$2
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -471,36 +470,36 @@ done
 
 generate_response_file ()
 {
-cp $SCRIPT_DIR/$ADDNODE_RSP $logdir/$ADDNODE_RSP
-chmod 666 $logdir/$ADDNODE_RSP
+cp "$SCRIPT_DIR"/"$ADDNODE_RSP" "$logdir"/"$ADDNODE_RSP"
+chmod 666 "$logdir"/"$ADDNODE_RSP"
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 
-if [ -z ${CRS_CONFIG_NODES} ]; then
+if [ -z "${CRS_CONFIG_NODES}" ]; then
    CRS_CONFIG_NODES="$PUBLIC_HOSTNAME:$VIP_HOSTNAME:HUB"
    print_message "Clustered Nodes are set to $CRS_CONFIG_NODES"
 fi
 
-sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $logdir/$ADDNODE_RSP
-sed -i -r "s|###PUBLIC_HOSTNAME###|$PUBLIC_HOSTNAME|g"  $logdir/$ADDNODE_RSP
-sed -i -r "s|###HOSTNAME_VIP###|$VIP_HOSTNAME|g"  $logdir/$ADDNODE_RSP
-sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###OSDBA###|$OSDBA|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###OSOPER###|$OSOPER|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###OSASM###|$OSASM|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###INVENTORY###|$INVENTORY|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -r "s|###PUBLIC_HOSTNAME###|$PUBLIC_HOSTNAME|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -r "s|###HOSTNAME_VIP###|$VIP_HOSTNAME|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###OSDBA###|$OSDBA|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###OSOPER###|$OSOPER|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###OSASM###|$OSASM|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g"  "$logdir"/"$ADDNODE_RSP"
 else
 print_message "Copying $COMMON_SCRIPTS/$GRID_RESPONSE_FILE $logdir/$ADDNODE_RSP"
-cp $COMMON_SCRIPTS/$GRID_RESPONSE_FILE $logdir/$ADDNODE_RSP
-chmod 666 $logdir/$ADDNODE_RSP
+cp "$COMMON_SCRIPTS"/"$GRID_RESPONSE_FILE" "$logdir"/"$ADDNODE_RSP"
+chmod 666 "$logdir"/"$ADDNODE_RSP"
 fi
 
 }
@@ -512,7 +511,6 @@ local cmd;
 local stat;
 local node=$EXISTING_CLS_NODE
 local oracle_home=$GRID_HOME
-local ORACLE_HOME=$GRID_HOME
 
 print_message "Checking Cluster"
 
@@ -715,7 +713,7 @@ error_exit "EVMD Check failed"
 fi
 
 print_message "Removing $logdir/cluvfy_check.txt as cluster check has passed"
-rm -f $logdir/cluvfy_check.txt
+rm -f "$logdir"/cluvfy_check.txt
 
 }
 
@@ -742,7 +740,7 @@ local vip_hostname=$VIP_HOSTNAME
 local cmd
 local stat
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -750,7 +748,7 @@ fi
 
 if [ -f "$logdir/cluvfy_check.txt" ]; then
 print_message "Moving any exisiting cluvfy $logdir/cluvfy_check.txt to $logdir/cluvfy_check_$TIMESTAMP.txt"
-mv $logdir/cluvfy_check.txt $logdir/cluvfy_check."$(date +%Y%m%d-%H%M%S)".txt
+mv "$logdir"/cluvfy_check.txt "$logdir"/cluvfy_check."$(date +%Y%m%d-%H%M%S)".txt
 fi
 
 #cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $hostname -vip $vip_hostname\" | tee -a $logdir/cluvfy_check.txt"'
@@ -764,14 +762,14 @@ eval $cmd
 done
 
 print_message "Checking $logdir/cluvfy_check.txt if there is any failed check."
-FAILED_CMDS=$(sed -n -f - $logdir/cluvfy_check.txt << EOF
+FAILED_CMDS=$(sed -n -f - "$logdir"/cluvfy_check.txt << EOF
  /.*FAILED.*/ {
 p
 }
 EOF
 )
 
-cat $logdir/cluvfy_check.txt > $STD_OUT_FILE
+cat "$logdir"/cluvfy_check.txt > $STD_OUT_FILE
 
 if [[ ${IGNORE_CVU_CHECKS} == 'true' ]]; then
 print_message "CVU Checks are ignored as IGNORE_CVU_CHECKS set to true. It is recommended to set IGNORE_CVU_CHECKS to false and meet all the cvu checks requirement. RAC installation might fail, if there are failed cvu checks."
@@ -814,7 +812,7 @@ addDBNode ()
 {
 local node=$EXISTING_CLS_NODE
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
    new_node_hostname=$PUBLIC_HOSTNAME
 else
    new_node_hostname=$CRS_NODES
@@ -841,10 +839,10 @@ local node=$EXISTING_CLS_NODE
 local stat=3
 local cmd
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
-  CLUSTER_NODES=$( echo $CRS_NODES | tr ',' ' ' )
+  CLUSTER_NODES=$( echo "$CRS_NODES" | tr ',' ' ' )
 fi
 
 if [ -z "${ORACLE_SID}" ];then
@@ -894,7 +892,7 @@ setremotelistener ()
 local status
 local cmd
 
-if resolveip $CMAN_HOSTNAME; then
+if resolveip "$CMAN_HOSTNAME"; then
 print_message "Executing script to set the remote listener"
 su - $DB_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
 fi
@@ -914,11 +912,11 @@ fi
 all_check
 print_message "Setting random password for root/$GRID_USER/$DB_USER user"
 print_message "Setting random password for $GRID_USER user"
-setpasswd $GRID_USER  $GRID_PASSWORD
+setpasswd "$GRID_USER"  "$GRID_PASSWORD"
 print_message "Setting random password for $DB_USER user"
-setpasswd $DB_USER $ORACLE_PASSWORD
+setpasswd "$DB_USER" "$ORACLE_PASSWORD"
 print_message "Setting random password for root user"
-setpasswd root $PASSWORD
+setpasswd root "$PASSWORD"
 
 ####  Setting up SSH #######
 setupSSH
@@ -947,7 +945,7 @@ if [ "${RUN_DBCA}" == 'true' ]; then
 print_message  "Performing DB Node addition"
 addDBNode
 print_message "Running root.sh"
-runrootsh $DB_HOME $DB_USER
+runrootsh "$DB_HOME" "$DB_USER"
 print_message "Adding DB Instance"
 addDBInst 
 print_message "Checking DB status"

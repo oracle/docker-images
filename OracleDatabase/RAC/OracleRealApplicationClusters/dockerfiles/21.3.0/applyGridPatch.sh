@@ -13,7 +13,7 @@
 PATCH=$1
 
 # Check whether edition has been passed on
-if [ "PATCH" == "" ]; then
+if [ "$PATCH" == "" ]; then
    echo "ERROR: No Patch  has been passed on!"
    echo "Please specify the correct PATCH!"
    exit 1;
@@ -33,12 +33,11 @@ if [ "$GRID_HOME" == "" ]; then
    exit 1;
 fi;
 
-temp_var1=`hostname`
 # Install Oracle binaries
 
-unzip -q $INSTALL_SCRIPTS/$PATCH -d $GRID_USER_HOME  && \
-rm -f $INSTALL_SCRIPTS/$GRID_PATCH && \
-cd $GRID_USER_HOME/$PATCH_NUMBER/$PATCH_NUMBER && \
-$GRID_HOME/OPatch/opatch napply -silent -local -oh $GRID_HOME -id $PATCH_NUMBER && \
-cd $GRID_USER_HOME && \
-rm -rf $GRID_USER_HOME/$PATCH_NUMBER
+unzip -q "$INSTALL_SCRIPTS"/"$PATCH" -d "$GRID_USER_HOME"  && \
+rm -f "$INSTALL_SCRIPTS"/"$GRID_PATCH" && \
+cd "$GRID_USER_HOME"/"$PATCH_NUMBER"/"$PATCH_NUMBER" && \
+"$GRID_HOME"/OPatch/opatch napply -silent -local -oh "$GRID_HOME" -id "$PATCH_NUMBER" && \
+cd "$GRID_USER_HOME" && \
+rm -rf "$GRID_USER_HOME"/"$PATCH_NUMBER"
