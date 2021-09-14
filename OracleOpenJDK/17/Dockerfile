@@ -25,9 +25,7 @@ FROM oraclelinux:8
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-
-ENV JAVA_PKG=https://download.java.net/java/GA/jdk17/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-17_linux-x64_bin.tar.gz \
-	JAVA_SHA256=6c714ded7d881ca54970ec949e283f43d673a142fda1de79b646ddd619da9c0c \
+ENV JAVA_PKG=https://download.java.net/java/GA/jdk17/0d483333a00540d886896bac774ff48b/35/GPL/openjdk-17_linux-x64_bin.tar.gz \
 	JAVA_HOME=/usr/java/jdk-17 \
 	LANG=en_US.UTF-8
 
@@ -46,6 +44,7 @@ RUN set -eux; \
 		freetype fontconfig \
 	; \
 	rm -rf /var/cache/dnf; \
+	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
