@@ -9,37 +9,38 @@
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) openjdk-16.xx_linux-x64_bin.tar.gz
+# (1) openjdk-17.xx_linux-x64_bin.tar.gz
 #     Downloaded from https://jdk.java.net/16/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/openjdk:16 .
+#      $ docker build -t oracle/openjdk:17 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
 
-FROM oraclelinux:8-slim
+FROM oraclelinux:8
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 
-
-ENV JAVA_PKG=https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-16.0.2_linux-x64_bin.tar.gz \
+ENV JAVA_PKG=https://download.java.net/java/GA/jdk17/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-17_linux-x64_bin.tar.gz \
 	JAVA_SHA256=6c714ded7d881ca54970ec949e283f43d673a142fda1de79b646ddd619da9c0c \
-	JAVA_VERSION=16.0.2 \
-	JAVA_HOME=/usr/java/jdk-16 \
+	JAVA_HOME=/usr/java/jdk-17 \
 	LANG=en_US.UTF-8
 
+# If you need the Java Version you can read it from the release file with 
+#JAVA_VERSION=$(sed -n '/^JAVA_VERSION="/{s///;s/"//;p;}' "$JAVA_HOME"/release);
+	
 ENV	PATH $JAVA_HOME/bin:$PATH
 	
-# Since the files is compressed as tar.gz first yum install gzip and tar
+
+# Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
 RUN set -eux; \
-	microdnf -y update; \
-	microdnf install -y \
-		gzip \
+	dnf -y update; \
+	dnf install -y \
 		tar \
 		# JDK assumes freetype is available		
 		freetype fontconfig \
@@ -57,12 +58,7 @@ RUN ln -sfT "$JAVA_HOME" /usr/java/default; \
 		base="$(basename "$bin")"; \
 		[ ! -e "/usr/bin/$base" ]; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done; \
-# -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-	java -Xshare:dump; \
-	java --version; \
-	javac --version; \
-	grep VERSION= /etc/os-release
+	done; 
 
 CMD ["jshell"]
 

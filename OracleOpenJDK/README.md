@@ -5,10 +5,10 @@ This repository contains sample container configurations to facilitate installat
 ## Building the Oracle Java OpenJDK base image
 Navigate to the folder containing the Dockerfile and run `docker build`, tagging the image with the version number:
 
-e.g. for OpenJDK 16 run
+e.g. for OpenJDK 17 run
 ```
-$ cd ../OracleOpenJDK/16
-$ docker build -t oracle/openjdk:16 .
+$ cd ../OracleOpenJDK/17
+$ docker build -t oracle/openjdk:17 .
 ```
 
 This command is already scripted in build.sh so you can alternatively run:
@@ -18,7 +18,7 @@ $ bash build.sh
 
 ### Parent image OS version
 
-The Oracle Java images for OpenJDK 16 uses `oraclelinux:8-slim` as the default parent image.
+The Oracle Java images for OpenJDK 17 uses `oraclelinux:8` as the default parent image.
 
 
 ## License

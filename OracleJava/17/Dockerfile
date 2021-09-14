@@ -4,33 +4,30 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 16
+# This is the Dockerfile for Oracle JDK 17
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-#
-# (1) jdk-16.XX_linux-x64_bin.tar.gz
-#     Download from https://www.oracle.com/java/technologies/javase-jdk16-downloads.html
+# This dockerfile will download a copy of JDK 17 from 
+#   https://download.oracle.com/java/17/jdk-linux-x64_bin.tar.gz
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/jdk:16 .
+#      $ docker build -t oracle/jdk:17 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM ghcr.io/oracle/oraclelinux8-compat:8-slim as builder
+FROM oraclelinux:8 as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-# Since the files are compressed as tar.gz first yum install tar.  gzip is already in ghcr.io/oracle/oraclelinux8-compat:8-slim
+# Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
 RUN set -eux; \
 	dnf install -y tar; 
-	
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -38,35 +35,36 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-16.0.2_linux-x64_bin.tar.gz \
-	JAVA_SHA256=630e3e56c58f45db3788343ce842756d5a5a401a63884242cc6a141071285a62 \
-	JAVA_HOME=/usr/java/jdk-16
+ENV JAVA_PKG=https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz \
+	JAVA_HOME=/usr/java/jdk-17
 
 ##
-COPY $JAVA_PKG /tmp/jdk.tgz
 RUN set -eux; \
-	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
+	JAVA_SHA256=$(curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz.sha256) ; \ 
+	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
+	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c; \
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 	
 ## Get a fresh version of OL8 for the final image	
-FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
+FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
-
-ENV JAVA_VERSION=16.0.2 \
-	JAVA_HOME=/usr/java/jdk-16
-
+ENV	JAVA_HOME=/usr/java/jdk-17
 ENV	PATH $JAVA_HOME/bin:$PATH	
+
+# If you need the Java Version you can read it from the release file with 
+# JAVA_VERSION=$(sed -n '/^JAVA_VERSION="/{s///;s/"//;p;}' "$JAVA_HOME"/release);
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
+# Ensure we get the latest OL 8 updates available at build time
 	dnf -y update; \
+# JDK assumes freetype is available	
 	dnf install -y \
-# JDK assumes freetype is available		
 		freetype fontconfig \
 	; \
 	rm -rf /var/cache/dnf; \
@@ -76,8 +74,6 @@ RUN set -eux; \
 		base="$(basename "$bin")"; \
 		[ ! -e "/usr/bin/$base" ]; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done; \
-# -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-	java -Xshare:dump; 
-
+	done;
+	
 CMD ["jshell"]
