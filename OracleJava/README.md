@@ -53,8 +53,8 @@ $ bash build.sh 8
 ```
 Build scripts `build.sh`will tag the images with the JDK version e.g., '17' and as the version and the operating system version e.g., '17-oraclelinux8'.
 
-## License
-JDK 17 is downloaded, as part of the build process, from [Oracle Website](https://www.oracle.com/javadownload) under the [Java SE Free Use License](https://java.com/freeuselicense).
+## Licenses
+JDK 17 is downloaded, as part of the build process, from [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
 
 For building JDK 11 and Server JRE 8 you must first download the corresponding Java Runtime from the [Oracle Website](https://www.oracle.com/javadownload) and accept the license indicated on that page.
 

@@ -40,7 +40,7 @@ ENV JAVA_PKG=https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar
 
 ##
 RUN set -eux; \
-	JAVA_SHA256=$(curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz.sha256) ; \ 
+	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c; \
 	mkdir -p "$JAVA_HOME"; \
