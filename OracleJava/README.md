@@ -9,7 +9,7 @@ For JDK 17 the required JDK binaries will be downloaded from [Oracle](https://ww
 
 For JDK 11 and SererJRE8 you must download the linux x-64 compressed archive (tar.gz) of the [JDK or Server JRE](https://www.oracle.com/javadownload) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
 
-e.g. for JDK 11 download jdk-11[X]_linux-x64_bin.tar.gz into OracleJava/16, 
+e.g. for JDK 11 download jdk-11[X]_linux-x64_bin.tar.gz into OracleJava/11, 
 for ServerJRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
 
 To build the container image run `docker build`. Tag it with the correct version number.
