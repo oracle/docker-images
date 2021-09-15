@@ -19,7 +19,7 @@ The containers will be connected using a Docker User Defined network.
 More information on Docker and its installation in Oracle Linux can be found here: [Oracle Container Runtime for Docker User Guide](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/)
 
 # 2. Hardware and Software Requirements
-Oracle WebCenter Portal has been tested and is known to run on the following hardware and software:
+Oracle WebCenter Content has been tested and is known to run on the following hardware and software:
 
 ## 2.1. Hardware Requirements
 
@@ -283,7 +283,7 @@ Note:
       1. If Managed Servers need to be accessed through host ports different from container ports, then intended host port values needs to be supplied as part of -p option of the `docker run` command mentoned above (for ex. -p 16201:16200 and -p 16251:16250). The same port value needs to be updated in the `webcenter.env.list` as `UCM_HOST_PORT` and `IBR_HOST_PORT`. If managed servers are going to be accessed via same host port number as the container port, then `UCM_PORT` and `UCM_HOST_PORT` values (and `IBR_PORT` and `IBR_HOST_PORT`) should be same in the `webcenter.env.list`.  
       2. Intradoc ports are for internal server communications and not meant for browser access. While, intradoc ports on container are configurable (like other parametres like admin credentials, admin port, domain-name, manged server container ports) through `webcenter.env.list`, publishing these to different host ports is not supported. This essentially means one can provide `-p 7777:7777` instead of `-p 4444:4444`, but `-p 6666:7777` is not supported.
       3. Using `docker run` command with options `-i` and `-t` makes the container run in the foreground and any changes to the shell or terminal impacts the container. If required, one can use a terminal-multiplexer (like tmux or screen) to be able to place the shell instance in the background. Please be extremely careful - closing the terminal used to start the Managed Server container as mentioned in sec A and C, will lead to stopping the container.
-      4. Start only those containers that you would like to use. There are 4 possible containers : WCContent, WebCenter Imaging, WebCenter Capture and WebCenter ADFUI.
+      4. Start only those containers that you would like to use. There are 4 possible containers : WebCenter Content, WebCenter Imaging, WebCenter Capture and WebCenter ADFUI.
       5. If using WebCenter Imaging (IPM), then "localhost" cannot be used to connect to WebCenter Content Server. Use the machine name or the IP address while creating the connection to WebCenter Content Server.
 
 #### B. Stopping Container
