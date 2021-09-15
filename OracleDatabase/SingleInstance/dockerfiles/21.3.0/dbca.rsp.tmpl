@@ -72,16 +72,6 @@ numberOfPDBs=1
 pdbName=###ORACLE_PDB###
 
 #-----------------------------------------------------------------------------
-# Name          : pdbAdminPassword
-# Datatype      : String
-# Description   : PDB Administrator user password
-# Valid values  : Check Oracle12c Administrator's Guide
-# Default value : None
-# Mandatory     : No
-#-----------------------------------------------------------------------------
-pdbAdminPassword=###ORACLE_PWD###
-
-#-----------------------------------------------------------------------------
 # Name          : templateName
 # Datatype      : String
 # Description   : Name of the template
@@ -90,26 +80,6 @@ pdbAdminPassword=###ORACLE_PWD###
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
 templateName=General_Purpose.dbc
-
-#-----------------------------------------------------------------------------
-# Name          : sysPassword
-# Datatype      : String
-# Description   : Password for SYS user
-# Valid values  : Check Oracle12c Administrator's Guide
-# Default value : None
-# Mandatory     : Yes
-#-----------------------------------------------------------------------------
-sysPassword=###ORACLE_PWD###
-
-#-----------------------------------------------------------------------------
-# Name          : systemPassword
-# Datatype      : String
-# Description   : Password for SYSTEM user
-# Valid values  : Check Oracle12c Administrator's Guide
-# Default value : None
-# Mandatory     : Yes
-#-----------------------------------------------------------------------------
-systemPassword=###ORACLE_PWD###
 
 #-----------------------------------------------------------------------------
 # Name          : emConfiguration
@@ -131,17 +101,6 @@ emConfiguration=DBEXPRESS
 #                 or auto generates a free port between 5500 and 5599
 #-----------------------------------------------------------------------------
 emExpressPort=5500
-
-#-----------------------------------------------------------------------------
-# Name          : dbsnmpPassword
-# Datatype      : String
-# Description   : Password for DBSNMP user
-# Valid values  : Check Oracle12c Administrator's Guide
-# Default value : None
-# Mandatory     : Yes, if emConfiguration is specified or
-#                 the value of runCVUChecks is TRUE
-#-----------------------------------------------------------------------------
-dbsnmpPassword=###ORACLE_PWD###
 
 #-----------------------------------------------------------------------------
 # Name          : characterSet
