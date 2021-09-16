@@ -88,10 +88,10 @@ for node in "${cluster_nodes[@]}"
 do
 if [ ! -f "$GRID_HOME"/bin/olsnodes ]; then
 print_message "Resetting password for ${user} on the ${node}"
-cmd='su - $user -c "echo $password | sudo passwd $user  --stdin"'
+cmd='su - ${user} -c "sudo /usr/sbin/chpasswd <<<\"$user:$password\""'
 else
 print_message "Resetting password for ${user} on all the ${node}"
-cmd='su - $user -c "ssh ${node} \"echo $password | sudo passwd $user  --stdin\""'
+cmd='su - ${user} -c "ssh ${node} sudo /usr/sbin/chpasswd <<<\"$user:$password\""'
 fi
 
 eval $cmd
