@@ -88,8 +88,10 @@ else
     chmod 400 $ORACLE_BASE/dbca.rsp
     export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
   else
-    # Use DBCA auto password generation for generating a random strong password for admin accounts
-    export DBCA_CRED_OPTIONS="-autoGeneratePasswords"
+    # If ORACLE_PWD is not provided, use DBCA auto password generation for generating a random, strong password
+    if [[ -z "${ORACLE_PWD}" ]]; then
+      export DBCA_CRED_OPTIONS="-autoGeneratePasswords"
+    fi
   fi
 
 fi
@@ -144,6 +146,12 @@ chmod 400 $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
+if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]] || [[ -z "$ORACLE_PWD" ]]; then
+   # Deleting password options from dbca response file as wallet will be used for credentials or ORACLE_PWD is not provided (i.e. password auto-generation intended)
+   sed -i -e "/###ORACLE_PWD###/d" $ORACLE_BASE/dbca.rsp
+else
+   sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
+fi
 
 # If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user
 if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
