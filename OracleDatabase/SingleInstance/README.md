@@ -138,14 +138,13 @@ In case these parameters are passed to the `docker run` command while reusing ex
 
 #### Changing the admin accounts passwords
 
-On the first startup of the container a random password will be generated for the database if not provided. You can find this password in the output line:
-
-    ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN:
+On the first startup of the container, a random password will be generated for the database if not provided. The user has to mandatorily change the password after the database is created and the corresponding container is healthy.
 
 The password for those accounts can be changed via the `docker exec` command. **Note**, the container has to be running:
 
     docker exec <container name> ./setPassword.sh <your password>
 
+This new password will be used afterwards.
 #### Enabling archive log mode while creating the database
 
 Archive mode can be enabled during the first time when database is created by setting ENABLE_ARCHIVELOG to `true` and passing it to `docker run` command. Archive logs are stored at the directory location: `/opt/oracle/oradata/$ORACLE_SID/archive_logs` inside the container.

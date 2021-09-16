@@ -77,11 +77,18 @@ if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
   export DBCA_CRED_OPTIONS="-useWalletForDBCredentials true  -dbCredentialsWalletLocation ${WALLET_DIR}"
 else
   if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
+    # Validation: Checking if ORACLE_PWD is provided or not
+    if [[ -z "$ORACLE_PWD" ]]; then
+      echo "ERROR: Please provide sys password of the primary database as ORACLE_PWD env variable. Exiting..."
+      exit 1
+    fi
+
     # Creating temporary response file containing sysPassword for clone/standby cases
     echo "sysPassword=${ORACLE_PWD}" > $ORACLE_BASE/dbca.rsp
     chmod 400 $ORACLE_BASE/dbca.rsp
     export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
   else
+    # Use DBCA auto password generation for generating a random strong password for admin accounts
     export DBCA_CRED_OPTIONS="-autoGeneratePasswords"
   fi
 

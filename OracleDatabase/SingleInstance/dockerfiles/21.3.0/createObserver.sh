@@ -32,6 +32,7 @@ fi
 mkdir -p ${DG_OBSERVER_DIR}
 
 # Starting observer in background
-nohup dgmgrl -echo sys/${ORACLE_PWD}@${PRIMARY_DB_CONN_STR} "START OBSERVER ${DG_OBSERVER_NAME} FILE IS ${DG_OBSERVER_DIR}/fsfo.dat LOGFILE IS ${DG_OBSERVER_DIR}/observer.log" > ${DG_OBSERVER_DIR}/nohup.out &
+nohup echo "${ORACLE_PWD}" | dgmgrl -echo sys@${PRIMARY_DB_CONN_STR} "START OBSERVER ${DG_OBSERVER_NAME} FILE IS ${DG_OBSERVER_DIR}/fsfo.dat LOGFILE IS ${DG_OBSERVER_DIR}/observer.log" > ${DG_OBSERVER_DIR}/nohup.out &
 # Sleep for dgmgrl to start observer in background otherwise container will exit
 sleep 4
+
