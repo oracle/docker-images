@@ -314,8 +314,8 @@ else
 error_exit "Error occurred during Grid password file generation"
 fi
 
-read GRID_PASSWORD < /tmp/${GRID_PWD_FILE}
-rm -f /tmp/${GRID_PWD_FILE}
+read GRID_PASSWORD < /tmp/"${GRID_PWD_FILE}"
+rm -f /tmp/"${GRID_PWD_FILE}"
 else
   GRID_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for Grid user"
@@ -333,8 +333,8 @@ else
 error_exit "Error occurred during Oracle  password file generation"
 fi
 
-read ORACLE_PASSWORD < /tmp/${ORACLE_PWD_FILE}
-rm -f /tmp/${GRID_PWD_FILE}
+read ORACLE_PASSWORD < /tmp/"${ORACLE_PWD_FILE}"
+rm -f /tmp/"${GRID_PWD_FILE}"
 else
   ORACLE_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for  Oracle user"
@@ -351,8 +351,8 @@ else
 error_exit "Error occurred during common database password file generation"
 fi
 
-read ORACLE_PWD < /tmp/${DB_PWD_FILE}
-rm -f /tmp/${DB_PWD_FILE}
+read ORACLE_PWD < /tmp/"${DB_PWD_FILE}"
+rm -f /tmp/"${DB_PWD_FILE}"
 else
    ORACLE_PWD="${PASSWORD}"
   print_message "Common OS Password string is set for Oracle Database"
@@ -519,10 +519,10 @@ fi
 setupSSH()
 {
 local CLUSTER_NODES
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
-  CLUSTER_NODES=$( echo $CRS_NODES | tr ',' ' ' ) 
+  CLUSTER_NODES=$( echo "$CRS_NODES" | tr ',' ' ' ) 
 fi
 
 print_message "SSh will be setup among $CLUSTER_NODES nodes"
@@ -545,14 +545,14 @@ local stat
 local status
 local CLUSTER_NODES
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
-  CLUSTER_NODES=$( echo $CRS_NODES | tr ',' ' ' )
+  CLUSTER_NODES=$( echo "$CRS_NODES" | tr ',' ' ' )
 fi
 
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
-echo $cmd
+echo "$cmd"
 
 for node in ${CLUSTER_NODES}
 do
@@ -572,7 +572,7 @@ done
 
 status="NA"
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
- echo $cmd
+ echo "$cmd"
 for node in ${CLUSTER_NODES}
 do
 
@@ -621,8 +621,8 @@ if [ $arr_device -ne 0 ]; then
   #      ((size+=$(blockdev --getsize64 $device)))
   #      print_message "Disks size (bytes) : $size"
         print_message "Changing Disk permission and ownership"
-        chown $GRID_USER:asmadmin $device
-        chmod 660 $device
+        chown $GRID_USER:asmadmin "$device"
+        chmod 660 "$device"
         count=$[$count+1]
        done
 fi
@@ -632,10 +632,10 @@ else
 error_exit "ASM_DEVICE_LIST is set to empty canot proceed"
 fi
 
-temp_str=$(echo -n $ASM_DISKGROUP_FG_DISKS | head -c -1)
+temp_str=$(echo -n "$ASM_DISKGROUP_FG_DISKS" | head -c -1)
 export ASM_DISKGROUP_FG_DISKS=$temp_str
 print_message "ASM Device list will be with failure groups $ASM_DISKGROUP_FG_DISKS"
-temp_str=$(echo -n $ASM_DISKGROUP_DISKS | head -c -1)
+temp_str=$(echo -n "$ASM_DISKGROUP_DISKS" | head -c -1)
 export ASM_DISKGROUP_DISKS=$temp_str
 print_message "ASM Device list will be groups $ASM_DISKGROUP_DISKS"
 else
@@ -674,8 +674,8 @@ if [ $arr_device -ne 0 ]; then
  #       ((size+=$(blockdev --getsize64 $device)))
  #       print_message "Disks size (bytes) : $size"
         print_message "Changing Disk permission and ownership"
-        chown $GRID_USER:asmadmin $device
-        chmod 660 $device
+        chown $GRID_USER:asmadmin "$device"
+        chmod 660 "$device"
         count=$[$count+1]
        done
 fi
@@ -685,10 +685,10 @@ else
 error_exit "GIMR_DEVICE_LIST is set to empty cannot proceed"
 fi
 
-temp_str=$(echo -n $GIMR_DISKGROUP_FG_DISKS | head -c -1)
+temp_str=$(echo -n "$GIMR_DISKGROUP_FG_DISKS" | head -c -1)
 export GIMR_DISKGROUP_FG_DISKS=$temp_str
 print_message "GIMR Device list will be with failure groups $GIMR_DISKGROUP_FG_DISKS"
-temp_str=$(echo -n $GIMR_DISKGROUP_DISKS | head -c -1)
+temp_str=$(echo -n "$GIMR_DISKGROUP_DISKS" | head -c -1)
 export GIMR_DISKGROUP_DISKS=$temp_str
 print_message "GIMR Device list will be set to  $GIMR_DISKGROUP_DISKS"
 else
@@ -708,7 +708,7 @@ setDevicePermissions ()
 local cmd
 local state=3
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -787,28 +787,28 @@ if [ -z "${GRID_RESPONSE_FILE}" ]; then
 ####### Building Public IP Details ###########
 ETH_CARD_2=$(ifconfig | awk "/${PUBLIC_IP}/ {print $1}"  RS="\n\n" | awk -F ":" '{ print $1 }' | head -1)
 
-if check_interface $ETH_CARD_2 ; then
+if check_interface "$ETH_CARD_2" ; then
   print_message "Check passed for network card $ETH_CARD_2 for public IP $PUBLIC_IP"
  else
  error_exit "Check failed for network card for $ETH_CARD_2 for public IP $PUBLIC_IP"
  fi
 
-PUBLIC_NETMASK=$(ifconfig $ETH_CARD_2  | awk '/netmask/ {print $4}')
+PUBLIC_NETMASK=$(ifconfig "$ETH_CARD_2"  | awk '/netmask/ {print $4}')
 print_message "Public Netmask : $PUBLIC_NETMASK"
-PUBLIC_NETWORK=$(ipcalc -np $PUBLIC_IP $PUBLIC_NETMASK | grep NETWORK | awk -F '=' '{ print $2 }')
+PUBLIC_NETWORK=$(ipcalc -np "$PUBLIC_IP"  "$PUBLIC_NETMASK" | grep NETWORK | awk -F '=' '{ print $2 }')
 
 ##### Building Private Network Detail #########
 
 ETH_CARD_1=$(ifconfig | awk "/${PRIV_IP}/ {print $1}" RS="\n\n" | awk -F ":" '{ print $1 }' | head -1)
 
-if check_interface $ETH_CARD_1 ; then
+if check_interface "$ETH_CARD_1" ; then
   print_message "Check passed for network card $ETH_CARD_1 for private IP $PRIV_IP"
 else
  error_exit "Check failed for network card for $ETH_CARD_1 for private IP $PRIV_IP"
 fi
 
-PRIVATE_NETMASK=$(ifconfig $ETH_CARD_1  | awk '/netmask/ {print $4}')
-PRIVATE_NETWORK=$(ipcalc -np $PRIV_IP $PRIVATE_NETMASK | grep NETWORK | awk -F '=' '{ print $2 }')
+PRIVATE_NETMASK=$(ifconfig "$ETH_CARD_1"  | awk '/netmask/ {print $4}')
+PRIVATE_NETWORK=$(ipcalc -np "$PRIV_IP" "$PRIVATE_NETMASK" | grep NETWORK | awk -F '=' '{ print $2 }')
 
 print_message "Building NETWORK_STRING to set  networkInterfaceList in Grid Response File"
 
@@ -831,69 +831,69 @@ fi
 grid_response_file ()
 {
 
-if [ -z $GRID_RESPONSE_FILE ]; then
-cp $SCRIPT_DIR/$GRID_INSTALL_RSP $logdir/$GRID_INSTALL_RSP
+if [ -z "$GRID_RESPONSE_FILE" ]; then
+cp "$SCRIPT_DIR"/"$GRID_INSTALL_RSP" "$logdir"/"$GRID_INSTALL_RSP"
 #chmod 777 $logdir
 
-if [ -z $CRS_CONFIG_NODES ]; then
+if [ -z "$CRS_CONFIG_NODES" ]; then
    CRS_CONFIG_NODES="$PUBLIC_HOSTNAME:$VIP_HOSTNAME:HUB"
 fi
 
-sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CLUSTER_NAME###|$CLUSTER_NAME|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###SCAN_NAME###|$SCAN_NAME|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###HOSTNAME###|$PUBLIC_HOSTNAME|g"  $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###HOSTNAME_VIP###|$VIP_HOSTNAME|g"  $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###NETWORK_STRING###|$NETWORK_STRING|g"  $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_DISKGROUP_FG_DISKS###|$ASM_DISKGROUP_FG_DISKS|g"  $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_DISKGROUP_DISKS###|$ASM_DISKGROUP_DISKS|g"  $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_DISCOVERY_STRING###|$ASM_DISCOVERY_DIR/*|g"  $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###PASSWORD###|$ORACLE_PWD|g"  $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###STORAGE_OPTIONS_FOR_MEMBERDB###|$STORAGE_OPTIONS_FOR_MEMBERDB|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###SCAN_PORT###|$SCAN_PORT|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CLUSTER_TYPE###|$CLUSTER_TYPE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_DG_REDUNDANCY###|$GIMR_DG_REDUNDANCY|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_DISKGROUP_FG_DISKS###|$GIMR_DISKGROUP_FG_DISKS|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_DISKGROUP_DISKS###|$GIMR_DISKGROUP_DISKS|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_DG_FLAG###|$GIMR_DG_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###NETWORK_STRING###|$NETWORK_STRING|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_DG_NAME###|$GIMR_DG_NAME|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GNS_SUBDOMAIN###|$GNS_SUBDOMAIN|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GNSVIP_HOSTNAME###|$GNSVIP_HOSTNAME|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GNS_OPTIONS###|$GNS_OPTIONS|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###DHCP_CONF###|$DHCP_CONF|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CONFIGURE_GNS###|$CONFIGURE_GNS|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###MEMBERDB_FILE###|$COMMON_SCRIPTS\/$MEMBERDB_FILE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###OSDBA###|$OSDBA|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###OSOPER###|$OSOPER|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###OSASM###|$OSASM|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###EXTENDED_CLUSTER###|$EXTENDED_CLUSTER|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###SHARED_GNS_FILE###|$SHARED_GNS_FILE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###EXTENDED_CLUSTER_SITES###|$EXTENDED_CLUSTER_SITES|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###IPMI_FLAG###|$IPMI_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###IPMI_USERNAME###|$IPMI_USERNAME|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###IPMI_PASSWORD###|$IPMI_PASSWORD|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_STORAGE_OPTION###|$ASM_STORAGE_OPTION|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_ON_NAS###|$ASM_ON_NAS|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_ON_NAS###|$GIMR_ON_NAS|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_ON_NAS_LOCATION###|$ASM_ON_NAS_LOCATION|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_REDUNDANCY###|$ASM_REDUNDANCY|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###AU_SIZE###|$AU_SIZE|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###FAILURE_GROUP_SITE_NAME###|$FAILURE_GROUP_SITE_NAME|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###QUORUM_FAILURE_GROUP###|$QUORUM_FAILURE_GROUP|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_DG_FAILURE_GROUP###|$GIMR_DG_FAILURE_GROUP|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###ASM_DG_FAILURE_GROUP###|$ASM_DG_FAILURE_GROUP|g" $logdir/$GRID_INSTALL_RSP
-sed -i -e "s|###GIMR_FLAG###|$GIMR_FLAG|g" $logdir/$GRID_INSTALL_RSP
+sed -i -e "s|###INVENTORY###|$INVENTORY|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###CLUSTER_NAME###|$CLUSTER_NAME|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###SCAN_NAME###|$SCAN_NAME|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###HOSTNAME###|$PUBLIC_HOSTNAME|g"  "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###HOSTNAME_VIP###|$VIP_HOSTNAME|g"  "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###NETWORK_STRING###|$NETWORK_STRING|g"  "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_DISKGROUP_FG_DISKS###|$ASM_DISKGROUP_FG_DISKS|g"  "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_DISKGROUP_DISKS###|$ASM_DISKGROUP_DISKS|g"  "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_DISCOVERY_STRING###|$ASM_DISCOVERY_DIR/*|g"  "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###PASSWORD###|$ORACLE_PWD|g"  "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###STORAGE_OPTIONS_FOR_MEMBERDB###|$STORAGE_OPTIONS_FOR_MEMBERDB|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###SCAN_PORT###|$SCAN_PORT|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###CLUSTER_TYPE###|$CLUSTER_TYPE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_DG_REDUNDANCY###|$GIMR_DG_REDUNDANCY|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_DISKGROUP_FG_DISKS###|$GIMR_DISKGROUP_FG_DISKS|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_DISKGROUP_DISKS###|$GIMR_DISKGROUP_DISKS|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_DG_FLAG###|$GIMR_DG_FLAG|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###NETWORK_STRING###|$NETWORK_STRING|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_DG_NAME###|$GIMR_DG_NAME|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GNS_SUBDOMAIN###|$GNS_SUBDOMAIN|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GNSVIP_HOSTNAME###|$GNSVIP_HOSTNAME|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GNS_OPTIONS###|$GNS_OPTIONS|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###DHCP_CONF###|$DHCP_CONF|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###CONFIGURE_GNS###|$CONFIGURE_GNS|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###MEMBERDB_FILE###|$COMMON_SCRIPTS\/$MEMBERDB_FILE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###OSDBA###|$OSDBA|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###OSOPER###|$OSOPER|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###OSASM###|$OSASM|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###EXTENDED_CLUSTER###|$EXTENDED_CLUSTER|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###SHARED_GNS_FILE###|$SHARED_GNS_FILE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###EXTENDED_CLUSTER_SITES###|$EXTENDED_CLUSTER_SITES|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###IPMI_FLAG###|$IPMI_FLAG|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###IPMI_USERNAME###|$IPMI_USERNAME|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###IPMI_PASSWORD###|$IPMI_PASSWORD|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_STORAGE_OPTION###|$ASM_STORAGE_OPTION|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_ON_NAS###|$ASM_ON_NAS|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_ON_NAS###|$GIMR_ON_NAS|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_ON_NAS_LOCATION###|$ASM_ON_NAS_LOCATION|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_REDUNDANCY###|$ASM_REDUNDANCY|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###AU_SIZE###|$AU_SIZE|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###FAILURE_GROUP_SITE_NAME###|$FAILURE_GROUP_SITE_NAME|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###QUORUM_FAILURE_GROUP###|$QUORUM_FAILURE_GROUP|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_DG_FAILURE_GROUP###|$GIMR_DG_FAILURE_GROUP|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###ASM_DG_FAILURE_GROUP###|$ASM_DG_FAILURE_GROUP|g" "$logdir"/"$GRID_INSTALL_RSP"
+sed -i -e "s|###GIMR_FLAG###|$GIMR_FLAG|g" "$logdir"/"$GRID_INSTALL_RSP"
 fi
 
 }
@@ -909,7 +909,7 @@ local TIMESTAMP=$(date +%s)
 
 if [ -f "$logdir/cluvfy_check.txt" ]; then
 print_message "Moving any exisiting cluvfy $logdir/cluvfy_check.txt to $logdir/cluvfy_check_$TIMESTAMP.txt"
-mv $logdir/cluvfy_check.txt $logdir/cluvfy_check."$(date +%Y%m%d-%H%M%S)".txt
+mv "$logdir"/cluvfy_check.txt "$logdir"/cluvfy_check."$(date +%Y%m%d-%H%M%S)".txt
 fi
 
 print_message "Performing Cluvfy Checks"
@@ -917,14 +917,14 @@ cmd='su - $GRID_USER -c "$GRID_HOME/runcluvfy.sh stage -pre crsinst -responseFil
 eval $cmd
 
 print_message "Checking $logdir/cluvfy_check.txt if there is any failed check."
-FAILED_CMDS=$(sed -n -f - $logdir/cluvfy_check.txt << EOF
+FAILED_CMDS=$(sed -n -f - "$logdir"/cluvfy_check.txt << EOF
  /.*FAILED.*/ {
 p
 }
 EOF
 )
 
-cat $logdir/cluvfy_check.txt > $STD_OUT_FILE
+cat "$logdir"/cluvfy_check.txt > "$STD_OUT_FILE"
 
 if [[ ${IGNORE_CVU_CHECKS} == 'true' ]]; then
 print_message "CVU Checks are ignored as IGNORE_CVU_CHECKS set to true. It is recommended to set IGNORE_CVU_CHECKS to false and meet all the cvu checks requirement. RAC installation might fail, if there are failed cvu checks."
@@ -957,7 +957,7 @@ runrootsh ()
 local cmd
 local state=3
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -1063,7 +1063,7 @@ fi
 done
 
 print_message "Removing $logdir/cluvfy_check.txt as cluster check has passed"
-rm -f $logdir/cluvfy_check.txt
+rm -f "$logdir"/cluvfy_check.txt
 
 }
 
@@ -1109,29 +1109,29 @@ done
 dbca_response_file ()
 {
 
-if [ -z $DBCA_RESPONSE_FILE ]; then
-cp $SCRIPT_DIR/$DBCA_RSP $logdir/$DBCA_RSP
-chmod 666 $logdir/$DBCA_RSP
+if [ -z "$DBCA_RESPONSE_FILE" ]; then
+cp "$SCRIPT_DIR"/"$DBCA_RSP" "$logdir"/"$DBCA_RSP"
+chmod 666 "$logdir"/"$DBCA_RSP"
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CRS_NODES=$PUBLIC_HOSTNAME
 fi
 
-sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $logdir/$DBCA_RSP
-sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $logdir/$DBCA_RSP
-sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $logdir/$DBCA_RSP
-sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $logdir/$DBCA_RSP
-sed -i -e "s|###DB_NODES###|$CRS_NODES|g" $logdir/$DBCA_RSP
-sed -i -e "s|###DB_BASE###|$DB_BASE|g" $logdir/$DBCA_RSP
-sed -i -e "s|###DB_HOME###|$DB_HOME|g" $logdir/$DBCA_RSP
-sed -i -e "s|###CONTAINER_DB_FLAG###|$CONTAINER_DB_FLAG|g" $logdir/$DBCA_RSP
-sed -i -e "s|###PDB_COUNT###|$PDB_COUNT|g" $logdir/$DBCA_RSP
-sed -i -e "s|###DATABASE_CONFIG_TYPE###|$DATABASE_CONFIG_TYPE|g" $logdir/$DBCA_RSP
-sed -i -e "s|###TOTAL_MEMORY###|$TOTAL_MEMORY|g" $logdir/$DBCA_RSP
+sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###DB_NODES###|$CRS_NODES|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###DB_BASE###|$DB_BASE|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###DB_HOME###|$DB_HOME|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###CONTAINER_DB_FLAG###|$CONTAINER_DB_FLAG|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###PDB_COUNT###|$PDB_COUNT|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###DATABASE_CONFIG_TYPE###|$DATABASE_CONFIG_TYPE|g" "$logdir"/"$DBCA_RSP"
+sed -i -e "s|###TOTAL_MEMORY###|$TOTAL_MEMORY|g" "$logdir"/"$DBCA_RSP"
 else
 
-if [ -f $COMMON_SCRIPTS/$DBCA_RESPONSE_FILE ];then
-cp $COMMON_SCRIPTS/$DBCA_RESPONSE_FILE $logdir/$DBCA_RSP
+if [ -f "$COMMON_SCRIPTS"/"$DBCA_RESPONSE_FILE" ];then
+cp "$COMMON_SCRIPTS"/"$DBCA_RESPONSE_FILE" "$logdir"/"$DBCA_RSP"
 else
 error_exit "$COMMON_SCRIPTS/$DBCA_RESPONSE_FILE does not exist"
 fi
@@ -1140,8 +1140,8 @@ fi
 
 # Modify StorageType if db-datafile in nfs and grid on asm
 if [ "${DB_STORAGE_TYPE}" == "FS" ] || [ "${DB_STORAGE_TYPE}" == "fs" ]; then
-   sed -i -e 's/storageType=.*/storageType=FS/' $logdir/$DBCA_RSP
-   sed -i -e 's/datafileDestination=.*/datafileDestination=\/oradbnas\/{DB_UNIQUE_NAME}\//' $logdir/$DBCA_RSP
+   sed -i -e 's/storageType=.*/storageType=FS/' "$logdir"/"$DBCA_RSP"
+   sed -i -e 's/datafileDestination=.*/datafileDestination=\/oradbnas\/{DB_UNIQUE_NAME}\//' "$logdir"/"$DBCA_RSP"
 fi
 
 }
@@ -1153,13 +1153,13 @@ local cmd
 
 ## Bug 32449232 .. Workaround is cleanup of $GRID_BASE/kfod directory. Will remove the workaround after this bug is fixed.
 print_message "Workaround for Bug 32449232 : Removing $GRID_BASE/kfod"
-rm -rf $GRID_BASE/diag/kfod
+rm -rf "$GRID_BASE"/diag/kfod
 sleep 1
 
 # Replace place holders in response file
 cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'
 eval $cmd
-rm -f $responsefile
+rm -f "$responsefile"
 }
 
 checkDBStatus ()
@@ -1191,7 +1191,7 @@ setremotelistener ()
 local status
 local cmd
 
-if resolveip $CMAN_HOSTNAME; then
+if resolveip "$CMAN_HOSTNAME"; then
 print_message "Executing script to set the remote listener"
 su - $DB_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
 fi
@@ -1211,9 +1211,9 @@ print_message "Process id of the program : $TOP_ID"
 all_check
 build_network
 print_message "Setting random password for $GRID_USER user"
-setpasswd $GRID_USER  $GRID_PASSWORD
+setpasswd $GRID_USER  "$GRID_PASSWORD"
 print_message "Setting random password for $DB_USER user"
-setpasswd $DB_USER $ORACLE_PASSWORD
+setpasswd $DB_USER "$ORACLE_PASSWORD"
 
 print_message "Calling setupSSH function"
 setupSSH

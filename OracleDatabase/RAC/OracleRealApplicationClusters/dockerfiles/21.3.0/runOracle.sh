@@ -24,15 +24,15 @@ trap '{ exit 15; }' TERM
 
 ###########################
 
-if [ -f $logfile ]; then
-mv $logfile  $logfile."$(date +%Y%m%d-%H%M%S)"
-touch $logfile
+if [ -f "$logfile" ]; then
+mv "$logfile"  "$logfile"."$(date +%Y%m%d-%H%M%S)"
+touch "$logfile"
 else
-touch $logfile
+touch "$logfile"
 fi
 
-chmod 666 $logfile
-progname="$(basename $0)"
+chmod 666 "$logfile"
+progname=$(basename "$0")
 grid_install_status="FALSE"
 
 ####################### Constants #################
@@ -65,7 +65,7 @@ print_message " Starting Grid Installation          "
 print_message "#################################################"
 
 print_message "Pre-Grid Setup steps are in process"
-$SCRIPT_DIR/$SETUPGRIDENV
+"$SCRIPT_DIR"/"$SETUPGRIDENV"
 stat=$?
 if [ $stat -ne 0 ]; then
 error_exit "Error has occurred in Grid Setup, Please verify!"
@@ -81,7 +81,7 @@ grid_install_status="TRUE"
 if [ -f /etc/oracle/olr.loc ];then
 grid_install_status="TRUE"
 OLR_FILE=$(cat /etc/oracle/olr.loc | grep olrconfig_loc | awk -F "=" '{ print $2 }')
-if [ -f $OLR_FILE ]; then
+if [ -f "$OLR_FILE" ]; then
 grid_install_status="TRUE"
 print_message "Grid is installed on $(hostname). $progname will start the Grid service"
 fi
@@ -95,7 +95,7 @@ print_message "Grid is already installed on this container! Grid will be started
 print_message "############################################################################################" 
 else
 if [ "${OP_TYPE}" == "INSTALL" ]; then
-$SCRIPT_DIR/$CONFIGGRID
+"$SCRIPT_DIR"/"$CONFIGGRID"
 stat=$?
 
 if [ $stat -ne 0 ];then
@@ -106,7 +106,7 @@ print_message "####################################"
 print_message "ORACLE RAC DATABASE IS READY TO USE!"
 print_message "####################################"
 elif [ "${OP_TYPE}" == "ADDNODE" ]; then
-$SCRIPT_DIR/$ADDNODE
+"$SCRIPT_DIR"/"$ADDNODE"
 stat=$?
 if [ $stat -ne 0 ];then
 error_exit "Error has occurred in Grid Setup, Please verify!"

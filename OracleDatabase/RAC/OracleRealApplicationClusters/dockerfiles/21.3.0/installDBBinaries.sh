@@ -42,10 +42,10 @@ fi;
 
 # Replace place holders
 # ---------------------
-sed -i -e "s|###ORACLE_EDITION###|$EDITION|g" $INSTALL_SCRIPTS/$DB_INSTALL_RSP && \
-sed -i -e "s|###DB_BASE###|$DB_BASE|g" $INSTALL_SCRIPTS/$DB_INSTALL_RSP && \
-sed -i -e "s|###DB_HOME###|$DB_HOME|g" $INSTALL_SCRIPTS/$DB_INSTALL_RSP && \
-sed -i -e "s|###INVENTORY###|$INVENTORY|g" $INSTALL_SCRIPTS/$DB_INSTALL_RSP
+sed -i -e "s|###ORACLE_EDITION###|$EDITION|g" "$INSTALL_SCRIPTS"/"$DB_INSTALL_RSP" && \
+sed -i -e "s|###DB_BASE###|$DB_BASE|g" "$INSTALL_SCRIPTS"/"$DB_INSTALL_RSP" && \
+sed -i -e "s|###DB_HOME###|$DB_HOME|g" "$INSTALL_SCRIPTS"/"$DB_INSTALL_RSP" && \
+sed -i -e "s|###INVENTORY###|$INVENTORY|g" "$INSTALL_SCRIPTS"/"$DB_INSTALL_RSP"
 
 export ORACLE_HOME=${DB_HOME}
 export PATH=${ORACLE_HOME}/bin:/bin:/sbin:/usr/bin
@@ -53,11 +53,11 @@ export LD_LIBRARY_PATH=${ORACLE_HOME}/lib:/lib:/usr/lib
 
 # Install Oracle binaries
 if [ "${DB_USER}" != "${GRID_USER}" ]; then
-mkdir -p /home/${DB_USER}/.ssh && \
-chmod 700 /home/${DB_USER}/.ssh 
+mkdir -p /home/"${DB_USER}"/.ssh && \
+chmod 700 /home/"${DB_USER}"/.ssh 
 fi
 
 
 # Install Oracle binaries
-unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_2 -d $DB_HOME && \
-$DB_HOME/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_SCRIPTS/$DB_INSTALL_RSP -ignorePrereqFailure || true
+unzip -q "$INSTALL_SCRIPTS"/"$INSTALL_FILE_2" -d "$DB_HOME" && \
+"$DB_HOME"/runInstaller -silent -force -waitforcompletion -responsefile "$INSTALL_SCRIPTS"/"$DB_INSTALL_RSP"  -ignorePrereqFailure || true

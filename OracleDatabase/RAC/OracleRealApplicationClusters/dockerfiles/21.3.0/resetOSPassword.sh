@@ -13,7 +13,7 @@
 declare -a cluster_nodes
 GRID_USER='grid'
 DB_USER='oracle'
-PROGNAME=$(basename $0)
+PROGNAME=$(basename "$0")
 PWD_KEY='pwd.key'
 SECRET_VOLUME='/run/secrets'
 declare -x REMOVE_OS_PWD_FILES='false'
@@ -42,12 +42,12 @@ else
 error_exit "Error occurred during common os password file generation"
 fi
 
-read PASSWORD < /tmp/${PWD_FILE}
-rm -f /tmp/${PWD_FILE}
+read PASSWORD < /tmp/"${PWD_FILE}"
+rm -f /tmp/"${PWD_FILE}"
 rm -f /tmp/${PWD_KEY}
 
 if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
-rm -f  ${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}
+rm -f  "${SECRET_VOLUME}"/"${COMMON_OS_PWD_FILE}"
 rm -f ${SECRET_VOLUME}/${PWD_KEY}
 fi
 
@@ -56,18 +56,18 @@ else
  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
 fi
 
-if [ ! -z ${PASSWORD} ]; then
+if [ ! -z "${PASSWORD}" ]; then
   PASSWD_VALUE="${PASSWORD}"
 fi
 
 }
 
 setNode () {
-if [ ! -f $GRID_HOME/bin/olsnodes ]; then
+if [ ! -f "$GRID_HOME"/bin/olsnodes ]; then
 cluster_nodes=( $(hostname) )
 else
-cluster_nodes=( $($GRID_HOME/bin/olsnodes | awk '{ print $1 }') )
-node_count=$($GRID_HOME/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
+cluster_nodes=( $("$GRID_HOME"/bin/olsnodes | awk '{ print $1 }') )
+node_count=$("$GRID_HOME"/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
 fi
 }
 
@@ -86,7 +86,7 @@ fi
 
 for node in "${cluster_nodes[@]}"
 do
-if [ ! -f $GRID_HOME/bin/olsnodes ]; then
+if [ ! -f "$GRID_HOME"/bin/olsnodes ]; then
 print_message "Resetting password for ${user} on the ${node}"
 cmd='su - $user -c "echo $password | sudo passwd $user  --stdin"'
 else
@@ -123,7 +123,7 @@ error_exit "Please specify correct parameters"
 SHORTOPTS="o:p:k:s:r:h"
 LONGOPTS="help,op_type:,pwd_key_file:,pwd_file:,secret_volume:,remove_os_pwd_files:"
 
-ARGS=$(getopt -o $SHORTOPTS --long $LONGOPTS --name $PROGNAME -- "$@" )
+ARGS=$(getopt -o $SHORTOPTS --long $LONGOPTS --name "$PROGNAME" -- "$@" )
 
 if [ $? != 0 ] ; then 
 error_exit  "Terminating... as error occurred during ARGS computation"; 
@@ -207,15 +207,15 @@ fi
 
 if [ "${RESET_PASSWORD_TYPE}" == 'reset_grid_oracle' ]; then
 print_message "Setting password for $GRID_USER user"
-reset_passwd $GRID_USER  $PASSWD_VALUE
+reset_passwd $GRID_USER  "$PASSWD_VALUE"
 print_message "Setting password for $DB_USER user"
-reset_passwd  $DB_USER $PASSWD_VALUE
+reset_passwd  $DB_USER "$PASSWD_VALUE"
 elif [ "${RESET_PASSWORD_TYPE}" == 'reset_grid' ]; then 
   print_message "Setting password for $GRID_USER user"
-  reset_passwd  $GRID_USER $PASSWD_VALUE
+  reset_passwd  $GRID_USER "$PASSWD_VALUE"
 elif [ "${RESET_PASSWORD_TYPE}" == 'reset_oracle' ]; then
   print_message "Setting password for $DB_USER user"
-  reset_passwd  $DB_USER $PASSWD_VALUE
+  reset_passwd  $DB_USER "$PASSWD_VALUE"
 else
 error_exit "Please specify correct value for RESET_PASSWORD_TYPE. Correct Values are reset_grid_oracle|reset_grid|reset_oracle"
 fi

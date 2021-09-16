@@ -402,7 +402,7 @@ EXISTING_CLS_NODES+=",$PUBLIC_HOSTNAME"
 CLUSTER_NODES=$(echo "$EXISTING_CLS_NODES" | tr ',' ' ')
 
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
-echo $cmd
+echo "$cmd"
 
 for node in ${CLUSTER_NODES}
 do
@@ -422,7 +422,7 @@ done
 
 status="NA"
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
- echo $cmd
+ echo "$cmd"
 for node in ${CLUSTER_NODES}
 do
 
@@ -514,7 +514,7 @@ local oracle_home=$GRID_HOME
 
 print_message "Checking Cluster"
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crs\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check crs\""'
 eval $cmd
 
 if [ $?  -eq 0 ];then
@@ -523,7 +523,7 @@ else
 error_exit "Cluster Check on remote node failed"
 fi
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check cluster\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check cluster\""'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -534,7 +534,7 @@ fi
 
 if [ ${GIMR_DB_FLAG} == 'true' ]; then
 
-   cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
+   cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/srvctl status mgmtdb\""'
    eval $cmd
 
     if [ $? -eq 0 ]; then
@@ -544,7 +544,7 @@ if [ ${GIMR_DB_FLAG} == 'true' ]; then
     fi
 fi
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crsd\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check crsd\""'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -554,7 +554,7 @@ error_exit "CRSD Check failed!"
 fi
 
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check cssd\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check cssd\""'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -563,7 +563,7 @@ else
 error_exit "CSSD Check failed!"
 fi
 
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check evmd\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check evmd\""'
 eval $cmd
 
 if [ $? -eq 0 ]; then
@@ -580,7 +580,7 @@ setDevicePermissions ()
 local cmd
 local state=3
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -725,7 +725,7 @@ local cluster_class
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl get cluster class"'
 cluster_class=$(eval $cmd)
 print_message "Cluster class is $cluster_class"
-CLUSTER_TYPE=$(echo $cluster_class | awk -F \' '{ print $2 }' | awk '{ print $1 }')
+CLUSTER_TYPE=$(echo "$cluster_class" | awk -F \' '{ print $2 }' | awk '{ print $1 }')
 }
 
 
@@ -769,7 +769,7 @@ p
 EOF
 )
 
-cat "$logdir"/cluvfy_check.txt > $STD_OUT_FILE
+cat "$logdir"/cluvfy_check.txt > "$STD_OUT_FILE"
 
 if [[ ${IGNORE_CVU_CHECKS} == 'true' ]]; then
 print_message "CVU Checks are ignored as IGNORE_CVU_CHECKS set to true. It is recommended to set IGNORE_CVU_CHECKS to false and meet all the cvu checks requirement. RAC installation might fail, if there are failed cvu checks."
@@ -801,7 +801,7 @@ cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/gridSetup.sh -silent -waitForCo
 eval $cmd
 
 print_message "Node Addition performed. removing Responsefile"
-rm -f $responsefile
+rm -f "$responsefile"
 cmd='su - $GRID_USER -c "ssh $node \"rm -f $responsefile\""'
 #eval $cmd
 
@@ -934,7 +934,7 @@ cluvfyCheck
 print_message "Running Node Addition and cluvfy test for node $PUBLIC_HOSTNAME"
 addGridNode
 print_message "Running root.sh on node $PUBLIC_HOSTNAME"
-runrootsh $GRID_HOME  $GRID_USER
+runrootsh "$GRID_HOME"  "$GRID_USER"
 checkCluster
 print_message "Checking Cluster Class"
 checkClusterClass

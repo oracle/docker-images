@@ -45,7 +45,7 @@ local alive="${2}"
 
 print_message "checking IP is in correct format such as xxx.xxx.xxx.xxx"
 
-if valid_ip $ip; then
+if valid_ip "$ip"; then
         print_message "IP $ip format check passed!"
 else
        error_exit "IP $ip is not in correct format..please check!"
@@ -57,7 +57,7 @@ if [ "${alive}" == "true" ]; then
 
 print_message "Checking if IP is pingable or not!"
 
-if host_alive $ip; then
+if host_alive "$ip"; then
         print_message  "IP $ip is pingable ...check passed!"
 else
         error_exit  "IP $ip is not pingable..check failed!"
@@ -67,7 +67,7 @@ else
 
 print_message "Checking if IP is pingable or not!"
 
-if host_alive $ip; then
+if host_alive "$ip"; then
         error_exit  "IP $ip is already allocated...check failed!"
 else
         print_message  "IP $ip is not pingable..check passed!"
@@ -81,7 +81,7 @@ check_interface ()
 local ethcard=$1
 local output
 
-ip link show | grep $ethcard
+ip link show | grep "$ethcard"
 
 output=$?
 
@@ -113,7 +113,7 @@ host_alive()
 
         local ip_or_hostname=$1
         local stat=1
-ping -c 1 -W 1 $ip_or_hostname  >& /dev/null
+ping -c 1 -W 1 "$ip_or_hostname"  >& /dev/null
 
 if [ $? -eq 0 ]; then
   stat=0
@@ -163,7 +163,7 @@ local stat=1
 IFS=', ' read -r -a string_array   <<< "$checkthestring"
 
 for ((i=0; i < ${#string_array[@]}; ++i)); do
-    if [ ${stringtocheck} == ${string_array[i]} ]; then
+    if [ "${stringtocheck}" == "${string_array[i]}" ]; then
             stat=0
     fi
 done
@@ -181,7 +181,7 @@ setpasswd ()
 
 local user=$1
 local pass=$2
-echo $pass | passwd $user  --stdin
+echo "$pass" | passwd "$user"  --stdin
 }
 
 ##############################################################################################

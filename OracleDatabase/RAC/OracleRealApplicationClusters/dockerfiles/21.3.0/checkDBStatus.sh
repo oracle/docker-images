@@ -17,7 +17,7 @@ if [ -f /etc/rac_env_vars ]; then
 source /etc/rac_env_vars
 fi
 
-source $SCRIPT_DIR/functions.sh
+source "$SCRIPT_DIR"/functions.sh
 export ORACLE_HOME=$DB_HOME
 export PATH=$ORACLE_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib
@@ -31,17 +31,17 @@ if [ -z "${sid}" ]; then
   exit 3;
 fi;
 
-ORACLE_SID=$($DB_HOME/bin/srvctl status database -d $sid | grep $(hostname) | awk '{ print $2 }')
+ORACLE_SID=$("$DB_HOME"/bin/srvctl status database -d "$sid" | grep "$(hostname)" | awk '{ print $2 }')
 
 echo "Checking $ORACLE_SID on $(hostname)"
 export ORACLE_SID=$ORACLE_SID
 
 # Check Oracle DB status and store it in status
-status=`$DB_HOME/bin/sqlplus -s / as sysdba << EOF
+status=`"$DB_HOME"/bin/sqlplus -s / as sysdba << EOF
    set heading off;
    set pagesize 0;
    select status from v\\$instance;
    exit;
 EOF`
 
-echo $status > /tmp/db_status.txt
+echo "$status" > /tmp/db_status.txt

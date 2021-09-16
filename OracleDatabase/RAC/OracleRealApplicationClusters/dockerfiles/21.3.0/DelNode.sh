@@ -17,7 +17,7 @@ node_count=0
 check_env_vars ()
 {
 
-if [ -z ${DEL_NODE} ];then
+if [ -z "${DEL_NODE}" ];then
 echo "Please provide node name which you want to delete";
 exit 1;
 else
@@ -37,8 +37,8 @@ return 1
 }
 
 setNode () {
-cluster_nodes=( $($GRID_HOME/bin/olsnodes | awk '{ print $1 }') )
-node_count=$($GRID_HOME/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
+cluster_nodes=( $("$GRID_HOME"/bin/olsnodes | awk '{ print $1 }') )
+node_count=$("$GRID_HOME"/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
 }
 
 delNode () {
@@ -47,14 +47,14 @@ containsNode "${DEL_NODE}"  "${cluster_nodes[@]}"
 ret=$?
 
 if [ $ret -eq 1 ]; then
-echo "Node ${DEL_NODE} is not a part of cluster. These Nodes are part of the cluster $cluster_nodes"
+echo "Node ${DEL_NODE} is not a part of cluster. These Nodes are part of the cluster ${cluster_nodes[@]}"
 exit 1 ;
 fi
 
- if [ ${node_count} -eq 1 -a ${DEL_NODE} == ${NODE_HOSTNAME} ] ;then
+ if [ ${node_count} -eq 1 -a "${DEL_NODE}" == "${NODE_HOSTNAME}" ] ;then
   echo "Stopping the Grid and deconfigure the cluster."
-  $GRID_HOME/bin/crsctl stop cluster
-  $GRID_HOME/crs/install/rootcrs.sh -deconfig -force
+  "$GRID_HOME"/bin/crsctl stop cluster
+  "$GRID_HOME"/crs/install/rootcrs.sh -deconfig -force
 else
 
 echo "Stopping Grid on deleting node"
@@ -62,7 +62,7 @@ cmd='su - grid -c "ssh ${DEL_NODE} \"sudo ${GRID_HOME}/bin/crsctl stop cluster\"
 eval $cmd
 
 echo "Deleting the node from the cluster"
-$GRID_HOME/bin/crsctl delete node -n ${DEL_NODE}
+"$GRID_HOME"/bin/crsctl delete node -n "${DEL_NODE}"
 
 echo "getting updated cluster node info from the cluster"
 setNode
@@ -72,7 +72,7 @@ containsNode "${DEL_NODE}"  "${cluster_nodes[@]}"
 ret=$?
 
 if [ $ret -eq 1 ]; then
-echo "Node ${DEL_NODE} is not a part of cluster. These Nodes are part of the cluster $cluster_nodes"
+echo "Node ${DEL_NODE} is not a part of cluster. These Nodes are part of the cluster ${cluster_nodes[@]}"
 exit 0 ;
 else
 echo "Node ${DEL_NODE} is still a part of cluster."

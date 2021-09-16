@@ -70,4 +70,4 @@ print_message "Not a valid option"
 usage
 ;;
 esac
-
+done

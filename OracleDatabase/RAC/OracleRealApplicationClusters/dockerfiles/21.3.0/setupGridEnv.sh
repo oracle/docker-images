@@ -23,7 +23,7 @@ declare -x PUBLIC_HOSTNAME                ## PUBLIC HOSTNAME set based on hostna
 declare -x NTPD_START='false'
 declare -x RESOLV_CONF_FILE='/etc/resolv.conf'
 
-progname="$(basename $0)"
+progname=$(basename "$0")
 ######################## Variable and Constant declaration ends here ######
 
 if [ -f /etc/rac_env_vars ]; then
@@ -48,7 +48,7 @@ local systemctl_state
 # Setting default gateway
 if [ ! -z "${DEFAULT_GATEWAY}" ];then
   ip route del default
-  ip route add default via $DEFAULT_GATEWAY 
+  ip route add default via "$DEFAULT_GATEWAY"
 fi
 
 # Adding blank ntp.conf
@@ -60,10 +60,10 @@ if [ ! -f ${ETCFSTAB} ]; then
 fi
 
 # Changing permission for /common_scripts
-if [ -d $COMMON_SCRIPTS ];
+if [ -d "$COMMON_SCRIPTS" ];
 then
-chown -R grid:oinstall ${COMMON_SCRIPTS}
-chmod 775 ${COMMON_SCRIPTS}
+chown -R grid:oinstall "${COMMON_SCRIPTS}"
+chmod 775 "${COMMON_SCRIPTS}"
 fi
 
 # Removing failed service as we systemd status 'running'
@@ -71,7 +71,7 @@ fi
 for systemd_svc in $(systemctl | grep failed | awk '{ print $2}')
 do
    print_message "Disable failed service $systemd_svc"
-   systemctl disable $systemd_svc
+   systemctl disable "$systemd_svc"
    print_message "Resetting Failed Services"
    systemctl reset-failed
 done
@@ -118,9 +118,9 @@ if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
         	print_message "Changing Disk permission and ownership $device"
-              if [ -e $device ]; then
-        	chown $GRID_USER:$ASMADMIN_GROUP $device
-	        chmod 660 $device
+              if [ -e "$device" ]; then
+        	chown $GRID_USER:$ASMADMIN_GROUP "$device"
+	        chmod 660 "$device"
               else
                 error_exit "Device $device does not exist! Please verify"
               fi
@@ -159,8 +159,8 @@ local disk_name
 	        for device in "${devices[@]}"
         	do
 	        print_message "Changing Disk permission and ownership"
-	        chown $GRID_USER:$ASMADMIN_GROUP $device
-	        chmod 660 $device
+	        chown $GRID_USER:$ASMADMIN_GROUP "$device"
+	        chmod 660 "$device"
 	        count=$[$count+1]
 	       done
 	fi
@@ -234,8 +234,8 @@ local HOST_LINE
 
 if [ "${DNS_SERVER_FLAG}" == 'false' ]; then
 
-if [ ! -z $HOSTFILE ]; then
-cat $COMMON_SCRIPTS/$HOSTFILE > /etc/hosts
+if [ ! -z "$HOSTFILE" ]; then
+cat "$COMMON_SCRIPTS"/"$HOSTFILE" > /etc/hosts
 else
 grep -P "127.0.0.1\tlocalhost.localdomain\tlocalhost" /etc/hosts
 stat=$?
@@ -254,42 +254,42 @@ else
            unset HOST_LINE
            HOST_LINE="\n${PUBLIC_IP}\t${PUBLIC_HOSTNAME}.${DOMAIN}\t${PUBLIC_HOSTNAME}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
-           echo -e $HOST_LINE >> $ETCHOSTS
+           echo -e "$HOST_LINE" >> $ETCHOSTS
  elif [ "${HOSTNAME}" == "${PRIV_HOSTNAME}" ];then
            unset HOST_LINE
            HOST_LINE="\n${PRIV_IP}\t${PRIV_HOSTNAME}.${DOMAIN}\t${PRIV_HOSTNAME}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
-           echo -e $HOST_LINE >> $ETCHOSTS
+           echo -e "$HOST_LINE" >> $ETCHOSTS
  elif [ "${HOSTNAME}" == "${VIP_HOSTNAME}" ];then
            unset HOST_LINE
            HOST_LINE="\n${NODE_VIP}\t${VIP_HOSTNAME}.${DOMAIN}\t${VIP_HOSTNAME}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
-           echo -e $HOST_LINE >> $ETCHOSTS
+           echo -e "$HOST_LINE" >> $ETCHOSTS
  elif [ "${HOSTNAME}" == "${EXISTING_CLS_NODE}" ]; then
           unset HOST_LINE
            HOST_LINE="\n${EXISTING_CLS_NODE_IP}\t${EXISTING_CLS_NODE}.${DOMAIN}\t${EXISTING_CLS_NODE}"
            print_message "Adding $HOST_LINE to $ETCHOSTS"
-           echo -e $HOST_LINE >> $ETCHOSTS
+           echo -e "$HOST_LINE" >> $ETCHOSTS
 elif [ "${HOSTNAME}" == "${SCAN_NAME}" ]; then
         unset HOST_LINE
 	if [ ! -z "$SCAN_IP" ];then
 	  HOST_LINE="\n${SCAN_IP}\t${SCAN_NAME}.${DOMAIN}\t${SCAN_NAME}" 
           print_message "Adding $HOST_LINE to $ETCHOSTS"
-          echo -e $HOST_LINE >> $ETCHOSTS
+          echo -e "$HOST_LINE" >> $ETCHOSTS
 	fi
 elif [ "${HOSTNAME}" == "${CMAN_HOSTNAME}" ]; then
         unset HOST_LINE
         if [ ! -z "$CMAN_IP" ];then
           HOST_LINE="\n${CMAN_IP}\t${CMAN_HOSTNAME}.${DOMAIN}\t${CMAN_HOSTNAME}"
           print_message "Adding $HOST_LINE to $ETCHOSTS"
-          echo -e $HOST_LINE >> $ETCHOSTS
+          echo -e "$HOST_LINE" >> $ETCHOSTS
         fi
 elif [ "${HOSTNAME}" == "${GNSVIP_HOSTNAME}" ]; then
         unset HOST_LINE
         if [ ! -z "$GNS_VIP" ];then
           HOST_LINE="\n${GNS_VIP}\t${GNSVIP_HOSTNAME}.${DOMAIN}\t${GNSVIP_HOSTNAME}"
           print_message "Adding $HOST_LINE to $ETCHOSTS"
-          echo -e $HOST_LINE >> $ETCHOSTS
+          echo -e "$HOST_LINE" >> $ETCHOSTS
         fi
 else
  print_message "HOSTNAME should match  any hostname in given hostnames $PUBLIC_HOSTNAME $PRIV_HOSTNAME $VIP_HOSTNAME $SCAN_NAME"

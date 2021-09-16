@@ -16,7 +16,7 @@ if [ -f /etc/rac_env_vars ]; then
 source /etc/rac_env_vars
 fi
 
-source $SCRIPT_DIR/functions.sh
+source "$SCRIPT_DIR"/functions.sh
 
 sid=$1
 scan_name=$2
@@ -44,7 +44,7 @@ if [ -z "${cman_host}" ]; then
 fi;
 
 export ORACLE_HOME=$DB_HOME
-ORACLE_SID=$($DB_HOME/bin/srvctl status database -d $sid | grep $(hostname) | awk '{ print $2 }')
+ORACLE_SID=$("$DB_HOME"/bin/srvctl status database -d "$sid" | grep "$(hostname)" | awk '{ print $2 }')
 
 echo "setting Oracle sid to  $ORACLE_SID on $(hostname)"
 export ORACLE_SID=$ORACLE_SID
@@ -52,7 +52,7 @@ export ORACLE_SID=$ORACLE_SID
 # Check Oracle DB status and store it in status
 echo "Remote Lisetenr String : remote_listener=$scan_name:1521,(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=$cman_host)(PORT=1521))))"
 
-status=`$DB_HOME/bin/sqlplus -s / as sysdba << EOF
+status=`"$DB_HOME"/bin/sqlplus -s / as sysdba << EOF
    set heading off;
    set pagesize 0;
 alter system set remote_listener='$scan_name:1521,(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=$cman_host)(PORT=1521))))'  scope=both;    
