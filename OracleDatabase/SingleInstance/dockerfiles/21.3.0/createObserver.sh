@@ -31,8 +31,10 @@ fi
 # Creating the directory for Observer configuration and log file
 mkdir -p ${DG_OBSERVER_DIR}
 
-# Starting observer in background
-nohup echo "${ORACLE_PWD}" | dgmgrl -echo sys@${PRIMARY_DB_CONN_STR} "START OBSERVER ${DG_OBSERVER_NAME} FILE IS ${DG_OBSERVER_DIR}/fsfo.dat LOGFILE IS ${DG_OBSERVER_DIR}/observer.log" > ${DG_OBSERVER_DIR}/nohup.out &
+# Starting observer in background, passing password using here-doc
+nohup dgmgrl -echo sys@${PRIMARY_DB_CONN_STR} "START OBSERVER ${DG_OBSERVER_NAME} FILE IS ${DG_OBSERVER_DIR}/fsfo.dat LOGFILE IS ${DG_OBSERVER_DIR}/observer.log" > ${DG_OBSERVER_DIR}/nohup.out << EOF &
+${ORACLE_PWD}
+EOF
 # Sleep for dgmgrl to start observer in background otherwise container will exit
 sleep 4
 

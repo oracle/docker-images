@@ -65,6 +65,9 @@ export ORACLE_SID=${1:-ORCLCDB}
 # Check whether ORACLE_PDB is passed on
 export ORACLE_PDB=${2:-ORCLPDB1}
 
+# Setting up file creation mask for newly created files (dbca response templates)
+umask 177
+
 # Checking if only one of INIT_SGA_SIZE & INIT_PGA_SIZE is provided by the user
 if [[ "${INIT_SGA_SIZE}" != "" && "${INIT_PGA_SIZE}" == "" ]] || [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" != "" ]]; then
    echo "ERROR: Provide both the values, INIT_SGA_SIZE and INIT_PGA_SIZE or neither of them. Exiting.";
@@ -84,8 +87,10 @@ else
     fi
 
     # Creating temporary response file containing sysPassword for clone/standby cases
-    echo "sysPassword=${ORACLE_PWD}" > $ORACLE_BASE/dbca.rsp
-    chmod 400 $ORACLE_BASE/dbca.rsp
+    cat > $ORACLE_BASE/dbca.rsp <<EOF
+sysPassword=${ORACLE_PWD}
+EOF
+
     export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
   else
     # If ORACLE_PWD is not provided, use DBCA auto password generation for generating a random, strong password
@@ -142,7 +147,6 @@ fi
 
 # Replace place holders in response file
 cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
-chmod 400 $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
