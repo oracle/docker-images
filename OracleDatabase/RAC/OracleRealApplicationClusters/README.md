@@ -166,12 +166,15 @@ Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle
 ```
 openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
 rm -f /opt/.secrets/common_os_pwdfile
+chmod 400 /opt/.secrets/common_os_pwdfile.enc
+chmod 400 /opt/.secrets/pwd.key
 ```
 
 ### Notes
 
 * If you want to specify different passwords for all the accounts, create 3 different files and encrypt them under /opt/.secrets and pass the file name to the container using the env variable. Env variables can be ORACLE_PWD_FILE for oracle user, GRID_PWD_FILE for grid user, and DB_PWD_FILE for the database password.
 * if you want a common password oracle, grid, and db user, you can assign a password file name to COMMON_OS_PWD_FILE env variable.
+* Once the RAC enviornment setup completed, user must change Oracle/Grid and DB passwords based on his enviornment.
 
 ### Deploying Oracle RAC on Container With Block Devices:
 
