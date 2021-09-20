@@ -13,7 +13,7 @@
 major_version=$("$ORACLE_HOME"/bin/oraversion -majorVersion)
 LIB_EDITION="/usr/bin/ar t $ORACLE_HOME/lib/libedtn"
 if [ "$major_version" -gt 19 ]; then
-    LIB_EDITION=$("$LIB_EDITION".a)
+    LIB_EDITION=$(${LIB_EDITION}.a)
 else
     LIB_EDITION=$("$LIB_EDITION""$major_version".a)
 fi
@@ -50,5 +50,5 @@ if [ -n "${ORACLE_EDITION}" ]; then
     fi
 fi
 
-echo "ORACLE EDITION: $CURRENT_EDITION}"
+echo "ORACLE EDITION: $CURRENT_EDITION"
 touch "$ORACLE_HOME"/install/.docker_"${CURRENT_EDITION,,}"
