@@ -19,15 +19,15 @@ if [ -z "$SCRIPTS_ROOT" ]; then
 fi;
 
 # Execute custom provided files (only if directory exists and has files in it)
-if [ -d "$SCRIPTS_ROOT" ] && [ -n "$(ls -A $SCRIPTS_ROOT)" ]; then
+if [ -d "$SCRIPTS_ROOT" ] && [ -n "$(ls -A "$SCRIPTS_ROOT")" ]; then
 
   echo "";
   echo "Executing user defined scripts"
 
-  for f in $SCRIPTS_ROOT/*; do
+  for f in "$SCRIPTS_ROOT"/*; do
       case "$f" in
           *.sh)     echo "$0: running $f"; . "$f" ;;
-          *.sql)    echo "$0: running $f"; echo "exit" | $ORACLE_HOME/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
+          *.sql)    echo "$0: running $f"; echo "exit" | "$ORACLE_HOME"/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
           *)        echo "$0: ignoring $f" ;;
       esac
       echo "";
