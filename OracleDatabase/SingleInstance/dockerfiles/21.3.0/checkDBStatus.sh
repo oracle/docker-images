@@ -59,8 +59,11 @@ EOF
 
 # Function to check that observer is running or not
 checkObserver() {
-   dg_observer_status="$(dgmgrl sys/"${ORACLE_PWD:?"ORACLE_PWD is not set. Exiting..."}"@"$PRIMARY_DB_CONN_STR" "show observer")"
-   if ! echo "$dg_observer_status" | grep -q 'Observer ".*"' -ne 0 ; then
+   dg_observer_status=$(dgmgrl sys@"$PRIMARY_DB_CONN_STR" "show observer" << EOF
+${ORACLE_PWD}
+EOF
+)
+   if ! echo "$dg_observer_status" | grep -q 'Observer ".*"' ; then
       exit 4
    fi 
 
