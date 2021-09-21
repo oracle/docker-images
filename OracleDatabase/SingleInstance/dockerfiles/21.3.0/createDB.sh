@@ -65,14 +65,14 @@ export ORACLE_SID=${1:-ORCLCDB}
 # Check whether ORACLE_PDB is passed on
 export ORACLE_PDB=${2:-ORCLPDB1}
 
+# Setting up file creation mask for newly created files (dbca response templates)
+umask 177
+
 # Checking if only one of INIT_SGA_SIZE & INIT_PGA_SIZE is provided by the user
 if [[ "${INIT_SGA_SIZE}" != "" && "${INIT_PGA_SIZE}" == "" ]] || [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" != "" ]]; then
    echo "ERROR: Provide both the values, INIT_SGA_SIZE and INIT_PGA_SIZE or neither of them. Exiting.";
    exit 1;
 fi;
-
-# Auto generate ORACLE PWD if not passed on
-export ORACLE_PWD=${3:-"$(openssl rand -base64 8)1"}
 
 # If wallet is present for database credentials then prepare dbca options to use
 if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
@@ -80,14 +80,23 @@ if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
   export DBCA_CRED_OPTIONS="-useWalletForDBCredentials true  -dbCredentialsWalletLocation ${WALLET_DIR}"
 else
   if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
-    # Creating temporary response file containing sysPassword for clone/standby cases
-    echo "sysPassword=${ORACLE_PWD}" > "$ORACLE_BASE"/dbca.rsp
-    export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
-  fi
+    # Validation: Checking if ORACLE_PWD is provided or not
+    if [[ -z "$ORACLE_PWD" ]]; then
+      echo "ERROR: Please provide sys password of the primary database as ORACLE_PWD env variable. Exiting..."
+      exit 1
+    fi
 
-  # Displaying password only when password is auto-generated and Oracle wallet is not used
-  if [[ -z "${3+x}" ]]; then
-    echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
+    # Creating temporary response file containing sysPassword for clone/standby cases
+    cat > "$ORACLE_BASE"/dbca.rsp <<EOF
+sysPassword=${ORACLE_PWD}
+EOF
+
+    export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
+  else
+    # If ORACLE_PWD is not provided, use DBCA auto password generation for generating a random, strong password
+    if [[ -z "${ORACLE_PWD}" ]]; then
+      export DBCA_CRED_OPTIONS="-autoGeneratePasswords"
+    fi
   fi
 
 fi
@@ -140,13 +149,13 @@ fi
 cp "$ORACLE_BASE"/"$CONFIG_RSP" "$ORACLE_BASE"/dbca.rsp
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" "$ORACLE_BASE"/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" "$ORACLE_BASE"/dbca.rsp
-if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
-  # Deleting password options from dbca response file as wallet will be used for credentials
-  sed -i -e "/###ORACLE_PWD###/d" "$ORACLE_BASE"/dbca.rsp
-else
-  sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" "$ORACLE_BASE"/dbca.rsp
-fi
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" "$ORACLE_BASE"/dbca.rsp
+if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]] || [[ -z "$ORACLE_PWD" ]]; then
+   # Deleting password options from dbca response file as wallet will be used for credentials or ORACLE_PWD is not provided (i.e. password auto-generation intended)
+   sed -i -e "/###ORACLE_PWD###/d" "$ORACLE_BASE"/dbca.rsp
+else
+   sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" "$ORACLE_BASE"/dbca.rsp
+fi
 
 # If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user
 if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
