@@ -13,19 +13,19 @@
 ########### Move DB files ############
 function moveFiles {
 
-   if [ ! -d $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID ]; then
-      mkdir -p $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   if [ ! -d "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID" ]; then
+      mkdir -p "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    fi;
 
-   mv $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_BASE_HOME/network/admin/sqlnet.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_BASE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_BASE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-   mv $ORACLE_HOME/install/.docker_* $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   mv "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   mv "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID" "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   mv "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   mv "$ORACLE_BASE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   mv "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
 
    # oracle user does not have permissions in /etc, hence cp and not mv
-   cp /etc/oratab $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
+   cp /etc/oratab "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    
    symLinkFiles;
 }
@@ -33,28 +33,28 @@ function moveFiles {
 ########### Symbolic link DB files ############
 function symLinkFiles {
 
-   if [ ! -L $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora
+   if [ ! -L "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora ]; then
+      ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/spfile"$ORACLE_SID".ora "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora
    fi;
    
-   if [ ! -L $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID
+   if [ ! -L "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID" ]; then
+      ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/orapw"$ORACLE_SID" "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID"
    fi;
    
-   if [ ! -L $ORACLE_BASE_HOME/network/admin/sqlnet.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/sqlnet.ora $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+   if [ ! -L "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora ]; then
+      ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/sqlnet.ora "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora
    fi;
 
-   if [ ! -L $ORACLE_BASE_HOME/network/admin/listener.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/listener.ora $ORACLE_BASE_HOME/network/admin/listener.ora
+   if [ ! -L "$ORACLE_BASE_HOME"/network/admin/listener.ora ]; then
+      ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/listener.ora "$ORACLE_BASE_HOME"/network/admin/listener.ora
    fi;
 
-   if [ ! -L $ORACLE_BASE_HOME/network/admin/tnsnames.ora ]; then
-      ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_BASE_HOME/network/admin/tnsnames.ora
+   if [ ! -L "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora ]; then
+      ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/tnsnames.ora "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora
    fi;
 
    # oracle user does not have permissions in /etc, hence cp and not ln 
-   cp $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab /etc/oratab
+   cp "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/oratab /etc/oratab
 
 }
 
@@ -119,17 +119,18 @@ trap _term SIGTERM
 if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
    if [ -z "${DG_OBSERVER_NAME}" ]; then
       # Auto generate the observer name if not given
-      export DG_OBSERVER_NAME="observer-`openssl rand -hex 4`"
+      DG_OBSERVER_NAME="observer-$(openssl rand -hex 4)"
+      export DB_OBSERVER_NAME
    fi 
    export DG_OBSERVER_DIR=${ORACLE_BASE}/oradata/${DG_OBSERVER_NAME}
 
    # Calling the script to create observer
-   $ORACLE_BASE/$CREATE_OBSERVER_FILE $DG_OBSERVER_NAME $PRIMARY_DB_CONN_STR $ORACLE_PWD $DG_OBSERVER_DIR
+   "$ORACLE_BASE"/"$CREATE_OBSERVER_FILE" "$DG_OBSERVER_NAME" "$PRIMARY_DB_CONN_STR" "${ORACLE_PWD:?'ORACLE_PWD not set. Exiting...'}" "$DG_OBSERVER_DIR"
 
    if [ ! -f "$DG_OBSERVER_DIR/observer.log" ]; then
       # Display the content of nohup.out to show errors
       if [ -f "$DG_OBSERVER_DIR/nohup.out" ]; then
-         cat $DG_OBSERVER_DIR/nohup.out
+         cat "$DG_OBSERVER_DIR"/nohup.out
          echo "Observer is not able to start. Exiting..."
       else
          echo "Observer creation and startup fail !! Exiting..."
@@ -138,13 +139,13 @@ if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
    else
       # Tail on observer log and wait (otherwise container will exit)
       echo "The following output is now a tail of the observer.log:"
-      tail -f $DG_OBSERVER_DIR/observer.log &
+      tail -f "$DG_OBSERVER_DIR"/observer.log &
       childPID=$!
       wait $childPID
 
       # Show nohup output and exit
       echo "Exiting..."
-      cat $DG_OBSERVER_DIR/nohup.out
+      cat "$DG_OBSERVER_DIR"/nohup.out
       exit 0;
    fi
 fi
@@ -173,7 +174,8 @@ else
 fi;
 
 # Read-only Oracle Home Config
-export ORACLE_BASE_CONFIG=$($ORACLE_HOME/bin/orabaseconfig)
+ORACLE_BASE_CONFIG=$("$ORACLE_HOME"/bin/orabaseconfig)
+export ORACLE_BASE_CONFIG
 
 # Default for ORACLE PDB
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
@@ -189,69 +191,67 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 . "$ORACLE_BASE/$RELINK_BINARY_FILE"
 
 # Check whether database already exists
-if [ -f $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN} ]; then
+if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
-   if [ ! -d $ORACLE_BASE/admin/$ORACLE_SID/adump ]; then
-      mkdir -p $ORACLE_BASE/admin/$ORACLE_SID/adump
+   if [ ! -d "$ORACLE_BASE"/admin/$ORACLE_SID/adump ]; then
+      mkdir -p "$ORACLE_BASE"/admin/$ORACLE_SID/adump
    fi;
    
    # Start database
-   $ORACLE_BASE/$START_FILE;
+   "$ORACLE_BASE"/"$START_FILE";
    
 else
   # Remove database config files, if they exist
-  rm -f $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora
-  rm -f $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID
-  rm -f $ORACLE_BASE_HOME/network/admin/sqlnet.ora
-  rm -f $ORACLE_BASE_HOME/network/admin/listener.ora
-  rm -f $ORACLE_BASE_HOME/network/admin/tnsnames.ora
+  rm -f "$ORACLE_BASE_CONFIG"/dbs/spfile$ORACLE_SID.ora
+  rm -f "$ORACLE_BASE_CONFIG"/dbs/orapw$ORACLE_SID
+  rm -f "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora
+  rm -f "$ORACLE_BASE_HOME"/network/admin/listener.ora
+  rm -f "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora
 
   # Clean up incomplete database
-  rm -rf $ORACLE_BASE/oradata/$ORACLE_SID
+  rm -rf "$ORACLE_BASE"/oradata/$ORACLE_SID
   cp /etc/oratab oratab.bkp
   sed "/$ORACLE_SID/d" oratab.bkp > /etc/oratab
   rm -f oratab.bkp
-  rm -rf $ORACLE_BASE/cfgtoollogs/dbca/$ORACLE_SID
-  rm -rf $ORACLE_BASE/admin/$ORACLE_SID
+  rm -rf "$ORACLE_BASE"/cfgtoollogs/dbca/$ORACLE_SID
+  rm -rf "$ORACLE_BASE"/admin/$ORACLE_SID
 
   # clean up zombie shared memory/semaphores
   ipcs -m | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -m 2> /dev/null
   ipcs -s | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -s 2> /dev/null
 
   # Create database
-  $ORACLE_BASE/$CREATE_DB_FILE $ORACLE_SID $ORACLE_PDB $ORACLE_PWD || exit 1;
+  "$ORACLE_BASE"/"$CREATE_DB_FILE" $ORACLE_SID "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
 
   # Check whether database is successfully created
-  $ORACLE_BASE/$CHECK_DB_FILE
-  if [ $? -eq 0 ]; then
+  if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
-    touch $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN}
+    touch "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata
   moveFiles;
 
   # Execute setup script for extensions
-  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/extensions/setup
+  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/extensions/setup
   
   # Execute custom provided setup scripts
-  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/setup
+  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/setup
 fi;
 
 # Check whether database is up and running
-$ORACLE_BASE/$CHECK_DB_FILE
-if [ $? -eq 0 ]; then
+if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
   echo "#########################"
 
   # Execute startup script for extensions
-  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/extensions/startup
+  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/extensions/startup
 
   # Execute custom provided startup scripts
-  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
+  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/startup
   
 else
   echo "#####################################"
@@ -264,6 +264,6 @@ fi;
 
 # Tail on alert log and wait (otherwise container will exit)
 echo "The following output is now a tail of the alert.log:"
-tail -f $ORACLE_BASE/diag/rdbms/*/*/trace/alert*.log &
+tail -f "$ORACLE_BASE"/diag/rdbms/*/*/trace/alert*.log &
 childPID=$!
 wait $childPID
