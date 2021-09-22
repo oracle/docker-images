@@ -23,6 +23,9 @@ Provides Docker build files to create an Oracle Connection Manager docker image.
 ## OracleRACStorageServer
 Provides Docker build files to create an NFS based Storage Server for Oracle RAC. If you do not have block storage or NAS device for Oracle RAC to store OCR/Voting files and Datafiles, you can use OracleRACStorageServer docker image to provide shared storage. For more details, see [OracleRACStorageServer/README.md](./OracleRACStorageServer/README.md).
 
+## OracleRACDNSServer
+Provides Docker build files to create a local DNS Server container for Oracle RAC On Docker. This container based DNS server provides IP addresses and the hostname resolution for the docker containers on the host. For more details, see [OracleRACDNSServer/README.md](./OracleDNSServer/README.md).
+
 ## OracleRealApplicationClusters
 Provides Docker build files to create an Oracle RAC Database docker image. For more details, see [OracleRealApplicationClusters/README.md](./OracleRealApplicationClusters/README.md).
 

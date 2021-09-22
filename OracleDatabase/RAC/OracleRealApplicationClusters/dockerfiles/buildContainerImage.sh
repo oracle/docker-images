@@ -1,29 +1,29 @@
 #!/bin/bash
-# 
+#
 # Since: November, 2018
 # Author: paramdeep.saini@oracle.com
-# Description: Build script for building Oracle Database RAC Docker images.
-# 
+# Description: Build script for building RAC container image
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
-# Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
-# 
+#
+# Copyright (c) 2014,2021 Oracle and/or its affiliates.
+#
 
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-i] [-o] [Docker build option]
-Builds a Docker Image for Oracle Database.
-  
+Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x] [-i] [-o] [container build option]
+It builds a container image for a DNS server
+
 Parameters:
    -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -i: ignores the MD5 checksums
-   -o: passes on Docker build option
+   -o: passes on container build option
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014,2021 Oracle and/or its affiliates.
 
 EOF
   exit 0
