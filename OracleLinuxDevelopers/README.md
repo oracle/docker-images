@@ -36,8 +36,8 @@ Oracle Database along with the appropriate Oracle Instant Client packages.
 
 ### Go
 
-* [`oraclelinux7-golang:1.15`](oraclelinux7/golang/1.15/Dockerfile)
 * [`oraclelinux7-golang:1.16`](oraclelinux7/golang/1.16/Dockerfile)
+* [`oraclelinux7-golang:1.17`](oraclelinux7/golang/1.17/Dockerfile)
 
 ### Node.js
 
