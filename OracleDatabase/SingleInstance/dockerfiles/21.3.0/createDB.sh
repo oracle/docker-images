@@ -90,6 +90,8 @@ else
     cat > "$ORACLE_BASE"/dbca.rsp <<EOF
 sysPassword=${ORACLE_PWD}
 EOF
+    # Reverting umask to original value
+    umask 022
 
     export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
   else
@@ -147,6 +149,8 @@ fi
 
 # Replace place holders in response file
 cp "$ORACLE_BASE"/"$CONFIG_RSP" "$ORACLE_BASE"/dbca.rsp
+# Reverting umask to original value
+umask 022
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" "$ORACLE_BASE"/dbca.rsp
 sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" "$ORACLE_BASE"/dbca.rsp
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" "$ORACLE_BASE"/dbca.rsp
@@ -180,7 +184,7 @@ export ARCHIVELOG_DIR=$ORACLE_BASE/oradata/$ORACLE_SID/$ARCHIVELOG_DIR_NAME
 
 # Start LISTENER and run DBCA
 lsnrctl start &&
-dbca -silent -createDatabase -enableArchive "$ENABLE_ARCHIVELOG" -archiveLogDest "$ARCHIVELOG_DIR" "$DBCA_CRED_OPTIONS" -responseFile "$ORACLE_BASE"/dbca.rsp ||
+dbca -silent -createDatabase -enableArchive "$ENABLE_ARCHIVELOG" -archiveLogDest "$ARCHIVELOG_DIR" ${DBCA_CRED_OPTIONS} -responseFile "$ORACLE_BASE"/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
  cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
 
