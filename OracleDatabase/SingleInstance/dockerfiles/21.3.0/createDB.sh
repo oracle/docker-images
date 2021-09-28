@@ -17,10 +17,10 @@ set -e
 
 ############## Setting up network related config files (sqlnet.ora, listener.ora) ##############
 function setupNetworkConfig {
-  mkdir -p $ORACLE_BASE_HOME/network/admin
+  mkdir -p "$ORACLE_BASE_HOME"/network/admin
 
   # sqlnet.ora
-  echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+  echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora
 
   # listener.ora
   echo "LISTENER = 
@@ -33,15 +33,15 @@ function setupNetworkConfig {
 
 DEDICATED_THROUGH_BROKER_LISTENER=ON
 DIAG_ADR_ENABLED = off
-" > $ORACLE_BASE_HOME/network/admin/listener.ora
+" > "$ORACLE_BASE_HOME"/network/admin/listener.ora
 
 }
 
 function setupTnsnames {
-  mkdir -p $ORACLE_BASE_HOME/network/admin
+  mkdir -p "$ORACLE_BASE_HOME"/network/admin
 
   # tnsnames.ora
-  echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > $ORACLE_BASE_HOME/network/admin/tnsnames.ora
+  echo "$ORACLE_SID=localhost:1521/$ORACLE_SID" > "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora
   echo "$ORACLE_PDB= 
 (DESCRIPTION = 
   (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
@@ -49,7 +49,7 @@ function setupTnsnames {
     (SERVER = DEDICATED)
     (SERVICE_NAME = $ORACLE_PDB)
   )
-)" >> $ORACLE_BASE_HOME/network/admin/tnsnames.ora
+)" >> "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora
 
 }
 
@@ -65,14 +65,14 @@ export ORACLE_SID=${1:-ORCLCDB}
 # Check whether ORACLE_PDB is passed on
 export ORACLE_PDB=${2:-ORCLPDB1}
 
+# Setting up file creation mask for newly created files (dbca response templates)
+umask 177
+
 # Checking if only one of INIT_SGA_SIZE & INIT_PGA_SIZE is provided by the user
 if [[ "${INIT_SGA_SIZE}" != "" && "${INIT_PGA_SIZE}" == "" ]] || [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" != "" ]]; then
    echo "ERROR: Provide both the values, INIT_SGA_SIZE and INIT_PGA_SIZE or neither of them. Exiting.";
    exit 1;
 fi;
-
-# Auto generate ORACLE PWD if not passed on
-export ORACLE_PWD=${3:-"`openssl rand -base64 8`1"}
 
 # If wallet is present for database credentials then prepare dbca options to use
 if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
@@ -80,14 +80,25 @@ if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
   export DBCA_CRED_OPTIONS="-useWalletForDBCredentials true  -dbCredentialsWalletLocation ${WALLET_DIR}"
 else
   if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
-    # Creating temporary response file containing sysPassword for clone/standby cases
-    echo "sysPassword=${ORACLE_PWD}" > $ORACLE_BASE/dbca.rsp
-    export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
-  fi
+    # Validation: Checking if ORACLE_PWD is provided or not
+    if [[ -z "$ORACLE_PWD" ]]; then
+      echo "ERROR: Please provide sys password of the primary database as ORACLE_PWD env variable. Exiting..."
+      exit 1
+    fi
 
-  # Displaying password only when password is auto-generated and Oracle wallet is not used
-  if [[ -z "${3+x}" ]]; then
-    echo "ORACLE PASSWORD FOR SYS, SYSTEM AND PDBADMIN: $ORACLE_PWD";
+    # Creating temporary response file containing sysPassword for clone/standby cases
+    cat > "$ORACLE_BASE"/dbca.rsp <<EOF
+sysPassword=${ORACLE_PWD}
+EOF
+    # Reverting umask to original value
+    umask 022
+
+    export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
+  else
+    # If ORACLE_PWD is not provided, use DBCA auto password generation for generating a random, strong password
+    if [[ -z "${ORACLE_PWD}" ]]; then
+      export DBCA_CRED_OPTIONS="-autoGeneratePasswords"
+    fi
   fi
 
 fi
@@ -106,14 +117,14 @@ if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
   # Creating the database using the dbca command
   if [ "${STANDBY_DB}" = "true" ]; then
     # Creating standby database
-    dbca -silent -createDuplicateDB -gdbName ${PRIMARY_DB_NAME} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} ${DBCA_CRED_OPTIONS} -sid ${ORACLE_SID} -createAsStandby -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
-      cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
-      cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+    dbca -silent -createDuplicateDB -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -createAsStandby -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
   else
     # Creating clone database after duplicating a primary database; CLONE_DB is set to true here
-    dbca -silent -createDuplicateDB -gdbName ${ORACLE_SID} -primaryDBConnectionString ${PRIMARY_DB_CONN_STR} ${DBCA_CRED_OPTIONS} -sid ${ORACLE_SID} -databaseConfigType SINGLE -useOMF true -dbUniquename ${ORACLE_SID} ORACLE_HOSTNAME=${ORACLE_HOSTNAME} ||
-      cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
-      cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+    dbca -silent -createDuplicateDB -gdbName "$ORACLE_SID" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -databaseConfigType SINGLE -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
   fi
 
   # Setup tnsnames.ora after execution of DBCA command to prevent getting overwritten
@@ -129,24 +140,26 @@ if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
   lsnrctl start;
 
   # Remove temporary response file
-  if [ -f $ORACLE_BASE/dbca.rsp ]; then
-    rm $ORACLE_BASE/dbca.rsp
+  if [ -f "$ORACLE_BASE"/dbca.rsp ]; then
+    rm "$ORACLE_BASE"/dbca.rsp
   fi
 
   exit 0
 fi
 
 # Replace place holders in response file
-cp $ORACLE_BASE/$CONFIG_RSP $ORACLE_BASE/dbca.rsp
-sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" $ORACLE_BASE/dbca.rsp
-sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" $ORACLE_BASE/dbca.rsp
-if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
-  # Deleting password options from dbca response file as wallet will be used for credentials
-  sed -i -e "/###ORACLE_PWD###/d" $ORACLE_BASE/dbca.rsp
+cp "$ORACLE_BASE"/"$CONFIG_RSP" "$ORACLE_BASE"/dbca.rsp
+# Reverting umask to original value
+umask 022
+sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" "$ORACLE_BASE"/dbca.rsp
+sed -i -e "s|###ORACLE_PDB###|$ORACLE_PDB|g" "$ORACLE_BASE"/dbca.rsp
+sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" "$ORACLE_BASE"/dbca.rsp
+if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]] || [[ -z "$ORACLE_PWD" ]]; then
+   # Deleting password options from dbca response file as wallet will be used for credentials or ORACLE_PWD is not provided (i.e. password auto-generation intended)
+   sed -i -e "/###ORACLE_PWD###/d" "$ORACLE_BASE"/dbca.rsp
 else
-  sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORACLE_BASE/dbca.rsp
+   sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" "$ORACLE_BASE"/dbca.rsp
 fi
-sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" $ORACLE_BASE/dbca.rsp
 
 # If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user
 if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
@@ -155,12 +168,12 @@ if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
     # The minimum of 2G is for small environments to guarantee that Oracle has enough memory to function
     # However, bigger environment can and should use more of the available memory
     # This is due to Github Issue #307
-    if [ `nproc` -gt 8 ]; then
-        sed -i -e "s|totalMemory=2048||g" $ORACLE_BASE/dbca.rsp
+    if [ "$(nproc)" -gt 8 ]; then
+        sed -i -e "s|totalMemory=2048||g" "$ORACLE_BASE"/dbca.rsp
     fi;
 else
-    sed -i -e "s|totalMemory=2048||g" $ORACLE_BASE/dbca.rsp
-    sed -i -e "s|initParams=.*|&,sga_target=${INIT_SGA_SIZE}M,pga_aggregate_target=${INIT_PGA_SIZE}M|g" $ORACLE_BASE/dbca.rsp
+    sed -i -e "s|totalMemory=2048||g" "$ORACLE_BASE"/dbca.rsp
+    sed -i -e "s|initParams=.*|&,sga_target=${INIT_SGA_SIZE}M,pga_aggregate_target=${INIT_PGA_SIZE}M|g" "$ORACLE_BASE"/dbca.rsp
 fi;
 
 # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
@@ -171,9 +184,9 @@ export ARCHIVELOG_DIR=$ORACLE_BASE/oradata/$ORACLE_SID/$ARCHIVELOG_DIR_NAME
 
 # Start LISTENER and run DBCA
 lsnrctl start &&
-dbca -silent -createDatabase -enableArchive $ENABLE_ARCHIVELOG -archiveLogDest $ARCHIVELOG_DIR ${DBCA_CRED_OPTIONS} -responseFile $ORACLE_BASE/dbca.rsp ||
- cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID/$ORACLE_SID.log ||
- cat /opt/oracle/cfgtoollogs/dbca/$ORACLE_SID.log
+dbca -silent -createDatabase -enableArchive "$ENABLE_ARCHIVELOG" -archiveLogDest "$ARCHIVELOG_DIR" ${DBCA_CRED_OPTIONS} -responseFile "$ORACLE_BASE"/dbca.rsp ||
+ cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
+ cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
 
 # Setup tnsnames.ora after execution of DBCA command to prevent getting overwritten
 setupTnsnames;
@@ -197,4 +210,4 @@ exit;
 EOF
 
 # Remove temporary response file
-rm $ORACLE_BASE/dbca.rsp
+rm "$ORACLE_BASE"/dbca.rsp
