@@ -1,6 +1,0 @@
-<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
-  <description> weblogic.xml for memory persistence </description>
-  <session-descriptor>
-    <persistent-store-type>replicated_if_clustered</persistent-store-type>
-  </session-descriptor>
-</weblogic-web-app>

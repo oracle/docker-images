@@ -1,8 +1,0 @@
-<application version="5">
-  <module>
-    <web>
-      <context-root>/</context-root>
-      <web-uri>registration.war</web-uri>
-    </web>
-  </module>
-</application>
