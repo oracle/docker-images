@@ -1,9 +1,0 @@
-create
---jdkVersion=%JDK_VERSION%
---type oud_wls
---version=12.2.1.4.0
---tag=%BUILDTAG%
---pull
---installerResponseFile %DOCKER_REPO%/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,%DOCKER_REPO%/OracleUnifiedDirectorySM/dockerfiles/12.2.1.4.0/install/oud.response
---additionalBuildCommands %DOCKER_REPO%/OracleUnifiedDirectorySM/imagetool/12.2.1.4.0/additionalBuildCmds.txt
---additionalBuildFiles %DOCKER_REPO%/OracleUnifiedDirectorySM/dockerfiles/12.2.1.4.0/container-scripts
