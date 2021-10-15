@@ -74,7 +74,7 @@ ENV ORACLE_BASE=/opt/oracle \
     WALLET_DIR=""
 
 # Use second ENV so that variable get substituted
-ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
+ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib \
     CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
 
