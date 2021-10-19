@@ -41,8 +41,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=server-jre-8u301-linux-x64.tar.gz \
-	JAVA_SHA256=fe1cbfbb4d67a3bd5a9491de3c13ab2870043bad8b5e6654b22432126231f482 \
+ENV JAVA_PKG=server-jre-8u311-linux-x64.tar.gz \
+	JAVA_SHA256=4132d53f500fea109386a5734dc156468558d792082cfbd39f0a097e6f55e710 \
 	JAVA_HOME=/usr/java/jdk-8
 
 COPY $JAVA_PKG /tmp/jdk.tgz
@@ -58,7 +58,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=1.8.0_301 \
+ENV JAVA_VERSION=1.8.0_311 \
 	JAVA_HOME=/usr/java/jdk-8 
 	
 ENV	PATH $JAVA_HOME/bin:$PATH
