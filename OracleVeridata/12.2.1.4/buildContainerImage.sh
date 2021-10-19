@@ -6,28 +6,28 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2020-2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020-2021 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 #
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version]
-Builds a Docker Image for Oracle GoldenGate Veridata.
+Usage: buildContainerImage.sh -v [version]
+Builds a Docker container for Oracle GoldenGate Veridata.
 
 Parameters:
    -v: Release version to build. Default is 12.2.1.4.0
    -i: OGG Veridata Installer zip file
-   -f: FMW Release version . Default is 12.2.1.4-210701
+   -f: FMW Release version.Default is 12.2.1.4-210701
    -p: Patch file
    -h: Help
 
 
 
-Copyright (c) 2020-2021 Oracle and/or its affiliates. All rights reserved.
-Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+Copyright (c) 2020-2021 Oracle and/or its affiliates.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 EOF
 exit 0
@@ -78,7 +78,7 @@ while getopts "hc:v:i:f:p:" optname; do
       ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+      echo "Unknown error while processing options inside buildContainerImage.sh"
       ;;
   esac
 done
@@ -163,5 +163,5 @@ cat << EOF
 
 EOF
 else
-  echo "Oracle GoldenGate Veridata Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "Oracle GoldenGate Veridata container image was not successfully created. Check the output and correct any reported problems with the build operation."
 fi

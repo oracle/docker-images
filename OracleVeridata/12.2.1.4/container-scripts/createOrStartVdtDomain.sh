@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #
-# Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2021 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # Author:Arnab Nandi <arnab.x.nandi@oracle.com>
@@ -56,12 +56,10 @@ echo "====================================="
 
 echo "SCHEMA_PREFIX=${SCHEMA_PREFIX:?"Please set SCHEMA_PREFIX for the database schemas"}"
 echo "VERIDATA_DOMAIN_NAME=${VERIDATA_DOMAIN_NAME:?"Please set VERIDATA_DOMAIN_NAME for creating the new Domain"}"
-#echo "VERIDATA_PASSWORD=${VERIDATA_PASSWORD:?"Please set VERIDATA_PASSWORD"}"
 echo "VERIDATA_USER=${VERIDATA_USER:?"Please set VERIDATA_USER"}"
 echo "DATABASE_HOST=${DATABASE_HOST:?"Please set DATABASE_HOST"}"
 echo "DATABASE_PORT=${DATABASE_PORT:?"Please set DATABASE_PORT"}"
 echo "DATABASE_USER=${DATABASE_USER:?"Please set DATABASE_USER"}"
-#echo "DATABASE_PASSWORD=${DATABASE_PASSWORD:?"Please set DATABASE_PASSWORD"}"
 
 CONTAINERCONFIG_DIR=${ORACLE_HOME}/user_projects/ContainerData
 
@@ -97,12 +95,10 @@ then
 fi
 
 
-#echo "DATABASE_JDBC_URL=${DATABASE_JDBC_URL} "
-
 if [ -z "${DATABASE_JDBC_URL}" ]
 then
     CONNECTION_STRING="${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_SERVICE}"
-    #JDBC_URL="jdbc:oracle:thin:@$CONNECTION_STRING"
+
 else
     CONNECTION_STRING="${DATABASE_JDBC_URL}"
 fi
@@ -123,11 +119,6 @@ else
     JDBC_URL="jdbc:mysql://$CONNECTION_STRING"
   fi
 fi
-
-
-#CONNECTION_STRING="${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_SERVICE}"
-#JDBC_URL="jdbc:oracle:thin:@$CONNECTION_STRING"
-
 
 export DATABASE_HOST=$DATABASE_HOST
 export DATABASE_PORT=$DATABASE_PORT
@@ -223,9 +214,6 @@ then
     CONFIGURE_DOMAIN="false"
 fi
 
-#CONFIGURE_DOMAIN="true"
-#export CONFIGURE_DOMAIN=$CONFIGURE_DOMAIN
-
 
 echo "Installation of Veridata Domain"
 echo "==================================="
@@ -233,8 +221,7 @@ echo "==================================="
 if [ "${CONFIGURE_DOMAIN}" == "true" ]
 then
 	echo "Running WLST.. "
-  echo "$ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning $ORACLE_HOME/container-scripts/createVeridataDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -dh $DOMAIN_HOME -name $VERIDATA_DOMAIN_NAME -port $VERIDATA_PORT -user $VERIDATA_USER -password $VERIDATA_PASSWORD -rcuDb $JDBC_URL -rcuPrefix $SCHEMA_PREFIX -rcuSchemaPwd $SCHEMA_PASSWORD -adminPort $ADMIN_PORT -adminName $ADMIN_NAME -prodMode $PROD_MODE">> $CONTAINERCONFIG_DIR/VDT.Domain.Configure.suc
-	$ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning $ORACLE_HOME/container-scripts/createVeridataDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -dh $DOMAIN_HOME -name $VERIDATA_DOMAIN_NAME -port $VERIDATA_PORT -user $VERIDATA_USER -password $VERIDATA_PASSWORD -rcuDb $JDBC_URL -rcuPrefix $SCHEMA_PREFIX -rcuSchemaPwd $SCHEMA_PASSWORD -adminPort $ADMIN_PORT -adminName $ADMIN_NAME -prodMode $PROD_MODE
+    $ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning $ORACLE_HOME/container-scripts/createVeridataDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -dh $DOMAIN_HOME -name $VERIDATA_DOMAIN_NAME -port $VERIDATA_PORT -user $VERIDATA_USER -password $VERIDATA_PASSWORD -rcuDb $JDBC_URL -rcuPrefix $SCHEMA_PREFIX -rcuSchemaPwd $SCHEMA_PASSWORD -adminPort $ADMIN_PORT -adminName $ADMIN_NAME -prodMode $PROD_MODE
 	retval=$?
 	if [ $retval -ne 0 ]
 	then
@@ -243,16 +230,16 @@ then
 	else
 	   	# Write the Domain suc file...
 	   	touch $CONTAINERCONFIG_DIR/VDT.Domain.Configure.suc
-      echo "$ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning $ORACLE_HOME/container-scripts/createVeridataDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -dh $DOMAIN_HOME -name $VERIDATA_DOMAIN_NAME -port $VERIDATA_PORT -user $VERIDATA_USER -password $VERIDATA_PASSWORD -rcuDb $JDBC_URL -rcuPrefix $SCHEMA_PREFIX -rcuSchemaPwd $SCHEMA_PASSWORD -adminPort $ADMIN_PORT -adminName $ADMIN_NAME -prodMode $PROD_MODE">> $CONTAINERCONFIG_DIR/VDT.Domain.Configure.suc
+        echo "$ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning $ORACLE_HOME/container-scripts/createVeridataDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -dh $DOMAIN_HOME -name $VERIDATA_DOMAIN_NAME -port $VERIDATA_PORT -user $VERIDATA_USER -password $VERIDATA_PASSWORD -rcuDb $JDBC_URL -rcuPrefix $SCHEMA_PREFIX -rcuSchemaPwd $SCHEMA_PASSWORD -adminPort $ADMIN_PORT -adminName $ADMIN_NAME -prodMode $PROD_MODE">> $CONTAINERCONFIG_DIR/VDT.Domain.Configure.suc
 	    echo "DATABASE_JDBC_URL=$JDBC_URL" > $CONTAINERCONFIG_DIR/vdtserverenv.sh
 	    echo "CONNECTION_STRING=$CONNECTION_STRING" > $CONTAINERCONFIG_DIR/vdtserverenv.sh
 	   	echo "SCHEMA_PREFIX=$SCHEMA_PREFIX" >> $CONTAINERCONFIG_DIR/vdtserverenv.sh
 	   	echo "SCHEMA_PASSWORD=$SCHEMA_PASSWORD" >> $CONTAINERCONFIG_DIR/vdtserverenv.sh
 
 	   	# Create the security file to start the server(s) without the password prompt
-      mkdir -p ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/
-      echo "username=${VERIDATA_USER}" >> ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/boot.properties
-      echo "password=${VERIDATA_PASSWORD}" >> ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/boot.properties
+        mkdir -p ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/
+        echo "username=${VERIDATA_USER}" >> ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/boot.properties
+        echo "password=${VERIDATA_PASSWORD}" >> ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/boot.properties
 
 
       # Setting env variables
@@ -273,7 +260,6 @@ ${DOMAIN_HOME}/bin/setDomainEnv.sh
 
 # Start Admin Server and tail the logs
 ${DOMAIN_HOME}/startWebLogic.sh
-#touch ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
 tail -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
 childPID=$!
 wait $childPID
