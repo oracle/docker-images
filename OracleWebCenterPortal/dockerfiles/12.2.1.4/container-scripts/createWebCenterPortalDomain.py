@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020,2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 import os
 import sys
@@ -17,7 +17,8 @@ class WCPortal12214Provisioner:
     }
 
     CLUSTERS = {
-        'wcp_cluster1' : {}
+        'wcportal_cluster1' : {},
+        'wcportlet_cluster1' : {}
     }
 
     SERVERS = {
@@ -30,7 +31,13 @@ class WCPortal12214Provisioner:
             'ListenAddress': '',
             'ListenPort': 8888,
             'Machine': 'machine1',
-            'Cluster': 'wcp_cluster1'
+            'Cluster': 'wcportal_cluster1'
+        },
+        'WC_Portlet' : {
+            'ListenAddress': '',
+            'ListenPort': 7777,
+            'Machine': 'machine1',
+            'Cluster': 'wcportlet_cluster1'
         }
     }
 
@@ -49,15 +56,22 @@ class WCPortal12214Provisioner:
             '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.wc_spaces_template.jar',
             '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.analyticscollector_template.jar'
         ],
-        'serverGroupsToTarget' : [ 'Webcenter Portal Managed Server' ]
+        'serverGroupsToTarget' : [ 'AS-MGD-SVRS_SPACES-MGD-SVRS' ]
     }
-
-    def __init__(self, oracleHome, javaHome, domainParentDir, adminServerPort, managedServerPort):
+    WCPortlet_12214_TEMPLATES = {
+            'extensionTemplates' : [
+                '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.portlet_producer_apps_template.jar',
+                '@@ORACLE_HOME@@/wcportal/common/templates/wls/oracle.ootb_producers_template.jar'
+            ],
+            'serverGroupsToTarget' : [ 'ENSEMBLE-MGD-SVRS_PRODUCER_APPS-MGD-SVRS' ]
+        }
+    def __init__(self, oracleHome, javaHome, domainParentDir, adminServerPort, managedServerPort, managedServerPortletPort):
         self.oracleHome = self.validateDirectory(oracleHome)
         self.javaHome = self.validateDirectory(javaHome)
         self.domainParentDir = self.validateDirectory(domainParentDir, create=True)
         self.SERVERS['AdminServer']['ListenPort'] = int(adminServerPort)
         self.SERVERS['WC_Portal']['ListenPort'] = int(managedServerPort)
+        self.SERVERS['WC_Portlet']['ListenPort'] = int(managedServerPortletPort)
         return
 
     def createWCPortalDomain(self, name, user, password, db, dbPrefix, dbPassword):
@@ -133,6 +147,9 @@ class WCPortal12214Provisioner:
         for extensionTemplate in self.WCPortal_12214_TEMPLATES['extensionTemplates']:
             addTemplate(self.replaceTokens(extensionTemplate))
 
+        print 'Applying WCPortlet templates...'
+        for extensionTemplate in self.WCPortlet_12214_TEMPLATES['extensionTemplates']:
+            addTemplate(self.replaceTokens(extensionTemplate))
         print 'Extension Templates added'
 
         print 'Configuring the Service Table DataSource...'
@@ -184,7 +201,7 @@ class WCPortal12214Provisioner:
         set('Target', ",".join(self.CLUSTERS))
 
         cd('/AppDeployments/wsm-pm')
-        set('Targets', ",".join(('AdminServer', 'WC_Portal')))
+        set('Targets', ",".join(('AdminServer', 'WC_Portal' ,'WC_Portlet')))
         
         print 'Preparing to update domain... '
         updateDomain()
@@ -305,11 +322,14 @@ while i < len(sys.argv):
     elif sys.argv[i] == '-managedServerPort':
         managedServerPort = sys.argv[i + 1]
         i += 2
+    elif sys.argv[i] == '-managedServerPortletPort':
+         managedServerPortletPort = sys.argv[i + 1]
+         i += 2
     else:
         print 'Unexpected argument switch at position ' + str(i) + ': ' + str(sys.argv[i])
         usage()
         sys.exit(1)
 
-provisioner = WCPortal12214Provisioner(oracleHome, javaHome, domainParentDir, adminServerPort, managedServerPort)
+provisioner = WCPortal12214Provisioner(oracleHome, javaHome, domainParentDir, adminServerPort, managedServerPort, managedServerPortletPort)
 provisioner.createWCPortalDomain(domainName, domainUser, domainPassword, rcuDb, rcuSchemaPrefix, rcuSchemaPassword)
 

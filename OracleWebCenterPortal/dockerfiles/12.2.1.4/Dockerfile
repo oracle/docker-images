@@ -1,4 +1,4 @@
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
@@ -18,7 +18,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/wcportal:12.2.1.4.0 .
+#      $ docker build -t oracle/wcportal:12.2.1.4
 #
 # -------------------------------------------------------------
 FROM oracle/fmw-infrastructure:12.2.1.4.0 as builder

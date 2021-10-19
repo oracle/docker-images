@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020,2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020,2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 function validate_parameter {
@@ -21,7 +21,7 @@ fi
 
 if [ -z ${CONFIGURE_ES_CONNECTION} ]
 then
-   # by default we always keep this flag ON
+   # by default we always keep this flag true
    export CONFIGURE_ES_CONNECTION="true"
 fi
 
