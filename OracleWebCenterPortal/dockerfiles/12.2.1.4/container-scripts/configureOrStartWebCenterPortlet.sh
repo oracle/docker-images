@@ -1,8 +1,8 @@
 #!/bin/bash
-# Copyright (c) 2020,2021, Oracle and/or its affiliates.
+# Copyright (c) 2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 export vol_name=u01
-export server=WC_Portal
+export server=WC_Portlet
 export DOMAIN_NAME='wcp-domain'
 
 ########### SIGINT handler ############
@@ -70,53 +70,18 @@ export CONTAINERCONFIG_DIR_NAME="container-data"
 export CONTAINERCONFIG_DIR="/$vol_name/oracle/user_projects/$CONTAINERCONFIG_DIR_NAME"
 export CONTAINERCONFIG_LOG_DIR="$CONTAINERCONFIG_DIR/logs"
 export hostname=`hostname -I`
-CONFIGURE_UCM="true"
 
-# start WC_Portal server in the container
+ #start WC_Portlet server in the container
 echo ""
 echo "========================================================="
-echo "            WebCenter Portal Docker Container            "
-echo "                      Portal Server                      "
+echo "            WebCenter Portlet Docker Container            "
+echo "                      Portlet Server                      "
 echo "                       12.2.1.4                        "
 echo "========================================================="
 echo ""
 echo ""
 
-cd /$vol_name/oracle/
-sh /$vol_name/oracle/container-scripts/startManagedServer.sh $server
+sh /$vol_name/oracle/container-scripts/installPortletAndStart.sh
 
-if [ -e $CONTAINERCONFIG_DIR/WCPortal.UCM.$UCM_CONNECTION_NAME.suc ]
-then
-  CONFIGURE_UCM="false"
-fi
 
-if [ "$CONFIGURE_UCM" == "true" ]
-then
-  echo "Content Server connection is not configured."
-  if [ "$CONFIGURE_UCM_CONNECTION" == "true" ]
-  then
-    echo "Creating content Server connection."
-    #create Content Server Connection
-    sh /$vol_name/oracle/container-scripts/createContentServerConnection.sh
-
-    # Write the ucm suc file... 
-    touch $CONTAINERCONFIG_DIR/WCPortal.UCM.$UCM_CONNECTION_NAME.suc
-  else
-    echo "Content Server configure is not selected in configure map, CONFIGURE_UCM_CONNECTION = $CONFIGURE_UCM_CONNECTION ."
-  fi
-fi
-
-/$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/createAnalyticsConnection.py
-/$vol_name/oracle/container-scripts/stopManagedServer.sh $server
-rm -f /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/$server/tmp/$server.lok
-rm -f /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/bin/$server.out
-/$vol_name/oracle/container-scripts/startManagedServer.sh $server
-
-echo ""
-echo ""
-if [ "$KEEP_CONTAINER_ALIVE" == "true" ]
-then
-  # This keeps the container running and alive
-  sh /$vol_name/oracle/container-scripts/keepContainerAlive.sh $CONTAINERCONFIG_LOG_DIR $hostname $server
-fi
 
