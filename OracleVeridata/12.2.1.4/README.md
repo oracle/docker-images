@@ -1,4 +1,4 @@
-# Oracle GoldenGate(OGG) Veridata
+# Oracle GoldenGate (OGG) Veridata
 
 This Docker configuration has been used to create the Oracle GoldenGate Veridata image. Providing this OGG Veridata image facilitates the configuration and environment set up for DevOps users. This project includes the creation of an OGG Veridata domain and agent.
 
@@ -8,6 +8,8 @@ This Docker configuration has been used to create the Oracle GoldenGate Veridata
 Please use https://container-registry.oracle.com to pull the images.
 
 `docker login container-registry.oracle.com`
+
+For more information please check https://container-registry.oracle.com
 
 
 ## How to build
@@ -22,9 +24,17 @@ Please use *docker tag* to tag it to *oracle/fmw-infrastructure:12.2.1.4.0-21070
 
 2. Oracle Database
 
-Oracle Database is required to install OGG Veridata repository.You can use an existing Oracle Database or pull Oracle Database image.
+Oracle Database is required to install OGG Veridata repository.
+You can use an existing Oracle Database or build a Oracle Database image.
+
+For building a Oracle Database image use the following command
 
 `docker pull container-registry.oracle.com/database/enterprise:19.3.0.0`
+
+For more information please check *Database* section in
+
+https://container-registry.oracle.com
+
 
 3. OGG Veridata Installer
 
@@ -36,12 +46,12 @@ https://www.oracle.com/middleware/technologies/goldengate-downloads.html
 
 4. Latest Bundle Patch (optional but recommended)
  
-Download the latest bundle patch.
+Download the latest bundle patch. Use the support website and login. Navigate to *Patch & Updates* and search for product patch.
 
 https://support.oracle.com
 
 
-5. Run buildContainerImage.sh
+5. Run `buildContainerImage.sh`
 
 Usage: buildContainerImage.sh -v [version]
 Builds a container Image for Oracle GoldenGate Veridata.
@@ -73,7 +83,7 @@ This is need in case you have container image of Oracle Database as repository.
 
 3. OGG Veridata Admin Server and Managed Server
 
-Edit vdt.env file . Following list of properties are required
+Edit `vdt.env file` . Following list of properties are required
 
 *DATABASE_HOST*
 *DATABASE_PORT*
@@ -86,21 +96,21 @@ Edit vdt.env file . Following list of properties are required
 *VERIDATA_PASSWORD*
 *DOMAIN_HOST_VOLUME*
 
-Execute run_admin_server.sh to run the Admin server.
+Execute `run_admin_server.sh` to run the Admin server.
 
-Note: Only for the  first time this script will also install the Veridata Domain. Subsequent runs will only start the Admin server.
+Note: Only for the  first time this script will also install the Veridata domain. Subsequent runs will only start the Admin server.
 
 After starting of the Admin Server execute run_managed_server.sh to run the Veridata Server. 
 
-Note: Oracle recommends that the vdt.env file be deleted or secured after the container and 
+Note: Oracle recommends that the `vdt.env` file be deleted or secured after the container and 
 WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
 
 4. OGG Veridata Agent
 
-Edit vdtagent.env . Following list of properties are required
+Edit `vdtagent.env` . Following list of properties are required
 
-Execute run_agent.sh to start the Agent.
+Execute `run_agent.sh` to start the Agent.
 
 
 
