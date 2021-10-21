@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c)  2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c)  2020,2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 function validate_parameter {
@@ -66,6 +66,7 @@ echo "ADMIN_PORT=${ADMIN_PORT}"
 echo "ADMIN_USERNAME=${ADMIN_USERNAME}"
 echo "MANAGED_SERVER_PORT=${MANAGED_SERVER_PORT}"
 echo "KEEP_CONTAINER_ALIVE=${KEEP_CONTAINER_ALIVE}"
+echo "MANAGED_SERVER_PORTLET_PORT=${MANAGED_SERVER_PORTLET_PORT}"
 echo ""
 echo ""
 
@@ -80,6 +81,7 @@ export DOMAIN_NAME='wcp-domain'
 export DB_PASSWORD=$DB_PASSWORD
 export DB_SCHEMA_PASSWORD=$DB_SCHEMA_PASSWORD
 export MANAGED_SERVER_PORT=${MANAGED_SERVER_PORT}
+export MANAGED_SERVER_PORTLET_PORT=${MANAGED_SERVER_PORTLET_PORT}
 export jdbc_url="jdbc:oracle:thin:@"$CONNECTION_STRING
 export vol_name=u01
 export KEEP_CONTAINER_ALIVE=$KEEP_CONTAINER_ALIVE
@@ -127,7 +129,7 @@ then
   if [ "$DROP_SCHEMA" == "true" ]
   then
     export RCU_LOG_NAME="RCU_dropRepository.out"
-    /$vol_name/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole SYSDBA -schemaPrefix $RCUPREFIX -component STB -component OPSS -component IAU -component IAU_APPEND -component IAU_VIEWER -component MDS -component WEBCENTER -component WLS -f < /$vol_name/oracle/pwd.txt
+    /$vol_name/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole SYSDBA -schemaPrefix $RCUPREFIX -component STB -component OPSS -component IAU -component IAU_APPEND -component IAU_VIEWER -component MDS -component WEBCENTER -component WLS -component PORTLET -component ACTIVITIES -f < /$vol_name/oracle/pwd.txt
     retval=$?
     if [ $retval -ne 0 ];
     then
@@ -140,7 +142,7 @@ then
 
   # Run the RCU.. it hasn't been loaded before.. 	
   export RCU_LOG_NAME="RCU_createRepository.out"
-  /$vol_name/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole SYSDBA -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component IAU_VIEWER -component WEBCENTER -component MDS -component IAU_APPEND -component STB -component IAU -component WLS -tablespace USERS -tempTablespace TEMP -f < /$vol_name/oracle/pwd.txt 
+  /$vol_name/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole SYSDBA -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component IAU_VIEWER -component WEBCENTER -component MDS -component IAU_APPEND -component STB -component IAU -component WLS -component PORTLET -component ACTIVITIES -tablespace USERS -tempTablespace TEMP -f < /$vol_name/oracle/pwd.txt
   retval=$?
   if [ $retval -ne 0 ];
   then
@@ -174,7 +176,7 @@ then
   echo "Domain Configuration Phase"
   echo "=========================="
 
-  /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/createWebCenterPortalDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent /$vol_name/oracle/user_projects/domains -name $DOMAIN_NAME -user $ADMIN_USERNAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -adminServerPort $ADMIN_PORT -managedServerPort $MANAGED_SERVER_PORT
+  /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/createWebCenterPortalDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent /$vol_name/oracle/user_projects/domains -name $DOMAIN_NAME -user $ADMIN_USERNAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -adminServerPort $ADMIN_PORT -managedServerPort $MANAGED_SERVER_PORT -managedServerPortletPort $MANAGED_SERVER_PORTLET_PORT
   retval=$?
   if [ $retval -ne 0 ]; 
   then
@@ -186,7 +188,7 @@ then
     touch $CONTAINERCONFIG_DIR/contenv.sh 
     chmod 755 $CONTAINERCONFIG_DIR/contenv.sh
 
-    echo "/$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/createWebCenterPortalDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent /$vol_name/oracle/user_projects/domains -name $DOMAIN_NAME -user $ADMIN_USERNAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -adminServerPort $ADMIN_PORT -managedServerPort $MANAGED_SERVER_PORT" >> $CONTAINERCONFIG_DIR/WCPortal.Domain.Configure.suc
+    echo "/$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/createWebCenterPortalDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent /$vol_name/oracle/user_projects/domains -name $DOMAIN_NAME -user $ADMIN_USERNAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -adminServerPort $ADMIN_PORT -managedServerPort $MANAGED_SERVER_PORT -managedServerPortletPort $MANAGED_SERVER_PORTLET_PORT" >> $CONTAINERCONFIG_DIR/WCPortal.Domain.Configure.suc
   
     echo "CONNECTION_STRING=$CONNECTION_STRING" > $CONTAINERCONFIG_DIR/contenv.sh
     echo "RCUPREFIX=$RCUPREFIX" >> $CONTAINERCONFIG_DIR/contenv.sh
@@ -200,6 +202,7 @@ then
   # Creating domain env file
   mkdir -p /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/AdminServer/security
   mkdir -p /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/WC_Portal/security
+  mkdir -p /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/WC_Portlet/security
   mv /$vol_name/oracle/container-scripts/commEnv.sh /$vol_name/oracle/wlserver/common/bin/commEnv.sh
 
   # Password less Adminserver starting
@@ -209,7 +212,11 @@ then
   # Password less WCPortal server starting
   echo "username="$ADMIN_USERNAME > /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/WC_Portal/security/boot.properties
   echo "password="$ADMIN_PASSWORD >> /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/WC_Portal/security/boot.properties
-fi 
+
+  # Password less WCPortlet server starting
+  echo "username="$ADMIN_USERNAME > /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/WC_Portlet/security/boot.properties
+  echo "password="$ADMIN_PASSWORD >> /$vol_name/oracle/user_projects/domains/$DOMAIN_NAME/servers/WC_Portlet/security/boot.properties
+fi
 
 # delete password file
 rm -f /$vol_name/oracle/pwd.txt
@@ -240,9 +247,6 @@ then
   echo "Assigning machines and clusters to the managed servers"
   echo "======================================================"
   echo ""
-  # assign machines and clusters to managed servers
-  /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/setTopology.py $hostname
-
   # Configure Node Manager
   /$vol_name/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /$vol_name/oracle/container-scripts/configureNodeManager.py $hostname $vol_name
 

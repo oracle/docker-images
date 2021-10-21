@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Copyright (c)  2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c)  2020,2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ==============================================
@@ -45,7 +45,8 @@ closeDomain()
 #Set up Node Manager
 #==========================
 connect(admin_name, admin_pass, url)
-grantAppRole(appStripe="webcenter", appRoleName="s8bba98ff_4cbb_40b8_beee_296c916a23ed#-#Administrator", principalClass="weblogic.security.principal.WLSUserImpl", principalName=admin_name)
+if not admin_name == "weblogic"
+    grantAppRole(appStripe="webcenter", appRoleName="s8bba98ff_4cbb_40b8_beee_296c916a23ed#-#Administrator", principalClass="weblogic.security.principal.WLSUserImpl", principalName=admin_name)
 nmEnroll(domain_path, nodemanager_path)
 disconnect()
 exit()

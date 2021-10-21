@@ -22,9 +22,6 @@ $ sudo chown 1000:1000 /scratch/wcpdocker/volumes/wcpportal
 
 Configure an environment before running the Oracle WebCenter Portal container.
 
-##### A. Creating a user-defined network
-##### B. WebCenter Content Server (Optional)
-
 ### A. Creating a user-defined network
 Create a user-defined network to enable containers to communicate by running the following command:
 
@@ -40,8 +37,8 @@ then it must be running in same network as Oracle WebCenter Portal Container (us
 ##  Running the Oracle WebCenter Portal containers
 
 Oracle WebCenter Portal requires the creation of at least two containers
-* an admin server container.
-* a single managed server container
+* An Administration Server container.
+* A single Managed server container.
 
 **Note :** While Naming Containers avoid using underscore in Container Name to avoid encountering malformed URL exception.  
 ### 1. Creating containers for WebCenter Portal Server
@@ -66,6 +63,9 @@ ADMIN_PORT=<Admin Server Port>
 ADMIN_PASSWORD=<Admin Server Password>
 ADMIN_USERNAME=<Admin Server User Name>
 MANAGED_SERVER_PORT=<Managed Server Port>
+
+# Portlet Server Configuration details
+MANAGED_SERVER_PORTLET_PORT=<Portlet Server Port>
 
 # Content Server Connection Configuration details
 CONFIGURE_UCM_CONNECTION=<true or false>
@@ -114,10 +114,10 @@ Admin Container start up command explained:
 **Note:** Replace variables with values configured in `webcenter.env.list`
 The above command deletes any previous RCU with the same prefix if `DB_DROP_AND_CREATE=true`
 
-The docker run command creates the container as well as starts the Admin Server in sequence given below:
+The docker run command creates the container as well as starts the Administration Server in sequence given below:
 
 * Node Manager
-* Admin Server
+* Administration Server
 
 When the command is run for the first time, the domain is created and the Oracle WebCenter Portal Server is configured, so the following are done in sequence
 
@@ -136,7 +136,6 @@ $ docker container stop <ADMIN_CONTAINER_NAME>
 ```
 $ docker container start -i <ADMIN_CONTAINER_NAME>
 ```
-
 ### 1.3. Portal Container (WCPortalContainer)
 
 #### A. Creating and Running Portal Container
@@ -159,7 +158,7 @@ WebCenter Portal   Container start up command explained:
 | :----------------------: | :-----------------------------:| :---------------------------------------------------------------------------------------: |
 | --name                   | WCP_CONTAINER_NAME                 |  Set to Oracle WebCenter Portal server container name                                                |
 | --network                | NETWORK_NAME                   | User-defined network to connect to; use the one created earlier `WCPortalNET`.             |
-| -p                       | HostFreePort:MANAGED_SERVER_PORT|  Set the mapped port on the host for the managed server.              	   |
+| -p                       | HostFreePort:MANAGED_SERVER_PORT|  Set the mapped port on the host for the Managed server.              	   |
 | -v                      | DATA_MOUNT                   | Mounts the host directory into container.      |
 | --env-file               | webcenter.env.list  | `webcenter.env.list` sets the environment variables.                            |
 |oracle/wcportal:12.2.1.4| REPOSITORY:TAG             | The (optional) repo, name and tag of the image.
@@ -168,7 +167,7 @@ WebCenter Portal   Container start up command explained:
 
 The docker run command creates the container as well as starts the WebCenter Portal managed server. 
 
-When the command is run for the first time and if `CONFIGURE_UCM_CONNECTION=true`, a default connection to Oracle WebCenter Content Server is created
+When the command is run for the first time and if `CONFIGURE_UCM_CONNECTION=true`, a default connection to Oracle WebCenter Content Server is created.
  
 #### B. Stopping Portal Container
 ```
@@ -184,8 +183,46 @@ $ docker container start -i <WCP_CONTAINER_NAME>
 ```
 $ docker exec -it <WCP_CONTAINER_NAME> /bin/bash
 ```
+### 1.4. Portlet Container (WCPortletContainer)
 
-### 1.4. Elasticsearch Container  (ESContainer)
+#### A. Creating and Running Portlet Container
+Run the following command to create the Portlet Managed Server container:
+
+```
+$ docker run -i -t --name <WCPORTLET_CONTAINER_NAME> --network=<NETWORK_NAME> -p <HostFreePort>:<MANAGED_SERVER_PORTLET_PORT> -v <DATA_VOLUME>:/u01/oracle/user_projects --env-file webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartWebCenterPortlet.sh
+
+```
+Sample Run Command 
+```
+$ docker run -i -t --name WCPortletContainer --network=WCPortalNET -p 7777:7777 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartWebCenterPortlet.sh
+
+```
+WebCenter Portlet Container start up command explained:
+
+| 		Parameter    	   |     Parameter Name             | 							     		Description			                               |
+| :----------------------: | :-----------------------------:| :---------------------------------------------------------------------------------------: |
+| --name                   | WCPORTLET_CONTAINER_NAME                 |  Set to WebCenter Portlet server container name                                                |
+| --network                | NETWORK_NAME                   | User-defined network to connect to; use the one created earlier ‘WCPortalNET’.             |
+| -p                       | HostFreePort:MANAGED_SERVER_PORTLET_PORT|  Set Portlet Server port ,Maps the container port to host's port.              	   |
+| -v                      | DATA_VOLUME                   | Mounts the host directory as a Volume.      |
+| --env-file               | webcenter.env.list  | `webcenter.env.list` sets the environment variables.                            |
+|oracle/wcportal:12.2.1.4| REPOSITORY:TAG             | Repository name:Tag name of the image created using buildDockerImage.sh 
+  
+**Note:** Replace variables with values configured in webcenter.env.list
+
+The docker run command creates the container as well as starts the WebCenter Portlet managed server. 
+
+ 
+#### B. Stopping Portlet Container
+```
+$ docker container stop <WCPORTLET_CONTAINER_NAME>
+```
+
+#### C. Starting Portlet Container
+```
+$ docker container start -i <WCPORTLET_CONTAINER_NAME>
+```
+### 1.5. Elasticsearch Container  (ESContainer)
 To create an Elasticsearch container, we can reuse the environment file `webcenter.env.list` from the above example.
 
 #### A. Data on a volume for Elasticsearch Container
@@ -241,14 +278,16 @@ To reuse a existing domain we need to comply with existing domain configuration 
 
 Follow below instruction to recreate a container in such a way that they continue using existing domain on data volume.
 
-*Delete existing container (ESContainer,WCPortalContainer and WCPAdminContainer)*
+*Delete existing container (ESContainer, WCPortletContainer, WCPortalContainer and WCPAdminContainer)*
  
 ```
 $ docker container stop ESContainer
+$ docker container stop WCPortletContainer
 $ docker container stop WCPortalContainer
 $ docker container stop WCPAdminContainer
 
 $ docker container rm ESContainer
+$ docker container rm WCPortletContainer
 $ docker container rm WCPortalContainer
 $ docker container rm WCPAdminContainer
 
@@ -268,9 +307,12 @@ DB_DROP_AND_CREATE=false
 ```
 # create Admin Container
 $ docker run -i -t --name WCPAdminContainer --network=WCPortalNET -p 7001:7001 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4
- 
+
 # create Portal Container
 $ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p 8888:8888 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartWebCenterPortal.sh
+
+#create Portlet Container
+$ docker run -i -t --name WCPortletContainer --network=WCPortalNET -p 7777:7777 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartWebCenterPortlet.sh
 
 # create Elasticsearch Container
 $ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v /scratch/wcpdocker/volumes/es:/u01/esHome/esNode/data --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartElasticsearch.sh
@@ -282,7 +324,7 @@ $ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volum
 ##### 2 How do I create containers with new domain?
 In case of any error or want a new fresh instance then you need to follow given instruction  in sequence:
 
-*Delete existing container (WCPAdminContainer, WCPortalContainer and ESContainer)*
+*Delete existing container (WCPAdminContainer, WCPortletContainer, WCPortalContainer and ESContainer)*
 
 
 *Delete data from shared bind mounts*
@@ -294,19 +336,21 @@ $ rm -rf DATA_MOUNT/*
 
 ```
 
-*Drop and recreate the WebCenter Portal database schema*
  
 ```
 $ docker container stop ESContainer
+$ docker container stop WCPortletContainer
 $ docker container stop WCPortalContainer
 $ docker container stop WCPAdminContainer
 
 $ docker container rm ESContainer
+$ docker container rm WCPortletContainer
 $ docker container rm WCPortalContainer
 $ docker container rm WCPAdminContainer
 
 
 ```
+*Drop and recreate the WebCenter Portal database schema*
 
 Update the following parameter inside `webcenter.env.list` :
 
@@ -322,14 +366,17 @@ DB_DROP_AND_CREATE=true
 ```
 # create Admin Container
 $ docker run -i -t --name WCPAdminContainer --network=WCPortalNET -p 7001:7001 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4
- 
+
 # create Portal Container
 $ docker run -i -t --name WCPortalContainer --network=WCPortalNET -p 8888:8888 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartWebCenterPortal.sh 
 
+#create Portlet Container
+$ docker run -i -t --name WCPortletContainer --network=WCPortalNET -p 7777:7777 -v /scratch/wcpdocker/volumes/wcpportal:/u01/oracle/user_projects --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartWebCenterPortlet.sh
+ 
 # create Elasticsearch Container
 $ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volumes-from WCPortalContainer -v /scratch/wcpdocker/volumes/es:/u01/esHome/esNode/data --env-file /scratch/<userid>/docker/webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartElasticsearch.sh
 
 ```
 
 # Copyright
- Copyright (c) 2020,2021 Oracle and/or its affiliates.
+ Copyright (c) 2020, 2021, Oracle and/or its affiliates.

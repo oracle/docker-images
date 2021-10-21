@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c)  2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c)  2020,2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description: script to build a Docker image for Oracle WebCenter Portal
@@ -17,7 +17,7 @@ Parameters:
    -s: skips the MD5 check of packages
 
 
- Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 2020, 2021, Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 EOF

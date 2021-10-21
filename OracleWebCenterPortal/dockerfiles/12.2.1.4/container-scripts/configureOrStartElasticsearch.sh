@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020,2021, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 export vol_name=u01
@@ -49,7 +49,7 @@ echo ""
 echo "========================================================================="
 echo "                  WebCenter Portal Docker Container                      "
 echo "                       Elasticsearch Server                              "
-echo "                           12.2.1.4.0                                    "
+echo "                           12.2.1.4                                    "
 echo "========================================================================="
 echo ""
 echo ""
