@@ -90,8 +90,6 @@ else
     cat > "$ORACLE_BASE"/dbca.rsp <<EOF
 sysPassword=${ORACLE_PWD}
 EOF
-    # Reverting umask to original value
-    umask 022
 
     export DBCA_CRED_OPTIONS=" -responseFile $ORACLE_BASE/dbca.rsp"
   else
@@ -105,6 +103,9 @@ fi
 
 # Clone DB/ Standby DB creation path
 if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
+  # Reverting umask to original value for clone/standby DB cases
+  umask 022
+
   # Validation: Check if PRIMARY_DB_CONN_STR is provided or not
   if [[ -z "${PRIMARY_DB_CONN_STR}" ]] || [[ $PRIMARY_DB_CONN_STR != *:*/* ]]; then
     echo "ERROR: Please provide PRIMARY_DB_CONN_STR in <HOST>:<PORT>/<SERVICE_NAME> format to connect with primary database. Exiting..."
