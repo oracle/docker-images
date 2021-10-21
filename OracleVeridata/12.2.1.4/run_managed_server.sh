@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 #
 #Copyright (c) 2021 Oracle and/or its affiliates.
 #
@@ -36,7 +36,6 @@ extract_env ADMIN_PORT ${scriptDir}/vdt.env
 extract_env VERIDATA_PORT ${scriptDir}/vdt.env
 extract_env ADMIN_CONTAINER_NAME ${scriptDir}/vdt.env
 extract_env VERIDATA_CONTAINER_NAME ${scriptDir}/vdt.env
-#extract_env DOMAIN_HOST_VOLUME ${scriptDir}/vdt.env
 
 admin_host() {
    adminhost=${ADMIN_CONTAINER_NAME:-"OggVdtAdminContainer"}
@@ -64,8 +63,5 @@ then
 else
   image_name="oracle/oggvdt:12.2.1.4-$version"
 fi
-
-
-echo " docker run -d -p ${managedport}:${managedport} --env-file ${scriptDir}/vdt.env -e VERIDATA_MANAGED_SERVER=true --volumes-from ${adminhost} --name ${managedname} --network=VdtBridge  $image_name startManagedServer.sh "
 
 docker run -d -p ${managedport}:${managedport} --env-file ${scriptDir}/vdt.env -e VERIDATA_MANAGED_SERVER=true --volumes-from ${adminhost} --name ${managedname}  --network=VdtBridge $image_name startManagedServer.sh

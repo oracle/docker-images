@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 #
 #Copyright (c) 2021 Oracle and/or its affiliates.
 #
@@ -69,7 +69,5 @@ then
 else
   image_name="oracle/oggvdt:12.2.1.4-$version"
 fi
-
-echo " docker run -d -p ${agentport}:${agentport} --env-file ${scriptDir}/vdtagent.env -e VERIDATA_AGENT=true -v ${agentvolume}:/u01/oracle/${agentdir} --name ${agentname}  --network=VdtBridge $image_name createOrStartVdtAgent.sh "
 
 docker run -d -p ${agentport}:${agentport} --env-file ${scriptDir}/vdtagent.env -e VERIDATA_AGENT=true -v ${agentvolume}:/u01/oracle/${agentdir} --name ${agentname}  --network=VdtBridge $image_name createOrStartVdtAgent.sh

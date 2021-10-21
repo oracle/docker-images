@@ -102,7 +102,7 @@ fi
 
 #Set Java options
 export JAVA_OPTIONS=${JAVA_OPTIONS}
-echo "Java Options: ${JAVA_OPTIONS}"
+
 
 ${DOMAIN_HOME}/bin/setDomainEnv.sh
 

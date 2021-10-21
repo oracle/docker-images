@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 #
 #Copyright (c) 2021 Oracle and/or its affiliates.
 #
@@ -68,8 +68,6 @@ then
 else
   image_name="oracle/oggvdt:12.2.1.4-$version"
 fi
-
-echo " docker run -d -p ${adminport}:${adminport}  --name ${adminhost} --network=VdtBridge  --env-file ${scriptDir}/vdt.env -e VERIDATA_ADMIN_SERVER=true -v ${domainhostvol}:/u01/oracle/user_projects $image_name createOrStartVdtDomain.sh"
 
 docker run -d -p ${adminport}:${adminport}  --name ${adminhost} --network=VdtBridge  --env-file ${scriptDir}/vdt.env -e VERIDATA_ADMIN_SERVER=true -v ${domainhostvol}:/u01/oracle/user_projects $image_name createOrStartVdtDomain.sh
 

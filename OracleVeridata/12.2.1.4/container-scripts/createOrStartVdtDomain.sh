@@ -235,6 +235,8 @@ then
 	    echo "CONNECTION_STRING=$CONNECTION_STRING" > $CONTAINERCONFIG_DIR/vdtserverenv.sh
 	   	echo "SCHEMA_PREFIX=$SCHEMA_PREFIX" >> $CONTAINERCONFIG_DIR/vdtserverenv.sh
 	   	echo "SCHEMA_PASSWORD=$SCHEMA_PASSWORD" >> $CONTAINERCONFIG_DIR/vdtserverenv.sh
+	   	echo "USERNAME=$VERIDATA_USER" >> $CONTAINERCONFIG_DIR/vdtserverenv.sh
+	   	echo "PASSWORD=$VERIDATA_PASSWORD" >> $CONTAINERCONFIG_DIR/vdtserverenv.sh
 
 	   	# Create the security file to start the server(s) without the password prompt
         mkdir -p ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/
@@ -263,5 +265,3 @@ ${DOMAIN_HOME}/startWebLogic.sh
 tail -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
 childPID=$!
 wait $childPID
-
-#sleep 5d

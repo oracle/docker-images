@@ -5,11 +5,10 @@ This Docker configuration has been used to create the Oracle GoldenGate Veridata
 
 ## Prerequisites
 
-Please use https://container-registry.oracle.com to pull the images.
+Create Docker network to run Admin,Managed server and repository Database (in case needed)
 
-`docker login container-registry.oracle.com`
+`docker network create -d bridge VdtBridge`
 
-For more information please check https://container-registry.oracle.com
 
 
 ## How to build
@@ -18,7 +17,7 @@ For more information please check https://container-registry.oracle.com
 
 Pull the Oracle FMW Infra Docker image
 
-`docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210701`
+ https://github.com/oracle/docker-images/tree/main/OracleFMWInfrastructure/dockerfiles/12.2.1.4
 
 Please use *docker tag* to tag it to *oracle/fmw-infrastructure:12.2.1.4.0-210701*
 
@@ -29,19 +28,14 @@ You can use an existing Oracle Database or build a Oracle Database image.
 
 For building a Oracle Database image use the following command
 
-`docker pull container-registry.oracle.com/database/enterprise:19.3.0.0`
-
-For more information please check *Database* section in
-
-https://container-registry.oracle.com
+https://github.com/oracle/docker-images/tree/main/OracleDatabase/SingleInstance
 
 
 3. OGG Veridata Installer
 
-Download the OGG Veridata 12.2.1.4.0 Installer.
+Download the Oracle GoldenGate Veridata 12.2.1.4.0 Installer to your local directory.
 
 https://www.oracle.com/middleware/technologies/goldengate-downloads.html
-
 
 
 4. Latest Bundle Patch (optional but recommended)
@@ -53,6 +47,9 @@ https://support.oracle.com
 
 5. Run `buildContainerImage.sh`
 
+```bash
+#!/bin/bash
+
 Usage: buildContainerImage.sh -v [version]
 Builds a container Image for Oracle GoldenGate Veridata.
 
@@ -62,55 +59,62 @@ Parameters:
 -f: FMW Release version.Default is 12.2.1.4-210701
 -p: Patch file
 -h: Help
-
+```
 e.g.
-
 `buildDockerImage.sh -v 12.2.1.4-210630 -i fmw_12.2.1.4.0_ogg_Disk1_1of1.zip -p p32761281_122140_Generic.zip`
 
 
 ## How to run OGG Veridata Server
 
-1. Create Docker network
+1. Oracle Database
 
-docker network create -d bridge VdtBridge
+Make sure the Database is running on the network,created earlier,using --network.
+This is needed in case you have container image of Oracle Database as repository. 
 
+2. OGG Veridata Admin Server and Managed Server
 
-
-2. Oracle Database
-
-Make sure the Database is running on the network ,created earlier, using --network.
-This is need in case you have container image of Oracle Database as repository. 
-
-3. OGG Veridata Admin Server and Managed Server
-
-Edit `vdt.env file` . Following list of properties are required
+Edit `./vdt.env` file. Following list of properties are required
 
 *DATABASE_HOST*
 *DATABASE_PORT*
 *DATABASE_SERVICE*
 *SCHEMA_PREFIX*
-*SCHEMA_PASSWORD*
 *DATABASE_USER*
 *DATABASE_PASSWORD*
 *VERIDATA_USER*
-*VERIDATA_PASSWORD*
 *DOMAIN_HOST_VOLUME*
 
-Execute `run_admin_server.sh` to run the Admin server.
+Start a container to launch the Administration Server and Veridata Managed Servers from the image created earlier.To facilitate running we provide scripts
+`run_admin_server.sh`,`run_manages_server.sh`.
 
-Note: Only for the  first time this script will also install the Veridata domain. Subsequent runs will only start the Admin server.
+To run a Admin Server, call:
 
-After starting of the Admin Server execute run_managed_server.sh to run the Veridata Server. 
+`docker run --name OggVdtAdmin -it --network=VdtBridge -p 7001:7001 --env-file vdt.env -v /scratch/arnnandi/vdtdocker/domain:/u01/oracle/user_projects oracle/oggvdt:12.2.1.4.0 createOrStartVdtDomain.sh`
 
-Note: Oracle recommends that the `vdt.env` file be deleted or secured after the container and 
+To run a Veridata Managed Server, call:
+
+`docker run --name OggVdtContainer -it --network=VdtBridge -p 7003:7003 --env-file vdt.env --volumes-from OggVdtAdminContainer oracle/oggvdt:12.2.1.4.0 startManagedServer.sh`
+
+Note: Only for the  first time this script will also install the Veridata domain.Subsequent runs will only start the Admin server.
+Oracle recommends that the `vdt.env` file be deleted or secured after the container and 
 WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
 
-4. OGG Veridata Agent
+3. OGG Veridata Agent
 
-Edit `vdtagent.env` . Following list of properties are required
+Edit `./vdtagent.env`. Following list of properties are required
 
-Execute `run_agent.sh` to start the Agent.
+*AGENT_PORT*
+*AGENT_JDBC_URL*
+*AGENT_HOST_VOLUME*
+
+Start a container to launch the Veridata Agent from the image created earlier.To facilitate running we provide script `run_agent.sh`
+
+To run a Veridata Agent, call:
+
+`docker run -d -p 7562:7562 --env-file /scratch/arnnandi/docker-git/build-docker/build/oggvdt122140/vdtagent.env -v /scratch/arnnandi/vdtdocker/vdt_agent:/u01/oracle/vdt_agent --name OggVdtAgent --network=VdtBridge oracle/oggvdt:12.2.1.4 createOrStartVdtAgent.sh`
+
+
 
 
 
