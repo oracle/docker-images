@@ -13,19 +13,20 @@ packages, they should be installed as part of your downstream `Dockerfile`.
 Originally, the images based on Oracle Linux 8 used the `8-slim` variant which
 required the use of `microdnf` for package management. The current images are
 based on an intermediate base image that is based on `oraclelinux:8` for full
-access to `dnf` to support AppStreams and modularity, but which also has 
+access to `dnf` to support AppStreams and modularity, but which also has
 `microdnf` installed and configured to ensure any existing automation continues
 to work.
 
-> **Deprecation of `microdnf`:** 
+> **Deprecation of `microdnf`:**
 > Existing users are strongly encouraged to switch from `microdnf` to `dnf` as
-> it we intend to remove it from the Oracle Linux Developer images when Oracle Linux 8.5 is released.
+> it we intend to remove it from the Oracle Linux Developer images when Oracle
+> Linux 8.5 is released.
 
 ## Usage of the binary images
 
-All the [published Oracle Linux Developer images](https://github.com/orgs/oracle/packages?repo_name=docker-images)
-use publicly available packages from the [Oracle Linux yum server](https://yum.oracle.com).
-No login, Oracle SSO account or permission is required to build, extend, use or distribute these images.
+All the [published Oracle Linux Developer images][1] use publicly available
+packages from the [Oracle Linux yum server][2]. No login, Oracle SSO account or
+permission is required to build, extend, use or distribute these images.
 
 ## Oracle Database support
 
@@ -84,6 +85,12 @@ You should then be able to create a new Ruby on Rails application.
 
 * [`oraclelinux8-golang:ol8`](oraclelinux8/golang/ol8/Dockerfile)
 
+### NGINX module
+
+* [`oraclelinux8-nginx:1.14`](oraclelinux8/nginx/1.14/Dockerfile)
+* [`oraclelinux8-nginx:1.16`](oraclelinux8/nginx/1.16/Dockerfile)
+* [`oraclelinux8-nginx:1.18`](oraclelinux8/nginx/1.18/Dockerfile)
+
 ### Node.js module
 
 * [`oraclelinux8-nodejs:12`](oraclelinux8/nodejs/12/Dockerfile)
@@ -125,3 +132,6 @@ You should then be able to create a new Ruby on Rails application.
 * [`oraclelinux8-ruby:2.6`](oraclelinux8/ruby/2.6/Dockerfile)
 * [`oraclelinux8-ruby:2.7`](oraclelinux8/ruby/2.7/Dockerfile)
 * [`oraclelinux8-ruby:2.7-nodejs`](oraclelinux8/ruby/2.7-nodejs/Dockerfile)
+
+[1]: https://github.com/orgs/oracle/packages?repo_name=docker-images
+[2]: https://yum.oracle.com
