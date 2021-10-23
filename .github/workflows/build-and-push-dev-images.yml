@@ -1,9 +1,9 @@
 name: Build and publish Oracle Linux developer container images to GitHub Container Registry
 
 # Builds are triggered either by:
-#   - a push on the master branch with changes in this file.
+#   - a push on the main branch with changes in this file.
 #     All container images will be (re)built.
-#   - a push on the master branch with changes the OracleLinuxDevelopers
+#   - a push on the main branch with changes the OracleLinuxDevelopers
 #     directory.
 #     Affected container images will be (re)built.
 #   - a manual trigger of the workflow using the API.
@@ -29,14 +29,14 @@ on:
         required: false
       lang:
         description: List of languages to build
-        default: 'compat, golang, nodejs, php, python, ruby'
+        default: 'compat, golang, nginx, nodejs, php, python, ruby'
         required: false
 
 # Default values for the builds triggered by the push event
 # Note: the "compat" image should *not* be in this list
 env:
   ol: 'oraclelinux7, oraclelinux8'
-  lang: 'golang, nodejs, php, python, ruby'
+  lang: 'golang, nodejs, nginx, php, python, ruby'
 
 jobs:
   prepare:
