@@ -23,12 +23,12 @@ if [ "${LIB_EDITION}" == "std" ]; then
 fi
 
 # If datafiles already exists
-if [ -f $ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN} ]; then
-    datafiles_edition=$(ls $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/.docker_* | rev | cut -d_ -f1 | rev)
-    if [ "${ORACLE_EDITION}" != "" ] && [ "${ORACLE_EDITION,,}" != $datafiles_edition ]; then
+if [ -f "$ORACLE_BASE"/oradata/."${ORACLE_SID}""${CHECKPOINT_FILE_EXTN}" ]; then
+    datafiles_edition=$(find "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/ -maxdepth 1 -name '.docker_*' | rev | cut -d_ -f1 | rev)
+    if [ "${ORACLE_EDITION}" != "" ] && [ "${ORACLE_EDITION,,}" != "$datafiles_edition" ]; then
         echo "The datafiles being used were created with $datafiles_edition edition software home. Please pass -e ORACLE_EDITION=$datafiles_edition to the docker run cmd.";
         exit 1;
-    elif [ "${ORACLE_EDITION}" == "" ] && [ "${CURRENT_EDITION,,}" != $datafiles_edition ]; then
+    elif [ "${ORACLE_EDITION}" == "" ] && [ "${CURRENT_EDITION,,}" != "$datafiles_edition" ]; then
         echo "The current software home is of ${CURRENT_EDITION,,} edition whereas the datafiles being used were created with $datafiles_edition edition software home. Please pass -e ORACLE_EDITION=$datafiles_edition to the docker run cmd.";
         exit 1;
     fi
@@ -45,4 +45,4 @@ if [ "${ORACLE_EDITION}" != "" ]; then
 fi
 
 echo "ORACLE EDITION: ${CURRENT_EDITION}"
-touch $ORACLE_HOME/install/.docker_${CURRENT_EDITION,,}
+touch "$ORACLE_HOME"/install/.docker_"${CURRENT_EDITION,,}"
