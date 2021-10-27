@@ -76,7 +76,6 @@ OID Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to t
    The OID Docker image is now built successfully.
 
 6. Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
-=========================================================================================================================
 
 ## Contents
 
