@@ -8,7 +8,7 @@ Building an Oracle Internet Directory Image using Dockerfiles and Scripts
 3. [How to Build the Oracle Java Image](#3-how-to-build-the-oracle-java-image)
 4. [How to Build the Oracle Fusion Middleware Infrastructure Image](#4-how-to-build-the-oracle-fusion-middleware-infrastructure-image)
 5. [Building a Container Image for Oracle Internet Directory](#5-building-a-container-image-for-oracle-internet-directory)
-6. [Building an Oracle Internet Directory Image with Dockerfiles Scripts and Base Image from Oracle Container Registry (OCR)](#6-building-an-oracle-internet-directory-image-with-dockerfiles-scripts-base-image-from-oracle-container-registry-(ocr))
+6. [Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)](#6-building-an-oracle-internet-directory-image-with-dockerfiles-scripts-and-base-image-from-oracle-container-registry-ocr)
 
 # 1. Introduction
 
@@ -38,29 +38,29 @@ OID Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to t
 
   1. Make a work directory to place the OID Docker files:
 
-    mkdir <work directory>
+    $ mkdir <work directory>
 
   2. Download the OID Docker files from the OID [repository](https://github.com/oracle/docker-images) by running the following command:
 
-    cd <work directory>
-    git clone https://github.com/oracle/docker-images
+    $ cd <work directory>
+    $ git clone https://github.com/oracle/docker-images
 
-## Downloading the 12.2.1.4.0 Identity Management shiphome
+## Downloading the 12.2.1.4.0 Identity Management shiphome.
 
   1. Download the [Oracle Internet Directory 12cPS4 software](https://www.oracle.com/in/security/identity-management/technologies/downloads/) to a stage directory. Unzip the downloaded `fmw_12.2.1.4.0_oid_linux64_Disk1_1of1.zip` file and copy the `fmw_12.2.1.4.0_oid_linux64.bin` to `<work directory>/docker-images/OracleInternetDirectory/dockerfiles/12.2.1.4.0/`:
 
-    unzip fmw_12.2.1.4.0_oid_linux64_Disk1_1of1.zip
-    cp fmw_12.2.1.4.0_oid_linux64.bin <work directory>/docker-images/OracleInternetDirectory/dockerfiles/12.2.1.4.0/fmw_12.2.1.4.0_oid_linux64.bin
+    $ unzip fmw_12.2.1.4.0_oid_linux64_Disk1_1of1.zip
+    $ cp fmw_12.2.1.4.0_oid_linux64.bin <work directory>/docker-images/OracleInternetDirectory/dockerfiles/12.2.1.4.0/fmw_12.2.1.4.0_oid_linux64.bin
   
   2. If you are creating the OID image with patches, create the following directories under the `12.2.1.4.0` directory, where patches directory will contain the patches and opatch_patch directory will contain the Opatch patch:
 
-    mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/patches
-    mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/opatch_patch
+    $ mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/patches
+    $ mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/opatch_patch
 
   3. If required run the following to set the proxy server appropriately. This is required so the build process can pull the relevant Linux packages via yum:
 
-    export http_proxy=http://<proxy_server_hostname>:<proxy_server_port>
-    export https_proxy=http://<proxy_server_hostname>:<proxy_server_port>
+    $ export http_proxy=http://<proxy_server_hostname>:<proxy_server_port>
+    $ export https_proxy=http://<proxy_server_hostname>:<proxy_server_port>
 
   4. Run the following command to build the OID image:
 
@@ -76,9 +76,8 @@ OID Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to t
 
    The OID Docker image is now built successfully.
 
-# 6. Building an Oracle Internet Directory Image with Dockerfiles Scripts and Base Image from Oracle Container Registry (OCR)
+# 6. Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
 
-## Contents
 
 1. [Pulling Oracle FMW Infrastructure 12.2.1.4.x image](#1-pull-oracle-fmw-infrastructure-12214x-image)
 2. [Downloading the 12.2.1.4.0 Identity Management Shiphome](#2-downloading-the-122140-identity-management-shiphome)
@@ -97,27 +96,27 @@ You can pull the Oracle FMW Infrastructure 12.2.1.4.x image from the [Oracle Con
 4. Use following commands to pull Oracle Fusion Middleware infrastructure base image from repository :
 
 ```
-docker login container-registry.oracle.com
-docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
-docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407 oracle/fmw-infrastructure:12.2.1.4.0
+$ docker login container-registry.oracle.com
+$ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407
+$ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407 oracle/fmw-infrastructure:12.2.1.4.0
 ```
 
-## 2. Downloading the 12.2.1.4.0 Identity Management Shiphome
+## 2. Downloading the 12.2.1.4.0 Identity Management Shiphome.
 
 You must download and save the Oracle Internet Directory 12.2.1.4.0 binary into the cloned/downloaded repository folder at location : `OracleInternetDirectory/dockerfiles/12.2.1.4.0/` (see **Checksum** for file name which is inside oid.download).
 
 ```
-cp fmw_12.2.1.4.0_oid_linux64.bin <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/
+$ cp fmw_12.2.1.4.0_oid_linux64.bin <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/
 ```
 
 If you are creating the OID image with patches create the following directories under the 12.2.1.4.0 directory, where the `patches` directory will contain the patches and the `opatch_patch` directory will contain the Opatch patch:
 
 ```
-mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/patches
+$ mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/patches
 ```
 
 ```
-mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/opatch_patch
+$ mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/opatch_patch
 ```
 
 ## 3. Building Oracle Internet Directory image
@@ -135,7 +134,7 @@ The `buildDockerImage.sh` script is a utility shell script that takes the versio
 
 **IMPORTANT**: If you are building the Oracle Internet Directory image, you must first download the Oracle Internet Directory 12.2.1.x binary (`fmw_12.2.1.4.0_oid_linux64.bin`) and locate it in the folder, `OracleInternetDirectory/dockerfiles/12.2.1.4.0`.
 
-**IMPORTANT**: To build the Oracle Internet Directory image with patches, you need to download and drop the patch zip files (for e.g. `p31400392_122140_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for 12.2.1.4.0 the folder is `12.2.1.4/patches/`.  Similarly, `OPatch` patches can be kept in the `opatch_patch/` folder (for 12.2.1.4.0 the folder is `12.2.1.4/opatch_patch`). Then run the `buildDockerImage.sh` script:
+**IMPORTANT**: To build the Oracle Internet Directory image with patches, you need to download and drop the patch zip files (for e.g. `p31400392_122140_Generic.zip`) into the `patches/` folder under the version which is required, for e.g. for 12.2.1.4.0 the folder is `12.2.1.4.0/patches/`.  Similarly, `OPatch` patches can be kept in the `opatch_patch/` folder (for 12.2.1.4.0 the folder is `12.2.1.4.0/opatch_patch`). Then run the `buildDockerImage.sh` script:
 
 The build script `buildDockerImage.sh` is located at `OracleInternetDirectory/dockerfiles`
 
@@ -154,8 +153,8 @@ Parameters:
 Run the following command to build the Oracle Internet Directory image:
 
 ```
-cd <work directory>/OracleInternetDirectory/dockerfiles/
-sh buildDockerImage.sh -v 12.2.1.4.0
+$ cd <work directory>/OracleInternetDirectory/dockerfiles/
+$ sh buildDockerImage.sh -v 12.2.1.4.0
 ```
 
 If the build is successful you will see a message similar to the following:
@@ -178,7 +177,7 @@ $
 Run the following command to make sure the Oracle Internet Directory image is installed in the docker images repository:
 
 ```
-docker images | grep oid
+$ docker images | grep oid
 ```
 
 The output will look similar to the following:
@@ -201,3 +200,4 @@ All scripts and files hosted in this project and GitHub [docker-images/OracleInt
 
 Copyright (c) 2021, Oracle and/or its affiliates.
 Licensed under the Universal Permissive License v 1.0 as shown at <https://oss.oracle.com/licenses/upl>
+
