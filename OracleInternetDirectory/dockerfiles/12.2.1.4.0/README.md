@@ -8,7 +8,7 @@ Building an Oracle Internet Directory Image using Dockerfiles and Scripts
 3. [How to Build the Oracle Java Image](#3-how-to-build-the-oracle-java-image)
 4. [How to Build the Oracle Fusion Middleware Infrastructure Image](#4-how-to-build-the-oracle-fusion-middleware-infrastructure-image)
 5. [Building a Container Image for Oracle Internet Directory](#5-building-a-container-image-for-oracle-internet-directory)
-6. [Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)](#6-building-an-oracle-internet-directory-image-with-dockerfiles-scripts-base-image-from-oracle-container-registry-(ocr))
+6. [Building an Oracle Internet Directory Image with Dockerfiles Scripts and Base Image from Oracle Container Registry (OCR)](#6-building-an-oracle-internet-directory-image-with-dockerfiles-scripts-base-image-from-oracle-container-registry-(ocr))
 
 # 1. Introduction
 
