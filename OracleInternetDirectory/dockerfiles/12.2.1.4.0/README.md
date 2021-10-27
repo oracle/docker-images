@@ -78,6 +78,8 @@ OID Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to t
 Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
 =========================================================================================================================
 
+## Contents
+
 1. [Pulling Oracle FMW Infrastructure 12.2.1.4.x image](#1-pull-oracle-fmw-infrastructure-12214x-image)
 2. [Downloading the 12.2.1.4.0 Identity Management Shiphome](#2-downloading-the-122140-identity-management-shiphome)
 3. [Building Oracle Internet Directory Image](#3-building-oracle-internet-directory-image)
