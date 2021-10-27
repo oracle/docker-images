@@ -83,7 +83,7 @@ Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base I
 3. [Building Oracle Internet Directory Image](#3-building-oracle-internet-directory-image)
 4. [Validate the Oracle Internet Directory Image](#4-validate-the-oracle-internet-directory-image)
 
-# 1. Pull Oracle FMW Infrastructure 12.2.1.4.x image
+## 1. Pull Oracle FMW Infrastructure 12.2.1.4.x image
 
 You can pull the Oracle FMW Infrastructure 12.2.1.4.x image from the [Oracle Container Registry](https://container-registry.oracle.com). When pulling the FMW Infrastructure 12.2.1.4.x image, re-tag the image so that it works with the dependent dockerfile which refers to the FMW Infrastructure 12.2.1.4.x image through 'oracle/fmw-infrastructure:12.2.1.4.0'.
 
@@ -100,7 +100,7 @@ docker pull container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4
 docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4-210407 oracle/fmw-infrastructure:12.2.1.4.0
 ```
 
-# 2. Downloading the 12.2.1.4.0 Identity Management Shiphome
+## 2. Downloading the 12.2.1.4.0 Identity Management Shiphome
 
 You must download and save the Oracle Internet Directory 12.2.1.4.0 binary into the cloned/downloaded repository folder at location : `OracleInternetDirectory/dockerfiles/12.2.1.4.0/` (see **Checksum** for file name which is inside oid.download).
 
@@ -118,7 +118,7 @@ mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/patches
 mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/opatch_patch
 ```
 
-# 3. Building Oracle Internet Directory image
+## 3. Building Oracle Internet Directory image
 
 ## Clone and download Oracle Internet Directory scripts and binary file
 
@@ -171,7 +171,7 @@ Successfully tagged oracle/oid:12.2.1.4.0
 $
 ```
 
-# 4 Validate the Oracle Internet Directory Image
+## 4 Validate the Oracle Internet Directory Image
 
 Run the following command to make sure the Oracle Internet Directory image is installed in the docker images repository:
 
