@@ -58,8 +58,8 @@ $
 * Run the following commands to setup imagetool
 
 ```
-$ cd <work directory>/imagetool/bin
-$ source setup.sh
+cd <work directory>/imagetool/bin
+source setup.sh
 ```
 
 * Execute the following to validate the WebLogic Image Tool:
@@ -73,13 +73,13 @@ $
 The WebLogic Image Tool creates a temporary Docker context directory, prefixed by wlsimgbuilder_temp, every time the tool runs. Under normal circumstances, this context directory will be deleted. However, if the process is aborted or the tool is unable to remove the directory, it is safe for you to delete it manually. By default, the WebLogic Image Tool creates the Docker context directory under the user's home directory. If you prefer to use a different directory for the temporary context, set the environment variable `WLSIMG_BLDDIR`.
 
 ```
-$ export WLSIMG_BLDDIR="/path/to/dir"
+export WLSIMG_BLDDIR="/path/to/dir"
 ```
 
 The WebLogic Image Tool maintains a local file cache store. This store is used to look up where the Java, WebLogic Server installers, and WebLogic Server patches reside in the local file system. By default, the cache store is located in the user's `$HOME/cache` directory. Under this directory, the lookup information is stored in the .metadata file. All automatically downloaded patches also reside in this directory. You can change the default cache store location by setting the environment variable `WLSIMG_CACHEDIR`.
 
 ```
-$ export WLSIMG_CACHEDIR="/path/to/cachedir"
+export WLSIMG_CACHEDIR="/path/to/cachedir"
 ```
 
 # 4. Download the required packages/installers & patches
@@ -97,8 +97,8 @@ Download the required installers from the [Oracle Software Delivery Cloud](https
 The Oracle Internet Directory image requires additional files for creating and starting the Oracle Internet Directory instance in the container. Download the required files from the docker-images [repository](https://github.com/oracle/docker-images). For example:
 
 ```  
-$ cd <work directory>
-$ git clone https://github.com/oracle/docker-images
+cd <work directory>
+git clone https://github.com/oracle/docker-images
 ```
 
 This will create the required directories and files under \<work directory\>/docker-images.
@@ -111,7 +111,6 @@ Oracle Internet Directory image requires additional build commands to set the re
 
 A sample additional build commands input file can be found at `<work directory>/docker-images/OracleInternetDirectory/imagetool/12.2.1.4.0/additionalBuildCmds.txt`.
 
-
 # 7. Steps to Create Oracle Internet Directory image
 
 Add the required installers, packages & patches to the imagetool cache by running the following commands. In the below examples substitute `<work directory>/stage` for the directory where the appropriate files reside.
@@ -119,7 +118,7 @@ Add the required installers, packages & patches to the imagetool cache by runnin
 ### i) Add JDK package to Imagetool cache
 
 ```bash
-$ imagetool cache addInstaller --type jdk --version 8u301 --path <work directory>/stage/jdk-8u301-linux-x64.tar.gz
+imagetool cache addInstaller --type jdk --version 8u301 --path <work directory>/stage/jdk-8u301-linux-x64.tar.gz
 ```
 
 For example:
@@ -133,8 +132,8 @@ $
 ### ii) Add installers to Imagetool cache
 
 ```
-$ imagetool cache addInstaller --type oid --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_oid_linux64.bin
-$ imagetool cache addInstaller --type fmw --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_infrastructure.jar
+imagetool cache addInstaller --type oid --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_oid_linux64.bin
+imagetool cache addInstaller --type fmw --version 12.2.1.4.0 --path <work directory>/stage/fmw_12.2.1.4.0_infrastructure.jar
 ```
 
 For example:
@@ -148,11 +147,12 @@ $
 ```
 
 ### iii) Add Patches to Imagetool cache
+
 In case, patches are required to be included in image, downloaded patches should be added to Imagetool cache.
 
 ```bash
-$ imagetool cache addEntry --key 28186730_13.9.4.2.2 --value <work directory>/stage/p28186730_139422_Generic.zip
-$ imagetool cache addEntry --key 31400392_12.2.1.4.0 --value <work directory>/stage/p31400392_122140_Generic.zip
+imagetool cache addEntry --key 28186730_13.9.4.2.2 --value <work directory>/stage/p28186730_139422_Generic.zip
+imagetool cache addEntry --key 31400392_12.2.1.4.0 --value <work directory>/stage/p31400392_122140_Generic.zip
 ```
 
 For example:
@@ -178,7 +178,6 @@ The following parameters are provided as input to the create command,
 * additionalBuildCommands - additional build commands provided as a text file.
 * addtionalBuildFiles - path of additional build files as comma separated list.
 
-
 Below is a sample command used to build an Oracle Internet Directory image.
 
 ```
@@ -189,6 +188,7 @@ $ imagetool create --jdkVersion=8u301 --type oid --version=12.2.1.4.0 \
     --additionalBuildFiles <work directory>/docker-images/OracleInternetDirectory/dockerfiles/12.2.1.4.0/container-scripts \
     --patches <patch_a>,<patch_b>,...
 ```
+
 > --patches option is required only when image is required to be generated with patches
 
 For example:
@@ -201,6 +201,7 @@ $ imagetool create --jdkVersion=8u301 --type oid --version=12.2.1.4.0 \
 --additionalBuildFiles /scratch/docker-images/OracleInternetDirectory/dockerfiles/12.2.1.4.0/container-scripts \
 --patches 28186730,31400392
 ```
+
 > --patches option is required only when image is required to be generated with patches
 
 ### v) View the docker image
@@ -231,7 +232,6 @@ create
 
 If you want to review a sample dockerfile created with the imagetool issue the `imagetool` command with the `--dryRun` option:
 
-
 ```
 imagetool @<work directory>/docker-images/OracleInternetDirectory/imagetool/12.2.1.4.0/buildArgs --dryRun
 ```
@@ -239,10 +239,12 @@ imagetool @<work directory>/docker-images/OracleInternetDirectory/imagetool/12.2
 # Licensing & Copyright
 
 ## License
+
 To download and run Oracle Fusion Middleware products, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project and GitHub [docker-images/OracleInternetDirectory](./) repository required to build the images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
+
 Copyright (c) 2021, Oracle and/or its affiliates.
-Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+Licensed under the Universal Permissive License v 1.0 as shown at <https://oss.oracle.com/licenses/upl>
