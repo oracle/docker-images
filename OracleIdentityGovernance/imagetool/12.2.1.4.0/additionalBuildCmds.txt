@@ -24,13 +24,16 @@ RUN mkdir -p /u01/oracle/dockertools && \
 	mkdir /usr/java && \
 	ln -s /u01/jdk /usr/java/latest 
 
-RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
+RUN cp -rf /u01/oracle/idm/server/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory_orig && \
+    rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
     ln -s  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory
 
 COPY --chown=oracle:root files/container-scripts/ /u01/oracle/dockertools/
 
 RUN chmod a+xr /u01/oracle/dockertools/* && \
-    chown -R oracle:root /u01/oracle/dockertools
+    chown -R oracle:root /u01/oracle/dockertools && \
+    chown -R oracle:root /u01/oracle/idm/server/ConnectorDefaultDirectory_orig && \
+    chown -h oracle:root /u01/oracle/idm/server/ConnectorDefaultDirectory
 
 USER oracle
 RUN if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | egrep -q '23855729|24204843|24325050'; then \

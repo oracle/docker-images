@@ -66,8 +66,10 @@ exportComposeEnv() {
 
 #===============================================
 createDirs() {
-  mkdir -p  ${DC_DDIR_OIM}
-  chmod 777  ${DC_DDIR_OIM}
+  mkdir -p  ${DC_DDIR_OIM}/domains/ConnectorDefaultDirectory
+  chmod 777 ${DC_DDIR_OIM}
+  chmod 777 ${DC_DDIR_OIM}/domains/
+  chmod 777 ${DC_DDIR_OIM}/domains/ConnectorDefaultDirectory
   mkdir -p ${DC_ORCL_DBDATA}
   chmod 777 ${DC_ORCL_DBDATA}
 }

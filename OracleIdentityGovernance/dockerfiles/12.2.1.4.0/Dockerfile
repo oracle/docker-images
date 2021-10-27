@@ -116,7 +116,8 @@ RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
     fi
     
-RUN rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
+RUN cp -rf /u01/oracle/idm/server/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory_orig && \
+    rm -rf /u01/oracle/idm/server/ConnectorDefaultDirectory && \
     ln -s  /u01/oracle/user_projects/domains/ConnectorDefaultDirectory /u01/oracle/idm/server/ConnectorDefaultDirectory && \
     if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | egrep -q '23855729|24204843|24325050' ; then \
      echo "Ready End Point already Configured."; \
