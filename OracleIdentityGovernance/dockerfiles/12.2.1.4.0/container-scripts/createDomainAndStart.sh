@@ -253,19 +253,19 @@ echo "export PATH=$PATH:/u01/oracle/common/bin:$DOMAIN_HOME/bin" >> /u01/oracle/
 
 updateListenAddress
 
-if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/ConnectorConfigTemplate.xml ]; then
+if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/ConnectorConfigTemplate.xml ] && [ -d /u01/oracle/idm/server/ConnectorDefaultDirectory_orig ]; then
     cp /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/ConnectorConfigTemplate.xml /u01/oracle/idm/server/ConnectorDefaultDirectory
 fi
 
-if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/ConnectorSchema.xsd ]; then
+if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/ConnectorSchema.xsd ] && [ -d /u01/oracle/idm/server/ConnectorDefaultDirectory_orig ]; then
     cp /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/ConnectorSchema.xsd /u01/oracle/idm/server/ConnectorDefaultDirectory
 fi
 
-if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/readme.txt ]; then
+if [ ! -f /u01/oracle/idm/server/ConnectorDefaultDirectory/readme.txt ] && [ -d /u01/oracle/idm/server/ConnectorDefaultDirectory_orig ]; then
     cp /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/readme.txt /u01/oracle/idm/server/ConnectorDefaultDirectory
 fi
 
-if [ ! -d /u01/oracle/idm/server/ConnectorDefaultDirectory/targetsystems-lib ]; then
+if [ ! -d /u01/oracle/idm/server/ConnectorDefaultDirectory/targetsystems-lib ] && [ -d /u01/oracle/idm/server/ConnectorDefaultDirectory_orig ]; then
     cp -rf /u01/oracle/idm/server/ConnectorDefaultDirectory_orig/targetsystems-lib /u01/oracle/idm/server/ConnectorDefaultDirectory
 fi
 
