@@ -1,0 +1,12 @@
+FROM oraclelinux:7-slim
+
+RUN yum -y install unzip java-1.8.0-openjdk \
+ && yum clean all
+RUN curl -s https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip > sqlcl-latest.zip
+RUN unzip sqlcl-latest.zip
+RUN chmod 755 sqlcl/bin/sql
+ADD oracle-graph-sqlcl-plugin-21.4.0.zip .
+RUN unzip oracle-graph-sqlcl-plugin-21.4.0.zip -d sqlcl/lib/ext \
+ && rm oracle-graph-sqlcl-plugin-21.4.0.zip
+ENV PATH=sqlcl/bin:$PATH
+CMD sql

@@ -20,6 +20,7 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle Essbase](/OracleEssbase)
 - [Oracle FMW Infrastructure](/OracleFMWInfrastructure)
 - [Oracle GoldenGate](/OracleGoldenGate)
+- [Oracle Graph Server](/OracleGraphServer)
 - [Oracle HTTP Server](/OracleHTTPServer)
 - [Oracle Identity Governance](/OracleIdentityGovernance)
 - [Oracle Instant Client](/OracleInstantClient) (Basic, SDK and SQL*Plus)
