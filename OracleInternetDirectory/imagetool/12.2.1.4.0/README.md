@@ -28,7 +28,7 @@ The following prerequisites are necessary before building Oracle Internet Direct
 ## 3. Setup WebLogic Image Tool
 
 * Download the latest version of [WebLogic Image Tool](https://github.com/oracle/weblogic-image-tool/releases).
-* Extract the release archive (zip, tar.gz) content into `WORK_DIR`>.
+* Extract the release archive (zip, tar.gz) content into `WORK_DIR`.
 
 ```bash
 $ unzip imagetool.zip
@@ -94,7 +94,7 @@ $ export WLSIMG_CACHEDIR="/path/to/cachedir"
 
 Download the required installers from the [Oracle Software Delivery Cloud](https://edelivery.oracle.com/) and save them in a directory of your choice e.g: `$WORK_DIR/stage`:
 
-Create a stage directory under $WORK_DIR for downloading the below installers by using the following command:
+Create a stage directory under `$WORK_DIR` for downloading the below installers by using the following command:
 
 ```bash
 $ mkdir -p $WORK_DIR/stage
@@ -190,7 +190,7 @@ oracle/oid                                                                   12.
 
 ## 8. Generate sample `Dockerfile` with imagetool
 
-If you want to review a sample Dockerfile created with the imagetool issue the `imagetool` command with the `--dryRun` option:
+If you want to review a sample `Dockerfile` created with the imagetool issue the `imagetool` command with the `--dryRun` option:
 
 
 ```bash

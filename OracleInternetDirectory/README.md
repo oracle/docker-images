@@ -21,8 +21,7 @@ This image includes binaries for OID Release 12.2.1.4.0 and it has the capabilit
 An Oracle Internet Directory image can be created and/or made available for deployment in the following ways:
 
 1. Oracle's preferred and recommended approach is to use the WebLogic Image Tool to build the Oracle Internet Directory 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an Oracle Internet Directory image with WebLogic Image Tool](imagetool/12.2.1.4.0)
-1. Build your own Oracle Internet Directory image using the `Dockerfile`, scripts and base image from Oracle Container Registry (OCR). To customize the image for specific use-cases, Oracle provides Dockerfile and build scripts. For more information, see [Building an Oracle Internet Directory Image with Dockerfile, Scripts and Base Image from OCR](dockerfiles/12.2.1.4.0/README.md).
-1. Build your own Oracle Internet Directory image using the Dockerfile and scripts. To customize the image for specific use-cases, Oracle provides Dockerfile and build scripts. For more information, see [Building an Oracle Internet Directory Image with Dockerfiles and Scripts](dockerfiles/12.2.1.4.0/README.md).
+1. Build your own Oracle Internet Directory image using the `Dockerfile` and scripts. To customize the image for specific use-cases, Oracle provides Dockerfile and build scripts. For more information, see [Building an Oracle Internet Directory Image with Dockerfiles and Scripts](dockerfiles/12.2.1.4.0/README.md).
 
 ## Oracle Internet Directory Container Configuration
 
