@@ -1,5 +1,4 @@
-#Oracle Internet Directory
-=========================
+# Oracle Internet Directory
 
 ## Contents
 
