@@ -2,5 +2,6 @@
 **/*.jar
 **/*.zip
 **/*.tar.gz
+**/*.bin
 .idea/
 .DS_Store

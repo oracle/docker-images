@@ -1,57 +1,60 @@
-Building an Oracle Internet Directory Image using Dockerfiles and Scripts
-========================================================================
+#Building an Oracle Internet Directory Image using Dockerfiles and Scripts
 
 ## Contents
 
-1. [Introduction](#1-introduction)
-2. [Prerequisites](#2-prerequisites)
-3. [How to Build the Oracle Java Image](#3-how-to-build-the-oracle-java-image)
-4. [How to Build the Oracle Fusion Middleware Infrastructure Image](#4-how-to-build-the-oracle-fusion-middleware-infrastructure-image)
-5. [Building a Container Image for Oracle Internet Directory](#5-building-a-container-image-for-oracle-internet-directory)
-6. [Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)](#6-building-an-oracle-internet-directory-image-with-dockerfiles-scripts-and-base-image-from-oracle-container-registry-ocr)
+1. [Introduction](##1-introduction)
+2. [Prerequisites](##2-prerequisites)
+3. [How to Build the Oracle Java Image](##3-how-to-build-the-oracle-java-image)
+4. [How to Build the Oracle Fusion Middleware Infrastructure Image](##4-how-to-build-the-oracle-fusion-middleware-infrastructure-image)
+5. [Building a Container Image for Oracle Internet Directory](##5-building-a-container-image-for-oracle-internet-directory)
+6. [Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)](##6-building-an-oracle-internet-directory-image-with-dockerfiles-scripts-and-base-image-from-oracle-container-registry-ocr)
 
-# 1. Introduction
+## 1. Introduction
 
-Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This Image includes binaries for Oracle Internet Directory (OID) Release 12.2.1.4.0 and has the capability to create the FMW Infrastructure domain and OID specific servers.
+Sample configurations to facilitate installation, configuration, and environment setup in containers. This image includes binaries for Oracle Internet Directory (OID) Release 12.2.1.4.0 and has the capability to create the Fusion Middleware (FMW) Infrastructure domain and OID specific servers.
 
-***Image***: oracle/oid:<version; example:12.2.1.4.0>
+## 2. Prerequisites
 
-# 2. Prerequisites
-
-The following prerequisites are necessary before building OID images:
+The following prerequisites are necessary to build OID images:
 
 * A working installation of Docker 18.03 or later
 
-# 3. How to Build the Oracle Java Image
+## 3. How to Build the Oracle Java Image
 
-Please refer to [README.md](../../../OracleJava/README.md) under `docker-images/OracleJava` for details on how to build Oracle Java image.
+Please refer to [`README.md`](../../../OracleJava/README.md) under `docker-images/OracleJava` for details on how to build Oracle Java image.
 
-# 4. How to Build the Oracle Fusion Middleware Infrastructure Image
+## 4. How to Build the Oracle Fusion Middleware Infrastructure Image
 
-Please refer to [README.md](../../../OracleFMWInfrastructure/README.md) under `docker-images/OracleFMWInfrastructure` for details on how to build Oracle Fusion Middleware Infrastructure image.
+Please refer to [`README.md`](../../../OracleFMWInfrastructure/README.md) under `docker-images/OracleFMWInfrastructure` for details on how to build Oracle Fusion Middleware Infrastructure image.
 
-OID Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to the Oracle Fusion Middleware (FMW) Infrastructure image, hence you should use this tag for the same.
+The OID Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to the Oracle Fusion Middleware (FMW) Infrastructure image, hence you should use this tag for the same.
 
-# 5. Building a Container Image for Oracle Internet Directory
+## 5. Building a Container Image for Oracle Internet Directory
 
-## Downloading the OID Docker files
+### Downloading the OID Docker files
 
   1. Make a work directory to place the OID Docker files:
 
+```shell    
     $ mkdir <work directory>
+```shell
 
-  2. Download the OID Docker files from the OID [repository](https://github.com/oracle/docker-images) by running the following command:
+  2. Clone the Oracle Docker Images GitHub repository by running the following command [repository](https://github.com/oracle/docker-images) by running the following command:
 
+```shell
     $ cd <work directory>
     $ git clone https://github.com/oracle/docker-images
+```shell
 
-## Downloading the 12.2.1.4.0 Identity Management shiphome.
+### Downloading the 12.2.1.4.0 Oracle Internet Directory binaries.
 
   1. Download the [Oracle Internet Directory 12cPS4 software](https://www.oracle.com/in/security/identity-management/technologies/downloads/) to a stage directory. Unzip the downloaded `fmw_12.2.1.4.0_oid_linux64_Disk1_1of1.zip` file and copy the `fmw_12.2.1.4.0_oid_linux64.bin` to `<work directory>/docker-images/OracleInternetDirectory/dockerfiles/12.2.1.4.0/`:
 
+    ```shell
     $ unzip fmw_12.2.1.4.0_oid_linux64_Disk1_1of1.zip
     $ cp fmw_12.2.1.4.0_oid_linux64.bin <work directory>/docker-images/OracleInternetDirectory/dockerfiles/12.2.1.4.0/fmw_12.2.1.4.0_oid_linux64.bin
-  
+    ```shell
+
   2. If you are creating the OID image with patches, create the following directories under the `12.2.1.4.0` directory, where patches directory will contain the patches and opatch_patch directory will contain the Opatch patch:
 
     $ mkdir -p <work directory>/OracleInternetDirectory/dockerfiles/12.2.1.4.0/patches
@@ -76,7 +79,7 @@ OID Dockerfile uses the 'oracle/fmw-infrastructure:12.2.1.4.0' tag to refer to t
 
    The OID Docker image is now built successfully.
 
-# 6. Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
+## 6. Building an Oracle Internet Directory Image with Dockerfiles, Scripts and Base Image from Oracle Container Registry (OCR)
 
 
 1. [Pulling Oracle FMW Infrastructure 12.2.1.4.x image](#1-pull-oracle-fmw-infrastructure-12214x-image)
