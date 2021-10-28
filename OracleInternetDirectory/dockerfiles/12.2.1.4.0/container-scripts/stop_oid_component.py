@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 #
 # Copyright (c) 2021, Oracle and/or its affiliates.
 #
@@ -11,7 +11,6 @@ domain_name  = os.environ.get("DOMAIN_NAME", "oid_domain")
 oracle_home = os.environ.get("ORACLE_HOME", "/u01/oracle/")
 weblogic_home = '/u01/oracle/wlserver'
 
-#realm_dn_new     = re.escape(realm_dn)
 # Node Manager Vars
 
 i = 1

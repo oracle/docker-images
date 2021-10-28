@@ -14,7 +14,7 @@ usage() {
 cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-s]
-Builds a Docker Image for Oracle Internet Directory .
+Builds an Oracle Internet Directory container image
 
 Parameters:
    -h: view usage
@@ -42,7 +42,7 @@ checksumPackages() {
 }
 
 #Parameters
-VERSION="12.2.1.4.0"
+VERSION="NONE"
 SKIPMD5=0
 while getopts "hsv:" optname; do
   case "$optname" in
@@ -62,13 +62,17 @@ while getopts "hsv:" optname; do
   esac
 done
 
+if [ "${VERSION}" = "NONE" ] || [ "${VERSION}" != "12.2.1.4.0" ]; then
+  usage
+fi
+
 # OID Image Name
 IMAGE_NAME="oracle/oid:$VERSION"
 DOCKERFILE_NAME="Dockerfile"
-
+THEDIR=${VERSION}
 
 # Go into version folder
-cd $VERSION
+cd "${THEDIR}" || exit
 echo  "version --> $VERSION  "
 
 # Proxy settings
@@ -107,8 +111,7 @@ docker build --force-rm=true --no-cache=true $PROXY_SETTINGS -t $IMAGE_NAME -f $
 }
 
 BUILD_END=$(date '+%s')
-BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
-
+BUILD_ELAPSED=$((BUILD_END-BUILD_START))
 echo ""
 
 if [ $? -eq 0 ]; then
@@ -121,5 +124,5 @@ cat << EOF
 
 EOF
 else
-  echo "Oracle Internet Directory Image was NOT  created. Check the output and correct any reported problems with the docker build operation."
+  echo "Oracle Internet Directory image was NOT created. Check the output and correct any reported problems with the docker build operation."
 fi

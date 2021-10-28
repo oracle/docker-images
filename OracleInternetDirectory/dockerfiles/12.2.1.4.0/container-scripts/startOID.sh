@@ -51,7 +51,6 @@ trap _term SIGTERM
 trap _kill SIGKILL
 
 #Echo Env Details
-# echo "Java Options: ${JAVA_OPTIONS}"
 echo "Domain Root: ${DOMAIN_ROOT}"
 echo "Domain Name: ${DOMAIN_NAME}"
 echo "Domain Home: ${DOMAIN_HOME}"
