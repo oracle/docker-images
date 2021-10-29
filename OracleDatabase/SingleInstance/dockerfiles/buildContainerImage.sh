@@ -175,6 +175,9 @@ elif [ ${EXPRESS} -eq 1 ]; then
   if [ "${VERSION}" == "18.4.0" ]; then
     EDITION="xe"
     SKIPMD5=1
+  elif [ "${VERSION}" == "21.4.0" ]; then
+    EDITION="xe"
+    SKIPMD5=1
   elif [ "${VERSION}" == "11.2.0.2" ]; then
     EDITION="xe"
     BUILD_OPTS=("--shm-size=1G" "${BUILD_OPTS[@]}")
@@ -185,7 +188,7 @@ elif [ ${EXPRESS} -eq 1 ]; then
 fi;
 
 # Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ]; then
+if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "21.4.0" ]; then
   DOCKERFILE="${DOCKERFILE}.${EDITION}"
 fi;
 
