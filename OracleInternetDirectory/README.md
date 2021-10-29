@@ -21,15 +21,15 @@ This image includes binaries for OID Release 12.2.1.4.0 and it has the capabilit
 An Oracle Internet Directory image can be created and/or made available for deployment in the following ways:
 
 1. Oracle's preferred and recommended approach is to use the WebLogic Image Tool to build the Oracle Internet Directory 12.2.1.4.0 image along with the latest Bundle Patch and any additional patches that you require. For more information, see [Building an Oracle Internet Directory image with WebLogic Image Tool](imagetool/12.2.1.4.0)
-1. Build your own Oracle Internet Directory image using the `Dockerfile` and scripts. To customize the image for specific use-cases, Oracle provides Dockerfile and build scripts. For more information, see [Building an Oracle Internet Directory Image with Dockerfiles and Scripts](dockerfiles/12.2.1.4.0/README.md).
+1. Build or customize your own Oracle Internet Directory image using the `Dockerfile` and build scripts provided by Oracle. For more information, see [Building an Oracle Internet Directory Image](dockerfiles/12.2.1.4.0/README.md).
 
 ## Oracle Internet Directory Container Configuration
 
-To deploy the Oracle Internet Directory container as a standalone container, see the tutorial [Creating Oracle Internet Directory Docker containers](https://docs.oracle.com/en/middleware/idm/internet-directory/12.2.1.4/tutorial-oid-docker/).
+To deploy the Oracle Internet Directory container as a standalone container, see the [Creating an Oracle Internet Directory container](https://docs.oracle.com/en/middleware/idm/internet-directory/12.2.1.4/tutorial-oid-docker/) tutorial.
 
 ## Deploying Oracle Internet Directory on Kubernetes
 
-To deploy the Oracle Internet Directory containers with Kubernetes see the [Oracle Internet Directory on Kubernetes](https://oracle.github.io/fmw-kubernetes/oid/) documentation.
+To deploy Oracle Internet Directory to a Kubernetes cluster, see the [Oracle Internet Directory on Kubernetes](https://oracle.github.io/fmw-kubernetes/oid/) documentation.
 
 ## License
 To download and run Oracle Fusion Middleware products, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
