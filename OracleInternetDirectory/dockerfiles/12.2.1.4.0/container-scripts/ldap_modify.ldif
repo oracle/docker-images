@@ -1,0 +1,7 @@
+dn: cn=@component@,cn=osdldapd,cn=subconfigsubentry
+changetype: modify
+replace: orclsslwalleturl
+orclsslwalleturl: file://u01/oracle/user_projects/domains/oid_domain/wallets/@host@/
+-
+replace: orclsslauthentication
+orclsslauthentication: 32
