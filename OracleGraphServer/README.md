@@ -8,6 +8,8 @@ Oracle Database is required for setting up Graph Server because the authenticati
 
 ![](https://user-images.githubusercontent.com/4862919/138631261-105c0795-3942-483c-9e01-f28417bf6d59.png)
 
+### Clone this repository
+
 To setup the environment, clone this repository first. Here we use `~/oracle-graph` as a work directory.
 
     $ cd ~/
@@ -22,7 +24,11 @@ Then, follow the two sections below.
 
 ## Setup Database
 
-If you have an existing environment running Oracle Database (>= 12.2), the new Graph Server container can connect to it. Please go to the skip the first step to create the database container, and proceed to the next step to configure the database.
+In this section, we will setup a container for Oracle Database and another container for SQLcl, so we can try PGQL queries in the 2-tier deployment. For enabling Oracle Graph, we need to apply a **PL/SQL patch** to the database and add the **PGQL plugin** to SQLcl.
+
+![](https://user-images.githubusercontent.com/4862919/139366077-8f63d92c-6192-4237-aa41-b4e20d117219.png)
+
+If you have an **existing** environment running Oracle Database (>= 12.2), it can be configured for Oracle Graph and a new Graph Server container (in the next section) can also connect to it. Please skip the first step to create the database container, and proceed to the next step to configure the database.
 
 ### Create a database container
 
@@ -54,7 +60,7 @@ You will get this error when the database is not ready yet.
 
     ORA-12514: TNS:listener does not currently know of service requested in connect descriptor
 
-You can stop the container (or quit with Ctl+C) and restart it.
+You can stop and restart the container.
 
     $ docker stop database
     $ docker start database
@@ -112,10 +118,11 @@ Create a database user `graphuser` and grant the necessary privileges.
     , graph_developer -- This role is required for using Graph Server
     TO graphuser;
 
-Exit and try connecting as the user newly created.
+Exit and confirm that you can connect as the user newly created.
 
     SQL> exit
     $ docker exec -it database sqlplus graphuser/Welcome1@xepdb1
+    SQL> exit
 
 ### Setup a SQLcl container
 
@@ -123,16 +130,18 @@ You need SQLcl and its PGQL plugin to run PGQL queries. (SQL*Plus does not suppo
 
 Download [PGQL Plugin for SQLcl](https://www.oracle.com/database/technologies/spatialandgraph/property-graph-features/graph-server-and-client/graph-server-and-client-downloads.html) and locate the file below into `21.4.0/` directory.
 
-- oracle-graph-sqlcl-plugin-21.4.0.zip
+    ~/oracle-graph/docker-images/OracleGraphServer/
+    ├─ 21.4.0/
+        ├─ oracle-graph-sqlcl-plugin-21.4.0.zip
 
 Go to the directory and build the image.
 
     $ cd ~/oracle-graph/docker-images/OracleGraphServer/21.4.0/
-    $ docker build -t oracle/sqlcl-pgql -f Dockerfile.sqlcl .
+    $ docker build -t oracle/sqlcl-pgql:21.4.0 -f Dockerfile.sqlcl .
 
 Create an alias and connect to the database with SQLcl.
 
-    $ alias sql='docker run --rm -it oracle/sqlcl-pgql sql'
+    $ alias sql='docker run --rm -it oracle/sqlcl-pgql:21.4.0 sql'
     $ sql graphuser/Welcome1@host.docker.internal:1521/xepdb1
     SQL>
 
@@ -140,7 +149,7 @@ Check if you can enable the PGQL mode.
 
     SQL> pgql auto on
     PGQL Auto enabled for graph=[null], execute=[true], translate=[false]
-    PGQL> 
+    PGQL>
 
 ### Create a graph
 
@@ -167,20 +176,9 @@ Insert two vertices and an edge between them.
 
 Query the car brand owned by Alice and since when.
 
-    SELECT p.NAME, LABEL(h), c.BRAND, h.SINCE
-    FROM MATCH (p)-[h:HAS]->(c) ON graph1
-    WHERE p.NAME = 'Alice';
-
-Delete all vertices (and connecting edges). 
-
-    DELETE v
-    FROM MATCH (v) ON graph1;
-
-    COMMIT;
-
-Drop the graph.
-
-    DROP PROPERTY GRAPH graph1;
+    SELECT v1.NAME, LABEL(e), v2.BRAND, e.SINCE
+    FROM MATCH (v1)-[e:HAS]->(v2) ON graph1
+    WHERE v1.NAME = 'Alice';
 
 Exit from SQLcl.
 
@@ -188,19 +186,27 @@ Exit from SQLcl.
 
 ## Setup Graph Server
 
-To setup a Graph Server, a database should be setup beforehand as above. If you use an existing database (= not the database Docker container above), please configure the JDBC URL in the file below.
+In this section, we will additionally create a Graph Server container which also contains Graph Client and Graph Viz web application. Graph Server will be connected to the database above via JDBC, so the clients can login to the Graph Server using the database user authentication.
+
+![](https://user-images.githubusercontent.com/4862919/139367239-63e03b8c-e503-4d5b-8a4f-4c0a68dc0d8d.png)
+
+### Set the JDBC URL (optional)
+
+If you use an existing database (= not the database container above), please open the configuration file below and set the JDBC URL accordingly.
 
     $ vi ~/oracle-graph/docker-images/OracleGraphServer/21.4.0/pgx.conf
     
-    # Modify this line accordingly
-    "jdbc_url": "jdbc:oracle:thin:@host.docker.internal:1522/xepdb1",
+    # Modify this line
+    "jdbc_url": "jdbc:oracle:thin:@host.docker.internal:1521/xepdb1",
 
 ### Download packages
 
 Download [Oracle Graph Server](https://www.oracle.com/database/technologies/spatialandgraph/property-graph-features/graph-server-and-client/graph-server-and-client-downloads.html) and [JDK 11 Linux x64 RPM Package](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) (No cost for personal use and development use). Then, add the following files into `21.4.0/` directory.
 
-- oracle-graph-21.4.0.x86_64.rpm
-- jdk-11.x.xx_linux-x64_bin.rpm
+    ~/oracle-graph/docker-images/OracleGraphServer/
+    ├─ 21.4.0/
+        ├─ oracle-graph-21.4.0.x86_64.rpm
+        ├─ jdk-11.x.xx_linux-x64_bin.rpm
 
 ### Start Container
 
@@ -211,7 +217,7 @@ Go to the directory.
 Build the image. `<version_of_JDK>` needs be replaced with the version, e.g. `11.0.10`.
 
     $ docker build . \
-      --tag graph-server:21.4.0 \
+      --tag oracle/graph-server:21.4.0 \
       --build-arg VERSION_GSC=21.4.0 \
       --build-arg VERSION_JDK=<version_of_JDK>
 
@@ -221,16 +227,35 @@ Start a container. For Linux host, `--add-host=host.docker.internal:host-gateway
       --name graph-server \
       --publish 7007:7007 \
       --volume $PWD/pgx.conf:/etc/oracle/graph/pgx.conf \
-      graph-server:21.4.0
+      oracle/graph-server:21.4.0
 
-You can now connect to the container from another console.
+Open another console and confirm that you can connect to the container.
 
     $ docker exec -it graph-server /bin/bash
+    # exit
 
-### Login to Graph Visualization
+You can stop and restart the container.
 
-Access Graph Visualization using web browser. You will get warnings because it is using a self-signed cirtificate. 
+    $ docker stop graph-server
+    $ docker start graph-server
 
-- Graph Visualization - https://localhost:7007/ui/
-  (USER: graphuser, PASSWORD: Welcome1)
+### Login to Graph Viz
 
+Access Graph Viz using a web browser. You will get warnings because it is using a self-signed cirtificate. For **Chrome**, type `thisisunsafe` to allows the access. For **Firefox**, click `Advanced` and `Accept the Risk and Continue` to proceed. 
+
+- URL: https://localhost:7007/ui/
+- Username: `graphuser`
+- Password: `Welcome1`
+- Advanced Options
+  - `Database`
+  - `jdbc:oracle:thin:@host.docker.internal:1521/xepdb1` (or an alternative JDBC URL)
+
+![](https://user-images.githubusercontent.com/4862919/139385128-0f4cde78-9749-434e-8d03-deeeb7ee0e28.jpg)
+
+Once logged in, pick `GRAPH1` and run the same query as in the previous section.
+
+    SELECT v1.NAME, LABEL(e), v2.BRAND, e.SINCE
+    FROM MATCH (v1)-[e:HAS]->(v2) ON graph1
+    WHERE v1.NAME = 'Alice'
+
+![](https://user-images.githubusercontent.com/4862919/139384916-138ccc94-8291-4950-8552-6d2a6408a107.jpg)
