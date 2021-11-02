@@ -66,21 +66,18 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
     mkdir $ORACLE_BASE/scripts/startup && \
     ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
+    mkdir -p $ORACLE_BASE/oradata /home/oracle && \
+    chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
     mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$CHECK_DB_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$CONF_FILE /etc/sysconfig/ && \
-    mkdir -p $ORACLE_BASE/oradata /home/oracle && \
-    chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
-    ln -s $ORACLE_BASE/$PWD_FILE /home/oracle && \
+    ln -s $ORACLE_BASE/$PWD_FILE / && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
     chmod ug+x $ORACLE_BASE/*.sh && \
     $ORACLE_BASE/oraInventory/orainstRoot.sh && \
     $ORACLE_HOME/root.sh
-
-USER oracle
-WORKDIR /home/oracle
 
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
