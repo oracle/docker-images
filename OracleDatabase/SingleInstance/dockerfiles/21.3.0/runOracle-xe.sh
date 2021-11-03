@@ -109,7 +109,7 @@ function createDB {
    sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" /etc/sysconfig/"$CONF_FILE"
 
    /etc/init.d/oracle-xe-21c configure << EOF
-${ORACLE_PWD};
+${ORACLE_PWD}
 ${ORACLE_PWD}
 EOF
 
