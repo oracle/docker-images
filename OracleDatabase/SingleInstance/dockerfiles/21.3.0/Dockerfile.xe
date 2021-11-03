@@ -39,11 +39,11 @@ ENV ORACLE_BASE=/opt/oracle \
     ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE \
     ORACLE_SID=XE \
     INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm" \
-    RUN_FILE="runOracle.sh" \
-    PWD_FILE="setPassword.sh" \
+    RUN_FILE="runOracle-xe.sh" \
+    PWD_FILE="setPassword-xe.sh" \
     CONF_FILE="oracle-xe-21c.conf" \
-    CHECK_SPACE_FILE="checkSpace.sh" \
-    CHECK_DB_FILE="checkDBStatus.sh" \
+    CHECK_SPACE_FILE="checkSpace-xe.sh" \
+    CHECK_DB_FILE="checkDBStatus-xe.sh" \
     INSTALL_DIR="$HOME/install" \
     ORACLE_DOCKER_INSTALL="true"
 
