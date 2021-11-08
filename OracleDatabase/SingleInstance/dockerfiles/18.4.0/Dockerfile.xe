@@ -58,9 +58,9 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
-    yum -y install openssl oracle-database-preinstall-18c && \
+    yum -y install expect openssl oracle-database-preinstall-18c && \
     sed -i -e 's/\(oracle\s\+hard\s\+nofile\)/# \1/' /etc/security/limits.d/oracle-database-preinstall-18c.conf && \
-    yum -y localinstall $INSTALL_FILE_1 && \
+    unbuffer yum -y localinstall $INSTALL_FILE_1 && \
     rm -rf /var/cache/yum && \
     rm -rf /var/tmp/yum-* && \
     mkdir -p $ORACLE_BASE/scripts/setup && \
