@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #
-# Copyright (c) 2014, 2020 Oracle and/or its affiliates.
+# Copyright (c) 2014, 2021, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
@@ -71,8 +71,8 @@ updateListenAddress() {
   mkdir -p ${DOMAIN_HOME}/logs
 
   export thehost=`hostname -I`
-  echo "INFO: Updating the listen address - ${thehost} ${ADMIN_HOST}"
-  cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/updListenAddress.py $vol_name ${thehost} AdminServer ${ADMIN_HOST}"
+  echo "INFO: Updating the listen address - ${thehost}"
+  cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/updListenAddress.py $vol_name ${thehost} AdminServer"
   echo ${cmd}
   ${cmd} > ${DOMAIN_HOME}/logs/aslisten.log 2>&1
 }

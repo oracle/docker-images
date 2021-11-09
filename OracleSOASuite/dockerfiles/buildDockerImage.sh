@@ -24,7 +24,7 @@ LICENSE Universal Permissive License (UPL), Version 1.0
 Copyright (c) 2016-2017: Oracle and/or its affiliates.
 
 EOF
-exit 0
+exit $1
 }
 
 #=============================================================
@@ -79,7 +79,7 @@ SKIPMD5=0
 while getopts "hsv:" optname; do
   case "$optname" in
     "h")
-      usage
+      usage 0
       ;;
     "s")
       SKIPMD5=1
@@ -89,7 +89,8 @@ while getopts "hsv:" optname; do
       ;;
     *)
       # Should not occur
-      echo "ERROR: Invalid argument. buildDockerImage.sh"
+      echo "ERROR: Invalid argument for buildDockerImage.sh"
+      usage 1
       ;;
   esac
 done
@@ -153,12 +154,14 @@ ${buildCmd} || {
   echo "ERROR: There was an error building the image."
   exit 1
 }
+status=$?
+
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
 
-if [ $? -eq 0 ]; then
+if [ ${status} -eq 0 ]; then
   cat << EOF
 INFO: Oracle SOA suite Docker Image for version: $VERSION
       is ready to be extended.

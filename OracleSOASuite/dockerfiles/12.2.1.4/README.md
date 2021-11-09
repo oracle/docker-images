@@ -179,7 +179,7 @@ ADMIN_PASSWORD=<admin_password>
 DOMAIN_NAME=soainfra
 DOMAIN_TYPE=<soa/osb/soaosb>
 ADMIN_HOST=<Administration Server hostname>
-ADMIN_PORT=<port number where Administration Server is running>
+ADMIN_PORT=<Node port number mapping Administration Server container port `7001`>
 PERSISTENCE_STORE=<jdbc | file>
 ```
 >IMPORTANT: `DOMAIN_TYPE` must be carefully chosen and specified depending on the use case. It can't be changed once you proceed.
@@ -202,8 +202,6 @@ ADMIN_PORT=7001
 PERSISTENCE_STORE=jdbc
 ```
 If `PERSISTENCE_STORE` is not specified, the default value is `jdbc`. When `PERSISTENCE_STORE=jdbc`, a JDBC persistence store will be configured for all servers for TLOG + SOAJMS/UMSJMS servers. If `PERSISTENCE_STORE=file`, file-based persistence stores will be used instead.
-
-> IMPORTANT: In the Administration Server's environment variables file, the `ADMIN_PORT` value must be `7001`.
 
 To start a Docker container with a SOA domain and the WebLogic Server Administration Server, use the `docker run` command and pass the `adminserver.env.list` file.
 
@@ -236,13 +234,16 @@ Create an environment variables file specific to each Managed Server in the clus
 MANAGED_SERVER=<Managed Server name, either soa_server1 or soa_server2>
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
-ADMIN_PORT=<port number where Administration Server is running>
+ADMIN_PORT=<Node port number mapping Administration Server container port `7001`>
 ADMIN_PASSWORD=<admin_password>
 MANAGED_SERVER_CONTAINER=true
-MANAGEDSERVER_PORT=<port number where Managed Server is running>
+MANAGEDSERVER_PORT=<Container port number where Managed Server is running>
 ```
 
->IMPORTANT: In the Managed Servers environment variables file, the `MANAGED_SERVER` value must be `soa_server1` or `soa_server2` for the  `soa` and `soaosb` domain type. Also, `MANAGEDSERVER_PORT` must be `8001` for `soa_server1` or `8002` for `soa_server2`.
+>IMPORTANT: In the Managed Servers environment variables file
+> - `MANAGED_SERVER` value must be `soa_server1` or `soa_server2` for the  `soa` and `soaosb` domain type.
+> - `MANAGEDSERVER_PORT` must be `8001` for `soa_server1` or `8002` for `soa_server2`.
+> - `ADMIN_PORT` must match the **node** port mapping the Administration Server container port `7001`.
 
 Example for `soaserver1.env.list`:
 ``` bash
@@ -302,13 +303,16 @@ Create an environment variables file specific to each Managed Server in the clus
 MANAGED_SERVER=<Managed Server name, either osb_server1 or osb_server2>
 DOMAIN_NAME=soainfra
 ADMIN_HOST=<Administration Server hostname>
-ADMIN_PORT=<port number where Administration Server is running>
+ADMIN_PORT=<Node port number mapping Administration Server container port `7001`>
 ADMIN_PASSWORD=<admin_password>
 MANAGED_SERVER_CONTAINER=true
-MANAGEDSERVER_PORT=<port number where Managed Server is running>
+MANAGEDSERVER_PORT=<Container port number where Managed Server is running>
 ```
 
->IMPORTANT: In the Managed Servers environment variables file the `MANAGED_SERVER` value must be `osb_server1` or `osb_server2` for the `osb` and `soaosb` domain type. Also, `MANAGEDSERVER_PORT` must be `9001` for `osb_server1` or `9002` for `osb_server2`.
+>IMPORTANT: In the Managed Servers environment variables file
+> - `MANAGED_SERVER` value must be `osb_server1` or `osb_server2` for the  `osb` and `soaosb` domain type.
+> - `MANAGEDSERVER_PORT` must be `9001` for `osb_server1` or `9002` for `osb_server2`.
+> - `ADMIN_PORT` must match the **node** port mapping the Administration Server container port `7001`.
 
 Example for `osbserver1.env.list`:
 ``` bash
