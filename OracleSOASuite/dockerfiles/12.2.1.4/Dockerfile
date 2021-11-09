@@ -104,7 +104,8 @@ LABEL maintainer="Sambasiva Battagiri <sambasiva.battagiri@oracle.com>"
 # Install the required packages
 # -----------------------------
 USER root
-RUN yum install -y hostname ant && \
+ENV PATH=$PATH:/u01/oracle/container-scripts:/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/1.10.5.0.0/apache-ant-1.10.5/bin
+RUN yum install -y hostname && \
     rm -rf /var/cache/yum
 
 COPY --from=builder --chown=oracle:root /u01 /u01
