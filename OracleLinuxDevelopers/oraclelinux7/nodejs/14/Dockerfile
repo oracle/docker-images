@@ -6,4 +6,4 @@ RUN yum -y install oracle-nodejs-release-el7 && \
     yum -y install nodejs && \
     rm -rf /var/cache/yum/*
 
-CMD ["/bin/node", "-v"
+CMD ["/bin/node", "-v"]
