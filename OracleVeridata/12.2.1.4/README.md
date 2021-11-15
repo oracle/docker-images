@@ -111,4 +111,4 @@ Oracle recommends that the `vdt.env` file be deleted or secured after the contai
 
 # Copyright
 
-Copyright (c) 2021 Oracle and/or its affiliates.OGG Veridata 12.2.1.4.0 Installer
+Copyright (c) 2021 Oracle and/or its affiliates.
