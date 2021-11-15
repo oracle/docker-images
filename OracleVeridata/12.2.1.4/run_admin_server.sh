@@ -31,9 +31,6 @@ set_context
 extract_env WEBLOGIC_PORT ${scriptDir}/vdt.env
 extract_env DOMAIN_HOST_VOLUME ${scriptDir}/vdt.env
 extract_env ADMIN_CONTAINER_NAME ${scriptDir}/vdt.env
-extract_env ADMIN_CONTAINER_NAME ${scriptDir}/vdt.env
-extract_env ADMIN_CONTAINER_NAME ${scriptDir}/vdt.env
-#extract_env DOMAIN_HOST_VOLUME ${scriptDir}/vdt.env
 
 # HOST volume where the domain home will be persisted
 domain_host_volume() {

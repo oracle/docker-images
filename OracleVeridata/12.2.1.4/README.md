@@ -8,7 +8,7 @@ This Docker configuration has been used to create the Oracle GoldenGate Veridata
 
 ## Prerequisites
 
-Create Docker network to run Admin, Managed server, and repository Database (in case needed).
+Use the docker network command to create a network for the Admin, Managed Server and optional repository database (if necessary).
 
 `docker network create -d bridge VdtBridge`
 
@@ -25,14 +25,14 @@ Use `docker tag` to tag it to `oracle/fmw-infrastructure:12.2.1.4.0-210701`
 Oracle Database is required to install Oracle GoldenGate Veridata repository.
 You can use an existing Oracle Database or build a Oracle Database image.
 
-To build an Oracle Database image run the following command:
+Build and deploy an Oracle Database container using the provided scripts in the following link:
 
 https://github.com/oracle/docker-images/tree/main/OracleDatabase/SingleInstance
 
 
 3. Oracle GoldenGate Veridata Installer:
 
-Download the Oracle GoldenGate Veridata 12.2.1.4.0 Installer to your local directory from the following location:
+Download the Oracle GoldenGate Veridata 12.2.1.4.0 Installer in to your local directory from the following location:
 
 https://www.oracle.com/middleware/technologies/goldengate-downloads.html
 
@@ -57,7 +57,7 @@ Parameters:
 -h: Help
 ```
 For example: 
-`buildDockerImage.sh -v 12.2.1.4-210630 -i fmw_12.2.1.4.0_ogg_Disk1_1of1.zip -p p32761281_122140_Generic.zip`
+`buildContainerImage.sh -v 12.2.1.4-210630 -i fmw_12.2.1.4.0_ogg_Disk1_1of1.zip -p p32761281_122140_Generic.zip`
 
 
 ## How to Run Oracle GoldenGateVeridata Server
@@ -111,4 +111,4 @@ Oracle recommends that the `vdt.env` file be deleted or secured after the contai
 
 # Copyright
 
-Copyright (c) 2021 Oracle and/or its affiliates.
+Copyright (c) 2021 Oracle and/or its affiliates.OGG Veridata 12.2.1.4.0 Installer
