@@ -1,7 +1,7 @@
 # The last matching pattern has the most precedence, so the file goes from least
 # specific to most specific file path to assign code ownership.
 #
-*                          @Djelibeybi @gvenzl @mriccell @rjeberhard 
+*                          @Djelibeybi @gvenzl @mriccell @rjeberhard
 /.github/*.yml             @Djelibeybi
 /.github/workflows         @Djelibeybi @AmedeeBulle
 /GraalVM/                  @mzachh
@@ -24,8 +24,8 @@
 /OracleSOASuite/           @knvijay @rdas0405
 /OracleUnifiedDirectory/   @kuldeepbshah @surya902
 /OracleUnifiedDirectorySM/ @kuldeepbshah @surya902
+/OracleVeridata/           @arnabnandioracle
 /OracleWebCenterContent/   @deboghos @pjadam
 /OracleWebCenterSites/     @prshshuk
 /OracleWebCenterPortal/    @dgothe
 /OracleWebLogic/           @mriccell
-/OracleVeridata/           @arnabnandioracle
