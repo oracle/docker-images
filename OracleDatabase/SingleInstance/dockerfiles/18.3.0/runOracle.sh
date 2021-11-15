@@ -79,16 +79,6 @@ EOF
    lsnrctl stop
 }
 
-########### SIGKILL handler ############
-function _kill() {
-   echo "SIGKILL received, shutting down database!"
-   sqlplus / as sysdba <<EOF
-   shutdown abort;
-   exit;
-EOF
-   lsnrctl stop
-}
-
 ###################################
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ############# MAIN ################
@@ -96,16 +86,20 @@ EOF
 ###################################
 
 # Check whether container has enough memory
+if [[ -f /sys/fs/cgroup/cgroup.controllers ]]; then
+   memory=$(cat /sys/fs/cgroup/memory.max)
+else
+   memory=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
+fi
+
 # Github issue #219: Prevent integer overflow,
-# only check if memory digits are less than 11 (single GB range and below) 
-if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes | wc -c` -lt 11 ]; then
-   if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes` -lt 2147483648 ]; then
-      echo "Error: The container doesn't have enough memory allocated."
-      echo "A database container needs at least 2 GB of memory."
-      echo "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
-      exit 1;
-   fi;
-fi;
+# only check if memory digits are less than 11 (single GB range and below)
+if [[ ${memory} != "max" && ${#memory} -lt 11 && ${memory} -lt 2147483648 ]]; then
+   echo "Error: The container doesn't have enough memory allocated."
+   echo "A database container needs at least 2 GB of memory."
+   echo "You currently only have $((memory/1024/1024)) MB allocated to the container."
+   exit 1;
+fi
 
 # Check that hostname doesn't container any "_"
 # Github issue #711
@@ -119,9 +113,6 @@ trap _int SIGINT
 
 # Set SIGTERM handler
 trap _term SIGTERM
-
-# Set SIGKILL handler
-trap _kill SIGKILL
 
 # Default for ORACLE SID
 if [ "$ORACLE_SID" == "" ]; then

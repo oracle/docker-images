@@ -1,23 +1,31 @@
-# The last matching pattern has the most precedence.
-*                         @Djelibeybi @gvenzl @mriccell
-/ContainerCloud/          @mikeraab
-/GlassFish/               @arindam-bandyopadhyay
-/GraalVM/                 @mzachh
-/NoSQL/                   @anandchandak
-/OpenJDK/                 @aureliogrb
-/OracleBI/                @sjvp
-/OracleCoherence/         @thegridman
-/OracleDataIntegrator/    @mavaishn
-/OracleDatabase/SingleInstance/          @gvenzl
-/OracleDatabase/RAC/      @psaini79
-/OracleEDQ/               @subhashsutrave
-/OracleFMWInfrastructure/ @mriccell
-/OracleGoldenGate/        @sbalousek
-/OracleHTTPServer/        @Prabhat-Kishore
-/OracleInstantClient/     @cjbj
-/OracleJava/              @aureliogrb
-/OracleRestDataServices/  @gvenzl
-/OracleTuxedo/            @toddinpal
-/OracleWebCenterSites/    @ashishchalak
-/OracleWebLogic/          @mriccell
-/OracleVeridata/          @arnabnandioracle
+# The last matching pattern has the most precedence, so the file goes from least
+# specific to most specific file path to assign code ownership.
+#
+*                          @Djelibeybi @gvenzl @mriccell @rjeberhard 
+/.github/*.yml             @Djelibeybi
+/.github/workflows         @Djelibeybi @AmedeeBulle
+/GraalVM/                  @mzachh
+/NoSQL/                    @Djelibeybi
+/OracleAccessManagement/   @pratdash-orcl
+/OracleBI/                 @sjvp
+/OracleCoherence/          @thegridman
+/OracleDatabase/           @gvenzl
+/OracleDatabase/RAC/       @psaini79
+/OracleEssbase/            @anilarora
+/OracleFMWInfrastructure/  @mriccell
+/OracleGoldenGate/         @sbalousek
+/OracleHTTPServer/         @Prabhat-Kishore
+/OracleIdentityGovernance/ @rishiagarwal-oracle
+/OracleInstantClient/      @cjbj
+/OracleInternetDirectory/  @pratdash-orcl @kuldeepbshah
+/OracleJava/               @aureliogrb
+/OracleLinuxDevelopers/    @Djelibeybi @totalamateurhour @AmedeeBulle
+/OracleRestDataServices/   @gvenzl
+/OracleSOASuite/           @knvijay @rdas0405
+/OracleUnifiedDirectory/   @kuldeepbshah @surya902
+/OracleUnifiedDirectorySM/ @kuldeepbshah @surya902
+/OracleWebCenterContent/   @deboghos @pjadam
+/OracleWebCenterSites/     @prshshuk
+/OracleWebCenterPortal/    @dgothe
+/OracleWebLogic/           @mriccell
+/OracleVeridata/           @arnabnandioracle

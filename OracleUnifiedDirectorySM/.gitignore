@@ -1,0 +1,16 @@
+*~
+OUD
+OUDSM
+*.tmp
+*.tar
+*.tar.gz
+*.tgz
+*.out
+tmp*
+pipeline.yaml
+kubernetes
+imagetool/**/manifest*.properties
+CONTRIBUTING.md
+LICENSE.txt
+OCRReadme.md
+CONTRIBUTORS

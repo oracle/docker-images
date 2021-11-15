@@ -3,10 +3,10 @@
 # Script to build a Docker image for Oracle SOA suite.
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
-# http://oss.oracle.com/licenses/upl.
+# https://oss.oracle.com/licenses/upl
 #
 #=============================================================
 usage() {
@@ -14,18 +14,17 @@ cat << EOF
 
 Usage: buildDockerImage.sh -v [version]
 
-Builds a Docker Image for Oracle SOA/OSB/BPM
+Builds a Docker Image for Oracle SOA/OSB
 Parameters:
    -h: view usage
-   -v: Release version to build. Required. Allowed values are
-       12.2.1.2, 12.2.1.3
+   -v: Release version to build. Required.
    -s: Skip checksum verification
 
 LICENSE Universal Permissive License (UPL), Version 1.0
-Copyright (c) 2016-2017: Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2016-2017: Oracle and/or its affiliates.
 
 EOF
-exit 0
+exit $1
 }
 
 #=============================================================
@@ -62,7 +61,7 @@ checksumPackages() {
   if [ "$?" -ne 0 ]; then
     cat <<EOF
 
-ERROR: MD5 for required packages to build the ${VERSION} 
+ERROR: MD5 for required packages to build the ${VERSION}
        image did not match. Please make sure to download
        or check the files in the ${VERSION} folder.
 EOF
@@ -80,7 +79,7 @@ SKIPMD5=0
 while getopts "hsv:" optname; do
   case "$optname" in
     "h")
-      usage
+      usage 0
       ;;
     "s")
       SKIPMD5=1
@@ -90,7 +89,8 @@ while getopts "hsv:" optname; do
       ;;
     *)
       # Should not occur
-      echo "ERROR: Invalid argument. buildDockerImage.sh"
+      echo "ERROR: Invalid argument for buildDockerImage.sh"
+      usage 1
       ;;
   esac
 done
@@ -101,23 +101,13 @@ fi
 
 . ../setenv.sh
 
-versionOK=false
-if [ ${VERSION} = 12.2.1.2 -o ${VERSION} = 12.2.1.3 ]
-then
-  IMAGE_NAME="${DC_REGISTRY_SOA}/oracle/soasuite:$VERSION"
-  DOCKERFILE_NAME=Dockerfile
-  versionOK=true
-  THEDIR=${VERSION}
-fi
+IMAGE_NAME="oracle/soasuite:$VERSION"
+DOCKERFILE_NAME=Dockerfile
+THEDIR=${VERSION}
 
-if [ "${versionOK}" = "false" ]; then
-  echo "ERROR: Incorrect version ${VERSION} specified"
+if [ ! -d ${THEDIR} ]; then
+  echo "ERROR: Incorrect version ${THEDIR} . Directory with product version not found"
   usage
-else
-  if [ ! -d ${THEDIR} ]; then
-    echo "ERROR: Incorrect version ${THEDIR} directory not found"
-    usage
-  fi
 fi
 
 # Go into version folder
@@ -164,14 +154,16 @@ ${buildCmd} || {
   echo "ERROR: There was an error building the image."
   exit 1
 }
+status=$?
+
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
 
-if [ $? -eq 0 ]; then
+if [ ${status} -eq 0 ]; then
   cat << EOF
-INFO: Oracle SOA suite Docker Image for version: $VERSION 
+INFO: Oracle SOA suite Docker Image for version: $VERSION
       is ready to be extended.
       --> $IMAGE_NAME
 INFO: Build completed in $BUILD_ELAPSED seconds.

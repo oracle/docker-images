@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: example-namespace
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oracle-rdbms-oradata
+  namespace: example-namespace
+  labels:
+    app: oracle-rdbms
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oracle-rdbms-config
+  namespace: example-namespace
+  labels:
+    app: oracle-rdbms
+data:
+  ORACLE_CHARACTERSET: "AL32UTF8"
+  ORACLE_EDITION: "enterprise"
+  ORACLE_SID: "ORCLCDB"
+  ORACLE_PDB: "ORCLPDB1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oracle-rdbms
+  labels:
+    app: oracle-rdbms
+  namespace: example-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oracle-rdbms
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: oracle-rdbms
+    spec:
+      securityContext:
+        runAsUser: 54321
+        fsGroup: 54321
+      containers:
+        - name: rdbms
+          image: local-repo/oracle/database:19.3.0-ee
+          envFrom:
+            - configMapRef:
+                name: oracle-rdbms-config
+            - secretRef:
+                name: oracle-rdbms-credentials
+          ports:
+            - containerPort: 1521
+              name: oracle-listener
+            - containerPort: 5500
+              name: oem-express
+          volumeMounts:
+          - name: oradata
+            mountPath: /opt/oracle/oradata
+          readinessProbe:
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - $ORACLE_BASE/$CHECK_DB_FILE
+          livenessProbe:
+            initialDelaySeconds: 300
+            periodSeconds: 60
+            exec:
+              command:
+                - /bin/sh
+                - "-c"
+                - $ORACLE_BASE/$CHECK_DB_FILE
+      volumes:
+        - name: oradata
+          persistentVolumeClaim:
+            claimName: oracle-rdbms-oradata
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: example-namespace
+  labels:
+    app: oracle-rdbms
+spec:
+  ports:
+    - name: listener
+      port: 1521
+      targetPort: oracle-listener
+  selector:
+    app: oracle-rdbms

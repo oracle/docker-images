@@ -1,0 +1,12 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl.
+
+[ENGINE]
+Response File Version=1.0.0.0.0
+[GENERIC]
+DECLINE_AUTO_UPDATES=false
+AUTO_UPDATES_LOCATION=
+INSTALL_TYPE=Collocated Oracle Internet Directory Server (Managed through WebLogic server)
+SKIP_SOFTWARE_UPDATES=true

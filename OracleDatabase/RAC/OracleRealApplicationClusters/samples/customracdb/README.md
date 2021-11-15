@@ -25,7 +25,12 @@ cp docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/samples/custom
 ```
 **Notes**: 
 * Using the sample responsefiles, you will be able to create 2 node RAC on containers. 
-* You can modify responsefiles based on your environment and pass them during container creation.
+* You need to modify responsefiles based on your environment and pass them during container creation. You need to change or add following based on your enviornment:
+  * Public/private IP subnet
+  * ASM disks for ASM storage
+  * ASM Redundancy level
+  * ASM failure disk groups
+  * Passwords for different accounts
 
 ## Section 3 : Creating the RAC Container
 All containers will share a host file for name resolution.  The shared hostfile must be available to all container. Create the shared host file (if it doesn't exist) at `/opt/containers/rac_host_file`:
@@ -175,6 +180,7 @@ docker create -t -i \
 --volume /opt/.secrets:/run/secrets \
 --volume /opt/containers/common_scripts:/common_scripts \
 --volume /opt/containers/rac_host_file:/etc/hosts \
+--volume racstorage:/oradata \
 --tmpfs /dev/shm:rw,exec,size=4G \
 --dns-search=example.com \
 --privileged=false \
@@ -193,7 +199,7 @@ docker create -t -i \
 -e DOMAIN=example.com \
 -e DEFAULT_GATEWAY=172.16.1.1 \
 -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
--e ASM_DISCOVERY_DIR=/dev \
+-e ASM_DISCOVERY_DIR=/oradata \
 -e CRS_NODES="racnode1,racnode2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
 -e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
@@ -214,6 +220,7 @@ docker create -t -i \
 --volume /opt/.secrets:/run/secrets \
 --volume /opt/containers/common_scripts:/common_scripts \
 --volume /opt/containers/rac_host_file:/etc/hosts \
+--volume racstorage:/oradata \
 --tmpfs /dev/shm:rw,exec,size=4G \
 --dns-search=example.com \
 --privileged=false \
@@ -232,7 +239,7 @@ docker create -t -i \
 -e DOMAIN=example.com \
 -e DEFAULT_GATEWAY=172.16.1.1 \
 -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
--e ASM_DISCOVERY_DIR=/dev \
+-e ASM_DISCOVERY_DIR=/oradata \
 -e CRS_NODES="racnode1,racnode2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
 -e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
@@ -242,7 +249,6 @@ docker create -t -i \
 --ulimit rtprio=99 \
 --name racnode2 oracle/database-rac:19.3.0
 ```
-**Note:** Change environment variable such as IPs, ASM_DEVICE_LIST, PWD_FILE and PWD_KEY based on your env. Also, change the devices based on your env.
 
 **Notes:**
 

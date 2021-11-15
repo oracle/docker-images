@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 #
-# Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2020 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 #
 
 export DOMAIN_NAME=${DOMAIN_NAME:-soainfra}
@@ -72,7 +72,7 @@ updateListenAddress() {
 
   export thehost=`hostname -I`
   echo "INFO: Updating the listen address - ${thehost} ${ADMIN_HOST}"
-  cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/updListenAddress.py $vol_name ${thehost} AdminServer ${ADMIN_HOST}"
+  cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/updListenAddress.py $vol_name ${thehost} AdminServer ${ADMIN_HOST}"
   echo ${cmd}
   ${cmd} > ${DOMAIN_HOME}/logs/aslisten.log 2>&1
 }
@@ -159,10 +159,10 @@ then
   # then drop the prefix and restart. New Domain creation
   # scenario
   echo "INFO: Dropping Schema $RCUPREFIX..."
-  /$vol_name/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -f < /tmp/pwd.txt
+  /$vol_name/oracle/oracle_common/bin/rcu -silent -dropRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -selectDependentsForComponents true -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -component ESS -f < /tmp/pwd.txt
 	
   echo "INFO: Creating Schema $RCUPREFIX..."
-  /$vol_name/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -variables SOA_PROFILE_TYPE=SMALL,HEALTHCARE_INTEGRATION=NO -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -f < /tmp/pwd.txt
+  /$vol_name/oracle/oracle_common/bin/rcu -silent -createRepository -databaseType ORACLE -connectString $CONNECTION_STRING -dbUser sys -dbRole sysdba -useSamePasswordForAllSchemaUsers true -selectDependentsForComponents true -variables SOA_PROFILE_TYPE=SMALL,HEALTHCARE_INTEGRATION=NO -schemaPrefix $RCUPREFIX -component OPSS -component STB -component SOAINFRA -component ESS -f < /tmp/pwd.txt
   retval=$?
 
   if [ $retval -ne 0 ]; 
@@ -199,7 +199,7 @@ fi
 
 if [ "$CONFIGURE_DOMAIN" = "true" ] 
 then
-  cfgCmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/dockertools/createDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -domainType $DOMAIN_TYPE"
+  cfgCmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/createDomain.py -oh $ORACLE_HOME -jh $JAVA_HOME -parent $DOMAIN_ROOT -name $DOMAIN_NAME -password $ADMIN_PASSWORD -rcuDb $CONNECTION_STRING -rcuPrefix $RCUPREFIX -rcuSchemaPwd $DB_SCHEMA_PASSWORD -domainType $DOMAIN_TYPE"
   ${cfgCmd}
   retval=$?
   if [ $retval -ne 0 ]; 
@@ -226,7 +226,7 @@ fi
 #
 # Creating domain env file
 #=========================
-mkdir -p $DOMAIN_HOME/servers/AdminServer/security $DOMAIN_HOME/servers/${MANAGED_SERVER}/security
+mkdir -p $DOMAIN_HOME/servers/AdminServer/security
 
 #
 # Password less Adminserver starting
@@ -235,18 +235,12 @@ echo "username=weblogic" > $DOMAIN_HOME/servers/AdminServer/security/boot.proper
 echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/AdminServer/security/boot.properties
 
 #
-# Password less Managed Server starting
-#======================================
-echo "username=weblogic" > $DOMAIN_HOME/servers/${MANAGED_SERVER}/security/boot.properties
-echo "password="$ADMIN_PASSWORD >> $DOMAIN_HOME/servers/${MANAGED_SERVER}/security/boot.properties
-
-#
 # Setting env variables
 #=======================
 echo ". $DOMAIN_HOME/bin/setDomainEnv.sh" >> /u01/oracle/.bashrc
 echo "export PATH=$PATH:/u01/oracle/common/bin:$DOMAIN_HOME/bin" >> /u01/oracle/.bashrc
 
 # Now we start the Admin server in this container... 
-/u01/oracle/dockertools/startAS.sh
+/u01/oracle/container-scripts/startAS.sh
 
 sleep infinity

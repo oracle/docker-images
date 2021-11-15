@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -22,9 +22,20 @@
 # ---------------
 FROM oraclelinux:7-slim as base
 
-# Maintainer
-# ----------
-MAINTAINER Gerald Venzl <gerald.venzl@oracle.com>
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.data"="/opt/oracle/oradata"                               \
+      "volume.setup.location1"="/opt/oracle/scripts/setup"              \
+      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
+      "volume.startup.location1"="/opt/oracle/scripts/startup"          \
+      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
+      "port.listener"="1521"                                            \
+      "port.oemexpress"="5500"
+
+# Argument to control removal of components not needed after db software installation
+ARG SLIMMING=true
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -42,7 +53,18 @@ ENV ORACLE_BASE=/opt/oracle \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
-    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
+    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
+    RELINK_BINARY_FILE="relinkOracleBinary.sh" \
+    SLIMMING=$SLIMMING \
+    ENABLE_ARCHIVELOG=false \
+    ARCHIVELOG_DIR_NAME=archive_logs \
+    # To clone a database referred by PRIMARY_DB_CONN_STR
+    CLONE_DB=false \
+    # Env var below should be in <HOST>:<PORT>/<SERVICE_NAME> format
+    PRIMARY_DB_CONN_STR="" \
+    CHECKPOINT_FILE_EXTN=".created" \
+    # Directory for keeping Oracle Wallet
+    WALLET_DIR=""
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
@@ -52,7 +74,7 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
 # Copy files needed during both installation and runtime
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
-COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
@@ -101,8 +123,6 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 USER oracle
 WORKDIR /home/oracle
 
-VOLUME ["$ORACLE_BASE/oradata"]
-EXPOSE 1521 5500
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 

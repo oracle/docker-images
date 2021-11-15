@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-#Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2019, 2020, Oracle and/or its affiliates.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # This script will wait until Admin Server is available.
 # There is no timeout!
 #
-connectString="${CUSTOM_ADMIN_HOST}/${CUSTOM_ADMIN_PORT}"
+connectString="${ADMIN_HOST}/${ADMIN_LISTEN_PORT}"
 
 echo "Waiting for WebLogic Admin Server on ${connectString} to become available..."
 while :

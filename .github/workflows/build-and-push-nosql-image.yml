@@ -1,0 +1,42 @@
+name: Build and publish NoSQL 19.5-ce container image to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'NoSQL/19.5-ce/*'
+      - '.github/workflows/build-and-push-nosql-image.yml'
+    workflow_dispatch:
+
+env:
+  IMAGE_NAME: nosql
+  TAG: 19.5-ce
+
+jobs:
+  push:
+    name: Build and push NoSQL 19.5-ce image
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Log into GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${GITHUB_ACTOR,,} --password-stdin ghcr.io
+
+      - name: Repository owner needs to be lowercase
+        id: repo-owner
+        run: |
+          REPO_OWNER=${{ github.repository_owner }}
+          echo "::set-output name=repo-owner::${REPO_OWNER,,}"
+
+      - name: Build NoSQL 19.5-ce image
+        run: |
+          cd NoSQL/19.5-ce
+          docker build --tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG .
+
+      - name: Push image to GitHub Container Registry
+        run: |
+          docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG

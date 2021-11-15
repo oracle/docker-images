@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2021 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: November, 2016
 # Author: gerald.venzl@oracle.com
@@ -11,8 +11,8 @@
 # 
 
 ORACLE_PWD=$1
-ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
-ORACLE_PDB="`ls -dl $ORACLE_BASE/oradata/$ORACLE_SID/*/ | grep -v pdbseed | awk '{print $9}' | cut -d/ -f6`"
+ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
+ORACLE_PDB="$(ls -dl "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ | grep -v -e pdbseed -e "$ARCHIVELOG_DIR_NAME" | awk '{print $9}' | cut -d/ -f6)"
 ORAENV_ASK=NO
 source oraenv
 

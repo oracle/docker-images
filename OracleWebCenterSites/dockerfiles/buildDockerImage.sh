@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2020 Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # Description: script to build a Docker image for WebCenter Sites
 # 
@@ -19,11 +19,9 @@ Parameters:
 	-c: enables Docker image layer cache during build
 	-s: skips the MD5 check of packages
 
-LICENSE CDDL 1.0 + GPL 2.0
+Copyright (c) 2018, 2020 Oracle and/or its affiliates.
 
-Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
-
-Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 EOF
 exit 0
@@ -43,7 +41,7 @@ checksumPackages() {
 }
 
 # Parameters
-VERSION="12.2.1.3"
+VERSION="12.2.1.4"
 SKIPMD5=0
 NOCACHE=true
 while getopts "hcsdgiv:" optname; do

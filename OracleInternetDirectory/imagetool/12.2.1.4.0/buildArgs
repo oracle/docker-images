@@ -1,0 +1,15 @@
+# Copyright (c) 2021, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl.
+
+create
+--type OID
+--version 12.2.1.4.0
+--jdkVersion %JDK_VERSION%
+--tag %BUILDTAG%
+--pull
+--chown oracle:root
+--installerResponseFile %DOCKER_REPO%/OracleFMWInfrastructure/dockerfiles/12.2.1.4.0/install.file,%DOCKER_REPO%/OracleInternetDirectory/dockerfiles/12.2.1.4.0/install/oid.response
+--additionalBuildCommands %DOCKER_REPO%/OracleInternetDirectory/imagetool/12.2.1.4.0/additionalBuildCmds.txt
+--additionalBuildFiles %DOCKER_REPO%/OracleInternetDirectory/dockerfiles/12.2.1.4.0/container-scripts

@@ -1,6 +1,6 @@
-#Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2019, 2020,  Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -20,41 +20,44 @@
 # ----
 FROM oracle/weblogic:12.2.1.3-developer
 
-# Maintainer
-# ----------
-MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "maintainer"="Monica Riccelli <monica.riccelli@oracle.com>"       \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "port.admin.listen"="7001"                                        \
+      "port.administration"="9002"                                      \
+      "port.managed.server"="8001"                                      
 
 # WLS Configuration
 # -----------------
-ENV CUSTOM_DOMAIN_NAME="${CUSTOM_DOMAIN_NAME:-base_domain}" \
-    CUSTOM_DOMAIN_ROOT="/u01/oracle/user_projects/domains" \
-    CUSTOM_ADMIN_PORT="${CUSTOM_ADMIN_PORT:-7001}" \
-    CUSTOM_ADMIN_NAME="${CUSTOM_ADMIN_NAME:-AdminServer}" \
-    CUSTOM_ADMIN_HOST="${CUSTOM_ADMIN_HOST:-AdminContainer}" \
-    CUSTOM_MANAGED_SERVER_PORT="${CUSTOM_MANAGED_SERVER_PORT:-8001}" \
-    CUSTOM_MANAGED_SERVER_NAME_BASE="${CUSTOM_MANAGED_SERVER_NAME_BASE:-MS}" \
-    CUSTOM_CONFIGURED_MANAGED_SERVER_COUNT="${CUSTOM_CONFIGURED_MANAGED_SERVER_COUNT:-2}" \
-    CUSTOM_MANAGED_NAME="${CUSTOM_MANAGED_NAME:-MS1}" \
-    CUSTOM_CLUSTER_NAME="${CUSTOM_CLUSTER_NAME:-cluster1}" \
-    CUSTOM_CLUSTER_TYPE="${CUSTOM_CLUSTER_TYPE:-DYNAMIC}" \
-    CUSTOM_PRODUCTION_MODE_ENABLED="${CUSTOM_PRODUCTION_MODE_ENABLED:-prod}" \
+ENV DOMAIN_ROOT="/u01/oracle/user_projects/domains" \
+    ADMIN_HOST="${ADMIN_HOST:-AdminContainer}" \
+    MANAGED_SERVER_PORT="${MANAGED_SERVER_PORT:-8001}" \
+    MANAGED_SERVER_NAME_BASE="${MANAGED_SERVER_NAME_BASE:-MS}" \
+    MANAGED_SERVER_CONTAINER="${MANAGED_SERVER_CONTAINER:-false}" \
+    CONFIGURED_MANAGED_SERVER_COUNT="${CONFIGURED_MANAGED_SERVER_COUNT:-2}" \
+    MANAGED_NAME="${MANAGED_NAME:-MS1}" \
+    CLUSTER_NAME="${CLUSTER_NAME:-cluster1}" \
+    CLUSTER_TYPE="${CLUSTER_TYPE:-DYNAMIC}" \
     PROPERTIES_FILE_DIR="/u01/oracle/properties" \
-    CUSTOM_JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false"  \
-    CUSTOM_PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
+    JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false"  \
+    PATH="$PATH:${JAVA_HOME}/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts"
 
 # Add files required to build this image
 COPY --chown=oracle:oracle container-scripts/* /u01/oracle/container-scripts/
+COPY --chown=oracle:oracle container-scripts/get_healthcheck_url.sh /u01/oracle/get_healthcheck_url.sh
 
 #Create directory where domain will be written to
 USER root
-RUN mkdir -p $CUSTOM_DOMAIN_ROOT && \
-    chown -R oracle:oracle $CUSTOM_DOMAIN_ROOT/.. && \
-    chmod -R a+xwr $CUSTOM_DOMAIN_ROOT/.. && \
+RUN mkdir -p $DOMAIN_ROOT && \
+    chown -R oracle:oracle $DOMAIN_ROOT/.. && \
+    chmod -R a+xwr $DOMAIN_ROOT/.. && \
     mkdir -p $ORACLE_HOME/properties && \
     chmod -R a+r $ORACLE_HOME/properties && \ 
     chmod +x /u01/oracle/container-scripts/*
 
-VOLUME $CUSTOM_DOMAIN_ROOT
+VOLUME $DOMAIN_ROOT
 
 USER oracle
 WORKDIR $ORACLE_HOME

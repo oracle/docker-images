@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021, Oracle and/or its affiliates.
+
     Licensed under the Universal Permissive License v 1.0 as shown at
-    http://oss.oracle.com/licenses/upl.
+    https://oss.oracle.com/licenses/upl.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -34,7 +35,7 @@
 
     <!-- library dependency versions -->
     <jackson.version>2.9.10</jackson.version>
-    <jackson.databind.version>2.9.10.1</jackson.databind.version>
+    <jackson.databind.version>2.9.10.8</jackson.databind.version>
     <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
     <jersey.version>2.22.4</jersey.version>
   </properties>
