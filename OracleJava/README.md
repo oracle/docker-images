@@ -7,7 +7,7 @@ Oracle Java Server JRE provides the features from Oracle Java JDK commonly requi
 ## Building the Oracle Java base image
 For JDK 17 the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
 
-For JDK 11 and SererJRE8 you must download the linux x-64 compressed archive (tar.gz) of the [JDK or Server JRE](https://www.oracle.com/javadownload) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
+For JDK 11 and SererJRE 8 you must download the linux x64 compressed archive (tar.gz) of the [JDK or Server JRE](https://www.oracle.com/javadownload) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
 
 e.g. for JDK 11 download jdk-11[X]_linux-x64_bin.tar.gz into OracleJava/11, 
 for ServerJRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
@@ -51,10 +51,10 @@ e.g.
 $ cd ../OracleJava/11
 $ bash build.sh 8
 ```
-Build scripts `build.sh`will tag the images with the JDK version e.g., '17' and as the version and the operating system version e.g., '17-oraclelinux8'.
+Build scripts `build.sh`will tag the images with the JDK version e.g., '17' and  the JDK  plus operating system versions e.g., '17-oraclelinux8'.
 
 ## Licenses
-JDK 17 is downloaded, as part of the build process, from [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
+JDK 17 is downloaded, as part of the build process, from the [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
 
 For building JDK 11 and Server JRE 8 you must first download the corresponding Java Runtime from the [Oracle Website](https://www.oracle.com/javadownload) and accept the license indicated on that page.
 
