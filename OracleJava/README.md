@@ -51,7 +51,7 @@ e.g.
 $ cd ../OracleJava/11
 $ bash build.sh 8
 ```
-Build scripts `build.sh`will tag the images with the JDK version e.g., '17' and  the JDK  plus operating system versions e.g., '17-oraclelinux8'.
+Build scripts `build.sh` will tag the images with the JDK version e.g., '17' and  the JDK  plus operating system versions e.g., '17-oraclelinux8'.
 
 ## Licenses
 JDK 17 is downloaded, as part of the build process, from the [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
