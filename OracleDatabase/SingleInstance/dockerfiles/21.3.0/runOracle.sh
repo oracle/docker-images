@@ -246,7 +246,7 @@ fi;
 status=$?
 
 # Check whether database is up and running
-if $status; then
+if [ $status -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
   echo "#########################"

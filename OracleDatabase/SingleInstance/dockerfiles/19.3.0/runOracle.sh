@@ -206,7 +206,7 @@ fi;
 "$ORACLE_BASE"/"$CHECK_DB_FILE"
 status=$?
 
-if $status; then
+if [ $status -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
   echo "#########################"
