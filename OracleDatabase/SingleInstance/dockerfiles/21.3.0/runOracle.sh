@@ -267,7 +267,7 @@ else
 fi;
 
 # Exiting the script without waiting on the tail logs
-if [ "$1" = "--exit" ]; then
+if [ "$1" = "--nowait" ]; then
    exit $status;
 fi
 
