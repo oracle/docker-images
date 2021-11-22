@@ -27,6 +27,8 @@ enable_archivelog: false
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 persistence:
   ## Oracle database data Persistent Volume Storage Class, nfs or block
+  ## If storageClass is empty then database is created inside the container of the pod itself (no persistence)
+  ## If the image has pre-built dataabse then the storageClass must be empty
   storageClass: ""
   size: 100Gi
 
@@ -35,6 +37,7 @@ persistence:
 availabilityDomain:
 
 ## Deploy multiple replicas for fast fail over
+## If storageClass is empty then fast fail over will not happen even if replicas>1 (as no persistence)
 replicas: 1
 
 ## deploy LoadBalancer service
