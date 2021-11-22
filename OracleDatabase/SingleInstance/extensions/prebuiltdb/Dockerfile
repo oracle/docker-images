@@ -14,10 +14,10 @@
 # -----------------------
 #
 # Run:
-#      $ docker build -t <extended_image_name> . --build-arg BASE_IMAGE=18.3.0-ee
+#      $ docker build -t <extended_image_name> . --build-arg BASE_IMAGE=21.3.0-ee
 #
 
-ARG BASE_IMAGE=oracle/database:19.3.0-ee
+ARG BASE_IMAGE=oracle/database:21.3.0-ee
 FROM ${BASE_IMAGE}
 
 ARG ORACLE_SID
