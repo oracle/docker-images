@@ -27,8 +27,7 @@ enable_archivelog: false
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 persistence:
   ## Oracle database data Persistent Volume Storage Class, nfs or block
-  ## If storageClass is empty then database is created inside the container of the pod itself (no persistence)
-  ## If the image has pre-built dataabse then the storageClass must be empty
+  ## If persistence is not desired (eg. using the extended image with 'prebuiltdb' extension), 'storageClass' parameter must  be an empty string
   storageClass: ""
   size: 100Gi
 

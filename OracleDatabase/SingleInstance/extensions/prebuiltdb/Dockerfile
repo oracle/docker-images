@@ -4,11 +4,11 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for pre-built database for gaining speedup in CI/CD pipelines
+# This Dockerfile extends the base container image with pre-created database, intending improved startup in CI/CD pipelines
 #
-# REQUIREMETNS FOR THIS IMAGE
+# REQUIREMENTS FOR THIS IMAGE
 # ----------------------------------
-# Any release of prebuilt oracle/database base docker image
+# Oracle Single Instance Database container image version 19c onwards
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------

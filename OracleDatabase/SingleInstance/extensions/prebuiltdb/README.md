@@ -1,8 +1,8 @@
-# Pre-built Database Extension
+# Pre-built Database (prebuiltdb) Extension
 
-This extension creates an additional layer having a pre-built database on top of the [base Oracle SingleInstance Database image](../../README.md).
+This extension extends [the base Oracle Single Instance Database image](../../README.md) in such a way that the resultant image has a pre-built database. So, when a container is started using this extended image, the start-up time is quite fast. 
 
-The cofigurable parameters while building this extension are as follows:
+The configurable parameters while building this extension are as follows:
 
 - ORACLE_SID
 - ORACLE_PDB
@@ -24,16 +24,16 @@ docker run -dt --name <container-name> -p :1521 -p :5500 oracle/database:ext
 ```
 
 **NOTE:**
-This extension is supported SingleInstance Datbase 19.3.0 onwards.
+This extension is supported Single Instance Database 19.3.0 onwards.
 
 ## Advantages
 
-The image which is created after building this extension has a pre-created database. So, when this image is used to spin-up a container, the startup time is really fast. In other words, this extended image saves the database creation time (~ 10-20 mins).
+This extended image has an additional layer containing pre-created database on top of the base image. So, when this image is used to spin-up a container, the startup time is really fast. In other words, this extended image saves the database creation time (~ 10-20 mins).
 
 This extended image would be very useful in CI/CD scenarios, where database would be used for conducting tests, experiments and the workflow is simple.
 
 ## Limitations
 
-Some limitations of this are as follows:
-- Can not use external volume for database persistence (as datafiles are inside the image itself).
-- In Kubernetes environment, the container can run only in single replica mode using this extended image.
+Some limitations are listed as follows:
+- **Can not use external volume** for database persistence (as data files are inside the image itself).
+- In Kubernetes environment, the deployment can run only in **single replica mode** using this extended image.
