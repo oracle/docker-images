@@ -24,7 +24,12 @@ docker run -dt --name <container-name> -p :1521 -p :5500 oracle/database:ext
 ```
 
 **NOTE:**
-This extension is supported Single Instance Database 19.3.0 onwards.
+- This extension supports Oracle Single Instance Database container image from version 19.3.0 onwards.
+- The user should override 'persistence' to 'null' explicitly while deploying this image on Kubernetes. For example,
+
+```
+helm install db21c --set image=<image-url>,persistence=null oracle-db-1.0.0.tgz
+```
 
 ## Advantages
 
@@ -35,5 +40,5 @@ This extended image would be very useful in CI/CD scenarios, where database woul
 ## Limitations
 
 Some limitations are listed as follows:
-- **Can not use external volume** for database persistence (as data files are inside the image itself).
-- In Kubernetes environment, the deployment can run only in **single replica mode** using this extended image.
+- **External volume can not be used** for database persistence (as data files are inside the image itself).
+- In Kubernetes environment, **the single replica mode** (i.e. replicas=1) can be used for database deployments.

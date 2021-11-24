@@ -25,9 +25,9 @@ enable_archivelog: false
 
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+## Override 'persistence' to 'null' using '--set' option, if persistence is not desired (e.g. using the extended image with 'prebuiltdb' extension)
 persistence:
-  ## Oracle database data Persistent Volume Storage Class, nfs or block
-  ## If persistence is not desired (eg. using the extended image with 'prebuiltdb' extension), 'storageClass' parameter must  be an empty string
+  ## Oracle Database data Persistent Volume Storage Class, nfs or block
   storageClass: ""
   size: 100Gi
 
@@ -36,7 +36,7 @@ persistence:
 availabilityDomain:
 
 ## Deploy multiple replicas for fast fail over
-## If storageClass is empty then fast fail over will not happen even if replicas>1 (as no persistence)
+## If 'persistence' is 'null' then fast fail over will not happen even if replicas>1 (as no persistence)
 replicas: 1
 
 ## deploy LoadBalancer service

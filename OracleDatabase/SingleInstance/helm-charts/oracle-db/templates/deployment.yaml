@@ -59,13 +59,13 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 40
             timeoutSeconds: 20
-          {{- if .Values.persistence.storageClass }}
+          {{- if .Values.persistence }}
           volumeMounts:
             - mountPath: /opt/oracle/oradata
               name: datamount
           {{- end }}
 {{- include "oracle-db-env" . | indent 10 }}
-      {{- if .Values.persistence.storageClass }}
+      {{- if .Values.persistence }}
       volumes:
         - name: datamount
           persistentVolumeClaim:
