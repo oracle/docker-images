@@ -73,6 +73,11 @@ EOF
 ################ MAIN #######################
 #############################################
 
+# Sanitizing env for XE Database
+if [ "${ORACLE_SID}" = "XE" ]; then
+   unset DG_OBSERVER_ONLY
+fi
+
 if [ "$DG_OBSERVER_ONLY" = "true" ]; then
    checkObserver
 else

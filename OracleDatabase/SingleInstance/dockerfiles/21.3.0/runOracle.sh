@@ -22,7 +22,9 @@ function moveFiles {
    mv "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   if [ -f "$ORACLE_HOME/install/.docker_*" ]; then
+      mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   fi;
 
    # oracle user does not have permissions in /etc, hence cp and not mv
    cp /etc/oratab "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
@@ -115,6 +117,12 @@ trap _int SIGINT
 # Set SIGTERM handler
 trap _term SIGTERM
 
+# Sanitizing env for XE
+if [ "${ORACLE_SID}" = "XE" ]; then
+   export ORACLE_PDB="XEPDB1"
+   unset DG_OBSERVER_ONLY CLONE_DB STANDBY_DB
+fi
+
 # Creation of Observer only section
 if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
    if [ -z "${DG_OBSERVER_NAME}" ]; then
@@ -188,10 +196,12 @@ export ORACLE_PDB=${ORACLE_PDB^^}
 export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
 # Call relinkOracleBinary.sh before the database is created or started
-. "$ORACLE_BASE/$RELINK_BINARY_FILE"
+if [ "${ORACLE_SID}" != "XE" ]; then
+   source "$ORACLE_BASE/$RELINK_BINARY_FILE"
+fi;
 
 # Check whether database already exists
-if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
+if [ -f "$ORACLE_BASE"/oradata/${ORACLE_SID}/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -200,7 +210,11 @@ if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
    fi;
    
    # Start database
-   "$ORACLE_BASE"/"$START_FILE";
+   if [ "${ORACLE_SID}" = "XE" ]; then
+      su -c '/etc/init.d/oracle-xe-21c start'
+   else
+      "$ORACLE_BASE"/"$START_FILE";
+   fi
    
 else
   # Remove database config files, if they exist
@@ -228,7 +242,7 @@ else
   # Check whether database is successfully created
   if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
-    touch "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
+    touch "$ORACLE_BASE"/oradata/${ORACLE_SID}/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata
