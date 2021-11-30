@@ -22,7 +22,7 @@ function moveFiles {
    mv "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   if [ -f "$ORACLE_HOME/install/.docker_*" ]; then
+   if [ -a "$ORACLE_HOME"/install/.docker_* ]; then
       mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    fi;
 
@@ -57,6 +57,31 @@ function symLinkFiles {
 
    # oracle user does not have permissions in /etc, hence cp and not ln 
    cp "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/oratab /etc/oratab
+
+}
+
+########### Undoing the symbolic links ############
+function undoSymLinkFiles {
+
+   if [ -L $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora ]; then
+      rm $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora
+   fi;
+
+   if [ -L $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID ]; then
+      rm $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID
+   fi;
+
+   if [ -L $ORACLE_BASE_HOME/network/admin/sqlnet.ora ]; then
+      rm $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+   fi;
+
+   if [ -L $ORACLE_BASE_HOME/network/admin/listener.ora ]; then
+      rm $ORACLE_BASE_HOME/network/admin/listener.ora
+   fi;
+
+   if [ -L $ORACLE_BASE_HOME/network/admin/tnsnames.ora ]; then
+      rm $ORACLE_BASE_HOME/network/admin/tnsnames.ora
+   fi;
 
 }
 
@@ -201,7 +226,7 @@ if [ "${ORACLE_SID}" != "XE" ]; then
 fi;
 
 # Check whether database already exists
-if [ -f "$ORACLE_BASE"/oradata/${ORACLE_SID}/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
+if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -217,6 +242,8 @@ if [ -f "$ORACLE_BASE"/oradata/${ORACLE_SID}/.${ORACLE_SID}"${CHECKPOINT_FILE_EX
    fi
    
 else
+  undoSymLinkFiles;
+
   # Remove database config files, if they exist
   rm -f "$ORACLE_BASE_CONFIG"/dbs/spfile$ORACLE_SID.ora
   rm -f "$ORACLE_BASE_CONFIG"/dbs/orapw$ORACLE_SID
@@ -242,7 +269,7 @@ else
   # Check whether database is successfully created
   if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
-    touch "$ORACLE_BASE"/oradata/${ORACLE_SID}/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
+    touch "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata

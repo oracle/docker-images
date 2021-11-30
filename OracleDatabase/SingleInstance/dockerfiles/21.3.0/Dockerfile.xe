@@ -47,6 +47,7 @@ ENV ORACLE_BASE=/opt/oracle \
     CONF_FILE="oracle-xe-21c.conf" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
+    SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DIR="$HOME/install" \
     ORACLE_DOCKER_INSTALL="true" \
     CHECKPOINT_FILE_EXTN=".created"
@@ -56,37 +57,26 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 
 # Copy binaries
 # -------------
-COPY $CHECK_SPACE_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CONF_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $INSTALL_DIR/
+COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $INSTALL_DIR/
+COPY $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
-    yum -y install expect openssl oracle-database-preinstall-21c && \
+    yum -y install expect && \
+    $INSTALL_DIR/$SETUP_LINUX_FILE && \
+    chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
     sed -i -e 's/\(oracle\s\+hard\s\+nofile\)/# \1/' /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
     unbuffer yum -y install $INSTALL_FILE_1 && \
     yum -y remove expect && \
     rm -rf /var/cache/yum && \
     rm -rf /var/tmp/yum-* && \
-    mkdir -p $ORACLE_BASE/scripts/setup && \
-    mkdir $ORACLE_BASE/scripts/startup && \
-    ln -s $ORACLE_BASE/scripts /docker-entrypoint-initdb.d && \
-    ln -s $ORACLE_BASE/$PWD_FILE /home/oracle/ && \
-    mkdir -p $ORACLE_BASE/oradata /home/oracle && \
-    mv $INSTALL_DIR/$RUN_FILE $ORACLE_BASE/ && \
-    mv $INSTALL_DIR/$PWD_FILE $ORACLE_BASE/ && \
-    mv $INSTALL_DIR/$CHECK_DB_FILE $ORACLE_BASE/ && \
-    mv $INSTALL_DIR/$CREATE_DB_FILE $ORACLE_BASE/ && \
-    mv $INSTALL_DIR/$USER_SCRIPTS_FILE $ORACLE_BASE/ && \
     mv $INSTALL_DIR/$CONF_FILE /etc/sysconfig/ && \
-    ln -s $ORACLE_BASE/$PWD_FILE / && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
-    chmod ug+x $ORACLE_BASE/*.sh && \
-    chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
     $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh && \
-    sed -ie 's/^root:\*/root:/' /etc/shadow
+    $ORACLE_HOME/root.sh
 
 USER oracle
 WORKDIR /home/oracle
