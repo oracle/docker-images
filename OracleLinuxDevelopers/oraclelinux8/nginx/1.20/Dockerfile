@@ -7,7 +7,7 @@ RUN \
     # Explicitly disable PHP to suppress conflicting requests error
     dnf -y module disable php \
     && \
-    dnf -y module enable nginx:1.16 && \
+    dnf -y module enable nginx:1.20 && \
     dnf -y install nginx && \
     rm -rf /var/cache/dnf \
     && \
