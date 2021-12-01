@@ -29,14 +29,14 @@ on:
         required: false
       lang:
         description: List of languages to build
-        default: 'compat, golang, nginx, nodejs, php, python, ruby'
+        default: 'compat, gcc-toolset, golang, nginx, nodejs, php, python, ruby'
         required: false
 
 # Default values for the builds triggered by the push event
 # Note: the "compat" image should *not* be in this list
 env:
   ol: 'oraclelinux7, oraclelinux8'
-  lang: 'golang, nodejs, nginx, php, python, ruby'
+  lang: 'gcc-toolset, golang, nodejs, nginx, php, python, ruby'
 
 jobs:
   prepare:
