@@ -13,7 +13,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run: 
-#      $ docker build -t oracle/database:21.4.0-xe -f Dockerfile.xe .
+#      $ docker build -t oracle/database:21.3.0-xe -f Dockerfile.xe .
 #
 #
 # Pull base image
