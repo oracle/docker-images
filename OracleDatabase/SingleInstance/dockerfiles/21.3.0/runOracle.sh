@@ -22,7 +22,9 @@ function moveFiles {
    mv "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   if [ -a "$ORACLE_HOME"/install/.docker_* ]; then
+      mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   fi;
 
    # oracle user does not have permissions in /etc, hence cp and not mv
    cp /etc/oratab "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
@@ -55,6 +57,31 @@ function symLinkFiles {
 
    # oracle user does not have permissions in /etc, hence cp and not ln 
    cp "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/oratab /etc/oratab
+
+}
+
+########### Undoing the symbolic links ############
+function undoSymLinkFiles {
+
+   if [ -L $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora ]; then
+      rm $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora
+   fi;
+
+   if [ -L $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID ]; then
+      rm $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID
+   fi;
+
+   if [ -L $ORACLE_BASE_HOME/network/admin/sqlnet.ora ]; then
+      rm $ORACLE_BASE_HOME/network/admin/sqlnet.ora
+   fi;
+
+   if [ -L $ORACLE_BASE_HOME/network/admin/listener.ora ]; then
+      rm $ORACLE_BASE_HOME/network/admin/listener.ora
+   fi;
+
+   if [ -L $ORACLE_BASE_HOME/network/admin/tnsnames.ora ]; then
+      rm $ORACLE_BASE_HOME/network/admin/tnsnames.ora
+   fi;
 
 }
 
@@ -114,6 +141,12 @@ trap _int SIGINT
 
 # Set SIGTERM handler
 trap _term SIGTERM
+
+# Sanitizing env for XE
+if [ "${ORACLE_SID}" = "XE" ]; then
+   export ORACLE_PDB="XEPDB1"
+   unset DG_OBSERVER_ONLY CLONE_DB STANDBY_DB
+fi
 
 # Creation of Observer only section
 if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
@@ -188,10 +221,12 @@ export ORACLE_PDB=${ORACLE_PDB^^}
 export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
 # Call relinkOracleBinary.sh before the database is created or started
-. "$ORACLE_BASE/$RELINK_BINARY_FILE"
+if [ "${ORACLE_SID}" != "XE" ]; then
+   source "$ORACLE_BASE/$RELINK_BINARY_FILE"
+fi;
 
 # Check whether database already exists
-if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
+if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -200,9 +235,15 @@ if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
    fi;
    
    # Start database
-   "$ORACLE_BASE"/"$START_FILE";
+   if [ "${ORACLE_SID}" = "XE" ]; then
+      su -c '/etc/init.d/oracle-xe-21c start'
+   else
+      "$ORACLE_BASE"/"$START_FILE";
+   fi
    
 else
+  undoSymLinkFiles;
+
   # Remove database config files, if they exist
   rm -f "$ORACLE_BASE_CONFIG"/dbs/spfile$ORACLE_SID.ora
   rm -f "$ORACLE_BASE_CONFIG"/dbs/orapw$ORACLE_SID
