@@ -6,7 +6,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
-* Oracle Database 21c (21.3.0) Enterprise Edition and Standard Edition 2
+* Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
 * Oracle Database 18c (18.3.0) Enterprise Edition and Standard Edition 2
@@ -20,7 +20,7 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE) and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*. You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE and 21c XE) and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*. You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
 
@@ -151,16 +151,16 @@ Archive mode can be enabled during the first time when database is created by se
 
 In case this parameter is set `true` and passed to `docker run` command while reusing existing datafiles, even though this parameter would be visible as set to `true` in the container environment, this would not be set inside the database. The value used at the time of database creation will be used.
 
-#### Running Oracle Database 18c Express Edition in a container
+#### Running Oracle Database 21c/18c Express Edition in a container
 
-To run your Oracle Database 18c Express Edition container image use the `docker run` command as follows:
+To run your Oracle Database 21c, or 18c Express Edition container image use the `docker run` command as follows:
 
     docker run --name <container name> \
     -p <host port>:1521 -p <host port>:5500 \
     -e ORACLE_PWD=<your database passwords> \
     -e ORACLE_CHARACTERSET=<your character set> \
     -v [<host mount point>:]/opt/oracle/oradata \
-    oracle/database:18.4.0-xe
+    oracle/database:21.3.0-xe
     
     Parameters:
        --name:        The name of the container (default: auto generated)
@@ -190,9 +190,7 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
     https://localhost:5500/em/
 
-On the first startup of the container a random password will be generated for the database if not provided. You can find this password in the output line:
-
-    ORACLE PASSWORD FOR SYS AND SYSTEM:
+On the first startup of the container a random password will be generated for the database if not provided.
 
 **Note:** The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
 
