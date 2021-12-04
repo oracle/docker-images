@@ -33,7 +33,7 @@ helm install db21c --set image=<image-url>,persistence=null oracle-db-1.0.0.tgz
 
 ## Advantages
 
-This extended image has an additional layer containing pre-created database on top of the base image. So, when this image is used to spin-up a container, the startup time is really fast. In other words, this extended image saves the database creation time (~ 10-20 mins).
+This extended image includes an already setup database inside the image itself. Although the image size is larger, the startup time of the container includes only the database startup itself, which makes the container startup duration just a couple of seconds.
 
 This extended image would be very useful in CI/CD scenarios, where database would be used for conducting tests, experiments and the workflow is simple.
 
