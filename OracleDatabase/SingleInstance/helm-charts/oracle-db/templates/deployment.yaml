@@ -55,16 +55,20 @@ spec:
             - containerPort: 5500
           readinessProbe:
             exec:
-              command: [ "/bin/sh", "-c", "$ORACLE_BASE/checkDBLockStatus.sh" ]
+              command: [ "/bin/sh", "-c", "if [ -f $ORACLE_BASE/checkDBLockStatus.sh ]; then $ORACLE_BASE/checkDBLockStatus.sh ; else $ORACLE_BASE/checkDBStatus.sh; fi " ]
             initialDelaySeconds: 20
             periodSeconds: 40
             timeoutSeconds: 20
+          {{- if .Values.persistence }}
           volumeMounts:
             - mountPath: /opt/oracle/oradata
               name: datamount
+          {{- end }}
 {{- include "oracle-db-env" . | indent 10 }}
+      {{- if .Values.persistence }}
       volumes:
         - name: datamount
           persistentVolumeClaim:
             claimName: {{ template "fullname" . }}
+      {{- end }}
 

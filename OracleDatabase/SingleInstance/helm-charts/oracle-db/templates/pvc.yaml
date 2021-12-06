@@ -3,6 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 
+{{- if .Values.persistence }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -15,3 +16,4 @@ spec:
     requests:
       storage: {{ .Values.persistence.size | quote }}
   storageClassName: {{ .Values.persistence.storageClass | quote }}
+{{- end }}
