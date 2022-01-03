@@ -25,8 +25,7 @@ ARG EXTENSION_NAME=k8s
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV ORACLE_SID=ORCLCDB \
-    STARTUP_FILE=startUp.sh \
+ENV STARTUP_FILE=startUp.sh \
     SHUT_DB_FILE=shutDown.sh \
     LOCKING_SCRIPT=lock.py \
     SWAP_LOCK_FILE=swapLocks.sh \
