@@ -205,6 +205,7 @@ sqlplus / as sysdba << EOF
    CREATE USER OPS\$oracle IDENTIFIED EXTERNALLY;
    GRANT CREATE SESSION TO OPS\$oracle;
    GRANT SELECT ON sys.v_\$pdbs TO OPS\$oracle;
+   GRANT SELECT ON sys.v_\$database TO OPS\$oracle;
    ALTER USER OPS\$oracle SET container_data=all for sys.v_\$pdbs container = current;
 
    exit;
