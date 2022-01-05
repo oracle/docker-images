@@ -6,7 +6,7 @@ DevOps users. For more information about Oracle NoSQL Database please see the
 
 This project offers sample Dockerfiles for:
 
-* [Oracle NoSQL Database (19.5) Community Edition](19.5/Dockerfile)
+* [Oracle NoSQL Database Community Edition](ce/Dockerfile)
 
 ## Quick start: building the Oracle NoSQL Community Edition image
 
@@ -14,17 +14,17 @@ To build the Oracle NoSQL Community Edition container image, clone this
 repository and run the following commands from the root of cloned repository:
 
 ```shell
-cd NoSQL/19.5-ce/
-docker build -t oracle/nosql:19.5-ce .
+cd NoSQL/ce/
+docker build -t oracle/nosql .
 ```
-
-The resulting image will be available as `oracle/nosql:19.5-ce`. You can also
-pull the image directly from the GitHub Container Registry:
+or
 
 ```shell
-docker pull ghcr.io/oracle/nosql:19.5-ce
-docker tag ghcr.io/oracle/nosql:19.5-ce oracle/nosql:19.5-ce
+cd NoSQL/ce/
+docker build --build-arg KV_VERSION=20.3.19 --tag oracle/nosql:20.3 .
 ```
+
+The resulting image will be available as `oracle/nosql:20.3-ce`. 
 
 ## Quick start: running Oracle NoSQL Database in a container
 
@@ -36,14 +36,14 @@ Start up KVLite in a Docker container. You must give it a name. Startup of
 KVLite is the default `CMD` of the Docker image:
 
 ```shell
-docker run -d --name=kvlite oracle/nosql:19.5-ce
+docker run --name=kvlite --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:20.3
 ```
 
 In a second shell, run a second Docker container to ping the kvlite store
 instance:
 
 ```shell
-docker run --rm -ti --link kvlite:store oracle/nosql:19.5-ce \
+docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
   java -jar lib/kvstore.jar ping -host store -port 5000
 ```
 
@@ -54,28 +54,78 @@ You can also use the Oracle NoSQL Command Line Interface (CLI). Start the
 following container (keep container `kvlite` running):
 
 ```shell
-$ docker run --rm -ti --link kvlite:store oracle/nosql:19.5-ce \
+
+$ docker run --rm -ti --link kvlite:store oracle/nosql:20.3  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
+
+20.3.19 2021-09-29 04:04:01 UTC  Build id: b8acf274b357 Edition: Community
+
+$ docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
   java -jar lib/kvstore.jar runadmin -host store -port 5000 -store kvstore
 
   kv-> ping
-  Pinging components of store kvstore based upon topology sequence #14
-  10 partitions and 1 storage nodes
-  Time: 2017-02-28 15:37:41 UTC   Version: 12.1.4.3.11
-  Shard Status: healthy:1 writable-degraded:0 read-only:0 offline:0
-  Admin Status: healthy
-  Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false]   RN Status: online:1 offline:0
-  Storage Node [sn1] on 659dbf4fba07:5000
-  Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false]
-  Status: RUNNING  Ver: 12cR1.4.3.11 2017-02-17 06:52:09 UTC  Build id: 0e3ebe7568a0
-  Admin [admin1]     Status: RUNNING,MASTER
-  Rep Node [rg1-rn1] Status: RUNNING,MASTER sequenceNumber:49 haPort:5006
+   Pinging components of store kvstore based upon topology sequence #14
+   10 partitions and 1 storage nodes
+   Time: 2021-12-20 12:56:33 UTC   Version: 20.3.19
+   Shard Status: healthy:1 writable-degraded:0 read-only:0 offline:0 total:1
+   Admin Status: healthy
+   Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]   RN Status: online:1 read-only:0 offline:0
+   Storage Node [sn1] on dcbd8ff4f07c:5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 20.3.19 2021-09-29 04:04:01 UTC  Build id: b8acf274b357 Edition: Community
+        Admin [admin1]          Status: RUNNING,MASTER
+        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber:50 haPort:5003 available storage size:1023 MB
+
 
   kv-> put kv -key /SomeKey -value SomeValue
   Operation successful, record inserted.
   kv-> get kv -key /SomeKey
   SomeValue
-  kv->
+  kv-> exit
 ```
+
+You can also use the Oracle SQL Shell Command Line Interface (CLI). Start the
+following container (keep container `kvlite` running):
+
+```shell
+$ docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
+  java -jar lib/sql.jar -helper-hosts store:5000 -store kvstore
+
+  sql-> show tables
+  tables
+    SYS$IndexStatsLease
+    SYS$MRTableAgentStat
+    SYS$MRTableInitCheckpoint
+    SYS$PartitionStatsLease
+    SYS$SGAttributesTable
+    SYS$StreamRequest
+    SYS$StreamResponse
+    SYS$TableStatsIndex
+    SYS$TableStatsPartition
+  sql-> exit
+
+```
+
+## Oracle NoSQL Database Proxy
+
+The Oracle NoSQL Database Proxy is a middle-tier component that lets the Oracle NoSQL Database drivers communicate with the Oracle NoSQL Database cluster. 
+The Oracle NoSQL Database drivers are available in various programming languages that are used in the client application.
+
+The Oracle NoSQL Database Proxy is a server that accepts requests from Oracle NoSQL Database drivers and processes them using the Oracle NoSQL Database. 
+The Oracle NoSQL Database drivers can be used to access either the Oracle NoSQL Database Cloud Service or an on-premises installation via the Oracle NoSQL Database Proxy. 
+Since the drivers and APIs are identical, applications can be moved between these two options. 
+
+You can deploy a docker Oracle NoSQL Database store first for a prototype project, and move forward to Oracle NoSQL Database cluster for a production project.
+
+Here is a snippet showing the connection from a Node.js program, the HTTP proxy is automatically started in this docker image
+
+````
+    /*
+     * EDIT: if the endpoint does not reflect how the Proxy
+     * Server has been started, modify it accordingly.
+     */
+    return new NoSQLClient({
+        serviceType: ServiceType.KVSTORE,
+        endpoint: 'docker-host-container-nosql:8081'
+    });
+````
 
 ## More information
 
@@ -98,4 +148,4 @@ Oracle NoSQL Community Edition has **no** commercial support.
 
 ## Copyright
 
-Copyright (c) 2017, 2020 Oracle and/or its affiliates.
+Copyright (c) 2017, 2022 Oracle and/or its affiliates.
