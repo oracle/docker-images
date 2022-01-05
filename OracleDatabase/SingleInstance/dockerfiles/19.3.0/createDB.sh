@@ -80,7 +80,7 @@ if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
   # Oracle Wallet is present
   export DBCA_CRED_OPTIONS="-useWalletForDBCredentials true  -dbCredentialsWalletLocation ${WALLET_DIR}"
 else
-  if [[ "${CLONE_DB}" == "true" ]]; then
+  if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
     # Validation: Checking if ORACLE_PWD is provided or not
     if [[ -z "$ORACLE_PWD" ]]; then
       echo "ERROR: Please provide sys password of the primary database as ORACLE_PWD env variable. Exiting..."
@@ -102,8 +102,8 @@ EOF
 
 fi
 
-# Clone DB creation path
-if [[ "${CLONE_DB}" == "true" ]]; then
+# Clone DB/ Standby DB creation path
+if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
   # Reverting umask to original value for clone/standby DB cases
   umask 022
   
@@ -113,10 +113,21 @@ if [[ "${CLONE_DB}" == "true" ]]; then
     exit 1
   fi
 
-  # Creating clone database using DBCA after duplicating a primary database
-  dbca -silent -createDuplicateDB -gdbName "${ORACLE_SID}" -primaryDBConnectionString "${PRIMARY_DB_CONN_STR}" ${DBCA_CRED_OPTIONS} -sid "${ORACLE_SID}" -databaseConfigType SINGLE -useOMF true -dbUniquename "${ORACLE_SID}" ORACLE_HOSTNAME="${ORACLE_HOSTNAME}" ||
-    cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
-    cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
+  # Primary database parameters extration
+  PRIMARY_DB_NAME=$(echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2)
+
+  # Creating the database using the dbca command
+  if [ "${STANDBY_DB}" = "true" ]; then
+    # Creating standby database
+    dbca -silent -createDuplicateDB -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -createAsStandby -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
+  else
+    # Creating clone database using DBCA after duplicating a primary database; CLONE_DB is set to true here
+    dbca -silent -createDuplicateDB -gdbName "${ORACLE_SID}" -primaryDBConnectionString "${PRIMARY_DB_CONN_STR}" ${DBCA_CRED_OPTIONS} -sid "${ORACLE_SID}" -databaseConfigType SINGLE -useOMF true -dbUniquename "${ORACLE_SID}" ORACLE_HOSTNAME="${ORACLE_HOSTNAME}" ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
+      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
+  fi
 
   # Setup tnsnames.ora after DBCA command execution, otherwise tnsnames gets overwritten by DBCA
   setupTnsnames;
