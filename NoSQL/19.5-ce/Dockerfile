@@ -5,8 +5,8 @@ FROM openjdk:14-oraclelinux7
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
-ENV VERSION="19.5.19" \
-    KVHOME=/kv-19.5.19 \
+ENV VERSION="19.5.25" \
+    KVHOME=/kv-19.5.25 \
     PACKAGE="kv-ce" \
     EXTENSION="zip" \
     BASE_URL="http://download.oracle.com/otn-pub/otn_software/nosql-database/" \
