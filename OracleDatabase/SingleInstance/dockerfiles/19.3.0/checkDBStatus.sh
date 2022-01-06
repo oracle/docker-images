@@ -6,9 +6,11 @@
 # Since: May, 2017
 # Author: gerald.venzl@oracle.com
 # Description: Checks the status of Oracle Database.
-# Return codes: 0 = PDB is open and ready to use
-#               1 = PDB is not open
-#               2 = Sql Plus execution failed
+# Return codes: 0 = Database is healthy and ready to use
+#               1 = Database role is neither PRIMARY nor STANDBY
+#               2 = PDB is not open in required mode
+#               3 = Sql Plus execution failed
+#               4 = Observer is not running
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
