@@ -1,9 +1,9 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
 # 
-# Since: April, 2021
+# Since: January, 2022
 # Author: abhishek.by.kumar@oracle.com
 # Description: Creates Data Guard Observer using the following parameters:
 #              $DG_OBSERVER_NAME: Name of the observer
