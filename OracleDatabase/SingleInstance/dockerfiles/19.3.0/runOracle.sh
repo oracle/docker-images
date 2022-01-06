@@ -58,6 +58,31 @@ function symLinkFiles {
 
 }
 
+########### Undoing the symbolic links ############
+function undoSymLinkFiles {
+
+   if [ -L "$ORACLE_HOME"/dbs/spfile"$ORACLE_SID".ora ]; then
+      rm "$ORACLE_HOME"/dbs/spfile"$ORACLE_SID".ora
+   fi;
+
+   if [ -L "$ORACLE_HOME"/dbs/orapw"$ORACLE_SID" ]; then
+      rm "$ORACLE_HOME"/dbs/orapw"$ORACLE_SID"
+   fi;
+
+   if [ -L "$ORACLE_HOME"/network/admin/sqlnet.ora ]; then
+      rm "$ORACLE_HOME"/network/admin/sqlnet.ora
+   fi;
+
+   if [ -L "$ORACLE_HOME"/network/admin/listener.ora ]; then
+      rm "$ORACLE_HOME"/network/admin/listener.ora
+   fi;
+
+   if [ -L "$ORACLE_HOME"/network/admin/tnsnames.ora ]; then
+      rm "$ORACLE_HOME"/network/admin/tnsnames.ora
+   fi;
+
+}
+
 ########### SIGINT handler ############
 function _int() {
    echo "Stopping container."
@@ -115,6 +140,41 @@ trap _int SIGINT
 # Set SIGTERM handler
 trap _term SIGTERM
 
+# Creation of Observer only section
+if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
+   if [ -z "${DG_OBSERVER_NAME}" ]; then
+      # Auto generate the observer name if not given
+      DG_OBSERVER_NAME="observer-$(openssl rand -hex 4)"
+      export DB_OBSERVER_NAME
+   fi 
+   export DG_OBSERVER_DIR=${ORACLE_BASE}/oradata/${DG_OBSERVER_NAME}
+
+   # Calling the script to create observer
+   "$ORACLE_BASE"/"$CREATE_OBSERVER_FILE" "$DG_OBSERVER_NAME" "$PRIMARY_DB_CONN_STR" "${ORACLE_PWD:?'ORACLE_PWD not set. Exiting...'}" "$DG_OBSERVER_DIR"
+
+   if [ ! -f "$DG_OBSERVER_DIR/observer.log" ]; then
+      # Display the content of nohup.out to show errors
+      if [ -f "$DG_OBSERVER_DIR/nohup.out" ]; then
+         cat "$DG_OBSERVER_DIR"/nohup.out
+         echo "Observer is not able to start. Exiting..."
+      else
+         echo "Observer creation and startup fail !! Exiting..."
+      fi
+      exit 1
+   else
+      # Tail on observer log and wait (otherwise container will exit)
+      echo "The following output is now a tail of the observer.log:"
+      tail -f "$DG_OBSERVER_DIR"/observer.log &
+      childPID=$!
+      wait $childPID
+
+      # Show nohup output and exit
+      echo "Exiting..."
+      cat "$DG_OBSERVER_DIR"/nohup.out
+      exit 0;
+   fi
+fi
+
 # Default for ORACLE SID
 if [ "$ORACLE_SID" == "" ]; then
    export ORACLE_SID=ORCLCDB
@@ -152,7 +212,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 . "$ORACLE_BASE/$RELINK_BINARY_FILE"
 
 # Check whether database already exists
-if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
+if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -164,6 +224,8 @@ if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ]; then
    "$ORACLE_BASE"/"$START_FILE";
    
 else
+  undoSymLinkFiles;
+
   # Remove database config files, if they exist
   rm -f "$ORACLE_HOME"/dbs/spfile$ORACLE_SID.ora
   rm -f "$ORACLE_HOME"/dbs/orapw$ORACLE_SID

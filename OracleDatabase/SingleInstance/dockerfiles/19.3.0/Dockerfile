@@ -49,6 +49,7 @@ ENV ORACLE_BASE=/opt/oracle \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
     CREATE_DB_FILE="createDB.sh" \
+    CREATE_OBSERVER_FILE="createObserver.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
@@ -60,8 +61,13 @@ ENV ORACLE_BASE=/opt/oracle \
     ARCHIVELOG_DIR_NAME=archive_logs \
     # To clone a database referred by PRIMARY_DB_CONN_STR
     CLONE_DB=false \
+    # To create a standby database referred by PRIMARY_DB_CONN_STR
+    STANDBY_DB=false \
     # Env var below should be in <HOST>:<PORT>/<SERVICE_NAME> format
     PRIMARY_DB_CONN_STR="" \
+    # For creating dataguard observer
+    DG_OBSERVER_ONLY=false \
+    DG_OBSERVER_NAME="" \
     CHECKPOINT_FILE_EXTN=".created" \
     # Directory for keeping Oracle Wallet
     WALLET_DIR=""
@@ -74,7 +80,7 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
 # Copy files needed during both installation and runtime
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
-COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CREATE_OBSERVER_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $ORACLE_BASE/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
