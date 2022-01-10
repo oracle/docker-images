@@ -17,4 +17,6 @@
 
 export ORACLE_SID=${ORACLE_SID^^}
 
-"$ORACLE_BASE/$LOCKING_SCRIPT" --acquire --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.create_lck" --block
+if [ "$DG_OBSERVER_ONLY" = "false" ]; then
+    "$ORACLE_BASE/$LOCKING_SCRIPT" --acquire --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.create_lck" --block
+fi
