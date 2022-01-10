@@ -10,12 +10,8 @@
 			<path>@PRODUCT_HOME/../oracle_common/modules/thirdparty/features/lib_wcSites_Examples_thirdparty.jar</path>
 		</classpath>
 		<java-system-property>
-			<key>weblogic.oif.serialFilterMode</key>
-			<value>combine</value>
-		</java-system-property>
-		<java-system-property>
-			<key>weblogic.oif.serialFilter</key>
-			<value>java.rmi.server.RemoteObject;java.**;net.sf.ehcache.**</value>
+			<key>weblogic.oif.serialFilterScope</key>
+			<value>weblogic</value>
 		</java-system-property>
 		<java-system-property>							   
 			<key>sites.config</key>
@@ -62,13 +58,9 @@
 			<value>250</value>
 		</java-system-property>
 		<java-system-property>
-			<key>weblogic.oif.serialFilterMode</key>
-			<value>combine</value>
-		</java-system-property>
-		<java-system-property>
-			<key>weblogic.oif.serialFilter</key>
-			<value>java.rmi.server.RemoteObject;java.**;net.sf.ehcache.**</value>
-		</java-system-property>				
+			<key>weblogic.oif.serialFilterScope</key>
+			<value>weblogic</value>
+		</java-system-property>			
 		<java-system-property os="Linux">
 			<key>java.security.egd</key>
 			<value>file:/dev/urandom</value>
@@ -91,12 +83,8 @@
             <path>@PRODUCT_HOME/../oracle_common/modules/thirdparty/features/lib_wcSites_Examples_thirdparty.jar</path>
 		</classpath>
 		<java-system-property>
-			<key>weblogic.oif.serialFilterMode</key>
-			<value>combine</value>
-		</java-system-property>
-		<java-system-property>
-			<key>weblogic.oif.serialFilter</key>
-			<value>java.rmi.server.RemoteObject;java.**;net.sf.ehcache.**</value>
+			<key>weblogic.oif.serialFilterScope</key>
+			<value>weblogic</value>
 		</java-system-property>
 		<java-system-property>							   
 			<key>sites.config</key>
