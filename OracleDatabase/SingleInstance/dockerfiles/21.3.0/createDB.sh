@@ -64,7 +64,7 @@ SID_LIST_LISTENER =
   (SID_LIST =
     (SID_DESC =
       (SID_NAME = PLSExtProc)
-      (ORACLE_HOME = $ORACLE_BASE_HOME)
+      (ORACLE_HOME = $ORACLE_HOME)
       (PROGRAM = extproc)
     )
   )
