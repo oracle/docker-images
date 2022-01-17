@@ -5,5 +5,5 @@
 if [ "$1" = "interactive-shell" ]; then
     scl enable gcc-toolset-11 -- bash
 else
-    scl enable gcc-toolset-11 -- bash -c "$@"
+    scl enable gcc-toolset-11 -- env -- "$@"
 fi
