@@ -7,10 +7,10 @@ Oracle Java Server JRE provides the features from Oracle Java JDK commonly requi
 ## Building the Oracle Java base image
 For JDK 17 the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
 
-For JDK 11 and SererJRE8 you must download the linux x-64 compressed archive (tar.gz) of the [JDK or Server JRE](https://www.oracle.com/javadownload) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
+For JDK 11 and Server JRE 8 you must download the linux x-64 compressed archive (tar.gz) of the [JDK or Server JRE](https://www.oracle.com/javadownload) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
 
 e.g. for JDK 11 download jdk-11[X]_linux-x64_bin.tar.gz into OracleJava/11, 
-for ServerJRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
+for Server JRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
 
 To build the container image run `docker build`. Tag it with the correct version number.
 
@@ -44,7 +44,7 @@ $ cd ../OracleJava/11
 $ docker build --file Dockerfile.8 --tag oracle/jdk:11-oraclelinux8 .
 ```
 
-On JDK 11 and ServerJRE 8 `build.sh` can be used to build on Oracle Linux 8, by passing `8`.
+On JDK 11 and Server JRE 8 `build.sh` can be used to build on Oracle Linux 8, by passing `8`.
 e.g. 
 
 ```

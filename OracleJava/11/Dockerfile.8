@@ -37,8 +37,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-11.0.13_linux-x64_bin.tar.gz \
-	JAVA_SHA256=f4f115f0cd46a604af9b9627d6b654bc2061a352840e9b95883f1b4959fe26f9 \
+ENV JAVA_PKG=jdk-11.0.14_linux-x64_bin.tar.gz \
+	JAVA_SHA256=9732bdd946b393ec527e4d5ff1f7e4667dc5150685bc3c9c7b1d042c657929db \
 	JAVA_HOME=/usr/java/jdk-11
 
 ##
@@ -54,7 +54,7 @@ FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.13 \
+ENV JAVA_VERSION=11.0.14 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
