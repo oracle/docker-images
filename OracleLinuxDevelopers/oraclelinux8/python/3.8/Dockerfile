@@ -5,8 +5,9 @@
 # so that any automation that relied on microdnf continues to work
 FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
 
-RUN dnf -y module enable python38 && \
-    dnf -y install python36 python3-pip python3-setuptools && \
+RUN dnf -y module disable python36 && \
+    dnf -y module enable python38 && \
+    dnf -y install python38 python38-pip python38-setuptools python38-wheel && \
     rm -rf /var/cache/dnf
 
 CMD ["/bin/python3", "-V"]
