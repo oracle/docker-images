@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Oracle and/or its affiliates
+# Copyright (c) 2022 Oracle and/or its affiliates
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
 FROM openjdk:14-oraclelinux8
@@ -13,8 +13,7 @@ ARG UNZIPPED_ONLY_LIB=kv-$KV_VERSION/lib
 
 ENV KV_PROXY_PORT 8080
 
-RUN microdnf install unzip && \
-    microdnf install hostname &&\
+RUN microdnf install unzip hostname && \
     microdnf clean all
 
 RUN curl -OLs  $DOWNLOAD_LINK  && \
