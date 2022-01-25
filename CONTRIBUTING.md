@@ -13,7 +13,7 @@ an issue too.
 
 All contributors are expected to adhere to our [code of conduct](CODE_OF_CONDUCT.md).
 
-Pull requests are made under [the Oracle Contributor Agreement](https://www.oracle.com/technetwork/community/oca-486395.html) (OCA).
+Pull requests are made under [the Oracle Contributor Agreement](https://oca.opensource.oracle.com/) (OCA).
 Only pull requests from committers that can be verified as having
 signed the OCA can be accepted.
 
