@@ -4,7 +4,7 @@ Sample Docker build files to facilitate installation and environment setup for
 DevOps users. For more information about Oracle NoSQL Database please see the
 [Oracle NoSQL Database documentation](https://docs.oracle.com/en/database/other-databases/nosql-database/index.html).
 
-This project offers sample Dockerfiles for:
+This project offers sample container image configuration files for:
 
 * [Oracle NoSQL Database Community Edition](ce/Dockerfile)
 
@@ -33,13 +33,13 @@ you are using Oracle NoSQL Database Enterprise Edition, please use the
 appropriate image name.
 
 Start up KVLite in a Docker container. You must give it a name. Startup of
-KVLite is the default `CMD` of the Docker image:
+KVLite is the default `CMD` of the image:
 
 ```shell
-docker run --name=kvlite --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:20.3
+docker run -d --name=kvlite --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:20.3
 ```
 
-In a second shell, run a second Docker container to ping the kvlite store
+In a second shell, run a second container to ping the kvlite store
 instance:
 
 ```shell
@@ -117,14 +117,14 @@ You can deploy a docker Oracle NoSQL Database store first for a prototype projec
 Here is a snippet showing the connection from a Node.js program, the HTTP proxy is automatically started in this docker image
 
 ````
-    /*
-     * EDIT: if the endpoint does not reflect how the Proxy
-     * Server has been started, modify it accordingly.
-     */
-    return new NoSQLClient({
-        serviceType: ServiceType.KVSTORE,
-        endpoint: 'docker-host-container-nosql:8081'
-    });
+/*
+* EDIT: if the endpoint does not reflect how the Proxy
+* Server has been started, modify it accordingly.
+*/
+return new NoSQLClient({
+  serviceType: ServiceType.KVSTORE,
+  endpoint: 'docker-host-container-nosql:8081'
+});
 ````
 
 ## More information
