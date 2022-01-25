@@ -82,7 +82,7 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
 ```
 
 You can also use the Oracle SQL Shell Command Line Interface (CLI). Start the
-following container (keep container `kvlite` running):
+following container:
 
 ```shell
 $ docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
