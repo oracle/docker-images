@@ -22,10 +22,9 @@ RUN curl -OLs  $DOWNLOAD_LINK  && \
 
 WORKDIR "kv-$KV_VERSION"
 
-RUN echo "KVHOST=\`hostname\`" >start-kvlite.sh  && \
-    echo "java -jar lib/kvstore.jar kvlite  -secure-config disable -root /kvroot &" >>start-kvlite.sh && \
-    echo "java -jar lib/httpproxy.jar -helperHosts \$KVHOST:5000 -storeName kvstore -httpPort \$KV_PROXY_PORT -verbose true" >>start-kvlite.sh
+COPY start-kvlite.sh .
+RUN chmod +x start-kvlite.sh
 
 VOLUME ["/kvroot"]
 
-CMD sh start-kvlite.sh
+CMD ["bash", "-c", "./start-kvlite.sh"]
