@@ -112,18 +112,14 @@ The Oracle NoSQL Database Proxy is a server that accepts requests from Oracle No
 The Oracle NoSQL Database drivers can be used to access either the Oracle NoSQL Database Cloud Service or an on-premises installation via the Oracle NoSQL Database Proxy. 
 Since the drivers and APIs are identical, applications can be moved between these two options. 
 
-You can deploy a docker Oracle NoSQL Database store first for a prototype project, and move forward to Oracle NoSQL Database cluster for a production project.
+You can deploy a container-based Oracle NoSQL Database store first for a prototype project, and move forward to Oracle NoSQL Database cluster for a production project.
 
-Here is a snippet showing the connection from a Node.js program, the HTTP proxy is automatically started in this docker image
+Here is a snippet showing the connection from a Node.js program.
 
 ````
-/*
-* EDIT: if the endpoint does not reflect how the Proxy
-* Server has been started, modify it accordingly.
-*/
 return new NoSQLClient({
   serviceType: ServiceType.KVSTORE,
-  endpoint: 'docker-host-container-nosql:8081'
+  endpoint: 'nosql-container-host:8080'
 });
 ````
 
