@@ -51,7 +51,7 @@ Note the required use of `--link` for proper hostname check (actual KVLite
 container is named `kvlite`; alias is `store`).
 
 You can also use the Oracle NoSQL Command Line Interface (CLI). Start the
-following container (keep container `kvlite` running):
+following container:
 
 ```shell
 
