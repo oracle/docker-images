@@ -50,7 +50,8 @@ ENV ORACLE_BASE=/opt/oracle \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DIR="$HOME/install" \
     ORACLE_DOCKER_INSTALL="true" \
-    CHECKPOINT_FILE_EXTN=".created"
+    CHECKPOINT_FILE_EXTN=".created" \
+    INIT_SGA_PERCENTAGE="75"
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$PATH

@@ -175,11 +175,11 @@ export ORACLE_PDB=${2:-ORCLPDB1}
 # Setting up file creation mask for newly created files (dbca response templates)
 umask 177
 
-# Checking if only one of INIT_SGA_SIZE & INIT_PGA_SIZE is provided by the user
-if [[ "${INIT_SGA_SIZE}" != "" && "${INIT_PGA_SIZE}" == "" ]] || [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" != "" ]]; then
-   echo "ERROR: Provide both the values, INIT_SGA_SIZE and INIT_PGA_SIZE or neither of them. Exiting.";
+# Checking if INIT_SGA_PERCENTAGE is valid
+if [[ -z "${INIT_SGA_PERCENTAGE}" || "${INIT_SGA_PERCENTAGE}" -gt 0 && "${INIT_SGA_PERCENTAGE}" -lt 100 ]]; then
+   echo "ERROR: INIT_SGA_PERCENTAGE must be greater than 0 and lower than 100. Exiting.";
    exit 1;
-fi;
+fi
 
 # If wallet is present for database credentials then prepare dbca options to use
 if [[ -n "${WALLET_DIR}" ]] && [[ -f $WALLET_DIR/ewallet.p12 ]]; then
@@ -269,20 +269,16 @@ else
    sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" "$ORACLE_BASE"/dbca.rsp
 fi
 
-# If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user
-if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
-    # If there is greater than 8 CPUs default back to dbca memory calculations
-    # dbca will automatically pick 40% of available memory for Oracle DB
-    # The minimum of 2G is for small environments to guarantee that Oracle has enough memory to function
-    # However, bigger environment can and should use more of the available memory
-    # This is due to Github Issue #307
-    if [ "$(nproc)" -gt 8 ]; then
-        sed -i -e "s|totalMemory=2048||g" "$ORACLE_BASE"/dbca.rsp
-    fi;
-else
+# If INIT_SGA_PERCENTAGE isn't disabled by user we allocate based on its value
+# shellcheck disable=SC2153
+if [[ -n "${INIT_SGA_PERCENTAGE}" ]]; then
+    INIT_PGA_PERCENTAGE=$((100 - INIT_SGA_PERCENTAGE))
+    INIT_SGA_SIZE=$((ALLOCATED_MEMORY * INIT_SGA_PERCENTAGE / 100))
+    INIT_PGA_SIZE=$((ALLOCATED_MEMORY * INIT_PGA_PERCENTAGE / 100))
+
     sed -i -e "s|totalMemory=2048||g" "$ORACLE_BASE"/dbca.rsp
     sed -i -e "s|initParams=.*|&,sga_target=${INIT_SGA_SIZE}M,pga_aggregate_target=${INIT_PGA_SIZE}M|g" "$ORACLE_BASE"/dbca.rsp
-fi;
+fi
 
 # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
 setupNetworkConfig;

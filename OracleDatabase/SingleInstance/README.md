@@ -70,8 +70,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
-    -e INIT_SGA_SIZE=<your database SGA memory in MB> \
-    -e INIT_PGA_SIZE=<your database PGA memory in MB> \
+    -e INIT_SGA_PERCENTAGE=<memory percentage of your database SGA> \
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
     -e ENABLE_ARCHIVELOG=true \
@@ -85,11 +84,9 @@ To run your Oracle Database image use the `docker run` command as follows:
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
-       -e INIT_SGA_SIZE:
-                      The total memory in MB that should be used for all SGA components (optional).
-                      Supported 19.3 onwards.
-       -e INIT_PGA_SIZE:
-                      The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
+       -e INIT_SGA_PERCENTAGE:
+                      The total memory percentage that should be used for all SGA components (default: 75).
+                      The rest will automatically be set for the PGA, which is 25% by default.
                       Supported 19.3 onwards.
        -e ORACLE_EDITION:
                       The Oracle Database Edition (enterprise/standard).

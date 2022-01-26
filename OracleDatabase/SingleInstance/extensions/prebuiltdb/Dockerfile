@@ -32,4 +32,6 @@ ENV ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 ENV ORACLE_PWD=${ORACLE_PWD}
 
 # Creating the database
-RUN $ORACLE_BASE/$RUN_FILE --nowait
+# We disable INIT_SGA_PERCENTAGE so that the prebuiltdb does not store data about
+# the memory of the builder inside of the container.
+RUN INIT_SGA_PERCENTAGE="" $ORACLE_BASE/$RUN_FILE --nowait
