@@ -35,8 +35,7 @@ def acquire_lock(lock_file, sock_file, block, heartbeat):
     """
 
     # create an empty lock file first
-    open(lock_file, 'a').close()
-    lock_handle = open(lock_file)
+    lock_handle = open(lock_file, 'a')
     print('[%s]: Acquiring lock %s with heartbeat %s secs' %
          (time.strftime('%Y:%m:%d %H:%M:%S'), os.path.basename(lock_file), heartbeat))
     while True:
@@ -68,7 +67,7 @@ def acquire_lock(lock_file, sock_file, block, heartbeat):
                         os.remove(lock_file)
                         open(lock_file, 'w').close()
 
-                lock_handle = open(lock_file)
+                lock_handle = open(lock_file, 'a')
                 print('[%s]: Reacquiring lock %s' %
                      (time.strftime('%Y:%m:%d %H:%M:%S'), os.path.basename(lock_file)))
 
