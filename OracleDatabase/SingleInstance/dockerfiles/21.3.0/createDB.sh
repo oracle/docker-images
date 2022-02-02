@@ -276,8 +276,8 @@ if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
     # The minimum of 2G is for small environments to guarantee that Oracle has enough memory to function
     # However, bigger environment can and should use more of the available memory
     # This is due to Github Issue #307
-    # Unless INIT_DONT_OPTIMIZE_FOR_BIG_ENVIRONMENTS=true, which is the case for the prebuiltdb extension
-    if [[ "${INIT_DONT_OPTIMIZE_FOR_BIG_ENVIRONMENTS}" != "true" && "$(nproc)" -gt 8 ]]; then
+    # Unless DBCA_MEM_CALCULATION=false, which is the case for the prebuiltdb extension
+    if [[ "${DBCA_MEM_CALCULATION}" != "false" && "$(nproc)" -gt 8 ]]; then
         sed -i -e "s|totalMemory=2048||g" "$ORACLE_BASE"/dbca.rsp
     fi;
 else
