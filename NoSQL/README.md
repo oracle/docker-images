@@ -21,10 +21,16 @@ or
 
 ```shell
 cd NoSQL/ce/
-docker build --build-arg KV_VERSION=20.3.19 --tag oracle/nosql:20.3 .
+docker build --build-arg KV_VERSION=20.3.19 --tag oracle/nosql:ce .
 ```
 
-The resulting image will be available as `oracle/nosql:20.3-ce`. 
+The resulting image will be available as `oracle/nosql:ce`. 
+You can also pull the image directly from the GitHub Container Registry:
+
+```shell
+docker pull ghcr.io/oracle/nosql:latest-ce
+docker tag ghcr.io/oracle/nosql:latest-ce oracle/nosql:ce
+```
 
 ## Quick start: running Oracle NoSQL Database in a container
 
@@ -32,18 +38,18 @@ The steps outlined below are using Oracle NoSQL Database community edition, if
 you are using Oracle NoSQL Database Enterprise Edition, please use the
 appropriate image name.
 
-Start up KVLite in a Docker container. You must give it a name. Startup of
+Start up KVLite in a Docker container. You must give it a name and provide a hostname. Startup of
 KVLite is the default `CMD` of the image:
 
 ```shell
-docker run -d --name=kvlite --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:20.3
+docker run -d --name=kvlite --hostname=kvlite --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:ce
 ```
 
 In a second shell, run a second container to ping the kvlite store
 instance:
 
 ```shell
-docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
+docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/kvstore.jar ping -host store -port 5000
 ```
 
@@ -55,11 +61,11 @@ following container:
 
 ```shell
 
-$ docker run --rm -ti --link kvlite:store oracle/nosql:20.3  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
+$ docker run --rm -ti --link kvlite:store oracle/nosql:ce  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
 
 20.3.19 2021-09-29 04:04:01 UTC  Build id: b8acf274b357 Edition: Community
 
-$ docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
+$ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/kvstore.jar runadmin -host store -port 5000 -store kvstore
 
   kv-> ping
@@ -85,7 +91,7 @@ You can also use the Oracle SQL Shell Command Line Interface (CLI). Start the
 following container:
 
 ```shell
-$ docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
+$ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/sql.jar -helper-hosts store:5000 -store kvstore
 
   sql-> show tables
@@ -102,6 +108,54 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:20.3 \
   sql-> exit
 
 ```
+
+## Using Oracle NoSQL Command-Line from an external host
+
+Start up KVLite in a Docker container. You must give it a name 
+and provide a hostname (resolvable from the external host - an alias to the container host). 
+You need to publish all internal ports.
+
+Startup of KVLite is the default `CMD` of the image:
+
+```shell
+docker run -d --name=kvlite --hostname=kvlite-nosql-container-host --env KV_PROXY_PORT=8080 -p 8080:8080 \
+-p 5000:5000 -p 5010-5020:5010-5020 -p 5021-5049:5021-5049 -p 5999:5999 oracle/nosql:ce
+```
+In a second shell, run the NoSQL command to ping the kvlite store
+instance:
+
+```shell
+$ cat /etc/hosts
+10.0.0.143 nosql-container-host
+10.0.0.143 kvlite-nosql-container-host
+
+
+$ ping kvlite-nosql-container-host
+
+PING kvlite-nosql-container-host (10.0.0.143) 56(84) bytes of data.
+64 bytes from nosql-container-host (10.0.0.143): icmp_seq=1 ttl=64 time=0.259 ms
+64 bytes from nosql-container-host (10.0.0.143): icmp_seq=2 ttl=64 time=0.241 ms
+64 bytes from nosql-container-host (10.0.0.143): icmp_seq=3 ttl=64 time=0.192 ms
+
+$ java -jar $KVHOME/lib/kvstore.jar ping -host kvlite-nosql-container-host -port 5000
+```
+
+Note: set the KVHOME variable according to your NoSQL software installation in the external host.
+
+
+You can also use the Oracle NoSQL Command Line Interface (CLI).
+
+```shell
+$ java -jar $KVHOME/lib/kvstore.jar runadmin -host kvlite-nosql-container-host -port 5000 -store kvstore
+````
+
+You can also use the Oracle SQL Shell Command Line Interface (CLI)
+
+```shell
+$ java -jar $KVHOME/lib/sql.jar -helper-hosts kvlite-nosql-container-host:5000 -store kvstore
+````
+
+
 
 ## Oracle NoSQL Database Proxy
 
