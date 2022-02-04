@@ -7,20 +7,22 @@ LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images
 
 ARG KV_VERSION=20.3.19
 ARG DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
-ARG DOWNLOAD_FILE=kv-ce-$KV_VERSION.zip
-ARG DOWNLOAD_LINK=$DOWNLOAD_ROOT/$DOWNLOAD_FILE
-ARG UNZIPPED_ONLY_LIB=kv-$KV_VERSION/lib
+ARG DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
+ARG DOWNLOAD_LINK="${DOWNLOAD_ROOT}/${DOWNLOAD_FILE}"
 
 ENV KV_PROXY_PORT 8080
+ENV KV_ADMIN_PORT 5999
 
-RUN microdnf install unzip hostname && \
-    microdnf clean all
+ENV KV_PORT 5000
+ENV KV_HARANGE 5010-5020
+ENV KV_SERVICERANGE 5021-5049
 
-RUN curl -OLs  $DOWNLOAD_LINK  && \
-    unzip $DOWNLOAD_FILE $UNZIPPED_ONLY_LIB/* && \
-    rm -f $DOWNLOAD_FILE
+RUN curl -OLs $DOWNLOAD_LINK  && \
+    jar tf $DOWNLOAD_FILE | grep "kv-$KV_VERSION/lib" > extract.libs && \
+    jar xf $DOWNLOAD_FILE @extract.libs && \
+    rm -f $DOWNLOAD_FILE extract.libs
 
-WORKDIR "kv-$KV_VERSION"
+WORKDIR "/kv-$KV_VERSION"
 
 COPY start-kvlite.sh .
 RUN chmod +x start-kvlite.sh
