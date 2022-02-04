@@ -155,7 +155,15 @@ You can also use the Oracle SQL Shell Command Line Interface (CLI)
 $ java -jar $KVHOME/lib/sql.jar -helper-hosts kvlite-nosql-container-host:5000 -store kvstore
 ````
 
+**Note**: We recommend running NoSQL Command-Line doing a container to container connection. 
+It allows starting the container without publishing all internal ports. In this way, you can run multiple containers in the same host.
 
+We recommend using the SDK drivers that will contact the Oracle NoSQL Database Proxy for your developments.
+
+```shell
+docker run -d --name=kvlite  --hostname=kvlite  --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:ce
+docker run -d --name=kvlite2 --hostname=kvlite2 --env KV_PROXY_PORT=8080 -p 8081:8080 oracle/nosql:ce
+```
 
 ## Oracle NoSQL Database Proxy
 
