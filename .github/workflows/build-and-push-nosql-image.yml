@@ -1,21 +1,21 @@
-name: Build and publish NoSQL 19.5-ce container image to GitHub Container Registry
+name: Build and publish NoSQL container image to GitHub Container Registry
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'NoSQL/19.5-ce/*'
+      - 'NoSQL/ce/*'
       - '.github/workflows/build-and-push-nosql-image.yml'
     workflow_dispatch:
 
 env:
   IMAGE_NAME: nosql
-  TAG: 19.5-ce
+  TAG: ce
 
 jobs:
   push:
-    name: Build and push NoSQL 19.5-ce image
+    name: Build and push NoSQL ce image
 
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
@@ -32,11 +32,22 @@ jobs:
           REPO_OWNER=${{ github.repository_owner }}
           echo "::set-output name=repo-owner::${REPO_OWNER,,}"
 
-      - name: Build NoSQL 19.5-ce image
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m')"
+         
+      - name: Build NoSQL ce image
         run: |
-          cd NoSQL/19.5-ce
+          cd NoSQL/ce
           docker build --tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG .
+          docker tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce
+        env:
+          TAG: ${{ steps.date.outputs.date }}-ce
 
       - name: Push image to GitHub Container Registry
         run: |
           docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG
+          docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce
+        env:
+          TAG: ${{ steps.date.outputs.date }}-ce
+          
