@@ -162,7 +162,7 @@ In this case, You need to publish all internal ports and the KV_PROXY_PORT.
 - 8080 KV_PROXY_PORT
 
 This hostname must be resolvable from the host outside the container. 
-It could be an alias to the host running the docker commands (e.g nosql-container-host).
+It could be an alias to the host running the docker commands.
 
 ```shell
 $ cat /etc/hosts
