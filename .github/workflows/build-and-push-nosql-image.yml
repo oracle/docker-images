@@ -7,7 +7,7 @@ on:
     paths:
       - 'NoSQL/ce/*'
       - '.github/workflows/build-and-push-nosql-image.yml'
-    workflow_dispatch:
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: nosql
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Log into GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${GITHUB_ACTOR,,} --password-stdin ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${GITHUB_ACTOR,,} --password-stdin
 
       - name: Repository owner needs to be lowercase
         id: repo-owner
@@ -35,7 +35,7 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m')"
-         
+
       - name: Build NoSQL ce image
         run: |
           cd NoSQL/ce
@@ -50,4 +50,3 @@ jobs:
           docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce
         env:
           TAG: ${{ steps.date.outputs.date }}-ce
-          
