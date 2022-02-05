@@ -38,7 +38,7 @@ The steps outlined below are using Oracle NoSQL Database community edition, if
 you are using Oracle NoSQL Database Enterprise Edition, please use the
 appropriate image name.
 
-Start up KVLite in a Docker container. You must give it a name and provide a hostname. Startup of
+Start up KVLite in a container. You must give it a name and provide a hostname. Startup of
 KVLite is the default `CMD` of the image:
 
 ```shell
@@ -111,7 +111,7 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
 
 ## Using Oracle NoSQL Command-Line from an external host
 
-Start up KVLite in a Docker container. You must give it a name 
+Start up KVLite in a container. You must give it a name 
 and provide a hostname (resolvable from the external host - an alias to the container host). 
 You need to publish all internal ports.
 
@@ -128,15 +128,16 @@ instance:
 $ cat /etc/hosts
 10.0.0.143 nosql-container-host
 10.0.0.143 kvlite-nosql-container-host
-
-
+```
+```shell
 $ ping kvlite-nosql-container-host
 
 PING kvlite-nosql-container-host (10.0.0.143) 56(84) bytes of data.
 64 bytes from nosql-container-host (10.0.0.143): icmp_seq=1 ttl=64 time=0.259 ms
 64 bytes from nosql-container-host (10.0.0.143): icmp_seq=2 ttl=64 time=0.241 ms
 64 bytes from nosql-container-host (10.0.0.143): icmp_seq=3 ttl=64 time=0.192 ms
-
+```
+```shell
 $ java -jar $KVHOME/lib/kvstore.jar ping -host kvlite-nosql-container-host -port 5000
 ```
 
