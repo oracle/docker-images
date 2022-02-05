@@ -155,7 +155,7 @@ KVHOME=$PWD/kv-$KV_VERSION
 
 Start up KVLite in a container. You must give it a name 
 and provide a hostname. 
-In this case, You need to publish all internal ports.
+In this case, You need to publish all internal ports and the KV_PROXY_PORT.
 - 5000 KVPORT
 - 5010-5020 KV_HARANGE
 - 5021-5049 KV_SERVICERANGE
