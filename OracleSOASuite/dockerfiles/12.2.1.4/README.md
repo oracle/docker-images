@@ -150,13 +150,13 @@ To run the database container to host the RCU schemas:
     ```
 1.  Enter the following command:
     ``` bash
-    $ docker run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 -v $data_volume/DB:/opt/oracle/oradata --env-file ./db.env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1
+    $ docker run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 -v $data_volume/DB:/ORCL --env-file ./db.env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:12.2.0.1
     ```
 1.  Verify that the database is running and healthy. The `STATUS` field should show `healthy` in the output of `docker ps`.
 
 The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus`. To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container:
 ``` bash
-$ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@soadb:1521/soadb.example.com AS SYSDBA
+$ docker run -ti --network=SOANet --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@soadb:1521/soapdb.example.com AS SYSDBA
 
 SQL> alter user sys identified by Welcome1 container=all;
 ```
@@ -202,6 +202,7 @@ ADMIN_PORT=7001
 PERSISTENCE_STORE=jdbc
 ```
 If `PERSISTENCE_STORE` is not specified, the default value is `jdbc`. When `PERSISTENCE_STORE=jdbc`, a JDBC persistence store will be configured for all servers for TLOG + SOAJMS/UMSJMS servers. If `PERSISTENCE_STORE=file`, file-based persistence stores will be used instead.
+
 
 To start a Docker container with a SOA domain and the WebLogic Server Administration Server, use the `docker run` command and pass the `adminserver.env.list` file.
 

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2017, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -90,6 +90,16 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
     else \
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
     fi
+RUN if [ -f "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [  -f "XEngine_8_4_1_23.tar.gz" ]; then \
+        cd $ORACLE_HOME/soa/soa/thirdparty/edifecs && \
+        tar -zxvf  XEngine_8_4_1_23.tar.gz \
+    else \
+        echo -e "\nNo XEngine_8_4_1_23.tar.gz present in ${ORACLE_HOME}/soa/soa/thirdparty/edifecs directory. Skipping untar."; \
+    fi
+# zip as few log files grow larger when patches are installed.
+RUN if ls /u01/oracle/cfgtoollogs/opatch/*.log; then \
+        gzip /u01/oracle/cfgtoollogs/opatch/*.log; \
+    fi
 #
 # Rebuild from base image
 # -----------------------
@@ -114,12 +124,6 @@ COPY --from=builder --chown=oracle:root /u01 /u01
 # Define default command to start bash.
 # 
 USER oracle
-RUN if [ -f "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [  -f "XEngine_8_4_1_23.tar.gz" ]; then \
-        cd $ORACLE_HOME/soa/soa/thirdparty/edifecs && \
-        tar -zxvf  XEngine_8_4_1_23.tar.gz \
-    else \
-        echo -e "\nNo XEngine_8_4_1_23.tar.gz present in ${ORACLE_HOME}/soa/soa/thirdparty/edifecs directory. Skipping untar."; \
-    fi
 HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR $ORACLE_HOME
 CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
