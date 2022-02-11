@@ -15,7 +15,8 @@
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ###################################
 
-export ORACLE_SID=${ORACLE_SID^^}
+export ORACLE_SID=${ORACLE_SID:-ORCLCDB}
+ORACLE_SID=${ORACLE_SID^^}
 
 if [ "$DG_OBSERVER_ONLY" = "false" ]; then
     "$ORACLE_BASE/$LOCKING_SCRIPT" --acquire --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.create_lck" --block
