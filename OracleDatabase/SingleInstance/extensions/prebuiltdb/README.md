@@ -43,5 +43,6 @@ This extended image would be very useful in CI/CD scenarios, where database woul
 Some limitations are listed as follows:
 - **External volume can not be used** for database persistence (as data files are inside the image itself).
 - In Kubernetes environment, **the single replica mode** (i.e. replicas=1) can be used for database deployments.
-- The amount of memory allocated for the database is calculated during creation of the database, which runs during the docker build phase. By default, `AUTO_MEM_CALCULATION` is `false` so that the container built with this extension is portable, but it also means that the database inside of the containers deployed with this image will not use more than 2GB, even if more is available/allocated.
+- The database created will not use more than 2GB of memory.
+  - The amount of memory allocated for the database is calculated during creation of the database, which runs during the docker build phase. By default, `AUTO_MEM_CALCULATION` is `false` so that the container built with this extension is portable, but it also means that the database inside of the containers deployed with this image will not use more than 2GB, even if more is available/allocated.
   - If you know the environment where you plan to deploy the container built with this extension, you can build the image with `docker build --memory=4096m --build-arg AUTO_MEM_CALCULATION=true` so that the database is created with 4GB of memory allocated.
