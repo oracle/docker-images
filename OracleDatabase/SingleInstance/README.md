@@ -91,6 +91,13 @@ To run your Oracle Database image use the `docker run` command as follows:
        -e INIT_PGA_SIZE:
                       The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
                       Supported 19.3 onwards.
+       -e AUTO_MEM_CALCULATION:
+                      To enable auto calculation of the DBCA total memory limit during the database creation, based on
+                      the available memory of the container, which can be constrained using the `docker run --memory`
+                      option. If set to 'false', the total memory will be set as 2GB (default: true).
+                      Note that this parameter is not taken into account if the `-e INIT_SGA_SIZE` or `-e INIT_PGA_SIZE`
+                      are set.
+                      Supported 19.3 onwards.
        -e ORACLE_EDITION:
                       The Oracle Database Edition (enterprise/standard).
                       Supported 19.3 onwards.
