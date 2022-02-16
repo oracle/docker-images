@@ -163,11 +163,14 @@ else
 fi
 sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" "$ORACLE_BASE"/dbca.rsp
 
-# If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user, and
-# AUTO_MEM_CALCULATION isn't set to false, we set the total memory with
-# the amount of memory allocated for the container.
-if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" && "${AUTO_MEM_CALCULATION}" != "false" ]]; then
-    sed -i -e "s|totalMemory=.*|totalMemory=${ALLOCATED_MEMORY?}|g" "$ORACLE_BASE"/dbca.rsp
+# If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user
+if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
+    # If AUTO_MEM_CALCULATION isn't set to false, we set the total memory with
+    # the amount of memory allocated for the container. Otherwise, we keep the
+    # default of 2GB.
+    if [[ "${AUTO_MEM_CALCULATION}" != "false" ]]; then
+      sed -i -e "s|totalMemory=.*|totalMemory=${ALLOCATED_MEMORY?}|g" "$ORACLE_BASE"/dbca.rsp
+    fi
 else
     sed -i -e "s|totalMemory=.*||g" "$ORACLE_BASE"/dbca.rsp
     sed -i -e "s|initParams=.*|&,sga_target=${INIT_SGA_SIZE}M,pga_aggregate_target=${INIT_PGA_SIZE}M|g" "$ORACLE_BASE"/dbca.rsp
