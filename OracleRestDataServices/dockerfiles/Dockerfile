@@ -50,7 +50,11 @@ RUN mkdir -p  $ORDS_HOME/doc_root && \
     rm $INSTALL_FILE && \
     mkdir -p $ORDS_HOME/config/ords && \
     java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
-    chown -R oracle:dba $ORDS_HOME
+    chown -R oracle:dba $ORDS_HOME && \
+    yum install -y tar && \
+    yum install -y unzip && \
+    rm -rf /var/cache/yum && \
+    rm -rf /var/tmp/yum-*
 
 # Finalize setup
 # -------------------
