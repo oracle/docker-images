@@ -89,15 +89,16 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
       $ORACLE_HOME/OPatch/opatch lspatches; \
     else \
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
-    fi
-RUN if [ -f "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [  -f "XEngine_8_4_1_23.tar.gz" ]; then \
+    fi && \
+    # Extract XEngine tar gz if present
+    if [ -f "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [  -f "XEngine_8_4_1_23.tar.gz" ]; then \
         cd $ORACLE_HOME/soa/soa/thirdparty/edifecs && \
         tar -zxvf  XEngine_8_4_1_23.tar.gz \
     else \
         echo -e "\nNo XEngine_8_4_1_23.tar.gz present in ${ORACLE_HOME}/soa/soa/thirdparty/edifecs directory. Skipping untar."; \
-    fi
-# zip as few log files grow larger when patches are installed.
-RUN if ls /u01/oracle/cfgtoollogs/opatch/*.log; then \
+    fi && \
+    # zip as few log files grow larger when patches are installed.
+    if ls /u01/oracle/cfgtoollogs/opatch/*.log; then \
         gzip /u01/oracle/cfgtoollogs/opatch/*.log; \
     fi
 #
