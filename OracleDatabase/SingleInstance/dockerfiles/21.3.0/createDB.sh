@@ -271,10 +271,10 @@ fi
 
 # If both INIT_SGA_SIZE & INIT_PGA_SIZE aren't provided by user
 if [[ "${INIT_SGA_SIZE}" == "" && "${INIT_PGA_SIZE}" == "" ]]; then
-    # If AUTO_MEM_CALCULATION isn't set to false, we set the total memory with
-    # the amount of memory allocated for the container. Otherwise, we keep the
-    # default of 2GB.
-    if [[ "${AUTO_MEM_CALCULATION}" != "false" ]]; then
+    # If AUTO_MEM_CALCULATION isn't set to false and a given amount of memory is allocated,
+    # we set the total memory with the amount of memory allocated for the container.
+    # Otherwise, we keep the default of 2GB.
+    if [[ "${AUTO_MEM_CALCULATION}" != "false" && "${ALLOCATED_MEMORY}" -le 655360 ]]; then
       sed -i -e "s|totalMemory=.*|totalMemory=${ALLOCATED_MEMORY?}|g" "$ORACLE_BASE"/dbca.rsp
     fi
 else
