@@ -10,6 +10,9 @@ ENV           OGG_DEPLOYMENT_HOME    "/u02"
 ENV           OGG_TEMPORARY_FILES    "/u03"
 ENV           PATH                   "${OGG_HOME}/bin:${PATH}"
 
+ARG           INSTALL_OPTION
+ENV           ENV_INSTALL_OPTION     ${INSTALL_OPTION}
+
 COPY          install-*.sh      /tmp/
 COPY          ${INSTALLER}      /tmp/installer.zip
 COPY          bin/              /usr/local/bin/

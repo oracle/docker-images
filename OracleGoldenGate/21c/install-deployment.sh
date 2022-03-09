@@ -56,11 +56,8 @@ function ogg_install() {
     if [[ -n "${installer}" ]]; then
         cat<<EOF >"/tmp/installer.rsp"
 oracle.install.responseFileVersion=/oracle/install/rspfmt_ogginstall_response_schema_v20_0_0
-INSTALL_OPTION=ORA20c
+INSTALL_OPTION="${ENV_INSTALL_OPTION:-ORA20c}"
 SOFTWARE_LOCATION=${OGG_HOME}
-START_MANAGER=false
-MANAGER_PORT=Not applicable for a Services installation.
-DATABASE_LOCATION=Not applicable for a Services installation.
 INVENTORY_LOCATION=${ORA_HOME}/oraInventory
 UNIX_GROUP_NAME=ogg
 EOF
