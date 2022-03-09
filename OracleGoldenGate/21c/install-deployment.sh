@@ -1,5 +1,5 @@
 #!/bin/bash
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2022, Oracle and/or its affiliates.
 set -e
 
 : "${INSTALLER:?}"
@@ -44,6 +44,23 @@ function ogg_installer_setup() {
     unzip -q "${INSTALLER}" -d "/tmp/installer" || abort "Unzip operation failed for '${INSTALLER}'"
     chmod -R o=g-w             "/tmp/installer"
 }
+##
+##
+## o g g _ i n s t a l l _ o p t i o n
+##
+function ogg_install_option() {
+  # Get the path to the fastcopy.xml file that contains the metadata for the install option.
+  fast_copy_file=`find /tmp/installer -name fastcopy.xml`
+
+  # Get the xml line that needs to be parsed.
+  xml_line=`grep -h 'TOPLEVEL_COMPONENT NAME' ${fast_copy_file}`
+
+  # Match string example:   <TOPLEVEL_COMPONENT NAME="oracle.oggcore.services" INSTALL_TYPE="ora21c" PLATFORM="Linux">
+  regex='.*<TOPLEVEL_COMPONENT NAME=.* INSTALL_TYPE="(.*)" .*'
+
+  [[ $xml_line =~ $regex ]]                     || abort "Could not find INSTALL_TYPE in the file '${fast_copy_file}'"
+  INSTALL_OPTION="${BASH_REMATCH[1]}"
+}
 
 ##
 ##  o g g _ i n s t a l l
@@ -54,13 +71,11 @@ function ogg_install() {
     chown -R ogg:ogg "$(dirname "${OGG_HOME}")"
     installer="$(find /tmp/installer -name runInstaller | head -1)"
     if [[ -n "${installer}" ]]; then
+        ogg_install_option
         cat<<EOF >"/tmp/installer.rsp"
 oracle.install.responseFileVersion=/oracle/install/rspfmt_ogginstall_response_schema_v20_0_0
-INSTALL_OPTION=ORA20c
+INSTALL_OPTION=${INSTALL_OPTION}
 SOFTWARE_LOCATION=${OGG_HOME}
-START_MANAGER=false
-MANAGER_PORT=Not applicable for a Services installation.
-DATABASE_LOCATION=Not applicable for a Services installation.
 INVENTORY_LOCATION=${ORA_HOME}/oraInventory
 UNIX_GROUP_NAME=ogg
 EOF
@@ -70,6 +85,7 @@ EOF
         $(run_as_ogg) tar xf /tmp/installer/*.tar -C "${OGG_HOME}"
     fi
 }
+
 
 ##
 ##  Installation

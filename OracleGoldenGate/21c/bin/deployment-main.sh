@@ -1,5 +1,5 @@
 #!/bin/bash
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2022, Oracle and/or its affiliates.
 set -e
 
 ##
@@ -70,6 +70,8 @@ function locate_java() {
 
     JAVA_HOME="$(dirname "$(dirname "$(readlink -f "${java}")")")"
     export JAVA_HOME
+    LIB_JVM_PATH="$(dirname "$(find $JAVA_HOME -name libjvm.so)" )"
+    export LD_LIBRARY_PATH=$LIB_JVM_PATH:$LD_LIBRARY_PATH
 }
 
 ##

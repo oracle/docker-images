@@ -1,4 +1,4 @@
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2022, Oracle and/or its affiliates.
 FROM          oraclelinux:8
 LABEL         maintainer="Stephen Balousek<stephen.balousek@oracle.com>"
 
@@ -9,6 +9,9 @@ ENV           OGG_HOME               "/u01/ogg"
 ENV           OGG_DEPLOYMENT_HOME    "/u02"
 ENV           OGG_TEMPORARY_FILES    "/u03"
 ENV           PATH                   "${OGG_HOME}/bin:${PATH}"
+
+ARG           INSTALL_OPTION
+ENV           ENV_INSTALL_OPTION     ${INSTALL_OPTION}
 
 COPY          install-*.sh      /tmp/
 COPY          ${INSTALLER}      /tmp/installer.zip
