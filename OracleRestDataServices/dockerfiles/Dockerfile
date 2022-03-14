@@ -20,7 +20,9 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/serverjre:8
+
+ARG BASE_IMAGE=container-registry.oracle.com/java/serverjre:8
+FROM ${BASE_IMAGE}
 
 # Labels
 # ----------
@@ -41,7 +43,8 @@ COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $ORDS_HOME/
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with ORDS installation
 # ------------------------------------------------------------
-RUN mkdir -p  $ORDS_HOME/doc_root && \
+RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.com/otn_software/java/ords/ords-latest.zip -o $ORDS_HOME/ords-latest.zip; fi && \
+    mkdir -p  $ORDS_HOME/doc_root && \
     chmod ug+x $ORDS_HOME/*.sh && \
     groupadd -g 54322 dba && \
     useradd -u 54321 -d /home/oracle -g dba -m -s /bin/bash oracle && \
