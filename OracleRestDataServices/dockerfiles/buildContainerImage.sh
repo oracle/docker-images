@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildDockerImage.sh [-i] [-o] [Docker build option]
+Usage: buildContainerImage.sh [-i] [-o] [Docker build option]
 Builds a Docker Image for Oracle Rest Data Services
   
 Parameters:
@@ -163,7 +163,7 @@ else
 fi
 
 echo "=========================="
-echo "DOCKER info:"
+echo "Container Runtime info:"
 "${CONTAINER_RUNTIME}" info
 echo "=========================="
 
