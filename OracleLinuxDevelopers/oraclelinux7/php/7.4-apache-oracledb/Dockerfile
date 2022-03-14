@@ -2,9 +2,9 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 FROM oraclelinux:7-slim
 
-RUN yum -y install oracle-php-release-el7 oracle-release-el7 && \
+RUN yum -y install oracle-php-release-el7 oracle-release-el7 oracle-instantclient-release-el7 && \
     yum -y install httpd \
-                   oracle-instantclient19.5-basic \
+                   oracle-instantclient-basic \
                    php \
                    php-cli \
                    php-json \
@@ -12,7 +12,7 @@ RUN yum -y install oracle-php-release-el7 oracle-release-el7 && \
                    php-mysqlnd \
                    php-pdo \
                    php-xml \
-                   php-oci8-19c \
+                   php-oci8-21c \
                    unzip && \
     rm -rf /var/cache/yum/* && \
     # Redirect logging for container usage
