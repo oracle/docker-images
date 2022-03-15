@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014-2012 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2022 Oracle and/or its affiliates. All rights reserved.
 # 
 
 yum -y install oracle-instantclient-release-el7 && \
