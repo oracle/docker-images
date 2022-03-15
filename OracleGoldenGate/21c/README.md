@@ -43,14 +43,14 @@ Another `--build-arg` `INSTALL_OPTION` to specify the GoldenGate database type.
 
 Please refer to the following table for more information:
 
-| GoldenGate deployment     | INSTALL_OPTION |
-|:--------------------------|:---------------|
-| GoldenGate for Oracle 20c | `ORA20c`       |
-| GoldenGate for BigData    | `Generic`      |
-| GoldenGate for MySQL      | `MySQL`        |
+| GoldenGate deployment              | INSTALL_OPTION |
+|:-----------------------------------|:---------------|
+| GoldenGate for Oracle Database 20c | `ORA20c`       |
+| GoldenGate for BigData             | `Generic`      |
+| GoldenGate for MySQL               | `MySQL`        |
 
 
-To create a docker image for GoldenGate for BigData, use the following script:
+To create a container image for GoldenGate for BigData, use the following script:
 ```bash
 #!/bin/bash
 
@@ -59,7 +59,7 @@ docker build --tag=oracle/goldengate-for-bigdata:21.3.0.0.0 \
                 --build-arg INSTALL_OPTION=Generic .
 ```
 
-To create a docker image for GoldenGate for Oracle, use the following script:
+To create a container image for GoldenGate for Oracle, use the following script:
 ```bash
 $ docker build --tag=oracle/goldengate:21.3.0.0.0 \
                 --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip \

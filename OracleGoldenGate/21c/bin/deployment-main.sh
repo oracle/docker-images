@@ -1,5 +1,5 @@
 #!/bin/bash
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2022, Oracle and/or its affiliates.
 set -e
 
 ##

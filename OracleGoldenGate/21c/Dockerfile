@@ -1,4 +1,4 @@
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2022, Oracle and/or its affiliates.
 FROM          oraclelinux:8
 LABEL         maintainer="Stephen Balousek<stephen.balousek@oracle.com>"
 
