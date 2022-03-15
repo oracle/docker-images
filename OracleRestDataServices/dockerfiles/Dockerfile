@@ -34,30 +34,31 @@ ENV ORDS_HOME=/opt/oracle/ords \
     INSTALL_FILE=ords*.zip \
     CONFIG_PROPS="ords_params.properties.tmpl" \
     STANDALONE_PROPS="standalone.properties.tmpl" \
-    RUN_FILE="runOrds.sh"
+    RUN_FILE="runOrds.sh" \
+    APEX_PREREQ_SETUP_FILE="apexPrereq.sh"
 
 # Copy binaries
 # -------------
-COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $ORDS_HOME/
+COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $APEX_PREREQ_SETUP_FILE $ORDS_HOME/
+
+# ARG for installing APEX prerequisites
+ARG APEX_PREREQ=false
 
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with ORDS installation
 # ------------------------------------------------------------
 RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.com/otn_software/java/ords/ords-latest.zip -o $ORDS_HOME/ords-latest.zip; fi && \
-    mkdir -p  $ORDS_HOME/doc_root && \
+    mkdir -p  $ORDS_HOME/doc_root $ORDS_HOME/config/ords && \
     chmod ug+x $ORDS_HOME/*.sh && \
     groupadd -g 54322 dba && \
     useradd -u 54321 -d /home/oracle -g dba -m -s /bin/bash oracle && \
     cd $ORDS_HOME && \
+    if [ $APEX_PREREQ == "true" ]; then ./$APEX_PREREQ_SETUP_FILE; fi && \
     jar -xf $INSTALL_FILE && \
-    rm $INSTALL_FILE && \
-    mkdir -p $ORDS_HOME/config/ords && \
+    rm $INSTALL_FILE $APEX_PREREQ_SETUP_FILE && \
     java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
-    chown -R oracle:dba $ORDS_HOME && \
-    yum install -y tar && \
-    rm -rf /var/cache/yum && \
-    rm -rf /var/tmp/yum-*
-
+    chown -R oracle:dba $ORDS_HOME
+    
 # Finalize setup
 # -------------------
 USER oracle
