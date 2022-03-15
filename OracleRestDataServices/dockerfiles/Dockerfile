@@ -61,7 +61,7 @@ RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.
     rm $INSTALL_FILE && \
     java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
     chown -R oracle:dba $ORDS_HOME && \
-    yum -y install tar && \
+    yum install -y tar && \
     rm -rf /var/cache/yum && \
     rm -rf /var/tmp/yum-*
     
