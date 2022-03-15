@@ -51,13 +51,14 @@ RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.
     chmod ug+x $ORDS_HOME/*.sh && \
     groupadd -g 54322 dba && \
     useradd -u 54321 -d /home/oracle -g dba -m -s /bin/bash oracle && \
-    cd $ORDS_HOME && \
     if [ $INCLUDE_APEX == "true" ]; then \
         yum -y install oracle-instantclient-release-el7 && \
         yum -y install oracle-instantclient-sqlplus.x86_64 && \
-        curl https://download.oracle.com/otn_software/apex/apex-latest.zip -o "${ORDS_HOME}"/config/ords/apex-latest.zip && \
-        jar -xf "${ORDS_HOME}"/config/ords/apex-latest.zip; \
+        cd "${ORDS_HOME}"/config/ords/ && \
+        curl https://download.oracle.com/otn_software/apex/apex-latest.zip -o apex-latest.zip && \
+        jar -xvf apex-latest.zip; \
     fi && \
+    cd $ORDS_HOME && \
     jar -xf $INSTALL_FILE && \
     rm $INSTALL_FILE "${ORDS_HOME}"/config/ords/apex-latest.zip && \
     java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
