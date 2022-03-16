@@ -50,10 +50,10 @@ function ogg_installer_setup() {
 ##
 function ogg_install_option() {
   # Get the path to the fastcopy.xml file that contains the metadata for the install option.
-  fast_copy_file=`find /tmp/installer -name fastcopy.xml`
+  fast_copy_file=$(find /tmp/installer -name fastcopy.xml)
 
   # Get the xml line that needs to be parsed.
-  xml_line=`grep -h 'TOPLEVEL_COMPONENT NAME' ${fast_copy_file}`
+  xml_line=$(grep -h 'TOPLEVEL_COMPONENT NAME' "${fast_copy_file}")
 
   # Match string example:   <TOPLEVEL_COMPONENT NAME="oracle.oggcore.services" INSTALL_TYPE="ora21c" PLATFORM="Linux">
   regex='.*<TOPLEVEL_COMPONENT NAME=.* INSTALL_TYPE="(.*)" .*'

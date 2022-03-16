@@ -24,11 +24,7 @@ This project was tested with:
 
 Support for Oracle GoldenGate Classic Architecture is not provided.
 
-**IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. 
-You only need to provide the binaries for the version you plan to install. 
-The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). 
-Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that for you. 
-You also must have Internet connectivity when building the container image for the package manager to perform additional software installations.
+**IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that for you. You also must have Internet connectivity when building the container image for the package manager to perform additional software installations.
 
 All shell commands in this document assume the usage of Bash shell.
 
@@ -39,18 +35,18 @@ For more information about Oracle GoldenGate please see the [Oracle GoldenGate 2
 Once you have downloaded the Oracle GoldenGate software, a container image can be created using the Docker command-line interface.
 A single `--build-arg` is needed to indicate the GoldenGate installer which was downloaded.
 
+To create a container image for GoldenGate for Oracle, use the following script:
+```bash
+docker build --tag=oracle/goldengate:21.3.0.0.0 \
+             --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
+```
+
 To create a container image for GoldenGate for BigData, use the following script:
 ```bash
 #!/bin/bash
 
 docker build --tag=oracle/goldengate-for-bigdata:21.3.0.0.0 \
              --build-arg INSTALLER=ggs_Linux_x64_BigData_services.21.5.0.0.0_220222.0938.zip .   
-```
-
-To create a container image for GoldenGate for Oracle, use the following script:
-```bash
-docker build --tag=oracle/goldengate:21.3.0.0.0 \
-             --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
 ```
 
 ## Running Oracle GoldenGate in a Container

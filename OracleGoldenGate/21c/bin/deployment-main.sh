@@ -70,8 +70,15 @@ function locate_java() {
 
     JAVA_HOME="$(dirname "$(dirname "$(readlink -f "${java}")")")"
     export JAVA_HOME
-    LIB_JVM_PATH="$(dirname "$(find $JAVA_HOME -name libjvm.so)" )"
-    export LD_LIBRARY_PATH=$LIB_JVM_PATH:$LD_LIBRARY_PATH
+
+    local libjvm
+    libjvm="$(find "${JAVA_HOME}" -name libjvm.so | head -1)"
+    if [ -z "${libjvm}" ]; then
+      echo "Warning: The shared library libjvm.so cannot be located."
+    fi
+    local JVM_LIBRARY_PATH
+    JVM_LIBRARY_PATH="$(dirname "${libjvm}" )"
+    export LD_LIBRARY_PATH=$JVM_LIBRARY_PATH:$LD_LIBRARY_PATH
 }
 
 ##
