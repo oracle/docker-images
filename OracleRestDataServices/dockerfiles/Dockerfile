@@ -56,11 +56,12 @@ RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.
         yum -y install oracle-instantclient-sqlplus.x86_64 && \
         cd "${ORDS_HOME}"/config/ords/ && \
         curl https://download.oracle.com/otn_software/apex/apex-latest.zip -o apex-latest.zip && \
-        jar -xvf apex-latest.zip; \
+        jar -xvf apex-latest.zip && \
+        rm "${ORDS_HOME}"/config/ords/apex-latest.zip; \
     fi && \
     cd $ORDS_HOME && \
     jar -xf $INSTALL_FILE && \
-    rm $INSTALL_FILE "${ORDS_HOME}"/config/ords/apex-latest.zip && \
+    rm $INSTALL_FILE  && \
     java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
     chown -R oracle:dba $ORDS_HOME && \
     yum install -y tar && \
