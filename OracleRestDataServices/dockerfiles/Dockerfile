@@ -57,7 +57,7 @@ RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.
         cd "${ORDS_HOME}"/config/ords/ && \
         curl https://download.oracle.com/otn_software/apex/apex-latest.zip -o apex-latest.zip && \
         jar -xvf apex-latest.zip && \
-        rm "${ORDS_HOME}"/config/ords/apex-latest.zip; \
+        rm apex-latest.zip; \
     fi && \
     cd $ORDS_HOME && \
     jar -xf $INSTALL_FILE && \
