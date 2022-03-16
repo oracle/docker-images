@@ -40,24 +40,34 @@ ENV ORDS_HOME=/opt/oracle/ords \
 # -------------
 COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $ORDS_HOME/
 
+# ARG for installing APEX prerequisites
+ARG INCLUDE_APEX=false
+
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with ORDS installation
 # ------------------------------------------------------------
 RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.com/otn_software/java/ords/ords-latest.zip -o $ORDS_HOME/ords-latest.zip; fi && \
-    mkdir -p  $ORDS_HOME/doc_root && \
+    mkdir -p  $ORDS_HOME/doc_root $ORDS_HOME/config/ords && \
     chmod ug+x $ORDS_HOME/*.sh && \
     groupadd -g 54322 dba && \
     useradd -u 54321 -d /home/oracle -g dba -m -s /bin/bash oracle && \
+    if [ $INCLUDE_APEX == "true" ]; then \
+        yum -y install oracle-instantclient-release-el7 && \
+        yum -y install oracle-instantclient-sqlplus.x86_64 && \
+        cd "${ORDS_HOME}"/config/ords/ && \
+        curl https://download.oracle.com/otn_software/apex/apex-latest.zip -o apex-latest.zip && \
+        jar -xvf apex-latest.zip && \
+        rm apex-latest.zip; \
+    fi && \
     cd $ORDS_HOME && \
     jar -xf $INSTALL_FILE && \
-    rm $INSTALL_FILE && \
-    mkdir -p $ORDS_HOME/config/ords && \
+    rm $INSTALL_FILE  && \
     java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
     chown -R oracle:dba $ORDS_HOME && \
     yum install -y tar && \
     rm -rf /var/cache/yum && \
     rm -rf /var/tmp/yum-*
-
+    
 # Finalize setup
 # -------------------
 USER oracle
