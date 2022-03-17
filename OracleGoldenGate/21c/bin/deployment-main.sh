@@ -70,6 +70,14 @@ function locate_java() {
 
     JAVA_HOME="$(dirname "$(dirname "$(readlink -f "${java}")")")"
     export JAVA_HOME
+}
+
+##
+##  l o c a t e _ l  i  b _  j  v  m
+##  Locate the shared library libjvm.so and set LD_LIBRARY_PATH
+##
+function locate_lib_jvm() {
+    [[ -z "${JAVA_HOME}" ]] && abort "Java installation not found"
 
     local libjvm
     libjvm="$(find "${JAVA_HOME}" -name libjvm.so | head -1)"
@@ -164,6 +172,7 @@ function signal_handling() {
 generatePassword
 setup_deployment_directories
 locate_java
+locate_lib_jvm
 start_ogg
 start_nginx
 signal_handling
