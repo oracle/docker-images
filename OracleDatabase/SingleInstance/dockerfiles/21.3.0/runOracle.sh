@@ -242,6 +242,10 @@ if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d
    else
       "$ORACLE_BASE"/"$START_FILE";
    fi
+
+   if [ -n "${ORACLE_PWD}" ]; then
+      "${ORACLE_BASE}"/"${PWD_FILE}" "${ORACLE_PWD}"
+   fi
    
 else
   undoSymLinkFiles;
