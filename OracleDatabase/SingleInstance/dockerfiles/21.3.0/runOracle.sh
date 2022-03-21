@@ -243,7 +243,8 @@ if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d
       "$ORACLE_BASE"/"$START_FILE";
    fi
 
-   if [ -n "${ORACLE_PWD}" ]; then
+   # In case of the prebuiltdb extended image container, provision changing password by ORACLE_PWD
+   if [ -n "${ORACLE_PWD}" ] && [ -e "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb" ]; then
       "${ORACLE_BASE}"/"${PWD_FILE}" "${ORACLE_PWD}"
    fi
    
@@ -315,6 +316,8 @@ fi;
 
 # Exiting the script without waiting on the tail logs
 if [ "$1" = "--nowait" ]; then
+   # Creating state-file for identifyig container of the prebuiltdb extended image
+   touch "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb"
    exit $status;
 fi
 
