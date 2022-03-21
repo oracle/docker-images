@@ -5,24 +5,22 @@ These instructions apply to building container images for Oracle GoldenGate vers
 
 ## Contents
 
-- [Oracle GoldenGate 21.3 Microservices Edition Container Images](#oracle-goldengate-213-microservices-edition-container-images)
-  - [Contents](#contents)
-  - [Before You Start](#before-you-start)
-  - [Build an Oracle GoldenGate Container Image](#build-an-oracle-goldengate-container-image)
-  - [Running Oracle GoldenGate in a Container](#running-oracle-goldengate-in-a-container)
-    - [Administrative Account Password](#administrative-account-password)
-    - [SSL Certificate](#ssl-certificate)
-    - [Running the Administration Client](#running-the-administration-client)
-  - [Known Issues](#known-issues)
-  - [License](#license)
-  - [Copyright](#copyright)
+* [Before You Start](#before-you-start)
+* [Build an Oracle GoldenGate Container Image](#build-an-oracle-goldengate-container-image)
+* [Running Oracle GoldenGate in a Container](#running-oracle-goldengate-in-a-container)
+  * [Administrative Account Password](#administrative-account-password)
+  * [SSL Certificate](#ssl-certificate)
+  * [Running the Administration Client](#running-the-administration-client)
+* [Known Issues](#known-issues)
+* [License](#license)
+* [Copyright](#copyright)
 
 ## Before You Start
 
 This project was tested with:
 
-- Oracle GoldenGate 21.3.0.0.0 Microservices for Oracle on Linux x86-64
-- Oracle GoldenGate 21.4.0.0.0 Microservices for Bigdata on Linux x86-64
+* Oracle GoldenGate 21.3.0.0.0 Microservices for Oracle on Linux x86-64
+* Oracle GoldenGate 21.4.0.0.0 Microservices for Bigdata on Linux x86-64
 
 Support for Oracle GoldenGate Classic Architecture is not provided.
 
@@ -76,14 +74,14 @@ $ docker run \
 
 Parameters:
 
-- `<container name>`   - A name for the new container (default: auto generated)
-- `-p <host-port>`     - The host port to map to the Oracle GoldenGate HTTPS server (default: no mapping)
-- `-e OGG_ADMIN`       - The name of the administrative account to create (default: `oggadmin`)
-- `-e OGG_ADMIN_PWD`   - The password for the administrative account (default: auto generated)
-- `-e OGG_DEPLOYMENT`  - The name of the deployment (default: `Local`)
-- `-v /u02`            - The volume used for persistent GoldenGate data (default: use container storage)
-- `-v /u03`            - The volume used for temporary GoldenGate data (default: use container storage)
-- `-v /etc/nginx/cert` - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
+* `<container name>`   - A name for the new container (default: auto generated)
+* `-p <host-port>`     - The host port to map to the Oracle GoldenGate HTTPS server (default: no mapping)
+* `-e OGG_ADMIN`       - The name of the administrative account to create (default: `oggadmin`)
+* `-e OGG_ADMIN_PWD`   - The password for the administrative account (default: auto generated)
+* `-e OGG_DEPLOYMENT`  - The name of the deployment (default: `Local`)
+* `-v /u02`            - The volume used for persistent GoldenGate data (default: use container storage)
+* `-v /u03`            - The volume used for temporary GoldenGate data (default: use container storage)
+* `-v /etc/nginx/cert` - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
 
 All parameters are optional, so the following command will work, too:
 
