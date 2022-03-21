@@ -82,11 +82,11 @@ function locate_lib_jvm() {
     local libjvm
     libjvm="$(find "${JAVA_HOME}" -name libjvm.so | head -1)"
     if [ -z "${libjvm}" ]; then
-      echo "Warning: The shared library libjvm.so cannot be located."
+        echo "Warning: The shared library libjvm.so cannot be located."
     else
-      local JVM_LIBRARY_PATH
-      JVM_LIBRARY_PATH="$(dirname "${libjvm}" )"
-      export LD_LIBRARY_PATH=$JVM_LIBRARY_PATH:$LD_LIBRARY_PATH
+        local JVM_LIBRARY_PATH
+        JVM_LIBRARY_PATH="$(dirname "${libjvm}" )"
+        export LD_LIBRARY_PATH=$JVM_LIBRARY_PATH:$LD_LIBRARY_PATH
     fi
 }
 
