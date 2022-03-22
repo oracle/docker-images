@@ -44,15 +44,21 @@ function ogg_installer_setup() {
     unzip -q "${INSTALLER}" -d "/tmp/installer" || abort "Unzip operation failed for '${INSTALLER}'"
     chmod -R o=g-w             "/tmp/installer"
 }
-##
+
 ##
 ## o g g _ i n s t a l l _ o p t i o n
+## Get the INSTALL_OPTION.
 ##
 function ogg_install_option() {
     local fastcopy_file
     fastcopy_file=$(find /tmp/installer -name fastcopy.xml -print -quit)
     [[ -z "${fastcopy_file}" ]] && abort "The file 'fastcopy.xml' could not be located."
-    perl -ne '/^.* INSTALL_TYPE="(.*)" .*$/ && print $1' "${fastcopy_file}"
+    awk '/INSTALL_TYPE/ {
+            sub(/^.*INSTALL_TYPE="/, "")
+            sub(/".*/, "")
+            print
+            exit 0
+        }' "${fastcopy_file}"
 }
 
 ##
@@ -66,7 +72,7 @@ function ogg_install() {
     if [[ -n "${installer}" ]]; then
         cat<<EOF >"/tmp/installer.rsp"
 oracle.install.responseFileVersion=/oracle/install/rspfmt_ogginstall_response_schema_v20_0_0
-INSTALL_OPTION=$(ogg_install_option)
+INSTALL_OPTION=${INSTALL_OPTION:-$(ogg_install_option)}
 SOFTWARE_LOCATION=${OGG_HOME}
 INVENTORY_LOCATION=${ORA_HOME}/oraInventory
 UNIX_GROUP_NAME=ogg
