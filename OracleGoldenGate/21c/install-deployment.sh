@@ -1,5 +1,5 @@
 #!/bin/bash
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2022, Oracle and/or its affiliates.
 set -e
 
 : "${INSTALLER:?}"
@@ -46,6 +46,22 @@ function ogg_installer_setup() {
 }
 
 ##
+## o g g _ i n s t a l l _ o p t i o n
+## Get the INSTALL_OPTION.
+##
+function ogg_install_option() {
+    local fastcopy_file
+    fastcopy_file=$(find /tmp/installer -name fastcopy.xml -print -quit)
+    [[ -z "${fastcopy_file}" ]] && abort "The file 'fastcopy.xml' could not be located."
+    awk '/INSTALL_TYPE/ {
+            sub(/^.*INSTALL_TYPE="/, "")
+            sub(/".*/, "")
+            print
+            exit 0
+        }' "${fastcopy_file}"
+}
+
+##
 ##  o g g _ i n s t a l l
 ##  Perform an OGG installation
 ##
@@ -56,11 +72,8 @@ function ogg_install() {
     if [[ -n "${installer}" ]]; then
         cat<<EOF >"/tmp/installer.rsp"
 oracle.install.responseFileVersion=/oracle/install/rspfmt_ogginstall_response_schema_v20_0_0
-INSTALL_OPTION=ORA20c
+INSTALL_OPTION=${INSTALL_OPTION:-$(ogg_install_option)}
 SOFTWARE_LOCATION=${OGG_HOME}
-START_MANAGER=false
-MANAGER_PORT=Not applicable for a Services installation.
-DATABASE_LOCATION=Not applicable for a Services installation.
 INVENTORY_LOCATION=${ORA_HOME}/oraInventory
 UNIX_GROUP_NAME=ogg
 EOF
