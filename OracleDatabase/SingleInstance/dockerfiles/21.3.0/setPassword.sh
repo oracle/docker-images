@@ -10,6 +10,11 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
+if [ -e "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb" ] && [ -n "${ORACLE_PWD}" ] && [ "${ORACLE_PWD}" != "$1" ]; then
+      echo "Unable to change the password for prebuiltdb. The password is already there in the environment. Exiting..."
+      exit 1
+fi
+
 ORACLE_PWD=$1
 ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
 ORACLE_PDB="$(ls -dl "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ | grep -v -e pdbseed -e "${ARCHIVELOG_DIR_NAME:-archive_logs}"| awk '{print $9}' | cut -d/ -f6)"
