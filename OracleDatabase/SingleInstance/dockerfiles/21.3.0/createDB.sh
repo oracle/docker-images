@@ -146,7 +146,7 @@ EOF
 # Creating database for XE edition
 if [ "${ORACLE_SID}" = "XE" ]; then
   # Auto generate ORACLE PWD if not passed on
-   export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
+  export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
   
   
   
