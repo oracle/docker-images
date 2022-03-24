@@ -145,13 +145,8 @@ EOF
 
 # Creating database for XE edition
 if [ "${ORACLE_SID}" = "XE" ]; then
-
-  if [ -e '/run/secrets/oracle_pwd' ]; then
-      export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
-  else
-    # Auto generate ORACLE PWD if not passed on
-    export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
-  fi
+  # Auto generate ORACLE PWD if not passed on
+   export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
   
   
   

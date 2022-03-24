@@ -129,6 +129,16 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
 **NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
 
+#### Securely specifying the password when using Podman (Supported from 21.3.0 onwards)
+`Podman secret` is supported if the user uses the podman runtime and needs to specify the password to the container securely. The user needs to create a secret first with the name **oracle_pwd**, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
+```bash
+    # Creating podman secret
+    echo "<Your Password>" | podmaqn create secret oracle_pwd -
+
+    # Running the Oracle Database 21c XE image with the secret
+    podman run -dt --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
+```
+
 #### Selecting the Edition (Supported from 19.3.0 release)
 
 The edition of the database can be changed during runtime by passing the ORACLE_EDITION parameter to the `docker run` command. Therefore, an enterprise container image can be used to run standard edition database and vice-versa. You can find the edition of the running database in the output line:
@@ -201,16 +211,8 @@ On the first startup of the container a random password will be generated for th
 
     docker exec <container name> /opt/oracle/setPassword.sh <your password>
 
-**Important Notes:** 
-- The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
-- **Oracle Database 21c XE** also support specifying the password (i.e. ORACLE_PWD) securely through `podman secret` (mount mode only). The user needs to create a secret first with the name **oracle_pwd**, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
-```bash
-    # Creating podman secret
-    echo "<Your Password>" | podman create secret oracle_pwd -
-
-    # Running the Oracle Database 21c XE image with the secret
-    podman run -dt --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
-```
+**Important Note:** 
+The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
 
 #### Running Oracle Database 11gR2 Express Edition in a container
 

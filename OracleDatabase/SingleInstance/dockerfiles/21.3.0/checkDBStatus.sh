@@ -73,6 +73,11 @@ EOF
 ################ MAIN #######################
 #############################################
 
+# Setting up ORACLE_PWD if podman secret is passed on
+if [ -e '/run/secrets/oracle_pwd' ]; then
+   export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+fi
+
 # Sanitizing env for XE Database
 if [ "${ORACLE_SID}" = "XE" ]; then
    unset DG_OBSERVER_ONLY
