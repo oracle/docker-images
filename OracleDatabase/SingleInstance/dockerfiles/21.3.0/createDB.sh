@@ -145,8 +145,15 @@ EOF
 
 # Creating database for XE edition
 if [ "${ORACLE_SID}" = "XE" ]; then
-  # Auto generate ORACLE PWD if not passed on
-  export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
+
+  if [ -e '/run/secrets/oracle_pwd' ]; then
+      export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+  else
+    # Auto generate ORACLE PWD if not passed on
+    export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
+  fi
+  
+  
   
   # Set character set
   su -c 'sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" /etc/sysconfig/"$CONF_FILE"'
