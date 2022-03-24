@@ -203,13 +203,13 @@ On the first startup of the container a random password will be generated for th
 
 **Important Notes:** 
 - The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
-- **Oracle Database 21c XE** also support specifying the password (i.e. ORACLE_PWD) securely through `podman secret` (mount mode only). The user needs to create a secret first, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
+- **Oracle Database 21c XE** also support specifying the password (i.e. ORACLE_PWD) securely through `podman secret` (mount mode only). The user needs to create a secret first with the name **oracle_pwd**, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
 ```bash
     # Creating podman secret
-    echo "<Your Password>" | podman create secret <secret_name> -
+    echo "<Your Password>" | podman create secret oracle_pwd -
 
     # Running the Oracle Database 21c XE image with the secret
-    podman run -dt --name=<container_name> --secret=<secret_name> oracle/database:21.3.0-xe
+    podman run -dt --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
 ```
 
 #### Running Oracle Database 11gR2 Express Edition in a container
