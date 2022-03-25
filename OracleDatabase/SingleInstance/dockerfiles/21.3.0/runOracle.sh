@@ -144,6 +144,11 @@ trap _int SIGINT
 # Set SIGTERM handler
 trap _term SIGTERM
 
+# Setting up ORACLE_PWD if podman secret is passed on
+if [ -e '/run/secrets/oracle_pwd' ]; then
+   export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+fi
+
 # Sanitizing env for XE
 if [ "${ORACLE_SID}" = "XE" ]; then
    export ORACLE_PDB="XEPDB1"
