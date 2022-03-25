@@ -133,10 +133,10 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 `Podman secret` is supported if the user uses the podman runtime and needs to specify the password to the container securely. The user needs to create a secret first with the name **oracle_pwd**, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
 ```bash
     # Creating podman secret
-    echo "<Your Password>" | podmaqn create secret oracle_pwd -
+    echo "<Your Password>" | podman create secret oracle_pwd -
 
     # Running the Oracle Database 21c XE image with the secret
-    podman run -dt --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
+    podman run -d --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
 ```
 
 #### Selecting the Edition (Supported from 19.3.0 release)
