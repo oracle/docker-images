@@ -11,7 +11,7 @@
 # 
 
 if [ -e "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb" ] && [ -n "${ORACLE_PWD}" ] && [ "${ORACLE_PWD}" != "$1" ]; then
-      echo "Unable to change the password for prebuiltdb. The password is already there in the environment. Exiting..."
+      echo "WARNING: The database password can not be changed for this container having a prebuilt database. The original password exists in the container environment. Your new password has been ignored !"
       exit 1
 fi
 
