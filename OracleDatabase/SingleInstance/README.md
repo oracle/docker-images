@@ -263,6 +263,26 @@ Once the container has been started you can connect to it just like to any other
     sqlplus sys/<your password>@//localhost:1521/XE as sysdba
     sqlplus system/<your password>@//localhost:1521/XE
 
+### Containerizing an on-premise database (Supported from version 19.3.0 release)
+If the user wants to containerize his/her on-premise database, we support cloning the on-premise databases. The user should use the following steps for successful on-premise database containerization:
+
+- The user needs to create the gold image from his on-premise database. The sample command is as follows:
+```bash
+cd $ORACLE_HOME && ./runInstaller -silent -createGoldImage -destinationLocation '<location for storing the gold image>'
+``` 
+- The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. The user needs to transfer it to the `OracleDatabase/SingleInstance/dockerfiles/<version>` directory. The **version** would be the base version of the gold image, e.g. 19.3.0.
+- Further, the user needs to create the container image using this gold image by the following command:
+```bash
+./buildContainerImage.sh -e -v <base-version> -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'
+```
+- Finally, the user can spin-up a container using the container image created above by cloning the on-premise database and using the following command:
+```bash
+docker run --name <container-name> -e CLONE_DB=true \
+-e ORACLE_PWD=<sys password of the on-prem database> \
+-e PRIMARY_DB_CONN_STR '<the on-prem database connection string in <HOST>:<PORT>/<SERVICE_NAME> format>' \
+oracle/database:19-onprem
+```
+
 ### Deploying Oracle Database on Kubernetes
 
 Helm is a package manager which uses a packaging format called charts. [helm-charts](helm-charts/) directory contains all the relevant files needed to deploy Oracle Database on Kubernetes. For more information on default configuration, installing/uninstalling the Oracle Database chart on Kubernetes, please refer [helm-charts/oracle-db/README.md](helm-charts/oracle-db/README.md).
