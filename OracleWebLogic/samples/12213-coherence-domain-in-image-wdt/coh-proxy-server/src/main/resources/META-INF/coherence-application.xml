@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- Copyright 2019, Oracle Corporation and/or its affiliates.  All rights reserved.
-     Licensed under the Universal Permissive License v 1.0 as shown at
-     http://oss.oracle.com/licenses/upl.-->
-<coherence-application>
-  <cache-configuration-ref>META-INF/server-cache-config.xml</cache-configuration-ref>
-</coherence-application>
