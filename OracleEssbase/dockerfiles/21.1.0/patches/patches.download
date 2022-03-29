@@ -1,5 +1,0 @@
-#
-# Oracle Essbase
-# Download patches from : https://support.oracle.com
-#
-# To build the Essbase image with patches, you must download and drop the Essbase 21.1.0.0.0 patch zip files (for e.g. p29928100_122130_Generic.zip) into the patches directory.
