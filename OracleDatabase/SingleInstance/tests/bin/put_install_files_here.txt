@@ -1,1 +1,0 @@
-Please put all installer files (.zip, etc) in here before running the tests.
