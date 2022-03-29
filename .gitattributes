@@ -1,3 +1,0 @@
-*.sh eol=lf
-*.conf eol=lf
-Checksum.* eol=lf
