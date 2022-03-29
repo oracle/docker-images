@@ -273,7 +273,7 @@ cd $ORACLE_HOME && ./runInstaller -silent -createGoldImage -destinationLocation 
 - The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to the `OracleDatabase/SingleInstance/dockerfiles/<version>` directory. The **version** would be the base version of the gold image, e.g. 19.3.0.
 - Create the container image using this gold image by the following sample command:
 ```bash
-./buildContainerImage.sh -e -v 19.3.0 -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'
+./buildContainerImage.sh -i -e -v 19.3.0 -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'
 ```
 - Run the container image created above with cloning option to clone the data files of the on-premise database. The sample command is as follows:
 ```bash
