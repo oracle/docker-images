@@ -1,8 +1,0 @@
-[template]
-src = "99-app.template"
-dest = "/etc/nginx/sites-enabled/99-app"
-
-keys = [
-"blue-green/APP_NAME/current"
-]
-reload_cmd = "sv reload nginx"

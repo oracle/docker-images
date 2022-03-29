@@ -1,7 +1,0 @@
-DB_HOST=<DataBase Host name>
-DB_PORT=<DataBase Port>
-DB_SERVICE=<Databse Service Name>
-RCUPREFIX=<Schema prefix for RCU>
-DB_PASSWORD=<DB Sys Password>
-DB_SCHEMA_PASSWORD=<DB Schema Password>
-DOMAIN_PASSWORD=<Weblogic Password>

@@ -1,7 +1,0 @@
-[template]
-src = "00-upstream-green.toml.template"
-dest = "/etc/confd/conf.d/00-upstream-green.toml"
-
-keys = [
-"blue-green/APP_NAME/green/id"
-]

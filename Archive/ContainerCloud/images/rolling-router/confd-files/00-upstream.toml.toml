@@ -1,8 +1,0 @@
-[template]
-src = "00-upstream.toml.template"
-dest = "/etc/confd/conf.d/00-upstream.toml"
-
-keys = [
-"rolling/APP_NAME/stable/id",
-"rolling/APP_NAME/candidate/id"
-]

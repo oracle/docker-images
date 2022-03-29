@@ -1,7 +1,0 @@
-[template]
-src = "00-upstream-blue.template.template"
-dest = "/etc/confd/templates/00-upstream-blue.template"
-
-keys = [
-"blue-green/APP_NAME/blue/id"
-]
