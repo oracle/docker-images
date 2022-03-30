@@ -133,7 +133,7 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 `Podman secret` is supported if the user uses the podman runtime and needs to specify the password to the container securely. The user needs to create a secret first with the name **oracle_pwd**, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
 ```bash
     # Creating podman secret
-    echo "<Your Password>" | podman create secret oracle_pwd -
+    echo "<Your Password>" | podman secret create oracle_pwd -
 
     # Running the Oracle Database 21c XE image with the secret
     podman run -d --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
@@ -262,6 +262,26 @@ Once the container has been started you can connect to it just like to any other
 
     sqlplus sys/<your password>@//localhost:1521/XE as sysdba
     sqlplus system/<your password>@//localhost:1521/XE
+
+### Containerizing an on-premise database (Supported from version 19.3.0 release)
+To containerize an on-premise database, please follow the steps mentioned below: 
+
+- Create the gold image from the on-premise database. The required command is as follows:
+```bash
+cd $ORACLE_HOME && ./runInstaller -silent -createGoldImage -destinationLocation '<location to store the gold image>'
+``` 
+- The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to the `OracleDatabase/SingleInstance/dockerfiles/<version>` directory. The **version** would be the base version of the gold image, e.g. 19.3.0.
+- Create the container image using this gold image by the following sample command:
+```bash
+./buildContainerImage.sh -i -e -v 19.3.0 -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'
+```
+- Run the container image created above with cloning option to clone the data files of the on-premise database. The sample command is as follows:
+```bash
+docker run --name <container-name> -e CLONE_DB=true \
+-e ORACLE_PWD='<sys password of the on-prem database>' \
+-e PRIMARY_DB_CONN_STR='<the on-prem database connection string in <HOST>:<PORT>/<SERVICE_NAME> format>' \
+oracle/database:19-onprem
+```
 
 ### Deploying Oracle Database on Kubernetes
 
