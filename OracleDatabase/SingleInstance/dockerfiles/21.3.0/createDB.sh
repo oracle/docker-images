@@ -163,6 +163,11 @@ setupNetworkConfigXE;
 # Setting up database
 dbSetupSQL;
 
+# Making Oracle Database EM Express available remotely for XE
+sqlplus / as sysdba << EOF
+EXEC DBMS_XDB.SETLISTENERLOCALACCESS(FALSE);
+EOF
+
 exit 0
 fi;
 
