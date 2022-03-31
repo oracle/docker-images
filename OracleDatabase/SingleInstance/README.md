@@ -59,6 +59,18 @@ The character set for the database is set during creating of the database. 11gR2
 
     ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
 
+##### Building the container images using Podman
+Building Oracle Database container images using Podman is similar to Docker. Some additional environment variables are required to be set for proper functioning. The description is as follows:
+
+- `export BUILDAH_FORMAT=docker` (Required to support `HEALTHCHECK` specified in the Dockerfile)
+- `export BUILDAH_ISOLATION=chroot` (Required while building the container image in rootless mode)
+
+After setting these environment variables, the container image can be built using `buildContainerImage.sh` script as follows:
+
+```bash
+./buildContainerImage.sh -e -v <version-to-build>
+```
+
 ### Running Oracle Database in a container
 
 #### Running Oracle Database Enterprise and Standard Edition 2 in a container
