@@ -141,7 +141,7 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
 **NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
 
-#### Securely specifying the password when using Podman (Supported from 21.3.0 onwards)
+#### Securely specifying the password when using Podman (Supported from 19.3.0 onwards)
 `Podman secret` is supported if the user uses the podman runtime and needs to specify the password to the container securely. The user needs to create a secret first with the name **oracle_pwd**, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
 ```bash
     # Creating podman secret

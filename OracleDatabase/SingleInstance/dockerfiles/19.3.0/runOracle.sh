@@ -142,6 +142,11 @@ trap _int SIGINT
 # Set SIGTERM handler
 trap _term SIGTERM
 
+# Setting up ORACLE_PWD if podman secret is passed on
+ if [ -e '/run/secrets/oracle_pwd' ]; then
+    export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+ fi
+
 # Creation of Observer only section
 if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
    if [ -z "${DG_OBSERVER_NAME}" ]; then
