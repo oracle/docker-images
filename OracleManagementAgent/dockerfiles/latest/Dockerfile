@@ -29,6 +29,11 @@ FROM oraclelinux:7-slim as builder
 
 MAINTAINER Drupad Panchal <drupad.panchal@oracle.com>
 
+# Labels
+LABEL "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.data"="/opt/oracle"
+
 # Install packages to install and run Management Agent
 RUN set -eux; \
     yum -y install \
