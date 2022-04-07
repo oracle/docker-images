@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -22,10 +22,6 @@
 # Pull base image
 # ---------------
 FROM oraclelinux:7-slim
-
-# Maintainer
-# ----------
-MAINTAINER Sanjay Singh (Sanjay.Singh@oracle.com), Paramdeep Saini (paramdeep.saini@oracle.com)
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
