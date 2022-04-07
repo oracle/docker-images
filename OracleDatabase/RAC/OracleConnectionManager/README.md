@@ -2,7 +2,7 @@
 Sample container build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Connection Manager online Documentation](http://docs.oracle.com/en/database/).
 
 ## How to build and run
-This project offers sample container image for:
+This project offers sample container images for:
   * Oracle Database 21c Client (21.3) for Linux x86-64
   * Oracle Database 19c Client (19.3) for Linux x86-64
   * Oracle Database 18c Client (18.3) for Linux x86-64
