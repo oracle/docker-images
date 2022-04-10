@@ -1,0 +1,62 @@
+######################################################################
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+#
+# NAME
+#    cman.ora
+#
+# DESCRIPTION
+#    Sample CMAN configuration file that the user can modify for their
+#    own use.
+#
+# NOTES
+#    1. Change <fqhost> to your fully qualified hostname
+#    2. Change <lsnport> to the listening port number
+#    3. Change <logdir> and <trcdir> to your log and trace directories
+#
+# MODIFIED  (MM/DD/YYYY)
+# asankrut   10/05/2002  -   Added Rule List Specifications
+# asankrut   06/11/2002  -   Modified to add new parameters; added comments.
+# asankrut   12/31/2001  -   Creation.
+#
+######################################################################
+
+# CMAN Alias
+CMAN_###CMAN_HOSTNAME###.###DOMAIN### =
+(configuration=
+  # Listening address of the cman
+  (address=(protocol=tcp)(host=###CMAN_HOSTNAME###.###DOMAIN###)(port=###PORT###))
+  # Configuration parameters of this CMAN
+  (parameter_list =
+    # Need authentication for connection?
+    # Valid values: boolean values for on/off
+    (connection_statistics=yes)
+    (log_directory=###DB_HOME###/network/log)
+    (log_level=###LOG_LEVEL###)
+    (trace_directory=###DB_HOME###/network/trace)
+    (trace_level=###TRACE_LEVEL###)
+    (valid_node_checking_registration=on)
+    (registration_invited_nodes=*) 
+  )
+
+  # Rule list
+
+  # Rule Specification:
+  # src = Source of connection; '*' for 'ANY'
+  # dst = Destination of connection; '*' for 'ANY'
+  # srv = Service of connection; '*' for 'ANY'
+  # act = Action: 'accept', 'reject' or 'drop'
+
+  # Action List Specification:
+  # aut         = aso_authentication_filter
+  # moct        = outbound_connect_timeout
+  # mct         = session_timeout
+  # mit         = idle_timeout
+  # conn_stats  = connect_statistics
+  (rule_list=
+    (rule=
+       (src=*)(dst=*)(srv=*)(act=accept)
+       (action_list=(aut=off)(moct=0)(mct=0)(mit=0)(conn_stats=on))
+    )
+  )
+)

@@ -1,0 +1,106 @@
+###############################################################################
+## Copyright(c) 2022 Oracle and/or its affiliates.                           ##
+##                                                                           ##
+## Specify values for the variables listed below to customize                ##
+## your installation.                                                        ##
+##                                                                           ##
+## Each variable is associated with a comment. The comment                   ##
+## can help to populate the variables with the appropriate                   ##
+## values.							             ##
+##                                                                           ##
+###############################################################################
+
+
+#-------------------------------------------------------------------------------
+# Do not change the following system generated value. 
+#-------------------------------------------------------------------------------
+oracle.install.responseFileVersion=/oracle/install/rspfmt_clientinstall_response_schema_v18.0.0
+
+#-------------------------------------------------------------------------------
+# Unix group to be set for the inventory directory.
+#------------------------------------------------------------------------------- 
+UNIX_GROUP_NAME=
+#-------------------------------------------------------------------------------
+# Inventory location.
+#-------------------------------------------------------------------------------
+INVENTORY_LOCATION=###INVENTORY###
+#-------------------------------------------------------------------------------
+# Complete path of the Oracle Home
+#-------------------------------------------------------------------------------  
+ORACLE_HOME=###DB_HOME###
+
+#-------------------------------------------------------------------------------
+# Complete path of the Oracle Base.
+#-------------------------------------------------------------------------------
+ORACLE_BASE=###DB_BASE###
+
+#------------------------------------------------------------------------------
+#Name       : INSTALL_TYPE
+#Datatype   : String
+#Description: Installation type of the component.
+#
+#             The following choices are available. The value should contain
+#             only one of these choices.
+#               - Administrator
+#               - Runtime
+#               - InstantClient
+#               - Custom
+#
+#Example    : INSTALL_TYPE = Administrator
+#------------------------------------------------------------------------------
+oracle.install.client.installType=Custom
+
+#-------------------------------------------------------------------------------
+# Name       : oracle.install.client.customComponents
+# Datatype   : StringList
+#
+# This property is considered only if INSTALL_TYPE is set to "Custom"
+#
+# Description: List of Client Components you would like to install
+#
+#   The following choices are available. You may specify any
+#   combination of these choices.  The components you choose should
+#   be specified in the form "internal-component-name:version"
+#   Below is a list of components you may specify to install.
+#
+# oracle.sqlj:18.0.0.0.0 -- "Oracle SQLJ"
+# oracle.rdbms.util:18.0.0.0.0 -- "Oracle Database Utilities"
+# oracle.javavm.client:18.0.0.0.0 -- "Oracle Java Client"
+# oracle.sqlplus:18.0.0.0.0 -- "SQL*Plus"
+# oracle.dbjava.jdbc:18.0.0.0.0 -- "Oracle JDBC/THIN Interfaces"
+# oracle.ldap.client:18.0.0.0.0 -- "Oracle Internet Directory Client"
+# oracle.rdbms.oci:18.0.0.0.0 -- "Oracle Call Interface (OCI)"
+# oracle.precomp:18.0.0.0.0 -- "Oracle Programmer"
+# oracle.xdk:18.0.0.0.0 -- "Oracle XML Development Kit"
+# oracle.network.aso:18.0.0.0.0 -- "Oracle Advanced Security"
+# oracle.oraolap.mgmt:18.0.0.0.0 -- "OLAP Analytic Workspace Manager and Worksheet"
+# oracle.network.client:18.0.0.0.0 -- "Oracle Net"
+# oracle.network.cman:18.0.0.0.0 -- "Oracle Connection Manager"
+# oracle.network.listener:18.0.0.0.0 -- "Oracle Net Listener"
+# oracle.ordim.client:18.0.0.0.0 -- "Oracle Multimedia Client Option"
+# oracle.odbc:18.0.0.0.0 -- "Oracle ODBC Driver"
+# oracle.has.client:18.0.0.0.0 -- "Oracle Clusterware High Availability API"
+# oracle.dbdev:18.0.0.0.0 -- "Oracle SQL Developer"
+# oracle.rdbms.scheduler:18.0.0.0.0 -- "Oracle Scheduler Agent" 
+#
+# Example    : oracle.install.client.customComponents="oracle.precomp:18.0.0.0.0","oracle.oraolap.mgmt:18.0.0.0.0","oracle.rdbms.scheduler:18.0.0.0.0"
+#-------------------------------------------------------------------------------
+oracle.install.client.customComponents=oracle.sqlplus:18.0.0.0.0,oracle.network.client:18.0.0.0.0,oracle.network.cman:18.0.0.0.0,oracle.network.listener:18.0.0.0.0
+
+#-------------------------------------------------------------------------------
+# Host name to be used for by the Oracle Scheduler Agent.
+# This needs to be entered in case oracle.rdbms.scheduler is selected in the
+# list of custom components during custom install
+#
+# Example    : oracle.install.client.schedulerAgentHostName = acme.domain.com
+#------------------------------------------------------------------------------
+oracle.install.client.schedulerAgentHostName=
+
+#------------------------------------------------------------------------------
+# Port number to be used for by the Oracle Scheduler Agent.
+# This needs to be entered in case oracle.rdbms.scheduler is selected in the
+# list of custom components during custom install
+#
+# Example: oracle.install.client.schedulerAgentPortNumber = 1500
+#------------------------------------------------------------------------------
+oracle.install.client.schedulerAgentPortNumber=
