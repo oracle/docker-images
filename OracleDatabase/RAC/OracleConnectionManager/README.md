@@ -10,7 +10,7 @@ This project offers sample container images for:
 
 To assist in building the container images, you can use the [buildContainerImage.sh](dockerfiles/buildContainerImage.sh) script. See section **Create Oracle Connection Manager Image** for instructions and usage.
 
-**IMPORTANT:** Oracle Connection Manager container is useful when you want to bind single port to host and serve many container on different ports. Oracle Connection manager provide proxy connections. If you are running Oracle RAC Database on docker/container and network is not available for users, you can use Oracle Connection Manager image to proxy the connections.
+**IMPORTANT:** Oracle Connection Manager binds to a single port on your host and proxies incoming connections to multiple running containers. It can also proxy connections for users to Oracle RAC Databases running on internal container networks.
 
 For complete Oracle Connection Manager setup, please go though following steps and execute them as per your enviornment:
 
