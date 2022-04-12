@@ -66,6 +66,8 @@ $ docker run \
     -e OGG_ADMIN=<admin user name> \
     -e OGG_ADMIN_PWD=<admin password> \
     -e OGG_DEPLOYMENT=<deployment name> \
+    -e RUN_COMMAND=<script or command> \
+    -e RUN_COMMAND_BACKGROUND=<true | false> \
     -v [<host mount point>:]/u02 \
     -v [<host mount point>:]/u03 \
     -v [<host mount point>:]/etc/nginx/cert \
@@ -74,14 +76,16 @@ $ docker run \
 
 Parameters:
 
-* `<container name>`   - A name for the new container (default: auto generated)
-* `-p <host-port>`     - The host port to map to the Oracle GoldenGate HTTPS server (default: no mapping)
-* `-e OGG_ADMIN`       - The name of the administrative account to create (default: `oggadmin`)
-* `-e OGG_ADMIN_PWD`   - The password for the administrative account (default: auto generated)
-* `-e OGG_DEPLOYMENT`  - The name of the deployment (default: `Local`)
-* `-v /u02`            - The volume used for persistent GoldenGate data (default: use container storage)
-* `-v /u03`            - The volume used for temporary GoldenGate data (default: use container storage)
-* `-v /etc/nginx/cert` - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
+* `<container name>`         - A name for the new container (default: auto generated)
+* `-p <host-port>`           - The host port to map to the Oracle GoldenGate HTTPS server (default: no mapping)
+* `-e OGG_ADMIN`             - The name of the administrative account to create (default: `oggadmin`)
+* `-e OGG_ADMIN_PWD`         - The password for the administrative account (default: auto generated)
+* `-e OGG_DEPLOYMENT`        - The name of the deployment (default: `Local`)
+* - e RUN_COMMAND            - Hook to run script of command before starting ogg
+* - e RUN_COMMAND_BACKGROUND - Run the RUN_COMMAND in foreground or background (default: true)
+* `-v /u02`                  - The volume used for persistent GoldenGate data (default: use container storage)
+* `-v /u03`                  - The volume used for temporary GoldenGate data (default: use container storage)
+* `-v /etc/nginx/cert`       - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
 
 All parameters are optional, so the following command will work, too:
 
