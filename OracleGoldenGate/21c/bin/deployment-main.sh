@@ -16,6 +16,9 @@ function abort() {
     exit 1
 }
 
+:     "${RUN_COMMAND:-}"
+:     "${RUN_COMMAND_BACKGROUND:=true}"
+
 :     "${OGG_DEPLOYMENT:=Local}"
 :     "${OGG_ADMIN:=oggadmin}"
 :     "${OGG_LISTEN_ON:=127.0.0.1}"
@@ -122,6 +125,37 @@ function setup_deployment_directories() {
 }
 
 ##
+##  r u n _ p r e s t a r t _ c o m m a n d
+##
+## Hook for launching custom command in the container prior to ogg start
+## If defined, the command identified by ${RUN_COMMAND} will be run.
+## 
+## The value of ${RUN_COMMAND_BACKGROUND} by default is set to true.
+##     When ${RUN_COMMAND_BACKGROUND} is true:
+##          The command identified by ${RUN_COMMAND} will be run in the background 
+##          and its return status is ignored
+##     When ${RUN_COMMAND_BACKGROUND} is false:
+##          The command identified by ${RUN_COMMAND} will be run in the foreground 
+##          and and must return a status of 0 in order to proceed with the start sequence
+##
+function run_prestart_command {
+    [[ ! -z "${RUN_COMMAND}" ]] && {
+
+        case "${RUN_COMMAND_BACKGROUND,,}" in
+            true)
+                ${RUN_COMMAND} &
+                ;;
+
+            false)
+                ${RUN_COMMAND} || abort "${RUN_COMMAND} did not complete successfully!"
+                ;;
+            *)
+                abort "Unknown RUN_COMMAND_BACKGROUND state [${RUN_COMMAND_BACKGROUND}] for run_prestart_command: expected true/false"
+        esac
+    }
+}
+
+##
 ##  s t a r t _ o g g
 ##  Initialize and start the OGG installation
 ##
@@ -169,6 +203,7 @@ function signal_handling() {
 ##
 ##  Entrypoint
 ##
+run_prestart_command
 generatePassword
 setup_deployment_directories
 locate_java
