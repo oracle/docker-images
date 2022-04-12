@@ -136,7 +136,7 @@ function setup_deployment_directories() {
 ##          and its return status is ignored
 ##     When ${RUN_COMMAND_BACKGROUND} is false:
 ##          The command identified by ${RUN_COMMAND} will be run in the foreground 
-##          and and must return a status of 0 in order to proceed with the start sequence
+##          and must return a status of 0 in order to proceed with the start sequence
 ##
 function run_prestart_command {
     [[ ! -z "${RUN_COMMAND}" ]] && {
