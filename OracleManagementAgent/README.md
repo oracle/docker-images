@@ -3,31 +3,24 @@
     Licensed under the Universal Permissive License v 1.0 as shown at
     https://oss.oracle.com/licenses/upl.
 -->
-Oracle Management Agent on Docker
+Oracle Management Agent Container Image
 =====
 This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux and Oracle OpenJDK 8.
 
-The certification of Oracle Management Agent on Docker does not require the use of any file presented in this
+The certification of Oracle Management Agent in a container does not require the use of any file presented in this
 repository. Customers and users are welcome to use them as starters, and customize/tweak, or create
 from scratch new scripts and Dockerfiles.
 
 
 ## How to build and run
 
-Oracle Management Agent images use the Oracle Linux 7 Slim docker image as the base image.
-
-### Prerequisites
-
-* Latest Management Agent software for Linux (Linux-x86_64/latest/oracle.mgmt_agent.zip)
+Oracle Management Agent images use the Oracle Linux 7 Slim container image as the base image.
 
 #### Build steps
 
 1. [Download the Management Agent software](https://cloud.oracle.com/macs)
 
     **Note: Select 'Downloads and Keys' then download 'Agent for LINUX (X86_64)' of the package type ZIP.**
-    ```shell
-    Copy-paste link: https://cloud.oracle.com/macs
-    ```
 
 1. Copy the downloaded bundle to the same directory as the Dockerfile
 
@@ -41,7 +34,7 @@ Oracle Management Agent images use the Oracle Linux 7 Slim docker image as the b
     $ cd OracleManagementAgent/dockerfiles/latest/
     ```
 
-1. Build the Docker image
+1. Use Docker to build a container image
 
     ```shell
     $ docker build -t oracle/mgmtagent-container .
@@ -50,9 +43,6 @@ Oracle Management Agent images use the Oracle Linux 7 Slim docker image as the b
 1. [Create and Download the Install Key](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html)
 
     **Note: Follow the steps in the 'Create Install Key' and 'Configure a Response File' sections to create the install key and save it as input.rsp.**
-    ```shell
-    $ docker volume create mgmtagent-volume
-    ```
 
 1. Create a Docker volume to share configs with the container
 
@@ -76,19 +66,23 @@ Oracle Management Agent images use the Oracle Linux 7 Slim docker image as the b
 
     **Note: Without the prerequisites applied the agent may not function as expected.**
 
-1. Start the Docker container
+1. Use Docker to start a container
 
     ```shell
     $ docker run -d --name mgmtagent-container --hostname mgmtagent1 -v mgmtagent-volume:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
     ```
+
     **Description of Docker run parameters used above**
-    ```shell
-    -d: Starts mgmtagent-container in detached mode
-    --name mgmtagent-container: The name given to the container to identify it.
-    --hostname mgmtagent1: Assign mgmtagent1 as the containers internal hostname. This can be any hostname compliant string and it will be used to identify the Management Agent instance in the OMC Console.
-    -v mgmtagent-volume:/opt/oracle:rw: Mounts the volume mgmtagent-volume created on host filesystem inside the container at /opt/oracle with Read/Write privileges.
-    --restart unless-stopped: Unless explicitly stopped, this restart policy restarts mgmtagent-container automatically when docker restarts.
-    ```
+    <!-- markdownlint-disable MD033 -->
+    | Parameter | Description |
+    | --------- | ----------- |
+    | -d | Starts mgmtagent-container in detached mode |
+    | --name mgmtagent-container | The name given to the container to identify it. |
+    | --hostname mgmtagent1 | Assign mgmtagent1 as the containers internal hostname. This can be any hostname compliant string and it will be used to identify the Management Agent instance in the OMC Console. |
+    | -v mgmtagent-volume | /opt/oracle:rw: Mounts the volume mgmtagent-volume created on host filesystem inside the container at /opt/oracle with Read/Write privileges. |
+    | --restart unless-stopped | Unless explicitly stopped, this restart policy restarts mgmtagent-container automatically when docker restarts. |
+    <!-- markdownlint-enable MD033 -->
+
 
 #### Helpful Docker Administration commands
 
@@ -118,7 +112,7 @@ Oracle Linux is licensed under the [Oracle Linux End-User License Agreement](htt
 All scripts and files hosted in this project and GitHub [`docker-images/OracleManagementAgent`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Customer Support
-Oracle Management Agent docker image is supported for Oracle Linux 7. For more details please see My Oracle Support.
+Oracle Management Agent container image is supported for Oracle Linux 7. For more details please see My Oracle Support.
 
 ## Copyright
-Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2022 Oracle and/or its affiliates.
