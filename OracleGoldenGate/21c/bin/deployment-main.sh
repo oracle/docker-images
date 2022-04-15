@@ -165,16 +165,24 @@ function run_user_scripts {
                     run_user_scripts "${f}"
                 } || {
                     case "$f" in
-                        *.sh)     printf "%s: running %s\n" "${0}" "${f}"; . "$f" ;;
-                        *.sql)    printf "%s: running %s\n" "${0}" "${f}"; echo "exit" | LD_LIBRARY_PATH=$(dirname ${SQLPLUS}):${LD_LIBRARY_PATH} ${SQLPLUS} -s "/ as sysdba" @"$f" ;;
-                        *)        printf "%s: ignoring %s\n" "${0}" "${f}" ;;
+                        *.sh)
+                                printf "%s: running %s\n" "${0}" "${f}";
+                                . "$f" && state=$? || state=$?
+                                ;;
+                        *.sql)
+                                printf "%s: running %s\n" "${0}" "${f}";
+                                echo "exit" | LD_LIBRARY_PATH=$(dirname ${SQLPLUS}):${LD_LIBRARY_PATH} ${SQLPLUS} -s "/ as sysdba" @"$f" && state=$? || state=$?
+                                ;;
+                        *)      
+                                printf "%s: ignoring %s\n" "${0}" "${f}" && state=$? || state=$?
+                                ;;
                     esac
-                    [ $? -ne 0 ] && {
+                    [ $state -ne 0 ] && {
                         printf "#################\n"
-                        printf "%s: WARNING - user script failed: %s\n" "${0}" "${f}"
+                        printf "## WARNING - %s: user script failed [exit code: %s]: %s\n" "${0}" "${state}" "${f}"
                         printf "#################\n"
                         [ "${ABORT_ON_USER_SCRIPT_ERRORS,,}" == "true" ] && {
-                            printf "Aborting startup! - Sleeping 10 seconds before exit"
+                            printf "Aborting startup! - Sleeping 10 seconds before exit\n"
                             sleep 10;
                             exit 1;
                         }
@@ -183,6 +191,8 @@ function run_user_scripts {
             done
         fi
     }
+
+    return 0
 }
 
 ##
@@ -192,7 +202,7 @@ function run_user_scripts {
 function start_ogg() {
     $(run_as_ogg) python3 /usr/local/bin/deployment-init.py
     $(run_as_ogg) tail -F "${OGG_DEPLOYMENT_HOME}"/ServiceManager/var/log/ServiceManager.log &
-    ogg_pid=$!
+    tail_ogg_pid=$!
 }
 
 ##
@@ -212,11 +222,16 @@ function start_nginx() {
 ##  Termination handler
 ##
 function termination_handler() {
-    [[ -z "${ogg_pid}" ]] || {
-        kill  "${ogg_pid}"
-        unset    ogg_pid
+    [[ -f "${OGG_HOME}/ogg.pid" ]] && {
+        kill  $(cat "${OGG_HOME}/ogg.pid")
+        rm -f "${OGG_HOME}/ogg.pid"
+    }
+    [[ -z "${tail_ogg_pid}" ]] || {
+        kill  "${tail_ogg_pid}"
+        unset    tail_ogg_pid
     }
     [[ ! -f "/var/run/nginx.pid" ]] || {
+        echo "stopping nginx"
         /usr/sbin/nginx -s stop
     }
     exit 0

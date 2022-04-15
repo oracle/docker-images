@@ -205,7 +205,18 @@ def establish_service_manager(hasServiceManager):
         terminate_process('ServiceManager')
         reset_servicemanager_configuration()
 
-    return subprocess.call(os.path.join(deployment_env['OGG_HOME'], 'bin', 'ServiceManager'), env=deployment_env)
+    subprocess.call(os.path.join(deployment_env['OGG_HOME'], 'bin', 'ServiceManager'), env=deployment_env)
+    
+    process = find_process('ServiceManager')
+    
+    if process:
+        filename = '%s/ogg.pid' % os.environ['OGG_HOME']
+        with open(filename, 'w') as f:
+            f.write("%i" % process.pid)
+        
+        return filename
+    
+    return None
 
 
 def create_sqlnet_ora(directoryName):
@@ -263,3 +274,4 @@ def main():
 
 
 sys.exit(main())
+
