@@ -66,7 +66,7 @@ function ogg_install_option() {
 ##  Perform an OGG installation
 ##
 function ogg_install() {
-    mkdir -p         "${OGG_HOME}"
+    mkdir -p "${OGG_HOME}" "${OGG_HOME}/scripts/setup" "${OGG_HOME}/scripts/startup"       
     chown -R ogg:ogg "$(dirname "${OGG_HOME}")"
     installer="$(find /tmp/installer -name runInstaller | head -1)"
     if [[ -n "${installer}" ]]; then

@@ -16,9 +16,6 @@ function abort() {
     exit 1
 }
 
-:     "${RUN_COMMAND:-}"
-:     "${RUN_COMMAND_BACKGROUND:=true}"
-
 :     "${OGG_DEPLOYMENT:=Local}"
 :     "${OGG_ADMIN:=oggadmin}"
 :     "${OGG_LISTEN_ON:=127.0.0.1}"
@@ -29,6 +26,12 @@ function abort() {
 [[ -d "${OGG_TEMPORARY_FILES}" ]] || abort "Deployment temporary storage, '${OGG_TEMPORARY_FILES}', not found."
 :     "${OGG_HOME:?}"
 [[ -d "${OGG_HOME}"            ]] || abort "Deployment runtime, '${OGG_HOME}'. not found."
+
+:     "${ABORT_ON_USER_SCRIPT_ERRORS:=true}"
+:     "${SETUP_USER_SCRIPTS:=${OGG_HOME}/scripts/setup}"
+[[ -d "${SETUP_USER_SCRIPTS}" ]] || mkdir -p "${SETUP_USER_SCRIPTS}"
+:     "${STARTUP_USER_SCRIPTS:=${OGG_HOME}/scripts/startup}"
+[[ -d "${STARTUP_USER_SCRIPTS}" ]] || mkdir -p "${STARTUP_USER_SCRIPTS}"
 
 NGINX_CRT="$(awk '$1 == "ssl_certificate"     { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
 NGINX_KEY="$(awk '$1 == "ssl_certificate_key" { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
@@ -125,33 +128,58 @@ function setup_deployment_directories() {
 }
 
 ##
-##  r u n _ p r e s t a r t _ c o m m a n d
+##  r u n _ u s e r _ s c r i p t s
 ##
-## Hook for launching custom command in the container prior to ogg start
-## If defined, the command identified by ${RUN_COMMAND} will be run.
-## 
-## The value of ${RUN_COMMAND_BACKGROUND} by default is set to true.
-##     When ${RUN_COMMAND_BACKGROUND} is true:
-##          The command identified by ${RUN_COMMAND} will be run in the background 
-##          and its return status is ignored
-##     When ${RUN_COMMAND_BACKGROUND} is false:
-##          The command identified by ${RUN_COMMAND} will be run in the foreground 
-##          and must return a status of 0 in order to proceed with the start sequence
+## Hook for launching custom scripts in the container before and after ogg start
+##     Default Values:
+         - ${ABORT_ON_USER_SCRIPT_ERRORS} : true
+##       - ${SETUP_USER_SCRIPTS}          : "${OGG_HOME}/scripts/setup"
+##       - ${STARTUP_USER_SCRIPTS}        : "${OGG_HOME/scripts/startup}"
 ##
-function run_prestart_command {
-    [[ ! -z "${RUN_COMMAND}" ]] && {
+## Scripts are run lexicographically and recursively from the directories pointed to by:
+##      - ${SETUP_USER_SCRIPTS} are executed prior to any other steps in the boot sequence
+##      - ${STARTUP_USER_SCRIPTS} are executed after ogg/nginx startup
+##
+## When ${ABORT_ON_USER_SCRIPT_ERRORS} is true:
+##    Scripts must return a status of 0 on exit or the boot proccess will abort
+##
+## When ${ABORT_ON_USER_SCRIPT_ERRORS} is false:
+##    Scripts that return a non-zero status will issue a warning but will continue
+##    the boot process
+##
+function run_user_scripts {
 
-        case "${RUN_COMMAND_BACKGROUND,,}" in
-            true)
-                ${RUN_COMMAND} &
-                ;;
-
-            false)
-                ${RUN_COMMAND} || abort "${RUN_COMMAND} did not complete successfully!"
-                ;;
-            *)
-                abort "Unknown RUN_COMMAND_BACKGROUND state [${RUN_COMMAND_BACKGROUND}] for run_prestart_command: expected true/false"
-        esac
+    local SCRIPTS_ROOT="${1}";
+    
+    [ -z "$SCRIPTS_ROOT" ] && {
+        printf "%s: No SCRIPTS_ROOT passed on, no scripts will be run\n" "${0}";
+        return 1;
+    } || {
+        if [ -d "$SCRIPTS_ROOT" ] && [ -n "$(ls -A "$SCRIPTS_ROOT")" ]; then
+            printf "Executing user defined scripts in: %s\n" "${SCRIPTS_ROOT}"
+        
+            for f in "${SCRIPTS_ROOT}"/*; do
+                [ -d "${f}" ] && {
+                    run_user_scripts "${f}"
+                } || {
+                    case "$f" in
+                        *.sh)     printf "%s: running %s\n" "${0}" "${f}"; . "$f" ;;
+                        *.sql)    printf "%s: running %s\n" "${0}" "${f}"; echo "exit" | "$ORACLE_HOME"/bin/sqlplus -s "/ as sysdba" @"$f" ;;
+                        *)        printf "%s: ignoring %s\n" "${0}" "${f}" ;;
+                    esac
+                    [ $? -ne 0 ] && {
+                        printf "#################\n"
+                        printf "%s: WARNING - user script failed: %s\n" "${0}" "${f}"
+                        printf "#################\n"
+                        [ "${ABORT_ON_USER_SCRIPT_ERRORS,,}" == "true" ] && {
+                            printf "Aborting startup! - Sleeping 10 seconds before exit"
+                            sleep 10;
+                            exit 1;
+                        }
+                    }
+                }
+            done
+        fi
     }
 }
 
@@ -196,14 +224,14 @@ function termination_handler() {
 ##  Signal Handling for this script
 ##
 function signal_handling() {
-    trap -                   SIGTERM SIGINT
-    trap termination_handler SIGTERM SIGINT
+    trap -                   SIGTERM SIGINT EXIT
+    trap termination_handler SIGTERM SIGINT EXIT
 }
 
 ##
 ##  Entrypoint
 ##
-run_prestart_command
+run_user_scripts "${SETUP_USER_SCRIPTS}"
 generatePassword
 setup_deployment_directories
 locate_java
@@ -211,4 +239,5 @@ locate_lib_jvm
 start_ogg
 start_nginx
 signal_handling
+run_user_scripts "${STARTUP_USER_SCRIPTS}"
 wait
