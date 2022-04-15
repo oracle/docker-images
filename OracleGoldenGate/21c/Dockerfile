@@ -14,7 +14,7 @@ COPY          install-*.sh      /tmp/
 COPY          ${INSTALLER}      /tmp/installer.zip
 COPY          bin/              /usr/local/bin/
 
-RUN           chmod +x /usr/local/bin/*              && \
+RUN           chmod 755/usr/local/bin/*              && \
               bash -c  /tmp/install-prerequisites.sh && \
               bash -c  /tmp/install-deployment.sh    && \
               rm   -fr /tmp/*   /etc/nginx

@@ -66,7 +66,7 @@ function ogg_install_option() {
 ##  Perform an OGG installation
 ##
 function ogg_install() {
-    mkdir -p "${OGG_HOME}" "${OGG_HOME}/scripts/setup" "${OGG_HOME}/scripts/startup"       
+    mkdir -p "${OGG_HOME}"       
     chown -R ogg:ogg "$(dirname "${OGG_HOME}")"
     installer="$(find /tmp/installer -name runInstaller | head -1)"
     if [[ -n "${installer}" ]]; then
@@ -82,6 +82,11 @@ EOF
     else
         $(run_as_ogg) tar xf /tmp/installer/*.tar -C "${OGG_HOME}"
     fi
+    
+    for dir in "${OGG_HOME}/scripts/setup" "${OGG_HOME}/scripts/startup"; do
+        mkdir -p "${dir}"
+        chown -R ogg:ogg "$(dirname "${dir}")"
+    done
 }
 
 ##
