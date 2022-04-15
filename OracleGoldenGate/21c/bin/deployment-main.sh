@@ -164,7 +164,7 @@ function run_user_scripts {
                 } || {
                     case "$f" in
                         *.sh)     printf "%s: running %s\n" "${0}" "${f}"; . "$f" ;;
-                        *.sql)    printf "%s: running %s\n" "${0}" "${f}"; echo "exit" | "$ORACLE_HOME"/bin/sqlplus -s "/ as sysdba" @"$f" ;;
+                        *.sql)    printf "%s: running %s\n" "${0}" "${f}"; echo "exit" | "$OGG_HOME"/instantclient/sqlplus -s "/ as sysdba" @"$f" ;;
                         *)        printf "%s: ignoring %s\n" "${0}" "${f}" ;;
                     esac
                     [ $? -ne 0 ] && {
