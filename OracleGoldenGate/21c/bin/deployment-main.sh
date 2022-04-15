@@ -132,7 +132,7 @@ function setup_deployment_directories() {
 ##
 ## Hook for launching custom scripts in the container before and after ogg start
 ##     Default Values:
-         - ${ABORT_ON_USER_SCRIPT_ERRORS} : true
+##       - ${ABORT_ON_USER_SCRIPT_ERRORS} : true
 ##       - ${SETUP_USER_SCRIPTS}          : "${OGG_HOME}/scripts/setup"
 ##       - ${STARTUP_USER_SCRIPTS}        : "${OGG_HOME/scripts/startup}"
 ##
