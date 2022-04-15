@@ -84,7 +84,7 @@ Parameters:
 * `-e OGG_DEPLOYMENT`              - The name of the deployment (default: `Local`)
 * `-e SETUP_USER_SCRIPTS`          - Hook to run lexicographically and recursively the scripts in the directory prior to any other steps in boot sequence (default: `${OGG_HOME}/scripts/setup`)
 * `-e STARTUP_USER_SCRIPTS`        - Hook to run lexicographically and recursively the scripts in the directory after ogg/nginx startup (default: `${OGG_HOME}/scripts/startup`)
-* `-e ABORT_ON_USER_SCRIPT_ERRORS` - User scripts must return a 0 status to continue processing boot sequence (default: true)
+* `-e ABORT_ON_USER_SCRIPT_ERRORS` - User scripts must return a 0 status to continue processing boot sequence (default: `true`)
 * `-v /u02`                        - The volume used for persistent GoldenGate data (default: use container storage)
 * `-v /u03`                        - The volume used for temporary GoldenGate data (default: use container storage)
 * `-v /etc/nginx/cert`             - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
