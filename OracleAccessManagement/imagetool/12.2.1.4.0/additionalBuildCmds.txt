@@ -1,3 +1,6 @@
+[package-manager-packages]
+hostname
+
 [final-build-commands]
 
 ENV FMW_IDM_JAR=fmw_12.2.1.4.0_idm_generic.jar \
@@ -23,24 +26,27 @@ ENV FMW_IDM_JAR=fmw_12.2.1.4.0_idm_generic.jar \
     DB_SCHEMA_PASSWORD=${DB_SCHEMA_PASSWORD:-} \
     USER_MEM_ARGS=${USER_MEM_ARGS:-"-Djava.security.egd=file:/dev/./urandom"} \
     JAVA_OPTIONS="${JAVA_OPTIONS} -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" \
-    PATH=$PATH:/usr/java/default/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/dockertools
+    PATH=$PATH:/usr/java/default/bin:$ORACLE_HOME/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/dockertools \
+    HEALTH_SCRIPT_FILE=/u01/oracle/dockertools/get_healthcheck_url.sh 
 
 USER root
 
 RUN mkdir -p ${USER_PROJECTS_DIR} && \
-    chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 775 ${USER_PROJECTS_DIR} && \
+    chown -R oracle:root ${USER_PROJECTS_DIR} && chmod -R 775 ${USER_PROJECTS_DIR} && \
+    chown -R oracle:root ${BASE_DIR} && \
     mkdir -p ${CONTAINER_DIR} && \
-    chown -R oracle:oracle ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-    mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \ 
-    yum install -y hostname && \
-    rm -rf /var/cache/yum
+    chown -R oracle:root ${CONTAINER_DIR} && chmod -R 775 ${CONTAINER_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:root ${SCRIPT_DIR} && \
+    mkdir -p ${PROPS_DIR} && chown oracle:root ${PROPS_DIR} 
 
 
-COPY --chown=oracle:oracle files/container-scripts/ ${SCRIPT_DIR}/
+COPY --chown=oracle:root files/container-scripts/ ${SCRIPT_DIR}/
 RUN chmod a+xr ${SCRIPT_DIR}/* && \
-     chown -R oracle:oracle ${SCRIPT_DIR}
+     chown -R oracle:root ${SCRIPT_DIR} && \
+     sed -i '/@@audit\/createCASBAudit.sql/s/@@audit\/createCASBAudit.sql/--@@audit\/createCASBAudit.sql/g' /u01/oracle/idm/common/sql/oam/sql/oam.sql && \
+    sed -i '/@@diagnostic\/createIdmDiagnosticLogRecord.sql/s/@@diagnostic\/createIdmDiagnosticLogRecord.sql/--@@diagnostic\/createIdmDiagnosticLogRecord.sql/g' /u01/oracle/idm/common/sql/oam/sql/oam.sql 
 
 USER oracle
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR $ORACLE_HOME
 CMD ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]

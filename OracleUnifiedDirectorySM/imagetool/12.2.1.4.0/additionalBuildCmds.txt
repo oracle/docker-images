@@ -1,3 +1,6 @@
+[package-manager-packages]
+hostname
+
 [before-jdk-install]
 # Instructions/Commands to be executed Before JDK install
 
@@ -27,20 +30,22 @@ ENV BASE_DIR=/u01 \
     DOMAIN_TYPE="oudsm" \
     USER_MEM_ARGS=${USER_MEM_ARGS:-"-Djava.security.egd=file:/dev/./urandom"} \
     JAVA_OPTIONS="${JAVA_OPTIONS} -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" \
-    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
+    PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts \
+    HEALTH_SCRIPT_FILE=/u01/oracle/container-scripts/get_healthcheck_url.sh
 
 USER root
 
 RUN mkdir -p ${VOLUME_DIR} && \
-    chown -R oracle:oracle ${VOLUME_DIR} && chmod -R 770 ${VOLUME_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-    mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \
-    yum install -y hostname && \
-    rm -rf /var/cache/yum
+      chown -R oracle:root ${BASE_DIR} && \
+    chown -R oracle:root ${VOLUME_DIR} && chmod -R 770 ${VOLUME_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:root  ${SCRIPT_DIR} && \
+    mkdir -p ${PROPS_DIR} && chown oracle:root ${PROPS_DIR} 
 
-COPY --chown=oracle:oracle files/container-scripts/ ${SCRIPT_DIR}/
+COPY --chown=oracle:root  files/container-scripts/ ${SCRIPT_DIR}/
 RUN chmod a+xr ${SCRIPT_DIR}/* && \
-     chown -R oracle:oracle ${SCRIPT_DIR}
+     chown -R oracle:root  ${SCRIPT_DIR}
+
 
 USER oracle
-ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
+CMD ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]
