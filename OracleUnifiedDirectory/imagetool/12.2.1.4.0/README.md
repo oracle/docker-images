@@ -3,7 +3,7 @@
 
 ## Documentation
 
-For instructions on building an OUD image with WebLogic Image Tool see [Create or update image](https://oracle.github.io/fmw-kubernetes/oud/create-or-update-image#create-or-update-an-oracle-unified-directory-image-using-the-weblogic-image-tool).
+Detailed instructions on how to [create or update an Oracle Unified Directory container image](https://oracle.github.io/fmw-kubernetes/oud/create-or-update-image#create-or-update-an-oracle-unified-directory-image-using-the-weblogic-image-tool) using the WebLogic Image Tool can be found in the [Oracle Fusion Middleware on Kubernetes](https://oracle.github.io/fmw-kubernetes/) documentation.
 
 
 ## License
