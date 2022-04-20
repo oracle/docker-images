@@ -2,7 +2,7 @@
 ====================================================================================
 
 ## Documentation
-For instructions on building an OUDSM image with WebLogic Image Tool see [Create or update image](https://oracle.github.io/fmw-kubernetes/oudsm/create-or-update-image#create-or-update-an-oracle-unified-directory-services-manager-image-using-the-weblogic-image-tool).
+Detailed instructions on how to [create or update an Oracle Unified Directory Services Manager container image](https://oracle.github.io/fmw-kubernetes/oudsm/create-or-update-image#create-or-update-an-oracle-unified-directory-services-manager-image-using-the-weblogic-image-tool) using the WebLogic Image Tool can be found in the [Oracle Fusion Middleware on Kubernetes](https://oracle.github.io/fmw-kubernetes/) documentation.
 
 
 ## License
