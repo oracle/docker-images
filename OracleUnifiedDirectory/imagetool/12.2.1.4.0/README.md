@@ -1,5 +1,4 @@
 # Building an Oracle Unified Directory image with WebLogic Image Tool
-===================================================================
 
 ## Documentation
 
