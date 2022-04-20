@@ -4,6 +4,7 @@ create
 --version=12.2.1.4.0
 --tag=%BUILDTAG%
 --pull
+--chown oracle:root
 --installerResponseFile %DOCKER_REPO%/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/install/oud.response
 --additionalBuildCommands %DOCKER_REPO%/OracleUnifiedDirectory/imagetool/12.2.1.4.0/additionalBuildCmds.txt
 --additionalBuildFiles %DOCKER_REPO%/OracleUnifiedDirectory/dockerfiles/12.2.1.4.0/container-scripts
