@@ -38,7 +38,7 @@ RUN set -eux; \
     java-1.8.0-openjdk-devel.x86_64 \
     sudo \
     unzip \
-    && yum clean all
+    && rm -rf /var/cache/yum
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8

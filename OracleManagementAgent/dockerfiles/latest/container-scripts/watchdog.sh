@@ -153,6 +153,7 @@ function configure_agent()
   	local cmd_exit_code=$?
     if [ $cmd_exit_code -eq 0 ]; then
       log "$APPNAME configure successful [status: $cmd_exit_code]"
+      :> $CONFIG_FILE
       return 0
     else
     	log "$APPNAME configure failed [status: $cmd_exit_code]"
