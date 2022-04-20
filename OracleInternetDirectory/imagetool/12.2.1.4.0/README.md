@@ -2,7 +2,7 @@
 
 ## Documentation 
 
-For instructions on building an OID image with WebLogic Image Tool see [Create or update image](https://oracle.github.io/fmw-kubernetes/oid/create-or-update-image#create-or-update-an-oracle-internet-directory-services-manager-image-using-the-weblogic-image-tool).
+Detailed instructions on how to [create or update an Oracle Internet Directory container image](https://oracle.github.io/fmw-kubernetes/oid/create-or-update-image#create-or-update-an-oracle-internet-directory-services-manager-image-using-the-weblogic-image-tool) using the WebLogic Image Tool can be found in the [Oracle Fusion Middleware on Kubernetes](https://oracle.github.io/fmw-kubernetes/) documentation.
 
 
 ## License
