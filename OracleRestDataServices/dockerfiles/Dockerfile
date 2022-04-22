@@ -54,7 +54,7 @@ RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.
     if [ $INCLUDE_APEX == "true" ]; then \
         yum -y install oracle-instantclient-release-el7 && \
         yum -y install oracle-instantclient-sqlplus.x86_64 && \
-        cd "${ORDS_HOME}"/config/ords/ && \
+        cd "${ORDS_HOME}"/config/ && \
         curl https://download.oracle.com/otn_software/apex/apex-latest.zip -o apex-latest.zip && \
         jar -xvf apex-latest.zip && \
         rm apex-latest.zip; \
