@@ -1,0 +1,39 @@
+name: Build and publish Oracle Rest Data Services (ORDS) container image to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'OracleRestDataServices/dockerfiles/**'
+      - '.github/workflows/build-and-push-instantclient-images.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  push:
+    name: Build and push ORDS image
+    runs-on: ubuntu-lates
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      # Login to a Github registry
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Build and push ORDS image
+      - name: Build and push ORDS image
+        run:  |
+          cd OracleRestDataServices/dockerfiles
+          ./buildContainerImage.sh -o '--build-arg INCLUDE_APEX=true'
+          docker tag oracle/restdataservices:latest ${REGISTRY}/${{ steps.repo-owner.outputs.repo-owner }}/oraclerestdataservices:latest
+          docker push ${REGISTRY}/${{ steps.repo-owner.outputs.repo-owner }}/oraclerestdataservices:latest
