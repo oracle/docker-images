@@ -11,6 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  TAG: latest
 
 jobs:
   push:
@@ -30,10 +31,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Repository owner needs to be lowercase
+        id: repo-owner
+        run: |
+          REPO_OWNER=${{ github.repository_owner }}
+          echo "::set-output name=repo-owner::${REPO_OWNER,,}"
+      
       # Build and push ORDS image
       - name: Build and push ORDS image
         run:  |
           cd OracleRestDataServices/dockerfiles
           ./buildContainerImage.sh -o '--build-arg INCLUDE_APEX=true'
-          docker tag oracle/restdataservices:latest ${REGISTRY}/${{ steps.repo-owner.outputs.repo-owner }}/oraclerestdataservices:latest
-          docker push ${REGISTRY}/${{ steps.repo-owner.outputs.repo-owner }}/oraclerestdataservices:latest
+          docker tag oracle/restdataservices:${TAG} ${REGISTRY}/${{ steps.repo-owner.outputs.repo-owner }}/oraclerestdataservices:${TAG}
+          docker push ${REGISTRY}/${{ steps.repo-owner.outputs.repo-owner }}/oraclerestdataservices:${TAG}
