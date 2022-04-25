@@ -55,9 +55,32 @@ Sending build context to Docker daemon
 Successfully tagged oracle/goldengate-for-bigdata:21.4.0.0.0   
 ```
 
+To create a container image for GoldenGate for MySQL Database, use the following script:
+
+```sh
+$ docker build --tag=oracle/goldengate-for-MySQL:21.3.0.0.0 \
+                --build-arg INSTALLER=213000_ggs_Linux_x64_MySQL_services_shiphome.zip .
+Sending build context to Docker daemon
+...
+Successfully tagged oracle/goldengate-for-MySQL:21.3.0.0.0
+```
+
+To create a container image for GoldenGate for PostgreSQL Database, use the following script:
+
+```sh
+$ docker build --tag=oracle/goldengate-for-PostgreSQL:21.3.0.0.0 \
+                --build-arg INSTALLER=213000_ggs_Linux_x64_PostgreSQL_services_shiphome.zip .
+Sending build context to Docker daemon
+...
+Successfully tagged oracle/goldengate-for-PostgreSQL:21.3.0.0.0
+
 ## Running Oracle GoldenGate in a Container
 
-Use the `docker run` command to create and start a container from the Oracle GoldenGate container image.
+The container image name for individual database is different. Use the below image name with `docker run` command to create and start a container from the Oracle GoldenGate container image.
+* Oracle         : oracle/goldengate:21.3.0.0.0
+* MySQL          : oracle/goldengate-for-MySQL:21.3.0.0.0
+* PostgreSQL     : oracle/goldengate-for-PostgreSQL:21.3.0.0.0
+* BigData        : oracle/goldengate-for-bigdata:21.4.0.0.0
 
 ```sh
 $ docker run \
@@ -69,7 +92,7 @@ $ docker run \
     -v [<host mount point>:]/u02 \
     -v [<host mount point>:]/u03 \
     -v [<host mount point>:]/etc/nginx/cert \
-    oracle/goldengate:21.3.0.0.0
+    <image name>
 ```
 
 Parameters:
@@ -86,7 +109,7 @@ Parameters:
 All parameters are optional, so the following command will work, too:
 
 ```sh
-$ docker run oracle/goldengate:21.3.0.0.0
+$ docker run <image name>
 ----------------------------------------------------------------------------------
 --  Password for OGG administrative user 'oggadmin' is 'XU2k7cMastmt-DJKs'
 ----------------------------------------------------------------------------------
@@ -161,4 +184,4 @@ To download and run Oracle GoldenGate, regardless whether inside or outside a co
 
 ## Copyright
 
-Copyright &copy; 2021 Oracle and/or its affiliates.
+Copyright &copy; 2022 Oracle and/or its affiliates.
