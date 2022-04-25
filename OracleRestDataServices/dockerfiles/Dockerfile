@@ -41,7 +41,7 @@ ENV ORDS_HOME=/opt/oracle/ords \
 COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $ORDS_HOME/
 
 # ARG for installing APEX prerequisites
-ARG INCLUDE_APEX=false
+ARG INCLUDE_APEX=true
 
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with ORDS installation
