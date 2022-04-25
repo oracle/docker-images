@@ -21,6 +21,8 @@ This project was tested with:
 
 * Oracle GoldenGate 21.3.0.0.0 Microservices for Oracle on Linux x86-64
 * Oracle GoldenGate 21.4.0.0.0 Microservices for Bigdata on Linux x86-64
+* Oracle GoldenGate 21.3.0.0.0 Microservices for MySQL on Linux x86-64
+* Oracle GoldenGate 21.3.0.0.0 Microservices for PostgreSQL on Linux x86-64
 
 Support for Oracle GoldenGate Classic Architecture is not provided.
 
@@ -44,43 +46,10 @@ Sending build context to Docker daemon
 ...
 Successfully tagged oracle/goldengate:21.3.0.0.0
 ```
-
-To create a container image for GoldenGate for BigData, use the following script:
-
-```sh
-$ docker build --tag=oracle/goldengate-for-bigdata:21.4.0.0.0 \
-                --build-arg INSTALLER=214000_ggs_Linux_x64_BigData_services_shiphome.zip .
-Sending build context to Docker daemon
-...
-Successfully tagged oracle/goldengate-for-bigdata:21.4.0.0.0   
-```
-
-To create a container image for GoldenGate for MySQL Database, use the following script:
-
-```sh
-$ docker build --tag=oracle/goldengate-for-MySQL:21.3.0.0.0 \
-                --build-arg INSTALLER=213000_ggs_Linux_x64_MySQL_services_shiphome.zip .
-Sending build context to Docker daemon
-...
-Successfully tagged oracle/goldengate-for-MySQL:21.3.0.0.0
-```
-
-To create a container image for GoldenGate for PostgreSQL Database, use the following script:
-
-```sh
-$ docker build --tag=oracle/goldengate-for-PostgreSQL:21.3.0.0.0 \
-                --build-arg INSTALLER=213000_ggs_Linux_x64_PostgreSQL_services_shiphome.zip .
-Sending build context to Docker daemon
-...
-Successfully tagged oracle/goldengate-for-PostgreSQL:21.3.0.0.0
+Similarly, for other Databases like BigData, MySQL, PostgreSQL, etc. provide the name of the zip file for the INSTALLER argument.
 
 ## Running Oracle GoldenGate in a Container
-
-The container image name for individual database is different. Use the below image name with `docker run` command to create and start a container from the Oracle GoldenGate container image.
-* Oracle         : oracle/goldengate:21.3.0.0.0
-* MySQL          : oracle/goldengate-for-MySQL:21.3.0.0.0
-* PostgreSQL     : oracle/goldengate-for-PostgreSQL:21.3.0.0.0
-* BigData        : oracle/goldengate-for-bigdata:21.4.0.0.0
+Use the `docker run` command to create and start a container from the Oracle GoldenGate container image.
 
 ```sh
 $ docker run \
@@ -92,7 +61,7 @@ $ docker run \
     -v [<host mount point>:]/u02 \
     -v [<host mount point>:]/u03 \
     -v [<host mount point>:]/etc/nginx/cert \
-    <image name>
+    oracle/goldengate:21.3.0.0.0
 ```
 
 Parameters:
@@ -109,7 +78,7 @@ Parameters:
 All parameters are optional, so the following command will work, too:
 
 ```sh
-$ docker run <image name>
+$ docker run oracle/goldengate:21.3.0.0.0
 ----------------------------------------------------------------------------------
 --  Password for OGG administrative user 'oggadmin' is 'XU2k7cMastmt-DJKs'
 ----------------------------------------------------------------------------------
