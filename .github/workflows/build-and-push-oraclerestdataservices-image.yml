@@ -16,7 +16,7 @@ env:
 jobs:
   push:
     name: Build and push ORDS image
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
