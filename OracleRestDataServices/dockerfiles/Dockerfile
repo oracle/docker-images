@@ -21,7 +21,7 @@
 # Pull base image
 # ---------------
 
-ARG BASE_IMAGE=container-registry.oracle.com/java/serverjre:8
+ARG BASE_IMAGE=container-registry.oracle.com/java/serverjre:latest
 FROM ${BASE_IMAGE}
 
 # Labels
@@ -46,7 +46,7 @@ ARG INCLUDE_APEX=false
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with ORDS installation
 # ------------------------------------------------------------
-RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.com/otn_software/java/ords/ords-latest.zip -o $ORDS_HOME/ords-latest.zip; fi && \
+RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.com/otn_software/java/ords/ords-21.4.2.062.1806.zip -o $ORDS_HOME/ords-latest.zip; fi && \
     mkdir -p  $ORDS_HOME/doc_root $ORDS_HOME/config/ords && \
     chmod ug+x $ORDS_HOME/*.sh && \
     groupadd -g 54322 dba && \
@@ -74,7 +74,7 @@ USER oracle
 WORKDIR /home/oracle
 
 VOLUME ["$ORDS_HOME/config/ords"]
-EXPOSE 8888
+EXPOSE 8443
 
 # Define default command to start Oracle Database.
 CMD $ORDS_HOME/$RUN_FILE

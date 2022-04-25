@@ -51,7 +51,8 @@ function setupOrds() {
   sed -i -e "s|###ORACLE_PWD###|$ORACLE_PWD|g" $ORDS_HOME/params/ords_params.properties
   
   # Replace standalone runtime variables (standalone.properties)
-  sed -i -e "s|###PORT###|8888|g" $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties
+  sed -i -e "s|###PORT###|8443|g" $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties
+  sed -i -e "s|###HOST###|$HOSTNAME|g" $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties
   sed -i -e "s|###CONTEXT_ROOT###|$CONTEXT_ROOT|g" $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties
   sed -i -e "s|###DOC_ROOT###|$ORDS_HOME/doc_root|g" $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties
   sed -i -e "s|###APEXI###|$APEXI|g" $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties
