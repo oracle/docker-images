@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'OracleRestDataServices/dockerfiles/**'
-      - '.github/workflows/build-and-push-instantclient-images.yml'
+      - '.github/workflows/build-and-push-oraclerestdataservices-image.yml'
   workflow_dispatch:
 
 env:
