@@ -1,10 +1,4 @@
-<!--
-    Copyright (c) 2022, Oracle and/or its affiliates.
-    Licensed under the Universal Permissive License v 1.0 as shown at
-    https://oss.oracle.com/licenses/upl.
--->
-Oracle Management Agent Container Image
-=====
+# Oracle Management Agent Container Image
 This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux and Oracle OpenJDK 8.
 
 The certification of Oracle Management Agent in a container does not require the use of any file presented in this
@@ -14,7 +8,7 @@ from scratch new scripts and Dockerfiles.
 
 ## How to build and run
 
-Oracle Management Agent images use the Oracle Linux 7 Slim container image as the base image.
+Oracle Management Agent image uses the official `oraclelinux:7-slim` container image as the base image.
 
 #### Prerequisites
 
