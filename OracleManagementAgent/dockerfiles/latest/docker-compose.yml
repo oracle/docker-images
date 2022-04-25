@@ -1,0 +1,59 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# ORACLE MANAGEMENT AGENT DOCKER-COMPOSE CONFIGURATION
+# ----------------------------------------------------
+# This is the Docker Compose file for Oracle Management Agent
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put all downloaded files in the same directory as this file
+# Run:
+#      $ docker-compose up -d
+#
+version: "3.3"
+
+#
+# [ service definition ]
+#
+# Define service to build and run Management Agent container
+#
+services:
+  mgmtagent:
+    build: .
+
+    # Image name reported by docker images listing
+    image: oracle/mgmtagent-container
+
+    # Internal hostname identifier for the container
+    hostname: ${mgmtagent_hostname}
+
+    # Named volume to persist state
+    volumes:
+      - mgmtagent-volume:/opt/oracle:rw
+
+    # Restart the container on crash unless if it was stoppped
+    restart: unless-stopped
+
+    # Copy secrets into the container at the target location
+    secrets:
+      - source: installkey_input_rsp
+        target: /opt/oracle/mgmtagent_secret/input.rsp
+
+#
+# [ secrets definition ]
+#
+# Create secret for install key used during Management Agent install
+#
+secrets:
+    installkey_input_rsp:
+      file: ./input.rsp
+
+#
+# [ volumes definition ]
+#
+# Create named Docker volume to persist Management Agent state
+#
+volumes:
+  mgmtagent-volume:
