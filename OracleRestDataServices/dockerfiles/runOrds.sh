@@ -69,7 +69,7 @@ if [ ! -f $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties ]; th
 fi;
 
 if [ "$1" = "--setuponly" ];then
-  exit 0
+  exit $?
 else
   java -jar $ORDS_HOME/$CONTEXT_ROOT.war standalone
 fi
