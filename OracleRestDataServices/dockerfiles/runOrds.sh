@@ -68,4 +68,8 @@ if [ ! -f $ORDS_HOME/config/$CONTEXT_ROOT/standalone/standalone.properties ]; th
    setupOrds;
 fi;
 
-java -jar $ORDS_HOME/$CONTEXT_ROOT.war standalone
+if [ "$1" = "--setuponly" ];then
+  exit 0
+else
+  java -jar $ORDS_HOME/$CONTEXT_ROOT.war standalone
+fi
