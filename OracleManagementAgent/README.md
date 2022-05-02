@@ -95,6 +95,11 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
     | --restart unless-stopped | Unless explicitly stopped, this restart policy restarts mgmtagent-container automatically when docker restarts. |
     <!-- markdownlint-enable MD033 -->
 
+1. Remove the Install Key (input.rsp) from the shared Docker volume Mountpoint after [verifying the new Management Agent is registered and visible in the main Management Agents page](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-46BE5661-012E-4557-B679-6456DBBEAA4A)
+
+    ```shell
+    $ rm  /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/input.rsp
+    ```
 
 #### Helpful administration commands
 
