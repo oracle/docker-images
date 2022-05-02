@@ -21,7 +21,7 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:8 as builder
+FROM --platform=linux/amd64 oraclelinux:8 as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
@@ -47,7 +47,7 @@ RUN set -eux; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 	
 ## Get a fresh version of OL8 for the final image	
-FROM oraclelinux:8
+FROM --platform=linux/amd64 oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8

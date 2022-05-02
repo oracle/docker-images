@@ -21,11 +21,11 @@
 #		$ bash build.sh
 #
 
-FROM oraclelinux:8
+FROM --platform=linux/amd64 oraclelinux:8 
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-ENV JAVA_PKG=https://download.java.net/java/GA/jdk18.0.1/3f48cabb83014f9fab465e280ccf630b/10/GPL/openjdk-18.0.1_linux-x64_bin.tar.gz \
+ENV JAVA_PKG=https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL/openjdk-18.0.1.1_linux-x64_bin.tar.gz \
 	JAVA_HOME=/usr/java/jdk-18 \
 	LANG=en_US.UTF-8
 

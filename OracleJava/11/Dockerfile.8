@@ -23,7 +23,7 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM ghcr.io/oracle/oraclelinux8-compat:8-slim as builder
+FROM --platform=linux/amd64 ghcr.io/oracle/oraclelinux8-compat:8-slim as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
@@ -37,8 +37,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-11.0.15_linux-x64_bin.tar.gz \
-	JAVA_SHA256=d69e577d6ea80bea71d01db1d17c1e764ad65982942991f4641bc63202a495ba \
+ENV JAVA_PKG=jdk-11.0.15.1_linux-x64_bin.tar.gz \
+	JAVA_SHA256=a40ad9342646ec14196deaf28c64f697fef4c698296f0e7d39b638f360780d27 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ##
@@ -49,12 +49,12 @@ RUN set -eux; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 	
 ## Get a fresh version of OL8 for the final image	
-FROM ghcr.io/oracle/oraclelinux8-compat:8-slim
+FROM --platform=linux/amd64 ghcr.io/oracle/oraclelinux8-compat:8-slim
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.15 \
+ENV JAVA_VERSION=11.0.15.1 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
