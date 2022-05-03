@@ -23,7 +23,7 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM --platform=linux/amd64 oraclelinux:7-slim as builder
+FROM oraclelinux:7-slim as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
@@ -53,7 +53,7 @@ RUN set -eux; \
 
 ## Get a fresh version of SLIM for the final image
 
-FROM --platform=linux/amd64 oraclelinux:7-slim
+FROM oraclelinux:7-slim
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
