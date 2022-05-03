@@ -30,7 +30,7 @@
 # cwallet.sso.  You can use a container volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.14/client64/lib/network/admin:Z,ro . . .
+#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.15/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -72,7 +72,7 @@
 FROM oraclelinux:8
 
 ARG release=19
-ARG update=14
+ARG update=15
 
 RUN  dnf -y install oracle-release-el8 && \
      dnf -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
