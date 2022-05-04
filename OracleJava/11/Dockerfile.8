@@ -34,7 +34,7 @@ RUN set -eux; \
 ENV LANG en_US.UTF-8
 
 
-# Environment variables for the builder image.  
+# Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
 ENV JAVA_HOME=/usr/java/jdk-11
@@ -49,7 +49,7 @@ RUN set -eux; \
         JAVA_SHA256=a40ad9342646ec14196deaf28c64f697fef4c698296f0e7d39b638f360780d27 ; \
     else \
 	    mv $(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz) /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=fbb191c2dfc976e61691b1c4805c6ac94cf39f72464779f421d207db1571540a ; \    	
+    	JAVA_SHA256=fbb191c2dfc976e61691b1c4805c6ac94cf39f72464779f421d207db1571540a ; \	
     fi && \
 	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \

@@ -23,7 +23,7 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM  oraclelinux:7-slim as builder
+FROM oraclelinux:7-slim as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
@@ -36,7 +36,7 @@ RUN set -eux; \
 ENV LANG en_US.UTF-8
 
 
-# Environment variables for the builder image.  
+# Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
 ENV JAVA_HOME=/usr/java/jdk-11

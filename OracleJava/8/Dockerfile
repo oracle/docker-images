@@ -38,7 +38,7 @@ RUN set -eux; \
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-# Environment variables for the builder image.  
+# Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
 ENV JAVA_PKG=server-jre-8u333-linux-x64.tar.gz \

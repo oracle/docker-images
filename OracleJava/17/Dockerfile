@@ -8,7 +8,7 @@
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# This dockerfile will download a copy of JDK 18 from
+# This dockerfile will download a copy of JDK 17 from
 #	https://download.oracle.com/java/17/latest/jdk-17_linux-<ARCH>_bin.tar.gz
 # 
 # It will use either x64 or aarch64 depending on the target platform
@@ -34,7 +34,7 @@ RUN set -eux; \
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-# Environment variables for the builder image.  
+# Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
 ENV JAVA_URL=https://download.oracle.com/java/17/latest \
