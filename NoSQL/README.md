@@ -8,24 +8,12 @@ This project offers sample container image configuration files for:
 
 * [Oracle NoSQL Database Community Edition](ce/Dockerfile)
 
-## Quick start: building the Oracle NoSQL Community Edition image
+This container image uses KVLite. **KVLite is a simplified version of the Oracle NoSQL Database**. It provides a single storage node, a single shard store, with no
+replication and no administration. It runs in a single process. **Note:** KVLite is not intended for production deployment or performance measurements.
 
-To build the Oracle NoSQL Community Edition container image, clone this
-repository and run the following commands from the root of cloned repository:
+## Quick start: pull the Oracle NoSQL Community Edition image
 
-```shell
-cd NoSQL/ce/
-docker build -t oracle/nosql .
-```
-or
-
-```shell
-cd NoSQL/ce/
-docker build --build-arg KV_VERSION=20.3.19 --tag oracle/nosql:ce .
-```
-
-The resulting image will be available as `oracle/nosql:ce`. 
-You can also pull the image directly from the GitHub Container Registry:
+You can  pull the image directly from the GitHub Container Registry:
 
 ```shell
 docker pull ghcr.io/oracle/nosql:latest-ce
@@ -129,7 +117,7 @@ return new NoSQLClient({
 });
 ````
 
-## Using Oracle NoSQL Command-Line from an external host
+## Quick start: Using Oracle NoSQL Command-Line from an external host
 
 **Note**: We recommend running NoSQL Command-Line doing a container to container connection as shown in the previous chapters. 
 It allows starting the container without publishing all internal ports (KVPORT, KV_HARANGE, KV_SERVICERANGE) but only the KV_PROXY_PORT. 
@@ -225,11 +213,29 @@ You can also use the Oracle SQL Shell Command Line Interface (CLI)
 $ java -jar $KVHOME/lib/sql.jar -helper-hosts kvlite-nosql-container-host:5000 -store kvstore
 ````
 
+## Quick start: building the Oracle NoSQL Community Edition image
+
+To build the Oracle NoSQL Community Edition container image, clone this
+repository and run the following commands from the root of cloned repository:
+
+```shell
+cd NoSQL/ce/
+docker build -t oracle/nosql:ce .
+```
+or
+
+```shell
+cd NoSQL/ce/
+docker build --build-arg KV_VERSION=20.3.19 --tag oracle/nosql:ce .
+```
+
+The resulting image will be available as `oracle/nosql:ce`. 
+
 
 ## More information
 
 For more information on [Oracle NoSQL](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html)
-please review the [product documentation](http://docs.oracle.com/cd/NOSQL/html/index.html).
+please review the [product documentation](https://docs.oracle.com/en/database/other-databases/nosql-database/index.html).
 
 The Oracle NoSQL Database Community Edition image contains the OpenJDK.
 
