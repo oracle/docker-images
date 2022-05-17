@@ -177,13 +177,13 @@ If you want to run without --link, you cannot use any alias when starting the co
 You can also use the admin Oracle NoSQL Command Line Interface (CLI).
 
 ```shell
-$ java -jar $KVHOME/lib/kvstore.jar runadmin -host kvlite-nosql-container-host -port 5000 -store kvstore
+$ java -jar $KVHOME/lib/kvstore.jar runadmin -host $HOSTNAME -port 5000 -store kvstore
 ````
 
 You can also use the Oracle SQL Shell Command Line Interface (CLI)
 
 ```shell
-$ java -jar $KVHOME/lib/sql.jar -helper-hosts kvlite-nosql-container-host:5000 -store kvstore
+$ java -jar $KVHOME/lib/sql.jar -helper-hosts $HOSTNAME:5000 -store kvstore
 ````
 
 ## Advanced Scenario: Using Oracle NoSQL Command-Line from an external host using an alias
