@@ -34,6 +34,8 @@ KVLite is the default `CMD` of the image:
 ```shell
 docker run -d --name=kvlite --hostname=kvlite --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:ce
 ```
+**Note**:  By default, the KVLite store created has a size of `10GB`, use `--env KV_STORAGESIZE=N` to override that. 
+The value of N is in GB and must be >= 1
 
 In a second shell, run a second container to ping the kvlite store
 instance:
