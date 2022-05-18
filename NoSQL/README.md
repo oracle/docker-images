@@ -297,7 +297,7 @@ The Oracle NoSQL Database Community Edition image contains the OpenJDK.
 
 ## Licenses
 
-Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt).
+Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt). https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/license/index.html#NSXLI-GUID-006E432E-1965-45A2-AEDE-204BD05E1560
 
 OpenJDK is licensed under the [GNU General Public License v2.0 with the Classpath Exception](http://openjdk.java.net/legal/gplv2+ce.html)
 
