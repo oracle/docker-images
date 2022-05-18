@@ -20,6 +20,8 @@ docker pull ghcr.io/oracle/nosql:latest-ce
 docker tag ghcr.io/oracle/nosql:latest-ce oracle/nosql:ce
 ```
 
+The resulting image will be available as `oracle/nosql:ce`. 
+
 ## Quick start: running Oracle NoSQL Database in a container
 
 The steps outlined below are using Oracle NoSQL Database community edition, if
