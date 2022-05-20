@@ -97,4 +97,4 @@ This project hosts two configurations (depending on the Oracle WebLogic Server v
 To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the `12213-domain` sample.
 
 ## Copyright
-Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2022, Oracle and/or its affiliates.

@@ -96,4 +96,4 @@ In your browser, enter `https://xxx.xx.x.x:9002/console`. Your browser will requ
 To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the `12214-domain` sample.
 
 ## Copyright
-Copyright (c) 2022  Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2022, Oracle and/or its affiliates.
