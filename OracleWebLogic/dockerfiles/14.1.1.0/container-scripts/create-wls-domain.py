@@ -1,10 +1,12 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # WebLogic on Docker Default Domain
 #
 # Domain, as defined in DOMAIN_NAME, will be created in this script. Name defaults to 'base_domain'.
 #
+# Since : October, 2014
 # Author: monica.riccelli@oracle.com
 # ==============================================
 domain_name  = os.environ.get("DOMAIN_NAME", "base_domain")
@@ -47,8 +49,8 @@ set('Name', admin_name)
 set('ListenAddress', '')
 set('ListenPort', admin_listen_port)
 if administration_port_enabled != "false":
-   create('AdminServer','SSL')
-   cd('SSL/AdminServer')
+   create(admin_name, 'SSL')
+   cd('SSL/' + admin_name)
    set('Enabled', 'True')
 
 # Define the user password for weblogic

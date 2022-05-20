@@ -84,7 +84,7 @@ You can override the default values of the following parameters during runtime w
 
 **NOTE**: For security, the Administration port 9002 is enabled by default, before running the container in WebLogic 12.2.1.4. If you prefer to not enable the Administration port when you issue the `docker run` command, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
 
-	$ docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_NAME=docker_domain oracle/weblogic:12.2.1.4-developer
+	$ docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_NAME=docker_domain -e ADMIN_NAME=docker-AdminServer oracle/weblogic:12.2.1.4-developer
 
 Run the WLS Administration Console:
 
@@ -96,4 +96,4 @@ In your browser, enter `https://xxx.xx.x.x:9002/console`. Your browser will requ
 To give users an idea of how to create a WebLogic domain and cluster from a custom Dockerfile which extends the WebLogic Server install image, we provide a few samples for 12c versions of the developer distribution. For an example, look at the `12214-domain` sample.
 
 ## Copyright
-Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2022  Oracle and/or its affiliates. All rights reserved.

@@ -49,8 +49,8 @@ set('Name', admin_name)
 set('ListenAddress', '')
 set('ListenPort', admin_listen_port)
 if administration_port_enabled != "false":
-   create('AdminServer','SSL')
-   cd('SSL/AdminServer')
+   create(admin_name, 'SSL')
+   cd('SSL/' + admin_name)
    set('Enabled', 'True')
 
 # Define the user password for weblogic
