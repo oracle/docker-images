@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014, 2022, Oracle and/or its affiliates. 
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
@@ -56,8 +56,8 @@ if [ ! -e ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log ]; then
 
    # Create an empty domain
    wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE  /u01/oracle/create-wls-domain.py
-   mkdir -p  ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/
-   chmod -R g+w  ${DOMAIN_HOME}
+   mkdir -p ${DOMAIN_HOME}/servers/${ADMIN_NAME}/security/
+   chmod -R g+w ${DOMAIN_HOME}
    echo "username=${USER}" >> $DOMAIN_HOME/servers/${ADMIN_NAME}/security/boot.properties
    echo "password=${PASS}" >> $DOMAIN_HOME/servers/${ADMIN_NAME}/security/boot.properties
    ${DOMAIN_HOME}/bin/setDomainEnv.sh
@@ -65,10 +65,10 @@ fi
 
 # Start Admin Server and tail the logs
 ${DOMAIN_HOME}/startWebLogic.sh
-if [  -e ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log ]; then
+if [ -e ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log ]; then
    echo "${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log"
 fi
-touch  ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
+touch ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
 tail -f ${DOMAIN_HOME}/servers/${ADMIN_NAME}/logs/${ADMIN_NAME}.log
 
 childPID=$!
