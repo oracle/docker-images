@@ -120,7 +120,8 @@ else
   memory=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
 fi
 
-export ALLOCATED_MEMORY=$((memory/1024/1024))
+# Default memory to 2GB, if not able to fetch memory restrictions from cgroups
+export ALLOCATED_MEMORY=$((${memory:=2147483648}/1024/1024))
 
 # Github issue #219: Prevent integer overflow,
 # only check if memory digits are less than 11 (single GB range and below)
@@ -143,6 +144,29 @@ trap _int SIGINT
 
 # Set SIGTERM handler
 trap _term SIGTERM
+
+# Default for ORACLE SID
+if [ "$ORACLE_SID" == "" ]; then
+   export ORACLE_SID=ORCLCDB
+else
+  # Make ORACLE_SID upper case
+  # Github issue # 984
+  export ORACLE_SID=${ORACLE_SID^^}
+
+  # Check whether SID is no longer than 12 bytes
+  # Github issue #246: Cannot start OracleDB image
+  if [ "${#ORACLE_SID}" -gt 12 ]; then
+     echo "Error: The ORACLE_SID must only be up to 12 characters long."
+     exit 1;
+  fi;
+
+  # Check whether SID is alphanumeric
+  # Github issue #246: Cannot start OracleDB image
+  if [[ "$ORACLE_SID" =~ [^a-zA-Z0-9] ]]; then
+     echo "Error: The ORACLE_SID must be alphanumeric."
+     exit 1;
+   fi;
+fi;
 
 # Setting up ORACLE_PWD if podman secret is passed on
 if [ -e '/run/secrets/oracle_pwd' ]; then
@@ -189,29 +213,6 @@ if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
       exit 0;
    fi
 fi
-
-# Default for ORACLE SID
-if [ "$ORACLE_SID" == "" ]; then
-   export ORACLE_SID=ORCLCDB
-else
-  # Make ORACLE_SID upper case
-  # Github issue # 984
-  export ORACLE_SID=${ORACLE_SID^^}
-
-  # Check whether SID is no longer than 12 bytes
-  # Github issue #246: Cannot start OracleDB image
-  if [ "${#ORACLE_SID}" -gt 12 ]; then
-     echo "Error: The ORACLE_SID must only be up to 12 characters long."
-     exit 1;
-  fi;
-
-  # Check whether SID is alphanumeric
-  # Github issue #246: Cannot start OracleDB image
-  if [[ "$ORACLE_SID" =~ [^a-zA-Z0-9] ]]; then
-     echo "Error: The ORACLE_SID must be alphanumeric."
-     exit 1;
-   fi;
-fi;
 
 # Read-only Oracle Home Config
 ORACLE_BASE_CONFIG=$("$ORACLE_HOME"/bin/orabaseconfig)
@@ -266,7 +267,7 @@ else
   # Clean up incomplete database
   rm -rf "$ORACLE_BASE"/oradata/$ORACLE_SID
   cp /etc/oratab oratab.bkp
-  sed "/$ORACLE_SID/d" oratab.bkp > /etc/oratab
+  sed "/^#/!d" oratab.bkp > /etc/oratab
   rm -f oratab.bkp
   rm -rf "$ORACLE_BASE"/cfgtoollogs/dbca/$ORACLE_SID
   rm -rf "$ORACLE_BASE"/admin/$ORACLE_SID
