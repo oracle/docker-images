@@ -131,8 +131,9 @@ RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
 USER oracle
 WORKDIR /home/oracle
 
-# Add a bashrc file to capitalize ORACLE_SID in the environment also
-RUN echo 'export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
+# Add a bashrc file to capitalize ORACLE_SID in the environment
+RUN echo 'export ORACLE_SID=${ORACLE_SID:-ORCLCDB}' > .bashrc && \
+    echo 'export ORACLE_SID=${ORACLE_SID^^}' >> .bashrc
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
