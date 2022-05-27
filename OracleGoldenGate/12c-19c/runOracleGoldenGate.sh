@@ -29,7 +29,7 @@ function getCommand {
 
 getCommand runuser
 runAsUser="${RUNUSER} -u oracle --"
-OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|replicat|server|ServiceManager)"
+OGGProcesses="(adminclient|adminsrvr|distsrvr|extract|ggsci|pmsrvr|recvsrvr|replicat|server|/bin/ServiceManager)"
 
 ##
 ## Set some reasonable defaults
