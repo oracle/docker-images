@@ -11,7 +11,6 @@
 /OracleCoherence/          @thegridman
 /OracleDatabase/           @gvenzl
 /OracleDatabase/RAC/       @psaini79
-/OracleEssbase/            @anilarora
 /OracleFMWInfrastructure/  @mriccell
 /OracleGoldenGate/         @sbalousek
 /OracleHTTPServer/         @Prabhat-Kishore
@@ -22,11 +21,10 @@
 /OracleLinuxDevelopers/    @Djelibeybi @totalamateurhour @AmedeeBulle
 /OracleRestDataServices/   @gvenzl
 /OracleSOASuite/           @knvijay @rdas0405
-/OracleUnifiedDirectory/   @kuldeepbshah @surya902
-/OracleUnifiedDirectorySM/ @kuldeepbshah @surya902
+/OracleUnifiedDirectory/   @kuldeepbshah 
+/OracleUnifiedDirectorySM/ @kuldeepbshah
 /OracleVeridata/           @arnabnandioracle
 /OracleWebCenterContent/   @deboghos @pjadam
-/OracleWebCenterSites/     @prshshuk
 /OracleWebCenterPortal/    @dgothe
 /OracleWebLogic/           @mriccell
 /OracleManagementAgent/    @drupanchal @ChaitanyaKulkarni28 @niravg75
