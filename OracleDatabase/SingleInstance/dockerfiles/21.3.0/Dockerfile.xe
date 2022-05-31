@@ -18,7 +18,7 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim
+FROM oraclelinux:8-slim
 
 # Labels
 # ------
@@ -60,11 +60,12 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $INSTALL_DIR/
 COPY $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
 
+RUN microdnf install yum
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     cd $INSTALL_DIR && \
-    yum -y install expect && \
+    yum -y install hostname expect && \
     $INSTALL_DIR/$SETUP_LINUX_FILE && \
     chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
     sed -i -e 's/\(oracle\s\+hard\s\+nofile\)/# \1/' /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
