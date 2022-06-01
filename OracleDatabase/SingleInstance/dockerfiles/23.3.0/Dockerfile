@@ -133,7 +133,7 @@ WORKDIR /home/oracle
 # Add a bashrc file to capitalize ORACLE_SID in the environment
 RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
-HEALTHCHECK --interval=1m --start-period=5m \
+HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
