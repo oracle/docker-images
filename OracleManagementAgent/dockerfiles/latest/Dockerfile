@@ -48,6 +48,10 @@ ENV LC_ALL=en_US.UTF-8
 COPY ./container-scripts/*.sh /opt/oracle-mgmtagent-bootstrap/scripts/
 RUN chmod 0544 /opt/oracle-mgmtagent-bootstrap/scripts/*.sh
 
+# Copy user provided scripts
+COPY ./user-scripts/init-agent.sh /opt/oracle-mgmtagent-bootstrap/scripts/
+RUN chmod 0544 /opt/oracle-mgmtagent-bootstrap/scripts/init-agent.sh
+
 # Copy Management Agent Installer Zip bundle
 COPY ./oracle.mgmt_agent.zip /opt/oracle-mgmtagent-bootstrap/packages/
 
