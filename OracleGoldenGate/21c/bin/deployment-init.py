@@ -143,7 +143,7 @@ def get_service_config(serviceName):
     url = 'http://' + service_address + ':' + str(service_ports['ServiceManager']) + '/services/v2/deployments/' + os.environ['OGG_DEPLOYMENT'] + '/services/' + serviceName
     response = get_requests_session().get(url, headers=rest_call_headers, auth=get_basic_auth_authentication())
     if response.status_code == 401:
-        response = get_requests_session().patch(url, headers=rest_call_headers, auth=get_digest_authentication(), json=body)
+        response = get_requests_session().patch(url, headers=rest_call_headers, auth=get_digest_authentication())
     if response.status_code == 200:
         response_json = response.json()
         if 'response' in response_json and \
