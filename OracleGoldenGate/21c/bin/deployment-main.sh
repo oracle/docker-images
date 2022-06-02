@@ -29,11 +29,9 @@ function abort() {
 
 :     "${ABORT_ON_USER_SCRIPT_ERRORS:=true}"
 :     "${SETUP_USER_SCRIPTS:=${OGG_HOME}/scripts/setup}"
-[[ -d "${SETUP_USER_SCRIPTS}" ]] || mkdir -p "${SETUP_USER_SCRIPTS}"
+[[ -d "${SETUP_USER_SCRIPTS}" ]] || abort "User scripts set up storage, '${SETUP_USER_SCRIPTS}', not found."
 :     "${STARTUP_USER_SCRIPTS:=${OGG_HOME}/scripts/startup}"
-[[ -d "${STARTUP_USER_SCRIPTS}" ]] || mkdir -p "${STARTUP_USER_SCRIPTS}"
-
-SQLPLUS="$(find ${OGG_HOME} -name sqlplus)"
+[[ -d "${STARTUP_USER_SCRIPTS}" ]] || abort "User scripts start up storage, '${SETUP_USER_SCRIPTS}', not found."
 
 NGINX_CRT="$(awk '$1 == "ssl_certificate"     { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
 NGINX_KEY="$(awk '$1 == "ssl_certificate_key" { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
@@ -152,14 +150,14 @@ function setup_deployment_directories() {
 function run_user_scripts {
 
     local SCRIPTS_ROOT="${1}";
-    
+
     [ -z "$SCRIPTS_ROOT" ] && {
         printf "%s: No SCRIPTS_ROOT passed on, no scripts will be run\n" "${0}";
         return 1;
     } || {
         if [ -d "$SCRIPTS_ROOT" ] && [ -n "$(ls -A "$SCRIPTS_ROOT")" ]; then
             printf "Executing user defined scripts in: %s\n" "${SCRIPTS_ROOT}"
-        
+
             for f in "${SCRIPTS_ROOT}"/*; do
                 [ -d "${f}" ] && {
                     run_user_scripts "${f}"
@@ -169,11 +167,7 @@ function run_user_scripts {
                                 printf "%s: running %s\n" "${0}" "${f}";
                                 . "$f" && state=$? || state=$?
                                 ;;
-                        *.sql)
-                                printf "%s: running %s\n" "${0}" "${f}";
-                                echo "exit" | LD_LIBRARY_PATH=$(dirname ${SQLPLUS}):${LD_LIBRARY_PATH} ${SQLPLUS} -s "/ as sysdba" @"$f" && state=$? || state=$?
-                                ;;
-                        *)      
+                        *)
                                 printf "%s: ignoring %s\n" "${0}" "${f}" && state=$? || state=$?
                                 ;;
                     esac
@@ -182,8 +176,7 @@ function run_user_scripts {
                         printf "## WARNING - %s: user script failed [exit code: %s]: %s\n" "${0}" "${state}" "${f}"
                         printf "#################\n"
                         [ "${ABORT_ON_USER_SCRIPT_ERRORS,,}" == "true" ] && {
-                            printf "Aborting startup! - Sleeping 10 seconds before exit\n"
-                            sleep 10;
+                            printf "Aborting startup!\n"
                             exit 1;
                         }
                     }
@@ -202,7 +195,7 @@ function run_user_scripts {
 function start_ogg() {
     $(run_as_ogg) python3 /usr/local/bin/deployment-init.py
     $(run_as_ogg) tail -F "${OGG_DEPLOYMENT_HOME}"/ServiceManager/var/log/ServiceManager.log &
-    tail_ogg_pid=$!
+    ogg_pid=$!
 }
 
 ##
@@ -222,13 +215,9 @@ function start_nginx() {
 ##  Termination handler
 ##
 function termination_handler() {
-    [[ -f "${OGG_HOME}/ogg.pid" ]] && {
-        kill  $(cat "${OGG_HOME}/ogg.pid")
-        rm -f "${OGG_HOME}/ogg.pid"
-    }
-    [[ -z "${tail_ogg_pid}" ]] || {
-        kill  "${tail_ogg_pid}"
-        unset    tail_ogg_pid
+    [[ -z "${ogg_pid}" ]] || {
+        kill  "${ogg_pid}"
+        unset    ogg_pid
     }
     [[ ! -f "/var/run/nginx.pid" ]] || {
         echo "stopping nginx"
@@ -241,8 +230,8 @@ function termination_handler() {
 ##  Signal Handling for this script
 ##
 function signal_handling() {
-    trap -                   SIGTERM SIGINT EXIT
-    trap termination_handler SIGTERM SIGINT EXIT
+    trap -                   SIGTERM SIGINT
+    trap termination_handler SIGTERM SIGINT
 }
 
 ##
