@@ -4,7 +4,7 @@
 
 Yes, this feature is supported version 19.3 onwards.
 
-Older images on the Oracle Container Registry, like the Oracle Database 12c R2 Standard Edition 2 and Enterprise Edition images, are not based on any of the Dockerfiles contained in this repository. If you require the runtime functionality documented in this repository, you will need to build an image from the appropriate Dockerfile.
+Versions prior to 19.3 available on the Oracle Container Registry, like the Oracle Database 12c R2 Standard Edition 2 and Enterprise Edition images, are not based on any of the Dockerfiles contained in this repository. If you require the runtime functionality documented in this repository, you will need to build an image from the appropriate Dockerfile.
 
 ## How do I change the timezone of my container
 
