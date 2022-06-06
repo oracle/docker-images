@@ -4,29 +4,32 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for a patched Oracle Database 19c Release 3
+# This is the Dockerfile for a patched Oracle Database 21c Release 3
 # 
 # REQUIREMETNS FOR THIS IMAGE
 # ----------------------------------
-# The oracle/rac-database:19.3.0 image has to exist
+# The oracle/rac-database:21.3.0 image has to exist
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put the downloaded patch(es) into the sub folders patch/0NN
 # Run: 
-#      $ docker build -f Dockerfile -t oracle/rac-database:19.3.0-<patch level> . 
+#      $ docker build -f Dockerfile -t oracle/rac-database:21.3.0-<patch level> . 
 #
 # Pull base image
 # ---------------
-FROM oracle/rac-database:19.3.0
+FROM oracle/database-rac:21.3.0
 
-# Maintainer
-# ----------
-MAINTAINER Paramdeep Saini  <paramdeep.saini@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-user root
+USER root
+
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "maintainer"="paramdeep Saini <paramdeep.saini@oracle.com>"                               
 
 ENV PATCH_DIR="patches" \
     GRID_PATCH_FILE="applyGridPatches.sh" \
