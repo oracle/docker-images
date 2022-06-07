@@ -66,9 +66,7 @@ $ docker run \
     -e OGG_ADMIN=<admin user name> \
     -e OGG_ADMIN_PWD=<admin password> \
     -e OGG_DEPLOYMENT=<deployment name> \
-    -e SETUP_USER_SCRIPTS=<path to setup scripts> \
-    -e STARTUP_USER_SCRIPTS=<path to startup scripts> \
-    -e ABORT_ON_USER_SCRIPT_ERRORS=<true | false>
+    -v [<host mount point>:]/u01/ogg/scripts \
     -v [<host mount point>:]/u02 \
     -v [<host mount point>:]/u03 \
     -v [<host mount point>:]/etc/nginx/cert \
@@ -82,9 +80,7 @@ Parameters:
 * `-e OGG_ADMIN`                   - The name of the administrative account to create (default: `oggadmin`)
 * `-e OGG_ADMIN_PWD`               - The password for the administrative account (default: auto generated)
 * `-e OGG_DEPLOYMENT`              - The name of the deployment (default: `Local`)
-* `-e SETUP_USER_SCRIPTS`          - Hook to run lexicographically and recursively the scripts in the directory prior to any other steps in boot sequence (default: `${OGG_HOME}/scripts/setup`)
-* `-e STARTUP_USER_SCRIPTS`        - Hook to run lexicographically and recursively the scripts in the directory after ogg/nginx startup (default: `${OGG_HOME}/scripts/startup`)
-* `-e ABORT_ON_USER_SCRIPT_ERRORS` - User scripts must return a 0 status to continue processing boot sequence (default: `true`)
+* `-v /u01/ogg/scripts`            - The volume used for executing setup (${OGG_HOME}/scripts/setup) and startup (${OGG_HOME}/scripts/startup) user scripts (default: none)
 * `-v /u02`                        - The volume used for persistent GoldenGate data (default: use container storage)
 * `-v /u03`                        - The volume used for temporary GoldenGate data (default: use container storage)
 * `-v /etc/nginx/cert`             - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
@@ -154,6 +150,16 @@ $ docker exec -ti --user ogg <container name> adminclient
 Oracle GoldenGate Administration Client for Oracle
 Version 21.3.0.0.0 ...
 ```
+
+### Running scripts before setup and on startup
+The container images can be configured to run scripts before setup and on startup. Currently, sh extensions are supported. For setup scripts just mount the volume /u01/ogg/scripts/setup or extend the image to include scripts in this directory. For startup scripts just mount the volume /u01/ogg/scripts/startup or extend the image to include scripts in this directory. Both of those locations are static and the content is controlled by the volume mount.
+
+The example below mounts the local directory myScripts to /u01/ogg/scripts which is then searched for custom startup scripts:
+
+```sh
+$ docker run -v /myScripts:/u01/ogg/scripts oracle/goldengate:21.3.0.0.0
+```
+
 
 ## Known Issues
 

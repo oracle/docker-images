@@ -27,10 +27,9 @@ function abort() {
 :     "${OGG_HOME:?}"
 [[ -d "${OGG_HOME}"            ]] || abort "Deployment runtime, '${OGG_HOME}'. not found."
 
-:     "${ABORT_ON_USER_SCRIPT_ERRORS:=true}"
-:     "${SETUP_USER_SCRIPTS:=${OGG_HOME}/scripts/setup}"
+:     "${SETUP_USER_SCRIPTS=${OGG_HOME}/scripts/setup}"
 [[ -d "${SETUP_USER_SCRIPTS}" ]] || abort "User scripts set up storage, '${SETUP_USER_SCRIPTS}', not found."
-:     "${STARTUP_USER_SCRIPTS:=${OGG_HOME}/scripts/startup}"
+:     "${STARTUP_USER_SCRIPTS=${OGG_HOME}/scripts/startup}"
 [[ -d "${STARTUP_USER_SCRIPTS}" ]] || abort "User scripts start up storage, '${SETUP_USER_SCRIPTS}', not found."
 
 NGINX_CRT="$(awk '$1 == "ssl_certificate"     { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
@@ -132,20 +131,12 @@ function setup_deployment_directories() {
 ##
 ## Hook for launching custom scripts in the container before and after ogg start
 ##     Default Values:
-##       - ${ABORT_ON_USER_SCRIPT_ERRORS} : true
 ##       - ${SETUP_USER_SCRIPTS}          : "${OGG_HOME}/scripts/setup"
 ##       - ${STARTUP_USER_SCRIPTS}        : "${OGG_HOME/scripts/startup}"
 ##
 ## Scripts are run lexicographically and recursively from the directories pointed to by:
 ##      - ${SETUP_USER_SCRIPTS} are executed prior to any other steps in the boot sequence
 ##      - ${STARTUP_USER_SCRIPTS} are executed after ogg/nginx startup
-##
-## When ${ABORT_ON_USER_SCRIPT_ERRORS} is true:
-##    Scripts must return a status of 0 on exit or the boot proccess will abort
-##
-## When ${ABORT_ON_USER_SCRIPT_ERRORS} is false:
-##    Scripts that return a non-zero status will issue a warning but will continue
-##    the boot process
 ##
 function run_user_scripts {
 
@@ -171,17 +162,11 @@ function run_user_scripts {
                                 printf "%s: ignoring %s\n" "${0}" "${f}" && state=$? || state=$?
                                 ;;
                     esac
-                    [ $state -ne 0 ] && {
-                        printf "#################\n"
-                        printf "## WARNING - %s: user script failed [exit code: %s]: %s\n" "${0}" "${state}" "${f}"
-                        printf "#################\n"
-                        [ "${ABORT_ON_USER_SCRIPT_ERRORS,,}" == "true" ] && {
-                            printf "Aborting startup!\n"
-                            exit 1;
-                        }
-                    }
+                    echo "";
                 }
             done
+            echo "DONE: Executing user defined scripts"
+            echo "";
         fi
     }
 
