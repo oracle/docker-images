@@ -149,8 +149,11 @@ directory.
 
 ## Using Wallets with Instant Client
 
-Oracle Wallets allow database connection over TLS and/or without requiring
-database credentials.
+Oracle Wallets allow database connection over mutual TLS and/or without
+requiring database credentials.
+
+> Note that starting from Instant Client 19.14 and 21.5, you can use 1-way TLS
+> with Oracle Autonomous Database instead of downloading a wallet.
 
 To use a wallet with Instant Client, obtain your wallet files and place them in
 a secure host directory.  Then, when running a container, use a volume to mount

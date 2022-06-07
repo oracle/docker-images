@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -50,12 +50,12 @@ USER root
 RUN mkdir -p ${BASE_DIR} && \
     mkdir -p ${PATCHES_BASE_DIR}/opatch_patch && \
     mkdir -p ${PATCHES_BASE_DIR}/patches && \
-    useradd -b ${BASE_DIR} -d ${ORACLE_HOME} -m -s /bin/bash oracle && \
-	chmod -R a+xr ${PATCHES_BASE_DIR} && chown -R oracle:oracle ${PATCHES_BASE_DIR} && \
-    chmod -R a+xr ${BASE_DIR} && chown -R oracle:oracle ${BASE_DIR} && \
+   useradd -b ${BASE_DIR} -d ${ORACLE_HOME} -g root -m -s /bin/bash oracle && \
+	chmod -R a+xr ${PATCHES_BASE_DIR} && chown -R oracle:root ${PATCHES_BASE_DIR} && \
+    chmod -R a+xr ${BASE_DIR} && chown -R oracle:root ${BASE_DIR} && \
     mkdir -p ${USER_PROJECTS_DIR} && \
-    chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 770 ${USER_PROJECTS_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
+    chown -R oracle:root ${USER_PROJECTS_DIR} && chmod -R 770 ${USER_PROJECTS_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:root ${SCRIPT_DIR} && \
     yum install -y libaio hostname vi && \
     rm -rf /var/cache/yum
 
@@ -68,17 +68,17 @@ FROM base as builder
 COPY container-scripts/* ${SCRIPT_DIR}/
 COPY install/* ${BASE_DIR}/
 ADD  $FMW_OUD_JAR ${BASE_DIR}/
-COPY --chown=oracle:oracle Dockerfile opatch_patch/* ${PATCHES_BASE_DIR}/opatch_patch/
-COPY --chown=oracle:oracle Dockerfile patches/* ${PATCHES_BASE_DIR}/patches/
+COPY --chown=oracle:root Dockerfile opatch_patch/* ${PATCHES_BASE_DIR}/opatch_patch/
+COPY --chown=oracle:root Dockerfile patches/* ${PATCHES_BASE_DIR}/patches/
 
 #
 # Update Permissions for packages and scripts
 # --------------------------------------------
 RUN cd ${BASE_DIR} && chmod 755 *.jar && \
      chmod a+xr ${SCRIPT_DIR}/* && \
-     chown -R oracle:oracle ${SCRIPT_DIR} && \
-     chown -R oracle:oracle ${BASE_DIR} && \
-     chown -R oracle:oracle ${PATCHES_BASE_DIR}
+     chown -R oracle:root ${SCRIPT_DIR} && \
+     chown -R oracle:root ${BASE_DIR} && \
+     chown -R oracle:root ${PATCHES_BASE_DIR}
 
 # 
 # Installation of OUD Binaries
@@ -150,8 +150,8 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls ${PATCHES_BASE_DIR}/patches/p*.
 # -------------
 FROM base
 
-COPY --chown=oracle:oracle --from=builder $BASE_DIR $BASE_DIR
-COPY --chown=oracle:oracle --from=builder $JAVA_HOME $JAVA_HOME
+COPY --chown=oracle:root --from=builder $BASE_DIR $BASE_DIR
+COPY --chown=oracle:root --from=builder $JAVA_HOME $JAVA_HOME
 
 USER oracle
 WORKDIR ${ORACLE_HOME}

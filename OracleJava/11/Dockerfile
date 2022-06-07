@@ -9,7 +9,7 @@
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) jdk-11.XX_linux-x64_bin.tar.gz
+# (1) jdk-11.XX_linux-x64_bin.tar.gz or jdk-11.XX_linux-aarch64_bin.tar.gz
 #     Download from https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -36,19 +36,26 @@ RUN set -eux; \
 ENV LANG en_US.UTF-8
 
 
-# Environment variables for the builder image.  
+# Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=jdk-11.0.14_linux-x64_bin.tar.gz \
-	JAVA_SHA256=9732bdd946b393ec527e4d5ff1f7e4667dc5150685bc3c9c7b1d042c657929db \
-	JAVA_HOME=/usr/java/jdk-11
+ENV JAVA_HOME=/usr/java/jdk-11
 
 ##
-COPY $JAVA_PKG /tmp/jdk.tgz
+COPY *.tar.gz /tmp/
 RUN set -eux; \
-	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
+	ARCH=$(uname -m) && \
+    if [ "$ARCH" == "x86_64" ]; \
+    then \
+		mv $(ls /tmp/jdk-11*_linux-x64_bin.tar.gz) /tmp/jdk.tar.gz ; \
+        JAVA_SHA256=a40ad9342646ec14196deaf28c64f697fef4c698296f0e7d39b638f360780d27 ; \
+    else \
+	    mv $(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz) /tmp/jdk.tar.gz ; \
+    	JAVA_SHA256=fbb191c2dfc976e61691b1c4805c6ac94cf39f72464779f421d207db1571540a ; \    	
+    fi && \
+	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
+	tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
 	
 ## Get a fresh version of SLIM for the final image	
 FROM oraclelinux:7-slim
@@ -56,7 +63,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.14 \
+ENV JAVA_VERSION=11.0.15.1 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	

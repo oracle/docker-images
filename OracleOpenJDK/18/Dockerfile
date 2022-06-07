@@ -21,11 +21,11 @@
 #		$ bash build.sh
 #
 
-FROM oraclelinux:8
+FROM oraclelinux:8 
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-ENV JAVA_PKG=https://download.java.net/java/GA/jdk18/43f95e8614114aeaa8e8a5fcf20a682d/36/GPL/openjdk-18_linux-x64_bin.tar.gz \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL \
 	JAVA_HOME=/usr/java/jdk-18 \
 	LANG=en_US.UTF-8
 
@@ -34,7 +34,6 @@ ENV JAVA_PKG=https://download.java.net/java/GA/jdk18/43f95e8614114aeaa8e8a5fcf20
 	
 ENV	PATH $JAVA_HOME/bin:$PATH
 	
-
 # Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
 RUN set -eux; \
 	dnf -y update; \
@@ -44,6 +43,12 @@ RUN set -eux; \
 		freetype fontconfig \
 	; \
 	rm -rf /var/cache/dnf; \
+	ARCH=$(uname -m) && \
+	# Java uses just x64 in the name of the tarball
+    if [ "$ARCH" == "x86_64" ]; \
+        then ARCH="x64"; \
+    fi && \
+    JAVA_PKG="$JAVA_URL/openjdk-18.0.1.1_linux-${ARCH}_bin.tar.gz" ; \
 	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \

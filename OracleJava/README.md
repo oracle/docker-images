@@ -1,11 +1,11 @@
 Oracle Java in Containers
 =====
-This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 17, 11, and for Server JRE 8.
+This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 18, 17, 11, and for Server JRE 8.
 
 Oracle Java Server JRE provides the features from Oracle Java JDK commonly required for server-side applications (i.e. Running a Java EE application server). For more information about Server JRE, visit the [Understanding the Server JRE blog entry](https://blogs.oracle.com/java-platform-group/understanding-the-server-jre) from the Java Product Management team.
 
 ## Building the Oracle Java base image
-For JDK 17 the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
+For JDK 18 and 17 the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
 
 For JDK 11 and Server JRE 8 you must download the linux x64 compressed archive (tar.gz) of the [JDK or Server JRE](https://www.oracle.com/javadownload) for the version you want to create an image of and place it in the same directory as the corresponding Dockerfile.
 
@@ -14,10 +14,10 @@ for Server JRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8
 
 To build the container image run `docker build`. Tag it with the correct version number.
 
-e.g. For JDK 17 run
+e.g. For JDK 18 run
 ```
-$ cd ../OracleJava/17
-$ docker build --tag oracle/jdk:17 .
+$ cd ../OracleJava/18
+$ docker build --tag oracle/jdk:18 .
 ```
 
 for Server JRE 8 run

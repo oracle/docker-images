@@ -18,7 +18,7 @@ $ bash build.sh
 
 ### Parent image OS version
 
-The Oracle Java images for OpenJDK 18 and 17 use `oraclelinux:8` as the default parent image.
+The Oracle Java images for OpenJDK 18 uses `oraclelinux:8` as the default parent image.
 
 
 ## License

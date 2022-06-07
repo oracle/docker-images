@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -34,6 +34,7 @@ ENV FMW_OUD_JAR=fmw_12.2.1.4.0_oud.jar \
     BASE_DIR=/u01 \
     ORACLE_HOME=/u01/oracle \
     SCRIPT_DIR=/u01/oracle/container-scripts \
+    HEALTH_SCRIPT_FILE=/u01/oracle/container-scripts/get_healthcheck_url.sh \
     PROPS_DIR=/u01/oracle/properties \
     PATCHES_BASE_DIR=/tmp/oracle_patches \
     VOLUME_DIR=/u01/oracle/user_projects \
@@ -56,12 +57,12 @@ USER root
 RUN mkdir -p ${BASE_DIR} && \
     mkdir -p ${PATCHES_BASE_DIR}/opatch_patch && \
     mkdir -p ${PATCHES_BASE_DIR}/patches && \
-    chmod a+xr ${BASE_DIR} && chown oracle:oracle ${BASE_DIR} && \
-    chmod -R a+xr ${PATCHES_BASE_DIR} && chown -R oracle:oracle ${PATCHES_BASE_DIR} && \
+chmod a+xr ${BASE_DIR} && chown oracle:root ${BASE_DIR} && \
+    chmod -R a+xr ${PATCHES_BASE_DIR} && chown -R oracle:root ${PATCHES_BASE_DIR} && \
     mkdir -p ${VOLUME_DIR} && \
-    chown -R oracle:oracle ${VOLUME_DIR} && chmod -R 770 ${VOLUME_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-    mkdir -p ${PROPS_DIR} && chown oracle:oracle ${PROPS_DIR} && \
+    chown -R oracle:root ${VOLUME_DIR} && chmod -R 770 ${VOLUME_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:root ${SCRIPT_DIR} && \
+    mkdir -p ${PROPS_DIR} && chown oracle:root ${PROPS_DIR} && \
     yum install -y libaio hostname && \
     rm -rf /var/cache/yum
 
@@ -74,17 +75,17 @@ FROM base as builder
 COPY container-scripts/* ${SCRIPT_DIR}/
 COPY install/* ${BASE_DIR}/
 ADD  $FMW_OUD_JAR ${BASE_DIR}/
-COPY --chown=oracle:oracle Dockerfile opatch_patch/* ${PATCHES_BASE_DIR}/opatch_patch/
-COPY --chown=oracle:oracle Dockerfile patches/* ${PATCHES_BASE_DIR}/patches/
+COPY --chown=oracle:root Dockerfile opatch_patch/* ${PATCHES_BASE_DIR}/opatch_patch/
+COPY --chown=oracle:root  Dockerfile patches/* ${PATCHES_BASE_DIR}/patches/
 
 #
 # Update Permissions for packages and scripts
 # --------------------------------------------
 RUN cd ${BASE_DIR} && chmod 755 *.jar && \
      chmod a+xr ${SCRIPT_DIR}/* && \
-     chown oracle:oracle ${SCRIPT_DIR}/* && \
+     chown oracle:root ${SCRIPT_DIR}/* && \
      chmod -R a+xr ${PATCHES_BASE_DIR} && \
-     chown -R oracle:oracle ${PATCHES_BASE_DIR}
+     chown -R oracle:root ${PATCHES_BASE_DIR}
 
 # 
 # Installation of OUD Binaries
@@ -144,10 +145,11 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls ${PATCHES_BASE_DIR}/patches/p*.
 # -------------
 FROM base 
 
-COPY --chown=oracle:oracle --from=builder $BASE_DIR $BASE_DIR
-COPY --chown=oracle:oracle --from=builder $JAVA_HOME $JAVA_HOME
+COPY --chown=oracle:root --from=builder $BASE_DIR $BASE_DIR
+COPY --chown=oracle:root --from=builder $JAVA_HOME $JAVA_HOME
 
 USER oracle
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
 WORKDIR ${ORACLE_HOME}
 # Define default command to start bash.
 ENTRYPOINT ["sh", "-c", "${SCRIPT_DIR}/createDomainAndStart.sh"]

@@ -1,3 +1,6 @@
+[package-manager-packages]
+libaio hostname vi
+
 [before-jdk-install]
 # Instructions/Commands to be executed Before JDK install
 
@@ -16,14 +19,14 @@ ENV BASE_DIR=/u01 \
 USER root
 
 RUN mkdir -p ${USER_PROJECTS_DIR} && \
-    chown -R oracle:oracle ${USER_PROJECTS_DIR} && chmod -R 770 ${USER_PROJECTS_DIR} && \
-    mkdir -p ${SCRIPT_DIR} && chown oracle:oracle ${SCRIPT_DIR} && \
-    yum install -y libaio hostname vi && \
-    rm -rf /var/cache/yum
+    chown -R oracle:root ${USER_PROJECTS_DIR} && chmod -R 770 ${USER_PROJECTS_DIR} && \
+    mkdir -p ${SCRIPT_DIR} && chown oracle:root ${SCRIPT_DIR} 
+    
 
-COPY --chown=oracle:oracle files/container-scripts/ ${SCRIPT_DIR}/
+COPY --chown=oracle:root files/container-scripts/ ${SCRIPT_DIR}/
 RUN chmod a+xr ${SCRIPT_DIR}/* && \
-     chown -R oracle:oracle ${SCRIPT_DIR}
+     chown -R oracle:root ${SCRIPT_DIR} && \
+     chown -R oracle:root ${BASE_DIR}
 
 USER oracle
 # Disabling Enpoint Identification for selected CLIs to allow connecting to OUD Instance with any hostname \
