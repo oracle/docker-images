@@ -15,7 +15,7 @@ usage() {
 
 Usage: ./buildPatchedDockerImage.sh -v [version] -p [patch label]
 Builds a patched Docker Image for Oracle Database.
-  
+
 Parameters:
    -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
@@ -40,7 +40,8 @@ fi
 # Parameters
 ENTERPRISE=0
 STANDARD=0
-VERSION="19.3.0"
+LATEST="latest"
+VERSION='x'
 PATCHLABEL="Patch"
 DOCKEROPS=""
 
@@ -62,11 +63,17 @@ while getopts "hesv:p:" optname; do
   esac
 done
 
+if [ "${VERSION}" = "x" ]; then
+
+  echo "Version is not specified. Pass the version as a parameter such 21.3.0 or 19.3.0 based on the image version you want to patch"
+  usage
+fi
+
 # Oracle Database Image Name
 IMAGE_NAME="oracle/database-rac:$VERSION-$PATCHLABEL"
 
 # Go into version folder
-cd $VERSION
+cd $LATEST
 
 echo "=========================="
 echo "DOCKER version:"
@@ -113,15 +120,14 @@ echo ""
 
 if [ $? -eq 0 ]; then
 cat << EOF
-  Oracle Database Docker Image for version $VERSION patch $PATCHLABEL is ready to be extended: 
-    
+  Oracle Database Docker Image for version $VERSION patch $PATCHLABEL is ready to be extended:
+
     --> $IMAGE_NAME
 
   Build completed in $BUILD_ELAPSED seconds.
-  
+
 EOF
 
 else
   echo "Oracle Database Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
-
