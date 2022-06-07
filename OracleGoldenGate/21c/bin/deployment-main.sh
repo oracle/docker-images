@@ -165,7 +165,7 @@ function run_user_scripts {
                     case "$f" in
                         *.sh)
                                 printf "%s: running %s\n" "${0}" "${f}";
-                                . "$f" && state=$? || state=$?
+                                source "$f" && state=$? || state=$?
                                 ;;
                         *)
                                 printf "%s: ignoring %s\n" "${0}" "${f}" && state=$? || state=$?
