@@ -133,17 +133,11 @@ def get_digest_authentication():
     userName, credential = get_admin_credentials()
     return requests.auth.HTTPDigestAuth(userName, credential)
 
-def get_basic_auth_authentication():
-    """Retrieve a basic authentication method for making a request"""
-    userName, credential = get_admin_credentials()
-    return requests.auth.HTTPBasicAuth(userName, credential)
 
 def get_service_config(serviceName):
     """Retrieve the configuration of a service from Service Manager"""
     url = 'http://' + service_address + ':' + str(service_ports['ServiceManager']) + '/services/v2/deployments/' + os.environ['OGG_DEPLOYMENT'] + '/services/' + serviceName
-    response = get_requests_session().get(url, headers=rest_call_headers, auth=get_basic_auth_authentication())
-    if response.status_code == 401:
-        response = get_requests_session().patch(url, headers=rest_call_headers, auth=get_digest_authentication())
+    response = get_requests_session().get(url, headers=rest_call_headers, auth=get_digest_authentication())
     if response.status_code == 200:
         response_json = response.json()
         if 'response' in response_json and \
@@ -159,9 +153,7 @@ def set_service_config(serviceName, config):
         'config': config,
         'status': 'restart'
     }
-    response = get_requests_session().patch(url, headers=rest_call_headers, auth=get_basic_auth_authentication(), json=body)
-    if response.status_code == 401:
-        response = get_requests_session().patch(url, headers=rest_call_headers, auth=get_digest_authentication(), json=body)
+    response = get_requests_session().patch(url, headers=rest_call_headers, auth=get_digest_authentication(), json=body)
     if response.status_code == 200:
         response_json = response.json()
         if 'response' in response_json:
