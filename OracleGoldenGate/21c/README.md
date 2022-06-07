@@ -21,6 +21,8 @@ This project was tested with:
 
 * Oracle GoldenGate 21.3.0.0.0 Microservices for Oracle on Linux x86-64
 * Oracle GoldenGate 21.4.0.0.0 Microservices for Bigdata on Linux x86-64
+* Oracle GoldenGate 21.3.0.0.0 Microservices for MySQL on Linux x86-64
+* Oracle GoldenGate 21.3.0.0.0 Microservices for PostgreSQL on Linux x86-64
 
 Support for Oracle GoldenGate Classic Architecture is not provided.
 
@@ -44,19 +46,9 @@ Sending build context to Docker daemon
 ...
 Successfully tagged oracle/goldengate:21.3.0.0.0
 ```
-
-To create a container image for GoldenGate for BigData, use the following script:
-
-```sh
-$ docker build --tag=oracle/goldengate-for-bigdata:21.4.0.0.0 \
-                --build-arg INSTALLER=214000_ggs_Linux_x64_BigData_services_shiphome.zip .
-Sending build context to Docker daemon
-...
-Successfully tagged oracle/goldengate-for-bigdata:21.4.0.0.0   
-```
+Similarly, for other Databases like BigData, MySQL, PostgreSQL, etc. provide the name of the zip file for the INSTALLER argument.
 
 ## Running Oracle GoldenGate in a Container
-
 Use the `docker run` command to create and start a container from the Oracle GoldenGate container image.
 
 ```sh
@@ -75,15 +67,15 @@ $ docker run \
 
 Parameters:
 
-* `<container name>`               - A name for the new container (default: auto generated)
-* `-p <host-port>`                 - The host port to map to the Oracle GoldenGate HTTPS server (default: no mapping)
-* `-e OGG_ADMIN`                   - The name of the administrative account to create (default: `oggadmin`)
-* `-e OGG_ADMIN_PWD`               - The password for the administrative account (default: auto generated)
-* `-e OGG_DEPLOYMENT`              - The name of the deployment (default: `Local`)
-* `-v /u01/ogg/scripts`            - The volume used for executing setup (${OGG_HOME}/scripts/setup) and startup (${OGG_HOME}/scripts/startup) user scripts (default: none)
-* `-v /u02`                        - The volume used for persistent GoldenGate data (default: use container storage)
-* `-v /u03`                        - The volume used for temporary GoldenGate data (default: use container storage)
-* `-v /etc/nginx/cert`             - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
+* `<container name>`   - A name for the new container (default: auto generated)
+* `-p <host-port>`     - The host port to map to the Oracle GoldenGate HTTPS server (default: no mapping)
+* `-e OGG_ADMIN`       - The name of the administrative account to create (default: `oggadmin`)
+* `-e OGG_ADMIN_PWD`   - The password for the administrative account (default: auto generated)
+* `-e OGG_DEPLOYMENT`  - The name of the deployment (default: `Local`)
+* `-v /u01/ogg/scripts`- The volume used for executing setup (${OGG_HOME}/scripts/setup) and startup (${OGG_HOME}/scripts/startup) user scripts (default: none)
+* `-v /u02`            - The volume used for persistent GoldenGate data (default: use container storage)
+* `-v /u03`            - The volume used for temporary GoldenGate data (default: use container storage)
+* `-v /etc/nginx/cert` - The volume used for storing the SSL certificate for the HTTPS server (default: create a self-signed certificate)
 
 All parameters are optional, so the following command will work, too:
 
@@ -160,7 +152,6 @@ The example below mounts the local directory myScripts to /u01/ogg/scripts which
 $ docker run -v /myScripts:/u01/ogg/scripts oracle/goldengate:21.3.0.0.0
 ```
 
-
 ## Known Issues
 
 None
@@ -173,4 +164,4 @@ To download and run Oracle GoldenGate, regardless whether inside or outside a co
 
 ## Copyright
 
-Copyright &copy; 2021 Oracle and/or its affiliates.
+Copyright &copy; 2022 Oracle and/or its affiliates.
