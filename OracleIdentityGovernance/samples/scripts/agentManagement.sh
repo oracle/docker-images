@@ -29,8 +29,8 @@ validateEmpty(){
   fi
 
 }
-createDir(){
 
+createDir(){
 
    if [[ ! -d "$1" ]]
    then
@@ -112,6 +112,7 @@ isDockerAvailable()
     containerRuntime="docker";
   fi
 }
+
 isPodmanAvailable()
 {
   if [[ $(podman --version 2>/dev/null) ]]
@@ -152,7 +153,7 @@ detectContainerRuntime()
 
   if [ -z "$containerRuntime" -a "$containerRuntime" == "" ]
   then
-    echo "ERROR: No contaner runtime available. Please install docker/podman before proceeding"
+    echo "ERROR: No container runtime available. Please install docker/podman before proceeding"
     errorFlag=true
     return
   fi
@@ -166,12 +167,14 @@ copyAndUnzipAgentPackage()
    rm -rf "$AGENTDIR"/*
    unzip "$AP" -d "$AGENTDIR"
 }
+
 copyConfigOverride(){
    if [ -f  "$configOverride" ]
   then
     cp -f "$configOverride"  "$CONFDIR"/config.properties
   fi
 }
+
 copyConfig(){
   echo "INFO: Copying wallet and config.json"
   source "$ENV_FILE_TEMP"
@@ -322,10 +325,12 @@ runAgent(){
       fi
   fi
 }
+
 hasDockerPermissions()
 {
   echo ""
 }
+
 isWriteAccessOnVolume()
 {
   permissions=$(ls -ld "$PV" | awk '{print $1}')
@@ -334,19 +339,12 @@ isWriteAccessOnVolume()
     errorFlag=true
   fi
 }
-isImageTarValid()
-{
-  echo ""
-}
-isImageChecksumValid()
-{
-  echo ""
-}
 
 validate()
 {
   echo "Validating Agent"
 }
+
 info(){
   echo "Agent Id           : $AI"
 
@@ -363,6 +361,7 @@ info(){
   echo "Logs directory     : "${PV}"/data/logs"
 
 }
+
 agentDaemonStatus(){
   validateStatus=$(cat "$CONFDIR"/status.txt)
   if [[ "$validateStatus" == "AGENT_RUNNING_NORMALLY" ]]
@@ -374,6 +373,7 @@ agentDaemonStatus(){
     echo "Agent Status       : Stopped"
   fi
 }
+
 status(){
   errorFlag=false
   if [ -f "$ENV_FILE" ]
@@ -464,6 +464,7 @@ fetchAgentContainerImage(){
     exit 1
   fi
 }
+
 isValidChecksum()
 {
   echo "INFO: Verifying Integrity Check"
@@ -474,6 +475,7 @@ isValidChecksum()
      exit 1
   fi
 }
+
 install()
 {
   if [ -f "$ENV_FILE_TEMP" ]
@@ -738,6 +740,7 @@ restart()
   fi
   start
 }
+
 uninstall(){
 
   echo "WARN: This will remove the existing agent and clean up the install directory."
@@ -767,6 +770,7 @@ uninstall(){
     echo "INFO: Agent uninstalled successfully"
   fi
 }
+
 rename(){
   source "$ENV_FILE_TEMP"
   validateEmpty "${AI}" "Agent Id" "--agentid"
