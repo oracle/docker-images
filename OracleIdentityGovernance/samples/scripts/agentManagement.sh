@@ -380,6 +380,7 @@ status(){
    then
      source "$ENV_FILE"
   fi
+  validateEmpty "${PV}" "Volume" "--volume"
   isAgentAvailable
   if [ $errorFlag == "true" ]; then
            echo "Agent is not installed."
