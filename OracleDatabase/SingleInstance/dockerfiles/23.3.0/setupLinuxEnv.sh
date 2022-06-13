@@ -21,7 +21,7 @@ ln -s "$ORACLE_BASE"/scripts /docker-entrypoint-initdb.d && \
 mkdir -p "$ORACLE_BASE"/oradata /home/oracle && \
 mkdir -p "$ORACLE_HOME" && \
 chmod ug+x "$ORACLE_BASE"/*.sh && \
-microdnf -y install oracle-database-preinstall-21c openssl hostname && \
+microdnf -y install oracle-database-preinstall-21c gcc openssl hostname && \
 rm -rf /var/cache/yum && \
 ln -s "$ORACLE_BASE"/"$PWD_FILE" /home/oracle/ && \
 echo oracle:oracle | chpasswd && \

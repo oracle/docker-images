@@ -1,4 +1,4 @@
-#! /usr/bin/python -u
+#! /usr/bin/env python
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
@@ -23,6 +23,9 @@ from multiprocessing.connection import Listener, Client
 
 # Multiprocess communication auth key
 AUTHKEY = 'vkidSQkgAHc='
+if hasattr(AUTHKEY, 'encode'):
+    AUTHKEY = AUTHKEY.encode()
+
 DIR_LOCK_FILE = os.sep + '.dirlock'
 
 def acquire_lock(lock_file, sock_file, block, heartbeat):
