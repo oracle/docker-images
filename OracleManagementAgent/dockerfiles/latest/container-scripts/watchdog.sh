@@ -228,6 +228,10 @@ function start_agent()
       return 0
   fi
 
+  if [ -e "${SCRIPTS}/init-agent.sh" ]; then
+    execute_cmd "${SCRIPTS}/init-agent.sh" "initialize agent"
+  fi
+
   log "Starting $APPNAME ..."
   su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_start.sh' -s /bin/sh $RUN_AGENT_AS_USER &
 
