@@ -83,10 +83,9 @@ EOF
         $(run_as_ogg) tar xf /tmp/installer/*.tar -C "${OGG_HOME}"
     fi
 
-    for dir in "${OGG_HOME}/scripts/setup" "${OGG_HOME}/scripts/startup"; do
-        mkdir -p "${dir}"
-        chown -R ogg:ogg "$(dirname "${dir}")"
-    done
+    mkdir -p "${OGG_HOME}/scripts/"{setup,startup}
+    chown -R ogg:ogg "${OGG_HOME}/scripts"
+
 }
 
 ##

@@ -27,10 +27,8 @@ function abort() {
 :     "${OGG_HOME:?}"
 [[ -d "${OGG_HOME}"            ]] || abort "Deployment runtime, '${OGG_HOME}'. not found."
 
-:     "${SETUP_USER_SCRIPTS=${OGG_HOME}/scripts/setup}"
-[[ -d "${SETUP_USER_SCRIPTS}" ]] || abort "User scripts set up storage, '${SETUP_USER_SCRIPTS}', not found."
-:     "${STARTUP_USER_SCRIPTS=${OGG_HOME}/scripts/startup}"
-[[ -d "${STARTUP_USER_SCRIPTS}" ]] || abort "User scripts start up storage, '${SETUP_USER_SCRIPTS}', not found."
+:     "${OGG_DEPLOYMENT_SCRIPTS:?}"
+[[ -d "${OGG_DEPLOYMENT_SCRIPTS}" ]] || abort "OGG deployment scripts storage, '${OGG_DEPLOYMENT_SCRIPTS}', not found."
 
 NGINX_CRT="$(awk '$1 == "ssl_certificate"     { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
 NGINX_KEY="$(awk '$1 == "ssl_certificate_key" { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
@@ -131,12 +129,11 @@ function setup_deployment_directories() {
 ##
 ## Hook for launching custom scripts in the container before and after ogg start
 ##     Default Values:
-##       - ${SETUP_USER_SCRIPTS}          : "${OGG_HOME}/scripts/setup"
-##       - ${STARTUP_USER_SCRIPTS}        : "${OGG_HOME/scripts/startup}"
+##       - ${OGG_DEPLOYMENT_SCRIPTS}          : "${OGG_HOME}/scripts"
 ##
 ## Scripts are run lexicographically and recursively from the directories pointed to by:
-##      - ${SETUP_USER_SCRIPTS} are executed prior to any other steps in the boot sequence
-##      - ${STARTUP_USER_SCRIPTS} are executed after ogg/nginx startup
+##      - ${OGG_DEPLOYMENT_SCRIPTS}/setup are executed prior to any other steps in the boot sequence
+##      - ${OGG_DEPLOYMENT_SCRIPTS}/startup are executed after ogg/nginx startup
 ##
 function run_user_scripts {
 
@@ -205,7 +202,6 @@ function termination_handler() {
         unset    ogg_pid
     }
     [[ ! -f "/var/run/nginx.pid" ]] || {
-        echo "stopping nginx"
         /usr/sbin/nginx -s stop
     }
     exit 0
@@ -222,7 +218,7 @@ function signal_handling() {
 ##
 ##  Entrypoint
 ##
-run_user_scripts "${SETUP_USER_SCRIPTS}"
+run_user_scripts "${OGG_DEPLOYMENT_SCRIPTS}/setup"
 generatePassword
 setup_deployment_directories
 locate_java
@@ -230,5 +226,5 @@ locate_lib_jvm
 start_ogg
 start_nginx
 signal_handling
-run_user_scripts "${STARTUP_USER_SCRIPTS}"
+run_user_scripts "${OGG_DEPLOYMENT_SCRIPTS}/startup"
 wait
