@@ -82,6 +82,10 @@ EOF
     else
         $(run_as_ogg) tar xf /tmp/installer/*.tar -C "${OGG_HOME}"
     fi
+
+    mkdir -p "${OGG_HOME}/scripts/"{setup,startup}
+    chown -R ogg:ogg "${OGG_HOME}/scripts"
+
 }
 
 ##
