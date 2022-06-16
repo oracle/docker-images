@@ -198,7 +198,7 @@ def establish_service_manager(hasServiceManager):
             option('oggDeployHome',              deployment_directory) + \
             option('deploymentName',            'ServiceManager') + \
             option('authUser',                   userName) + \
-            option('authModes',                 'Digest,Basic') + \
+            option('authModes',                 'Digest-SHA-256,Digest,Basic') + \
             option('silent') + \
             option('nonsecure')
         subprocess.call(shell_command, shell=True, env=deployment_env)
@@ -235,13 +235,13 @@ def create_ogg_deployment():
         option('authUser',                   userName) + \
         option('enablePmSrvr',              'Yes') + \
         option('criticalPmSrvr',            'Yes') + \
-        option('pmSrvrDataStoreType',       'LMDB') + \
+        option('pmSrvrDataStoreType',       'LMDB') +f \
         option('portAdminSrvr',              service_ports['adminsrvr']) + \
         option('portDistSrvr',               service_ports['distsrvr' ]) + \
         option('portRcvrSrvr',               service_ports['recvsrvr' ]) + \
         option('portPmSrvr',                 service_ports['pmsrvr'   ]) + \
         option('portPmSrvrUdp',              service_ports['pmsrvr'   ]) + \
-        option('authModes',                 'Digest,Basic') + \
+        option('authModes',                 'Digest-SHA-256,Digest,Basic') + \
         option('silent') + \
         option('nonsecure')
     subprocess.call(shell_command, shell=True, env=deployment_env)
