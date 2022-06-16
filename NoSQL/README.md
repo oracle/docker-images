@@ -55,21 +55,29 @@ following container:
 
 $ docker run --rm -ti --link kvlite:store oracle/nosql:ce  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
 
-20.3.19 2021-09-29 04:04:01 UTC  Build id: b8acf274b357 Edition: Community
+21.2.46 2022-05-24 20:36:59 UTC  Build id: 1b73ce65d872 Edition: Community
+
+$ docker run --rm -ti --link kvlite:store oracle/nosql:ce   java -jar lib/kvstore.jar runadmin -host store -port 5000 \
+-store kvstore show parameters -service sn1 | grep GB
+    path=/kvroot/kvstore/sn1 size=10 GB
+
 
 $ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/kvstore.jar runadmin -host store -port 5000 -store kvstore
 
   kv-> ping
-   Pinging components of store kvstore based upon topology sequence #14
-   10 partitions and 1 storage nodes
-   Time: 2021-12-20 12:56:33 UTC   Version: 20.3.19
-   Shard Status: healthy:1 writable-degraded:0 read-only:0 offline:0 total:1
-   Admin Status: healthy
-   Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]   RN Status: online:1 read-only:0 offline:0
-   Storage Node [sn1] on dcbd8ff4f07c:5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 20.3.19 2021-09-29 04:04:01 UTC  Build id: b8acf274b357 Edition: Community
-        Admin [admin1]          Status: RUNNING,MASTER
-        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber:50 haPort:5003 available storage size:1023 MB
+Pinging components of store kvstore based upon topology sequence #14
+10 partitions and 1 storage nodes
+Time: 2022-06-16 20:06:03 UTC   Version: 21.2.46
+Shard Status: healthy: 1 writable-degraded: 0 read-only: 0 offline: 0 total: 1
+Admin Status: healthy
+Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]   RN Status: online: 1 read-only: 0 offline: 0
+Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 21.2.46 2022-05-24 
+20:36:59 UTC  Build id: 1b73ce65d872 Edition: Community    isMasterBalanced: true   serviceStartTime: 2022-06-16 19:56:24 UTC
+        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2022-06-16 19:56:27 UTC       stateChangeTime: 2022-06-16 19:56:26 UTC
+        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 293 haPort: 5011 availableStorageSize: 9 GB storageType: HD      serviceStartTime: 
+ 2022-06-16 19:56:28 UTC       stateChangeTime: 2022-06-16 19:56:29 UTC
+
 
 
   kv-> put kv -key /SomeKey -value SomeValue
@@ -107,10 +115,12 @@ The Oracle NoSQL Database Proxy is a middle-tier component that lets the Oracle 
 The Oracle NoSQL Database drivers are available in various programming languages that are used in the client application.
 
 The Oracle NoSQL Database Proxy is a server that accepts requests from Oracle NoSQL Database drivers and processes them using the Oracle NoSQL Database. 
-The Oracle NoSQL Database drivers can be used to access either the Oracle NoSQL Database Cloud Service or an on-premises installation via the Oracle NoSQL Database Proxy. 
+The Oracle NoSQL Database drivers can be used to access either the Oracle NoSQL Database Cloud Service or an on-premises installation via the Oracle NoSQL Database 
+Proxy. 
 Since the drivers and APIs are identical, applications can be moved between these two options. 
 
-You can deploy a container-based Oracle NoSQL Database store first for a prototype project, and move forward to Oracle NoSQL Database cluster for a production project.
+You can deploy a container-based Oracle NoSQL Database store first for a prototype project, and move forward to Oracle NoSQL Database cluster for a production 
+project.
 
 Here is a snippet showing the connection from a Node.js program.
 
@@ -133,7 +143,7 @@ If you need to run NoSQL Command-Line from a host outside any container, please 
 Install Oracle NoSQL in your external host
 
 ```shell
-KV_VERSION=20.3.19
+KV_VERSION=21.2.46
 rm -rf kv-$KV_VERSION
 DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
@@ -160,6 +170,10 @@ You will use you current HOSTNAME as a value for the --hostname
 docker run -d --name=kvlite --hostname=$HOSTNAME --env KV_PROXY_PORT=8080 -p 8080:8080 \
 -p 5000:5000 -p 5010-5020:5010-5020 -p 5021-5049:5021-5049 -p 5999:5999 oracle/nosql:ce
 ```
+
+**Note**:  By default, the KVLite store created has a size of `10GB`, use `--env KV_STORAGESIZE=N` to override that. 
+The value of N is in GB and must be >= 1
+
 In a second shell, run the NoSQL command to ping the kvlite store
 instance:
 
@@ -202,7 +216,7 @@ If you need to run NoSQL Command-Line from a host outside any container, please 
 Install Oracle NoSQL in your external host
 
 ```shell
-KV_VERSION=20.3.19
+KV_VERSION=21.2.46
 rm -rf kv-$KV_VERSION
 DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
@@ -244,6 +258,8 @@ PING kvlite-nosql-container-host (10.0.0.143) 56(84) bytes of data.
 docker run -d --name=kvlite --hostname=kvlite-nosql-container-host --env KV_PROXY_PORT=8080 -p 8080:8080 \
 -p 5000:5000 -p 5010-5020:5010-5020 -p 5021-5049:5021-5049 -p 5999:5999 oracle/nosql:ce
 ```
+**Note**:  By default, the KVLite store created has a size of `10GB`, use `--env KV_STORAGESIZE=N` to override that. 
+The value of N is in GB and must be >= 1
 
 ```shell
 java -jar $KVHOME/lib/kvstore.jar ping -host kvlite-nosql-container-host -port 5000
@@ -286,7 +302,7 @@ or
 
 ```shell
 cd NoSQL/ce/
-docker build --build-arg KV_VERSION=20.3.19 --tag oracle/nosql:ce .
+docker build --build-arg KV_VERSION=21.2.46 --tag oracle/nosql:ce .
 ```
 
 The resulting image will be available as `oracle/nosql:ce`. 
@@ -301,7 +317,8 @@ The Oracle NoSQL Database Community Edition image contains the OpenJDK.
 
 ## Licenses
 
-Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt). https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/license/index.html#NSXLI-GUID-006E432E-1965-45A2-AEDE-204BD05E1560
+Oracle NoSQL Community Edition is licensed under the [APACHE LICENSE v2.0](https://docs.oracle.com/cd/NOSQL/html/driver_table_c/doc/LICENSE.txt). 
+https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/license/index.html#NSXLI-GUID-006E432E-1965-45A2-AEDE-204BD05E1560
 
 OpenJDK is licensed under the [GNU General Public License v2.0 with the Classpath Exception](http://openjdk.java.net/legal/gplv2+ce.html)
 
