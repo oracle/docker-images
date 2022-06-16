@@ -235,7 +235,7 @@ def create_ogg_deployment():
         option('authUser',                   userName) + \
         option('enablePmSrvr',              'Yes') + \
         option('criticalPmSrvr',            'Yes') + \
-        option('pmSrvrDataStoreType',       'LMDB') +f \
+        option('pmSrvrDataStoreType',       'LMDB') + \
         option('portAdminSrvr',              service_ports['adminsrvr']) + \
         option('portDistSrvr',               service_ports['distsrvr' ]) + \
         option('portRcvrSrvr',               service_ports['recvsrvr' ]) + \
