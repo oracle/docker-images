@@ -191,7 +191,7 @@ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
 ```
 Note the required use of `--link` for proper hostname check (actual KVLite container is named `kvlite` and its alias is `store`).
 
-If you want to run without --link, you cannot use any alias when starting the container (use HOSTNAME).  
+If you want to run without `--link`, you can not use any alias when starting the container, so use `$HOSTNAME` instead..  
 
 You can also use the admin Oracle NoSQL Command Line Interface (CLI).
 
