@@ -173,7 +173,7 @@ docker run -d --name=kvlite --hostname=$HOSTNAME --env KV_PROXY_PORT=8080 -p 808
 ```
 
 **Note**:  By default, the KVLite store created has a size of `10GB`, use `--env KV_STORAGESIZE=N` to override that. 
-The value of N is in GB and must be >= 1
+The value of `N` is in gigabytes and must be greater than 1GB.
 
 In a second shell, run the NoSQL command to ping the kvlite store
 instance:
