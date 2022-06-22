@@ -165,7 +165,7 @@ In this case, You need to publish all internal ports and the KV_PROXY_PORT.
 
 Startup of KVLite is the default `CMD` of the image:
 
-You will use you current HOSTNAME as a value for the --hostname
+Use the environment variable `$HOSTNAME` as the value for the `--hostname`
 
 ```shell
 docker run -d --name=kvlite --hostname=$HOSTNAME --env KV_PROXY_PORT=8080 -p 8080:8080 \
