@@ -260,7 +260,7 @@ docker run -d --name=kvlite --hostname=kvlite-nosql-container-host --env KV_PROX
 -p 5000:5000 -p 5010-5020:5010-5020 -p 5021-5049:5021-5049 -p 5999:5999 oracle/nosql:ce
 ```
 **Note**:  By default, the KVLite store created has a size of `10GB`, use `--env KV_STORAGESIZE=N` to override that. 
-The value of N is in GB and must be >= 1
+The value of `N` is in gigabytes and must be greater than 1GB.
 
 ```shell
 java -jar $KVHOME/lib/kvstore.jar ping -host kvlite-nosql-container-host -port 5000
