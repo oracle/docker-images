@@ -181,7 +181,7 @@ instance:
 ```shell
 java -jar $KVHOME/lib/kvstore.jar ping -host $HOSTNAME -port 5000
 ```
-Note: -host must be the same name used when starting the container
+Note: the value provided for `-host` must match the name used when starting the container.
 
 If you want to run the NoSQL command to ping the kvlite store from another container:
 
