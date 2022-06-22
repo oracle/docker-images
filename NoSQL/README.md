@@ -189,7 +189,7 @@ If you want to run the NoSQL command to ping the kvlite store from another conta
 docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/kvstore.jar ping -host store -port 5000
 ```
-Note the required use of --link for proper hostname check (actual KVLite container is named kvlite; alias is store).
+Note the required use of `--link` for proper hostname check (actual KVLite container is named `kvlite` and its alias is `store`).
 
 If you want to run without --link, you cannot use any alias when starting the container (use HOSTNAME).  
 
