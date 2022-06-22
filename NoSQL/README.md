@@ -8,8 +8,9 @@ This project offers sample container image configuration files for:
 
 * [Oracle NoSQL Database Community Edition](ce/Dockerfile)
 
-This container image uses KVLite. **KVLite is a simplified version of the Oracle NoSQL Database**. It provides a single storage node, a single shard store, with no
-replication and no administration. It runs in a single process. **Note:** KVLite is not intended for production deployment or performance measurements.
+This container image uses a simplified version of the Oracle NoSQL Database called KVLite. KVLite runs as a single process that provides a single storage node and single storage shard. KVLite does not include replication or administration. 
+
+> **Note:** KVLite is not intended for production deployment or performance measurements.
 
 ## Quick start: pull the Oracle NoSQL Community Edition image
 
