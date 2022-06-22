@@ -265,7 +265,7 @@ The value of `N` is in gigabytes and must be greater than 1GB.
 ```shell
 java -jar $KVHOME/lib/kvstore.jar ping -host kvlite-nosql-container-host -port 5000
 ```
-Note: -host must be the same name used when starting the container
+Note: `-host` must be the same name used when starting the container
 
 If you want to run the NoSQL command to ping the kvlite store from another container:
 
