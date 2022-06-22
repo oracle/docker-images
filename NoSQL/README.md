@@ -312,7 +312,7 @@ The resulting image will be available as `oracle/nosql:ce`.
 ## More information
 
 For more information on [Oracle NoSQL](http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html)
-please review the [product documentation](https://docs.oracle.com/en/database/other-databases/nosql-database/index.html).
+please review the [Oracle NoSQL Database product documentation](https://docs.oracle.com/en/database/other-databases/nosql-database/index.html).
 
 The Oracle NoSQL Database Community Edition image contains the OpenJDK.
 
