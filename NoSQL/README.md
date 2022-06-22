@@ -134,8 +134,9 @@ return new NoSQLClient({
 
 ## Advanced Scenario: Using Oracle NoSQL Command-Line from an external host
 
-**Note**: We recommend running NoSQL Command-Line doing a container to container connection as shown in the previous chapters. 
-It allows starting the container without publishing all internal ports (KVPORT, KV_HARANGE, KV_SERVICERANGE) but only the KV_PROXY_PORT. 
+**Note**: We recommend running NoSQL Command-Line and creating a container-to-container connection as detailed above.. 
+
+It allows you to start a container with only the `KV_PROXY_PORT` enabled. 
 
 For your developments, remember the SDK drivers will contact the Oracle NoSQL Database Proxy on KV_PROXY_PORT. 
 
