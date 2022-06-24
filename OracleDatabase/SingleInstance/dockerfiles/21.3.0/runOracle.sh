@@ -293,6 +293,12 @@ else
   
   # Execute custom provided setup scripts
   "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/setup
+
+  # Setup TCPS with the database
+  if [ "${ENABLE_TCPS}" = "true" ]; then
+    "${ORACLE_BASE}"/"${CONFIG_TCPS_FILE}"
+  fi
+
 fi;
 
 # Check whether database is up and running
