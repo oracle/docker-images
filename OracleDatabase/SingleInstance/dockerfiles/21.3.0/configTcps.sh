@@ -17,7 +17,7 @@ set -e
 function setupClientWallet() {
     # Client wallet location
     CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet"
-    echo -e "\n\nSetting up Client Wallet in location ${CLIENT_WALLET_LOC}..."
+    echo -e "\n\nSetting up Client Wallet in location ${CLIENT_WALLET_LOC}...\n"
 
     if [ ! -d  "${CLIENT_WALLET_LOC}" ]; then
         mkdir -p "${CLIENT_WALLET_LOC}"
@@ -75,7 +75,7 @@ SSL_CLIENT_AUTHENTICATION = FALSE" > "${CLIENT_WALLET_LOC}"/sqlnet.ora
 ########### Configure Oracle Net Service for TCPS (sqlnet.ora and listener.ora) ##############
 function configure_netservices() {
    # Add wallet location and SSL_CLIENT_AUTHENTICATION to sqlnet.ora and listener.ora
-   echo -e "\n\nConfiguring Oracle Net service for TCPS..."
+   echo -e "\n\nConfiguring Oracle Net service for TCPS...\n"
    echo "WALLET_LOCATION =
 (SOURCE =
    (METHOD = FILE)
@@ -104,9 +104,12 @@ CERT_LOC="${ORACLE_BASE}/cert"
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
 # Random wallet Password
 WALLET_PWD=$(openssl rand -hex 4)
+# Export ORACLE_PDB value
+export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+ORACLE_PDB=${ORACLE_PDB^^}
 
 # Creating the wallet
-echo -e "\n\nCreating Oracle Wallet for the database server side certificate..."
+echo -e "\n\nCreating Oracle Wallet for the database server side certificate...\n"
 if [ ! -d "${WALLET_LOC}" ]; then
     mkdir -p "${WALLET_LOC}"
     # Configure sqlnet.ora and listener.ora for TCPS
@@ -116,13 +119,13 @@ else
     rm -f "${WALLET_LOC}"/*
 fi
 orapki wallet create -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -auto_login
-echo -e "Oracle Wallet location: ${WALLET_LOC}"
+echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
 if [ -e "${CERT_LOC}/tls.crt" ]; then
     # Add this certificate to the wallet
     orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -trusted_cert -cert "${CERT_LOC}/tls.crt"
 else
-    # Create a self-signed certificate using orapki utility
+    # Create a self-signed certificate using orapki utility; VALIDITY: 3650 days
     orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=$(hostname)" -keysize 1024 -self_signed -validity 3650
 fi
 
