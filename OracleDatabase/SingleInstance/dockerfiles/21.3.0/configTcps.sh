@@ -38,7 +38,7 @@ function setupClientWallet() {
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=$(hostname))
+    (HOST=localhost)
     (PORT=1522)
   )
   (CONNECT_DATA=
@@ -51,7 +51,7 @@ ${ORACLE_PDB}=
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=$(hostname))
+    (HOST=localhost)
     (PORT=1522)
   )
   (CONNECT_DATA=
@@ -87,9 +87,12 @@ function configure_netservices() {
 SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE_HOME"/network/admin/{sqlnet.ora,listener.ora} > /dev/null
 
    # Add listener for TCPS
-   sed -i.bak "/TCP/a\
+   sed -i "/TCP/a\
 \ \ \ \ (ADDRESS = (PROTOCOL = TCPS)(HOST = 0.0.0.0)(PORT = ${TCPS_PORT}))
 " "$ORACLE_BASE_HOME"/network/admin/listener.ora
+
+  # Remove TCP listener running on 1521 port
+  sed -i '/1521/d' "$ORACLE_BASE_HOME"/network/admin/listener.ora
 
 }
 
@@ -125,8 +128,8 @@ if [ -e "${CERT_LOC}/tls.crt" ]; then
     # Add this certificate to the wallet
     orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -trusted_cert -cert "${CERT_LOC}/tls.crt"
 else
-    # Create a self-signed certificate using orapki utility; VALIDITY: 3650 days
-    orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=$(hostname)" -keysize 1024 -self_signed -validity 3650
+    # Create a self-signed certificate using orapki utility; VALIDITY: 1095 days
+    orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -keysize 1024 -self_signed -validity 1095
 fi
 
 # Restart listener to enable TCPS (Reload wouldn't work here)
@@ -134,7 +137,7 @@ lsnrctl stop
 lsnrctl start
 
 # Export the cert to be updated in the client wallet
-orapki wallet export -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=$(hostname)" -cert /tmp/"$(hostname)"-certificate.crt
+orapki wallet export -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -cert /tmp/"$(hostname)"-certificate.crt
 
 # Update the client wallet
 setupClientWallet "${WALLET_PWD}"
