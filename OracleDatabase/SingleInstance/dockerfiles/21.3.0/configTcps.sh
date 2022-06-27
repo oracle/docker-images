@@ -84,15 +84,15 @@ function configure_netservices() {
    )
 )
 
-SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE_HOME"/network/admin/{sqlnet.ora,listener.ora} > /dev/null
+SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/{sqlnet.ora,listener.ora} > /dev/null
 
    # Add listener for TCPS
    sed -i "/TCP/a\
 \ \ \ \ (ADDRESS = (PROTOCOL = TCPS)(HOST = 0.0.0.0)(PORT = ${TCPS_PORT}))
-" "$ORACLE_BASE_HOME"/network/admin/listener.ora
+" "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/listener.ora
 
   # Remove TCP listener running on 1521 port
-  sed -i '/1521/d' "$ORACLE_BASE_HOME"/network/admin/listener.ora
+  sed -i '/1521/d' "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/listener.ora
 
 }
 
