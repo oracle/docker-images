@@ -14,7 +14,6 @@ BOOTSTRAP_HOME=/opt/oracle-mgmtagent-bootstrap
 SCRIPTS=$BOOTSTRAP_HOME/scripts
 PACKAGES=$BOOTSTRAP_HOME/packages
 UPGRADE_STAGE=$BOOTSTRAP_HOME/upgrade
-RUN_AGENT_AS_USER=mgmt_agent
 CONFIG_FILE=/opt/oracle/mgmtagent_secret/input.rsp
 MGMTAGENT_HOME=/opt/oracle/mgmt_agent
 AUTOUPGRADE_BUNDLE=$MGMTAGENT_HOME/zip/oracle.mgmt_agent-??????.????.linux.zip
@@ -28,6 +27,13 @@ source "$SCRIPTS/install_zip.sh"
 
 echo $$ > /var/run/mgmtagent_watchdog.pid
 trap "log 'Stopping container ...'; stop_agent; exit" SIGINT SIGTERM
+
+
+###########################################################
+# Init environment
+if [[ -z "$RUN_AGENT_AS_USER" ]]; then
+  export RUN_AGENT_AS_USER="mgmt_agent"
+fi
 
 
 ###########################################################

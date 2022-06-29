@@ -213,7 +213,11 @@ if [ "${AI}" == "" ];
    echo AI=agent_"$(hostname -f)"_"$(date +%s)" >> $ENV_FILE_TEMP
 fi
 
-sed -i "" -e "s/__AGENT_ID__/${AI}/g" "$CONFDIR"/config.json
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i "" -e "s/__AGENT_ID__/${AI}/g" "$CONFDIR"/config.json
+else
+  sed -i -e "s/__AGENT_ID__/${AI}/g" "$CONFDIR"/config.json
+fi
 
 }
 
@@ -380,6 +384,7 @@ status(){
    then
      source "$ENV_FILE"
   fi
+  validateEmpty "${PV}" "Volume" "--volume"
   isAgentAvailable
   if [ $errorFlag == "true" ]; then
            echo "Agent is not installed."
