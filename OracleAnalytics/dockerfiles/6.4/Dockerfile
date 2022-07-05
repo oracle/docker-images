@@ -4,19 +4,18 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Business Intelligence 12.2.1.3.0
+# This is the Dockerfile for Oracle Analytics Server 2022 (6.4)
 # 
-# REQUIRED FILES TO BUILD THIS IMAGE
+# REQUIRED FILE(S) TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) fmw_12.2.1.3.0_bi_linux64_Disk1_1of2.zip 
-# (2) fmw_12.2.1.3.0_bi_linux64_Disk1_2of2.zip
-#     Download the two installer files from http://www.oracle.com/technetwork/middleware/bi/downloads/default-3852322.html
+# (1) Oracle_Analytics_Server_Linux_2022(6.4).zip
+#     Download the installer file from https://www-sites.oracle.com/solutions/business-analytics/analytics-server/analytics-server.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/biplatform:12.2.1.3.0 . 
+#      $ docker build -t oracle/biplatform:6.4 .
 #
 # Pull base image
 # ---------------
