@@ -5,7 +5,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 # Author: steve.phillips@oracle.com
-# Description: script to build a Docker image for Oracle Business Intelligence
+# Description: script to build a Docker image for Oracle Analytics Server
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -134,6 +134,6 @@ cat << EOF
 
 EOF
 else
-  echo "Oracle Business Intelligence Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "Oracle Analytics Server Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
 

@@ -10,7 +10,7 @@ usage() {
 cat << EOF
 
 Usage: createAndStartDomain.sh
-Start a Oracle Business Intelligence domain, creating one if not yet available.
+Start a Oracle Analytics Server domain, creating one if not yet available.
 
 The following variables are mandatory when creating the domain (i.e. when starting the container first time):
   ORACLE_HOME - installation location (built into the image environment)
