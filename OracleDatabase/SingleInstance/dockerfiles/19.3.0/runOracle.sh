@@ -264,8 +264,8 @@ else
   # Check whether database is successfully created
   if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
-    touch "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
-    sync
+    # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
+    date -Iseconds > "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata
@@ -305,7 +305,6 @@ fi;
 if [ "$1" = "--nowait" ]; then
    # Creating state-file for identifyig container of the prebuiltdb extended image
    touch "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb"
-   sync
    exit $status;
 fi
 

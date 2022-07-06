@@ -11,11 +11,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-# Sleep if the database checkpoint file is not created
-if [ ! -f "$ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN}" ]; then
-  sleep 2
-fi
-
 "$ORACLE_BASE/$LOCKING_SCRIPT" --release --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.create_lck"
 if ! pgrep -f "$LOCKING_SCRIPT.*--acquire.*exist_lck" > /dev/null; then
   # Acquire exist lock if not already acquired or trying. This is a blocking call
