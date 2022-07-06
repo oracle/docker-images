@@ -31,10 +31,7 @@ trap "log 'Stopping container ...'; stop_agent; exit" SIGINT SIGTERM
 
 ###########################################################
 # Init environment
-if [[ -z "$RUN_AGENT_AS_USER" ]]; then
-  export RUN_AGENT_AS_USER="mgmt_agent"
-fi
-
+export RUN_AGENT_AS_USER=${RUN_AGENT_AS_USER:-mgmt_agent}
 
 ###########################################################
 # Check if agent upgrade is available
