@@ -9,5 +9,4 @@ Infrastructure (OCI).
 The following tools are available as Docker images:
 
 * [OCI Provider for Terraform](terraform-oci/)
-
-
+* [OCI CLI](oci-cli/)
