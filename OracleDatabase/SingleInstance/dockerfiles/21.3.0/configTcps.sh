@@ -91,9 +91,6 @@ SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$OR
 \ \ \ \ (ADDRESS = (PROTOCOL = TCPS)(HOST = 0.0.0.0)(PORT = ${TCPS_PORT}))
 " "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/listener.ora
 
-  # Remove TCP listener running on 1521 port
-  sed -i '/1521/d' "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/listener.ora
-
 }
 
 
