@@ -20,7 +20,8 @@
 # (9) p32575741_122140_Linux-x86-64.zip
 # (10) p33950717_122140_Generic.zip
 # (11) p34065178_122140_Generic.zip
-#     Download the patch from http://support.oracle.com
+
+#     Download the patches from http://support.oracle.com
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------

@@ -23,6 +23,12 @@ To build a BI image you start by building the Oracle Java image and then the Ora
 
 ### Building the Oracle Java (Server JRE) Image
 
+If a proxy is needed for the host to access yum.oracle.com during build, then first set up the appropriate environment, e.g.:
+
+        $ export http_proxy=myproxy.example.com:80
+        $ export https_proxy=myproxy.example.com:80
+        $ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
+
 Download the Oracle Server JRE binary into folder `OracleJava/java-8` and build the image:
 
         $ cd OracleJava/java-8
@@ -46,6 +52,11 @@ Build the image:
         $ ./buildDockerImage.sh -v 12.2.1.4
 
 Please refer to README.md under [OracleFMWInfrastructure](https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure) for details on how to build FMW Infrastructure image.
+
+### Building the Oracle FMW Infrastructure Patched Image
+
+Please refer to README.md under [OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64](OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64) for steps on how to build FMW Infrastructure patched image.
+
 
 ### Building the Oracle Analytics Server Image
 
@@ -170,5 +181,5 @@ All scripts and files hosted in this project and GitHub [docker/OracleAnalyticsS
 
 ## Copyright
 
-Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
 
