@@ -19,7 +19,7 @@
 #
 # Pull base image
 # ---------------
-FROM oracle/fmw-infrastructure:12.2.1.4
+FROM oracle/fmw-infrastructure:12.2.1.4-patched-for-oas64
 
 # Maintainer
 # ----------
