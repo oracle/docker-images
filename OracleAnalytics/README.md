@@ -173,6 +173,16 @@ In this mode, the containers are started in parallel and the BI container must w
         environment:
           - DB_WAIT_TIMEOUT=240
 
+## Known Issues
+
+1. The domain's nodemanager is configured to listen on the network interface for the container's original hostname, rather than on all interfaces.  Therefore if you create a new container using an existing data volume for /u01/oracle/user_projects, you must ensure the same hostname is used, e.g.
+
+        $ docker run --hostname original_hostname ......
+
+2. If the container is restarted, it requires the same set of environment variables passed in again, even though the domain has already been created.
+
+3. Docker health-check is not implemented.
+
 ## License
 
 To download and run Oracle Analytics Server Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
