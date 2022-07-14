@@ -40,9 +40,9 @@ RUN set -eux; \
     unzip \
     && rm -rf /var/cache/yum
 
-# Default to UTF-8 file.encoding
+# Specify locale settings
 ENV LANG en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
+ENV LC_ALL C
 
 # Copy container scripts to initialize the environment and start Management Agent
 COPY ./container-scripts/*.sh /opt/oracle-mgmtagent-bootstrap/scripts/
