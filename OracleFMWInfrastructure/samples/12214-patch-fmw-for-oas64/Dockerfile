@@ -26,13 +26,19 @@ FROM oracle/fmw-infrastructure:12.2.1.4
 # ----------
 MAINTAINER Padam Bengani <padam.bengani@oracle.com>
 
+#Common ENV
+#-----------
+ENV OPATCH_NO_FUSER=true
+
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV PATCH_PKG_1="p28186730_139428_Generic.zip"
+ENV PATCH_PKG_1="p28186730_139428_Generic.zip" \
+    PATCH_PKG_2="p33903365_122140_Generic.zip"
 
 # Copy supplemental package and scripts
 # --------------------------------
 COPY --chown=oracle:oracle $PATCH_PKG_1 /u01/
+COPY --chown=oracle:oracle $PATCH_PKG_2 /u01/
 
 # Installation of Supplemental Quick Installer
 # --------------------------------------------
@@ -40,6 +46,10 @@ USER oracle
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_1 && cd - && \
     cd /u01/6880880 && $JAVA_HOME/bin/java -jar /u01/6880880/opatch_generic.jar -silent oracle_home=$ORACLE_HOME && \
     rm /u01/$PATCH_PKG_1
+
+RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_2 && cd - && \
+    cd /u01/33903365 && $ORACLE_HOME/OPatch/opatch apply -silent && \
+    rm /u01/$PATCH_PKG_2
 
 WORKDIR ${ORACLE_HOME}
 
