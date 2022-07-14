@@ -55,7 +55,7 @@ Please refer to README.md under [OracleFMWInfrastructure](https://github.com/ora
 
 ### Building the Oracle FMW Infrastructure Patched Image
 
-Please refer to README.md under [OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64](OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64) for steps on how to build FMW Infrastructure patched image.
+Please refer to README.md under [OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64](../OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64) for steps on how to build FMW Infrastructure patched image.
 
 
 ### Building the Oracle Analytics Server Image
