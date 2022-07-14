@@ -101,27 +101,6 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
     $ rm  /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/input.rsp
     ```
 
-#### Steps to run Management Agent as root user
-
-Management Agent can be run as the root user if access to specific locations (example: `/var/log`) within the container environment are restricted to only the root user as described in the following steps. Please also note that the steps given below must be applied prior to container creation. Applying these changes after creating the container is not supported. 
-
-##### Steps to run as root when using Docker Compose
-
-1. Update the .env file to override the agent run-as-user environment variable
-    ```shell
-    $ echo "RUN_AGENT_AS_USER=root" >> .env
-    ```
-    **Note: Modifying this environment variable after container creation is not supported. Refer to volume cleanup in Helpful administration commands section and then startover.**
-
-##### Steps to run as root when using Docker CLI
-
-1. Start a container overriding the agent run-as-user environment variable
-    ```shell
-    $ docker run -d --env RUN_AGENT_AS_USER=root --name mgmtagent-container --hostname mgmtagent1 -v mgmtagent-volume:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
-    ```
-    **Note: Setting this environment variable after container creation is not supported. Refer to volume cleanup in Helpful administration commands section and then startover.**
-
-
 #### Steps to execute custom user operations
 
 Users can provide custom shell script commands to execute before starting Management Agent as described in the following steps
