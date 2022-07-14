@@ -1,13 +1,18 @@
 name: Build and Push OCI CLI Image
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 0 * * 3'  # Tuesday@17h30 Pacific = Wednesday@00h30 UTC
   push:
     branches: [ "main" ]
     paths:
       - 'OracleCloudInfrastructuree/oci-cli/*'
       - '.github/workflows/build-and-push-oci-cli-image.yml'
-  workflow_dispatch:
   pull_request:
+    paths:
+      - 'OracleCloudInfrastructuree/oci-cli/*'
+      - '.github/workflows/build-and-push-oci-cli-image.yml'
     branches: [ "main" ]
 
 
@@ -46,6 +51,22 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=true
+          labels: |
+            provider=Oracle
+            issues=https://github.com/oracle/docker-images/issues
+            org.opencontainers.image.licenses=UPL-1.0
+            org.opencontainers.image.vendor=Oracle
+            org.opencontainers.image.title=OCI CLI
+            org.opencontainers.image.description=Oracle Cloud Infrastructure Command Line Interface
+            org.opencontainers.image.source=https://github.com/oracle/docker-images/tree/main/OracleCloudInfrastructure/oci-cli
+            org.opencontainers.image.documentation=https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cliconcepts.htm
+            org.opencontainers.image.url=https://github.com/oracle/docker-images/pkgs/container/oci-cli
+            org.opencontainers.image.base.name=ghcr.io/oracle/oci-cli:latest
+          tags: |
+            type=schedule,pattern={{date 'YYYYMMDD'}}
+            type=sha
 
       - name: Build and push image
         id: build-and-push
