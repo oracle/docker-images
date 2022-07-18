@@ -57,32 +57,30 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 
 # Copy binaries
 # -------------
-COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $INSTALL_DIR/
-COPY $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/
+COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $INSTALL_DIR/
 
-RUN chmod ug+x $INSTALL_DIR/*.sh && \
+RUN cd $INSTALL_DIR && \
+    cp $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/ && \
+    chmod ug+x *.sh && \
     sync && \
-    $INSTALL_DIR/$CHECK_SPACE_FILE && \
-    cd $INSTALL_DIR && \
+    $CHECK_SPACE_FILE && \
     yum -y install expect && \
-    $INSTALL_DIR/$SETUP_LINUX_FILE && \
+    $SETUP_LINUX_FILE && \
     chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
-    sed -i -e 's/\(oracle\s\+hard\s\+nofile\)/# \1/' /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
+    sed -i -r 's/(^session\s+include\s+system-auth)/# \1/' /etc/pam.d/su && \
     unbuffer yum -y install $INSTALL_FILE_1 && \
     yum -y remove expect && \
     rm -rf /var/cache/yum && \
     rm -rf /var/tmp/yum-* && \
-    mv $INSTALL_DIR/$CONF_FILE /etc/sysconfig/ && \
+    mv $CONF_FILE /etc/sysconfig/ && \
     cd $HOME && \
     rm -rf $INSTALL_DIR && \
     $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh
+    $ORACLE_HOME/root.sh && \
+    echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 USER oracle
 WORKDIR /home/oracle
-
-# Add a bashrc file to capitalize ORACLE_SID in the environment
-RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
