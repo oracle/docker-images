@@ -101,6 +101,20 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
     $ rm  /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/input.rsp
     ```
 
+#### Steps to execute custom user operations
+
+Users can provide custom shell script commands to execute before starting Management Agent as described in the following steps
+
+1. Refer to [init-agent.sh](dockerfiles/latest/user-scripts/init-agent.sh) in the user-scripts directory
+
+    Modify the script `init-agent.sh` to add custom commands that execute each time before Management Agent starts
+
+1. Follow the steps to build and run a container and validate the output of `init-agent.sh` script is visible in the logs by running the following command
+
+    ```shell
+    $ docker logs mgmtagent-container
+    ```
+
 #### Helpful administration commands
 
 1. Starting a stopped Management Agent Container
@@ -119,6 +133,18 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 
     ```shell
     $ docker logs mgmtagent-container
+    ```
+
+1. Cleanup volume using Docker Compose
+
+    ```shell
+    $ docker-compose down --volumes
+    ```
+
+1. Cleanup volume using Docker CLI
+
+    ```shell
+    $ docker volume rm mgmtagent-volume
     ```
 
 ## License

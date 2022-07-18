@@ -27,6 +27,9 @@ function abort() {
 :     "${OGG_HOME:?}"
 [[ -d "${OGG_HOME}"            ]] || abort "Deployment runtime, '${OGG_HOME}'. not found."
 
+:     "${OGG_DEPLOYMENT_SCRIPTS:?}"
+[[ -d "${OGG_DEPLOYMENT_SCRIPTS}" ]] || abort "OGG deployment scripts storage, '${OGG_DEPLOYMENT_SCRIPTS}', not found."
+
 NGINX_CRT="$(awk '$1 == "ssl_certificate"     { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
 NGINX_KEY="$(awk '$1 == "ssl_certificate_key" { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
 
@@ -122,6 +125,52 @@ function setup_deployment_directories() {
 }
 
 ##
+##  r u n _ u s e r _ s c r i p t s
+##
+## Hook for launching custom scripts in the container before and after ogg start
+##     Default Values:
+##       - ${OGG_DEPLOYMENT_SCRIPTS}          : "${OGG_HOME}/scripts"
+##
+## Scripts are run lexicographically and recursively from the directories pointed to by:
+##      - ${OGG_DEPLOYMENT_SCRIPTS}/setup are executed prior to any other steps in the boot sequence
+##      - ${OGG_DEPLOYMENT_SCRIPTS}/startup are executed after ogg/nginx startup
+##
+function run_user_scripts {
+
+    local SCRIPTS_ROOT="${1}";
+
+    [ -z "$SCRIPTS_ROOT" ] && {
+        printf "%s: No SCRIPTS_ROOT passed on, no scripts will be run\n" "${0}";
+        return 1;
+    } || {
+        if [ -d "$SCRIPTS_ROOT" ] && [ -n "$(ls -A "$SCRIPTS_ROOT")" ]; then
+            printf "Executing user defined scripts in: %s\n" "${SCRIPTS_ROOT}"
+
+            for f in "${SCRIPTS_ROOT}"/*; do
+                [ -d "${f}" ] && {
+                    run_user_scripts "${f}"
+                } || {
+                    case "$f" in
+                        *.sh)
+                                printf "%s: running %s\n" "${0}" "${f}";
+                                source "$f" && state=$? || state=$?
+                                ;;
+                        *)
+                                printf "%s: ignoring %s\n" "${0}" "${f}" && state=$? || state=$?
+                                ;;
+                    esac
+                    echo "";
+                }
+            done
+            echo "DONE: Executing user defined scripts"
+            echo "";
+        fi
+    }
+
+    return 0
+}
+
+##
 ##  s t a r t _ o g g
 ##  Initialize and start the OGG installation
 ##
@@ -169,6 +218,7 @@ function signal_handling() {
 ##
 ##  Entrypoint
 ##
+run_user_scripts "${OGG_DEPLOYMENT_SCRIPTS}/setup"
 generatePassword
 setup_deployment_directories
 locate_java
@@ -176,4 +226,5 @@ locate_lib_jvm
 start_ogg
 start_nginx
 signal_handling
+run_user_scripts "${OGG_DEPLOYMENT_SCRIPTS}/startup"
 wait

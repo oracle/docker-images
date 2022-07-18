@@ -118,7 +118,8 @@ else
    memory=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
 fi
 
-export ALLOCATED_MEMORY=$((memory/1024/1024))
+# Default memory to 2GB, if not able to fetch memory restrictions from cgroups
+export ALLOCATED_MEMORY=$((${memory:=2147483648}/1024/1024))
 
 # Github issue #219: Prevent integer overflow,
 # only check if memory digits are less than 11 (single GB range and below)
@@ -248,7 +249,7 @@ else
   # Clean up incomplete database
   rm -rf "$ORACLE_BASE"/oradata/$ORACLE_SID
   cp /etc/oratab oratab.bkp
-  sed "/$ORACLE_SID/d" oratab.bkp > /etc/oratab
+  sed "/^#/!d" oratab.bkp > /etc/oratab
   rm -f oratab.bkp
   rm -rf "$ORACLE_BASE"/cfgtoollogs/dbca/$ORACLE_SID
   rm -rf "$ORACLE_BASE"/admin/$ORACLE_SID
@@ -263,7 +264,8 @@ else
   # Check whether database is successfully created
   if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
-    touch "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
+    # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
+    echo "$(date -Iseconds)" > "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata

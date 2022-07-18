@@ -1,6 +1,6 @@
-#Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+#Copyright (c) 2014, 2022, Oracle and/or its affiliates.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # WebLogic on Docker Default Domain
 #
@@ -49,8 +49,8 @@ set('Name', admin_name)
 set('ListenAddress', '')
 set('ListenPort', admin_listen_port)
 if administration_port_enabled != "false":
-   create('AdminServer','SSL')
-   cd('SSL/AdminServer')
+   create(admin_name, 'SSL')
+   cd('SSL/' + admin_name)
    set('Enabled', 'True')
 
 # Define the user password for weblogic

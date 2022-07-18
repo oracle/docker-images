@@ -16,17 +16,36 @@ IMPORTANT: To access the Oracle RAC DB on your network either use the Docker MAC
 ## Using this Image
 To create an Oracle RAC environment, execute the steps in the following sections:
 
-1.  [Prerequisites for running Oracle RAC in containers](#section-1-prerequisites-for-oracle-rac-on-containers)
-2.  [Building the Oracle RAC Database container Images](#section-2-building-oracle-rac-database-container-images)
-3.  [Creating the first Grid Infrastructure and Oracle RAC container](#section-3-creating-the-oracle-gi-and-rac-container)
-4.  [Adding additional node containers](#section-4-adding-a-oracle-rac-node-using-a-container)
-5.  [Connecting to the Oracle RAC database](#section-5-connecting-to-oracle-rac-database)
-6.  [Environment variables for the first node](#section-6-environment-variables-for-the-first-node)
-7.  [Environment variables for the second and subsequent nodes](#section-7-environment-variables-for-the-second-and-subsequent-nodes)
-8.  [Sample Container files for older releases](#sample-container-files-for-older-releases)
-9.  [Support](#section-9)
-10. [License](#section-10-license)
-11. [Copyright](#section-11-copyright)
+- [Oracle RAC Database on Container](#oracle-rac-database-on-container)
+  - [How to build and run](#how-to-build-and-run)
+  - [Using this Image](#using-this-image)
+  - [Section 1: Prerequisites for Oracle RAC on Containers](#section-1-prerequisites-for-oracle-rac-on-containers)
+    - [Notes](#notes)
+  - [Section 2: Building Oracle RAC Database Container Images](#section-2-building-oracle-rac-database-container-images)
+    - [Notes](#notes-1)
+  - [Section 3: Creating the Oracle GI and RAC Container](#section-3-creating-the-oracle-gi-and-rac-container)
+    - [Password management](#password-management)
+    - [Notes](#notes-2)
+    - [Deploying Oracle RAC on Container With Block Devices:](#deploying-oracle-rac-on-container-with-block-devices)
+    - [Deploying Oracle RAC on Container  With Oralce RAC Storage Container](#deploying-oracle-rac-on-container--with-oralce-rac-storage-container)
+    - [Assign networks to Oracle RAC containers](#assign-networks-to-oracle-rac-containers)
+    - [Start the first container](#start-the-first-container)
+    - [Connect to the Oracle RAC container](#connect-to-the-oracle-rac-container)
+  - [Section 4: Adding a Oracle RAC Node using a container](#section-4-adding-a-oracle-rac-node-using-a-container)
+    - [Password management](#password-management-1)
+    - [Notes](#notes-3)
+    - [Deploying with Block Devices:](#deploying-with-block-devices)
+    - [Deploying Oracle RAC on Container with Oracle RAC Storage Container](#deploying-oracle-rac-on-container-with-oracle-rac-storage-container)
+    - [Assign Network to additional Oracle RAC container](#assign-network-to-additional-oracle-rac-container)
+    - [Start Oracle RAC container](#start-oracle-rac-container)
+    - [Connect to the Oracle RAC container](#connect-to-the-oracle-rac-container-1)
+  - [Section 5: Connecting to Oracle RAC Database](#section-5-connecting-to-oracle-rac-database)
+  - [Section 6: Environment Variables for the first node](#section-6-environment-variables-for-the-first-node)
+  - [Section 7: Environment Variables for the second and subsequent nodes](#section-7-environment-variables-for-the-second-and-subsequent-nodes)
+  - [Sample Container Files for Older Releases](#sample-container-files-for-older-releases)
+  - [Section 9 : Support](#section-9--support)
+  - [Section 10 : License](#section-10--license)
+  - [Section 11 : Copyright](#section-11--copyright)
 
 
 ## Section 1: Prerequisites for Oracle RAC on Containers
@@ -52,50 +71,54 @@ Refer Oracle Database 21c Release documentation [Oracle Grid Infrastructure Inst
 5. Verify you have enough memory and CPU resources available for all containers. Each container for Oracle RAC requires 8GB memory and 16GB swap.
 6. For Oracle RAC, you must set the following parameters at the host level in `/etc/sysctl.conf`:
 
-```
-fs.file-max = 6815744
-net.core.rmem_max = 4194304
-net.core.rmem_default = 262144
-net.core.wmem_max = 1048576
-net.core.wmem_default = 262144
-net.core.rmem_default = 262144
-```
+  ```
+  fs.file-max = 6815744
+  net.core.rmem_max = 4194304
+  net.core.rmem_default = 262144
+  net.core.wmem_max = 1048576
+  net.core.wmem_default = 262144
+  net.core.rmem_default = 262144
+  ```
 
  * Execute the following once the file is modified.
 
-  ```
-  # sysctl -a
-  # sysctl -p
-  ```
+    ```
+    # sysctl -a
+    # sysctl -p
+    ```
 
 7. You need to plan your private and public network for containers before you start the installation. You can create a network bridge on every host so containers running within that host can communicate with each other.  For example, create `rac_pub1_nw` for the public network (`172.16.1.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing however in this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
 
-```
-# docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
-# docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
-```
+  ```
+  # docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
+  # docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
+  ```
 
  * You must run Oracle RAC on Docker on multi-host using the [Docker MACVLAN Driver](https://docs.docker.com/network/macvlan/). To create a network bridge using MACVLAN docker driver using the following commands:
 
-  ```
-  # docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
-  # docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
-  ```
+    ```
+    # docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
+    # docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
+    ```
 
-8.  Oracle RAC needs to run certain processes in real-time mode. To run processes inside a container in real-time mode, you need to make changes to the Docker configuration files. For details, refer to the [`dockerd` documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples). and  update the `OPTIONS` value in `/etc/sysconfig/docker` to following:
-
-```
-OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
-```
-
- * Once you have edited the `/etc/sysconfig/docker`, execute following commands:
-
-  ```
-  # systemctl daemon-reload
-  # systemctl stop docker
-  # systemctl start docker
-  ```
-
+8.  Oracle RAC needs to run certain processes in real-time mode. To run processes inside a container in real-time mode, you need to make changes to the Docker configuration files. Execute following steps to run processes in real-time mode as shoen below:
+  * Edit `/usr/lib/systemd/system/docker.service` on docker host
+  * Append the following parameter setting for the line starting with entry `ExecStart=` under the `[Service]` section:
+    ```
+    --cpu-rt-runtime=950000
+    ```
+  * After appending the parameter, the ExecStart value should appear similar to the following example:
+    ```
+    ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --cpu-rt-runtime=950000
+    ```
+  * Save the `/usr/lib/systemd/system/docker.service` file.
+  * Run the following commands to reload the daemon and container with the changes
+    ```
+    systemctl daemon-reload
+    systemctl stop docker
+    systemctl start docker
+    ```
+   For details, refer to the [`dockerd` documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples) and  [Oracle Database Enterprise Edition Installation Guide for Docker Containers on Oracle Linux](https://docs.oracle.com/en/database/oracle/oracle-database/21/clustering.html)  
 9. Verify you have enough memory and cpu resources available for container. For details, refer to [Oracle 21c Grid Infrastructure Installation and Upgrade Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html)
 
 10. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Docker Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment.
@@ -115,16 +138,16 @@ OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
 
 To assist in building the images, you can use the [buildContainerImage.sh](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildContainerImage.sh) script. See the following for instructions and usage.
 
-```
-./buildContainerImage.sh -v <Software Version>
-#  e.g., ./buildContainerImage.sh -v 21.3.0
-```
+  ```
+  ./buildContainerImage.sh -v <Software Version>
+  #  e.g., ./buildContainerImage.sh -v 21.3.0
+  ```
 
 For detailed usage of the command, execute the following command:
 
-```
-#  ./buildContainerImage.sh -h
-```
+  ```
+  #  ./buildContainerImage.sh -h
+  ```
 
 ### Notes
 
@@ -137,18 +160,18 @@ All containers will share a host file for name resolution.  The shared hostfile 
 
 For example:
 
-```
-# mkdir /opt/containers
-# touch /opt/containers/rac_host_file
-```
+  ```
+  # mkdir /opt/containers
+  # touch /opt/containers/rac_host_file
+  ```
 
 **Note:** Do not modify `/opt/containers/rac_host_file` from docker host. It will be managed from within the containers.
 
 If you are using the Oracle Connection Manager for accessing the Oracle RAC Database from outside the host, you need to add the following variable in the container creation command.
 
-```
--e CMAN_HOSTNAME=(CMAN_HOSTNAME) -e CMAN_IP=(CMAN_IP)
-```
+  ```
+  -e CMAN_HOSTNAME=(CMAN_HOSTNAME) -e CMAN_IP=(CMAN_IP)
+  ```
 
 **Note:** You need to replace `CMAN_HOSTNAME` and `CMAN_IP` with the correct values based on your environment settings.
 
@@ -156,19 +179,19 @@ If you are using the Oracle Connection Manager for accessing the Oracle RAC Data
 
 Specify the secret volume for resetting grid/oracle and database password during node creation or node addition. It can be shared volume among all the containers
 
-```
-mkdir /opt/.secrets/
-openssl rand -hex 64 -out /opt/.secrets/pwd.key
-```
+  ```
+  mkdir /opt/.secrets/
+  openssl rand -hex 64 -out /opt/.secrets/pwd.key
+  ```
 
 Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle and database. It will be a common password for grid/oracle and database users. Execute the following command:
 
-```
-openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
-rm -f /opt/.secrets/common_os_pwdfile
-chmod 400 /opt/.secrets/common_os_pwdfile.enc
-chmod 400 /opt/.secrets/pwd.key
-```
+  ```
+  openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
+  rm -f /opt/.secrets/common_os_pwdfile
+  chmod 400 /opt/.secrets/common_os_pwdfile.enc
+  chmod 400 /opt/.secrets/pwd.key
+  ```
 
 ### Notes
 
@@ -182,51 +205,51 @@ If you are using an NFS volume, skip to the section "Deploying Oracle RAC on Con
 
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
-```
-# dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
-```
+  ```
+  # dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
+  ```
 
 Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
 
 Now create the Oracle RAC container using the image. For the details of environment variables, refer to section 5. You can use the following example to create a container:
 
-```
-# docker create -t -i \
-  --hostname racnode1 \
-  --volume /boot:/boot:ro \
-  --volume /dev/shm \
-  --tmpfs /dev/shm:rw,exec,size=4G \
-  --volume /opt/containers/rac_host_file:/etc/hosts  \
-  --volume /opt/.secrets:/run/secrets:ro \
-  --dns=172.16.1.25 \
-  --dns-search=example.com \
-  --device=/dev/xvde:/dev/asm_disk1  \
-  --device=/dev/xvdf:/dev/asm_disk2 \
-  --privileged=false  \
-  --cap-add=SYS_NICE \
-  --cap-add=SYS_RESOURCE \
-  --cap-add=NET_ADMIN \
-  -e DNS_SERVERS="172.16.1.25" \
-  -e NODE_VIP=172.16.1.160 \
-  -e VIP_HOSTNAME=racnode1-vip  \
-  -e PRIV_IP=192.168.17.150 \
-  -e PRIV_HOSTNAME=racnode1-priv \
-  -e PUBLIC_IP=172.16.1.150 \
-  -e PUBLIC_HOSTNAME=racnode1  \
-  -e SCAN_NAME=racnode-scan \
-  -e OP_TYPE=INSTALL \
-  -e DOMAIN=example.com \
-  -e ASM_DEVICE_LIST=/dev/asm_disk1,/dev/asm_disk2 \
-  -e ASM_DISCOVERY_DIR=/dev \
-  -e CMAN_HOSTNAME=racnode-cman1 \
-  -e CMAN_IP=172.16.1.15 \
-  -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
-  -e PWD_KEY=pwd.key \
-  --restart=always --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  --cpu-rt-runtime=95000 --ulimit rtprio=99  \
-  --name racnode1 \
-  oracle/database-rac:21.3.0
-```
+  ```
+  # docker create -t -i \
+    --hostname racnode1 \
+    --volume /boot:/boot:ro \
+    --volume /dev/shm \
+    --tmpfs /dev/shm:rw,exec,size=4G \
+    --volume /opt/containers/rac_host_file:/etc/hosts  \
+    --volume /opt/.secrets:/run/secrets:ro \
+    --dns=172.16.1.25 \
+    --dns-search=example.com \
+    --device=/dev/xvde:/dev/asm_disk1  \
+    --device=/dev/xvdf:/dev/asm_disk2 \
+    --privileged=false  \
+    --cap-add=SYS_NICE \
+    --cap-add=SYS_RESOURCE \
+    --cap-add=NET_ADMIN \
+    -e DNS_SERVERS="172.16.1.25" \
+    -e NODE_VIP=172.16.1.160 \
+    -e VIP_HOSTNAME=racnode1-vip  \
+    -e PRIV_IP=192.168.17.150 \
+    -e PRIV_HOSTNAME=racnode1-priv \
+    -e PUBLIC_IP=172.16.1.150 \
+    -e PUBLIC_HOSTNAME=racnode1  \
+    -e SCAN_NAME=racnode-scan \
+    -e OP_TYPE=INSTALL \
+    -e DOMAIN=example.com \
+    -e ASM_DEVICE_LIST=/dev/asm_disk1,/dev/asm_disk2 \
+    -e ASM_DISCOVERY_DIR=/dev \
+    -e CMAN_HOSTNAME=racnode-cman1 \
+    -e CMAN_IP=172.16.1.15 \
+    -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
+    -e PWD_KEY=pwd.key \
+    --restart=always --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    --cpu-rt-runtime=95000 --ulimit rtprio=99  \
+    --name racnode1 \
+    oracle/database-rac:21.3.0
+  ```
 
 **Note:** Change environment variables such as IPs, ASM_DEVICE_LIST, PWD_FILE, and PWD_KEY based on your env. Also, change the devices based on your env.
 
@@ -234,44 +257,44 @@ Now create the Oracle RAC container using the image. For the details of environm
 
 Now create the Oracle RAC container using the image. For the details of environment variables, refer to section 6. You can use the following example to create a container:
 
-```
-# docker create -t -i \
-  --hostname racnode1 \
-  --volume /boot:/boot:ro \
-  --volume /dev/shm \
-  --tmpfs /dev/shm:rw,exec,size=4G \
-  --volume /opt/containers/rac_host_file:/etc/hosts  \
-  --volume /opt/.secrets:/run/secrets:ro \
-  --dns=172.16.1.25 \
-  --dns-search=example.com \
-  --privileged=false \
-  --volume racstorage:/oradata \
-  --cap-add=SYS_NICE \
-  --cap-add=SYS_RESOURCE \
-  --cap-add=NET_ADMIN \
-  -e DNS_SERVERS="172.16.1.25" \
-  -e NODE_VIP=172.16.1.160  \
-  -e VIP_HOSTNAME=racnode1-vip  \
-  -e PRIV_IP=192.168.17.150  \
-  -e PRIV_HOSTNAME=racnode1-priv \
-  -e PUBLIC_IP=172.16.1.150 \
-  -e PUBLIC_HOSTNAME=racnode1  \
-  -e SCAN_NAME=racnode-scan \
-  -e OP_TYPE=INSTALL \
-  -e DOMAIN=example.com \
-  -e ASM_DISCOVERY_DIR=/oradata \
-  -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
-  -e CMAN_HOSTNAME=racnode-cman1 \
-  -e CMAN_IP=172.16.1.15 \
-  -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
-  -e PWD_KEY=pwd.key \
-  --restart=always \
-  --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-  --cpu-rt-runtime=95000 \
-  --ulimit rtprio=99  \
-  --name racnode1 \
-  oracle/database-rac:21.3.0
-```
+  ```
+  # docker create -t -i \
+    --hostname racnode1 \
+    --volume /boot:/boot:ro \
+    --volume /dev/shm \
+    --tmpfs /dev/shm:rw,exec,size=4G \
+    --volume /opt/containers/rac_host_file:/etc/hosts  \
+    --volume /opt/.secrets:/run/secrets:ro \
+    --dns=172.16.1.25 \
+    --dns-search=example.com \
+    --privileged=false \
+    --volume racstorage:/oradata \
+    --cap-add=SYS_NICE \
+    --cap-add=SYS_RESOURCE \
+    --cap-add=NET_ADMIN \
+    -e DNS_SERVERS="172.16.1.25" \
+    -e NODE_VIP=172.16.1.160  \
+    -e VIP_HOSTNAME=racnode1-vip  \
+    -e PRIV_IP=192.168.17.150  \
+    -e PRIV_HOSTNAME=racnode1-priv \
+    -e PUBLIC_IP=172.16.1.150 \
+    -e PUBLIC_HOSTNAME=racnode1  \
+    -e SCAN_NAME=racnode-scan \
+    -e OP_TYPE=INSTALL \
+    -e DOMAIN=example.com \
+    -e ASM_DISCOVERY_DIR=/oradata \
+    -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
+    -e CMAN_HOSTNAME=racnode-cman1 \
+    -e CMAN_IP=172.16.1.15 \
+    -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
+    -e PWD_KEY=pwd.key \
+    --restart=always \
+    --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    --cpu-rt-runtime=95000 \
+    --ulimit rtprio=99  \
+    --name racnode1 \
+    oracle/database-rac:21.3.0
+  ```
 
 **Notes:**
 
@@ -282,32 +305,32 @@ Now create the Oracle RAC container using the image. For the details of environm
 
 You need to assign the Docker networks created in section 1 to containers.Eexecute the following commands:
 
-```
-# docker network disconnect bridge racnode1
-# docker network connect rac_pub1_nw --ip 172.16.1.150 racnode1
-# docker network connect rac_priv1_nw --ip 192.168.17.150  racnode1
-```
+  ```
+  # docker network disconnect bridge racnode1
+  # docker network connect rac_pub1_nw --ip 172.16.1.150 racnode1
+  # docker network connect rac_priv1_nw --ip 192.168.17.150  racnode1
+  ```
 
 ### Start the first container
 You need to start the container.Execute the following command:
 
-```
-# docker start racnode1
-```
+  ```
+  # docker start racnode1
+  ```
 
 It can take at least 40 minutes or longer to create the first node of the cluster. To check the logs, use the following command from another terminal session:
 
-```
-# docker logs -f racnode1
-```
+  ```
+  # docker logs -f racnode1
+  ```
 
 You should see the database creation success message at the end:
 
-```
-####################################
-ORACLE RAC DATABASE IS READY TO USE!
-####################################
-```
+  ```
+  ####################################
+  ORACLE RAC DATABASE IS READY TO USE!
+  ####################################
+  ```
 ### Connect to the Oracle RAC container
 To connect to the container execute the following command:
 
