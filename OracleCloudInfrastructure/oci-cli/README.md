@@ -94,7 +94,8 @@ $ docker run --rm -it -v "$HOME/.oci:/oracle/.oci" oci --auth instance_principal
  If you created a shell alias, add it to the alias definition.
 
 ## Access local files from OCI container
-For OCI container to access local files, create a "scratch" directory in your home directory and map that into the container, for example this command does bulk upload of local fiels to specified OCI bucket:
+For OCI container to access local files, create a "scratch" directory in your home directory and map that into the container.
+For example this command does bulk upload of local files to the specified OCI bucket:
 ```shell
 mkdir "$HOME/scratch"
 docker run --rm -it -v "$HOME/.oci:/oracle/.oci" -v "$HOME/scratch:/oracle/scratch" ghcr.io/oracle/oci os object bulk-upload -ns <namespace> -bn <bucket name> --src-dir /oracle/scratch/...
