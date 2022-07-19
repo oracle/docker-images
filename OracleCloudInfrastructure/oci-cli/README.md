@@ -17,15 +17,16 @@ For examples of how to set up a new user, group, compartment, and policy, see th
 
 To use the container image, pull the latest version from the GitHub Container Registry:
 
-```shell
+```bash
 $ docker pull ghcr.io/oracle/oci-cli:latest
 $ docker images
 REPOSITORY                              TAG               IMAGE ID       CREATED        SIZE
 ghcr.io/oracle/oci-cli                  latest            387639e80a9a   3 days ago     711MB
 ```
+
 Consider tagging the image as `oci` to make it a more seamless drop-in replacement:
 
-```shell
+```bash
 $ docker tag ghcr.io/oracle/oci-cli:latest oci
 $ docker images oci
 REPOSITORY   TAG       IMAGE ID       CREATED      SIZE
@@ -38,7 +39,7 @@ $ docker run -v "$HOME/.oci:/oracle/.oci" oci os ns get
 
 To make it even easier, create an shell alias that runs the container for you:
 
-```shell
+```bash
 $ alias oci='docker run --rm -it -v "$HOME/.oci:/oracle/.oci" oci'
 $ oci os ns get
 {
@@ -52,8 +53,10 @@ This is the default authentication method used by all OCI SDKs and the OCI CLI. 
 
 If you have previously configured the OCI CLI on the host machine, the easiest way to provide access to your API signing key is map your `$HOME/.oci` directory to `/oracle/.oci/` inside the container:
 
-```shell
-$ docker run --rm -it -v "$HOME/.oci:/oracle/.oci" ghcr.io/oracle/oci os ns get
+```bash
+$ docker run --rm -it \
+  -v "$HOME/.oci:/oracle/.oci" \
+  ghcr.io/oracle/oci-cli os ns get
 {
   "data": "example"
 }
@@ -63,55 +66,71 @@ Alternatively, you could pass the `OCI_CLI_CONFIG_FILE` environment variable to 
 
 > Note: ensure that the `key_file` field in `$HOME/.oci/config` uses the `~` character so that the path resolves both inside and outside the container, e.g. `key_file=~/.oci/oci_api_key.pem`. Alternatively, pass the `OCI_CLI_KEY_FILE` environment variable to the container at runtime to specify a different location for the private key.
 
- If you haven't previously configured the OCI CLI, create `$HOME/.oci` first then start the OCI CLI's interactive setup process:
+ If you haven't previously configured the OCI CLI, create `$HOME/.oci`:
 
- ```shell
-$ mkdir $HOME/.oci
-$ docker run --rm -it -v "$HOME/.oci:/oracle/.oci" ghcr.io/oracle/oci-cli setup config
-   This command provides a walkthrough of creating a valid CLI config file.
-   ...
+ ```bash
+mkdir $HOME/.oci
+```
+
+ Then start the OCI CLI's interactive setup process:
+
+```bash
+docker run --rm -it \
+  -v "$HOME/.oci:/oracle/.oci" \
+  ghcr.io/oracle/oci-cli setup config
 ```
 
 ## Session token authentication
 
 To use token-based authentication, map port 8181 to the container:
 
-```shell
-docker run --rm -it -v "$HOME/.oci:/oracle/.oci" -p 8181:8181 oci session authenticate
+```bash
+docker run --rm -it \
+  -v "$HOME/.oci:/oracle/.oci" \
+  -p 8181:8181 \
+  ghcr.io/oracle/oci-cli session authenticate
 ```
 
 ## Instance principal authentication
 
-Include the `--auth instance_principal` when running the container to enable instance principal authentication.
+To enable instance prinicipal authentication, you can use either the `--auth instance_principal` command-line parameter:
 
-```shell
-$ docker run --rm -it -v "$HOME/.oci:/oracle/.oci" oci --auth instance_principal os ns get
-{
-  "data": "example"
-}
+```bash
+docker run --rm -it ghcr.io/oracle/oci-cli --auth instance_principal os ns get
 ```
 
- If you created a shell alias, add it to the alias definition.
+Or pass the `OCI_CLI_AUTH` environment variable:
 
-## Access local files from OCI container
-For OCI container to access local files, create a "scratch" directory in your home directory and map that into the container.
-For example this command does bulk upload of local files to the specified OCI bucket:
-```shell
-mkdir "$HOME/scratch"
-docker run --rm -it -v "$HOME/.oci:/oracle/.oci" -v "$HOME/scratch:/oracle/scratch" ghcr.io/oracle/oci os object bulk-upload -ns <namespace> -bn <bucket name> --src-dir /oracle/scratch/...
+```bash
+docker run --rm -it -e OCI_CLI_AUTH=instance_principal ghcr.io/oracle/oci-cli os ns get
+```
+
+If you created a shell alias, add it to the alias definition.
+
+## Local file access
+
+The simplest way to allow the OCI CLI running inside the container to access files on the host is to bind mount a directory from the host into the container.
+
+In the following example, the `$HOME/scratch` directory is bind mounted as `/oracle/scratch` in the container so that the files inside that directory can be bulk uploaded to OCI Object Storatge using the OCI CLI:
+
+```bash
+docker run --rm -it \
+  -v "$HOME/.oci:/oracle/.oci" \
+  -v "$HOME/scratch:/oracle/scratch" \
+  ghcr.io/oracle/oci-cli os object bulk-upload -ns <namespace> -bn <bucket name> --src-dir /oracle/scratch/
 ```
 
 ## Building the image locally
 
 To build the image, clone this repository, change to the `OracleCloudInfrastructure/oci-cli` directory and then run:
 
-```shell
+```bash
 docker build --tag oci .
 ```
 
 ## License
 
-This container image is licensed under the Universal Permissive License 1.0. The OCI CLI and samples are dual-licensed under the Universal Permissive License 1.0 and the Apache License 2.0; third-party dependencies are separately licensed as described in the [OCI CLI repository][5].
+This container image is licensed under the Universal Permissive License 1.0. The OCI CLI and samples are dual-licensed under the Universal Permissive License 1.0 and the Apache License 2.0. Third-party dependencies of the OCI CLI are separately licensed as described in the [OCI CLI repository][5].
 
 [1]: https://docs.oracle.com/en-us/iaas/Content/GSG/Tasks/addingusers.htm#Adding_Users
 [2]: https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/commonpolicies.htm#top
