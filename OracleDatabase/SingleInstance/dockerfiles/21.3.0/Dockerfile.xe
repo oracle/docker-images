@@ -60,7 +60,7 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $INSTALL_DIR/
 
 RUN cd $INSTALL_DIR && \
-    cp $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/ && \
+    mv $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $ORACLE_BASE/ && \
     chmod ug+x *.sh && \
     sync && \
     $CHECK_SPACE_FILE && \
@@ -77,7 +77,7 @@ RUN cd $INSTALL_DIR && \
     rm -rf $INSTALL_DIR && \
     $ORACLE_BASE/oraInventory/orainstRoot.sh && \
     $ORACLE_HOME/root.sh && \
-    echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
+    echo 'export ORACLE_SID=XE' > .bashrc
 
 USER oracle
 WORKDIR /home/oracle
