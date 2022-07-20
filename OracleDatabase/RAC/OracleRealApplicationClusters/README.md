@@ -644,6 +644,17 @@ DB_PWD_FILE=###You need to pass the file name to set the password for DB user i.
 
 REMOVE_OS_PWD_FILES=###You need to set this to true to remove pwd key file and password file after resetting password.###
 ```
+## Section 8: Delete node from RAC Cluster
+```
+docker exec racnode1 /bin/sh -c "sudo -E /opt/scripts/startup/DelNode.sh <node_to_be_deleted>"
+docker stop <node_to_be_deleted>
+docker rm <node_to_be_deleted>
+
+e.g To Delete racnode3 from cluster of racnode1, racnode2 and racnode3.
+docker exec racnode1 /bin/sh -c "sudo -E /opt/scripts/startup/DelNode.sh racnode3"
+docker stop racnode3
+docker rm racnode3
+```
 
 ## Sample Container Files for Older Releases
 This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
