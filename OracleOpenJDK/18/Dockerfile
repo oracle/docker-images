@@ -25,7 +25,8 @@ FROM oraclelinux:8
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL \
+
+ENV JAVA_URL=https://download.java.net/java/GA/jdk18.0.2/f6ad4b4450fd4d298113270ec84f30ee/9/GPL \
 	JAVA_HOME=/usr/java/jdk-18 \
 	LANG=en_US.UTF-8
 
@@ -48,7 +49,7 @@ RUN set -eux; \
     if [ "$ARCH" == "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL/openjdk-18.0.1.1_linux-${ARCH}_bin.tar.gz" ; \
+    JAVA_PKG="$JAVA_URL/openjdk-18.0.2_linux-${ARCH}_bin.tar.gz" ; \
 	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
