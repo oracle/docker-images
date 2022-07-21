@@ -23,7 +23,6 @@ software before installation. If you want commercial software downloaded for you
 - [Oracle HTTP Server](/OracleHTTPServer)
 - [Oracle Identity Governance](/OracleIdentityGovernance)
 - [Oracle Instant Client](/OracleInstantClient) (Basic, SDK and SQL*Plus)
-- [Oracle Internet Directory](/OracleInternetDirectory)
 - [Oracle Java](/OracleJava)
 - [Oracle Rest Data Services](OracleRestDataServices) (ORDS)
 - [Oracle SOA Suite](/OracleSOASuite)

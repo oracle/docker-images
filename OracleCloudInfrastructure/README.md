@@ -1,13 +1,6 @@
-# Oracle Cloud Infrastructure Tools
+# Oracle Cloud Infrastructure Container Images
 
-The Docker images in this location can be used to create containers that
-contain various command-line utilities to interact with Oracle Cloud
-Infrastructure (OCI).
+The following Oracle Cloud Infrastructure tools are available as container images:
 
-## Tools
-
-The following tools are available as Docker images:
-
+* [OCI Command Line Interface](oci-cli/)
 * [OCI Provider for Terraform](terraform-oci/)
-
-
