@@ -135,6 +135,8 @@ Once the container has been started and the database created you can connect to 
     sqlplus system/<your password>@//localhost:1521/<your SID>
     sqlplus pdbadmin/<your password>@//localhost:1521/<Your PDB name>
 
+If you having connections error like "Got minus one from read call" from SQLDeveloper try to use the internal IP from Docker0 instead of localhost.
+
 The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
 
     https://localhost:5500/em/
