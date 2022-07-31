@@ -72,11 +72,7 @@ ENV ORACLE_BASE=/opt/oracle \
     DG_OBSERVER_NAME="" \
     CHECKPOINT_FILE_EXTN=".created" \
     # Directory for keeping Oracle Wallet
-    WALLET_DIR="" \
-    # To configure and enable TCPS
-    ENABLE_TCPS=false \
-    # Custom port for TCPS
-    TCPS_PORT=1522
+    WALLET_DIR=""
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \

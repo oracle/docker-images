@@ -15,8 +15,6 @@ set -e
 
 ############# Function for setting up the client wallet ######################################
 function setupClientWallet() {
-    # Client wallet location
-    CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet"
     echo -e "\n\nSetting up Client Wallet in location ${CLIENT_WALLET_LOC}...\n"
 
     if [ ! -d  "${CLIENT_WALLET_LOC}" ]; then
@@ -76,14 +74,7 @@ SSL_CLIENT_AUTHENTICATION = FALSE" > "${CLIENT_WALLET_LOC}"/sqlnet.ora
 function configure_netservices() {
    # Add wallet location and SSL_CLIENT_AUTHENTICATION to sqlnet.ora and listener.ora
    echo -e "\n\nConfiguring Oracle Net service for TCPS...\n"
-   echo "WALLET_LOCATION =
-(SOURCE =
-   (METHOD = FILE)
-   (METHOD_DATA =
-     (DIRECTORY = $WALLET_LOC)
-   )
-)
-
+   echo "WALLET_LOCATION = (SOURCE = (METHOD = FILE)(METHOD_DATA = (DIRECTORY = $WALLET_LOC))
 SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/{sqlnet.ora,listener.ora} > /dev/null
 
    # Add listener for TCPS
@@ -93,17 +84,50 @@ SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$OR
 
 }
 
+# Function for reconfiguring the Listener; 'lsnrctl reload' does't work for reconfiguration
+function reconfigure_listener() {
+  lsnrctl stop
+  lsnrctl start
+}
+
+# Function for disabling the tcps and restore the previous Oracle Net configuration
+function disable_tcps() {
+  # Deleting WALLET_LOCATION and SSL_CLIENT_AUTHENTICATION params from listener.ora and sqlnet.ora and listener.ora
+  sed -i -e '/WALLET_LOCATION/d' -e '/SSL_CLIENT_AUTHENTICATION/d' "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/{sqlnet,listener}.ora
+  # Deleting Listener Endpoint for TCPS
+  sed -i "/TCPS/d" "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/listener.ora
+  # Reconfigure the Listener
+  reconfigure_listener
+  # Deleting the wallet Directories
+  rm -rf "$WALLET_LOC" "$CLIENT_WALLET_LOC"
+}
+
 
 ###########################################
 ################## MAIN ###################
 ###########################################
 
-# External certificate location
-CERT_LOC="${ORACLE_BASE}/cert"
 # Oracle wallet location which stores the certificate
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
+
 # Random wallet Password
 WALLET_PWD=$(openssl rand -hex 4)
+
+# Client wallet location
+CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet"
+
+# Disable TCPS control flow
+if [ "${1^^}" == "DISABLE" ]; then
+  disable_tcps
+  exit 0
+elif [[ "$1" =~ ^[0-9]+$ ]]; then
+  # If TCPS_PORT is not set in the environment, honor the TCPS_PORT passed as the positional argument
+  TCPS_PORT=${TCPS_PORT:-"$1"}
+fi
+
+# Default TCPS_PORT value
+TCPS_PORT=${TCPS_PORT:-1522}
+
 # Export ORACLE_PDB value
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 ORACLE_PDB=${ORACLE_PDB^^}
@@ -121,17 +145,12 @@ fi
 orapki wallet create -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -auto_login
 echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
-if [ -e "${CERT_LOC}/tls.crt" ]; then
-    # Add this certificate to the wallet
-    orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -trusted_cert -cert "${CERT_LOC}/tls.crt"
-else
-    # Create a self-signed certificate using orapki utility; VALIDITY: 1095 days
-    orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -keysize 1024 -self_signed -validity 1095
-fi
+# Create a self-signed certificate using orapki utility; VALIDITY: 1095 days
+orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -keysize 1024 -self_signed -validity 1095
 
-# Restart listener to enable TCPS (Reload wouldn't work here)
-lsnrctl stop
-lsnrctl start
+
+# Reconfigure listener to enable TCPS (Reload wouldn't work here)
+reconfigure_listener
 
 # Export the cert to be updated in the client wallet
 orapki wallet export -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -cert /tmp/"$(hostname)"-certificate.crt
