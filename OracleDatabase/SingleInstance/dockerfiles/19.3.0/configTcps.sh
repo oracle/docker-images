@@ -74,7 +74,7 @@ SSL_CLIENT_AUTHENTICATION = FALSE" > "${CLIENT_WALLET_LOC}"/sqlnet.ora
 function configure_netservices() {
    # Add wallet location and SSL_CLIENT_AUTHENTICATION to sqlnet.ora and listener.ora
    echo -e "\n\nConfiguring Oracle Net service for TCPS...\n"
-   echo "WALLET_LOCATION = (SOURCE = (METHOD = FILE)(METHOD_DATA = (DIRECTORY = $WALLET_LOC))
+   echo "WALLET_LOCATION = (SOURCE = (METHOD = FILE)(METHOD_DATA = (DIRECTORY = $WALLET_LOC)))
 SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/{sqlnet.ora,listener.ora} > /dev/null
 
    # Add listener for TCPS
@@ -115,7 +115,7 @@ WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
 WALLET_PWD=$(openssl rand -hex 4)
 
 # Client wallet location
-CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet"
+CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet/${ORACLE_SID}"
 
 # Disable TCPS control flow
 if [ "${1^^}" == "DISABLE" ]; then
