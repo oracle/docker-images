@@ -97,6 +97,7 @@ function disable_tcps() {
   # Deleting Listener Endpoint for TCPS
   sed -i "/TCPS/d" "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/listener.ora
   # Reconfigure the Listener
+  echo -e "\nReconfiguring the Listener...\n"
   reconfigure_listener
   # Deleting the wallet Directories
   rm -rf "$WALLET_LOC" "$CLIENT_WALLET_LOC"
