@@ -52,6 +52,7 @@ RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \
     chmod ug+rwx $PATCH_INSTALL_DIR && \
     chown -R grid:oinstall $PATCH_INSTALL_DIR && \
     sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.conf  && \
+    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.conf  && \
     sync && \
     su grid -c "$PATCH_INSTALL_DIR/$GRID_PATCH_FILE $PATCH_INSTALL_DIR" && \
     chown -R oracle:oinstall $PATCH_INSTALL_DIR && \

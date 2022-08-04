@@ -47,9 +47,10 @@ yum -y install nfs-utils
 Execute following command to create the container:
 
 ```
+export ORACLE_DBNAME=ORCLCDB
 docker run -d -t --hostname racnode-storage \
 --dns-search=example.com  --cap-add SYS_ADMIN \
---volume /docker_volumes/asm_vol/$ORACLE_SID:/oradata --init \
+--volume /docker_volumes/asm_vol/$ORACLE_DBNAME:/oradata --init \
 --network=rac_priv1_nw --ip=192.168.17.25 --tmpfs=/run  \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --name racnode-storage oracle/rac-storage-server:19.3.0
@@ -57,7 +58,7 @@ docker run -d -t --hostname racnode-storage \
 
 **IMPORTANT:** During the container startup 5 files named as asm_disk0[1-5].img will be created under /oradata.If the files are already present, they will not be recreated.These files can be used for ASM storage in RAC containers.
 
-**NOTE**: Expose directory to container which has atleast 60GB. In the above  example, we are using /docker_volumes/asm_vol/$ORACLE_SID and you need to change values according to your env. Inside container, it will be /oradata and do not change this.
+**NOTE**: Expose directory to container which has atleast 60GB. In the above  example, we are using /docker_volumes/asm_vol/$ORACLE_DBNAME and you need to change values according to your env. Inside container, it will be /oradata and do not change this.
 
 In the above example, we used **192.168.17.0/24** subnet for NFS server. You can change the subnet values according to your environment.
 

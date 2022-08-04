@@ -117,7 +117,7 @@ Refer Oracle Database 21c Release documentation [Oracle Grid Infrastructure Inst
 
 10. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Docker Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment.
  
-11. The Oracle RAC dockerfiles, do not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under dockerfiles/<version> folder.
+11. The Oracle RAC dockerfiles, do not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under `<GITHUM_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles` folder.
 
     Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
     Oracle Database 21c (21.3) for Linux x86-64
@@ -451,7 +451,7 @@ For example:
   -e DOMAIN=example.com \
   -e SCAN_NAME=racnode-scan \
   -e ASM_DISCOVERY_DIR=/oradata \
-  -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.imgv,/oradata/asm_disk04.img,/oradata/asm_disk05.img \
+  -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img \
   -e ORACLE_SID=ORCLCDB \
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \

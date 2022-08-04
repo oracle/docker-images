@@ -139,7 +139,7 @@ Refer Oracle Database 21c Release documentation:
 
 To assist in building the images, you can use the [buildContainerImage.sh](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildContainerImage.sh) script. See the following for instructions and usage.
 
-* Before executing the next step, you need to move `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/21.3.0/Dockerfile_podman` to `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/21.3.0/Dockerfile`.
+* Before executing the next step, you need to edit `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/21.3.0/Dockerfile_podman` and change `oraclelinux:7-slim` to `oraclelinux:8` and save the file.
  
   ```
   ./buildContainerImage.sh -v <Software Version>
@@ -348,9 +348,10 @@ Now create the Oracle RAC container using the image. You can use the following e
     --restart=always \
     --cpu-rt-runtime=95000 \
     --ulimit rtprio=99  \
+    --user 0 \
     --systemd=true \
     --name racnode1 \
-   localhost/oracle/database-rac:21.3.0-21.7.0
+   localhost/oracle/database-rac:21.3.0-21.7.0 "/usr/sbin/init"
   ```
 
 **Note:** Change environment variables such as IPs, ASM_DEVICE_LIST, PWD_FILE, and PWD_KEY based on your env in the envfile. Also, change the devices based on your env in the envfile.
@@ -389,9 +390,10 @@ Now create the Oracle RAC container using the image. You can use the following e
     --restart=always \
     --cpu-rt-runtime=95000 \
     --ulimit rtprio=99  \
+    --user 0 \
     --systemd=true \
     --name racnode1 \
-   localhost/oracle/database-rac:21.3.0-21.7.0
+   localhost/oracle/database-rac:21.3.0-21.7.0 "/usr/sbin/init"
   ```
 
 **Notes:**
@@ -419,7 +421,7 @@ You need to start the container.Execute the following command:
 It can take at least 40 minutes or longer to create the first node of the cluster. To check the logs, use the following command from another terminal session:
 
   ```
-  # podman logs -f racnode1
+  # podman exec racnode1 /bin/bash -c "tail -f /tmp/orod.log"
   ```
 
 You should see the database creation success message at the end:
@@ -542,9 +544,10 @@ To create additional nodes, use the following command:
    --restart=always \
    --cpu-rt-runtime=95000 \
    --ulimit rtprio=99  \
+   --user 0 \
    --systemd=true \
    --name racnode2 \
-   localhost/oracle/database-rac:21.3.0-21.7.0
+   localhost/oracle/database-rac:21.3.0-21.7.0 "/usr/sbin/init"
 ```
 
 For details of all environment variables and parameters, refer to section 6.
@@ -584,9 +587,10 @@ For example:
     --restart=always \
     --cpu-rt-runtime=95000 \
     --ulimit rtprio=99  \
+    --user 0 \
     --systemd=true \
     --name racnode2 \
-   localhost/oracle/database-rac:21.3.0-21.7.0
+   localhost/oracle/database-rac:21.3.0-21.7.0 "/usr/sbin/init"
 ```
 
 **Notes:**
@@ -614,7 +618,7 @@ Start the container
 To check the DB logs, tail the logs using the following command:
 
 ```
-# podman logs -f racnode2
+# podman exec racnode2 /bin/bash -c "tail -f /tmp/orod.log"
 ```
 
 You should see the database creation success message at the end.
