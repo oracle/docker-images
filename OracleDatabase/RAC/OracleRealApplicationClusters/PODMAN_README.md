@@ -209,10 +209,11 @@ Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle
 To run RAC on PODMAN, you need to create envfile which will be mounted inside the PODMAN container.For the details of environment variables, refer to `section 6`.  You need to change the parameters in following section `Parameters need to be changed`  based on your enviornment . Save the file in `/opt/containers/envfile` on PODMAN host.
 
 **Note**: If you are planing to use `RAC Storage Container` for shared storage, change following parameters in the `Parameters need to be changed` section as shown following:
-    ```
-    ASM_DISCOVERY_DIR=/oradata
-    ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img
-   ```
+
+```
+ export ASM_DISCOVERY_DIR=/oradata
+ export ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img
+```
 
 #### Edit `/opt/containers/envfile` file and make required changes:
 
@@ -476,12 +477,13 @@ To perorm the RAC node addition, you need to create envfile which will be mounte
 You need to change the parameters in following section `Parameters need to be changed`  based on your enviornment . Save the file in `/opt/containers/envfile` on PODMAN host.
 
 **Note**: If you are planing to use `RAC Storage Container` for shared storage, change following parameters in the `Parameters need to be changed` section as shown following:
-    ```
-    ASM_DISCOVERY_DIR=/oradata
-    ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img
-   ```
 
-#### Create `/opt/containers/envfile` as mentioned in section 3. You need to change only section "Parameters need to be changed` in /opt/containers/envfile based on node addition enviornment:
+```
+ export ASM_DISCOVERY_DIR=/oradata
+ export ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img
+```
+
+#### Create `/opt/containers/envfile` as mentioned in section 3. You need to change only section `Parameters need to be changed` in `/opt/containers/envfile` based on node addition enviornment:
 
 ```
 ### Parameters need to be changed######
