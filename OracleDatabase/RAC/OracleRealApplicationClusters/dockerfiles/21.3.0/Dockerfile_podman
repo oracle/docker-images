@@ -107,6 +107,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     $INSTALL_DIR/install/$GRID_SETUP_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE && \
     sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
+    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
     su  $GRID_USER -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
     $INVENTORY/orainstRoot.sh && \
     $GRID_HOME/root.sh && \
