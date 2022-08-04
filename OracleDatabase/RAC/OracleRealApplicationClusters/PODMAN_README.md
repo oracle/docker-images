@@ -186,7 +186,7 @@ Specify the secret volume for resetting grid/oracle and database password during
 
   ```
   mkdir /opt/.secrets/
-  openssl rand -hex 64 -out /opt/.secrets/pwd.key
+  openssl rand -hex -out /opt/.secrets/pwd.key
   ```
 
 Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle and database. It will be a common password for grid/oracle and database users. Execute the following command:
@@ -447,7 +447,7 @@ Specify the secret volume for resetting grid/oracle and database passwords durin
 
 ```
 mkdir /opt/.secrets/
-openssl rand -hex 64 -out /opt/.secrets/pwd.key
+openssl rand -hex -out /opt/.secrets/pwd.key
 ```
 
 Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle and database. It will be a common password for grid/oracle and database user. Execute the following command:
