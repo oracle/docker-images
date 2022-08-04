@@ -206,7 +206,7 @@ Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle
 
 
 ### Prepare the envfile
-To run RAC on PODMAN, you need to create envfile which will be mounted inside the PODMAN container.For the details of environment variables, refer to section 6.  You need to change the parameters in following section `Parameters need to be changed`  based on your enviornment . Save the file in `/opt/containers/envfile` on PODMAN host.
+To run RAC on PODMAN, you need to create envfile which will be mounted inside the PODMAN container.For the details of environment variables, refer to `section 6`.  You need to change the parameters in following section `Parameters need to be changed`  based on your enviornment . Save the file in `/opt/containers/envfile` on PODMAN host.
 
 **Note**: If you are planing to use `RAC Storage Container` for shared storage, change following parameters in the `Parameters need to be changed` section as shown following:
     ```
@@ -215,8 +215,10 @@ To run RAC on PODMAN, you need to create envfile which will be mounted inside th
    ```
 
 #### Edit `/opt/containers/envfile` file and make required changes:
+
 ```
-### Parameters need to be changed######
+### Parameters need to be changed###
+
 export HOSTNAME=racnode1
 export DNS_SERVERS=172.16.1.25
 export OP_TYPE=INSTALL
@@ -237,7 +239,7 @@ export PUBLIC_IP=172.16.1.150
 export ASM_DEVICE_LIST=/dev/asm-disk1,/dev/asm-disk2
 export ASM_DISCOVERY_DIR=/dev
 
-###### DO Not Change Following ######
+#### DO Not Change Following ####
 export PATH=/bin:/usr/bin:/sbin:/usr/sbin
 export TERM=xterm
 export ContainerType=RAC
@@ -480,6 +482,7 @@ You need to change the parameters in following section `Parameters need to be ch
    ```
 
 #### Create `/opt/containers/envfile` as mentioned in section 3. You need to change only section "Parameters need to be changed` in /opt/containers/envfile based on node addition enviornment:
+
 ```
 ### Parameters need to be changed######
 export HOSTNAME=racnode2
