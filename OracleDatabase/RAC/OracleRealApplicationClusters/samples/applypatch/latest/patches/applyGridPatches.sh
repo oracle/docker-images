@@ -60,7 +60,7 @@ for file in `ls -d */`; do
    if [ $? -ne 0 ]; then
      exit 1
    fi
-   cd ../
+#   cd ../
    # Clean up patch directory (-f needed because some files
    # in patch directory may not have write permissions)
    # Delete any xml artifacts if present.

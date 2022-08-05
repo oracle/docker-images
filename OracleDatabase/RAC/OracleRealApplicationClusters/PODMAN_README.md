@@ -43,7 +43,7 @@ To create an Oracle RAC environment, execute the steps in the following sections
 
 **IMPORTANT:** You must make the changes specified in this section (customized for your environment) before you proceed to the next section.
 
-You must install and configure [Oracle Container Runtime for PODMAN](https://docs.oracle.com/en/operating-systems/oracle-linux/podman/) on Oracle Linux 8.5 or later to run Oracle RAC on PODMAN.Oracle Container Runtime for Podman Release 4.0.2 or later. Each container that you will deploy as part of your cluster must satisfy the minimum hardware requirements of the Oracle RAC and GI software. An Oracle Oracle RAC database is a shared everything database.
+You must install and configure [Oracle Container Runtime for PODMAN release 4.0.2 or later](https://docs.oracle.com/en/operating-systems/oracle-linux/podman/) on Oracle Linux 8.5 or later to run Oracle RAC on PODMAN. Each container that you will deploy as part of your cluster must satisfy the minimum hardware requirements of the Oracle RAC and GI software. An Oracle Oracle RAC database is a shared everything database.
 
 All data files, control files, redo log files, and the server parameter file (`SPFILE`) used by the Oracle RAC database must reside on shared storage that is accessible by all the Oracle Oracle RAC database instances.
 
@@ -114,8 +114,9 @@ Refer Oracle Database 21c Release documentation:
     # systemctl daemon-reload
     # systemctl enable podman-rac-cgroup.service
     # systemctl enable podman-restart.service 
+    # systemctl start podman-rac-cgroup.service
     ```
-10. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database PODMAN Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment.
+10. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database PODMAN Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment. You need to make sure you have `podman-docker` package installed on your OL8 podman host to run the command using `docker` utility. 
  
 11. The Oracle RAC dockerfiles, do not contain any Oracle Software Binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under dockerfiles/<version> folder.
 
@@ -139,7 +140,7 @@ Refer Oracle Database 21c Release documentation:
 
 To assist in building the images, you can use the [buildContainerImage.sh](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildContainerImage.sh) script. See the following for instructions and usage.
 
-* Before executing the next step, you need to edit `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/21.3.0/Dockerfile_podman` and change `oraclelinux:7-slim` to `oraclelinux:8` and save the file.
+* Before executing the next step, you need to edit `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/21.3.0/Dockerfile` and change `oraclelinux:7-slim` to `oraclelinux:8` and save the file.
  
   ```
   ./buildContainerImage.sh -v <Software Version>
@@ -152,7 +153,7 @@ For detailed usage of the command, execute the following command:
   #  ./buildContainerImage.sh -h
   ```
 
- * Once the `21.3.0` Oracle RAC on PODMAN image is built, start building patched image with the download 21.7 RU and one-offs. To build the patch the image, refer `[Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch)`.
+ * Once the `21.3.0` Oracle RAC on PODMAN image is built, start building patched image with the download 21.7 RU and one-offs. To build the patch the image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
 
 ### Notes
 
@@ -231,7 +232,7 @@ To run RAC on PODMAN, you need to create envfile which will be mounted inside th
  export PWD_KEY=pwd.key 
  export PRIV_IP=192.168.17.150 
  export PUBLIC_HOSTNAME=racnode1 
- export DOMAIN=example.info 
+ export DOMAIN=example.com 
  export CMAN_HOSTNAME=racnode-cman1 
  export CMAN_IP=172.16.1.15 
  export DEFAULT_GATEWAY=172.16.1.1 
@@ -324,7 +325,7 @@ Now create the Oracle RAC container using the image. You can use the following e
   # podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
-    --dns-search "example.info" \
+    --dns-search "example.com" \
     --dns 172.16.1.25 \
     --shm-size 4G \
     --device=/dev/xvdd:/dev/asm-disk1  \
@@ -365,7 +366,7 @@ Now create the Oracle RAC container using the image. You can use the following e
  podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
-    --dns-search "example.info" \
+    --dns-search "example.com" \
     --dns 172.16.1.25 \
     --shm-size 4G \
     --device=/dev/xvdd:/dev/asm-disk1  \
@@ -499,7 +500,7 @@ export SCAN_NAME=racnode-scan
 export PWD_KEY=pwd.key
 export PRIV_IP=192.168.17.151
 export PUBLIC_HOSTNAME=racnode2
-export DOMAIN=example.info
+export DOMAIN=example.com
 export CMAN_HOSTNAME=racnode-cman1
 export CMAN_IP=172.16.1.15
 export DEFAULT_GATEWAY=172.16.1.1
@@ -520,7 +521,7 @@ To create additional nodes, use the following command:
  # podman create -t -i \
    --hostname racnode2 \
    --volume /boot:/boot:ro \
-   --dns-search "example.info" \
+   --dns-search "example.com" \
    --dns 172.16.1.25 \
    --shm-size 4G \
    --device=/dev/xvdd:/dev/asm-disk1  \
@@ -564,7 +565,7 @@ For example:
   # podman create -t -i \
     --hostname racnode2 \
     --volume /boot:/boot:ro \
-    --dns-search "example.info" \
+    --dns-search "example.com" \
     --dns 172.16.1.25 \
     --shm-size 4G \
     --volume /etc/localtime:/etc/localtime:ro \
@@ -779,7 +780,8 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
  * Download following one-offs for 19.16 from [support.oracle.com](https://support.oracle.com/portal/)
    * `34339952`
    * `32869666`
- * Before executing the next step, you need to move `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile_podman` to `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile`.
+ * Before executing the next step, you need to move `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile` to `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile`.
+ * You need to add `CV_ASSUME_DISTID=OEL8` inside the `Dockerfile` as an env variable.
 
  * Once the `19.3.0` Oracle RAC on PODMAN image is built, start building patched image with the download 19.16 RU and one-offs. To build the patch the image, refer `[Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch)`. 
 

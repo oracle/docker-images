@@ -85,7 +85,7 @@ Create NFS volume using following command:
 docker volume create --driver local \
 --opt type=nfs \
 --opt   o=addr=192.168.17.25,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
---opt device=:/oradata \
+--opt device=192.168.17.25:/oradata \
 racstorage
 ```
 

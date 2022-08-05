@@ -72,7 +72,7 @@ for file in `ls -d */`; do
 #      exit $return_code;
 #   fi;
    # Go back out of patch directory
-   cd ../
+#   cd ../
    # Clean up patch directory (-f needed because some files
    # in patch directory may not have write permissions)
    #rm -rf */

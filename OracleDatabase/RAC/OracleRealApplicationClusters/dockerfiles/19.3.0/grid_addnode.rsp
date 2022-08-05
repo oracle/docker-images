@@ -43,7 +43,7 @@
 #------------------------------------------------------------------------------
 # Do not change the following system generated value. 
 #------------------------------------------------------------------------------
-oracle.install.responseFileVersion=/oracle/install/rspfmt_crsinstall_response_schema_v18.0.0
+oracle.install.responseFileVersion=/oracle/install/rspfmt_crsinstall_response_schema_v19.0.0
 
 ###############################################################################
 #                                                                             #
