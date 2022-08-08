@@ -8,5 +8,5 @@ For more information on Oracle RAC Database 21c refer to the [Oracle Database do
 
 This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters on following container solutions:
 
- * [RAC on Docker](./DOCKER_README.md) 
- * [RAC on PODMAN](./PODMAN_README.md)
+* [RAC on Docker](./DOCKER_README.md)
+* [RAC on PODMAN](./PODMAN_README.md)

@@ -91,7 +91,7 @@ Refer Oracle Database 21c Release documentation:
   # Podman network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw 
   ```
 
-* To run Oracle RAC using Oracle Container Runtime for Docker on multiple hosts, you will need to create a [Podman `macvlan` network](https://docs.Podman.io/en/latest/markdown/Podman-network-create.1.html) using the following commands:
+* To run Oracle RAC using Oracle Container Runtime for Podman on multiple hosts, you will need to create a [Podman `macvlan` network](https://docs.Podman.io/en/latest/markdown/Podman-network-create.1.html) using the following commands:
 
     ```bash
     # Podman network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
@@ -665,10 +665,10 @@ If the node addition fails, log in to the container using the preceding command 
 If you are using Connection Manager and exposed port 1521 on the host, connect from an external client using the following connection string:
 
 ```bash
-system/<password>@//<docker_host>:1521/<ORACLE_SID>
+system/<password>@//<podman_host>:1521/<ORACLE_SID>
 ```
 
-If you are using a Docker `macvlan` network and you have configured DNS appropriately, you can connect using the public SCAN listener directly from any external client using the following connection string:
+If you are using a Podman `macvlan` network and you have configured DNS appropriately, you can connect using the public SCAN listener directly from any external client using the following connection string:
 
 ```bash
 system/<password>@//<scan_name>:1521/<ORACLE_SID>
