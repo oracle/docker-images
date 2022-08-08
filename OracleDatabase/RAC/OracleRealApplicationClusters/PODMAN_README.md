@@ -13,7 +13,7 @@ To create an Oracle RAC environment, execute the steps in the following sections
 
 - [Running an Oracle Real Application Clusters Database using Podman](#running-an-oracle-real-application-clusters-database-using-podman)
   - [Using this Image](#using-this-image)
-  - [Section 1: Prerequisites for running Oracle RAC with Podman Engine](#section-1-prerequisites-for-running-oracle-rac-with-podman-engine)
+  - [Section 1: Prerequisites for running Oracle RAC with Podman](#section-1-prerequisites-for-running-oracle-rac-with-podman)
     - [Notes](#notes)
   - [Section 2: Building Oracle RAC Database Container Images](#section-2-building-oracle-rac-database-container-images)
     - [Notes](#notes-1)
@@ -44,7 +44,7 @@ To create an Oracle RAC environment, execute the steps in the following sections
   - [Section 10 : License](#section-10--license)
   - [Section 11 : Copyright](#section-11--copyright)
 
-## Section 1: Prerequisites for running Oracle RAC with Podman Engine
+## Section 1: Prerequisites for running Oracle RAC with Podman
 
 **IMPORTANT:** You must make the changes specified in this section (customized for your environment) before you proceed to the next section.
 
