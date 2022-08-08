@@ -56,7 +56,7 @@ You must provide block devices shared across the hosts.  If you don't have share
 
 Refer Oracle Database 21c Release documentation:
 
-* [Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://support.oracle.com/portal/) to make sure your enviornment meeting all the pre-requisites.
+* [Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://support.oracle.com/portal/) to make sure your environment meeting all the pre-requisites.
 
 1. You must configure the following addresses manually in your DNS.
    * Public IP address for each container
@@ -91,7 +91,7 @@ Refer Oracle Database 21c Release documentation:
   # Podman network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw 
   ```
 
-* To run Oracle RAC using Oracle Container Runtime for Podman on multiple hosts, you will need to create a [Podman `macvlan` network](https://docs.Podman.io/en/latest/markdown/Podman-network-create.1.html) using the following commands:
+* To run Oracle RAC using Podman on multiple hosts, you will need to create a [Podman `macvlan` network](https://docs.Podman.io/en/latest/markdown/Podman-network-create.1.html) using the following commands:
 
     ```bash
     # Podman network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
@@ -182,7 +182,7 @@ For example:
   # touch /opt/containers/rac_host_file
   ```
 
-**Note:** Do not modify `/opt/containers/rac_host_file` from the host running Oracle Container Runtime for Podman. It will be managed from within the containers.
+**Note:** Do not modify `/opt/containers/rac_host_file` from the host running Oracle Podman. It will be managed from within the containers.
 
 If you are using the Oracle Connection Manager for accessing the Oracle RAC Database from outside the host, you need to add the following variable in the container creation command.
 
@@ -414,7 +414,7 @@ Now create the Oracle RAC container using the image. You can use the following e
 
 ### Assign networks to Oracle RAC containers
 
-You need to assign the Podman networks created in section 1 to containers.Eexecute the following commands:
+You need to assign the Podman networks created in section 1 to containers. Execute the following commands:
 
   ```bash
   # Podman network disconnect Podman racnode1
