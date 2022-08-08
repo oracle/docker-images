@@ -282,7 +282,8 @@ else
   # Check whether database is successfully created
   if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
-    touch "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
+    # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
+    echo "$(date -Iseconds)" > "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata

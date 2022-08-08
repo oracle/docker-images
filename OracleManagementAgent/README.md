@@ -135,6 +135,18 @@ Users can provide custom shell script commands to execute before starting Manage
     $ docker logs mgmtagent-container
     ```
 
+1. Cleanup volume using Docker Compose
+
+    ```shell
+    $ docker-compose down --volumes
+    ```
+
+1. Cleanup volume using Docker CLI
+
+    ```shell
+    $ docker volume rm mgmtagent-volume
+    ```
+
 ## License
 To download and run the Oracle Management Agent, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 

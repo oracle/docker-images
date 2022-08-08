@@ -202,6 +202,7 @@ def establish_service_manager(hasServiceManager):
             option('silent') + \
             option('nonsecure')
         subprocess.call(shell_command, shell=True, env=deployment_env)
+        wait_for_service(service_ports['ServiceManager'])
         terminate_process('ServiceManager')
         reset_servicemanager_configuration()
 

@@ -5,7 +5,7 @@ FROM openjdk:17-oraclelinux8
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
-ARG KV_VERSION=20.3.19
+ARG KV_VERSION=21.2.46
 ARG DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 ARG DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
 ARG DOWNLOAD_LINK="${DOWNLOAD_ROOT}/${DOWNLOAD_FILE}"

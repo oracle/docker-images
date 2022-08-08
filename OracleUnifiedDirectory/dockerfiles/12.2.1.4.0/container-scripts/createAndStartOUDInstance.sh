@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -538,7 +538,31 @@ else
     sleep ${sleepBeforeConfig}
 	echo "[$(date)] - Configuration to start now after sleeping for ${sleepBeforeConfig} ..." 2>&1 | tee -a ${oudInstanceConfigStatus}
   fi
+
   case $instanceType in
+    "DS2RS_STS") 
+       hostname=`hostname -f`
+       host_name=`expr "$hostname" : '\([^.][^.]*\)\..*'`
+       echo "[$(date)] - host_name: $host_name"
+       ordinal=`expr "$host_name" : '.*-\(.*\)'`
+       echo "[$(date)] - Ordinal: $ordinal"
+
+       if [ "$ordinal" == "0" ]; then
+         echo "[$(date)] - Calling createOUD_Directory"
+         if [[ -f "/u01/oracle/config-input/config-baseOUD.props" ]]; then
+          source "/u01/oracle/config-input/config-baseOUD.props"
+         fi
+         createOUD_Directory
+       fi
+
+       if [[ "$ordinal" != "0" && ! -z "$ordinal" ]]; then
+         echo "[$(date)] - Calling createOUD_DS2RS"
+        if [[ -f "/u01/oracle/config-input/config-replOUD.props" ]]; then
+         source "/u01/oracle/config-input/config-replOUD.props"
+        fi
+         createOUD_DS2RS
+       fi
+      ;;
     "Directory") createOUD_Directory
       ;;
     "Proxy") createOUD_Proxy
@@ -552,6 +576,7 @@ else
       exit
       ;;
   esac
+  
   deletePwdFiles
   ${SCRIPT_DIR}/startOUDInstance.sh
 fi
