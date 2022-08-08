@@ -70,7 +70,6 @@ Refer Oracle Database 21c Release documentation [Oracle Grid Infrastructure Inst
   net.core.rmem_default = 262144
   net.core.wmem_max = 1048576
   net.core.wmem_default = 262144
-  net.core.rmem_default = 262144
   ```
 
 * Execute the following once the file is modified.

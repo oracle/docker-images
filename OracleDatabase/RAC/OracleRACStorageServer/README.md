@@ -49,7 +49,7 @@ Execute following command to create the container:
 ```bash
 export ORACLE_DBNAME=ORCLCDB
 docker run -d -t --hostname racnode-storage \
---dns-search=example.com  --cap-add SYS_ADMIN --cap-add ADUIT_WRITE \
+--dns-search=example.com  --cap-add SYS_ADMIN --cap-add AUDIT_WRITE \
 --volume /docker_volumes/asm_vol/$ORACLE_DBNAME:/oradata --init \
 --network=rac_priv1_nw --ip=192.168.17.25 --tmpfs=/run  \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
