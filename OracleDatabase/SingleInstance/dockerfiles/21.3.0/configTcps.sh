@@ -130,7 +130,12 @@ fi
 TCPS_PORT=${TCPS_PORT:-1522}
 
 # Export ORACLE_PDB value
-export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+if [ "$ORACLE_SID" == "XE" ]; then
+  export ORACLE_PDB="XEPDB1"
+else
+  export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+fi
+
 ORACLE_PDB=${ORACLE_PDB^^}
 
 # Creating the wallet
