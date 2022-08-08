@@ -416,7 +416,7 @@ Create the Oracle RAC container using the image. You can use the following examp
 
 ### Assign networks to Oracle RAC containers
 
-You need to assign the Podman networks created in section 1 to containers by running the following commands:
+Assign the networks created in section 1 to the containers by running the following commands:
 
   ```bash
   # Podman network disconnect Podman racnode1
