@@ -56,7 +56,7 @@ You must provide block devices shared across the hosts.  If you don't have share
 
 Refer Oracle Database 21c Release documentation:
 
-* [Real Application Clusters Installation Guide for PODMAN Containers Oracle Linux x86-64](PODMAN Website) to make sure your enviornment meeting all the pre-requisites.
+* [Real Application Clusters Installation Guide for PODMAN Containers Oracle Linux x86-64](https://support.oracle.com/portal/) to make sure your enviornment meeting all the pre-requisites.
 
 1. You must configure the following addresses manually in your DNS.
    * Public IP address for each container
@@ -140,7 +140,7 @@ Refer Oracle Database 21c Release documentation:
   * `34339952`
   * `32869666`
 
-12. if SELINUX is enabled on PODMAN host, you need to create RAC on PODMAN SELINUX policy. For details, refer the `How to Configure Podman for SELinux Mode` section [Real Application Clusters Installation Guide for PODMAN Containers Oracle Linux x86-64]([PODMAN Website](https://support.oracle.com/portal/))  in Oracle RAC on PODMAN documentation.
+12. if SELINUX is enabled on PODMAN host, you need to create RAC on PODMAN SELINUX policy. For details, refer the `How to Configure Podman for SELinux Mode` section [Real Application Clusters Installation Guide for PODMAN Containers Oracle Linux x86-64](https://support.oracle.com/portal/) in Oracle RAC on PODMAN documentation.
   
 ### Notes
 
@@ -760,7 +760,7 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
 
 ## Section 9 : Support
 
-At the time of this release, Oracle RAC on PODMAN is supported for Oracle Linux 8.5 later. To see current Linux support certifications, refer [Oracle RAC on PODMAN Documentation](review)
+At the time of this release, Oracle RAC on PODMAN is supported for Oracle Linux 8.5 later. To see current Linux support certifications, refer [Oracle RAC on PODMAN Documentation](https://support.oracle.com/portal/)
 
 ## Section 10 : License
 

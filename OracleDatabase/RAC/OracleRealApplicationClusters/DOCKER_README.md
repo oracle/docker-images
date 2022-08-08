@@ -623,7 +623,7 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
   
 ## Section 9 : Support
 
-At the time of this release, Oracle RAC is supported for Oracle Linux 7. To see current Linux support certifications, see:
+At the time of this release, Oracle RAC on Docker is supported only on Oracle Linux 7. To see current details, refer the [Real Application Clusters Installation Guide for Docker Containers Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racdk/oracle-rac-on-docker.html).
 
 ## Section 10 : License
 
