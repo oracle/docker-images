@@ -48,7 +48,7 @@ To create an Oracle RAC environment, execute the steps in the following sections
 
 **IMPORTANT:** You must make the changes specified in this section (customized for your environment) before you proceed to the next section.
 
-You must install and configure [Oracle Container Runtime for Podman release 4.0.2 or later](https://docs.oracle.com/en/operating-systems/oracle-linux/Podman/) on Oracle Linux 8.5 or later to run Oracle RAC on Podman. Each container that you will deploy as part of your cluster must satisfy the minimum hardware requirements of the Oracle RAC and GI software. An Oracle Oracle RAC database is a shared everything database.
+You must install and configure [Podman release 4.0.2 or later](https://docs.oracle.com/en/operating-systems/oracle-linux/Podman/) on Oracle Linux 8.5 or later to run Oracle RAC on Podman. Each container that you will deploy as part of your cluster must satisfy the minimum hardware requirements of the Oracle RAC and GI software. An Oracle Oracle RAC database is a shared everything database.
 
 All data files, control files, redo log files, and the server parameter file (`SPFILE`) used by the Oracle RAC database must reside on shared storage that is accessible by all the Oracle Oracle RAC database instances.
 
@@ -56,7 +56,7 @@ You must provide block devices shared across the hosts.  If you don't have share
 
 Refer Oracle Database 21c Release documentation:
 
-* [Real Application Clusters Installation Guide for Podman Containers Oracle Linux x86-64](https://support.oracle.com/portal/) to make sure your enviornment meeting all the pre-requisites.
+* [Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://support.oracle.com/portal/) to make sure your enviornment meeting all the pre-requisites.
 
 1. You must configure the following addresses manually in your DNS.
    * Public IP address for each container
@@ -64,7 +64,7 @@ Refer Oracle Database 21c Release documentation:
    * Virtual IP address for each container
    * Three single client access name (SCAN) addresses for the cluster.
 2. If you are planning to use block devices for shared storage, allocate block devices for Oracle Cluster Registry (OCR)/voting and database files.
-3. If you are planning to use NFS storage for OCR, voting and database files, configure NFS storage and export at least one NFS mount. For testing purposes only, use the Oracle `rac-storage-server` image to deploy a Podman container providing NFS-based sharable storage. This applies also to domain name server (DNS) server.
+3. If you are planning to use NFS storage for OCR, voting and database files, configure NFS storage and export at least one NFS mount. For testing purposes only, use the Oracle `rac-storage-server` image to deploy a container providing NFS-based sharable storage. This applies also to domain name server (DNS) server.
 4. If you are planning to use `DNSServer` container for SCAN, IPs, VIPs resolution, configure DNSServer. For testing purposes only, use the Oracle `DNSServer` image to deploy a container providing DNS resolutions.
 5. Verify you have enough memory and CPU resources available for all containers. Each container for Oracle RAC requires 8GB memory and 16GB swap.
 6. For Oracle RAC, you must set the following parameters at the host level in `/etc/sysctl.conf`:
@@ -139,7 +139,7 @@ Refer Oracle Database 21c Release documentation:
   * `34339952`
   * `32869666`
 
-12. if SELINUX is enabled on Podman host, you need to create RAC on Podman SELINUX policy. For details, refer the `How to Configure Podman for SELinux Mode` section [Real Application Clusters Installation Guide for Podman Containers Oracle Linux x86-64](https://support.oracle.com/portal/) in Oracle RAC on Podman documentation.
+12. if SELINUX is enabled on Podman host, you need to create RAC on Podman SELINUX policy. For details, refer the `How to Configure Podman for SELinux Mode` section [Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://support.oracle.com/portal/) in Oracle RAC on Podman documentation.
   
 ### Notes
 
@@ -218,7 +218,7 @@ Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid/oracle
 
 ### Prepare the envfile
 
-To run RAC on Podman, you need to create envfile which will be mounted inside the Podman container.For the details of environment variables, refer to `section 6`.  You need to change the parameters in following section `Parameters need to be changed`  based on your enviornment . Save the file in `/opt/containers/envfile` on Podman host.
+To run RAC on Podman, you need to create envfile which will be mounted inside the container.For the details of environment variables, refer to `section 6`.  You need to change the parameters in following section `Parameters need to be changed`  based on your enviornment . Save the file in `/opt/containers/envfile` on Podman host.
 
 **Note**: If you are planing to use `RAC Storage Container` for shared storage, change following parameters in the `Parameters need to be changed` section as shown following:
 
@@ -491,7 +491,7 @@ sh /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_fil
 
 ### Prepare the envfile
 
-To perorm the RAC node addition, you need to create envfile which will be mounted inside the Podman container.For the details of environment variables, refer to section 7 for node addition.
+To perorm the RAC node addition, you need to create envfile which will be mounted inside the container.For the details of environment variables, refer to section 7 for node addition.
 
 **Note**: If you are planing to use `RAC Storage Container` for shared storage, change following parameters in the `Parameters need to be changed` section as shown following:
 
