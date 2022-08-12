@@ -189,25 +189,22 @@ There are two ways to enable TCPS in the database:
 1. Enable TCPS while creating the database.
 2. Enable TCPS after the database is created.
 
-To enable TCPS while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 1522 for TCPS. You can change this container port using `-e TCPS_PORT=<new value>` option. Further, this container port should be mapped to some host port to get accessed from outside. You can expose the container port using `-p <host-port>:1522` option.
+To enable TCPS while creating the database, use `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 1522 for TCPS.
 
-To enable TCPS after the database is created, please use one the following sample commands:
+To enable TCPS after the database is created, please use one the following sample command:
 ```bash
     # Creates Listener for TCPS at container port 1522
     docker exec -it <container name> /opt/oracle/configTcps.sh
-
-    # Creates Listener for TCPS at container port 2484
-    docker exec -it <container name> /opt/oracle/configTcps.sh 2484
 ```
 
-Similarly, to disable the TCPS in the database, please use the following command:
+Similarly, to disable TCPS in the database, please use the following command:
 ```bash
     # Disable TCPS in the database
     docker exec -it <container name> /opt/oracle/configTcps.sh disable
 ```
 
 **NOTE**:
-- The container port at which TCPS listener is listening should be exposed to the outside world for access.
+- The container port at which TCPS listener is listening (i.e. 1522) should be exposed and mapped to some host port using `-p <host-port>:1522` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
 - When TCPS is enabled, a self-signed certificate will be created for the same. For user's convenience, a client side wallet is prepared and stored at the location, `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with `SQLPlus` to connect with the database. The sample command to download the client wallet is as follows:
     ```bash
         # ORACLE_SID default value is ORCLCDB
@@ -226,7 +223,7 @@ Similarly, to disable the TCPS in the database, please use the following command
         docker exec -it <container name> /opt/oracle/configTcps.sh
     ```
     After certificate renewal, the client wallet should be updated by downloading it again.
-- Supports 21.3.0 XE also.
+- Supports XE version 21.3.0 onwards.
 
 
 #### Running Oracle Database 21c/18c Express Edition in a container
