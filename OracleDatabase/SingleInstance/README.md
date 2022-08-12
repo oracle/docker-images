@@ -78,7 +78,7 @@ After setting these environment variables, the container image can be built usin
 To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
-    -p <host port>:1521 -p <host port>:5500 \
+    -p <host port>:1521 -p <host port>:5500 -p <host port>: 1522\
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
@@ -87,13 +87,14 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
     -e ENABLE_ARCHIVELOG=true \
+    -e ENABLE_TCPS=true \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:21.3.0-ee
     
     Parameters:
        --name:        The name of the container (default: auto generated).
        -p:            The port mapping of the host port to the container port.
-                      Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express).
+                      Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 1522(TCPS Listener Port if TCPS is enabled).
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
@@ -117,6 +118,9 @@ To run your Oracle Database image use the `docker run` command as follows:
                       The character set to use when creating the database (default: AL32UTF8).
        -e ENABLE_ARCHIVELOG:
                       To enable archive log mode when creating the database (default: false).
+                      Supported 19.3 onwards.
+       -e ENABLE_TCPS:
+                      To enable TCPS in the database.
                       Supported 19.3 onwards.
        -v /opt/oracle/oradata
                       The data volume to use for the database.
@@ -179,6 +183,51 @@ This new password will be used afterwards.
 Archive mode can be enabled during the first time when database is created by setting ENABLE_ARCHIVELOG to `true` and passing it to `docker run` command. Archive logs are stored at the directory location: `/opt/oracle/oradata/$ORACLE_SID/archive_logs` inside the container.
 
 In case this parameter is set `true` and passed to `docker run` command while reusing existing datafiles, even though this parameter would be visible as set to `true` in the container environment, this would not be set inside the database. The value used at the time of database creation will be used.
+
+#### Configuring TCPS in the database (Support from version 19.3.0 onwards)
+There are two ways to enable TCPS in the database:
+1. Enable TCPS while creating the database.
+2. Enable TCPS after the database is created.
+
+To enable TCPS while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 1522 for TCPS. You can change this container port using `-e TCPS_PORT=<new value>` option. Further, this container port should be mapped to some host port to get accessed from outside. You can expose the container port using `-p <host-port>:1522` option.
+
+To enable TCPS after the database is created, please use one the following sample commands:
+```bash
+    # Creates Listener for TCPS at container port 1522
+    docker exec -it <container name> /opt/oracle/configTcps.sh
+
+    # Creates Listener for TCPS at container port 2484
+    docker exec -it <container name> /opt/oracle/configTcps.sh 2484
+```
+
+Similarly, to disable the TCPS in the database, please use the following command:
+```bash
+    # Disable TCPS in the database
+    docker exec -it <container name> /opt/oracle/configTcps.sh disable
+```
+
+**NOTE**:
+- The container port at which TCPS listener is listening should be exposed to the outside world for access.
+- When TCPS is enabled, a self-signed certificate will be created for the same. For user's convenience, a client side wallet is prepared and stored at the location, `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with `SQLPlus` to connect with the database. The sample command to download the client wallet is as follows:
+    ```bash
+        # ORACLE_SID default value is ORCLCDB
+        docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
+    ```
+- The client wallet above will have wallet files, along with sample `sqlnet.ora` and `tnsnames.ora`. You should edit the `HOST` and `PORT` field accordingly in the `tnsnames.ora` before connecting using TCPS.
+- After the `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set the TNS_ADMIN for `SQLPlus` by using the `export TNS_ADMIN=$(pwd)` command. Then user can connect with the following sample commands:
+    ```bash
+    # Connecting Enterprise Edition
+    sqlplus sys/<password>@ORCLCDB as sysdba
+    # Connecting Express Edition
+    sqlplus sys/<password>@XE as sysdba
+    ```
+- The certificate used with TCPS has validity for 3 years. After certificate is expired, you can renew certs using the following command:
+    ```bash
+        docker exec -it <container name> /opt/oracle/configTcps.sh
+    ```
+    After certificate renewal, the client wallet should be updated by downloading it again.
+- Supports 21.3.0 XE also.
+
 
 #### Running Oracle Database 21c/18c Express Edition in a container
 

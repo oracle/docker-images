@@ -36,7 +36,7 @@ function setupClientWallet() {
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=${HOSTNAME:localhost})
+    (HOST=${HOSTNAME:-localhost})
     (PORT=${TCPS_PORT})
   )
   (CONNECT_DATA=
@@ -49,7 +49,7 @@ ${ORACLE_PDB}=
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=${HOSTNAME:localhost})
+    (HOST=${HOSTNAME:-localhost})
     (PORT=${TCPS_PORT})
   )
   (CONNECT_DATA=
