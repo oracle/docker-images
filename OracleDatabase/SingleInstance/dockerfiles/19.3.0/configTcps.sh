@@ -25,9 +25,9 @@ function setupClientWallet() {
     fi
 
     # Create the client wallet
-    orapki wallet create -wallet "${CLIENT_WALLET_LOC}" -pwd "$1" -auto_login
+    orapki wallet create -wallet "${CLIENT_WALLET_LOC}" -pwd "$WALLET_PWD" -auto_login
     # Add the certificate
-    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -pwd "$1" -trusted_cert -cert /tmp/"$(hostname)"-certificate.crt
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -pwd "$WALLET_PWD" -trusted_cert -cert /tmp/"$(hostname)"-certificate.crt
     # Removing cert from /tmp location
     rm /tmp/"$(hostname)"-certificate.crt
 
@@ -36,7 +36,7 @@ function setupClientWallet() {
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=localhost)
+    (HOST=${HOSTNAME:localhost})
     (PORT=${TCPS_PORT})
   )
   (CONNECT_DATA=
@@ -49,7 +49,7 @@ ${ORACLE_PDB}=
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=localhost)
+    (HOST=${HOSTNAME:localhost})
     (PORT=${TCPS_PORT})
   )
   (CONNECT_DATA=
@@ -125,6 +125,9 @@ if [ "${1^^}" == "DISABLE" ]; then
 elif [[ "$1" =~ ^[0-9]+$ ]]; then
   # If TCPS_PORT is not set in the environment, honor the TCPS_PORT passed as the positional argument
   TCPS_PORT=${TCPS_PORT:-"$1"}
+  HOSTNAME="$2"
+else
+  HOSTNAME="$1"
 fi
 
 # Default TCPS_PORT value
@@ -158,4 +161,4 @@ reconfigure_listener
 orapki wallet export -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -cert /tmp/"$(hostname)"-certificate.crt
 
 # Update the client wallet
-setupClientWallet "${WALLET_PWD}"
+setupClientWallet
