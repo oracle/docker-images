@@ -14,14 +14,10 @@ To create an Oracle RAC environment, execute the steps in the following sections
 - [Running an Oracle Real Application Clusters Database using Podman](#running-an-oracle-real-application-clusters-database-using-podman)
   - [Using this Image](#using-this-image)
   - [Section 1: Prerequisites for running Oracle RAC with Podman](#section-1-prerequisites-for-running-oracle-rac-with-podman)
-    - [Notes](#notes)
   - [Section 2: Building Oracle RAC Database Container Images](#section-2-building-oracle-rac-database-container-images)
-    - [Notes](#notes-1)
   - [Section 3: Creating the Oracle Grid Infrastructure and Oracle RAC Container](#section-3-creating-the-oracle-grid-infrastructure-and-oracle-rac-container)
     - [Password management](#password-management)
-    - [Notes](#notes-2)
     - [Prepare the envfile](#prepare-the-envfile)
-      - [Edit `/opt/containers/envfile` file and make required changes](#edit-optcontainersenvfile-file-and-make-required-changes)
     - [Deploying Oracle RAC on a Container with Block Devices](#deploying-oracle-rac-on-a-container-with-block-devices)
     - [Deploying Oracle RAC on Container With Oracle RAC Storage Container](#deploying-oracle-rac-on-container-with-oracle-rac-storage-container)
     - [Assign networks to Oracle RAC containers](#assign-networks-to-oracle-rac-containers)
@@ -29,7 +25,6 @@ To create an Oracle RAC environment, execute the steps in the following sections
     - [Connect to the Oracle RAC Container](#connect-to-the-oracle-rac-container)
   - [Section 4: Adding an Oracle RAC Node Using a Container](#section-4-adding-an-oracle-rac-node-using-a-container)
     - [Password Management](#password-management-1)
-    - [Notes](#notes-3)
     - [Prepare the envfile](#prepare-the-envfile-1)
     - [Deploying with Block Devices](#deploying-with-block-devices)
     - [Deploying Oracle RAC on Container with Oracle RAC Storage Container](#deploying-oracle-rac-on-container-with-oracle-rac-storage-container-1)
@@ -39,7 +34,7 @@ To create an Oracle RAC environment, execute the steps in the following sections
   - [Section 5: Connecting to Oracle RAC Database](#section-5-connecting-to-oracle-rac-database)
   - [Section 6: Environment Variables for the first node](#section-6-environment-variables-for-the-first-node)
   - [Section 7: Environment Variables for the second and subsequent nodes](#section-7-environment-variables-for-the-second-and-subsequent-nodes)
-  - [Sample Container Files for Older Releases](#sample-container-files-for-older-releases)
+  - [Section 8 : Sample Container Files for Older Releases](#section-8--sample-container-files-for-older-releases)
   - [Section 9 : Support](#section-9--support)
   - [Section 10 : License](#section-10--license)
   - [Section 11 : Copyright](#section-11--copyright)
@@ -54,11 +49,11 @@ All data files, control files, redo log files, and the server parameter file (`S
 
 You must provide block devices shared across the hosts.  If you don't have shared block storage, then you can use an NFS volume. The Podman host must meet the requirements specified in the documentation:
 
-[Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html/) 
+[Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
 
 Ensure that your environment meets all the listed prerequisites.
 
-Complete configuration as follows: 
+Complete configuration as follows:
 
 1. Configure the following addresses manually in your DNS.
    * Public IP address for each container
@@ -71,79 +66,79 @@ Complete configuration as follows:
 5. Verify you have enough memory and CPU resources available for all containers. Each container for Oracle RAC requires 8 GB memory and 16 GB swap.
 6. For Oracle RAC, you must set the following parameters at the host level in `/etc/sysctl.conf`:
 
-  ```INI
-  fs.file-max = 6815744
-  net.core.rmem_max = 4194304
-  net.core.rmem_default = 262144
-  net.core.wmem_max = 1048576
-  net.core.wmem_default = 262144
-  ```
+    ```INI
+    fs.file-max = 6815744
+    net.core.rmem_max = 4194304
+    net.core.rmem_default = 262144
+    net.core.wmem_max = 1048576
+    net.core.wmem_default = 262144
+    ```
 
 * After the file is modified, run the following commands:
 
-    ```bash
-    # sysctl -a
-    # sysctl -p
-    ```
+  ```bash
+  # sysctl -a
+  # sysctl -p
+  ```
 
 7. Before you start the installation, you must plan your private and public network. You can create a network bridge on every host so containers running within that host can communicate with each other.  For example, create `rac_pub1_nw` for the public network (`172.16.1.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing. In this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
 
-  ```bash
-  # Podman network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
-  # Podman network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw 
-  ```
+    ```bash
+    # podman network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
+    # podman network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw 
+    ```
 
 * To run Oracle RAC using Podman on multiple hosts, you must create a [Podman `macvlan` network](https://docs.Podman.io/en/latest/markdown/Podman-network-create.1.html), using the following commands:
 
-    ```bash
-    # Podman network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
-    # Podman network create -d macvlan --subnet=192.168.17.0/24 -o parent=eth1 rac_priv1_nw
-    ```
+  ```bash
+  # podman network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
+  # podman network create -d macvlan --subnet=192.168.17.0/24 -o parent=eth1 rac_priv1_nw
+  ```
 
 8. Oracle RAC must run certain processes in real-time mode. To run processes inside a container in real-time mode, populate the real-time CPU budgeting on machine restarts. create oneshot systemd service as mentioned following:
 
-* Create a file `/etc/systemd/system/Podman-rac-cgroup.service`
-* Append the following lines:
+   * Create a file `/etc/systemd/system/podman-rac-cgroup.service`
+   * Append the following lines:
 
-    ```INI
-    [Unit]
-     Description=Populate Cgroups with real time chunk on machine restart
-     After=Podman-restart.service
-    [Service]
-     Type=oneshot
-     ExecStart=/bin/bash -c “/bin/echo 950000 > /sys/fs/cgroup/cpu,cpuacct/machine.slice/cpu.rt_runtime_us && /bin/systemctl restart Podman-restart.service”
-     StandardOutput=journal
-     CPUAccounting=yes
-     Slice=machine.slice
-    [Install]
-     WantedBy=multi-user.target
-    ```
+      ```INI
+      [Unit]
+      Description=Populate Cgroups with real time chunk on machine restart
+      After=multi-user.target
+      [Service]
+      Type=oneshot
+      ExecStart=/bin/bash -c “/bin/echo 950000 > /sys/fs/cgroup/cpu,cpuacct/machine.slice/cpu.rt_runtime_us && /bin/systemctl restart Podman-restart.service”
+      StandardOutput=journal
+      CPUAccounting=yes
+      Slice=machine.slice
+      [Install]
+      WantedBy=multi-user.target
+      ```
 
-* After creating the file `/etc/systemd/system/Podman-rac-cgroup.service` with the above contents, execute following steps:
+   * After creating the file `/etc/systemd/system/Podman-rac-cgroup.service` with the above contents, execute following steps:
 
-    ```bash
-    # systemctl daemon-reload
-    # systemctl enable Podman-rac-cgroup.service
-    # systemctl enable Podman-restart.service 
-    # systemctl start Podman-rac-cgroup.service
-    ```
+      ```bash
+      # systemctl daemon-reload
+      # systemctl enable podman-rac-cgroup.service
+      # systemctl enable podman-restart.service 
+      # systemctl start podman-rac-cgroup.service
+      ```
 
-10. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a preconfigured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment. You must ensure that you have the`Podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
+9. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a preconfigured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME' and 'DNS_SERVER' based on your environment. You must ensure that you have the`Podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
 
-11. The Oracle RAC `Dockerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under `<GITHUM_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles` folder.
+10. The Oracle RAC `Dockerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under `<GITHUM_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles` folder.
 
-* Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
-* Oracle Database 21c (21.3) for Linux x86-64
+    * Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
+    * Oracle Database 21c (21.3) for Linux x86-64
 
-* Because Oracle RAC on Podman is supported on Release 21c (21.7) or later, you must download the grid release update (RU) from [support.oracle.com](https://support.oracle.com/portal/). In this case, we downloaded RU `34155589`.
+    * Because Oracle RAC on Podman is supported on Release 21c (21.7) or later, you must download the grid release update (RU) from [support.oracle.com](https://support.oracle.com/portal/). In this case, we downloaded RU `34155589`.
 
-* Download the following one-off patches for release 21.7 from [support.oracle.com](https://support.oracle.com/portal/)
-  * `34339952`
-  * `32869666`
+    * Download the following one-off patches for release 21.7 from [support.oracle.com](https://support.oracle.com/portal/)
+        * `34339952`
+        * `32869666`
 
-12. If SELINUX is enabled on the Podman host, then you must create a RAC on Podman SELINUX policy. For details, refer to `How to Configure Podman for SELinux Mode` in the section [Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html) in Oracle RAC on Podman documentation.
+11. If SELINUX is enabled on the Podman host, then you must create a RAC on Podman SELINUX policy. For details, refer to `How to Configure Podman for SELinux Mode` in the section [Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html) in Oracle RAC on Podman documentation.
 
-### Notes
+**Notes**
 
 * If the Podman bridge network is not available outside your host, you can use the Oracle Connection Manager (CMAN) image to access the Oracle RAC Database from outside the host.
 
@@ -160,7 +155,7 @@ To assist in building the images, you can use the [`buildContainerImage.sh`](htt
   #  for example ./buildContainerImage.sh -v 21.3.0
   ```
 
-For detailed usage of the command, execute the following command:
+* For detailed usage of the command, execute the following command:
 
   ```bash
   #  ./buildContainerImage.sh -h
@@ -168,14 +163,14 @@ For detailed usage of the command, execute the following command:
 
 * After the `21.3.0` Oracle RAC on Podman image is built, start building a patched image with the download 21.7 RU and one-offs. To build the patch image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
 
-### Notes
+**Notes**
 
-* The resulting images will contain the Oracle Grid Infrastructure Binaries and Oracle RAC Database binaries.
+* The resulting images will contain the Oracle Grid Infrastructure binaries and Oracle RAC Database binaries.
 * If you are behind a proxy wall, then you must set the `https_proxy` environment variable based on your environment before building the image.
 
 ## Section 3: Creating the Oracle Grid Infrastructure and Oracle RAC Container
 
-All containers will share a host file for name resolution.  The shared host file must be available to all containers. Create the shared host file (if it doesn't exist) at `/opt/containers/rac_host_file`. 
+All containers will share a host file for name resolution.  The shared host file must be available to all containers. Create the shared host file (if it doesn't exist) at `/opt/containers/rac_host_file`.
 
 For example:
 
@@ -212,7 +207,7 @@ Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid, oracl
   chmod 400 /opt/.secrets/pwd.key
   ```
 
-### Notes
+**Notes**
 
 * If you want to specify different passwords for each of the accounts, then create three different files and encrypt them under `/opt/.secrets`.  Next, pass the file name to the container by using the `env` parameter. Environment variables are `ORACLE_PWD_FILE` for `oracle` user, `GRID_PWD_FILE` for `grid` user, and `DB_PWD_FILE` for the database password.
 * If you want a common password for the `oracle`, `grid`, and `database` users, then assign a password file name to `COMMON_OS_PWD_FILE` environment variable.
@@ -222,14 +217,14 @@ Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for grid, oracl
 
 To run Oracle RAC on Podman, you must create an envfile,  which will be mounted inside the container. For the details of environment variables, refer to `section 6`.  You must change the parameters as described in the following section, `Parameters need to be changed`, based on your environment . Save the file in `/opt/containers/envfile` on Podman host.
 
-**Note**: If you are planning to use the `RAC Storage Container` for shared storage, then change following parameters in the `Parameters need to be changed` section: 
+**Note**: If you are planning to use the `RAC Storage Container` for shared storage, then change following parameters in the `Parameters need to be changed` section:
 
 ```bash
  export ASM_DISCOVERY_DIR=/oradata
  export ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img
 ```
 
-#### Edit `/opt/containers/envfile` file and make required changes
+Edit `/opt/containers/envfile` file and make required changes
 
 ```INI
  ### Parameters need to be changed###
@@ -334,7 +329,7 @@ Repeat for each shared block device. In the preceding example, `/dev/xvde` is a 
 Now create the Oracle RAC container using the image. You can use the following example to create a container:
 
   ```bash
-  # Podman create -t -i \
+  # podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
     --dns-search "example.com" \
@@ -374,8 +369,7 @@ Now create the Oracle RAC container using the image. You can use the following e
 Create the Oracle RAC container using the image. You can use the following example to create a container:
 
   ```bash
-  # 
- Podman create -t -i \
+  #  podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
     --dns-search "example.com" \
@@ -419,9 +413,9 @@ Create the Oracle RAC container using the image. You can use the following examp
 Assign the networks created in section 1 to the containers by running the following commands:
 
   ```bash
-  # Podman network disconnect Podman racnode1
-  # Podman network connect rac_pub1_nw --ip 172.16.1.150 racnode1
-  # Podman network connect rac_priv1_nw --ip 192.168.17.150  racnode1
+  # podman network disconnect podman racnode1
+  # podman network connect rac_pub1_nw --ip 172.16.1.150 racnode1
+  # podman network connect rac_priv1_nw --ip 192.168.17.150  racnode1
   ```
 
 ### Start the first container
@@ -429,13 +423,13 @@ Assign the networks created in section 1 to the containers by running the follow
 To start the first container, run the following command:
 
   ```bash
-  # Podman start racnode1
+  # podman start racnode1
   ```
 
 It can take at least 40 minutes or longer to create the first node of the cluster. To check the logs, use the following command from another terminal session:
 
   ```bash
-  # Podman exec racnode1 /bin/bash -c "tail -f /tmp/orod.log"
+  # podman exec racnode1 /bin/bash -c "tail -f /tmp/orod.log"
   ```
 
 You should see the database creation success message at the end:
@@ -451,7 +445,7 @@ You should see the database creation success message at the end:
 To connect to the container execute the following command:
 
 ```bash
-# Podman exec -i -t racnode1 /bin/bash
+# podman exec -i -t racnode1 /bin/bash
 ```
 
 If the install fails for any reason, log in to the container using the preceding command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
@@ -476,7 +470,7 @@ openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.se
 rm -f /opt/.secrets/common_os_pwdfile
 ```
 
-### Notes
+**Notes**
 
 * If you want to specify different passwords for each of the accounts, then create three different files and encrypt them under `/opt/.secrets`. Next, pass the file name to the container using the following environment variables: `ORACLE_PWD_FILE` for the `oracle` user, `GRID_PWD_FILE` for the  `grid` user and `DB_PWD_FILE` for the database password.
 * If you want a common password for the `oracle`, `grid`, and database users, then assign a single password file by using the `COMMON_OS_PWD_FILE` environment variable.
@@ -484,7 +478,7 @@ rm -f /opt/.secrets/common_os_pwdfile
 Reset the password on the existing Oracle RAC node for SSH setup between an existing node in the cluster and the new node. Password must be the same on all the nodes for the `grid` and `oracle` users. Execute the following command on an existing node of the cluster.
 
 ```bash
-Podman exec -i -t -u root racnode1 /bin/bash
+podman exec -i -t -u root racnode1 /bin/bash
 sh  /opt/scripts/startup/resetOSPassword.sh --help
 sh /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_file common_os_pwdfile.enc --secret_volume /run/secrets --pwd_key_file pwd.key
 ```
@@ -537,7 +531,7 @@ If you are using an NFS volume, then skip to the section "Deploying with the Ora
 To create additional nodes, use the following command:
 
 ```bash
- # Podman create -t -i \
+ # podman create -t -i \
    --hostname racnode2 \
    --volume /boot:/boot:ro \
    --dns-search "example.com" \
@@ -581,7 +575,7 @@ Use the existing `racstorage:/oradata` volume when creating the additional conta
 For example:
 
 ```bash
-  # Podman create -t -i \
+  # podman create -t -i \
     --hostname racnode2 \
     --volume /boot:/boot:ro \
     --dns-search "example.com" \
@@ -623,9 +617,9 @@ For example:
 Connect the private and public networks you created earlier to the container:
 
 ```bash
-# Podman  network disconnect Podman racnode2
-# Podman  network connect rac_pub1_nw --ip 172.16.1.151 racnode2
-# Podman  network connect rac_priv1_nw --ip 192.168.17.151 racnode2
+# podman  network disconnect podman racnode2
+# podman  network connect rac_pub1_nw --ip 172.16.1.151 racnode2
+# podman  network connect rac_priv1_nw --ip 192.168.17.151 racnode2
 ```
 
 ### Start Oracle RAC container
@@ -633,13 +627,13 @@ Connect the private and public networks you created earlier to the container:
 Start the container
 
 ```bash
-# Podman start racnode2
+# podman start racnode2
 ```
 
 To check the Database logs, tail the logs using the following command:
 
 ```bash
-# Podman exec racnode2 /bin/bash -c "tail -f /tmp/orod.log"
+# podman exec racnode2 /bin/bash -c "tail -f /tmp/orod.log"
 ```
 
 You should see the database creation success message at the end.
@@ -655,7 +649,7 @@ ORACLE RAC DATABASE IS READY TO USE!
 To connect to the container execute the following command:
 
 ```bash
-# Podman exec -i -t racnode2 /bin/bash
+# podman exec -i -t racnode2 /bin/bash
 ```
 
 If the node addition fails, log in to the container using the preceding command and review `/tmp/orod.log`. You can also review the Grid Infrastructure logs i.e. `$GRID_BASE/diag/crs` and check for failure logs. If the node creation has failed during the database creation process, then check DB logs.
@@ -741,28 +735,28 @@ DB_PWD_FILE=###You need to pass the file name to set the password for DB user i.
 REMOVE_OS_PWD_FILES=###You need to set this to true to remove pwd key file and password file after resetting password.###
 ```
 
-## Sample Container Files for Older Releases
+## Section 8 : Sample Container Files for Older Releases
 
 This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
 
 * Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
 * Oracle Database 19c (19.3) for Linux x86-64
   
-
  **Notes:**
 
 * Because Oracle RAC on Podman is supported on 19c from 19.16 or later, you must download the grid release update (RU) from [support.oracle.com](https://support.oracle.com/portal/). In this case, we downloaded RU `34130714`.
 * Download following one-offs for 19.16 from [support.oracle.com](https://support.oracle.com/portal/)
   * `34339952`
   * `32869666`
-* Before starting the next step, you must  move `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile` to `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile`.
+* Before starting the next step, you must edit `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile`, change `oraclelinux:7-slim` to `oraclelinux:8`, and save the file.
 * You must add `CV_ASSUME_DISTID=OEL8` inside the `Dockerfile` as an env variable.
 
-* Once the `19.3.0` Oracle RAC on Podman image is built, start building patched image with the download 19.16 RU and one-offs. To build the patch the image, refer `[Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch)`.
+* Once the `19.3.0` Oracle RAC on Podman image is built, start building patched image with the download 19.16 RU and one-offs. To build the patch the image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
+* Make changes in `/opt/containers/envfile` in [Prepare the envfile](#prepare-the-envfile) sectoin as per 19c `Dockerfile`. You need to change all the contents based on 19c such as `GRID_HOME`, `ORACLE_HOME` and `ADDNODE_RSP` which you have used in `Dockerfile` while building the image.
 
 ## Section 9 : Support
 
-At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.5 later. To see current Linux support certifications, refer [Oracle RAC on Podman Documentation](https://support.oracle.com/portal/)
+At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.5 later. To see current Linux support certifications, refer [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
 
 ## Section 10 : License
 
