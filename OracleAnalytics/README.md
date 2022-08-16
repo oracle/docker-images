@@ -21,18 +21,12 @@ An Oracle Database container can be created from an [OracleDatabase](https://git
 
 To build a BI image you start by building the Oracle Java image and then the Oracle FMW Infrastructure image.
 
-### Building the Oracle Java (Server JRE) Image
+### Building the Oracle Java (Server JRE 8) Image
 
-If a proxy is needed for the host to access yum.oracle.com during build, then first set up the appropriate environment, e.g.:
+Download the Oracle Server JRE binary into folder `OracleJava/8` and build the image:
 
-        $ export http_proxy=myproxy.example.com:80
-        $ export https_proxy=myproxy.example.com:80
-        $ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
-
-Download the Oracle Server JRE binary into folder `OracleJava/java-8` and build the image:
-
-        $ cd OracleJava/java-8
-        $ docker build -t oracle/serverjre:8 .
+        $ cd OracleJava/8
+        $ docker build --tag oracle/serverjre:8 .
 
 Please refer to README.md under [OracleJava](https://github.com/oracle/docker-images/tree/master/OracleJava) for details on how to build Oracle Java image.
 
