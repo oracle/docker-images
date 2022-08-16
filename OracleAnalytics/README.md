@@ -47,11 +47,6 @@ Build the image:
 
 Please refer to README.md under [OracleFMWInfrastructure](https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure) for details on how to build FMW Infrastructure image.
 
-### Building the Oracle FMW Infrastructure Patched Image
-
-Please refer to README.md under [OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64](../OracleFMWInfrastructure/samples/12214-patch-fmw-for-oas64) for steps on how to build FMW Infrastructure patched image.
-
-
 ### Building the Oracle Analytics Server Image
 
 Download binaries for [Oracle Analytics Server 2022 (6.4)](https://www-sites.oracle.com/solutions/business-analytics/analytics-server/analytics-server.html) for Linux x86-64-bit into folder `OracleAnalytics/dockerfiles/6.4`.
@@ -66,6 +61,11 @@ Build the image:
 
         $ cd OracleAnalytics/dockerfiles
         $ ./buildDockerImage.sh -v 6.4
+
+### Building the Oracle Analytics Server Patched Image
+
+Please refer to README.md under [OracleAnalytics/patches/6.4-patch](./patches/6.4-patch) for steps on how to build Oracle Analytics Server patched image.
+
 
 ## Creating an Oracle Analytics Server Container
 
@@ -91,7 +91,7 @@ ORACLE_HOME is fixed to `/u01/oracle`. DOMAIN_HOME is fixed to `/u01/oracle/user
   
 e.g.:
 
-        $ docker run -it -p 9500:9500 -p 9502:9502 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/biplatform:6.4
+        $ docker run -it -p 9500:9500 -p 9502:9502 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/biplatform:6.4-patch
 
 (change _<...password>_ to your required values, and DB values to match your database).
 
@@ -114,7 +114,7 @@ If access to the OBI Server component is required, e.g. by the BI Administration
 
 e.g.:
 
-        $ docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/biplatform:6.4
+        $ docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/biplatform:6.4-patch
 
 
 ### Using a host directory for persistent data
@@ -142,7 +142,7 @@ Then start a database container using the above network:
 
 Then start a BI container that uses the database by name:
 
-        $ docker run --name bi --network=bi_net -e DB_HOST=database ...... oracle/biplatform:6.4
+        $ docker run --name bi --network=bi_net -e DB_HOST=database ...... oracle/biplatform:6.4-patch
 
 (in the above docker run examples other parameters are omitted for clarity).
 
