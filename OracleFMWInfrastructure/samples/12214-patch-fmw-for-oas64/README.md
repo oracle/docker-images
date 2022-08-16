@@ -1,4 +1,4 @@
-Patch a FMW Infrastructure Image for Oracle Analytics Server 6.4
+Build a FMW Infrastructure Patched Image for Oracle Analytics Server 6.4
 ===============================================
 This Dockerfile extends the Oracle FMW Infrastructure image (12.2.1.4), and applies necessary patches required for Oracle Analytics Server 6.4.
 
