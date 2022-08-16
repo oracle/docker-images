@@ -341,6 +341,8 @@ docker run --name <container-name> -e CLONE_DB=true \
 -e PRIMARY_DB_CONN_STR='<the on-prem database connection string in <HOST>:<PORT>/<SERVICE_NAME> format>' \
 oracle/database:19-onprem
 ```
+**NOTE:**
+Make sure that the directory structure of the on-premise database matches with the directory structure used in the docker image.
 
 ### Deploying Oracle Database on Kubernetes
 
