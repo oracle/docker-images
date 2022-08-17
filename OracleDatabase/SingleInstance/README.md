@@ -206,18 +206,18 @@ Similarly, to disable TCPS in the database, please use the following command:
 **NOTE**:
 - Only the database server authentication is supported (no mTLS).
 - The container port at which TCPS listener is listening (i.e. 1522) should be exposed and mapped to some host port using `-p <host-port>:1522` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
-- When TCPS is enabled, a self-signed certificate will be created for the same. For user's convenience, a client side wallet is prepared and stored at the location, `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with `SQL*Plus` to connect with the database. The sample command to download the client wallet is as follows:
+- When TCPS is enabled, a self-signed certificate will be created for the same. For user's convenience, a client side wallet is prepared and stored at the location, `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect with the database. The sample command to download the client wallet is as follows:
     ```bash
         # ORACLE_SID default value is ORCLCDB
         docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
     ```
 - The client wallet above will have wallet files, along with sample `sqlnet.ora` and `tnsnames.ora`. You should edit the `HOST` and `PORT` field accordingly in the `tnsnames.ora` before connecting using TCPS.
-- After the `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set the TNS_ADMIN for `SQL*Plus` by using the `export TNS_ADMIN=$(pwd)` command. Then user can connect with the following sample commands:
+- After the `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set the TNS_ADMIN for SQL\*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then user can connect with the following sample commands:
     ```bash
     # Connecting Enterprise Edition
-    sqlplus sys/<password>@ORCLCDB as sysdba
+    sqlplus sys@ORCLCDB as sysdba
     # Connecting Express Edition
-    sqlplus sys/<password>@XE as sysdba
+    sqlplus sys@XE as sysdba
     ```
 - The certificate used with TCPS has validity for 3 years. After certificate is expired, you can renew certs using the following command:
     ```bash
@@ -342,7 +342,7 @@ docker run --name <container-name> -e CLONE_DB=true \
 oracle/database:19-onprem
 ```
 **NOTE:**
-Make sure that the directory structure of the on-premise database matches with the directory structure used in the docker image.
+Make sure that the directory structure of the on-premise database matches with the directory structure used in the container image.
 
 ### Deploying Oracle Database on Kubernetes
 
