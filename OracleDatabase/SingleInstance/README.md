@@ -191,7 +191,7 @@ There are two ways to enable TCPS in the database:
 
 To enable TCPS while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 1522 for TCPS.
 
-To enable TCPS after the database is created, please use one the following sample command:
+To enable TCPS after the database is created, please use one of the following sample commands:
 ```bash
     # Creates Listener for TCPS at container port 1522
     docker exec -it <container name> /opt/oracle/configTcps.sh
