@@ -48,10 +48,10 @@ RUN set -eux; \
     if [ "$ARCH" == "x86_64" ]; \
     then \
 		mv $(ls /tmp/jdk-11*_linux-x64_bin.tar.gz) /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=da9297fa500517e82e575c88886ca2311018d86cf374177a8e12b8ea8c49e79e ; \
+        JAVA_SHA256=4edc62ebb4359b276ea33abfd9a54bacb218b8f972603c20be9e415b8a59012c ; \
     else \
 	    mv $(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz) /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=080d0d8bd15bf30b5f8cc6305d66e150c323858fe3759d855af94915378ca936 ; \    	
+    	JAVA_SHA256=546dca8e140abbcddbbb36f691817d81f7116b76e00e25ce2e0586bfee567f57 ; \    	
     fi && \
 	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
@@ -63,7 +63,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.15.1 \
+ENV JAVA_VERSION=11.0.16.1 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
