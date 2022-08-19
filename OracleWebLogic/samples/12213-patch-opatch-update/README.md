@@ -4,7 +4,7 @@ This Dockerfile extends the Oracle WebLogic install image by updating OPatch and
 
 Historically, OPatch was updated by unzipping and replacing the ORACLE_HOME/OPatch directory. For versions greater than or equal to 13.6, it now uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI metadata. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasion led to upgrade related issues.
 
-**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, 12.2.1.4, and 14.1.1 images. Note that the 12.2.1.3 images in OCR already have these patches applied.
+**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, 12.2.1.4, and 14.1.1 images and updates OPatch. Note that the WebLogic CPU images in OCR already have these patches applied.
 
 ## How to build
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
