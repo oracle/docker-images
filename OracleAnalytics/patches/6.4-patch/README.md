@@ -5,7 +5,7 @@ This Dockerfile extends the Oracle Analytics Server image (6.4), and applies nec
 ## How to build and run
 First make sure you have built `oracle/biplatform:6.4`.
 
-Download the following patches from [My Oracle Support](http://support.oracle.com) and place them in the same directory as this README.
+Download the following patches from [My Oracle Support](https://support.oracle.com) and place them in the same directory as this README.
 
 (1) p34080315_122140_Generic.zip  
 (2) p33958532_122140_Generic.zip  
@@ -25,4 +25,4 @@ To build, run:
 
 
 # Copyright
-Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2022 Oracle and/or its affiliates.
