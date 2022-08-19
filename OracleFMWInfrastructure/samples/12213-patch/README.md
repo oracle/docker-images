@@ -2,7 +2,7 @@ Example How to Patch a FMW Infrastructure Image
 ===============================================
 This Dockerfile extends the Oracle FMW Infrastructure image and applies a patch.
 
-**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, 12.2.1.4, and 14.1.1 images and updates OPatch. Note that the WebLogic CPU images in OCR already have these patches applied.
+**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, and 12.2.1.4 images and updates OPatch. Note that the WebLogic CPU images in OCR already have these patches applied.
 
 ## How to build and run
 First make sure you have built `oracle/fmw-infrastructure:12.2.1.3`.
