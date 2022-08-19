@@ -1,6 +1,6 @@
 Oracle Analytics Server on Docker
 =============
-Sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for Oracle Analytics Server 2022 (6.4) based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle FMW Infrastructure 12.2.1.4.0.
+Sample container configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for Oracle Analytics Server 2022 (6.4) based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle FMW Infrastructure 12.2.1.4.0.
 
 For more information about Oracle Analytics Server please see the [Oracle Analytics Server Online Documentation](https://docs.oracle.com/en/middleware/bi/analytics-server/index.html).
 
@@ -10,7 +10,7 @@ For pre-built images containing Oracle software, please check the [Oracle Contai
 
 ## Database prerequisite
 
-You need to have a running Oracle Database, either in a Docker container or on a host. 
+You need to have a running Oracle Database, either in a container or on a host. 
 The database connection details are required for creating midtier schemas for use by the BI domain.  The schemas are created automatically when the BI container is started.
  
 If using an Oracle CDB/PDB database, ensure PDB is used when creating the schemas. CDB is not supported.
@@ -175,11 +175,11 @@ In this mode, the containers are started in parallel and the BI container must w
 
 2. If the container is restarted, it requires the same set of environment variables passed in again, even though the domain has already been created.
 
-3. Docker health-check is not implemented.
+3. Container health-check is not implemented.
 
 ## License
 
-To download and run Oracle Analytics Server Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
+To download and run Oracle Analytics Server Distribution regardless of inside or outside a container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
 All scripts and files hosted in this project and GitHub [docker/OracleAnalyticsServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 
