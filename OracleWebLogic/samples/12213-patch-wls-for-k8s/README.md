@@ -8,9 +8,11 @@ There are two  Dockerfiles which extend the Oracle WebLogic binary image and app
 
 2.) `Dockerfile.patch-ontop-12213-psu`: applies patch `p28298734` (WLS PATCH SET UPDATE 12.2.1.3.181016), patch `p29135930` (on top of WLS 12.2.1.3 October PSU), and `p28186730` (Opatch update). Before applying the WebLogic 12.2.1.3 October PSU PATCH 12.2.1.3.181016WLSPSU, Opatch needs to be updated with PATCH 28186730: OPATCH 13.9.4.0.0 FOR FMW/WLS 12.2.1.3.
 
-**Note**: Historically, OPatch was updated by unzipping and replacing the `ORACLE_HOME/OPatch` directory. For versions greater than or equal to 13.6, now it uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasion, led to upgrade-related issues.
+Historically, OPatch was updated by unzipping and replacing the `ORACLE_HOME/OPatch` directory. For versions greater than or equal to 13.6, now it uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasion, led to upgrade-related issues.
 
 We are applying patch `p29135930` which is required for the WebLogic Kubernetes Operator to work.
+
+**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, 12.2.1.4, and 14.1.1 images and updates OPatch. Note that the WebLogic CPU images in OCR already have these patches applied.
 
 ## How to build
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
