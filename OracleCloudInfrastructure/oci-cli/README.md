@@ -111,7 +111,7 @@ If you created a shell alias, add it to the alias definition.
 
 The simplest way to allow the OCI CLI running inside the container to access files on the host is to bind mount a directory from the host into the container.
 
-In the following example, the `$HOME/scratch` directory is bind mounted as `/oracle/scratch` in the container so that the files inside that directory can be bulk uploaded to OCI Object Storatge using the OCI CLI:
+In the following example, the `$HOME/scratch` directory is bind mounted as `/oracle/scratch` in the container so that the files inside that directory can be bulk uploaded to OCI Object Storage using the OCI CLI:
 
 ```bash
 docker run --rm -it \
