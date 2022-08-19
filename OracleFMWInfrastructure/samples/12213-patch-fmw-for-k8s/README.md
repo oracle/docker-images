@@ -2,6 +2,8 @@ Example of how to patch an FMW Infrastructure Image
 ===============================================
 This image extends the Oracle Fusion Middleware Infrastructure binary image and applies the necessary patch for the WebLogic Kubernetes Operator 2.2.  We are applying patch `p29135930` which is required for the WebLogic Kubernetes Operator to work.
 
+**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, 12.2.1.4, and 14.1.1 images and updates OPatch. Note that the WebLogic CPU images in OCR already have these patches applied.
+
 ## How to build
 First, make sure you have built **oracle/fmw-infrastructure:12.2.1.3** in `OracleFMWInfrastructure/dockerfile/12.2.1.3`.
 If you want to patch on top of FMW Infrastructure 12.2.1.3, download the file, [p29135930_122130_Generic.zip](http://support.oracle.com), and place it in the same directory as this README.
