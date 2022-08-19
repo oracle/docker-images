@@ -181,9 +181,9 @@ In this mode, the containers are started in parallel and the BI container must w
 
 To download and run Oracle Analytics Server Distribution regardless of inside or outside a container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
-All scripts and files hosted in this project and GitHub [docker/OracleAnalyticsServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+All scripts and files hosted in this project and GitHub [docker/OracleAnalyticsServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ## Copyright
 
-Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2022 Oracle and/or its affiliates.
 

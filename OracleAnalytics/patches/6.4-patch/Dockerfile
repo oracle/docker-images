@@ -1,11 +1,11 @@
-# LICENSE UPL 1.0
+# Copyright (c) 2022 Oracle and/or its affiliates.
 #
-# Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This Dockerfile extends the Oracle FMW Infrastructure image (12.2.1.4), and applies necessary
-# patches required for Oracle Analytics Server 6.4.
+# This Dockerfile extends the Oracle Analytics Server 6.4, and applies necessary
+# patches required.
 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -21,7 +21,7 @@
 # (10) p33950717_122140_Generic.zip
 # (11) p34065178_122140_Generic.zip
 
-#     Download the patches from http://support.oracle.com
+#     Download the patches from https://support.oracle.com
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
