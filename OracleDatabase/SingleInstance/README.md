@@ -78,7 +78,7 @@ After setting these environment variables, the container image can be built usin
 To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
-    -p <host port>:1521 -p <host port>:5500 \
+    -p <host port>:1521 -p <host port>:5500 -p <host port>:1522\
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
@@ -87,37 +87,41 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
     -e ENABLE_ARCHIVELOG=true \
+    -e ENABLE_TCPS=true \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:21.3.0-ee
     
     Parameters:
        --name:        The name of the container (default: auto generated).
        -p:            The port mapping of the host port to the container port.
-                      Two ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express).
+                      The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 1522 (TCPS Listener Port if TCPS is enabled).
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
        -e INIT_SGA_SIZE:
                       The total memory in MB that should be used for all SGA components (optional).
-                      Supported 19.3 onwards.
+                      Supported by Oracle Database 19.3 onwards.
        -e INIT_PGA_SIZE:
                       The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
-                      Supported 19.3 onwards.
+                      Supported by Oracle Database 19.3 onwards.
        -e AUTO_MEM_CALCULATION:
                       To enable auto calculation of the DBCA total memory limit during the database creation, based on
                       the available memory of the container, which can be constrained using the `docker run --memory`
                       option. If set to 'false', the total memory will be set as 2GB (default: true).
                       Note that this parameter is not taken into account if the `-e INIT_SGA_SIZE` or `-e INIT_PGA_SIZE`
                       are set.
-                      Supported 19.3 onwards.
+                      Supported by Oracle Database 19.3 onwards.
        -e ORACLE_EDITION:
                       The Oracle Database Edition (enterprise/standard).
-                      Supported 19.3 onwards.
+                      Supported by Oracle Database 19.3 onwards.
        -e ORACLE_CHARACTERSET:
                       The character set to use when creating the database (default: AL32UTF8).
        -e ENABLE_ARCHIVELOG:
                       To enable archive log mode when creating the database (default: false).
-                      Supported 19.3 onwards.
+                      Supported by Oracle Database 19.3 onwards.
+       -e ENABLE_TCPS:
+                      To enable TCPS connections for Oracle Database.
+                      Supported by Oracle Database 19.3 onwards.
        -v /opt/oracle/oradata
                       The data volume to use for the database.
                       Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
@@ -179,6 +183,49 @@ This new password will be used afterwards.
 Archive mode can be enabled during the first time when database is created by setting ENABLE_ARCHIVELOG to `true` and passing it to `docker run` command. Archive logs are stored at the directory location: `/opt/oracle/oradata/$ORACLE_SID/archive_logs` inside the container.
 
 In case this parameter is set `true` and passed to `docker run` command while reusing existing datafiles, even though this parameter would be visible as set to `true` in the container environment, this would not be set inside the database. The value used at the time of database creation will be used.
+
+#### Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)
+There are two ways to enable TCPS connections for the database:
+1. Enable TCPS while creating the database.
+2. Enable TCPS after the database is created.
+
+To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 1522 for TCPS.
+
+To enable TCPS connections after the database is created, please use the following sample command:
+```bash
+    # Creates Listener for TCPS at container port 1522
+    docker exec -it <container name> /opt/oracle/configTcps.sh
+```
+
+Similarly, to disable TCPS connections for the database, please use the following command:
+```bash
+    # Disable TCPS in the database
+    docker exec -it <container name> /opt/oracle/configTcps.sh disable
+```
+
+**NOTE**:
+- Only database server authentication is supported (no mTLS).
+- The container port at which TCPS listener is listening (i.e. 1522) should be exposed and mapped to some host port using `-p <host-port>:1522` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
+- When TCPS is enabled, a self-signed certificate will be created. For users' convenience, a client-side wallet is prepared and stored at the location `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect to the database. The sample command to download the client wallet is as follows:
+    ```bash
+        # ORACLE_SID default value is ORCLCDB
+        docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
+    ```
+- The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files. You should edit the `HOST` and `PORT` fields accordingly in the `tnsnames.ora` before connecting using TCPS.
+- After `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL\*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
+    ```bash
+    # Connecting Enterprise Edition
+    sqlplus sys@ORCLCDB as sysdba
+    # Connecting Express Edition
+    sqlplus sys@XE as sysdba
+    ```
+- The certificate used with TCPS has validity for 3 years. After the certificate is expired, you can renew it using the following command:
+    ```bash
+        docker exec -it <container name> /opt/oracle/configTcps.sh
+    ```
+    After certificate renewal, the client wallet should be updated by downloading it again.
+- Supports Oracle Database XE version 21.3.0 onwards.
+
 
 #### Running Oracle Database 21c/18c Express Edition in a container
 
@@ -294,6 +341,8 @@ docker run --name <container-name> -e CLONE_DB=true \
 -e PRIMARY_DB_CONN_STR='<the on-prem database connection string in <HOST>:<PORT>/<SERVICE_NAME> format>' \
 oracle/database:19-onprem
 ```
+**NOTE:**
+Make sure that the directory structure of the on-premise database matches with the directory structure used in the container image.
 
 ### Deploying Oracle Database on Kubernetes
 

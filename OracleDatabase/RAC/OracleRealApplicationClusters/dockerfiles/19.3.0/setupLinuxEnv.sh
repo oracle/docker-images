@@ -16,7 +16,7 @@
 mkdir /asmdisks && \
 mkdir /responsefiles  && \
 chmod ug+x /opt/scripts/startup/*.sh && \
-yum -y install systemd oracle-database-preinstall-19c net-tools which zip unzip tar openssl expect e2fsprogs openssh-server openssh-client vim-minimal passwd which sudo && \
+yum -y install systemd oracle-database-preinstall-19c net-tools which zip unzip tar openssl expect e2fsprogs openssh-server vim-minimal passwd which sudo hostname policycoreutils-python-utils && \
 yum clean all 
 
 ## Custom install to install xorg, perl, ntpd,crontab and hostname inside the container

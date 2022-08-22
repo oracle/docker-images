@@ -1,10 +1,12 @@
 Example of Image with WLS Domain
 ================================
-This Dockerfile extends the Oracle WebLogic install image by updating OPatch and applying a patch. Before applaying the WebLogic 12.2.1.3 October PSU PATCH 12.2.1.3.181016WLSPSU Opatch needs to be updated with PATCH 28186730: OPATCH 13.9.4.0.0 FOR FMW/WLS 12.2.1.3.
-		
-**Notes:** Historically, OPatch was updated by unzipping and replacing ORACLE_HOME/OPatch directory. For versions greater than or equal to 13.6, it now uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI meta-data. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasions led to upgrade related issues.
+This Dockerfile extends the Oracle WebLogic install image by updating OPatch and applying a patch. Before applying the WebLogic 12.2.1.3 October PSU PATCH 12.2.1.3.181016WLSPSU, Opatch needs to be updated with PATCH 28186730: OPATCH 13.9.4.0.0 FOR FMW/WLS 12.2.1.3.
 
-## How to build 
+Historically, OPatch was updated by unzipping and replacing the ORACLE_HOME/OPatch directory. For versions greater than or equal to 13.6, it now uses the OUI installation tooling. This ensures that the installer both executes the file updates and logs the components and file changes to the OUI metadata. A pure unzip install means the OUI tooling is not aware of these changes, which has on occasion led to upgrade related issues.
+
+**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, 12.2.1.4, and 14.1.1 images and updates OPatch. Note that the WebLogic CPU images in OCR already have these patches applied.
+
+## How to build
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
 
 Then download file [p28186730_139400_Generic.zip](http://support.oracle.com) and place it in the same directory as this README.
@@ -22,7 +24,7 @@ Run a container from the image
 cd OPatch and run:
 
         ./opatch version
-        ./opatch lspatches 
+        ./opatch lspatches
 
 You will see the OPatch version being 13.9.4.0.0 and the one-off patch 27117282 applied applied
 
@@ -52,7 +54,7 @@ You can override the default values of the following parameters during runtime w
 
 **NOTE**: For security, the Administration port 9002 is enabled by default. If you would like to disable the Administration port, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. To set the `DOMAIN_NAME`, you must set both `DOMAIN_NAME` and `DOMAIN_HOME`.
 
-        $docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12213-opatch-update 
+        $docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12213-opatch-update
 
 Run the WLS Administration Console:
 

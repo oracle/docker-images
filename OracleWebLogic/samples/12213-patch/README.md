@@ -2,6 +2,8 @@ Example of Image with WLS Domain
 ================================
 This Dockerfile extends the Oracle WebLogic image by applying a patch.
 
+**NOTE**: Oracle strongly recommends using the [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool/userguide/tools/create-image/) (WIT) with the `--recommendedPatches` option, which automatically downloads and applies all the required PSUs, bundle patches, and one-off patches to your 12.2.1.3, 12.2.1.4, and 14.1.1 images and updates OPatch. Note that the WebLogic CPU images in OCR already have these patches applied.
+
 # How to build and run
 First make sure you have built **oracle/weblogic:12.2.1.3-developer**.
 
@@ -35,7 +37,7 @@ You can override the default values of the following parameters during runtime w
 
 **NOTE**: For security, the Administration port 9002 is enabled by default. If you would like to disable the Administration port, set `ADMINISTRTATION_PORT_ENABLED` to false. If you intend to run these images in production, then you must change the Production Mode to `production`. To set the `DOMAIN_NAME`, you must set both `DOMAIN_NAME` and `DOMAIN_HOME`.
 
-        $docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12213-p27117282 
+        $docker run -d -p 7001:7001 -p 9002:9002  -v `HOST PATH where the domain.properties file is`:/u01/oracle/properties -e ADMINISTRATION_PORT_ENABLED=true -e DOMAIN_HOME=/u01/oracle/user_projects/domains/abc_domain -e DOMAIN_NAME=abc_domain oracle/weblogic:12213-p27117282
 
 Run the WLS Administration Console:
 
@@ -54,7 +56,7 @@ Go into the image
 
 cd OPatch and run:
 
-        ./opatch lsinventory 
+        ./opatch lsinventory
 
 The patch will show in the inventory of applied patches.
 
