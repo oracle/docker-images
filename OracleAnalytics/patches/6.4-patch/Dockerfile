@@ -32,7 +32,7 @@
 
 # Pull base image
 # ---------------
-FROM oracle/biplatform:6.4
+FROM oracle/analyticsserver:6.4
 
 # Maintainer
 # ----------

@@ -91,7 +91,7 @@ ORACLE_HOME is fixed to `/u01/oracle`. DOMAIN_HOME is fixed to `/u01/oracle/user
   
 e.g.:
 
-        $ docker run -d --name bi -p 9500:9500 -p 9502:9502 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/biplatform:6.4-patch
+        $ docker run -d --name bi -p 9500:9500 -p 9502:9502 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:6.4-patch
 
 (change _<...password>_ to your required values, and DB values to match your database).
 
@@ -114,7 +114,7 @@ If access to the OBI Server component is required, e.g. by the BI Administration
 
 e.g.:
 
-        $ docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/biplatform:6.4-patch
+        $ docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:6.4-patch
 
 
 ### Using a host directory for persistent data
@@ -142,7 +142,7 @@ Then start a database container using the above network:
 
 Then start a BI container that uses the database by name:
 
-        $ docker run --name bi --network=bi_net -e DB_HOST=database ...... oracle/biplatform:6.4-patch
+        $ docker run --name bi --network=bi_net -e DB_HOST=database ...... oracle/analyticsserver:6.4-patch
 
 (in the above docker run examples other parameters are omitted for clarity).
 
