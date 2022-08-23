@@ -15,7 +15,7 @@
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/biplatform:6.4 .
+#      $ docker build -t oracle/analyticsserver:6.4 .
 #
 # Pull base image
 # ---------------

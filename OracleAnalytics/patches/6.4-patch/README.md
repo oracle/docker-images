@@ -3,7 +3,7 @@ Build a Oracle Analytics Server 6.4 Patched Image
 This Dockerfile extends the Oracle Analytics Server image (6.4), and applies necessary patches.
 
 ## How to build and run
-First make sure you have built `oracle/biplatform:6.4`.
+First make sure you have built `oracle/analyticsserver:6.4`.
 
 Download the following patches from [My Oracle Support](https://support.oracle.com) and place them in the same directory as this README.
 
@@ -21,7 +21,7 @@ Download the following patches from [My Oracle Support](https://support.oracle.c
 
 To build, run:
 
-        $ docker build --force-rm=true --no-cache=true -t oracle/biplatform:6.4-patch .
+        $ docker build --force-rm=true --no-cache=true -t oracle/analyticsserver:6.4-patch .
 
 
 # Copyright
