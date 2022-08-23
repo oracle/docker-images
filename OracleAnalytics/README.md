@@ -1,10 +1,10 @@
-Oracle Analytics Server on Docker
+Oracle Analytics Server on Container
 =============
 Sample container configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for Oracle Analytics Server 2022 (6.4) based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle FMW Infrastructure 12.2.1.4.0.
 
 For more information about Oracle Analytics Server please see the [Oracle Analytics Server Online Documentation](https://docs.oracle.com/en/middleware/bi/analytics-server/index.html).
 
-The certification of Oracle Analytics Server on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
+The certification of Oracle Analytics Server on Container does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 
@@ -17,7 +17,7 @@ If using an Oracle CDB/PDB database, ensure PDB is used when creating the schema
 
 An Oracle Database container can be created from an [OracleDatabase](https://github.com/oracle/docker-images/tree/master/OracleDatabase) image - follow the instructions to create a 12.1 or 12.2 Enterprise Edition database.
 
-## Oracle Analytics Server Docker Image Creation
+## Oracle Analytics Server Container Image Creation
 
 To build a BI image you start by building the Oracle Java image and then the Oracle FMW Infrastructure image.
 
@@ -130,7 +130,7 @@ The chmod is necessary as the container's processes are run under user 'oracle'.
 
 ### Using a database container
 
-In the above example, `DB_HOST` specifies the hostname for the database instance.  If a database container is used, then a docker user-defined network must be set up as a pre-requisite, or the legacy `--link` feature used.
+In the above example, `DB_HOST` specifies the hostname for the database instance.  If a database container is used, then a container user-defined network must be set up as a pre-requisite, or the legacy `--link` feature used.
 
 For instance, create a user-defined network using the bridge driver:
 
@@ -146,7 +146,7 @@ Then start a BI container that uses the database by name:
 
 (in the above docker run examples other parameters are omitted for clarity).
 
-### Passing configuration environment by mounted file or docker secrets
+### Passing configuration environment by mounted file or container secrets
 
 The domain creation script also supports loading the same set of environment key/value pairs from files mounted into the container, via `docker run /v` or docker secrets.
 
@@ -181,7 +181,7 @@ In this mode, the containers are started in parallel and the BI container must w
 
 To download and run Oracle Analytics Server Distribution regardless of inside or outside a container, and regardless of the distribution, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
-All scripts and files hosted in this project and GitHub [docker/OracleAnalyticsServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+All scripts and files hosted in this project and GitHub [docker/OracleAnalyticsServer](./) repository required to build the container images are, unless otherwise noted, released under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 ## Copyright
 
