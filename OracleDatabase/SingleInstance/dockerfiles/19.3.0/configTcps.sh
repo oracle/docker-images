@@ -109,6 +109,9 @@ function disable_tcps() {
 ################## MAIN ###################
 ###########################################
 
+ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
+ORACLE_PDB="$(ls -dl "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ | grep -v -e pdbseed -e "${ARCHIVELOG_DIR_NAME:-archive_logs}"| awk '{print $9}' | cut -d/ -f6)"
+
 # Oracle wallet location which stores the certificate
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
 
@@ -132,10 +135,6 @@ fi
 
 # Default TCPS_PORT value
 TCPS_PORT=${TCPS_PORT:-1522}
-
-# Export ORACLE_PDB value
-export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
-ORACLE_PDB=${ORACLE_PDB^^}
 
 # Creating the wallet
 echo -e "\n\nCreating Oracle Wallet for the database server side certificate...\n"
