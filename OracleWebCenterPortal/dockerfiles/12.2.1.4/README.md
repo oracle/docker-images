@@ -240,7 +240,7 @@ $ sudo chown 1000:1000 /scratch/wcpdocker/volumes/es
 
 #### B. Creating and Running Elasticsearch Container
 
->Note: With the beginning of April 2022 PSU release Oracle WebCenter Portal to install Elasticsearch you need to download the Elasticsearch 7.17.x binaries from Elasticsearch [Releases](https://www.elastic.co/downloads/past-releases#elasticsearch).
+>Note: With the beginning of April 2022 PSU release of Oracle WebCenter Portal, to install Elasticsearch you need to download the Elasticsearch 7.17.x binaries from Elasticsearch [Releases](https://www.elastic.co/downloads/past-releases#elasticsearch).
 
 Update the file name as `ELASTIC_SEARCH_INSTALLER_FILE_NAME` value and Elasticsearch version as `ELASTIC_SEARCH_VERSION` value.
 
