@@ -84,6 +84,8 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e ORACLE_PWD=<your database passwords> \
     -e INIT_SGA_SIZE=<your database SGA memory in MB> \
     -e INIT_PGA_SIZE=<your database PGA memory in MB> \
+    -e INIT_CPU_COUNT=<cpu_count init-parameter> \
+    -e INIT_PROCESSES=<processes init-parameter> \
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
     -e ENABLE_ARCHIVELOG=true \
@@ -104,6 +106,12 @@ To run your Oracle Database image use the `docker run` command as follows:
        -e INIT_PGA_SIZE:
                       The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
                       Supported by Oracle Database 19.3 onwards.
+       -e INIT_CPU_COUNT:
+                      Specifies the number of CPUs available for Oracle Database to use. 
+                      On CPUs with multiple CPU threads, it specifies the total number of available CPU threads (optional).
+       -e INIT_PROCESSES:
+                      Specifies the maximum number of operating system user processes that can simultaneously connect to Oracle Database. 
+                      Its value should allow for all background processes such as locks, job queue processes, and parallel execution processes (optional).
        -e AUTO_MEM_CALCULATION:
                       To enable auto calculation of the DBCA total memory limit during the database creation, based on
                       the available memory of the container, which can be constrained using the `docker run --memory`
@@ -166,6 +174,12 @@ This parameter modifies the software home binaries but it doesn't have any effec
 #### Setting the SGA and PGA memory (Supported from 19.3.0 release)
 
 The SGA and PGA memory can be set during the first time when database is created by passing the INIT_SGA_SIZE and INIT_PGA_SIZE parameters respectively to the `docker run` command. The user must provide the values in MB and without any units appended to the values (For example: -e INIT_SGA_SIZE=1536). These parameters are optional and dbca calculates these values if they aren't provided.
+
+In case these parameters are passed to the `docker run` command while reusing existing datafiles, even though these values would be visible in the container environment, they would not be set inside the database. The values used at the time of database creation will be used.
+
+#### Setting the CPU_COUNT and PROCESSES (Supported from 19.3.0 release)
+
+The CPU_COUNT and PROCESSES init-parameters can be set during the first time when the database is created by passing the INIT_CPU_COUNT and INIT_PROCESSES parameters respectively to the `docker run` command. These parameters are optional.
 
 In case these parameters are passed to the `docker run` command while reusing existing datafiles, even though these values would be visible in the container environment, they would not be set inside the database. The values used at the time of database creation will be used.
 
