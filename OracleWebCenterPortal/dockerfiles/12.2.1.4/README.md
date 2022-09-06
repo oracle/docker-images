@@ -244,9 +244,9 @@ $ sudo chown 1000:1000 /scratch/wcpdocker/volumes/es
 
 Update the file name as `ELASTIC_SEARCH_INSTALLER_FILE_NAME` value and Elasticsearch version as `ELASTIC_SEARCH_VERSION` value.
 
-Copy the downloaded Elasticsearch binary to portal managed server using below command. 
+Copy the downloaded Elasticsearch binary to host mount directory (`DATA_MOUNT`) using below command. 
 ```
-$ docker cp elasticsearch-7.17.x-linux-x86_64.tar.gz <WCPORTLET_CONTAINER_NAME>:/u01/oracle/user_projects
+$  cp elasticsearch-7.17.x-linux-x86_64.tar.gz /scratch/wcpdocker/volumes/wcpportal
 ```
 
 ```
