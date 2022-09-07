@@ -240,14 +240,17 @@ $ sudo chown 1000:1000 /scratch/wcpdocker/volumes/es
 
 #### B. Creating and Running Elasticsearch Container
 
->Note: With the beginning of April 2022 PSU release of Oracle WebCenter Portal, to install Elasticsearch you need to download the Elasticsearch 7.17.x binaries from Elasticsearch [Releases](https://www.elastic.co/downloads/past-releases#elasticsearch).
+>Note: Starting with the April 2022 PSU release for Oracle WebCenter Portal, you are able to optionally add Elasticsearch registered to the WebCenter Portal container image. Before creating this image, you must first manually download the [Elasticsearch 7.17.x binaries](https://www.elastic.co/downloads/past-releases#elasticsearch) directly from Elasticsearch.
 
-Update the file name as `ELASTIC_SEARCH_INSTALLER_FILE_NAME` value and Elasticsearch version as `ELASTIC_SEARCH_VERSION` value.
+Update the `ELASTIC_SEARCH_INSTALLER_FILE_NAME` variable with the correct filename and set the `ELASTIC_SEARCH_VERSION` variable to the version of Elasticsearch you downloaded.
 
-Copy the downloaded Elasticsearch binary to host mount directory (`DATA_MOUNT`) using below command. 
+Copy the downloaded `elasticsearch-7.17.x-linux-x86_64.tar.gz` file to the location on the host used as the source for the `DATA_MOUNT` bind mount: 
+
 ```
 $  cp elasticsearch-7.17.x-linux-x86_64.tar.gz /scratch/wcpdocker/volumes/wcpportal
 ```
+
+Run the following command to create the Elasticsearch container:
 
 ```
 $ docker run -i -t --name <ES_CONTAINER_NAME> --network=<NETWORK_NAME> -p <HostFreePort>:9200 --volumes-from <WCP_CONTAINER_NAME> -v <ES_DATA_MOUNT>:/u01/esHome/esNode/data --env-file webcenter.env.list oracle/wcportal:12.2.1.4 configureOrStartElasticsearch.sh
@@ -392,3 +395,5 @@ $ docker run -i -t --name ESContainer --network=WCPortalNET -p 9200:9200 --volum
 
 # Copyright
  Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+ 
+ Elasticsearch is a registered trademark of Elasticsearch BV.
