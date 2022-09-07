@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020,2021, Oracle and/or its affiliates.
+# Copyright (c) 2020,2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 function validate_parameter {
@@ -34,6 +34,8 @@ validate_parameter "ADMIN_PASSWORD" $ADMIN_PASSWORD
 # validate elasticsearch server parameters
 validate_parameter "SEARCH_APP_USERNAME" $SEARCH_APP_USERNAME
 validate_parameter "SEARCH_APP_USER_PASSWORD" $SEARCH_APP_USER_PASSWORD
+validate_parameter "ELASTIC_SEARCH_INSTALLER_FILE_NAME" $ELASTIC_SEARCH_INSTALLER_FILE_NAME
+validate_parameter "ELASTIC_SEARCH_VERSION" $ELASTIC_SEARCH_VERSION
 
 export ADMIN_SERVER_CONTAINER_NAME=$ADMIN_SERVER_CONTAINER_NAME
 export ADMIN_PORT=$ADMIN_PORT
@@ -50,6 +52,11 @@ export KEEP_CONTAINER_ALIVE=$KEEP_CONTAINER_ALIVE
 export UNICAST_HOST_LIST=$UNICAST_HOST_LIST
 export NODE_NAME=${NODE_NAME}
 export LOAD_BALANCER_IP=${LOAD_BALANCER_IP}
+export ELASTIC_SEARCH_INSTALLER_FILE_NAME=$ELASTIC_SEARCH_INSTALLER_FILE_NAME
+export ELASTIC_SEARCH_INSTALLER_LOCATION="/u01/oracle/user_projects/$ELASTIC_SEARCH_INSTALLER_FILE_NAME"
+export ELASTIC_SEARCH_VERSION=$ELASTIC_SEARCH_VERSION
+
+
 echo "Environment variables"
 echo "====================="
 echo ""
@@ -66,6 +73,8 @@ echo "KEEP_CONTAINER_ALIVE=${KEEP_CONTAINER_ALIVE}"
 echo "UNICAST_HOST_LIST=${UNICAST_HOST_LIST}"
 echo "NODE_NAME=${NODE_NAME}"
 echo "LOAD_BALANCER_IP=${LOAD_BALANCER_IP}"
+echo "ELASTIC_SEARCH_VERSION=${ELASTIC_SEARCH_VERSION}"
+echo "ELASTIC_SEARCH_INSTALLER_LOCATION=${ELASTIC_SEARCH_INSTALLER_LOCATION}"
 echo ""
 echo ""
  
@@ -95,6 +104,8 @@ else
   sed -i "s|ADMIN_SERVER_PORT=.*|ADMIN_SERVER_PORT=$ADMIN_PORT|" $ES_CONFIG_FILE
   sed -i "s|SEARCH_APP_USER=.*|SEARCH_APP_USER=$SEARCH_APP_USERNAME|" $ES_CONFIG_FILE
   sed -i "s|WCP_FMW_CONFIG_LOCATION=.*|WCP_FMW_CONFIG_LOCATION=$FMW_CONFIG_HOME|" $ES_CONFIG_FILE
+  sed -i "s|ELASTIC_SEARCH_INSTALLER_LOCATION=.*|ELASTIC_SEARCH_INSTALLER_LOCATION=$ELASTIC_SEARCH_INSTALLER_LOCATION|" $ES_CONFIG_FILE
+  sed -i "s|ELASTIC_SEARCH_VERSION=.*|ELASTIC_SEARCH_VERSION=$ELASTIC_SEARCH_VERSION|" $ES_CONFIG_FILE
   sed -i "s|ELASTIC_SEARCH_CLUSTER_NAME=.*|ELASTIC_SEARCH_CLUSTER_NAME=$ES_CLUSTER_NAME|" $ES_CONFIG_FILE
 
   # env variable to support kubernetes deployment
@@ -109,7 +120,7 @@ else
   $ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning "$ORACLE_HOME/container-scripts/createSearchApplicationUser.py"
 
   # install elasticsearch server
-  $ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning "$ES_INSTALL_FILE" "$ES_CONFIG_FILE" "$ADMIN_PASSWORD" "$SEARCH_APP_USER_PASSWORD"
+  $ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning "$ES_INSTALL_FILE" "$ES_CONFIG_FILE" "$ADMIN_PASSWORD" "$SEARCH_APP_USER_PASSWORD" "$SEARCH_APP_USER_PASSWORD"
 
   # create search connection, if configured
   if [ "$CONFIGURE_ES_CONNECTION" == "true" ]
