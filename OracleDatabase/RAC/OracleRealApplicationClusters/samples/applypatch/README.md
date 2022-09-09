@@ -14,7 +14,7 @@ Once you have built your base Oracle RAC image image following the [README.md](.
 The scripts used in this example rely on following directory structure:
 
 ```text
-    21.3.0
+    latest 
        patches
          grid
            001 (patch directory)

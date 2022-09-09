@@ -632,7 +632,6 @@ Now create the Oracle RAC container using the image. For the details of environm
   # podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
-    --volume /dev/shm \
     --tmpfs /dev/shm:rw,exec,size=4G \
     --volume /opt/containers/rac_host_file:/etc/hosts  \
     --volume /opt/.secrets:/run/secrets:ro \
@@ -681,7 +680,6 @@ Now create the Oracle RAC container using the image.  You can use the following 
   # podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
-    --volume /dev/shm \
     --tmpfs /dev/shm:rw,exec,size=4G \
     --volume /opt/containers/rac_host_file:/etc/hosts  \
     --volume /opt/.secrets:/run/secrets:ro \
@@ -793,7 +791,6 @@ To create additional nodes, use the following command:
 ```bash
 # podman create -t -i \
   --hostname racnode2 \
-  --volume /dev/shm \
   --tmpfs /dev/shm:rw,exec,size=4G  \
   --volume /boot:/boot:ro \
   --dns-search=example.com  \
@@ -846,7 +843,6 @@ For example:
 ```bash
 # podman create -t -i \
   --hostname racnode2 \
-  --volume /dev/shm \
   --tmpfs /dev/shm:rw,exec,size=4G  \
   --volume /boot:/boot:ro \
   --dns-search=example.com  \
