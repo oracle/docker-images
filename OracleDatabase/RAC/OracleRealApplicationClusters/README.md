@@ -991,3 +991,61 @@ REMOVE_OS_PWD_FILES=###You need to set this to true to remove pwd key file and p
 ## Section 9: Building a Patched Oracle RAC Container Image
 
 If you want to build a patched image based on a base 21.3.0 container image, then refer to the GitHub page [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
+
+## Section 10 : Sample Container Files for Older Releases
+
+### Docker
+
+This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
+  
+* Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
+* Oracle Database 19c (19.3) for Linux x86-64
+* Oracle Database 18c Oracle Grid Infrastructure (18.3) for Linux x86-64
+* Oracle Database 18c (18.3) for Linux x86-64
+* Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
+* Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
+  
+ **Notes:**
+
+* Note that the Oracle RAC on Docker Container releases are supported only for test and development environments, but not for production environments.
+* If you are planning to build and deploy Oracle RAC 18.3.0, you need to download Oracle 18.3.0 Grid Infrastructure and Oracle Database 18.3.0 Database. You also need to download Patch# p28322130_183000OCWRU_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/18.3.0 folder.
+* If you are planning to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/12.2.0.1 folder.
+
+### Podman
+
+This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
+
+* Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
+* Oracle Database 19c (19.3) for Linux x86-64
+  
+ **Notes:**
+
+* Because Oracle RAC on Podman is supported on 19c from 19.16 or later, you must download the grid release update (RU) from [support.oracle.com](https://support.oracle.com/portal/). In this case, we downloaded RU `34130714`.
+* Download following one-offs for 19.16 from [support.oracle.com](https://support.oracle.com/portal/)
+  * `34339952`
+  * `32869666`
+* Before starting the next step, you must edit `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile`, change `oraclelinux:7-slim` to `oraclelinux:8`, and save the file.
+* You must add `CV_ASSUME_DISTID=OEL8` inside the `Dockerfile` as an env variable.
+
+* Once the `19.3.0` Oracle RAC on Podman image is built, start building patched image with the download 19.16 RU and one-offs. To build the patch the image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
+* Make changes in `/opt/containers/envfile` in [Prepare the envfile](#prepare-the-envfile) sectoin as per 19c `Dockerfile`. You need to change all the contents based on 19c such as `GRID_HOME`, `ORACLE_HOME` and `ADDNODE_RSP` which you have used in `Dockerfile` while building the image.
+
+## Section 11 : Support
+
+### Docker
+
+At the time of this release, Oracle RAC on Docker is supported only on Oracle Linux 7. To see current details, refer the [Real Application Clusters Installation Guide for Docker Containers Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racdk/oracle-rac-on-docker.html).
+
+### Podman
+
+At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.5 later. To see current Linux support certifications, refer [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
+
+## Section 12 : License
+
+To download and run Oracle Grid and Database, regardless of whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated on that page.
+
+All scripts and files hosted in this repository which are required to build the container  images are, unless otherwise noted, released under UPL 1.0 license.
+
+## Section 11 : Copyright
+
+Copyright (c) 2014-2022 Oracle and/or its affiliates.
