@@ -97,7 +97,7 @@ Complete each of the following prerequisites:
     sysctl -p
     ```
 
-8. To resolve VIPs and SCAN IPs, we are using a dummy DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment. You must ensure that you have the`Podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
+8. To resolve VIPs and SCAN IPs, we are using a DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment. You must ensure that you have the`Podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
 
 9. If you are running RAC on Podman, you need to make sure you have installed the `podman-docker` rpm so that podman commands can be run using `docker` utility.
 10. The Oracle RAC `Dockerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationCluster/dockerfiles/<VERSION>` folder.
@@ -295,7 +295,7 @@ Now create the Oracle RAC container using the image. You can use the following e
     --restart=always --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
     --cpu-rt-runtime=95000 --ulimit rtprio=99  \
     --name racnode1 \
-    localhost/oracle/database-rac:21.3.0-21.7.0
+    oracle/database-rac:21.3.0
   ```
 
 **Note:** Change environment variables such as `NODE_IP`, `PRIV_IP`, `PUBLIC_IP`,  `ASM_DEVICE_LIST`, `PWD_FILE`, and `PWD_KEY` based on your environment. Also, ensure you use the correct device names on each host.
@@ -342,7 +342,7 @@ Now create the Oracle RAC container using the image. You can use the following e
     --cpu-rt-runtime=95000 \
     --ulimit rtprio=99  \
     --name racnode1 \
-    localhost/oracle/database-rac:21.3.0-21.7.0
+    oracle/database-rac:21.3.0
   ```
 
 **Notes:**
@@ -455,7 +455,7 @@ To create additional nodes, use the following command:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  localhost/oracle/database-rac:21.3.0-21.7.0
+  oracle/database-rac:21.3.0
 ```
 
 For details of all environment variables and parameters, refer to [Section 7](#section-7-environment-variables-for-the-first-node).
@@ -505,7 +505,7 @@ For example:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  localhost/oracle/database-rac:21.3.0-21.7.0
+  oracle/database-rac:21.3.0
 ```
 
 **Notes:**
