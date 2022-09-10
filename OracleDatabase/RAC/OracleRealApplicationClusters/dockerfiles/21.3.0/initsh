@@ -1,0 +1,18 @@
+#!/bin/bash
+# LICENSE UPL 1.0
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+#
+# Since: January, 2022
+# Author: sanjay.singh@oracle.com,  paramdeep.saini@oracle.com
+# Description:
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+
+echo "Creating env variables file /etc/rac_env_vars"
+/bin/bash -c "cat /proc/1/environ | tr '\0' '\n' > /etc/rac_env_vars"
+/bin/bash -c "sed -i -e 's/^/export /' /etc/rac_env_vars"
+
+echo "Starting Systemd"
+exec /lib/systemd/systemd
