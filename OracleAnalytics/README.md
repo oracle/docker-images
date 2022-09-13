@@ -1,17 +1,17 @@
-Oracle Analytics Server on Container
+Oracle Analytics Server Container
 =============
-Sample container configurations facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [dockerfiles](dockerfiles/) for Oracle Analytics Server 2022 (6.4) based on Oracle Linux 7, Oracle JRE 8 (Server), and Oracle Fusion Middleware Infrastructure 12.2.1.4.0.
+Sample container configurations facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [container](dockerfiles/) for Oracle Analytics Server 2022 (6.4) based on Oracle Linux 7, Oracle JRE 8 (Server), and Oracle Fusion Middleware Infrastructure 12.2.1.4.0.
 
 For more information about Oracle Analytics Server, see the [Oracle Analytics Server Online Documentation](https://docs.oracle.com/en/middleware/bi/analytics-server/index.html).
 
-The certification of Oracle Analytics Server on Container doesn't require the use of any file presented in this repository. Customers and users are welcome to use them as starter templates to customize or tweak, or to create scripts and Docker files from scratch.
+The certification of Oracle Analytics Server Container doesn't require the use of any file presented in this repository. Customers and users are welcome to use the files in this repository as starter templates to customize or tweak, or to create scripts and container files from scratch.
 
 For pre-built images containing Oracle software, check the [Oracle Container Registry](https://container-registry.oracle.com).
 
 ## Database Prerequisites
 
 You must have a running Oracle Database, either in a container or on a host. 
-You need these database connection details to create midtier schemas for the BI domain. The schemas are created automatically when the BI container starts.
+You need these database connection details to create mid-tier schemas for the BI domain. The schemas are created automatically when the BI container starts.
  
 If you're using an Oracle multitenant container database (CDB) or pluggable database (PDB) database, you must use PDB when creating the schemas because CDB isn’t supported.
 
@@ -73,7 +73,7 @@ The BI image provides a script to create and start a single-node BI domain, with
 
 This script is invoked when a container is started using the image. Subsequently, if the container restarts, the BI domain restarts automatically.
 
-The BI image doesn't support scale-out or upgrade to any future Oracle Analytics Server patchset release.
+The BI image doesn't support scale-out or upgrade to any future Oracle Analytics Server patch set release.
 
 ### Starting a New Container
 The following variables are mandatory when starting the container:
@@ -145,11 +145,11 @@ For example,
 
    $ docker run --name bi --network=bi_net -e DB_HOST=database ...... oracle/analyticsserver:6.4-patch
 
-Note: In the above docker run examples, other parameters are omitted for clarity.
+Note: In the above container run examples, other parameters are omitted for clarity.
 
 ### Passing Configuration Environment by Mounted File or Container Secrets
 
-The domain creation script also supports loading the same set of environment key/value pairs from files mounted into the container, using `docker run /v` or docker secrets.
+The domain creation script also supports loading the same set of environment key/value pairs from files mounted into the container, using `docker run /v` or container secrets.
 
 The following files are processed if available, overriding any environment already set:
 * For ADMIN_USERNAME/ADMIN_PASSWORD: `/run/secrets/admin.txt` 
@@ -159,9 +159,9 @@ The following files are processed if available, overriding any environment alrea
 
 Each *.txt file must contain lines of `key=value` pairs.
 
-### Using Docker Compose
+### Using Container Compose
 
-The BI image supports using docker compose to start the BI and DB containers together.
+The BI image supports using container compose to start the BI and DB containers together.
 
 In this mode, the containers are started in parallel, and the BI container must wait for the DB to become available.  The wait time is enabled by setting environment variable `DB_WAIT_TIMEOUT` to the maximum number of seconds to wait. For example, in your `docker-compose.yml`, add:
 
