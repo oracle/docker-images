@@ -36,6 +36,6 @@ ENV AUTO_MEM_CALCULATION=${AUTO_MEM_CALCULATION:-false}
 # Creating the database
 RUN $ORACLE_BASE/$RUN_FILE --nowait
 
-# Adjust the healthcheck since the database won't be created
+# Adjust the healthcheck since the database will be already created, retaining compatibility with the k8s extension
 HEALTHCHECK --interval=30s --start-period=1m --timeout=30s \
    CMD if [ -f "$ORACLE_BASE/$CHECK_DB_LOCK_FILE" ]; then "$ORACLE_BASE/$CHECK_DB_LOCK_FILE"; else "$ORACLE_BASE/$CHECK_DB_FILE"; fi >/dev/null || exit 1
