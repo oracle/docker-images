@@ -38,4 +38,4 @@ RUN $ORACLE_BASE/$RUN_FILE --nowait
 
 # Adjust the healthcheck since the database won't be created
 HEALTHCHECK --interval=30s --start-period=1m --timeout=30s \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+   CMD if [ -f "$ORACLE_BASE/$CHECK_DB_LOCK_FILE" ]; then "$ORACLE_BASE/$CHECK_DB_LOCK_FILE"; else "$ORACLE_BASE/$CHECK_DB_FILE"; fi >/dev/null || exit 1
