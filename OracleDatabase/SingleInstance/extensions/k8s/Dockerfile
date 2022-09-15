@@ -29,14 +29,15 @@ ENV STARTUP_FILE=startUp.sh \
     SHUT_DB_FILE=shutDown.sh \
     LOCKING_SCRIPT=lock.py \
     SWAP_LOCK_FILE=swapLocks.sh \
-    CHECK_DB_LOCK_FILE=checkDBLockStatus.sh
+    CHECK_DB_LOCK_FILE=checkDBLockStatus.sh \
+    HEALTHCHECK_FILE="$ORACLE_BASE/$CHECK_DB_LOCK_FILE"
 
 # Turn on dnfs
 RUN cd $ORACLE_HOME/rdbms/lib && make -f ins_rdbms.mk dnfs_on
 
 # Updated Health Check
 HEALTHCHECK --interval=1m --start-period=30m \
-   CMD "$ORACLE_BASE/$CHECK_DB_LOCK_FILE" >/dev/null || exit 1
+   CMD "$HEALTHCHECK_FILE" >/dev/null || exit 1
 
 # backup original runOracle
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \

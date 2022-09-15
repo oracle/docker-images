@@ -38,4 +38,4 @@ RUN $ORACLE_BASE/$RUN_FILE --nowait
 
 # Adjust the healthcheck since the database will be already created, retaining compatibility with the k8s extension
 HEALTHCHECK --interval=30s --start-period=1m --timeout=30s \
-   CMD if [ -n "$CHECK_DB_LOCK_FILE" ]; then "$ORACLE_BASE/$CHECK_DB_LOCK_FILE"; else "$ORACLE_BASE/$CHECK_DB_FILE"; fi >/dev/null || exit 1
+   CMD "$HEALTHCHECK_FILE" >/dev/null || exit 1

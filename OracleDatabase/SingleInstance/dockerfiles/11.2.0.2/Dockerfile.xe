@@ -50,7 +50,8 @@ ENV ORACLE_BASE=/u01/app/oracle \
     CONFIG_RSP="xe.rsp" \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
-    CHECK_DB_FILE="checkDBStatus.sh"
+    CHECK_DB_FILE="checkDBStatus.sh" \
+    HEALTHCHECK_FILE="$ORACLE_BASE/$CHECK_DB_FILE"
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$PATH
@@ -87,6 +88,6 @@ RUN yum -y install unzip libaio bc initscripts net-tools openssl compat-libstdc+
     chmod ug+x $ORACLE_BASE/*.sh
 
 HEALTHCHECK --interval=1m --start-period=5m \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+   CMD "$HEALTHCHECK_FILE" >/dev/null || exit 1
 
 CMD exec $ORACLE_BASE/$RUN_FILE

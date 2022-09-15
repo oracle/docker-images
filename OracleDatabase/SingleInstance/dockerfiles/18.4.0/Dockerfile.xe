@@ -44,6 +44,7 @@ ENV ORACLE_BASE=/opt/oracle \
     CONF_FILE="oracle-xe-18c.conf" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
+    HEALTHCHECK_FILE="$ORACLE_BASE/$CHECK_DB_FILE" \
     INSTALL_DIR="$HOME/install" \
     ORACLE_DOCKER_INSTALL="true"
 
@@ -79,6 +80,6 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     chmod ug+x $ORACLE_BASE/*.sh
 
 HEALTHCHECK --interval=1m --start-period=5m \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+   CMD "$HEALTHCHECK_FILE" >/dev/null || exit 1
 
 CMD exec $ORACLE_BASE/$RUN_FILE
