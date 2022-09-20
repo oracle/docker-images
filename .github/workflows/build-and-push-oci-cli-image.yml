@@ -51,7 +51,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate container iamge metadata
+      - name: Generate container image metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -77,6 +77,10 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v3
         with:
+          build-args: |
+            BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
           context: ./OracleCloudInfrastructure/oci-cli/
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64, linux/arm64
