@@ -9,13 +9,13 @@
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) openjdk-18.xx_linux-x64_bin.tar.gz
-#     Downloaded from https://jdk.java.net/18/
+# (1) openjdk-19.xx_linux-x64_bin.tar.gz
+#     Downloaded from https://jdk.java.net/19/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/openjdk:18 .
+#      $ docker build -t oracle/openjdk:19 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -26,8 +26,8 @@ FROM oraclelinux:8
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk18.0.2.1/db379da656dc47308e138f21b33976fa/1/GPL \
-	JAVA_HOME=/usr/java/jdk-18 \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/36/GPL \
+	JAVA_HOME=/usr/java/jdk-19 \
 	LANG=en_US.UTF-8
 
 # If you need the Java Version you can read it from the release file with 
@@ -49,7 +49,7 @@ RUN set -eux; \
     if [ "$ARCH" == "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL/openjdk-18.0.2.1_linux-${ARCH}_bin.tar.gz" ; \
+    JAVA_PKG="$JAVA_URL/openjdk-19_linux-${ARCH}_bin.tar.gz" ; \
 	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
