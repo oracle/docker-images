@@ -139,7 +139,7 @@ else
 fi
 
 # Default TCPS_PORT value
-TCPS_PORT=${TCPS_PORT:-1522}
+TCPS_PORT=${TCPS_PORT:-2484}
 
 # Creating the wallet
 echo -e "\n\nCreating Oracle Wallet for the database server side certificate...\n"
