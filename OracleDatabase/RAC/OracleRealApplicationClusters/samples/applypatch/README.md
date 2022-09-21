@@ -42,30 +42,26 @@ This is useful if you want to install multiple patches at once. The script will 
 
 * If you have multiple patches to be applied at once, add more sub directories following the numbering scheme of 002, 003, 004, 005, 00N.
 * If you have a new version of OPatch, put the OPatch zip file directly into the patches directory. Do not change the name of the zip file!
-* You need to change the base image to be patched with the RU in `latest/Dockerfile` based on your env. For example, if you want to build 19.3.0 patched images, change the image name in `latest/Dockerfile` as shown below and save the file:
-
-  ```bash
-  vi latest/Dockerfile
-  FROM oracle/database-rac:21.3.0
-  to
-  FROM oracle/database-rac:19.3.0
-  ```
-
-* A utility script named `buildPatchedDockerImage.sh` has been provided to assist with building the patched image:
+* A utility script named `buildPatchedContainerImage.sh` has been provided to assist with building the patched image:
 
    ```bash
-    [oracle@localhost applypatch]# ./buildPatchedDockerImage.sh -h
-    
-    Usage: ./buildPatchedDockerImage.sh -v [version] -p [patch label]
-    Builds a patched Docker Image for Oracle Database.
-    
-    Parameters:
+     [oracle@localhost applypatch]# ./buildPatchedContainerImage.sh -h
+      Usage: buildPatchedContainerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
+      It builds a container image for RAC patched image
+
+      Parameters:
        -v: version to build
-           Choose one of: 21.3.0 or 19.3.0
+        Choose one of: latest
+       -o: passes on container build option
        -p: patch label to be used for the tag
    ```
+* Following is an example of building patched image using 21.3.0. Note that `BASE_RAC_IMAGE=oracle/database-rac:21.3.0` set to 21.3.0. You need to set BASE_RAC_IMAGE based on your enviornment.
 
-**Important:** It is not supported to apply patches on already existing databases. You will have to create a new, patched database Docker image. You can use the PDB unplug/plug functionality to carry over your PDB into the patched container database!
+ ```bash
+ # ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.7.0 -o '--build-arg BASE_RAC_IMAGE=oracle/database-rac:21.3.0'
+ ```
+
+**Important:** It is not supported to apply patches on already existing databases. You will have to create a new, patched database container image. You can use the PDB unplug/plug functionality to carry over your PDB into the patched container database!
 
 **Notes**: If you are trying to patch the image on OL8 on PODMAN host, you must have `podman-docker` package instaled on your PODMAN host.
 

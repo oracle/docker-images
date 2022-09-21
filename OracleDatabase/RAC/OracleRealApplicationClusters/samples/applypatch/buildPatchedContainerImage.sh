@@ -1,29 +1,23 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
-# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
-#
-# Since: January, 2018
-# Author: paramdeep.saini@oracle.com
-# Description: Sets up the unix environment for DB installation.
-#
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-#
+# Copyright (c) 2022, Oracle and/or its affiliates
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 usage() {
   cat << EOF
 
-Usage: ./buildPatchedDockerImage.sh -v [version] -p [patch label]
-Builds a patched Docker Image for Oracle Database.
+Usage: buildPatchedContainerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
+It builds a patched RAC container image
 
 Parameters:
    -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+   -o: passes on container build option
    -p: patch label to be used for the tag
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014,2022 Oracle and/or its affiliates.
 
 EOF
   exit 0
@@ -42,10 +36,10 @@ ENTERPRISE=0
 STANDARD=0
 LATEST="latest"
 VERSION='x'
-PATCHLABEL="Patch"
+PATCHLABEL="patch"
 DOCKEROPS=""
 
-while getopts "hesv:p:" optname; do
+while getopts "h:v:p:o:" optname; do
   case "$optname" in
     "h")
       usage
@@ -56,29 +50,25 @@ while getopts "hesv:p:" optname; do
     "p")
       PATCHLABEL="$OPTARG"
       ;;
+    "o")
+      DOCKEROPS="$OPTARG"
+     ;;
+    "?")
+      usage;
+      exit 1;
+      ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside buildPatchedDockerImage.sh"
+      echo "Unknown error while processing options inside buildPatchedContainerImage.sh"
       ;;
   esac
 done
-
-if [ "${VERSION}" = "x" ]; then
-
-  echo "Version is not specified. Pass the version as a parameter such 21.3.0 or 19.3.0 based on the image version you want to patch"
-  usage
-fi
 
 # Oracle Database Image Name
 IMAGE_NAME="oracle/database-rac:$VERSION-$PATCHLABEL"
 
 # Go into version folder
-cd $LATEST
-
-echo "=========================="
-echo "DOCKER version:"
-docker version
-echo "=========================="
+cd latest
 
 # Proxy settings
 PROXY_SETTINGS=""
@@ -120,7 +110,7 @@ echo ""
 
 if [ $? -eq 0 ]; then
 cat << EOF
-  Oracle Database Docker Image for version $VERSION patch $PATCHLABEL is ready to be extended:
+  Oracle Database container image for Real Application Clusters (RAC) version $VERSION is ready to be extended:
 
     --> $IMAGE_NAME
 
@@ -129,5 +119,5 @@ cat << EOF
 EOF
 
 else
-  echo "Oracle Database Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "Oracle Database Real Application Clusters container image was NOT successfully created. Check the output and correct any reported problems that occurred during the build operation."
 fi
