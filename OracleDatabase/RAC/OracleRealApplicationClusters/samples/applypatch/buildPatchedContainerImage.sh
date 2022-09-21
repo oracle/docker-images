@@ -6,8 +6,8 @@
 usage() {
   cat << EOF
 
-Usage: buildPatchedDockerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
-It builds a container image for RAC patched image
+Usage: buildPatchedContainerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
+It builds a patched RAC container image
 
 Parameters:
    -v: version to build
@@ -59,7 +59,7 @@ while getopts "h:v:p:o:" optname; do
       ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+      echo "Unknown error while processing options inside buildPatchedContainerImage.sh"
       ;;
   esac
 done
@@ -110,7 +110,7 @@ echo ""
 
 if [ $? -eq 0 ]; then
 cat << EOF
-  Oracle Database Docker Image for Real Application Clusters (RAC) version $VERSION is ready to be extended:
+  Oracle Database container image for Real Application Clusters (RAC) version $VERSION is ready to be extended:
 
     --> $IMAGE_NAME
 
@@ -119,5 +119,5 @@ cat << EOF
 EOF
 
 else
-  echo "Oracle Database Real Application Clusters Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "Oracle Database Real Application Clusters container image was NOT successfully created. Check the output and correct any reported problems that occurred during the build operation."
 fi
