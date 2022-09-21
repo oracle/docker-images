@@ -46,7 +46,7 @@ This is useful if you want to install multiple patches at once. The script will 
 
    ```bash
      [oracle@localhost applypatch]# ./buildPatchedContainerImage.sh -h
-      Usage: buildContainerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
+      Usage: buildPatchedContainerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
       It builds a container image for RAC patched image
 
       Parameters:
