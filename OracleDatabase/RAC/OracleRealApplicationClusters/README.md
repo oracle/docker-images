@@ -169,7 +169,7 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
     ```bash
     # mkdir /opt/.secrets/
     ```
-- If your enviorment is docker then execute `openenssl rand -hex 64 -out /opt/.secrets/pwd.key`. Otherwise, on Podman execute `openssl rand -hex -out /opt/.secrets/pwd.key`
+- If your enviorment is docker then execute `openssl rand -hex 64 -out /opt/.secrets/pwd.key`. Otherwise, on Podman execute `openssl rand -hex -out /opt/.secrets/pwd.key`
 - Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for the  grid, oracle and database users. For this deployment scenario, it will be a common password for the grid, oracle, and database users. Run the command:
 
     ```bash
@@ -178,10 +178,10 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
     ```
 3. Create hostfile on podman/docker hosts:
 
-  ```bash
-  mkdir /opt/containers/
-  touch /opt/containers/rac_host_file
-  ```
+   ```bash
+   # mkdir /opt/containers/
+   # touch /opt/containers/rac_host_file
+   ```
 
 **Notes**
 
