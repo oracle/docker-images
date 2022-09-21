@@ -3,6 +3,14 @@
 
 FROM ghcr.io/oracle/oraclelinux8-python:3.9
 
+ARG BUILDTIME
+ARG VERSION
+ARG REVISION
+
+ENV IMAGE_BUILDTIME=${BUILDTIME} \
+    IMAGE_VERSION=${VERSION} \
+    IMAGE_REVISION=${REVISION}
+
 RUN python3 -m pip install --upgrade pip \
     && python3 -m pip install oci-cli \
     && cp /usr/local/lib/python3.9/site-packages/oci_cli/bin/oci_autocomplete.sh /usr/local/bin/oci_autocomplete.sh \

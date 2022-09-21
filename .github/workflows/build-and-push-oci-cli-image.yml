@@ -17,8 +17,7 @@ on:
 
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: 'oracle/oci-cli'
+  IMAGE_NAME: oci-cli
 
 jobs:
   build:
@@ -38,32 +37,38 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: Repository owner needs to be lowercase
+        id: repo-owner
+        run: |
+          REPO_OWNER=${{ github.repository_owner }}
+          echo "::set-output name=repo-owner::${REPO_OWNER,,}"
+
+      - name: Log into GitHub Container Registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
+      - name: Generate container image metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${{ env.IMAGE_NAME }}
           flavor: |
             latest=true
           labels: |
-            provider=Oracle
-            issues=https://github.com/oracle/docker-images/issues
+            provider=${REPO_OWNER}
+            issues=https://github.com/${{ steps.repo-owner.outputs.repo-owner }}/docker-images/issues
             org.opencontainers.image.licenses=UPL-1.0
-            org.opencontainers.image.vendor=Oracle
+            org.opencontainers.image.vendor=${REPO_OWNER}
             org.opencontainers.image.title=OCI CLI
             org.opencontainers.image.description=Oracle Cloud Infrastructure Command Line Interface
             org.opencontainers.image.source=https://github.com/oracle/docker-images/tree/main/OracleCloudInfrastructure/oci-cli
             org.opencontainers.image.documentation=https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cliconcepts.htm
-            org.opencontainers.image.url=https://github.com/oracle/docker-images/pkgs/container/oci-cli
-            org.opencontainers.image.base.name=ghcr.io/oracle/oci-cli:latest
+            org.opencontainers.image.url=https://github.com/${{ steps.repo-owner.outputs.repo-owner }}/docker-images/pkgs/container/oci-cli
+            org.opencontainers.image.base.name=ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/oci-cli:latest
           tags: |
             type=schedule,pattern={{date 'YYYYMMDD'}}
             type=sha
@@ -72,6 +77,10 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v3
         with:
+          build-args: |
+            BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
           context: ./OracleCloudInfrastructure/oci-cli/
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64, linux/arm64
