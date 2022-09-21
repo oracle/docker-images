@@ -78,7 +78,7 @@ After setting these environment variables, the container image can be built usin
 To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
-    -p <host port>:1521 -p <host port>:5500 -p <host port>:1522\
+    -p <host port>:1521 -p <host port>:5500 -p <host port>:2484\
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
@@ -96,7 +96,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     Parameters:
        --name:        The name of the container (default: auto generated).
        -p:            The port mapping of the host port to the container port.
-                      The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 1522 (TCPS Listener Port if TCPS is enabled).
+                      The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 2484 (TCPS Listener Port if TCPS is enabled).
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
@@ -203,11 +203,11 @@ There are two ways to enable TCPS connections for the database:
 1. Enable TCPS while creating the database.
 2. Enable TCPS after the database is created.
 
-To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 1522 for TCPS.
+To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
 
 To enable TCPS connections after the database is created, please use the following sample command:
 ```bash
-    # Creates Listener for TCPS at container port 1522
+    # Creates Listener for TCPS at container port 2484
     docker exec -it <container name> /opt/oracle/configTcps.sh
 ```
 
@@ -219,7 +219,7 @@ Similarly, to disable TCPS connections for the database, please use the followin
 
 **NOTE**:
 - Only database server authentication is supported (no mTLS).
-- The container port at which TCPS listener is listening (i.e. 1522) should be exposed and mapped to some host port using `-p <host-port>:1522` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
+- The container port at which TCPS listener is listening (i.e. 2484) should be exposed and mapped to some host port using `-p <host-port>:2484` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
 - When TCPS is enabled, a self-signed certificate will be created. For users' convenience, a client-side wallet is prepared and stored at the location `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect to the database. The sample command to download the client wallet is as follows:
     ```bash
         # ORACLE_SID default value is ORCLCDB

@@ -110,7 +110,9 @@ function disable_tcps() {
 ###########################################
 
 ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
-ORACLE_PDB="$(ls -dl "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ | grep -v -e pdbseed -e "${ARCHIVELOG_DIR_NAME:-archive_logs}"| awk '{print $9}' | cut -d/ -f6)"
+# Export ORACLE_PDB value
+export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+ORACLE_PDB=${ORACLE_PDB^^}
 
 # Oracle wallet location which stores the certificate
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
@@ -134,7 +136,7 @@ else
 fi
 
 # Default TCPS_PORT value
-TCPS_PORT=${TCPS_PORT:-1522}
+TCPS_PORT=${TCPS_PORT:-2484}
 
 # Creating the wallet
 echo -e "\n\nCreating Oracle Wallet for the database server side certificate...\n"
@@ -150,7 +152,7 @@ orapki wallet create -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -auto_login
 echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
 # Create a self-signed certificate using orapki utility; VALIDITY: 1095 days
-orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -keysize 1024 -self_signed -validity 1095
+orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -keysize 2048 -self_signed -validity 1095
 
 
 # Reconfigure listener to enable TCPS (Reload wouldn't work here)
