@@ -6,7 +6,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2014,2021 Oracle and/or its affiliates.
+# Copyright (c) 2014,2022 Oracle and/or its affiliates.
 #
 
 usage() {
@@ -23,7 +23,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014,2022 Oracle and/or its affiliates.
 
 EOF
   exit 0

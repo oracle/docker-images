@@ -55,7 +55,7 @@ This is useful if you want to install multiple patches at once. The script will 
        -o: passes on container build option
        -p: patch label to be used for the tag
    ```
-* Following is the example of build patched image using 21.3.0. Note that `BASE_RAC_IMAGE=oracle/database-rac:21.3.0` set to 21.30. You need to set BASE_RAC_IMAGE based on your enviornment.
+* Following is an example of building patched image using 21.3.0. Note that `BASE_RAC_IMAGE=oracle/database-rac:21.3.0` set to 21.3.0. You need to set BASE_RAC_IMAGE based on your enviornment.
 
  ```bash
  # ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.7.0 -o '--build-arg BASE_RAC_IMAGE=oracle/database-rac:21.3.0'
