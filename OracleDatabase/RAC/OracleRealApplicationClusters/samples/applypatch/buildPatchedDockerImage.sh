@@ -1,18 +1,12 @@
 #!/bin/bash
 #
-# Since: November, 2018
-# Author: paramdeep.saini@oracle.com
-# Description: Build script for building RAC container image
-#
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-#
-# Copyright (c) 2014,2022 Oracle and/or its affiliates.
-#
+# Copyright (c) 2022, Oracle and/or its affiliates
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 usage() {
   cat << EOF
 
-Usage: buildContainerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
+Usage: buildPatchedDockerImage.sh -v [version] -t [image_name:tag] -p [patch version] [-o] [container build option]
 It builds a container image for RAC patched image
 
 Parameters:
