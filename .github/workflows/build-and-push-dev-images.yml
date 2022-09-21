@@ -81,7 +81,7 @@ jobs:
           matrix=$(
             for ol in ${ol_list[*]}; do
               pushd "${ol}" >/dev/null || exit 1
-              for lang in ${list[*]}; do
+              for lang in ${lang_list[*]}; do
                 if [[ -d ${lang} ]]; then
                   pushd "${lang}" >/dev/null || exit 1
                   for dockerfile in */Dockerfile; do
