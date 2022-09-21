@@ -12,8 +12,7 @@ name: Build and publish Oracle Linux developer container images to GitHub Contai
 # Images are built for both amd64 and arm64 architectures, except for
 #   - oracledb images (not available on arm)
 #   - php and nodejs on OL7 (packages not available)
-# When the oraclelinux8-compat:8-slim container image is built, the images
-# based on it will be (re)built as well.
+
 on:
   push:
     branches:
@@ -29,11 +28,10 @@ on:
         required: false
       lang:
         description: List of languages to build
-        default: 'compat, gcc-toolset, golang, nginx, nodejs, php, python, ruby'
+        default: 'gcc-toolset, golang, nginx, nodejs, php, python, ruby'
         required: false
 
 # Default values for the builds triggered by the push event
-# Note: the "compat" image should *not* be in this list
 env:
   ol: 'oraclelinux7, oraclelinux8'
   lang: 'gcc-toolset, golang, nodejs, nginx, php, python, ruby'
@@ -45,7 +43,6 @@ jobs:
     outputs:
       matrix: ${{ steps.build-matrix.outputs.matrix }}
       skip_build: ${{ steps.build-matrix.outputs.skip_build }}
-      compat: ${{ steps.build-matrix.outputs.compat }}
       repository_owner: ${{ steps.repository_owner.outputs.repository_owner }}
       date_stamp: ${{ steps.date_stamp.outputs.date_stamp }}
 
@@ -62,7 +59,6 @@ jobs:
         run: |
           IFS=", " read -r -a ol_list <<< "${{ github.event.inputs.ol || env.ol}}"
           IFS=", " read -r -a lang_list <<< "${{ github.event.inputs.lang || env.lang}}"
-          mapfile -t compat_list < <(cd oraclelinux8 && grep -l -- '^FROM.*oraclelinux8-compat:8-slim' */*/Dockerfile | sed -e 's!/.*!!' | sort -u)
           changes=$(mktemp)
           # workflow is only set in the workflow_dispatch event payload
           workflow="${{ github.event.workflow }}"
@@ -78,29 +74,13 @@ jobs:
               echo "PUSH: Rebuilding changed images only"
               build_all=0
             fi
-            if grep -q OracleLinuxDevelopers/oraclelinux8/compat "${changes}"; then
-              echo "PUSH: oraclelinux8-compat:8-slim updated, rebuilding dependencies"
-              compat=1
-            fi
           else
             echo "MANUAL: Rebuilding based on parameters"
             build_all=1
-            if [[ " ${lang_list[*]} " =~ " compat " ]]; then
-              echo "MANUAL: oraclelinux8-compat:8-slim listed, rebuilding dependencies"
-              compat=1
-              read -r -a lang_list <<< "${lang_list[@]/compat}"
-            else
-              compat=0
-            fi
           fi
           matrix=$(
             for ol in ${ol_list[*]}; do
               pushd "${ol}" >/dev/null || exit 1
-              if [[ ${ol} == "oraclelinux8" && ${compat} -eq 1 ]]; then
-                mapfile -t list < <(tr ' ' '\n' <<< "${lang_list[*]} ${compat_list[*]}" | sort -u)
-              else
-                list=("${lang_list[@]}")
-              fi
               for lang in ${list[*]}; do
                 if [[ -d ${lang} ]]; then
                   pushd "${lang}" >/dev/null || exit 1
@@ -113,8 +93,6 @@ jobs:
                       multi=1
                     fi
                     if [[ ${build_all} -eq 1 ]] || grep -q "${ol}/${lang}/${tag}" "${changes}"; then
-                      echo "${ol};${lang};${tag};${arch};${multi}"
-                    elif [[ ${ol} == "oraclelinux8" && ${compat} -eq 1 && " ${compat_list[*]} " == *" ${lang} "* ]]; then
                       echo "${ol};${lang};${tag};${arch};${multi}"
                     fi
                   done
@@ -138,7 +116,6 @@ jobs:
           fi
           echo "::set-output name=matrix::${matrix}"
           echo "::set-output name=skip_build::${skip_build}"
-          echo "::set-output name=compat::${compat}"
 
       - name: Lowercase repository owner
         id: repository_owner
@@ -150,64 +127,9 @@ jobs:
         run: |
           echo "::set-output name=date_stamp::$(date +'%Y%m%d')"
 
-  build-compat:
-    name: Build oraclelinux8-compat:8-slim image
-    needs: prepare
-    if: needs.prepare.outputs.compat == '1'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-        with:
-          platforms: arm64
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Log into GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build image - amd64
-        uses: docker/build-push-action@v2
-        with:
-          context: OracleLinuxDevelopers/oraclelinux8/compat/8-slim
-          platforms: linux/amd64
-          push: true
-          tags: |
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-${{ needs.prepare.outputs.date_stamp }}-amd64"
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-amd64"
-
-      - name: Build image - arm64
-        uses: docker/build-push-action@v2
-        with:
-          context: OracleLinuxDevelopers/oraclelinux8/compat/8-slim
-          platforms: linux/arm64
-          push: true
-          tags: |
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-${{ needs.prepare.outputs.date_stamp }}-arm64"
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-arm64"
-
-      - name: Manifest
-        run: |
-          docker buildx imagetools create --tag \
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-${{ needs.prepare.outputs.date_stamp }}" \
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-${{ needs.prepare.outputs.date_stamp }}-amd64" \
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-${{ needs.prepare.outputs.date_stamp }}-arm64"
-          docker buildx imagetools create --tag \
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim" \
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-amd64" \
-            "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/oraclelinux8-compat:8-slim-arm64"
-
   build-image:
     name: Build image
-    needs: [ prepare, build-compat ]
+    needs: [ prepare ]
     if: always() && needs.prepare.outputs.skip_build == 'false'
     strategy:
       matrix: ${{fromJson(needs.prepare.outputs.matrix)}}
