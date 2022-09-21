@@ -1,6 +1,5 @@
-# LICENSE UPL 1.0
-#
-# Copyright (c) 1982-2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2022, Oracle and/or its affiliates
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -136,7 +135,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 # -------------------------------------------
 #############################################
 
-from base AS builder
+FROM base AS builder
 
 COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
 
@@ -164,7 +163,7 @@ RUN rm -f $INSTALL_DIR/install/* && \
 
 #############################################
 # -------------------------------------------
-# Start new layer for grid & database runtime
+# Start new image for grid & database runtime
 # -------------------------------------------
 #############################################
 
