@@ -233,7 +233,7 @@ Similarly, to disable TCPS connections for the database, please use the followin
     # Connecting Express Edition
     sqlplus sys@XE as sysdba
     ```
-- The certificate used with TCPS has validity for 3 years. After the certificate is expired, you can renew it using the following command:
+- The certificate used with TCPS has validity for 1 year. After the certificate is expired, you can renew it using the following command:
     ```bash
         docker exec -it <container name> /opt/oracle/configTcps.sh
     ```
