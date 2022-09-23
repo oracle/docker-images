@@ -1,0 +1,67 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tuxedows-svr
+  labels: 
+    app: tuxedows-svr
+    service: tuxedows-svr
+spec:
+  selector:
+    app: tuxedows-svr
+  ports:
+    - name: wsl
+      port: 9055
+    - name: ssl
+      port: 9060
+    - name: wsh1
+      port: 2071
+    - name: wsh2
+      port: 2072
+    - name: wsh3
+      port: 2073
+    - name: wsh4
+      port: 2074
+    - name: wsh5
+      port: 2075
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tuxws-depl
+  labels:
+    app: tuxedows-svr
+spec:
+  replicas: 1
+  selector:  
+    matchLabels:
+      # pod with below label will have its 1 replica always running
+      app: tuxedows-svr
+  template:
+    metadata:
+      labels:
+        # below label used by both service and deployment 
+        #   to select the pods they have to operate on
+        app: tuxedows-svr
+    spec:
+      containers:
+        - name: tuxedows-svr
+          image: iad.ocir.io/paasdevblockchain/oracle/tuxedows_svr:1.0
+          imagePullPolicy: Always
+          ports:
+            - name: tuxedows-svr
+              containerPort: 9055
+              protocol: TCP
+          {{- if .Values.TuxLoadBalIP }}
+          env:
+            - name: TUX_LOADBAL_IP
+              value: {{ .Values.TuxLoadBalIP }}
+          {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+      {{- end }}
+
+---

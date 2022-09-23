@@ -1,0 +1,13 @@
+1. Get the LoadBalancer's IP using the below steps:
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available
+           You can watch the "EXTERNAL-IP" column by running the below cmd a few times, if neccessary:
+             kubectl get service --namespace default tuxedo-loadbal-svc
+   LB_IP=$(kubectl get service --namespace default tuxedo-loadbal-svc --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
+   echo LB_IP=$LB_IP
+
+2. Use this IP for tuxedows server installation as below:
+
+   helm install \
+        --set imagePullSecrets="<your-secret-file-for-oracle-container-registry-access>" \
+        --set TuxLoadBalIP="${LB_IP}" \
+    tuxedows-helm-install tuxedows-helm-chart-0.1.0.tgz
