@@ -1,4 +1,4 @@
-/*	(c) 2003 BEA Systems, Inc. All Rights Reserved. */
+/*	(c) 2022 Oracle Corp.      All Rights Reserved. */
 /*	Copyright (c) 1997 BEA Systems, Inc.
   	All rights reserved
 

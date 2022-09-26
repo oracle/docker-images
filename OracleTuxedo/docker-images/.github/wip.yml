@@ -1,8 +1,0 @@
-locations:
-  - title
-  - label_name
-  - commit_subject
-terms:
-  - wip
-  - do not merge
-  - work in progress

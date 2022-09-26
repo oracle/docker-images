@@ -16,7 +16,7 @@ Parameters:
    -m: MD5 value expected. Required if -s not specified.
 LICENSE UPL 1.0 
 
-Copyright (c) 2016, 2022, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
 
 EOF
 exit 0
