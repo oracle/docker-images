@@ -4,19 +4,19 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 18
+# This is the Dockerfile for Oracle JDK 19
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# This dockerfile will download a copy of JDK 18 from
-#	https://download.oracle.com/java/18/latest/jdk-18_linux-<ARCH>_bin.tar.gz if 
+# This dockerfile will download a copy of JDK 19 from
+#	https://download.oracle.com/java/19/latest/jdk-19_linux-<ARCH>_bin.tar.gz if 
 # 
 # It will use either x64 or aarch64 depending on the target platform
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/jdk:18 .
+#      $ docker build -t oracle/jdk:19 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -37,8 +37,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 	
-ENV JAVA_URL=https://download.oracle.com/java/18/latest \
-	JAVA_HOME=/usr/java/jdk-18
+ENV JAVA_URL=https://download.oracle.com/java/19/latest \
+	JAVA_HOME=/usr/java/jdk-19
 
 ##
 RUN set -eux; \
@@ -47,7 +47,7 @@ RUN set -eux; \
     if [ "$ARCH" == "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL/jdk-18_linux-${ARCH}_bin.tar.gz" ; \
+    JAVA_PKG="$JAVA_URL/jdk-19_linux-${ARCH}_bin.tar.gz" ; \
 	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c; \
@@ -59,7 +59,7 @@ FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
-ENV	JAVA_HOME=/usr/java/jdk-18
+ENV	JAVA_HOME=/usr/java/jdk-19
 ENV	PATH $JAVA_HOME/bin:$PATH	
 
 # If you need the Java Version you can read it from the release file with 

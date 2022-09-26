@@ -25,9 +25,16 @@ function setupClientWallet() {
     fi
 
     # Create the client wallet
-    orapki wallet create -wallet "${CLIENT_WALLET_LOC}" -pwd "$WALLET_PWD" -auto_login
+    orapki wallet create -wallet "${CLIENT_WALLET_LOC}" -auto_login <<EOF
+${WALLET_PWD}
+${WALLET_PWD}
+EOF
+
     # Add the certificate
-    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -pwd "$WALLET_PWD" -trusted_cert -cert /tmp/"$(hostname)"-certificate.crt
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+${WALLET_PWD}
+EOF
+
     # Removing cert from /tmp location
     rm /tmp/"$(hostname)"-certificate.crt
 
@@ -110,13 +117,15 @@ function disable_tcps() {
 ###########################################
 
 ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
-ORACLE_PDB="$(ls -dl "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ | grep -v -e pdbseed -e "${ARCHIVELOG_DIR_NAME:-archive_logs}"| awk '{print $9}' | cut -d/ -f6)"
+# Export ORACLE_PDB value
+export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+ORACLE_PDB=${ORACLE_PDB^^}
 
 # Oracle wallet location which stores the certificate
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
 
 # Random wallet Password
-WALLET_PWD=$(openssl rand -hex 4)
+WALLET_PWD=$(openssl rand -hex 8)
 
 # Client wallet location
 CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet/${ORACLE_SID}"
@@ -134,7 +143,7 @@ else
 fi
 
 # Default TCPS_PORT value
-TCPS_PORT=${TCPS_PORT:-1522}
+TCPS_PORT=${TCPS_PORT:-2484}
 
 # Creating the wallet
 echo -e "\n\nCreating Oracle Wallet for the database server side certificate...\n"
@@ -146,18 +155,25 @@ else
     echo -e "\nCleaning up existing wallet..."
     rm -f "${WALLET_LOC}"/*
 fi
-orapki wallet create -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -auto_login
+orapki wallet create -wallet "${WALLET_LOC}" -auto_login <<EOF
+${WALLET_PWD}
+${WALLET_PWD}
+EOF
+
 echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
-# Create a self-signed certificate using orapki utility; VALIDITY: 1095 days
-orapki wallet add -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -keysize 1024 -self_signed -validity 1095
-
+# Create a self-signed certificate using orapki utility; VALIDITY: 365 days
+orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=localhost" -keysize 2048 -self_signed -validity 365 <<EOF
+${WALLET_PWD}
+EOF
 
 # Reconfigure listener to enable TCPS (Reload wouldn't work here)
 reconfigure_listener
 
 # Export the cert to be updated in the client wallet
-orapki wallet export -wallet "${WALLET_LOC}" -pwd "${WALLET_PWD}" -dn "CN=localhost" -cert /tmp/"$(hostname)"-certificate.crt
-
+orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=localhost" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+${WALLET_PWD}
+EOF
+ 
 # Update the client wallet
 setupClientWallet
