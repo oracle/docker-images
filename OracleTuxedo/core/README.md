@@ -20,7 +20,7 @@ To assist in building the images, the `buildContainerImage.sh` simplifies the pr
 
 The Tuxedo image uses the Oracle JDK 8 (Server JRE) container image as its base. Please follow the [Oracle Java image](https://github.com/oracle/docker-images/blob/master/OracleJava) documentation to build that image before continuing.
 
-## Building Tuxedo Container Image 
+## Building Tuxedo Container Image
 
 1. Into an empty directory:
    * Download the [Tuxedo 22.1.0.0.0 Linux 64-bit installer](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html) from the Oracle Technology Network.

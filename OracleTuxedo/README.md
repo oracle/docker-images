@@ -2,7 +2,7 @@
 
 This repository contains container image configuration, build and sample files for Oracle Tuxedo products and some samples.
 
-The following container images are available: 
+The following container images are available:
 
 * [Tuxedo Core](./core) Tuxedo core including server binaries, client libraries
 
@@ -16,4 +16,4 @@ All scripts and files hosted in this repository required to build the container 
 
 ## Copyright
 
-Copyright (c) 2022, Oracle and/or its affiliates. 
+Copyright (c) 2022, Oracle and/or its affiliates.
