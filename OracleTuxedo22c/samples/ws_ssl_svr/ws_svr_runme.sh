@@ -10,14 +10,15 @@
 # Usage: source ws_svr_runme.sh
 #
 mkdir -p /u01/oracle/user_projects
-cd /u01/oracle/user_projects
+cd /u01/oracle/user_projects || return 1
 rm -rf ws_svr
 mkdir ws_svr
-cd ws_svr
+cd ws_svr || return 1
 
 # Create environment setup script setenv.sh
-export HOSTNAME=`uname -n`
-export APPDIR=`pwd`
+HOSTNAME=$(uname -n)
+APPDIR=$(pwd)
+export HOSTNAME APPDIR
 export WS_PORT=9055
 export SSL_PORT=9060
 #export TUX_LOADBAL_IP="138.3.79.82"
@@ -45,16 +46,17 @@ if [[ -n "${TUX_LOADBAL_IP}" ]]; then
 fi
 EndOfFile
 
+# shellcheck disable=SC1091
 source ./setenv.sh
 
 
 
 # create ssl certificates and PKCS12 wallet
 WALLET_DIR=${APPDIR}/wallet/wallet.${SEC_PRINCIPAL_NAME}
-mkdir -p ${WALLET_DIR}
-mkdir -p ${APPDIR}/CA
+mkdir -p "${WALLET_DIR}"
+mkdir -p "${APPDIR}"/CA
 
-    cd ${APPDIR}/CA
+    cd "${APPDIR}"/CA || return 1
     mkdir certs newcerts private
     cp -p  /u01/oracle/openssl.cnf .
     touch index.txt 
@@ -78,10 +80,10 @@ mkdir -p ${APPDIR}/CA
 
     # create the PKCS12 wallet
     cat certs/tuxsvr_cert.pem certs/ca_cert.pem private/tuxsvr_key.pem > pre-p12.pem
-    openssl pkcs12 -export -in pre-p12.pem -password pass:${PASSVAR}  -out ${WALLET_DIR}/ewallet.p12
+    openssl pkcs12 -export -in pre-p12.pem -password pass:"${PASSVAR}"  -out "${WALLET_DIR}"/ewallet.p12
     echo "Created ewallet.p12 in ${WALLET_DIR}"
 
-    cd ${APPDIR}
+    cd "${APPDIR}" || return 1
 
 
 # clean up from any previous run
@@ -143,6 +145,7 @@ fi
 
 # Compile the configuration file and build the client and server
 # "cat /dev/null" below makes "tmloadcf" take the password from "PASSVAR"
+# shellcheck disable=SC2002
 cat /dev/null | tmloadcf -y ubbws
 buildserver -o serverws -f serverws.c -s BASICWS
 buildserver -o simpserv -f simpserv.c -s TOUPPER
@@ -150,9 +153,9 @@ buildserver -o simpserv -f simpserv.c -s TOUPPER
 # Boot up the domain
 tmboot -y
 
-cat ${APPDIR}/ULOG*
+cat "${APPDIR}"/ULOG*
 
-while [ 1 ]
+while true
 do
     ONE_HOUR=3600
     sleep ${ONE_HOUR}

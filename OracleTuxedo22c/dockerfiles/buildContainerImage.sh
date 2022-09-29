@@ -15,7 +15,7 @@ Builds a Container Image for Oracle Tuxedo.
 Parameters:
    -h: Help
    -v: Version to build. Required.
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+       Choose one of subdirectories. e.g. 21.1.0.0.0
    -s: Skips the MD5 check of packages.
    -i: Installer name. Required.
    -m: MD5 value expected. Required if -s not specified.
@@ -32,13 +32,13 @@ exit 0
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
   if [ -z "$MD5VALUE" ]; then   # -m option is a MUST
-    echo "You must specify "$INSTALLER" MD5 value with -m option"
+    echo "You must specify $INSTALLER MD5 value with -m option"
     exit
   fi
   MD5="${MD5VALUE}  ${VERSION}/${INSTALLER}"
-  echo "MD5 = " ${MD5}
-  MD5_CHECK="`md5sum ${VERSION}/${INSTALLER}`"
-  echo "MD5_CHECK = " ${MD5_CHECK}
+  echo "MD5 =  ${MD5}"
+  MD5_CHECK="$(md5sum "${VERSION}"/"${INSTALLER}")"
+  echo "MD5_CHECK =  ${MD5_CHECK}"
 
   if [ "$MD5" != "$MD5_CHECK" ]
   then
@@ -98,7 +98,7 @@ fi
 
 echo "====================="
 
-if [ ! -e ${VERSION}/${INSTALLER} ]
+if [ ! -e "${VERSION}"/"${INSTALLER}" ]
 then
   echo "Download the Tuxedo ZIP Distribution and"
   echo "drop the file ${INSTALLER} in ${VERSION} folder before"
@@ -108,18 +108,22 @@ fi
 
 # Proxy settings
 PROXY_SETTINGS=""
+# shellcheck disable=SC2154
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
@@ -130,8 +134,9 @@ fi
 
 echo "====================="
 
-docker build $PROXY_SETTINGS -t oracle/tuxedo:latest -t oracle/tuxedo:${VERSION} ${VERSION}/
-if [ "$?" = "0" ]
+docker build  ${PROXY_SETTINGS:+"$PROXY_SETTINGS"} -t oracle/tuxedo:latest -t oracle/tuxedo:"${VERSION}" "${VERSION}"/
+ret=$?
+if [ "$ret" = "0" ]
     then
 	echo ""
 	echo "Tuxedo Container image is ready to be used. To create a container, run:"

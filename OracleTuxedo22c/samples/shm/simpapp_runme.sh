@@ -11,14 +11,16 @@
 #
 # Usage: source simpapp_runme.sh
 #
-cd /u01/oracle/user_projects
+mkdir -p /u01/oracle/user_projects
+cd /u01/oracle/user_projects || return 1
 rm -rf simpapp
 mkdir simpapp
-cd simpapp
+cd simpapp || return 1
 
 # Create environment setup script setenv.sh
-export HOSTNAME=`uname -n`
-export APPDIR=`pwd`
+HOSTNAME=$(uname -n)
+APPDIR=$(pwd)
+export HOSTNAME APPDIR
 
 cat >setenv.sh << EndOfFile
 source  ${TUXDIR}/tux.env
@@ -68,11 +70,11 @@ EndOfFile
 # Get the sources if not already in this directory
 if [ ! -r simpcl.c ]
     then
-	cp $TUXDIR/samples/atmi/simpapp/simpcl.c .
+	cp "${TUXDIR}"/samples/atmi/simpapp/simpcl.c .
 fi
 if [ ! -r simpserv.c ]
     then
-	cp $TUXDIR/samples/atmi/simpapp/simpserv.c .
+	cp "${TUXDIR}"/samples/atmi/simpapp/simpserv.c .
 fi
 
 # Compile the configuration file and build the client and server
