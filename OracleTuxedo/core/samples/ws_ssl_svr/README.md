@@ -1,21 +1,25 @@
 
-# Tuxedo "ws (workstation) ssl server" sample with container image
+# Oracle Tuxedo "ws (workstation) ssl server" sample container image
 
-Example of Image with Tuxedo Domain
-
-This Dockerfile extends the Oracle Tuxedo image by creating a sample ws (workstation) ssl server app.
+This example extends the Oracle Tuxedo image by creating a sample ws (workstation) ssl server app.
 
 ## How to run
 
-First make sure you have built oracle/tuxedo:latest version from the core directory.  
+First make sure you have built `oracle/tuxedo:latest` from the "core" folder.
 
-Now to build this sample, run:  
+Now to build this sample, run:
+```shell
 docker build -t oracle/tuxedows_svr .  
+```
 or  
+```shell
 ./buildContainerImage.sh
+```
 
 You can then start the image and run the sample in a new container using the below command:  
+```shell
 docker run -d -h tuxhost -v ${Local_volumes_dir}:/u01/oracle/user_projects oracle/tuxedows_svr
+```
 
 You can check the logs from `docker logs <container_id>`, container_id can be checked by `docker ps -a`.
 

@@ -3,7 +3,7 @@
 #
 # Dockerfile template for Tuxedo 22.1.0.0.0
 # 
-# Download the following files to an empty directory:
+# Download the following file
 #   tuxedo221000_64_Linux_01_x86.zip http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
@@ -57,15 +57,6 @@ ENV ORACLE_HOME=/u01/oracle/tuxHome
 ENV TUXDIR=/u01/oracle/tuxHome/tuxedo22.1.0.0.0
 ENV PATH=$PATH:$TUXDIR/bin \
     LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TUXDIR/lib
-
-#
-# Configure network ports
-# tlisten	nlsaddr:5001  jmx:5002
-# SALT 		http:5010
-# WSL		5020
-#EXPOSE 5001 5002 5010 5020
-#USER root
-#RUN yum -y install bind-utils
 
 USER oracle
 WORKDIR /u01/oracle
