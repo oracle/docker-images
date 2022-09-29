@@ -32,6 +32,8 @@ export IPCKEY=112233
 export NLSPORT=12233
 export JMXPORT=22233
 EndOfFile
+
+# shellcheck disable=SC1091
 source ./setenv.sh
 
 # clean up from any previous run
