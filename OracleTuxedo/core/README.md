@@ -16,27 +16,29 @@ This project offers Dockerfiles for Tuxedo 22.1.0.0.0. To assist in building the
 
 To assist in building the images, the `buildContainerImage.sh` simplifies the process of ensuring the correct binary archive is available before starting the build process. More experienced users are welcome to build the image using their preferred container engine or CI/CD tool.
 
-## Building Oracle JDK (Server JRE) base image
+## Building the Oracle JDK (Server JRE) base image
 
 The Tuxedo image uses the Oracle JDK 8 (Server JRE) container image as its base. Please follow the [Oracle Java image](https://github.com/oracle/docker-images/blob/master/OracleJava) documentation to build that image before continuing.
 
-## Building Tuxedo Container Image
+## Building the Tuxedo Container Image
 
-1. Into an empty directory:
-   * Download the [Tuxedo 22.1.0.0.0 Linux 64-bit installer](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html) from the Oracle Technology Network.
-   * Clone or download this repository
-   * Move the downloaded Tuxedo installer to the corresponding version directory
-   * Optionally download the latest Tuxedo rolling patch from My Oracle Support
-2. Change to the `OracleTuxedo/core/dockerfiles` directory in your local copy of the repository
-3. Run './buildContainerImage.sh' to see the available parameters for this script then follow [the documentation](./dockerfiles/README.md) to build the image.
+1. Create a directory on your local system and download the following items into your local directory:
+   * [Tuxedo 22.1.0.0.0 Linux 64-bit installer](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html) from the Oracle Technology Network.
+   * A copy of this repository.
+   * (Optional) The latest Tuxedo rolling patch from My Oracle Support.
+2. Move the installer that you downloaded in the previous step to the appropriate version directory (e.g. 21.1.0.0.0) in your local copy of the repository.
+3. Change to the `OracleTuxedo/core/dockerfiles` directory in your local copy of the repository.
+4. Run './buildContainerImage.sh' to see the available parameters for this script and then follow the instructions in  [the documentation](./dockerfiles/README.md) to build the image.
 
-This process builds a container image image named `oracle/tuxedo` tagged by version. For example, `oracle/tuxedo:22.1.0.0.0` and `oracle/tuxedo:latest`.
+This process builds a container image named `oracle/tuxedo` tagged by version. For example, `oracle/tuxedo:22.1.0.0.0` and `oracle/tuxedo:latest`.
 
-You can then start a container based on this image using the following command:
+## Running the Tuxedo Container Image
+
+Once the container image is built, you can now start a container based on this image using the following command:
 ```shell
 docker run -d -v "${LOCAL_DIR}:/u01/oracle/user_projects" oracle/tuxedo:22.1.0.0.0
 ```
-Note: `${LOCAL_DIR}` must resolve to a local directory in which the container can store data.
+Note: The `${LOCAL_DIR}` environment variable must resolve to a local directory in which the container can store data.
 
 ## Tuxedo Distribution and Documentation
 
@@ -44,9 +46,9 @@ Note: `${LOCAL_DIR}` must resolve to a local directory in which the container ca
 
 ## License
 
-To download and run Tuxedo 22.1.0.0.0 regardless of inside or outside a Container container, you must download the binaries from Oracle website and accept the license indicated at that page.
+To download and run Tuxedo 22.1.0.0.0, regardless of whether you are running Tuxedo with a CDB, non-CDB, or PDB, inside or outside a Container container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
-All scripts and files hosted in this repository required to build the container images are, unless otherwise noted, released under [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
+All scripts and files hosted in this repository required to build the container images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Copyright
 

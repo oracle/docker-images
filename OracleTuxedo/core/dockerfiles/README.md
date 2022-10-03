@@ -1,28 +1,28 @@
 # Introduction
 
-This folder contains the information on how to create a Tuxedo container image based and two examples for how to use [Tuxedo](http://oracle.com/tuxedo) with it.
+This file contains the information on how to create the Oracle Tuxedo container image and two sample applications to use it.
 
-## To use
+## Prerequisites
 
-1. Into an empty directory:
-   * Download the latest Tuxedo (say 12.1.3  or 22.1.0.0.0) Linux 64 bit installer from [OTN](http://www.oracle.com/technetwork/middleware/tuxedo/downloads/index.html)
-   * Download all the files from this GitHub repository to a local directory
-   * Drop the downloaded Tuxedo installer to the corresponding version directory
-   * Optionally download the latest Tuxedo rolling patch from My Oracle Support
-2. In the local directory
-   * Execute ``./buildContainerImage.sh -v 12.1.3 -i tuxedo121300_64_Linux_01_x86.zip -s`` to create an image for Tuxedo 12.1.3.  
-     or  
-   * Execute ``./buildContainerImage.sh -v 22.1.0.0.0 -i tuxedo221000_64_Linux_01_x86.zip -s`` to create an image for Tuxedo 22.1.0.
+The Tuxedo image uses the Oracle JDK 8 (Server JRE) container image oracle/serverjre:8 as its base. Please follow the [Oracle Java image](https://github.com/oracle/docker-images/blob/master/OracleJava) documentation to build that image before continuing.
 
-Notes:
+## To build the Oracle Tuxedo container image
 
-   1. Before you run buildContainerImage.sh, depending on your Tuxedo version, you need to change the above command and installer name. For instance, `tuxedo122200_64_Linux_01_x86.zip` as the installer name for version 12.2.2 or `tuxedo221000_64_Linux_01_x86.zip` as the installer name for version 22.1.0.0.0.
-   2. Before you run buildContainerImage.sh, if proxy is needed to access network, you need to set environment variables at first: http_proxy, https_proxy, ftp_proxy, no_proxy
-   3. The base image oracle/serverjre:8 should be built before you run buildContainerImage.sh. To build the base image, you must first download the Oracle Server JRE binary and drop in folder ../OracleJava/java-8 and build that image.
-   For more information, visit the [OracleJava](https://github.com/oracle/docker-images/blob/master/OracleJava) folder's [README](https://github.com/oracle/docker-images/blob/master/OracleJava/README.md) file.
+1. Download the latest Tuxedo Linux 64 bit installer (e.g. tuxedo221000_64_Linux_01_x86.zip) as instructed in [the documentation](../README.md).
+2. Move the installer that you downloaded in the previous step to the appropriate version directory (e.g. 21.1.0.0.0) in your local copy of the repository.
+3. Change to this directory `OracleTuxedo/core/dockerfiles` in your local copy of the repository.
+4. Execute ``./buildContainerImage.sh -v 22.1.0.0.0 -i tuxedo221000_64_Linux_01_x86.zip -s`` to create a container image for Tuxedo 22.1.0.
 
-    cd ../OracleJava/java-8
-    sh build.sh
+You should now have a container image tagged oracle/tuxedo:`<version>` where version is the Tuxedo version number provided to buildContainerImage.sh above.
 
-You should end up with a Container image tagged oracle/tuxedo:`<version>` where version is Tuxedo version number provided to buildContainerImage.sh.
-Have fun!
+## Notes
+
+1. Before you run buildContainerImage.sh, depending on your Tuxedo version, you may need to change the above command and installer name. For instance, `tuxedo122200_64_Linux_01_x86.zip` as the installer name for version 12.2.2 or `tuxedo221000_64_Linux_01_x86.zip` as the installer name for version 22.1.0.0.0.
+2. Before you run buildContainerImage.sh, if a proxy is needed to access network, you need to set the following environment variables: http_proxy, https_proxy, ftp_proxy, no_proxy.
+
+
+## To run the two sample applications
+
+1. shm sample - Follow the instructions in [shm sample README](../samples/shm/README.md)
+2. ws sample - Follow the instructions in [ws sample README](../samples/ws/README.md)
+
