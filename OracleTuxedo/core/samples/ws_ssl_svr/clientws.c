@@ -3,13 +3,6 @@
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
-/*
- *  "BEA TUX-A11 Application Administration"
- *  "/WS Configuration Lab"
- *  "clientws.c"
- *  "Version 1.1"
-*/
-
 #include <stdio.h>
 #include <string.h>
 #include "atmi.h"

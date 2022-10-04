@@ -1,26 +1,25 @@
 
-# Oracle Tuxedo "ws (workstation) ssl server" sample container image
+# Oracle Tuxedo workstation (WS) SSL server sample container image
 
-This example extends the Oracle Tuxedo image by creating a sample ws (workstation) ssl server app.
+This example extends the Oracle Tuxedo image by creating a sample workstation (WS) SSL server application.
 
 ## How to run
 
-First make sure you have built `oracle/tuxedo:latest` from the "core" folder.
+Before building this sample image, ensure you have successfully created the `oracle/tuxedo:latest` image using the documentation in the `core` folder.
 
-Now to build this sample, run:
+To build the sample container image, run:
+
 ```shell
 docker build -t oracle/tuxedows_svr .  
 ```
-or  
+or use the `./buildContainerImage.sh` script in this folder.
+
+Next, use the sample image to create a container that runs the sample application with the following command:
+
 ```shell
-./buildContainerImage.sh
+docker run -d -h tuxhost -v ${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedows_svr
 ```
 
-You can then start the image and run the sample in a new container using the below command:  
-```shell
-docker run -d -h tuxhost -v ${Local_volumes_dir}:/u01/oracle/user_projects oracle/tuxedows_svr
-```
+You can review the container logs using `docker logs <container_id>`. The `container_id` can be found by running `docker ps`.
 
-You can check the logs from `docker logs <container_id>`, container_id can be checked by `docker ps -a`.
-
-Push the built container image into your private or public container registry and then use tuxedows-helm-chart in [Oracle Tuxedo Helm Charts](https://github.com/oracle/helm-charts) for deploying to kubernetes engine.
+Push this container image to a private container registry and use `tuxedows-helm-chart` from the [Oracle Helm Charts](https://github.com/oracle/helm-charts) repository to deploy this Tuxedo WS SSL server sample to a Kubernetes cluster.

@@ -12,7 +12,7 @@ This folder contains the information and examples of how to deploy [Tuxedo](http
 
 ## How to build and run
 
-This project offers Dockerfiles for Tuxedo 22.1.0.0.0. To assist in building the images, you can use the buildContainerImage.sh script. See below for instructions and usage.
+This project offers `Dockerfiles` for Tuxedo 22.1.0.0.0.
 
 To assist in building the images, the `buildContainerImage.sh` simplifies the process of ensuring the correct binary archive is available before starting the build process. More experienced users are welcome to build the image using their preferred container engine or CI/CD tool.
 
@@ -35,9 +35,11 @@ This process builds a container image named `oracle/tuxedo` tagged by version. F
 ## Running the Tuxedo Container Image
 
 Once the container image is built, you can now start a container based on this image using the following command:
+
 ```shell
 docker run -d -v "${LOCAL_DIR}:/u01/oracle/user_projects" oracle/tuxedo:22.1.0.0.0
 ```
+
 Note: The `${LOCAL_DIR}` environment variable must resolve to a local directory in which the container can store data.
 
 ## Tuxedo Distribution and Documentation

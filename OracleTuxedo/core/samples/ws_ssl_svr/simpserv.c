@@ -3,17 +3,6 @@
 ** Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 */
 
-/*	(c) 2003 BEA Systems, Inc. All Rights Reserved. */
-/*	Copyright (c) 1997 BEA Systems, Inc.
-  	All rights reserved
-
-  	THIS IS UNPUBLISHED PROPRIETARY
-  	SOURCE CODE OF BEA Systems, Inc.
-  	The copyright notice above does not
-  	evidence any actual or intended
-  	publication of such source code.
-*/
-
 /* #ident	"@(#) samples/atmi/simpapp/simpserv.c	$Revision: 1.7 $" */
 
 #include <stdio.h>

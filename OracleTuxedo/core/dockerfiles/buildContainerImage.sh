@@ -141,7 +141,7 @@ if [ "$ret" = "0" ]
 	echo ""
 	echo "Tuxedo Container image is ready to be used. To create a container, run:"
 	echo "docker run -d -v \${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedo:${VERSION}"
-	echo "Note: \${LOCAL_DIR} is a local dir which used in Container image as external storage, it can be any dir."
+	echo "Note: \${LOCAL_DIR} is a local dir which is required by Tuxedo for persistent storage. Ensure correct permission has been set to allow the container to read and write files in this location."
     else
 	echo "Build of Tuxedo Container image failed."
 fi
