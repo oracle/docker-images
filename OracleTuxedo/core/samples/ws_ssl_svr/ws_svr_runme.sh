@@ -68,7 +68,7 @@ CA_PASSWORD=$(openssl rand -hex 8)
 echo "CA_PASSWORD = ${CA_PASSWORD} during creation of the CA key and certificates."
 openssl req -new -x509 -extensions v3_ca -keyout private/ca_key.pem -out certs/ca_cert.pem \
             -days 3650 -config ./openssl.cnf  \
-            -passout pass:${CA_PASSWORD}  \
+            -passout pass:"${CA_PASSWORD}"  \
             -subj "/C=US/ST=CA/L=SV/O=OraTux/OU=IT/CN=ISH_tuxsvr"
 
 # create tux server key and tux server certificate signing request (CSR)
@@ -77,7 +77,7 @@ openssl req -new -nodes -out tuxsvr-req.pem -keyout private/tuxsvr_key.pem \
             -subj "/C=US/ST=CA/L=SV/O=OraTux/OU=IT/CN=ISH_tuxsvr"
 
 # sign the tux server CSR using CA cert to create the tux server certificate
-openssl ca -out certs/tuxsvr_cert.pem -config ./openssl.cnf -passin pass:${CA_PASSWORD} \
+openssl ca -out certs/tuxsvr_cert.pem -config ./openssl.cnf -passin pass:"${CA_PASSWORD}" \
            -batch -infiles tuxsvr-req.pem
 
 # create the PKCS12 wallet
