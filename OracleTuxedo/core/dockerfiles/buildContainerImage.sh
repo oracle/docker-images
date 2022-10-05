@@ -109,27 +109,9 @@ fi
 # Proxy settings
 PROXY_SETTINGS=""
 # shellcheck disable=SC2154
-if [ "${http_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
-fi
-
-# shellcheck disable=SC2154
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
-fi
-
-# shellcheck disable=SC2154
-if [ "${ftp_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
-fi
-
-# shellcheck disable=SC2154
-if [ "${no_proxy}" != "" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
-fi
-
-if [ "$PROXY_SETTINGS" != "" ]; then
-  echo "Proxy settings were found and will be used during build."
+  echo "Proxy settings were found and will be used during build, https_proxy = ${https_proxy}"
 fi
 
 echo "====================="

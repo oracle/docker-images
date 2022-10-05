@@ -21,7 +21,6 @@ APPDIR=$(pwd)
 export HOSTNAME APPDIR
 export WS_PORT=9055
 export SSL_PORT=9060
-#export TUX_LOADBAL_IP="138.3.79.82"             # uncomment and set this appropriately if behind NAT and this is not set as env var
 export SEC_PRINCIPAL_NAME="ISH_tuxqa"            # ssl
 
 cat >setenv.sh << EOF
@@ -41,8 +40,8 @@ export NLSPORT=12233
 export JMXPORT=22233
 export WSNADDR="//${HOSTNAME}:${WS_PORT}"
 unset NATADDR_OPT
-if [[ -n "${TUX_LOADBAL_IP}" ]]; then
-    export NATADDR_OPT=" -H //${TUX_LOADBAL_IP}:${WS_PORT} "
+if [[ -n "${TUX_EXTERNAL_IP}" ]]; then
+    export NATADDR_OPT=" -H //${TUX_EXTERNAL_IP}:${WS_PORT} "
 fi
 EOF
 

@@ -18,7 +18,7 @@ You should now have a container image tagged `oracle/tuxedo:<version>` where ver
 ## Notes
 
 1. Before you run `buildContainerImage.sh`, depending on your Tuxedo version, you may need to change the above command and installer name. For instance, `tuxedo122200_64_Linux_01_x86.zip` as the installer name for version 12.2.2 or `tuxedo221000_64_Linux_01_x86.zip` as the installer name for version 22.1.0.0.0.
-2. If your container host requires a proxy to access the network, then before running `buildContainerImage.sh`, you may need to set one of the following environment variables : `http_proxy`, `https_proxy`, `ftp_proxy` or `no_proxy`.
+2. If your container host requires a proxy to access internet locations, ensure the `https_proxy` environment variable is set before running `buildContainerImage.sh`.
 
 ## Sample applications
 
