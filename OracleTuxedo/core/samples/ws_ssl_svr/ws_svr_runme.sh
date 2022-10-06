@@ -90,6 +90,7 @@ cd "${APPDIR}" || return 1
 # clean up from any previous run
 tmshutdown -y &>/dev/null 
 rm -Rf serverws simpserv tuxconfig ubbws ULOG.*
+rm -f "${SHUTDOWN_MARKER_FILE}"
 
 # Create the Tuxedo configuration file
 cat >ubbws << EOF
