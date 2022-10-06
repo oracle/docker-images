@@ -13,7 +13,7 @@ STOP_OUT_FILE="${SERVER_HOME}/stop.out"
 # shellcheck disable=SC1091
 source "${SERVER_HOME}/setenv.sh"
 
-echo "stop server script kicked off at `date`." > ${STOP_OUT_FILE}
+echo "stop server script kicked off at $(date)." > ${STOP_OUT_FILE}
 
 # Shutdown the domain
 tmshutdown -y

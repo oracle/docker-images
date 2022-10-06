@@ -157,7 +157,7 @@ tmboot -y
 cat "${APPDIR}"/ULOG*
 
 while true; do
-    if [ -e ${SHUTDOWN_MARKER_FILE} ] ; then
+    if [ -e "${SHUTDOWN_MARKER_FILE}" ] ; then
       exit 0
     fi
 
