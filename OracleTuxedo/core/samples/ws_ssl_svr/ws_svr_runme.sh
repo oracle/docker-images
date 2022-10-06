@@ -3,9 +3,7 @@
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # 
-# Shell script to build and run ws_svr.  It assume TUXDIR has been set, or that 
-# Tuxedo has been installed to: ~/tuxHome/tuxedo12.1.3.0.0   If not, invoke 
-# this script with a single argument indicating the location of TUXDIR.
+# Shell script to build and run ws_svr.  It assumes that TUXDIR has been set
 #
 # Usage: source ws_svr_runme.sh
 #
@@ -28,6 +26,7 @@ source ${TUXDIR}/tux.env
 export HOSTNAME=${HOSTNAME}
 export APPDIR=${APPDIR}
 export TUXCONFIG=${APPDIR}/tuxconfig
+export SHUTDOWN_MARKER_FILE=${APPDIR}/shutdown.marker
 export TM_SECURITY_CONFIG=NONE
 export TM_ALLOW_NOTLS=Y
 export SSL_PORT=${SSL_PORT}                      # ssl
@@ -157,10 +156,11 @@ tmboot -y
 
 cat "${APPDIR}"/ULOG*
 
-while true
-do
-    ONE_HOUR=3600
-    sleep ${ONE_HOUR}
-done
+while true; do
+    if [ -e ${SHUTDOWN_MARKER_FILE} ] ; then
+      exit 0
+    fi
 
+    sleep 1
+done
 
