@@ -81,7 +81,7 @@ After setting these environment variables, the container image can be built usin
 To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
-    -p <host port>:1521 -p <host port>:5500 -p <host port>:2484\
+    -p <host port>:1521 -p <host port>:5500 -p <host port>:2484 \
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
