@@ -8,7 +8,7 @@ For pre-built images containing Oracle software, please check the [Oracle Contai
 
 ## Contents
 
-This folder contains the information and examples of how to deploy [Tuxedo](http://oracle.com/tuxedo) in a container.
+This folder contains the information and examples of how to deploy Oracle Tuxedo in a container.
 
 ## How to build and run
 
