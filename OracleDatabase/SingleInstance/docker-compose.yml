@@ -1,0 +1,8 @@
+version: "3"
+services:
+    oracle:
+        image: oracle/database:21.3.0-xe
+        ports:
+            - "11521:1521"
+        environment:
+            - ORACLE_PWD=testing12345
