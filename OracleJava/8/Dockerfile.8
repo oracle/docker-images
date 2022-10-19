@@ -23,7 +23,7 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM ghcr.io/oracle/oraclelinux:8 as builder
+FROM oraclelinux:8 as builder
 
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
@@ -37,8 +37,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=server-jre-8u341-linux-x64.tar.gz \
-	JAVA_SHA256=71c5ef1d73737e324b5aff491a0603f6a9698006132d788df11ea6883b5d3b1b \
+ENV JAVA_PKG=server-jre-8u351-linux-x64.tar.gz \
+	JAVA_SHA256=388157820c1c25d2d6dc1decab9d2d5273bee84ab54c0204feb6d2530837983c \
 	JAVA_HOME=/usr/java/jdk-8
 
 COPY $JAVA_PKG /tmp/jdk.tgz
@@ -49,7 +49,7 @@ RUN set -eux; \
 
 ## Get a fresh version of SLIM for the final image
 
-FROM ghcr.io/oracle/oraclelinux:8
+FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
