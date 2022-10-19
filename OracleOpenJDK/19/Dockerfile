@@ -26,7 +26,7 @@ FROM oraclelinux:8
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/36/GPL \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk19.0.1/afdd2e245b014143b62ccb916125e3ce/10/GPL \
 	JAVA_HOME=/usr/java/jdk-19 \
 	LANG=en_US.UTF-8
 
@@ -49,7 +49,7 @@ RUN set -eux; \
     if [ "$ARCH" == "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL/openjdk-19_linux-${ARCH}_bin.tar.gz" ; \
+    JAVA_PKG="$JAVA_URL/openjdk-19.0.1_linux-${ARCH}_bin.tar.gz" ; \
 	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
