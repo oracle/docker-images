@@ -64,7 +64,8 @@ trap _int SIGINT
 trap _term SIGTERM
 
 # Set SIGKILL handler
-trap _kill SIGKILL
+# Commented out to avoid Lint shell script check failure issue during git push  
+# trap _kill SIGKILL
 
 echo "INFO: CONNECTION_STRING = ${CONNECTION_STRING:?"Please set CONNECTION_STRING"}"
 echo "INFO: RCUPREFIX         = ${RCUPREFIX:?"Please set RCUPREFIX"}"
