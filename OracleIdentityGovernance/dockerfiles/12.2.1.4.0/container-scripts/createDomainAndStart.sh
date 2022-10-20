@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -68,7 +68,6 @@ trap _kill SIGKILL
 
 echo "INFO: CONNECTION_STRING = ${CONNECTION_STRING:?"Please set CONNECTION_STRING"}"
 echo "INFO: RCUPREFIX         = ${RCUPREFIX:?"Please set RCUPREFIX"}"
-echo "INFO: DB_PASSWORD       = ${DB_PASSWORD:?"Please set DB_PASSWORD"}"
 
 if [ -z ${ADMIN_PASSWORD} ]
 then

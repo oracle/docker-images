@@ -1,5 +1,6 @@
 [package-manager-packages]
 hostname
+perl
 
 [final-build-commands]
 
@@ -31,9 +32,9 @@ RUN cp -rf /u01/oracle/idm/server/ConnectorDefaultDirectory /u01/oracle/idm/serv
 COPY --chown=oracle:root files/container-scripts/ /u01/oracle/dockertools/
 
 RUN chmod a+xr /u01/oracle/dockertools/* && \
-    chown -R oracle:root /u01/oracle/dockertools && \
     chown -R oracle:root /u01/oracle/idm/server/ConnectorDefaultDirectory_orig && \
-    chown -h oracle:root /u01/oracle/idm/server/ConnectorDefaultDirectory
+    chown -h oracle:root /u01/oracle/idm/server/ConnectorDefaultDirectory && \
+    chown -R oracle:root /u01/oracle/dockertools
 
 USER oracle
 RUN if $ORACLE_HOME/OPatch/opatch lsinventory  -oh $ORACLE_HOME -jre $JAVA_HOME | egrep -q '23855729|24204843|24325050'; then \
