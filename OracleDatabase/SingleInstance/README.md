@@ -82,6 +82,7 @@ To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
     -p <host port>:1521 -p <host port>:5500 -p <host port>:2484 \
+    --ulimit nofile=1024:65536 --ulimit nproc=2047:16384 --ulimit stack=10485760:33554432 --ulimit memlock=3221225472 \
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
@@ -100,6 +101,7 @@ To run your Oracle Database image use the `docker run` command as follows:
        --name:        The name of the container (default: auto generated).
        -p:            The port mapping of the host port to the container port.
                       The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 2484 (TCPS Listener Port if TCPS is enabled).
+       --ulimit:      Resource limits. Update according to Oracle Database documentation.
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
