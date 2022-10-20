@@ -194,7 +194,7 @@ then
     export DOMAIN_HOME
     export JAVA_HOME
     chmod a+rx /u01/oracle/idm/server/bin/offlineConfigManager.sh
-    cd /u01/oracle/idm/server/bin/
+    cd /u01/oracle/idm/server/bin/ || exit 1
     offlineCmd="./offlineConfigManager.sh"
     ${offlineCmd}
     retval=$?
