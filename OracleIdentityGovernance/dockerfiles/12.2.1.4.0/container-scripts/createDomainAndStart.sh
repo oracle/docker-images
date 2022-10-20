@@ -49,7 +49,8 @@ function rand_pwd(){
 function updateListenAddress() {
   mkdir -p ${DOMAIN_HOME}/logs
 
-  export thehost=`hostname -I`
+  thehost=`hostname -I`
+  export thehost
   echo "INFO: Updating the listen address of Adminserver -> IP->${thehost} DNS->${ADMIN_HOST}"
   cmd1="${ORACLE_HOME}/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning ${SCRIPT_DIR}/updateListenAddress.py ${thehost} AdminServer ${ADMIN_HOST}"
   echo ${cmd1}
@@ -85,7 +86,7 @@ then
   # Auto generate Oracle Database Schema password
   temp_pwd=$(rand_pwd)
   #Password should not start with a number for database
-  f_str=`echo $temp_pwd|cut -c1|tr [0-9] [A-Z]`
+  f_str=`echo $temp_pwd|cut -c1|tr '[0-9] [A-Z]'`
   s_str=`echo $temp_pwd|cut -c2-`
   DB_SCHEMA_PASSWORD=${f_str}${s_str}
   echo ""
