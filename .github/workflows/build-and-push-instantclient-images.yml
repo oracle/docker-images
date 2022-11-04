@@ -62,8 +62,8 @@ jobs:
             ic="19 21"
           fi
           echo "Rebuilding: ${ol} ${ic}"
-          echo "::set-output name=ol::${ol}"
-          echo "::set-output name=ic::${ic}"
+          echo "ol=${ol}" >> $GITHUB_OUTPUT
+          echo "ic=${ic}" >> $GITHUB_OUTPUT
           rm "${changes}"
 
       - name: Log into GitHub Container Registry
@@ -73,7 +73,7 @@ jobs:
         id: repo-owner
         run: |
           REPO_OWNER=${{ github.repository_owner }}
-          echo "::set-output name=repo-owner::${REPO_OWNER,,}"
+          echo "repo-owner=repo-owner::${REPO_OWNER,,}" >> $GITHUB_OUTPUT
 
       - name: Build Oracle Instant Client
         run: |
