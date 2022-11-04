@@ -73,7 +73,7 @@ jobs:
         id: repo-owner
         run: |
           REPO_OWNER=${{ github.repository_owner }}
-          echo "repo-owner=repo-owner::${REPO_OWNER,,}" >> $GITHUB_OUTPUT
+          echo "repo-owner=${REPO_OWNER,,}" >> $GITHUB_OUTPUT
 
       - name: Build Oracle Instant Client
         run: |
