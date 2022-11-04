@@ -8,8 +8,8 @@
 # --------------------------------------------
 #
 # Execute:
-#      $ docker build --pull -t oraclelinux7-instantclient:19 .
-#      $ docker run -ti --rm oraclelinux7-instantclient:19 sqlplus /nolog
+#      $ podman build --pull -t oraclelinux7-instantclient:19 .
+#      $ podman run -ti --rm oraclelinux7-instantclient:19 sqlplus /nolog
 #
 # NOTES
 # -----
@@ -27,10 +27,10 @@
 # Optional Oracle Network and Oracle client configuration files can be put in the
 # default configuration file directory /usr/lib/oracle/<version>/client64/lib/network/admin.
 # Configuration files include tnsnames.ora, sqlnet.ora, oraaccess.xml and
-# cwallet.sso.  You can use a Docker volume to mount the directory containing
+# cwallet.sso.  You can use a container volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/19.15/client64/lib/network/admin:Z,ro . . .
+#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.17/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -67,12 +67,12 @@
 # A prebuilt container from this Dockerfile is available from
 #   https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient
 # and can be pulled with:
-#   docker pull ghcr.io/oracle/oraclelinux7-instantclient:19
+#   podman pull ghcr.io/oracle/oraclelinux7-instantclient:19
 
 FROM oraclelinux:7-slim
 
 ARG release=19
-ARG update=15
+ARG update=17
 
 RUN  yum -y install oracle-release-el7 && \
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
