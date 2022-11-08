@@ -176,6 +176,16 @@ else
     sed -i -e "s|initParams=.*|&,sga_target=${INIT_SGA_SIZE}M,pga_aggregate_target=${INIT_PGA_SIZE}M|g" "$ORACLE_BASE"/dbca.rsp
 fi
 
+# Adding INIT_CPU_COUNT initParam if provided
+if [ -n "${INIT_CPU_COUNT}" ]; then
+  sed -i -e "s|initParams=.*|&,cpu_count=${INIT_CPU_COUNT}|g" "$ORACLE_BASE"/dbca.rsp
+fi
+
+# Adding INIT_PROCESSES initParam if provided
+if [ -n "${INIT_PROCESSES}" ]; then
+  sed -i -e "s|initParams=.*|&,processes=${INIT_PROCESSES}|g" "$ORACLE_BASE"/dbca.rsp
+fi
+
 # Create network related config files (sqlnet.ora, listener.ora)
 setupNetworkConfig;
 

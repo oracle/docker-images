@@ -20,7 +20,9 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE and 21c XE) and put them into the `dockerfiles/<version>` folder. You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*. You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE and 21c XE) and put them into the `dockerfiles/<version>` folder.
+You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
+You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
 
@@ -53,23 +55,24 @@ Before you build the image make sure that you have provided the installation bin
 
 You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
-The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8. You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
+The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8.
+You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
 
-**NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension. So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
+**NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension.
+So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
 
     ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
 
-##### Building the container images using Podman
+#### Building the container images using Podman
+
 Building Oracle Database container images using Podman is similar to Docker. Some additional environment variables are required to be set for proper functioning. The description is as follows:
 
-- `export BUILDAH_FORMAT=docker` (Required to support `HEALTHCHECK` specified in the Dockerfile)
-- `export BUILDAH_ISOLATION=chroot` (Required while building the container image in rootless mode)
+* `export BUILDAH_FORMAT=docker` (Required to support `HEALTHCHECK` specified in the Dockerfile)
+* `export BUILDAH_ISOLATION=chroot` (Required while building the container image in rootless mode)
 
 After setting these environment variables, the container image can be built using `buildContainerImage.sh` script as follows:
 
-```bash
-./buildContainerImage.sh -e -v <version-to-build>
-```
+    ./buildContainerImage.sh -e -v <version-to-build>
 
 ### Running Oracle Database in a container
 
@@ -78,12 +81,14 @@ After setting these environment variables, the container image can be built usin
 To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
-    -p <host port>:1521 -p <host port>:5500 -p <host port>:1522\
+    -p <host port>:1521 -p <host port>:5500 -p <host port>:2484 \
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
     -e INIT_SGA_SIZE=<your database SGA memory in MB> \
     -e INIT_PGA_SIZE=<your database PGA memory in MB> \
+    -e INIT_CPU_COUNT=<cpu_count init-parameter> \
+    -e INIT_PROCESSES=<processes init-parameter> \
     -e ORACLE_EDITION=<your database edition> \
     -e ORACLE_CHARACTERSET=<your character set> \
     -e ENABLE_ARCHIVELOG=true \
@@ -94,7 +99,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     Parameters:
        --name:        The name of the container (default: auto generated).
        -p:            The port mapping of the host port to the container port.
-                      The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 1522 (TCPS Listener Port if TCPS is enabled).
+                      The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 2484 (TCPS Listener Port if TCPS is enabled).
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
@@ -104,6 +109,12 @@ To run your Oracle Database image use the `docker run` command as follows:
        -e INIT_PGA_SIZE:
                       The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
                       Supported by Oracle Database 19.3 onwards.
+       -e INIT_CPU_COUNT:
+                      Specifies the number of CPUs available for Oracle Database to use. 
+                      On CPUs with multiple CPU threads, it specifies the total number of available CPU threads (optional).
+       -e INIT_PROCESSES:
+                      Specifies the maximum number of operating system user processes that can simultaneously connect to Oracle Database. 
+                      Its value should allow for all background processes such as locks, job queue processes, and parallel execution processes (optional).
        -e AUTO_MEM_CALCULATION:
                       To enable auto calculation of the DBCA total memory limit during the database creation, based on
                       the available memory of the container, which can be constrained using the `docker run --memory`
@@ -146,14 +157,14 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 **NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
 
 #### Securely specifying the password when using Podman (Supported from 19.3.0 onwards)
+
 `Podman secret` is supported if the user uses the podman runtime and needs to specify the password to the container securely. The user needs to create a secret first with the name **oracle_pwd**, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
-```bash
+
     # Creating podman secret
     echo "<Your Password>" | podman secret create oracle_pwd -
 
     # Running the Oracle Database 21c XE image with the secret
     podman run -d --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
-```
 
 #### Selecting the Edition (Supported from 19.3.0 release)
 
@@ -169,6 +180,12 @@ The SGA and PGA memory can be set during the first time when database is created
 
 In case these parameters are passed to the `docker run` command while reusing existing datafiles, even though these values would be visible in the container environment, they would not be set inside the database. The values used at the time of database creation will be used.
 
+#### Setting the CPU_COUNT and PROCESSES (Supported from 19.3.0 release)
+
+The CPU_COUNT and PROCESSES init-parameters can be set during the first time when the database is created by passing the INIT_CPU_COUNT and INIT_PROCESSES parameters respectively to the `docker run` command. These parameters are optional.
+
+In case these parameters are passed to the `docker run` command while reusing existing datafiles, even though these values would be visible in the container environment, they would not be set inside the database. The values used at the time of database creation will be used.
+
 #### Changing the admin accounts passwords
 
 On the first startup of the container, a random password will be generated for the database if not provided. The user has to mandatorily change the password after the database is created and the corresponding container is healthy.
@@ -178,6 +195,7 @@ The password for those accounts can be changed via the `docker exec` command. **
     docker exec <container name> ./setPassword.sh <your password>
 
 This new password will be used afterwards.
+
 #### Enabling archive log mode while creating the database
 
 Archive mode can be enabled during the first time when database is created by setting ENABLE_ARCHIVELOG to `true` and passing it to `docker run` command. Archive logs are stored at the directory location: `/opt/oracle/oradata/$ORACLE_SID/archive_logs` inside the container.
@@ -185,47 +203,47 @@ Archive mode can be enabled during the first time when database is created by se
 In case this parameter is set `true` and passed to `docker run` command while reusing existing datafiles, even though this parameter would be visible as set to `true` in the container environment, this would not be set inside the database. The value used at the time of database creation will be used.
 
 #### Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)
+
 There are two ways to enable TCPS connections for the database:
+
 1. Enable TCPS while creating the database.
 2. Enable TCPS after the database is created.
 
-To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 1522 for TCPS.
+To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
 
 To enable TCPS connections after the database is created, please use the following sample command:
-```bash
-    # Creates Listener for TCPS at container port 1522
+
+    # Creates Listener for TCPS at container port 2484
     docker exec -it <container name> /opt/oracle/configTcps.sh
-```
 
 Similarly, to disable TCPS connections for the database, please use the following command:
-```bash
+
     # Disable TCPS in the database
     docker exec -it <container name> /opt/oracle/configTcps.sh disable
-```
 
 **NOTE**:
-- Only database server authentication is supported (no mTLS).
-- The container port at which TCPS listener is listening (i.e. 1522) should be exposed and mapped to some host port using `-p <host-port>:1522` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
-- When TCPS is enabled, a self-signed certificate will be created. For users' convenience, a client-side wallet is prepared and stored at the location `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect to the database. The sample command to download the client wallet is as follows:
-    ```bash
+
+* Only database server authentication is supported (no mTLS).
+* The container port at which TCPS listener is listening (i.e. 2484) should be exposed and mapped to some host port using `-p <host-port>:2484` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
+* When TCPS is enabled, a self-signed certificate will be created. For users' convenience, a client-side wallet is prepared and stored at the location `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect to the database. The sample command to download the client wallet is as follows:
+
         # ORACLE_SID default value is ORCLCDB
         docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
-    ```
-- The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files. You should edit the `HOST` and `PORT` fields accordingly in the `tnsnames.ora` before connecting using TCPS.
-- After `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL\*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
-    ```bash
-    # Connecting Enterprise Edition
-    sqlplus sys@ORCLCDB as sysdba
-    # Connecting Express Edition
-    sqlplus sys@XE as sysdba
-    ```
-- The certificate used with TCPS has validity for 3 years. After the certificate is expired, you can renew it using the following command:
-    ```bash
-        docker exec -it <container name> /opt/oracle/configTcps.sh
-    ```
-    After certificate renewal, the client wallet should be updated by downloading it again.
-- Supports Oracle Database XE version 21.3.0 onwards.
 
+* The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files. You should edit the `HOST` and `PORT` fields accordingly in the `tnsnames.ora` before connecting using TCPS.
+* After `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL\*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
+
+        # Connecting Enterprise Edition
+        sqlplus sys@ORCLCDB as sysdba
+        # Connecting Express Edition
+        sqlplus sys@XE as sysdba
+
+* The certificate used with TCPS has validity for 1 year. After the certificate is expired, you can renew it using the following command:
+
+        docker exec -it <container name> /opt/oracle/configTcps.sh
+
+    After certificate renewal, the client wallet should be updated by downloading it again.
+* Supports Oracle Database XE version 21.3.0 onwards.
 
 #### Running Oracle Database 21c/18c Express Edition in a container
 
@@ -270,7 +288,7 @@ On the first startup of the container a random password will be generated for th
 
     docker exec <container name> /opt/oracle/setPassword.sh <your password>
 
-**Important Note:** 
+**Important Note:**
 The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
 
 #### Running Oracle Database 11gR2 Express Edition in a container
@@ -323,24 +341,25 @@ Once the container has been started you can connect to it just like to any other
     sqlplus system/<your password>@//localhost:1521/XE
 
 ### Containerizing an on-premise database (Supported from version 19.3.0 release)
-To containerize an on-premise database, please follow the steps mentioned below: 
 
-- Create the gold image from the on-premise database. The required command is as follows:
-```bash
-cd $ORACLE_HOME && ./runInstaller -silent -createGoldImage -destinationLocation '<location to store the gold image>'
-``` 
-- The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to the `OracleDatabase/SingleInstance/dockerfiles/<version>` directory. The **version** would be the base version of the gold image, e.g. 19.3.0.
-- Create the container image using this gold image by the following sample command:
-```bash
-./buildContainerImage.sh -i -e -v 19.3.0 -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'
-```
-- Run the container image created above with cloning option to clone the data files of the on-premise database. The sample command is as follows:
-```bash
-docker run --name <container-name> -e CLONE_DB=true \
--e ORACLE_PWD='<sys password of the on-prem database>' \
--e PRIMARY_DB_CONN_STR='<the on-prem database connection string in <HOST>:<PORT>/<SERVICE_NAME> format>' \
-oracle/database:19-onprem
-```
+To containerize an on-premise database, please follow the steps mentioned below:
+
+* Create the gold image from the on-premise database. The required command is as follows:
+
+        cd $ORACLE_HOME && ./runInstaller -silent -createGoldImage -destinationLocation '<location to store the gold image>'
+
+* The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to the `OracleDatabase/SingleInstance/dockerfiles/<version>` directory. The **version** would be the base version of the gold image, e.g. 19.3.0.
+* Create the container image using this gold image by the following sample command:
+
+        ./buildContainerImage.sh -i -e -v 19.3.0 -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'
+
+* Run the container image created above with cloning option to clone the data files of the on-premise database. The sample command is as follows:
+
+        docker run --name <container-name> -e CLONE_DB=true \
+        -e ORACLE_PWD='<sys password of the on-prem database>' \
+        -e PRIMARY_DB_CONN_STR='<the on-prem database connection string in <HOST>:<PORT>/<SERVICE_NAME> format>' \
+        oracle/database:19-onprem
+
 **NOTE:**
 Make sure that the directory structure of the on-premise database matches with the directory structure used in the container image.
 

@@ -8,20 +8,6 @@ Each of the language and version variants are based off either the
 package set as possible. If your application requires additional modules or
 packages, they should be installed as part of your downstream `Dockerfile`.
 
-## Change to Oracle Linux 8 images
-
-Originally, the images based on Oracle Linux 8 used the `8-slim` variant which
-required the use of `microdnf` for package management. The current images are
-based on an intermediate base image that is based on `oraclelinux:8` for full
-access to `dnf` to support AppStreams and modularity, but which also has
-`microdnf` installed and configured to ensure any existing automation continues
-to work.
-
-> **Deprecation of `microdnf`:**
-> Existing users are strongly encouraged to switch from `microdnf` to `dnf` as
-> it we intend to remove it from the Oracle Linux Developer images when Oracle
-> Linux 8.5 is released.
-
 ## Usage of the binary images
 
 All the [published Oracle Linux Developer images][1] use publicly available
@@ -90,12 +76,14 @@ You should then be able to create a new Ruby on Rails application.
 * [`oraclelinux8-nginx:1.14`](oraclelinux8/nginx/1.14/Dockerfile)
 * [`oraclelinux8-nginx:1.16`](oraclelinux8/nginx/1.16/Dockerfile)
 * [`oraclelinux8-nginx:1.18`](oraclelinux8/nginx/1.18/Dockerfile)
+* [`oraclelinux8-nginx:1.20`](oraclelinux8/nginx/1.20/Dockerfile)
 
 ### Node.js module
 
 * [`oraclelinux8-nodejs:12`](oraclelinux8/nodejs/12/Dockerfile)
 * [`oraclelinux8-nodejs:14`](oraclelinux8/nodejs/14/Dockerfile)
 * [`oraclelinux8-nodejs:14-oracledb`](oraclelinux8/nodejs/14-oracledb/Dockerfile)
+* [`oraclelinux8-nodejs:16`](oraclelinux8/nodejs/16/Dockerfile)
 
 ### PHP module
 
@@ -103,8 +91,11 @@ You should then be able to create a new Ruby on Rails application.
 * [`oraclelinux8-php:7.3-cli`](oraclelinux8/php/7.3-cli/Dockerfile)
 * [`oraclelinux8-php:7.3-fpm`](oraclelinux8/php/7.3-fpm/Dockerfile)
 * [`oraclelinux8-php:7.4-apache`](oraclelinux8/php/7.4-apache/Dockerfile)
+* [`oraclelinux8-php:7.4-apache-oracledb`](oraclelinux8/php/7.4-apache-oracledb/Dockerfile)
 * [`oraclelinux8-php:7.4-cli`](oraclelinux8/php/7.4-cli/Dockerfile)
+* [`oraclelinux8-php:7.4-cli-oracledb`](oraclelinux8/php/7.4-cli-oracledb/Dockerfile)
 * [`oraclelinux8-php:7.4-fpm`](oraclelinux8/php/7.4-fpm/Dockerfile)
+* [`oraclelinux8-php:7.4-fpm-oracledb`](oraclelinux8/php/7.4-fpm-oracledb/Dockerfile)
 
 ### Python modules
 
@@ -132,6 +123,7 @@ You should then be able to create a new Ruby on Rails application.
 * [`oraclelinux8-ruby:2.6`](oraclelinux8/ruby/2.6/Dockerfile)
 * [`oraclelinux8-ruby:2.7`](oraclelinux8/ruby/2.7/Dockerfile)
 * [`oraclelinux8-ruby:2.7-nodejs`](oraclelinux8/ruby/2.7-nodejs/Dockerfile)
+* [`oraclelinux8-ruby:3.0`](oraclelinux8/ruby/3.0/Dockerfile)
 
 [1]: https://github.com/orgs/oracle/packages?repo_name=docker-images
 [2]: https://yum.oracle.com

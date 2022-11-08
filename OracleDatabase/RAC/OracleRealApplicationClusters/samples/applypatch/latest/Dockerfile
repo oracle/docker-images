@@ -16,38 +16,51 @@
 # Run: 
 #      $ docker build -f Dockerfile -t oracle/rac-database:21.3.0-<patch level> . 
 #
+ARG BASE_RAC_IMAGE=oracle/database-rac:21.3.0
+
 # Pull base image
 # ---------------
-FROM oracle/database-rac:21.3.0
-
-
-# Environment variables required for this build (do NOT change)
-# -------------------------------------------------------------
-USER root
+FROM $BASE_RAC_IMAGE
 
 # Labels
 # ------
-LABEL "provider"="Oracle"                                               \
-      "issues"="https://github.com/oracle/docker-images/issues"         \
-      "maintainer"="paramdeep Saini <paramdeep.saini@oracle.com>"                               
+LABEL "provider"="Oracle"                                            \
+      "issues"="https://github.com/oracle/docker-images/issues"      \
+      "maintainer"="paramdeep Saini <paramdeep.saini@oracle.com>"    \
+      "volume.setup.location1"="/opt/scripts"                        \
+      "volume.startup.location1"="/opt/scripts/startup"              \
+      "port.listener"="1521"                                         \
+      "port.oemexpress"="5500"
 
-ENV PATCH_DIR="patches" \
+# Argument to control removal of components not needed after db software installation
+ARG SLIMMING=false
+ARG PATCH_DIR="patches"
+ARG DB_EDITION="EE"
+ARG USER="root"
+ARG WORKDIR="/rac-work-dir"
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+USER root 
+
+ENV PATCH_DIR=$PATCH_DIR \
     GRID_PATCH_FILE="applyGridPatches.sh" \
     DB_PATCH_FILE="applyDBPatches.sh" \
     FIXUP_PREQ_FILE="fixupPreq.sh" \
     DB_USER="oracle" \
+    USER=$USER \
+    WORKDIR=$WORKDIR \
     GRID_USER="grid"  
 
 # Use second ENV so that variable get substituted
 ENV PATCH_INSTALL_DIR=/tmp/patches
-
 
 # Copy binaries
 # -------------
 COPY $PATCH_DIR $PATCH_INSTALL_DIR/
 
 # Install patches
-RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \ 
+RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \
     chmod ug+x $PATCH_INSTALL_DIR/*.sh && \
     chmod ug+rwx $PATCH_INSTALL_DIR && \
     chown -R grid:oinstall $PATCH_INSTALL_DIR && \
@@ -55,16 +68,23 @@ RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \
     sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.conf  && \
     sync && \
     su grid -c "$PATCH_INSTALL_DIR/$GRID_PATCH_FILE $PATCH_INSTALL_DIR" && \
-    chown -R oracle:oinstall $PATCH_INSTALL_DIR && \
-    su oracle -c "$PATCH_INSTALL_DIR/$DB_PATCH_FILE $PATCH_INSTALL_DIR" && \
-    $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
+    chown -R oracle:oinstall $PATCH_INSTALL_DIR
+
+USER oracle
+
+RUN $PATCH_INSTALL_DIR/$DB_PATCH_FILE $PATCH_INSTALL_DIR
+
+USER root
+
+RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
     rm -rf /etc/oracle && \
     rm -rf $PATCH_INSTALL_DIR
 
-USER grid 
-WORKDIR /home/grid
+USER $USER
+WORKDIR $WORKDIR
+
 VOLUME ["/common_scripts"]
 
 # Define default command to start Oracle Grid and RAC Database setup.
 
-CMD ["/usr/sbin/oracleinit"]
+ENTRYPOINT /usr/bin/$INITSH

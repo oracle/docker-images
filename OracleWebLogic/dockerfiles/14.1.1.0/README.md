@@ -4,7 +4,7 @@ These Docker configurations have been used to create the Oracle WebLogic Server 
 
 The certification of Oracle WebLogic Server on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Dockerfiles.
 
-For more information on the certification, please see the [Oracle WebLogic Server on Docker certification whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [The WebLogic Server Blog](https://blogs.oracle.com/WebLogicServer/) for updates.
+For more information on the certification, please see the [Oracle WebLogic Server on Docker certification whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [The WebLogic Server Blog](https://blogs.oracle.com/weblogicserver/) for updates.
 
 ## How to build and run
 This project offers sample Dockerfiles for Oracle WebLogic Server 14.1.1.0. It provides at least one Dockerfile for the `developer` distribution, a second Dockerfile for the `generic` distribution, and a third Dockerfile for the `slim` distribution.  

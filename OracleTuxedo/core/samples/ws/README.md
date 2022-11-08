@@ -1,0 +1,23 @@
+
+# Oracle Tuxedo workstation (WS) sample container image
+
+This example extends the Oracle Tuxedo image by creating a sample workstation (WS) application.
+
+## How to build the image
+
+Before building this sample image, ensure you have successfully created the `oracle/tuxedo:latest` image using the documentation in the `core` folder.
+
+To build the WS sample application, run:
+
+```shell
+docker build -t oracle/tuxedows .  
+```
+or use the `./buildContainerImage.sh` script in this folder.
+
+Next, use the sample image to create a container that runs the sample application with the following command:
+
+```shell
+docker run -d -h tuxhost -v ${LOCAL_DIR}:/u01/oracle/user_projects oracle/tuxedows
+```
+
+You can review the container logs using `docker logs <container_id>`. The `container_id` can be found by running `docker ps`.
