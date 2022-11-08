@@ -4,7 +4,7 @@ Sample Docker build files to facilitate installation and environment setup for
 DevOps users. For more information about Oracle NoSQL Database please see the
 [Oracle NoSQL Database documentation][DOCS].
 
-This project offers sample container image configuration files for:
+This project offers a sample container image configuration files for:
 
 * [Oracle NoSQL Database Community Edition](ce/Dockerfile)
 
@@ -23,8 +23,16 @@ enabled
 . Use the env variable`KV_DRIVER_USER_PWD` parameter to set the password for this user
 6. Grant the System Built-in Role `READWRITE` and `DBADMIN` privileges to the `driver_user`
 
-> **Note:** KVLite is not intended for production deployment or performance
-> measurements.
+> **Note:** KVLite is NOT intended for production deployment or performance
+> measurements.  We recommend testing with data that is NOT considered sensitive 
+> in nature. In other words, do not test with sensitive information such as 
+> usernames, passwords, credit card information, medication information, etc.
+
+> **Note:** There are 2 container images available, one using a secure configuration
+> and one using a non-secure configuration.    The primary difference is in the way
+> access is performed to KVLite.   We recommend using the secure setup, albeit 
+> additional steps are needed during set up.  One advantage to using the secure 
+> set up is it gives you exposure to what is needed to set up a secure KVStore. 
 
 ## Quick start: pull the Oracle NoSQL Community Edition image
 
