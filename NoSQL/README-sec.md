@@ -32,7 +32,7 @@ enabled
 > and one using a non-secure configuration.    The primary difference is in the way
 > access is performed to KVLite.   We recommend using the secure setup, albeit
 > additional steps are needed during set up.  One advantage to using the secure
-> set up is it gives you exposure to what is needed to set up a secure KVStore. 
+> set up is it gives you exposure to what is needed to set up a secure KVStore.
 
 ## Quick start: pull the Oracle NoSQL Community Edition image
 
