@@ -1,6 +1,7 @@
+#! /bin/bash
+#
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
-#
 
 if [ -d /kvroot/proxy/ ] ; then
   echo "Reusing existing configuration"
@@ -22,7 +23,6 @@ java -jar lib/kvstore.jar securityconfig pwdfile create -file /kvroot/proxy/prox
 java -jar lib/kvstore.jar securityconfig pwdfile secret -file /kvroot/proxy/proxy.passwd -set -alias proxy_user -secret "${KV_PROXY_PWD-ProxyPass@@123}"
 cp /kvroot/security/client.trust /kvroot/proxy/client.trust
 cp /kvroot/security/client.security /kvroot/proxy/proxy.login
-cp sec/proxy.login /kvroot/proxy/proxy.login
 echo "oracle.kv.auth.username=proxy_user" >> /kvroot/proxy/proxy.login
 echo "oracle.kv.auth.pwdfile.file=proxy.passwd" >> /kvroot/proxy/proxy.login
 
@@ -37,7 +37,7 @@ openssl pkcs8 -topk8 -inform PEM -outform PEM -in /kvroot/proxy/key.pem -out /kv
 keytool -import -alias example -keystore /kvroot/proxy/driver.trust -file /kvroot/proxy/certificate.pem  -storepass file:/kvroot/proxy/pwdin -noprompt
 
 
-if [ ! -z "${KV_DRIVER_USER_PWD}" ] ; then
+if [ -n "${KV_DRIVER_USER_PWD}" ] ; then
   echo "Creating USER proxy_user and driver_user"
   java -jar lib/sql.jar -helper-hosts localhost:5000 -store kvstore -security /kvroot/security/user.security <<EOF
 CREATE USER driver_user IDENTIFIED BY "${KV_DRIVER_USER_PWD}";
