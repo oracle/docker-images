@@ -13,15 +13,15 @@ This container image uses a simplified version of the Oracle NoSQL Database call
  single storage shard. KVLite does not include replication or administration.
 
 > **Note:** KVLite is NOT intended for production deployment or performance
-> measurements.  We recommend testing with data that is NOT considered sensitive 
-> in nature. In other words, do not test with sensitive information such as 
+> measurements.  We recommend testing with data that is NOT considered sensitive
+> in nature. In other words, do not test with sensitive information such as
 > usernames, passwords, credit card information, medication information, etc.
-
+>
 > **Note:** There are 2 container images available, one using a secure configuration
 > and one using a non-secure configuration.    The primary difference is in the way
-> access is performed to KVLite.   We recommend using the secure setup, albeit 
-> additional steps are needed during set up.  One advantage to using the secure 
-> set up is it gives you exposure to what is needed to set up a secure KVStore. 
+> access is performed to KVLite.   We recommend using the secure setup, albeit
+> additional steps are needed during set up.  One advantage to using the secure
+> set up is it gives you exposure to what is needed to set up a secure KVStore.
 
 ## Quick start: pull the Oracle NoSQL Community Edition image
 

@@ -13,7 +13,7 @@ This container image uses a simplified version of the Oracle NoSQL Database call
  single storage shard. KVLite does not include replication or administration.
 
 This container image configures an Oracle NoSQL Database secure configuration
-1. Create a KVlite secured configuration with the 
+1. Create a KVlite secured configuration with the
 [password complexity policy](https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/security/password-complexity-policies.html)
 enabled
 2. Create the `root` user and the file `user.security` that contain property settings for the login as admin
@@ -24,14 +24,14 @@ enabled
 6. Grant the System Built-in Role `READWRITE` and `DBADMIN` privileges to the `driver_user`
 
 > **Note:** KVLite is NOT intended for production deployment or performance
-> measurements.  We recommend testing with data that is NOT considered sensitive 
-> in nature. In other words, do not test with sensitive information such as 
+> measurements.  We recommend testing with data that is NOT considered sensitive
+> in nature. In other words, do not test with sensitive information such as
 > usernames, passwords, credit card information, medication information, etc.
-
+>
 > **Note:** There are 2 container images available, one using a secure configuration
 > and one using a non-secure configuration.    The primary difference is in the way
-> access is performed to KVLite.   We recommend using the secure setup, albeit 
-> additional steps are needed during set up.  One advantage to using the secure 
+> access is performed to KVLite.   We recommend using the secure setup, albeit
+> additional steps are needed during set up.  One advantage to using the secure
 > set up is it gives you exposure to what is needed to set up a secure KVStore. 
 
 ## Quick start: pull the Oracle NoSQL Community Edition image
@@ -94,7 +94,7 @@ To check the size of the storage shard:
 ```shell
 $ docker run --rm -ti -v secfiles:/shared_conf:ro --link kvlite:store oracle/nosql:ce-sec \
     java -jar lib/kvstore.jar runadmin -host store -port 5000 \
-	-security /shared_conf/user.security \
+    -security /shared_conf/user.security \
     -store kvstore show parameters -service sn1 | grep GB
 path=/kvroot/kvstore/sn1 size=10 GB
 ```
@@ -182,9 +182,9 @@ return new NoSQLClient({
 });
 ```
 
-In secure mode the proxy requires SSL Certificate and private key. To provide the certificate, before running your application, 
+In secure mode the proxy requires SSL Certificate and private key. To provide the certificate, before running your application,
 set environment variable NODE_EXTRA_CA_CERTS
-````
+````bash
 docker cp kvlite:/kvroot/proxy/certificate.pem /mylocalpath
 export NODE_EXTRA_CA_CERTS=/mylocalpath/certificate.pem
 ````
@@ -201,7 +201,7 @@ $ openssl x509 -text -noout -in /mylocalpath/certificate.pem | grep CN
         Subject: CN=kvlite
 
 ````
-Note: the certicate can be customized in the script setup-http-proxy-sec.sh 
+Note: the certicate can be customized in the script setup-http-proxy-sec.sh
 (e.g adding [SAN](https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/security/ssl-using-openssl.html))
 
 ## Advanced Scenario: connecting to Oracle NoSQL CE from another host
