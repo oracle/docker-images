@@ -4,13 +4,24 @@ Sample Docker build files to facilitate installation and environment setup for
 DevOps users. For more information about Oracle NoSQL Database please see the
 [Oracle NoSQL Database documentation][DOCS].
 
-This project offers sample container image configuration files for:
+This project offers a sample container image configuration files for:
 
 * [Oracle NoSQL Database Community Edition](ce/Dockerfile)
 
 This container image uses a simplified version of the Oracle NoSQL Database called
  KVLite. KVLite runs as a single process that provides a single storage node and
  single storage shard. KVLite does not include replication or administration.
+
+This container image configures an Oracle NoSQL Database secure configuration
+1. Create a KVlite secured configuration with the
+[password complexity policy](https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/security/password-complexity-policies.html)
+enabled
+2. Create the `root` user and the file `user.security` that contain property settings for the login as admin
+3. Generate the `certificate.pem` file allowing to establish a HTTP secure communication between the proxy and the driver
+4. Generate the `driver.trust` file necessary if the Java driver is used
+5. Create a user `driver_user` which is used by the application to access the KVlite through the proxy
+. Use the env variable`KV_DRIVER_USER_PWD` parameter to set the password for this user
+6. Grant the System Built-in Role `READWRITE` and `DBADMIN` privileges to the `driver_user`
 
 > **Note:** KVLite is NOT intended for production deployment or performance
 > measurements.  We recommend testing with data that is NOT considered sensitive
@@ -28,11 +39,11 @@ This container image uses a simplified version of the Oracle NoSQL Database call
 You can  pull the image directly from the GitHub Container Registry:
 
 ```shell
-docker pull ghcr.io/oracle/nosql:latest-ce
-docker tag ghcr.io/oracle/nosql:latest-ce oracle/nosql:ce
+docker pull ghcr.io/oracle/nosql:latest-ce-sec
+docker tag ghcr.io/oracle/nosql:latest-ce-sec oracle/nosql:ce-sec
 ```
 
-The resulting image will be available as `oracle/nosql:ce`.
+The resulting image will be available as `oracle/nosql:ce-sec`.
 
 ## Quick start: running Oracle NoSQL Database in a container
 
@@ -46,8 +57,10 @@ You must give it a name and provide a hostname. Startup of
 KVLite is the default `CMD` of the image:
 
 ```shell
-docker run -d --name=kvlite --hostname=kvlite --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:ce
+docker run -d --name=kvlite --hostname=kvlite -v secfiles:/shared_conf \
+--env KV_DRIVER_USER_PWD="DriverPass@@123" --env KV_PROXY_PORT=8080 -p 8080:8080 oracle/nosql:ce-sec
 ```
+**Note**: `-v secfiles:/shared_conf` is needed if you want to run commands from another container.
 
 By default, the KVLite store created has a size of `10GB`. Use `--env KV_STORAGESIZE=N`
 to set a new value where `N` is in gigabytes and must be greater than 1.
@@ -56,8 +69,8 @@ In a second shell, run a second container to ping the kvlite store
 instance:
 
 ```shell
-docker run --rm -ti --link kvlite:store oracle/nosql:ce \
-  java -jar lib/kvstore.jar ping -host store -port 5000
+docker run --rm -ti  -v secfiles:/shared_conf:ro --link kvlite:store oracle/nosql:ce-sec \
+  java -jar lib/kvstore.jar ping -host store -port 5000  -security /shared_conf/user.security
 ```
 
 Note the use of the `--link` parameter to ensure successful hostname resolution
@@ -72,15 +85,16 @@ interface.
 For example, to check the version of KVLite, use the `version` command:
 
 ```shell
-$ docker run --rm -ti --link kvlite:store oracle/nosql:ce  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
+$ docker run --rm -ti --link kvlite:store oracle/nosql:ce-sec  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
 21.2.46 2022-05-24 20:36:59 UTC  Build id: 1b73ce65d872 Edition: Community
 ```
 
 To check the size of the storage shard:
 
 ```shell
-$ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
+$ docker run --rm -ti -v secfiles:/shared_conf:ro --link kvlite:store oracle/nosql:ce-sec \
     java -jar lib/kvstore.jar runadmin -host store -port 5000 \
+    -security /shared_conf/user.security \
     -store kvstore show parameters -service sn1 | grep GB
 path=/kvroot/kvstore/sn1 size=10 GB
 ```
@@ -91,8 +105,9 @@ container and link it to the first one.
 Here's an example of using the CLI to ping the first instance:
 
 ```shell
-$ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
-  java -jar lib/kvstore.jar runadmin -host store -port 5000 -store kvstore
+$ docker run --rm -ti -v secfiles:/shared_conf:ro --link kvlite:store oracle/nosql:ce-sec \
+  java -jar lib/kvstore.jar runadmin -host store -port 5000 -store kvstore \
+  -security /shared_conf/user.security
 
   kv-> ping
 Pinging components of store kvstore based upon topology sequence #14
@@ -117,8 +132,9 @@ Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY all
 And here's an example that lists the available tables:
 
 ```shell
-$ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
-  java -jar lib/sql.jar -helper-hosts store:5000 -store kvstore
+$ docker run --rm -ti -v secfiles:/shared_conf:ro --link kvlite:store oracle/nosql:ce-sec \
+  java -jar lib/sql.jar -helper-hosts store:5000 -store kvstore \
+  -security /shared_conf/user.security
 
   sql-> show tables
   tables
@@ -156,9 +172,37 @@ Here is a snippet showing the connection from a Node.js program.
 ```javascript
 return new NoSQLClient({
   serviceType: ServiceType.KVSTORE,
-  endpoint: 'nosql-container-host:8080'
+  endpoint: 'https://kvlite:8080',
+  auth: {
+        kvstore: {
+            user: "driver_user",
+            password: "DriverPass@@123"
+        }
+   }  
 });
 ```
+
+In secure mode the proxy requires SSL Certificate and private key. To provide the certificate, before running your application,
+set environment variable NODE_EXTRA_CA_CERTS
+````bash
+docker cp kvlite:/kvroot/proxy/certificate.pem /mylocalpath
+export NODE_EXTRA_CA_CERTS=/mylocalpath/certificate.pem
+````
+
+The certificate created is using the hostname of the container as a Subject. The endpoint must be the same hostname of the container.
+````shell
+$ curl --cacert /mylocalpath/certificate.pem  https://kvlite:8080
+
+$ curl --cacert /mylocalpath/certificate.pem  https://proxy-nosql:8080
+curl: (51) Unable to communicate securely with peer: requested domain name does not match the server's certificate.
+
+$ openssl x509 -text -noout -in /mylocalpath/certificate.pem | grep CN
+        Issuer: CN=kvlite
+        Subject: CN=kvlite
+
+````
+Note: the certicate can be customized in the script setup-http-proxy-sec.sh
+(e.g adding [SAN](https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/security/ssl-using-openssl.html))
 
 ## Advanced Scenario: connecting to Oracle NoSQL CE from another host
 
@@ -199,14 +243,17 @@ wen starting the container:
 
 ```shell
 docker run -d --name=kvlite --hostname=$HOSTNAME \
+  -v secfiles:/shared_conf \
+  --env KV_DRIVER_USER_PWD="DriverPass@@123" \
   --env KV_PROXY_PORT=8080 \
   -p 8080:8080 \
   -p 5000:5000 \
   -p 5010-5020:5010-5020 \
   -p 5021-5049:5021-5049 \
   -p 5999:5999 \
-  oracle/nosql:ce
+  oracle/nosql:ce-sec
 ```
+**Note**: `-v secfiles:/shared_conf` is needed if you want to run commands from another container.
 
 By default, the KVLite store created has a size of `10GB`. Use `--env KV_STORAGESIZE=N`
 to set a new value where `N` is in gigabytes and must be greater than 1.
@@ -215,7 +262,12 @@ In a second shell, run the NoSQL command to ping the KVLite `store`
 instance:
 
 ```shell
-java -jar $KVHOME/lib/kvstore.jar ping -host $HOSTNAME -port 5000
+docker cp kvlite:/kvroot/proxy/certificate.pem /mylocalpath
+docker cp kvlite:/kvroot/security/ /mylocalpath
+```
+
+```shell
+java -jar $KVHOME/lib/kvstore.jar ping -host $HOSTNAME -port 5000 -security /mylocalpath/security/user.security
 ```
 
 Note: the value provided for `-host` must match the hostname used when starting
@@ -224,8 +276,9 @@ the container.
 Or use a container to run the NoSQL ping command:
 
 ```shell
-docker run --rm -ti --link kvlite:store oracle/nosql:ce \
-  java -jar lib/kvstore.jar ping -host store -port 5000
+docker run --rm -ti  -v secfiles:/shared_conf:ro --link kvlite:store oracle/nosql:ce-sec \
+  java -jar lib/kvstore.jar ping -host store -port 5000  -security /shared_conf/user.security
+
 ```
 
 Note the use of `--link` for proper hostname resolution between containers as
@@ -236,7 +289,7 @@ the KVLite container are both set to the hostname of the host on which they are
 running by using the `$HOSTNAME` environment variable for both. For example:
 
 ```shell
-docker run -d --name=$HOSTNAME --hostname=$HOSTNAME
+docker run -d -v secfiles:/shared_conf --name=$HOSTNAME --hostname=$HOSTNAME 
 ```
 
 As all container names must be unique on a host, this restriction means only one
@@ -246,13 +299,15 @@ You can use the admin Oracle NoSQL Command Line Interface (CLI) from the
 host to access the container:
 
 ```shell
-java -jar $KVHOME/lib/kvstore.jar runadmin -host $HOSTNAME -port 5000 -store kvstore
+java -jar $KVHOME/lib/kvstore.jar runadmin -host $HOSTNAME -port 5000 -store kvstore \
+-security /mylocalpath/security/user.security
 ```
 
 You can also use the Oracle NoSQL Shell Interface:
 
 ```shell
-java -jar $KVHOME/lib/sql.jar -helper-hosts $HOSTNAME:5000 -store kvstore
+java -jar $KVHOME/lib/sql.jar -helper-hosts $HOSTNAME:5000 -store kvstore \
+-security /mylocalpath/security/user.security
 ```
 
 ## Advanced Scenario: connecting from a remote host using an alias
@@ -282,50 +337,62 @@ Start the KVLite container using the alias in the `--hostname` parameter:
 ```shell
 docker run -d --name=kvlite \
     --hostname=kvlite-nosql-container-host \
+    -v secfiles:/shared_conf \
+    --env KV_DRIVER_USER_PWD="DriverPass@@123" \
     --env KV_PROXY_PORT=8080 \
     -p 8080:8080 \
     -p 5000:5000 \
     -p 5010-5020:5010-5020 \
     -p 5021-5049:5021-5049 \
     -p 5999:5999 \
-    oracle/nosql:ce
+    oracle/nosql:ce-sec
 ```
+
+**Note**: `-v secfiles:/shared_conf` is needed if you want to run commands from another container.
 
 You can now use the alias to connect to this container instance from the host:
 
 ```shell
-java -jar $KVHOME/lib/kvstore.jar ping -host kvlite-nosql-container-host -port 5000
+docker cp kvlite:/kvroot/proxy/certificate.pem /mylocalpath
+docker cp kvlite:/kvroot/security/ /mylocalpath
+```
+
+```shell
+java -jar $KVHOME/lib/kvstore.jar ping -host kvlite-nosql-container-host -port 5000 \
+-security /mylocalpath/security/user.security
 ```
 
 From another container using `--link`:
 
 ```shell
-docker run --rm -ti --link kvlite:store oracle/nosql:ce \
-    java -jar lib/kvstore.jar ping -host store -port 5000
+docker run --rm -ti  -v secfiles:/shared_conf:ro --link kvlite:store oracle/nosql:ce-sec \
+  java -jar lib/kvstore.jar ping -host store -port 5000  -security /shared_conf/user.security
 ```
 
 Using the NoSQL Admin CLI:
 
 ```shell
-java -jar $KVHOME/lib/kvstore.jar runadmin -host kvlite-nosql-container-host -port 5000 -store kvstore
+java -jar $KVHOME/lib/kvstore.jar runadmin -host kvlite-nosql-container-host -port 5000 -store kvstore \
+-security /mylocalpath/security/user.security
 ```
 
 Using the NoSQL Shell CLI:
 
 ```shell
-java -jar $KVHOME/lib/sql.jar -helper-hosts kvlite-nosql-container-host:5000 -store kvstore
+java -jar $KVHOME/lib/sql.jar -helper-hosts kvlite-nosql-container-host:5000 -store kvstore \
+-security /mylocalpath/security/user.security
 ```
 
 ## Quick start: building the Oracle NoSQL Community Edition image
 
-These examples assume you have cloned this repository and are inthe `NoSQL/ce`
+These examples assume you have cloned this repository and are inthe `NoSQL/ce-sec`
 directory.
 
-To build a container image named `oracle/nosql-ce:latest` that has the latest
+To build a container image named `oracle/nosql-ce-sec:latest` that has the latest
 version of Oracle NoSQL CE:
 
 ```shell
-docker build -t oracle/nosql-ce:latest .
+docker build -t oracle/nosql-ce-sec:latest .
 ```
 
 To build a container that uses a specific version of Oracle NoSQL with the version
@@ -333,7 +400,7 @@ number used for the image tag:
 
 
 ```shell
-KV_VERSION=21.2.46 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce:$KV_VERSION" .
+KV_VERSION=21.2.46 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce-sec:$KV_VERSION" .
 ```
 
 ## More information

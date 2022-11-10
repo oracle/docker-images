@@ -1,0 +1,52 @@
+name: Build and publish NoSQL container image to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'NoSQL/ce-sec/*'
+      - '.github/workflows/build-and-push-nosql-image.yml'
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: nosql
+  TAG: ce
+
+jobs:
+  push:
+    name: Build and push NoSQL ce image
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Log into GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${GITHUB_ACTOR,,} --password-stdin
+
+      - name: Repository owner needs to be lowercase
+        id: repo-owner
+        run: |
+          REPO_OWNER=${{ github.repository_owner }}
+          echo "::set-output name=repo-owner::${REPO_OWNER,,}"
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m')"
+
+      - name: Build NoSQL ce image
+        run: |
+          cd NoSQL/ce-sec
+          docker build --tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG .
+          docker tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce-sec
+        env:
+          TAG: ${{ steps.date.outputs.date }}-ce-sec
+
+      - name: Push image to GitHub Container Registry
+        run: |
+          docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG
+          docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce-sec
+        env:
+          TAG: ${{ steps.date.outputs.date }}-ce-sec
