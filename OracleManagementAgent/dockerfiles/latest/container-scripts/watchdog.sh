@@ -236,6 +236,7 @@ function start_agent()
   fi
 
   log "Starting $APPNAME ..."
+  load_agent_java_options /opt/oracle/mgmt_agent/agent_inst/config/java.options
   su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_start.sh' -s /bin/sh $RUN_AGENT_AS_USER &
 
   local sleep_time=10

@@ -121,3 +121,23 @@ function latest_upgrade_bundle()
   [[ -n $latest_file ]] && echo -n "$latest_file"
   return 0
 }
+
+###########################################################
+# Load java.options file and set lines into a variable ignoring commment lines
+# Input: ./agent_inst/config/java.options
+# Returns: 0 if execution is successful, error code otherwise
+function load_agent_java_options()
+{
+  local java_options_file="$1"
+  local java_options=""
+  while read -r line; do
+    option=$(trim "$line")
+    case "$option" in \#*) continue ;; esac
+    case "$option" in "") continue ;; esac
+    java_options+=" ${option}"
+  done < "$java_options_file"
+
+  log "$APPNAME found java.options [values: $java_options]"
+  export AGENT_JAVA_OPTIONS=$(trim "$java_options")
+  return 0
+}
