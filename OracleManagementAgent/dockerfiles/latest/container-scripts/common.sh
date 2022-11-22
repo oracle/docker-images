@@ -73,7 +73,7 @@ function version_parse()
     var=$(unzip -l "${var}" | grep -Po 'oracle.mgmt_agent-\d{6}.\d{4}.linux.zip')
   fi
   var=${var##*/}
-  var=${var#${var%%[[:digit:]]*}}
+  var=${var#"${var%%[[:digit:]]*}"}
   var=${var%%[[:alpha:]]*}
   var=${var%.};
   echo -n "$var"
