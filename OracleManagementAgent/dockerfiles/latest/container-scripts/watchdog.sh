@@ -22,6 +22,7 @@ DOCKER_INSTALL_BUNDLE=$PACKAGES/oracle.mgmt_agent.zip
 
 ###########################################################
 # Script imports
+# shellcheck source-path=SCRIPTDIR
 source "$SCRIPTS/common.sh"
 source "$SCRIPTS/install_zip.sh"
 
