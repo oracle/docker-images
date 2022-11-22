@@ -24,9 +24,9 @@ DOCKER_INSTALL_BUNDLE=$PACKAGES/oracle.mgmt_agent.zip
 
 ###########################################################
 # Script imports
-# shellcheck source=common.sh
+# shellcheck source=/dev/null
 source "$SCRIPTS/common.sh"
-# shellcheck source=install_zip.sh
+# shellcheck source=/dev/null
 source "$SCRIPTS/install_zip.sh"
 
 echo $$ > /var/run/mgmtagent_watchdog.pid
@@ -53,7 +53,7 @@ function is_agent_upgrade_exist()
     current_version=$($MGMTAGENT_HOME/agent_inst/bin/agentcore version)
     log "Current version: [$current_version]"
 
-    if version_greater_than $upgrade_version $current_version; then
+    if version_greater_than "$upgrade_version" "$current_version"; then
       log "Upgrade required ..."
       return 0
     fi
@@ -123,7 +123,7 @@ function create_agentrun_user()
 {
   local user_home_dir="/usr/share/$RUN_AGENT_AS_USER"
   local user_comment="Disabled Oracle Polaris Agent"
-  useradd -m -r -U -d "$user_home_dir" -s /bin/false -c "$user_comment" $RUN_AGENT_AS_USER
+  useradd -m -r -U -d "$user_home_dir" -s /bin/false -c "$user_comment" "$RUN_AGENT_AS_USER"
   local cmd_exit_code=$?
   if [ $cmd_exit_code -eq 0 ]; then
     log "$RUN_AGENT_AS_USER user created [status: $cmd_exit_code]"
@@ -199,7 +199,7 @@ function deploy_agent_initial_plugins()
     
     # plugin(s) must be deployed from agent_inst/bin
     pushd "$MGMTAGENT_HOME/agent_inst/bin"
-    su -c "$java_exec $jvm_args -cp $java_cp $java_class" -s /bin/sh $RUN_AGENT_AS_USER &
+    su -c "$java_exec $jvm_args -cp $java_cp $java_class" -s /bin/sh "$RUN_AGENT_AS_USER" &
     log "$APPNAME plugin deployment outcome [status: $?]"
     popd
     return 0
@@ -219,7 +219,7 @@ function is_agent_alive()
   if test -f "$agent_pid_file"; then
     local agent_pid
     agent_pid=$(grep -Po "(?<=pid=)\d+" $agent_pid_file)
-    if ps -p $agent_pid > /dev/null; then
+    if ps -p "$agent_pid" > /dev/null; then
       log "$APPNAME is running with PID: $agent_pid"
       return 0
     fi     
@@ -247,7 +247,7 @@ function start_agent()
 
   log "Starting $APPNAME ..."
   load_agent_java_options /opt/oracle/mgmt_agent/agent_inst/config/java.options
-  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_start.sh' -s /bin/sh $RUN_AGENT_AS_USER &
+  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_start.sh' -s /bin/sh "$RUN_AGENT_AS_USER" &
 
   local sleep_time=10
   local timeout=120
@@ -259,7 +259,7 @@ function start_agent()
       deploy_agent_initial_plugins
       return 0
     else
-      let counter=counter+1
+      (( counter++ ))
       if [ "$counter" -gt "$num_iterations" ]; then
         # waited long enough for agent to startup
         log "$APPNAME failed to start after waiting $timeout seconds"
@@ -279,7 +279,7 @@ function start_agent()
 function stop_agent()
 {
   log "Stopping $APPNAME ..."
-  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_stop.sh' -s /bin/sh $RUN_AGENT_AS_USER
+  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_stop.sh' -s /bin/sh "$RUN_AGENT_AS_USER"
 }
 
 

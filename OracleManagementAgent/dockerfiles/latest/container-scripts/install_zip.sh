@@ -34,7 +34,7 @@ function _unpack_upgrade_bundle()
   fi
 
   log "Upgrading $APPNAME ..."
-  mkdir -p ${UPGRADE_STAGE}/zip
+  mkdir -p "${UPGRADE_STAGE}/zip"
 
   # Get unpack jar
   log "Staging unpacker ..."

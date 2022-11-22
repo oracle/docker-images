@@ -9,9 +9,9 @@
 function log()
 {
   if [ -n "$LOGFILE" ]; then
-    printf '[%s] %s - %s\n' "`date -u`" "${0##*/}" "$@" >> "$LOGFILE" 2>&1
+    printf '[%s] %s - %s\n' "$(date -u)" "${0##*/}" "$@" >> "$LOGFILE" 2>&1
   fi
-  printf '[%s] %s - %s\n' "`date -u`" "${0##*/}" "$@" 2>&1
+  printf '[%s] %s - %s\n' "$(date -u)" "${0##*/}" "$@" 2>&1
 }
 
 ###########################################################
@@ -89,7 +89,7 @@ function execute_cmd()
   local cmd="$1"
   local operation="$2"
   log "Executing ($operation): $cmd"
-  eval $cmd
+  eval "$cmd"
   
   local cmd_exit_code=$?
   if [ $cmd_exit_code -eq 0 ]; then
@@ -114,7 +114,7 @@ function latest_upgrade_bundle()
   for upgrader_file in $glob_pattern ; do
     local current_version
     current_version=$(version_parse "$upgrader_file")
-    if [[ -z $latest_file ]] || version_greater_than $current_version $previous_version ; then
+    if [[ -z $latest_file ]] || version_greater_than "$current_version" "$previous_version" ; then
       latest_file=$upgrader_file
     fi
     previous_version=$current_version
