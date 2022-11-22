@@ -38,8 +38,8 @@ function _expandVar()
 # Returns: 0 if first version gte second, otherwise 1
 function version_greater_than()
 {
-  local date1=(${1%%.*}) time1=(${1##*.})
-  local date2=(${2%%.*}) time2=(${2##*.})
+  local date1=${1%%.*} time1=${1##*.}
+  local date2=${2%%.*} time2=${2##*.}
 
   if [ "$date1" -gt "$date2" ]; then
     return 0
@@ -112,7 +112,8 @@ function latest_upgrade_bundle()
   local latest_file=""
   local previous_version=""
   for upgrader_file in $glob_pattern ; do
-    local current_version=$(version_parse "$upgrader_file")
+    local current_version
+    current_version=$(version_parse "$upgrader_file")
     if [[ -z $latest_file ]] || version_greater_than $current_version $previous_version ; then
       latest_file=$upgrader_file
     fi
@@ -139,6 +140,7 @@ function load_agent_java_options()
   done < "$java_options_file"
 
   log "$APPNAME found java.options [values: $java_options]"
-  export AGENT_JAVA_OPTIONS=$(trim "$java_options")
+  AGENT_JAVA_OPTIONS=$(trim "$java_options")
+  export AGENT_JAVA_OPTIONS
   return 0
 }
