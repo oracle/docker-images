@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Copyright (c) 2022 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
@@ -9,20 +9,24 @@ set -o pipefail  # Fail a pipe if any sub-command fails.
 ###########################################################
 # Script constants
 APPNAME="Management Agent"
+# shellcheck disable=SC2034
 LOGFILE=/var/log/mgmtagent_watchdog.log
 BOOTSTRAP_HOME=/opt/oracle-mgmtagent-bootstrap
 SCRIPTS=$BOOTSTRAP_HOME/scripts
 PACKAGES=$BOOTSTRAP_HOME/packages
+# shellcheck disable=SC2034
 UPGRADE_STAGE=$BOOTSTRAP_HOME/upgrade
 CONFIG_FILE=/opt/oracle/mgmtagent_secret/input.rsp
 MGMTAGENT_HOME=/opt/oracle/mgmt_agent
-AUTOUPGRADE_BUNDLE=$MGMTAGENT_HOME/zip/oracle.mgmt_agent-??????.????.linux.zip
+AUTOUPGRADE_BUNDLE="$MGMTAGENT_HOME/zip/oracle.mgmt_agent-??????.????.linux.zip"
 DOCKER_INSTALL_BUNDLE=$PACKAGES/oracle.mgmt_agent.zip
 
 
 ###########################################################
 # Script imports
+# shellcheck source=/dev/null
 source "$SCRIPTS/common.sh"
+# shellcheck source=/dev/null
 source "$SCRIPTS/install_zip.sh"
 
 echo $$ > /var/run/mgmtagent_watchdog.pid
@@ -42,12 +46,14 @@ function is_agent_upgrade_exist()
   local upgrader_file="$1"
   log "Checking upgrade bundle: [$upgrader_file]"
   if test -f "$upgrader_file"; then
-    local upgrade_version=$(version_parse "$upgrader_file")
+    local upgrade_version
+    upgrade_version=$(version_parse "$upgrader_file")
     log "Upgrade file version: [$upgrade_version]"
-    local current_version=$($MGMTAGENT_HOME/agent_inst/bin/agentcore version)
+    local current_version
+    current_version=$($MGMTAGENT_HOME/agent_inst/bin/agentcore version)
     log "Current version: [$current_version]"
 
-    if version_greater_than $upgrade_version $current_version; then
+    if version_greater_than "$upgrade_version" "$current_version"; then
       log "Upgrade required ..."
       return 0
     fi
@@ -62,8 +68,10 @@ function is_agent_upgrade_exist()
 # Execute User Scope: user
 function attempt_agent_upgrade()
 {
-  local upgrader_file=$(latest_upgrade_bundle "$AUTOUPGRADE_BUNDLE")
-  local installer_file=$(latest_upgrade_bundle "$DOCKER_INSTALL_BUNDLE")
+  local upgrader_file
+  upgrader_file=$(latest_upgrade_bundle "$AUTOUPGRADE_BUNDLE")
+  local installer_file
+  installer_file=$(latest_upgrade_bundle "$DOCKER_INSTALL_BUNDLE")
 
   if is_agent_upgrade_exist "$upgrader_file"; then
     upgrade_agent "$upgrader_file"
@@ -114,9 +122,8 @@ function is_agentrun_user_exist()
 function create_agentrun_user()
 {
   local user_home_dir="/usr/share/$RUN_AGENT_AS_USER"
-  local user_group_name="$RUN_AGENT_AS_USER"
   local user_comment="Disabled Oracle Polaris Agent"
-  useradd -m -r -U -d "$user_home_dir" -s /bin/false -c "$user_comment" $RUN_AGENT_AS_USER
+  useradd -m -r -U -d "$user_home_dir" -s /bin/false -c "$user_comment" "$RUN_AGENT_AS_USER"
   local cmd_exit_code=$?
   if [ $cmd_exit_code -eq 0 ]; then
     log "$RUN_AGENT_AS_USER user created [status: $cmd_exit_code]"
@@ -152,19 +159,19 @@ function configure_agent()
 {
   log "Configuring $APPNAME ..."
   if test -f "$CONFIG_FILE"; then
-  	/opt/oracle/mgmt_agent/agent_inst/bin/setup.sh opts=$CONFIG_FILE
-  	local cmd_exit_code=$?
+    /opt/oracle/mgmt_agent/agent_inst/bin/setup.sh opts=$CONFIG_FILE
+    local cmd_exit_code=$?
     if [ $cmd_exit_code -eq 0 ]; then
       log "$APPNAME configure successful [status: $cmd_exit_code]"
       :> $CONFIG_FILE
       return 0
     else
-    	log "$APPNAME configure failed [status: $cmd_exit_code]"
-  	  return 1
+      log "$APPNAME configure failed [status: $cmd_exit_code]"
+      return 1
     fi
   else
-  	log "Config file input.rsp not found"
-  	return 1
+    log "Config file input.rsp not found"
+    return 1
   fi
 }
 
@@ -179,10 +186,12 @@ function deploy_agent_initial_plugins()
 
   if [[ -f $ext_plugin_file || -f $meta_plugin_file ]]; then
     log "$APPNAME plugin deployment in progress ..."
-    local current_version=$($MGMTAGENT_HOME/agent_inst/bin/agentcore version)
+    local current_version
+    current_version=$($MGMTAGENT_HOME/agent_inst/bin/agentcore version)
     log "Current version: [$current_version]"
 
-    local java_exec=$($MGMTAGENT_HOME/agent_inst/bin/javaPath.sh)
+    local java_exec
+    java_exec=$($MGMTAGENT_HOME/agent_inst/bin/javaPath.sh)
     log "Java executable path: [$java_exec]"
     local java_cp="$MGMTAGENT_HOME/$current_version/jlib/agent-configure-*.jar"
     local java_class="oracle.polaris.configure.DeployPlugins"
@@ -190,7 +199,7 @@ function deploy_agent_initial_plugins()
     
     # plugin(s) must be deployed from agent_inst/bin
     pushd "$MGMTAGENT_HOME/agent_inst/bin"
-    su -c "$java_exec $jvm_args -cp $java_cp $java_class" -s /bin/sh $RUN_AGENT_AS_USER &
+    su -c "$java_exec $jvm_args -cp $java_cp $java_class" -s /bin/sh "$RUN_AGENT_AS_USER" &
     log "$APPNAME plugin deployment outcome [status: $?]"
     popd
     return 0
@@ -208,8 +217,9 @@ function is_agent_alive()
 {
   local agent_pid_file=/opt/oracle/mgmt_agent/agent_inst/log/agent.pid
   if test -f "$agent_pid_file"; then
-    local agent_pid=$(grep -Po "(?<=pid=)\d+" $agent_pid_file)
-    if ps -p $agent_pid > /dev/null; then
+    local agent_pid
+    agent_pid=$(grep -Po "(?<=pid=)\d+" $agent_pid_file)
+    if ps -p "$agent_pid" > /dev/null; then
       log "$APPNAME is running with PID: $agent_pid"
       return 0
     fi     
@@ -236,7 +246,8 @@ function start_agent()
   fi
 
   log "Starting $APPNAME ..."
-  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_start.sh' -s /bin/sh $RUN_AGENT_AS_USER &
+  load_agent_java_options /opt/oracle/mgmt_agent/agent_inst/config/java.options
+  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_start.sh' -s /bin/sh "$RUN_AGENT_AS_USER" &
 
   local sleep_time=10
   local timeout=120
@@ -248,7 +259,7 @@ function start_agent()
       deploy_agent_initial_plugins
       return 0
     else
-      let counter=counter+1
+      (( counter++ ))
       if [ "$counter" -gt "$num_iterations" ]; then
         # waited long enough for agent to startup
         log "$APPNAME failed to start after waiting $timeout seconds"
@@ -268,7 +279,7 @@ function start_agent()
 function stop_agent()
 {
   log "Stopping $APPNAME ..."
-  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_stop.sh' -s /bin/sh $RUN_AGENT_AS_USER
+  su -c '/opt/oracle/mgmt_agent/agent_inst/bin/polaris_stop.sh' -s /bin/sh "$RUN_AGENT_AS_USER"
 }
 
 
@@ -284,8 +295,8 @@ function start_watchdog()
       attempt_agent_upgrade
     fi
 
-  	start_agent || stop_agent
-  	log "waiting $sleep_time seconds before next check"
+    start_agent || stop_agent
+    log "waiting $sleep_time seconds before next check"
     sleep $sleep_time
   done
 }
