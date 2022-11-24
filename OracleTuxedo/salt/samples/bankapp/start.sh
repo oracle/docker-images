@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /u01/data/bankapp/
+cd /u01/data/bankapp/ || return 1
 
 APPDIR=$(pwd)
 export APPDIR
@@ -19,6 +19,7 @@ rm -f TLOG GWTLOG tuxconfig saltconfig bankdl1 bankdl2 bankdl3 ULOG.*
 # modify and run the environment setup script 
 cp -p bankvar bankvar.new
 
+# shellcheck disable=SC2016
 echo '
 #
 # For GWWS
@@ -32,6 +33,7 @@ SALTCONFIG=${APPDIR}/saltconfig
 export SALTCONFIG
 ' >> bankvar.new
 
+# shellcheck disable=SC1091
 source ./bankvar.new
 
 
