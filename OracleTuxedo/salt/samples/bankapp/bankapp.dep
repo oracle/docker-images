@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Deployment xmlns="http://www.bea.com/Tuxedo/SALTDEPLOY/2007">
+    <WSDF>
+        <Import location="bankapp.wsdf"></Import>
+    </WSDF>
+    <WSGateway>
+        <GWInstance id="GWWSRestful">
+            <TLogDevice location="<APPDIR1>/GWTLOG" />
+            <TLogName id="GW1TLOG" />
+            <Inbound>
+                <HTTP>
+                    <Network http="0.0.0.0:5955" />
+                    <Service name="INQUIRY">
+                        <Method name="POST" service="INQUIRY" inputbuffer="FML" />
+                    </Service>
+                    <Service name="WITHDRAWAL">
+                        <Method name="POST" service="WITHDRAWAL" inputbuffer="FML" />
+                    </Service>
+                    <Service name="DEPOSIT">
+                        <Method name="POST" service="DEPOSIT" inputbuffer="FML" />
+                    </Service>
+                    <Service name="TRANSFER">
+                        <Method name="POST" service="TRANSFER" inputbuffer="FML" />
+                    </Service>
+                    <Service name="PREPAREFAIL">
+                        <Method name="POST" service="PREPAREFAIL" inputbuffer="STRING" />
+                    </Service>
+                    <Service name="COMMITFAIL">
+                        <Method name="POST" service="COMMITFAIL" inputbuffer="STRING" />
+                    </Service>
+                    <Service name="REBOOTCOMMIT">
+                        <Method name="POST" service="REBOOTCOMMIT" inputbuffer="STRING" />
+                    </Service>
+                    <Service name="APPFAIL">
+                        <Method name="POST" service="APPFAIL" inputbuffer="STRING" />
+                    </Service>
+                    <Service name="APPTIMEOUT">
+                        <Method name="POST" service="APPTIMEOUT" inputbuffer="STRING" />
+                    </Service>
+                    <Service name="TOUPPER">
+                        <Method name="POST" service="TOUPPER" inputbuffer="STRING" />
+                    </Service>
+                    <Service name="TWOSERVICE">
+                        <Method name="POST" service="TWOSERVICE" inputbuffer="STRING" />
+                    </Service>
+                    <Service name="ABAL">
+                        <Method name="POST" service="ABAL" inputbuffer="VIEW/aud" />
+                    </Service>
+                </HTTP>
+            </Inbound>
+            <Properties>
+            </Properties>
+        </GWInstance>
+    </WSGateway>
+    <System>
+      <Certificate>
+        <!--
+          <PrivateKey>/scratch/dohan/tux/bankapp/certs/server.pem</PrivateKey>
+          <TrustedCert>/scratch/dohan/tux/bankapp/certs/server.pem</TrustedCert>
+        -->
+        <!-- TrustedIdpCert>/u01/data/bankapp/certs/server.pem</TrustedIdpCert -->
+        <!--
+           <PrivateKey>/scratch/dohan/tux/bankapp/wallet.4096buser</PrivateKey>
+           <TrustedCert>/scratch/dohan/tux/bankapp/wallet.4096buser</TrustedCert>
+         -->
+        <VerifyClient>false</VerifyClient>
+      </Certificate>
+    </System>
+</Deployment>
+
