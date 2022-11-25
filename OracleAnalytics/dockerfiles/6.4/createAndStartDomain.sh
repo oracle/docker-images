@@ -31,7 +31,7 @@ They can all be accepted as docker environment variables and/or Kubernetes secre
 The following files can also be used, overriding any environment already set.
 
 For ADMIN_USERNAME/ADMIN_PASSWORD:
- - /run/secrets/admin.txt, or 
+ - /run/secrets/admin.txt, or
  - /run/secrets/admin/username and /run/secrets/admin/password
 For DB_USERNAME/DB_PASSWORD:
  - /run/secrets/db.txt, or
@@ -40,7 +40,7 @@ For SCHEMA_PASSWORD:
  - /run/secrets/schema.txt, or
  - /run/secrets/schema/password
 For providing all keys:
- - /run/secrets/config.txt 
+ - /run/secrets/config.txt
 
 Each *.txt file must contain lines of key=value pairs. This is intended docker secrets or docker run /v.
 Each non-txt file must contain only the required value.  This is intended for Kubernetes secrets.
@@ -59,7 +59,10 @@ while getopts "hv" optname; do
       usage
       ;;
     "v")
-      _V=1 
+      _V=1
+      ;;
+    *)
+      usage
       ;;
   esac
 done
@@ -79,7 +82,7 @@ DOMAIN_HOME=$DOMAINS_DIR/$DOMAIN_NAME
 # Use a touch file controlled by this script to ensure a container restart will know to start a successfully created domain.
 # But don't allow start for a failed configuration (we could delete DOMAIN_HOME and retry instead?)
 domainCheckFile=$DOMAIN_HOME/domainready.txt
-if [ ! -f $domainCheckFile -a -d $DOMAIN_HOME ]; then
+if [ ! -f "$domainCheckFile" ] && [ -d "$DOMAIN_HOME" ]; then
   echo "An attempt was made to start a container with an incomplete DOMAIN_HOME"
   exit 2
 fi
@@ -92,7 +95,7 @@ loadParametersFile() {
     if [ "txt" == "${file##*.}" ]; then
       parameters=$(cat $file | xargs) 
       log "Loaded from $file: $parameters"
-      eval $(cat $file | sed -e "s/=\(.*\)/='\1'/g")
+      eval "$(cat $file | sed -e "s/=\(.*\)/='\1'/g")"
     else
       parameterKey=$(echo $2 | tr /a-z/ /A-Z/ | tr / _)
       parameterValue=$(cat $file)
@@ -121,7 +124,11 @@ validateMandatoryParameter() {
 mandatoryParameters=(ORACLE_HOME DOMAIN_NAME DOMAINS_DIR ADMIN_USERNAME ADMIN_PASSWORD DB_HOST DB_PORT DB_SERVICE DB_USERNAME DB_PASSWORD SCHEMA_PREFIX SCHEMA_PASSWORD)
 missingMandatoryParameters=()
 for mandatoryParameter in "${mandatoryParameters[@]}"; do
-  missingMandatoryParameters+=($(validateMandatoryParameter $mandatoryParameter))
+  missingParam=$(validateMandatoryParameter $mandatoryParameter)
+
+  if [[ ${missingParam} ]]; then
+    missingMandatoryParameters+=("${missingParam}")
+  fi
 done
 
 if (( ${#missingMandatoryParameters[@]} != 0 )); then
@@ -144,7 +151,7 @@ done
 # This is useful when starting DB+BI via docker compose.
 DB_WAIT_TIMEOUT=${DB_WAIT_TIMEOUT:-0}
 if (( $DB_WAIT_TIMEOUT > 0 )); then
- if [ -z DB_USERNAME -o -z DB_PASSWORD ]; then
+ if [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ]; then
    echo "DB_USERNAME and DB_PASSWORD must be set if DB_WAIT_TIMEOUT is non-zero"
    exit 3
  fi
@@ -165,7 +172,7 @@ if [ ! -f $domainCheckFile ]; then
   trap 'rm -rf -- "$tempDir"; kill -TERM $PID' INT TERM
 
   responseFile=$tempDir/response.txt
-  cp $masterResponseFile $responseFile
+  cp "$masterResponseFile" "$responseFile"
 
   replacements="  -e \"s|@@DOMAIN_TYPE@@|DOMAIN_TYPE_EXPANDED|g\""
   replacements+=" -e \"s|@@CONFIGURE_ESSBASE@@|true|g\""
@@ -189,23 +196,23 @@ if [ ! -f $domainCheckFile ]; then
   replacements+=" -e \"s|@@PORT_RANGE_START@@|9500|g\""
   replacements+=" -e \"s|@@PORT_RANGE_END@@|9999|g\""
 
-  eval sed -i $replacements $responseFile 
+  eval sed -i "$replacements" "$responseFile"
 
   # TODO (minor as scale-out not supported) - for SDD setting, need to not start the stack, but mv sdd and mod the xml (and manually dump diag zip?)
   # TODO (minor) - hostname can change after image update, could realign nodemanager settings.
   # TODO (minor) - autoport is in use, but the container must expose fixed ports.  This works by chance.
-  $ORACLE_HOME/bi/bin/config.sh -ignoreSysPrereqs -silent -responseFile $responseFile &
+  "$ORACLE_HOME"/bi/bin/config.sh -ignoreSysPrereqs -silent -responseFile "$responseFile" &
   PID=$!
   wait $PID
-  rm -f $responseFile
+  rm -f "$responseFile"
   trap - INT TERM
 
   echo "Do not delete this file - it tells the container createAndStartDomain.sh script that the domain is ready to be started" > $domainCheckFile
 else
-  ${DOMAIN_HOME}/bitools/bin/start.sh
+  "${DOMAIN_HOME}"/bitools/bin/start.sh
 fi
 
 trap '${DOMAIN_HOME}/bitools/bin/stop.sh; kill -TERM $PID' INT TERM
-tail -f ${DOMAIN_HOME}/servers/AdminServer/logs/${DOMAIN_NAME}.log &
+tail -f "${DOMAIN_HOME}"/servers/AdminServer/logs/"${DOMAIN_NAME}".log &
 PID=$!
 wait $PID

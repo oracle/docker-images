@@ -17,11 +17,10 @@ DB_PORT=$4
 DB_SERVICE=$5
 DB_PASSWORD=$(cat)
 
-MW_HOME=$ORACLE_HOME
-. $ORACLE_HOME/oracle_common/common/bin/commEnv.sh
+. "$ORACLE_HOME"/oracle_common/common/bin/commEnv.sh
 
 echo "Waiting for DB"
-until java -cp $WEBLOGIC_CLASSPATH utils.dbping ORACLE_THIN "$DB_USERNAME as sysdba" $DB_PASSWORD $DB_HOST:$DB_PORT/$DB_SERVICE > /dev/null
+until java -cp "$WEBLOGIC_CLASSPATH" utils.dbping ORACLE_THIN "$DB_USERNAME as sysdba" "$DB_PASSWORD" "$DB_HOST":"$DB_PORT"/"$DB_SERVICE" > /dev/null
 do
   echo "Waiting for DB"
   sleep 10
