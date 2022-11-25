@@ -153,7 +153,7 @@ detectContainerRuntime()
 
   if [ -z "$containerRuntime" -a "$containerRuntime" == "" ]
   then
-    echo "ERROR: No container runtime available. Please install docker/podman before proceeding"
+    echo "ERROR: No container runtime available. Please install Docker/Podman before proceeding"
     errorFlag=true
     return
   fi
