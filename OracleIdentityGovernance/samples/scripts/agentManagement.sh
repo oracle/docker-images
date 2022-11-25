@@ -153,7 +153,7 @@ detectContainerRuntime()
 
   if [ -z "$containerRuntime" -a "$containerRuntime" == "" ]
   then
-    echo "ERROR: No container runtime available. Please install docker/podman before proceeding"
+    echo "ERROR: No container runtime available. Please install Docker/Podman before proceeding"
     errorFlag=true
     return
   fi
@@ -226,10 +226,10 @@ loadImage(){
   imageName=""
   if [ "$containerRuntime" == "docker" ]
   then
-    imageName=$(docker load < "$AGENTDIR"/agent-lcm/idm-agcs-agent-framework.dockerize_agent.tar.gz | grep "Loaded image:" | awk '{ print $3 }')
+    imageName=$(docker load < "$AGENTDIR"/agent-lcm/idm-agcs-agent-framework.dockerize_agent.tar.gz | grep "Loaded image" | awk '{ print $3 }')
   elif [ "$containerRuntime" == "podman" ]
   then
-    imageName=$(podman load < "$AGENTDIR"/agent-lcm/idm-agcs-agent-framework.dockerize_agent.tar.gz | grep "Loaded image(s):" | awk '{ print $3 }')
+    imageName=$(podman load < "$AGENTDIR"/agent-lcm/idm-agcs-agent-framework.dockerize_agent.tar.gz | grep "Loaded image" | awk '{ print $3 }')
   fi
   if [ "$imageName" == "" ]
   then
