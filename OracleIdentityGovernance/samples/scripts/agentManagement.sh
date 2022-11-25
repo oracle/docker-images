@@ -230,6 +230,10 @@ loadImage(){
   elif [ "$containerRuntime" == "podman" ]
   then
     imageName=$(podman load < "$AGENTDIR"/agent-lcm/idm-agcs-agent-framework.dockerize_agent.tar.gz | grep "Loaded image(s):" | awk '{ print $3 }')
+    if [ "$imageName" == "" ]
+      then
+        imageName=$(podman load < "$AGENTDIR"/agent-lcm/idm-agcs-agent-framework.dockerize_agent.tar.gz | grep "Loaded image:" | awk '{ print $3 }')
+    fi
   fi
   if [ "$imageName" == "" ]
   then
