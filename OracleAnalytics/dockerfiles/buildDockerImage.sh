@@ -17,7 +17,7 @@ Builds a Docker Image for Oracle Business Intelligence.
   
 Parameters:
    -v: version to build. Required.
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+       Choose one of: $(for i in */; do echo -n "${i%%/}  "; done)
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
    -q: squash resulting image
@@ -34,10 +34,11 @@ exit 0
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
   md5sum -c Checksum.md5
-  if [ "$?" -ne 0 ]; then
+  exit_code="$?"
+  if [ "$exit_code" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"
-    exit $?
+    exit "$exit_code"
   fi
 }
 
@@ -76,7 +77,7 @@ done
 IMAGE_NAME="oracle/analyticsserver:$VERSION"
 
 # Go into version folder
-cd $VERSION
+cd "$VERSION" || exit 1
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
@@ -88,18 +89,22 @@ echo "====================="
 
 # Proxy settings
 PROXY_SETTINGS=""
+http_proxy="${http_proxy:=}"
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
 
+https_proxy="${https_proxy:=}"
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
+ftp_proxy="${ftp_proxy:=}"
 if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
+no_proxy="${no_proxy:=}"
 if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
@@ -120,11 +125,10 @@ docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $SQUASH $PROXY_SETTINGS -t 
   exit 1
 }
 BUILD_END=$(date '+%s')
-BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
+BUILD_ELAPSED=`expr "$BUILD_END" - "$BUILD_START"`
 
 echo ""
 
-if [ $? -eq 0 ]; then
 cat << EOF
   Oracle Business Intelligence Docker Image for version $VERSION is ready: 
     
@@ -133,7 +137,4 @@ cat << EOF
   Build completed in $BUILD_ELAPSED seconds.
 
 EOF
-else
-  echo "Oracle Analytics Server Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
-fi
 
