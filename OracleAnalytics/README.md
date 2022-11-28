@@ -43,7 +43,7 @@ and then build the Oracle Fusion Middleware Infrastructure image.
 
 Download the Oracle Server JRE binary into folder `OracleJava/8` and build the image:
 
-```
+```bash
 cd OracleJava/8
 docker build --tag oracle/serverjre:8 .
 ```
@@ -59,7 +59,7 @@ Download the binary of Oracle Fusion Middleware Infrastructure into the folder `
 If you need a proxy for the host to access yum.oracle.com during build,
 first set up the appropriate environment. For example:
 
-```
+```bash
 export http_proxy=myproxy.example.com:80
 export https_proxy=myproxy.example.com:80
 export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
@@ -67,7 +67,7 @@ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 Build the image:
 
-```
+```bash
 cd OracleFMWInfrastructure/dockerfiles
 ./buildDockerImage.sh -v 12.2.1.4
 ```
@@ -85,7 +85,7 @@ for Linux x86-64-bit into the folder `OracleAnalytics/dockerfiles/6.4`.
 If you need a proxy for the host to access yum.oracle.com during build,
 first set up the appropriate environment. For example:
 
-```
+```bash
 export http_proxy=myproxy.example.com:80
 export https_proxy=myproxy.example.com:80
 export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
@@ -93,7 +93,7 @@ export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
 
 Build the image:
 
-```
+```bash
 cd OracleAnalytics/dockerfiles
 ./buildDockerImage.sh -v 6.4
 ```
@@ -136,7 +136,7 @@ DOMAIN_HOME is fixed to `/u01/oracle/user_projects/domains/bi`.
 
 For example:
 
-```
+```bash
 docker run -d --name bi -p 9500:9500 -p 9502:9502 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:6.4-patch
 ```
 
@@ -166,7 +166,7 @@ you must modify the previous `docker run` command to expose port 9514.
 
 For example:
 
-```
+```bash
 docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:6.4-patch
 ```
 
@@ -181,7 +181,7 @@ You can use a data volume for `/u01/oracle/user_projects`
 to store persistent data on the host disk.
 For example, to mount a host directory as a data volume:
 
-```
+```bash
 mkdir -p /scratch/bi && chmod 777 /scratch/bi
 docker run -v /scratch/bi:/u01/oracle/user_projects ......
 ```
@@ -237,7 +237,7 @@ The wait time is enabled by setting environment variable `DB_WAIT_TIMEOUT`
 to the maximum number of seconds to wait.
 For example, in your `docker-compose.yml`, add:
 
-```
+```yaml
 environment:
   - DB_WAIT_TIMEOUT=240
 ```
@@ -250,7 +250,7 @@ rather than on all interfaces.
 Therefore, if you create a container using an existing data volume for /u01/oracle/user_projects,
 you must ensure you use the same host name. For example,
 
-```
+```bash
 docker run --hostname original_hostname ......
 ```
 

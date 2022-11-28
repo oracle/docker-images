@@ -25,7 +25,7 @@ and place them in the same directory as this README.
 
 To build, run:
 
-```
+```bash
 docker build --force-rm=true --no-cache=true -t oracle/analyticsserver:6.4-patch .
 ```
 
