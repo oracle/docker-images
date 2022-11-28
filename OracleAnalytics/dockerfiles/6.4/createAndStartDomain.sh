@@ -77,7 +77,7 @@ function log () {
 # Mounting in $ORACLE_HOME/user_projects from a host o/s directory will work (if its permissions are correctly set).
 # Mounting in $ORACLE_HOME/user_projects/domains/$DOMAIN_NAME will fail with ScriptExecutor configuration error.
 # Separately mounting in $ORACLE_HOME/user_projects/domains/$DOMAIN_NAME/bidata (SDD) will fail with $DOMAIN_HOME in use configuration error.
-DOMAIN_HOME=$DOMAINS_DIR/$DOMAIN_NAME
+DOMAIN_HOME=$DOMAINS_DIR/${DOMAIN_NAME:-bi}
 
 # Use a touch file controlled by this script to ensure a container restart will know to start a successfully created domain.
 # But don't allow start for a failed configuration (we could delete DOMAIN_HOME and retry instead?)
@@ -91,17 +91,17 @@ fi
 # Note we take care to not export these, so they are not visible to child processes
 loadParametersFile() {
   file=$1/$2
-  if [ -f $file ]; then
+  if [ -f "$file" ]; then
     if [ "txt" == "${file##*.}" ]; then
-      parameters=$(cat $file | xargs) 
+      parameters=$(xargs < "$file")
       log "Loaded from $file: $parameters"
-      eval "$(cat $file | sed -e "s/=\(.*\)/='\1'/g")"
+      eval "$(sed -e "s/=\(.*\)/='\1'/g" < "$file")"
     else
-      parameterKey=$(echo $2 | tr /a-z/ /A-Z/ | tr / _)
-      parameterValue=$(cat $file)
+      parameterKey=$(echo "$2" | tr /a-z/ /A-Z/ | tr / _)
+      parameterValue=$(cat "$file")
       parameter="$parameterKey='$parameterValue'"
       log "Loaded from $file: $parameter"
-      eval $parameter 
+      eval "$parameter"
     fi
   fi  
 }
@@ -109,14 +109,14 @@ loadParametersFile() {
 parameterFileDir=/run/secrets
 parameterFiles=(config.txt admin.txt db.txt schema.txt admin/username admin/password db/username db/password schema/password)
 for parameterFile in "${parameterFiles[@]}"; do
-  loadParametersFile $parameterFileDir $parameterFile
+  loadParametersFile "$parameterFileDir" "$parameterFile"
 done
 
 # validate that all required parameters have been set somehow
 validateMandatoryParameter() {
   key=$1
   if [ -z "${!key}" ]; then
-    echo $key
+    echo "$key"
   fi
 }
 
@@ -124,7 +124,7 @@ validateMandatoryParameter() {
 mandatoryParameters=(ORACLE_HOME DOMAIN_NAME DOMAINS_DIR ADMIN_USERNAME ADMIN_PASSWORD DB_HOST DB_PORT DB_SERVICE DB_USERNAME DB_PASSWORD SCHEMA_PREFIX SCHEMA_PASSWORD)
 missingMandatoryParameters=()
 for mandatoryParameter in "${mandatoryParameters[@]}"; do
-  missingParam=$(validateMandatoryParameter $mandatoryParameter)
+  missingParam=$(validateMandatoryParameter "$mandatoryParameter")
 
   if [[ ${missingParam} ]]; then
     missingMandatoryParameters+=("${missingParam}")
@@ -150,14 +150,15 @@ done
 # If a wait timeout is set, block until the DB is available or the timeout is reached.
 # This is useful when starting DB+BI via docker compose.
 DB_WAIT_TIMEOUT=${DB_WAIT_TIMEOUT:-0}
-if (( $DB_WAIT_TIMEOUT > 0 )); then
+if (( DB_WAIT_TIMEOUT > 0 )); then
  if [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ]; then
    echo "DB_USERNAME and DB_PASSWORD must be set if DB_WAIT_TIMEOUT is non-zero"
    exit 3
  fi
  set +e
- echo $DB_PASSWORD | timeout $DB_WAIT_TIMEOUT /u01/wait_for_db.sh $ORACLE_HOME $DB_USERNAME $DB_HOST $DB_PORT $DB_SERVICE
- if [ ! $? -eq 0 ]; then
+ echo "$DB_PASSWORD" | timeout "$DB_WAIT_TIMEOUT" /u01/wait_for_db.sh "$ORACLE_HOME" "$DB_USERNAME" "$DB_HOST" "$DB_PORT" "$DB_SERVICE"
+ exit_code="$?"
+ if [ ! "${exit_code}" -eq 0 ]; then
     echo "Reached timeout waiting for DB to start - exiting"
     exit 1
  fi
@@ -165,7 +166,7 @@ if (( $DB_WAIT_TIMEOUT > 0 )); then
 fi
 
 # Create Domain only if 1st execution
-if [ ! -f $domainCheckFile ]; then
+if [ ! -f "$domainCheckFile" ]; then
   masterResponseFile=$ORACLE_HOME/bi/modules/oracle.bi.configassistant/response.txt
 
   tempDir=$(mktemp -dt "create_domain_XXXXXXXXXX")
@@ -207,7 +208,7 @@ if [ ! -f $domainCheckFile ]; then
   rm -f "$responseFile"
   trap - INT TERM
 
-  echo "Do not delete this file - it tells the container createAndStartDomain.sh script that the domain is ready to be started" > $domainCheckFile
+  echo "Do not delete this file - it tells the container createAndStartDomain.sh script that the domain is ready to be started" > "$domainCheckFile"
 else
   "${DOMAIN_HOME}"/bitools/bin/start.sh
 fi

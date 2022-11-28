@@ -17,6 +17,7 @@ DB_PORT=$4
 DB_SERVICE=$5
 DB_PASSWORD=$(cat)
 
+# shellcheck source=/dev/null
 . "$ORACLE_HOME"/oracle_common/common/bin/commEnv.sh
 
 echo "Waiting for DB"
