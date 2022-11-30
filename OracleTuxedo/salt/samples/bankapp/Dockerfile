@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # Pull Tuxedo base image (which also sets TUXDIR)
+# hadolint ignore=DL3007
 FROM oracle/tuxedo:latest
 
 LABEL maintainer="helptuxedo_ww_grp@oracle.com"
