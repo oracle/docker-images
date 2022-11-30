@@ -21,9 +21,9 @@
 # ---------------
 FROM oracle/fmw-infrastructure:12.2.1.4
 
-# Maintainer
-# ----------
-MAINTAINER Padam Bengani <padam.bengani@oracle.com>
+# Labels
+# ------
+LABEL "maintainer"="Padam Bengani <padam.bengani@oracle.com>"
 
 #Common ENV
 #-----------
