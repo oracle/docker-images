@@ -5,7 +5,7 @@ This repository contains the container image configuration, build and sample fil
 The following container image is available:
 
 * [Tuxedo Core](./core) Tuxedo core including server binaries and client libraries
-* [Tuxedo SALT](./salt) Tuxedo SALT bankapp sample application
+* [Oracle Service Architecture Leveraging Tuxedo (SALT)](./salt) Sample banking application
 
 For support and certification information, please consult the documentation for each folder.
 

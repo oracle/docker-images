@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 cd /u01/data/bankapp/ || return 1
 
 APPDIR=$(pwd)
@@ -13,25 +16,35 @@ TUX_GID=$(id -g)
 # clean up from any previous run
 tmshutdown -y &>/dev/null 
 rm -f TLOG GWTLOG tuxconfig saltconfig bankdl1 bankdl2 bankdl3 ULOG.*
+rm -f "${SHUTDOWN_MARKER_FILE}"
 
+
+# Get the bankapp sources and build it
+cp -rp "${TUXDIR}"/samples/atmi/bankapp/*  "${APPDIR}/"
+export LD_LIBRARY_PATH="${TUXDIR}/lib:$LD_LIBRARY_PATH"
+make -f bankapp.mk TUXDIR="${TUXDIR}" APPDIR="${APPDIR}"
 
 
 # modify and run the environment setup script 
 cp -p bankvar bankvar.new
 
 # shellcheck disable=SC2016
-echo '
+cat << 'EOF' >> bankvar.new
 #
 # For GWWS
 #
-GWTLOGDEVICE=${APPDIR}/GWTLOG
+GWTLOGDEVICE="${APPDIR}/GWTLOG"
 export GWTLOGDEVICE
 #
 # Device for binary file that gives SALT all its information
 #
-SALTCONFIG=${APPDIR}/saltconfig
+SALTCONFIG="${APPDIR}/saltconfig"
 export SALTCONFIG
-' >> bankvar.new
+#
+# For graceful shutdown 
+#
+export SHUTDOWN_MARKER_FILE="${APPDIR}/shutdown.marker"
+EOF
 
 # shellcheck disable=SC1091
 source ./bankvar.new
@@ -64,13 +77,13 @@ sed -e "s;<APPDIR1>;${APPDIR};g" bankapp.dep > BANKAPP.DEP
 
 
 # Compile the configuration file 
-tmloadcf -y UBBSHM
-wsloadcf -y BANKAPP.DEP
+tmloadcf -y UBBSHM       || return 1
+wsloadcf -y BANKAPP.DEP  || return 1
 
 
 # Create the bank DB and the logs
-./crbank
-./crtlog
+./crbank || return 1
+./crtlog || return 1
 
  
 # Boot up the domain
@@ -81,6 +94,16 @@ tmboot -y
 ./populate
 
 
-# Sleep
-sleep infinity
+# beginning section of logs to stdout
+cat "${APPDIR}/ULOG*"
+
+
+# Sleep till shutdown initiated
+while true; do
+    if [ -e "${SHUTDOWN_MARKER_FILE}" ] ; then
+      exit 0
+    fi
+
+    sleep 1
+done
 
