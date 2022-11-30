@@ -1,0 +1,12 @@
+---
+##########################
+## Hadolint config file ##
+##########################
+
+failure-threshold: warning
+
+ignored:
+  - DL3032
+  - DL3033
+  - DL3040
+  - DL3041

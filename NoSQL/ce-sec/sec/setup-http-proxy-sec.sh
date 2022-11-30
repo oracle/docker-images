@@ -34,7 +34,7 @@ cp sec/pwd /kvroot/proxy/pwdout
 echo "Creating certificate"
 openssl req -x509 -days 365 -newkey rsa:4096 -keyout /kvroot/proxy/key.pem -out /kvroot/proxy/certificate.pem -subj "/CN=${HOSTNAME}" -passin file:/kvroot/proxy/pwdin -passout file:/kvroot/proxy/pwdout
 openssl pkcs8 -topk8 -inform PEM -outform PEM -in /kvroot/proxy/key.pem -out /kvroot/proxy/key-pkcs8.pem -passin file:/kvroot/proxy/pwdin -passout file:/kvroot/proxy/pwdout  -v1 PBE-SHA1-3DES
-keytool -import -alias example -keystore /kvroot/proxy/driver.trust -file /kvroot/proxy/certificate.pem  -storepass file:/kvroot/proxy/pwdin -noprompt
+keytool -import -alias example -keystore /kvroot/proxy/driver.trust -file /kvroot/proxy/certificate.pem  -storepass "$(cat /kvroot/proxy/pwdin)" -noprompt
 
 
 if [ -n "${KV_DRIVER_USER_PWD}" ] ; then

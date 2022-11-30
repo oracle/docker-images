@@ -17,6 +17,7 @@ ENV KV_PORT 5000
 ENV KV_HARANGE 5010-5020
 ENV KV_SERVICERANGE 5021-5049
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -OLs $DOWNLOAD_LINK  && \
     jar tf $DOWNLOAD_FILE | grep "kv-$KV_VERSION/lib" > extract.libs && \
     jar xf $DOWNLOAD_FILE @extract.libs && \

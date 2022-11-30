@@ -24,29 +24,29 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Log into GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${GITHUB_ACTOR,,} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${GITHUB_ACTOR,,}" --password-stdin
 
       - name: Repository owner needs to be lowercase
         id: repo-owner
         run: |
-          REPO_OWNER=${{ github.repository_owner }}
-          echo "::set-output name=repo-owner::${REPO_OWNER,,}"
+          REPO_OWNER="${{ github.repository_owner }}"
+          echo "repo-owner=${REPO_OWNER,,}" >> "$GITHUB_OUTPUT"
 
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m')"
+        run: echo "date=$(date +'%Y-%m')" >> "$GITHUB_OUTPUT"
 
       - name: Build NoSQL ce image
         run: |
           cd NoSQL/ce
-          docker build --tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG .
-          docker tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce
+          docker build --tag "ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG" .
+          docker tag "ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG" "ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce"
         env:
           TAG: ${{ steps.date.outputs.date }}-ce
 
       - name: Push image to GitHub Container Registry
         run: |
-          docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG
-          docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce
+          docker push "ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:$TAG"
+          docker push "ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/$IMAGE_NAME:latest-ce"
         env:
           TAG: ${{ steps.date.outputs.date }}-ce
