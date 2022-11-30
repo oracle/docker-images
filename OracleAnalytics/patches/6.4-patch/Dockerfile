@@ -59,17 +59,7 @@ ENV PATCH_PKG_34080315="p34080315_122140_Generic.zip" \
 
 # Copy supplemental package and scripts
 # --------------------------------
-COPY --chown=oracle:oracle $PATCH_PKG_34080315 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_33958532 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_34044738 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_32784652 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_30613424 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_31403376 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_33618954 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_33546536 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_32575741 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_33950717 /u01/
-COPY --chown=oracle:oracle $PATCH_PKG_34065178 /u01/
+COPY --chown=oracle:oracle $PATCH_PKG_34080315 $PATCH_PKG_33958532 $PATCH_PKG_34044738 $PATCH_PKG_32784652 $PATCH_PKG_30613424 $PATCH_PKG_31403376 $PATCH_PKG_33618954 $PATCH_PKG_33546536 $PATCH_PKG_32575741 $PATCH_PKG_33950717 $PATCH_PKG_34065178 /u01/
 
 # Installation of Supplemental Quick Installer
 # --------------------------------------------
@@ -77,50 +67,38 @@ USER oracle
 
 RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34080315 && cd - && \
     cd /u01/WLS_SPB_12.2.1.4.220418/tools/spbat/generic/SPBAT && chmod +x ./spbat.sh && ./spbat.sh -phase apply -oracle_home $ORACLE_HOME && \
-    rm /u01/$PATCH_PKG_34080315
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33958532 && cd - && \
+    rm /u01/$PATCH_PKG_34080315 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33958532 && cd - && \
     cd /u01/33958532 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33958532
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34044738 && cd - && \
+    rm /u01/$PATCH_PKG_33958532 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34044738 && cd - && \
     cd /u01/34044738 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_34044738
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_32784652 && cd - && \
+    rm /u01/$PATCH_PKG_34044738 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_32784652 && cd - && \
     cd /u01/32784652 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_32784652
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_30613424 && cd - && \
+    rm /u01/$PATCH_PKG_32784652 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_30613424 && cd - && \
     cd /u01/30613424 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_30613424
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_31403376 && cd - && \
+    rm /u01/$PATCH_PKG_30613424 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_31403376 && cd - && \
     cd /u01/31403376 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_31403376
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33618954 && cd - && \
+    rm /u01/$PATCH_PKG_31403376 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33618954 && cd - && \
     cd /u01/33618954 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33618954
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33546536 && cd - && \
+    rm /u01/$PATCH_PKG_33618954 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33546536 && cd - && \
     cd /u01/33546536 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33546536
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_32575741 && cd - && \
+    rm /u01/$PATCH_PKG_33546536 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_32575741 && cd - && \
     cd /u01/32575741 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_32575741
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33950717 && cd - && \
+    rm /u01/$PATCH_PKG_32575741 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33950717 && cd - && \
     cd /u01/33950717 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33950717
-
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34065178 && cd - && \
+    rm /u01/$PATCH_PKG_33950717 && \
+    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34065178 && cd - && \
     cd /u01/34065178 && $ORACLE_HOME/OPatch/opatch apply -silent && \
     rm /u01/$PATCH_PKG_34065178
 
-
-USER oracle
 WORKDIR ${ORACLE_HOME}
 
 CMD ["/u01/createAndStartDomain.sh"]
