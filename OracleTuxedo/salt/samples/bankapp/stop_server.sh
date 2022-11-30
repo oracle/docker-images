@@ -12,7 +12,7 @@ LOG_FILE="${APPDIR}/stop_server.log"
 # shellcheck disable=SC1091
 source "${APPDIR}/bankvar.new"
 
-echo "stop server script kicked off at $(date)." > ${LOG_FILE}
+echo "Server shutdown initiated at $(date)" >> $LOG_FILE
 
 # Shutdown the domain
 tmshutdown -y

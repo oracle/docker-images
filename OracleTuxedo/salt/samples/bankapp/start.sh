@@ -62,9 +62,9 @@ sed -e "s;<TUXDIR1>;${TUXDIR};g" \
     -e "s;^\(\s*\)\(ULOGPFX=.*\);\1\2\n\1MAXWSCLIENTS=15;g" \
     -e 's;\(bankdl3:bankdb:readwrite".*$\);\1\nGWWSGRP		GRPNO=4\n	OPENINFO=""	TMSNAME=""	LMID=SITE1;g' \
     -e 's;\(BALC\s\+SRVGRP=BANKB3\s\+SRVID=29.*$\);\1\
-TMMETADATA  SRVGRP=GWWSGRP      SRVID=1     CLOPT="-A -- -f bankapp.repos"\
+TMMETADATA  SRVGRP=GWWSGRP      SRVID=1     CLOPT="-A -- -f bankapp.repos" \
 GWWS        SRVGRP=GWWSGRP      SRVID=2     CLOPT="-A -- -iGWWSRestful";g' \
-   ubbshm > UBBSHM
+   ubbshm > ubbshm.new
 
 
 # Create ENVFILE
@@ -73,12 +73,12 @@ export MASKPATH=${APPDIR}
 
 
 # Modify bankapp.dep
-sed -e "s;<APPDIR1>;${APPDIR};g" bankapp.dep > BANKAPP.DEP
+sed -e "s;<APPDIR1>;${APPDIR};g" bankapp.dep > bankapp.dep.new
 
 
 # Compile the configuration file 
-tmloadcf -y UBBSHM       || return 1
-wsloadcf -y BANKAPP.DEP  || return 1
+tmloadcf -y ubbshm.new       || return 1
+wsloadcf -y bankapp.dep.new  || return 1
 
 
 # Create the bank DB and the logs
