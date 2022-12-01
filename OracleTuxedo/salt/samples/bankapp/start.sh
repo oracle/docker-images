@@ -13,11 +13,6 @@ TUX_UID=$(id -u)
 TUX_GID=$(id -g)
 
 
-# clean up from any previous run
-tmshutdown -y &>/dev/null 
-rm -f TLOG GWTLOG tuxconfig saltconfig bankdl1 bankdl2 bankdl3 ULOG.*
-rm -f "${SHUTDOWN_MARKER_FILE}"
-
 
 # Get the bankapp sources and build it
 cp -rp "${TUXDIR}"/samples/atmi/bankapp/*  "${APPDIR}/"
@@ -27,6 +22,7 @@ make -f bankapp.mk TUXDIR="${TUXDIR}" APPDIR="${APPDIR}"
 
 # modify and run the environment setup script 
 cp -p bankvar bankvar.new
+
 
 # shellcheck disable=SC2016
 cat << 'EOF' >> bankvar.new
@@ -46,8 +42,15 @@ export SALTCONFIG
 export SHUTDOWN_MARKER_FILE="${APPDIR}/shutdown.marker"
 EOF
 
+
 # shellcheck disable=SC1091
 source ./bankvar.new
+
+
+# clean up from any previous run
+tmshutdown -y &>/dev/null 
+rm -f TLOG GWTLOG tuxconfig saltconfig bankdl1 bankdl2 bankdl3 ULOG.*
+rm -f "${SHUTDOWN_MARKER_FILE}"
 
 
 # Modify the Tuxedo configuration file
