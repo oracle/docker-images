@@ -65,39 +65,40 @@ COPY --chown=oracle:oracle $PATCH_PKG_34080315 $PATCH_PKG_33958532 $PATCH_PKG_34
 # --------------------------------------------
 USER oracle
 
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34080315 && cd - && \
-    cd /u01/WLS_SPB_12.2.1.4.220418/tools/spbat/generic/SPBAT && chmod +x ./spbat.sh && ./spbat.sh -phase apply -oracle_home $ORACLE_HOME && \
-    rm /u01/$PATCH_PKG_34080315 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33958532 && cd - && \
-    cd /u01/33958532 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33958532 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34044738 && cd - && \
-    cd /u01/34044738 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_34044738 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_32784652 && cd - && \
-    cd /u01/32784652 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_32784652 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_30613424 && cd - && \
-    cd /u01/30613424 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_30613424 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_31403376 && cd - && \
-    cd /u01/31403376 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_31403376 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33618954 && cd - && \
-    cd /u01/33618954 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33618954 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33546536 && cd - && \
-    cd /u01/33546536 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33546536 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_32575741 && cd - && \
-    cd /u01/32575741 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_32575741 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_33950717 && cd - && \
-    cd /u01/33950717 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_33950717 && \
-    cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG_34065178 && cd - && \
-    cd /u01/34065178 && $ORACLE_HOME/OPatch/opatch apply -silent && \
-    rm /u01/$PATCH_PKG_34065178
+RUN unzip "/u01/$PATCH_PKG_34080315" -d /u01 && \
+    chmod +x /u01/WLS_SPB_12.2.1.4.220418/tools/spbat/generic/SPBAT/spbat.sh && \
+    /u01/WLS_SPB_12.2.1.4.220418/tools/spbat/generic/SPBAT/spbat.sh -phase apply -oracle_home "$ORACLE_HOME" && \
+    rm "/u01/$PATCH_PKG_34080315" && \
+    unzip "/u01/$PATCH_PKG_33958532" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/33958532 && \
+    rm "/u01/$PATCH_PKG_33958532" && \
+    unzip "/u01/$PATCH_PKG_34044738" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/34044738 && \
+    rm "/u01/$PATCH_PKG_34044738" && \
+    unzip "/u01/$PATCH_PKG_32784652" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/32784652 && \
+    rm "/u01/$PATCH_PKG_32784652" && \
+    unzip "/u01/$PATCH_PKG_30613424" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/30613424 && \
+    rm "/u01/$PATCH_PKG_30613424" && \
+    unzip "/u01/$PATCH_PKG_31403376" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/31403376 && \
+    rm "/u01/$PATCH_PKG_31403376" && \
+    unzip "/u01/$PATCH_PKG_33618954" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/33618954 && \
+    rm "/u01/$PATCH_PKG_33618954" && \
+    unzip "/u01/$PATCH_PKG_33546536" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/33546536 && \
+    rm "/u01/$PATCH_PKG_33546536" && \
+    unzip "/u01/$PATCH_PKG_32575741" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/32575741 && \
+    rm "/u01/$PATCH_PKG_32575741" && \
+    unzip "/u01/$PATCH_PKG_33950717" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/33950717 && \
+    rm "/u01/$PATCH_PKG_33950717" && \
+    unzip "/u01/$PATCH_PKG_34065178" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/34065178 && \
+    rm "/u01/$PATCH_PKG_34065178"
 
 WORKDIR ${ORACLE_HOME}
 
