@@ -9,7 +9,7 @@ The Tuxedo image uses the Oracle JDK 8 (Server JRE) container image `oracle/serv
 ## To build the Oracle Tuxedo container image
 
 1. Download the latest Tuxedo Linux 64 bit installer (e.g. `tuxedo221000_64_Linux_01_x86.zip`) as instructed in [the documentation](../README.md).
-2. Move the installer that you downloaded in the previous step to the appropriate version directory (e.g. 21.1.0.0.0) in your local copy of the repository.
+2. Move the installer that you downloaded in the previous step to the appropriate version directory (e.g. OracleTuxedo/core/dockerfiles/22.1.0.0.0) in your local copy of the repository.
 3. Change to this directory `OracleTuxedo/core/dockerfiles` in your local copy of the repository.
 4. Execute ``./buildContainerImage.sh -v 22.1.0.0.0 -i tuxedo221000_64_Linux_01_x86.zip -s`` to create a container image for Tuxedo 22.1.0.
 
