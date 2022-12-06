@@ -120,19 +120,20 @@ to any future Oracle Analytics Server patch set release.
 
 The following variables are mandatory when starting the container:
 
-* ADMIN_USERNAME - WebLogic admin username for the new domain
-* ADMIN_PASSWORD - WebLogic admin password
-* DB_HOST - Host name for database into which to create schemas
-* DB_PORT - Database listener port
-* DB_SERVICE - Database instance service name
-* DB_USERNAME - Database sysdba username
-* DB_PASSWORD - Database sysdba password
-* SCHEMA_PREFIX - Schema prefix for new schemas in the new domain.
-The schema prefix must be unique. If it’s already in use, domain creation fails.
-* SCHEMA_PASSWORD - Password for all new schemas created
+* `ADMIN_USERNAME` - WebLogic admin username for the new domain
+* `ADMIN_PASSWORD` - WebLogic admin password
+* `DB_HOST` - Host name for database into which to create schemas
+* `DB_PORT` - Database listener port
+* `DB_SERVICE` - Database instance service name
+* `DB_USERNAME` - Database sysdba username
+* `DB_PASSWORD` - Database sysdba password
+* `SCHEMA_PREFIX` - Schema prefix for new schemas in the new domain. The schema prefix must be unique. If it’s already in use, domain creation fails.
+* `SCHEMA_PASSWORD` - Password for all new schemas created
 
-ORACLE_HOME is fixed to `/u01/oracle`.
-DOMAIN_HOME is fixed to `/u01/oracle/user_projects/domains/bi`.
+The following variables are predefined:
+
+`ORACLE_HOME` is `/u01/oracle`.
+`DOMAIN_HOME` is `/u01/oracle/user_projects/domains/bi`.
 
 For example:
 
