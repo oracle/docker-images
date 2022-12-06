@@ -100,9 +100,7 @@ cd OracleAnalytics/dockerfiles
 
 ### Building the Oracle Analytics Server Patched Image
 
-Refer to the README.md file under
-[OracleAnalytics/patches/6.4-patch](./patches/6.4-patch)
-for steps on how to build the Oracle Analytics Server patched image.
+See the [Oracle Analytics patched image documentation](./patches/6.4-patch) for details.
 
 ## Creating an Oracle Analytics Server Container
 
