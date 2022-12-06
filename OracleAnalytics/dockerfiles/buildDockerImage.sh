@@ -131,7 +131,7 @@ BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))
 echo ""
 
 cat << EOF
-  Oracle Business Intelligence Docker Image for version $VERSION is ready: 
+  Oracle Analytics container image for version $VERSION is ready: 
     
     --> $IMAGE_NAME
 
