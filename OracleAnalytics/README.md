@@ -143,11 +143,11 @@ to store persistent data on the host disk.
 For example, to mount a host directory as a data volume:
 
 ```bash
-mkdir -p /scratch/bi && chmod 777 /scratch/bi
+mkdir -p /scratch/bi && chmod 700 /scratch/bi && chown 1000:1000 /scratch/bi
 docker run -v /scratch/bi:/u01/oracle/user_projects ......
 ```
 
-`chmod` is necessary because the container's processes are run under user 'oracle'.
+`chown` is necessary to ensure that the directory has the same UID/GID as the user inside the container i.e. 'oracle'.
 
 ### Using a Database Container
 
