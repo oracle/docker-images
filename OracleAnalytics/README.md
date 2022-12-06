@@ -36,45 +36,7 @@ Follow these instructions to create a 12.1 or 12.2 Enterprise Edition database.
 
 ## Oracle Analytics Server Container Image Creation
 
-To build a BI image, first build the Oracle Java image,
-and then build the Oracle Fusion Middleware Infrastructure image.
-
-### Building the Oracle Java (Server JRE 8) Image
-
-Download the Oracle Server JRE binary into folder `OracleJava/8` and build the image:
-
-```bash
-cd OracleJava/8
-docker build --tag oracle/serverjre:8 .
-```
-
-Refer to the README.md file under
-[OracleJava](https://github.com/oracle/docker-images/tree/master/OracleJava)
-for details on how to build Oracle Java image.
-
-### Building the Oracle Fusion Middleware Infrastructure Image
-
-Download the binary of Oracle Fusion Middleware Infrastructure into the folder `OracleFMWInfrastructure/dockerfiles/12.2.1.4`.
-
-If you need a proxy for the host to access yum.oracle.com during build,
-first set up the appropriate environment. For example:
-
-```bash
-export http_proxy=myproxy.example.com:80
-export https_proxy=myproxy.example.com:80
-export no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
-```
-
-Build the image:
-
-```bash
-cd OracleFMWInfrastructure/dockerfiles
-./buildDockerImage.sh -v 12.2.1.4
-```
-
-Refer to the README.md file under
-[OracleFMWInfrastructure](https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure)
-for details on how to build the Oracle Fusion Middleware Infrastructure image.
+Before you can build a BI image, you will need to build the [Oracle Java](https://github.com/oracle/docker-images/tree/master/OracleJava) image and the [Oracle Fusion Middleware](https://github.com/oracle/docker-images/tree/master/OracleFMWInfrastructure) image or pull pre-built images of each from the [Oracle Container Registry](https://container-registry.oracle.com).
 
 ### Building the Oracle Analytics Server Image
 
