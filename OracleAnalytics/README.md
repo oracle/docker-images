@@ -208,7 +208,7 @@ environment:
 1. The domain's node manager is configured to listen on the network interface
 for the container's original host name,
 rather than on all interfaces.
-Therefore, if you create a container using an existing data volume for /u01/oracle/user_projects,
+Therefore, if you create a container using an existing data volume for `/u01/oracle/user_projects`,
 you must ensure you use the same host name. For example,
 
 ```bash
