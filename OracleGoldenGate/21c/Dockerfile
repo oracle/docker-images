@@ -1,5 +1,7 @@
 ## Copyright (c) 2021, Oracle and/or its affiliates.
-FROM          oraclelinux:8
+ARG           BASE_IMAGE=oraclelinux:8
+#  hadolint ignore=DL3006
+FROM        ${BASE_IMAGE}
 LABEL         maintainer="Stephen Balousek<stephen.balousek@oracle.com>"
 
 ARG           INSTALLER
