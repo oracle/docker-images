@@ -13,7 +13,7 @@ usage() {
 cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-s] [-c] [-q]
-Builds a Docker Image for Oracle Business Intelligence.
+Builds a container image for Oracle Analytics.
   
 Parameters:
    -v: version to build. Required.
