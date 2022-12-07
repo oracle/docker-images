@@ -45,7 +45,7 @@ checksumPackages() {
 if [ "$#" -eq 0 ]; then usage; fi
 
 # Parameters
-VERSION="12.2.1"
+VERSION="6.4"
 SKIPMD5=0
 NOCACHE=true
 SQUASH=""
