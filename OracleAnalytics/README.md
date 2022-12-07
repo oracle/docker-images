@@ -176,7 +176,7 @@ Note: In the above container run examples, other parameters are omitted for clar
 The domain creation script also supports
 loading the same set of environment key/value pairs
 from files mounted into the container,
-using `docker run /v` or container secrets.
+using `docker run -v` or container secrets.
 
 The following files are processed if available,
 overriding any environment already set:
