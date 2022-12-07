@@ -141,12 +141,6 @@ for parameter in "${mandatoryParameters[@]}"; do
   log "Parameter: $parameter=${!parameter}"
 done
 
-# TODO - in the case where docker secrets are used, it should be possible to remove the secret once the domain is created.
-#  However, that leaves no creds available for the dbping. Options: fail if no creds and DB_WAIT_TIMEOUT is set (i.e. not
-#  our responsibility to handle this on restart, b) work if schema password only is set (and then wait_for_db needs the prefix
-#  and not use 'as sysdba', c) as per b, but use the Connections API to recover a schema password from the domain (this makes
-#  more sense than (b).
-
 # If a wait timeout is set, block until the DB is available or the timeout is reached.
 # This is useful when starting DB+BI via docker compose.
 DB_WAIT_TIMEOUT=${DB_WAIT_TIMEOUT:-0}
@@ -199,9 +193,6 @@ if [ ! -f "$domainCheckFile" ]; then
 
   eval sed -i "$replacements" "$responseFile"
 
-  # TODO (minor as scale-out not supported) - for SDD setting, need to not start the stack, but mv sdd and mod the xml (and manually dump diag zip?)
-  # TODO (minor) - hostname can change after image update, could realign nodemanager settings.
-  # TODO (minor) - autoport is in use, but the container must expose fixed ports.  This works by chance.
   "$ORACLE_HOME"/bi/bin/config.sh -ignoreSysPrereqs -silent -responseFile "$responseFile" &
   PID=$!
   wait $PID
