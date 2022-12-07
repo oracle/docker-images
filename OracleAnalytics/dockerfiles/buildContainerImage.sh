@@ -12,7 +12,7 @@
 usage() {
 cat << EOF
 
-Usage: buildDockerImage.sh -v [version] [-s] [-c] [-q]
+Usage: buildContainerImage.sh -v [version] [-s] [-c] [-q]
 Builds a container image for Oracle Analytics.
   
 Parameters:
@@ -68,7 +68,7 @@ while getopts "qhcsv:" optname; do
       ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+      echo "Unknown error while processing options inside buildContainerImage.sh"
       ;;
   esac
 done

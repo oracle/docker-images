@@ -57,7 +57,7 @@ Build the image:
 
 ```bash
 cd OracleAnalytics/dockerfiles
-./buildDockerImage.sh -v 6.4
+./buildContainerImage.sh -v 6.4
 ```
 
 Sample command(s) for users who don't want to use the above script to build the image:
