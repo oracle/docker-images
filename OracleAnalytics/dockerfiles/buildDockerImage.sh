@@ -18,7 +18,7 @@ Builds a container image for Oracle Analytics.
 Parameters:
    -v: version to build. Required.
        Choose one of: $(for i in */; do echo -n "${i%%/}  "; done)
-   -c: enables Docker image layer cache during build
+   -c: enables image layer cache during build
    -s: skips the MD5 check of packages
    -q: squash resulting image
 
