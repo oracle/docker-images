@@ -219,7 +219,7 @@ docker run --hostname original_hostname ......
 pass the same set of environment variables again,
 even though the domain has already been created.
 
-3. Container health-check isn't implemented.
+3. Container health check isn't implemented.
 
 ## License
 
