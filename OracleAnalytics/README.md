@@ -60,6 +60,16 @@ cd OracleAnalytics/dockerfiles
 ./buildDockerImage.sh -v 6.4
 ```
 
+Sample command(s) for users who don't want to use the above script to build the image:
+
+```bash
+# without proxy
+docker build --force-rm=true --no-cache=true -t oracle/analyticsserver:6.4 -f Dockerfile .
+
+# with proxy
+docker build --force-rm=true --no-cache=true --build-arg http_proxy=http://myproxy.example.com:80 --build-arg https_proxy=https://myproxy.example.com:80 -t oracle/analyticsserver:6.4 -f Dockerfile .
+```
+
 ### Building the Oracle Analytics Server Patched Image
 
 See the [Oracle Analytics patched image documentation](./patches/6.4-patch) for details.
