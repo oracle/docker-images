@@ -109,10 +109,10 @@ The script then tails the domain log to stdout.
 
 The BI domain uses the following ports:
 
-* 9500 - WebLogic AdminServer
-* 9502 - WebLogic bi_server1 managed server, hosting BI JEE apps
-* 9508 - OBI Cluster Controller, providing access to OBI Server system component
-* 9514 - OBI Server system component
+* `9500` - WebLogic AdminServer
+* `9502` - WebLogic `bi_server1` managed server, hosting BI JEE apps
+* `9508` - OBI Cluster Controller, providing access to OBI Server system component
+* `9514` - OBI Server system component
 
 The following example URLs provide access to the BI domain:
 
