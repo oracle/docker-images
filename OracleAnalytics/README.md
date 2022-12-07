@@ -190,7 +190,7 @@ Each *.txt file must contain lines of `key=value` pairs.
 
 ### Using Container Compose
 
-The BI image supports using container compose to start the BI and DB containers together.
+The BI image supports using `docker-compose` to start the BI and DB containers together.
 
 In this mode, the containers are started in parallel,
 and the BI container must wait for the DB to become available.
