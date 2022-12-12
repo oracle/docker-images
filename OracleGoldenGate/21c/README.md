@@ -7,10 +7,12 @@ These instructions apply to building container images for Oracle GoldenGate vers
 
 * [Before You Start](#before-you-start)
 * [Build an Oracle GoldenGate Container Image](#build-an-oracle-goldengate-container-image)
+  * [Changing the Base Image](#changing-the-base-image)
 * [Running Oracle GoldenGate in a Container](#running-oracle-goldengate-in-a-container)
   * [Administrative Account Password](#administrative-account-password)
   * [SSL Certificate](#ssl-certificate)
   * [Running the Administration Client](#running-the-administration-client)
+  * [Running Scripts Before Setup and on Startup](#running-scripts-before-setup-and-on-startup)
 * [Known Issues](#known-issues)
 * [License](#license)
 * [Copyright](#copyright)
@@ -26,7 +28,8 @@ This project was tested with:
 
 Support for Oracle GoldenGate Classic Architecture is not provided.
 
-**IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that for you. You also must have Internet connectivity when building the container image for the package manager to perform additional software installations.
+**IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that
+for you. You also must have Internet connectivity when building the container image for the package manager to perform additional software installations.
 
 All shell commands in this document assume the usage of Bash shell.
 
@@ -34,25 +37,38 @@ For more information about Oracle GoldenGate please see the [Oracle GoldenGate 2
 
 ## Build an Oracle GoldenGate Container Image
 
-Once you have downloaded the Oracle GoldenGate software, a container image can be created using the Docker command-line interface.
+Once you have downloaded the Oracle GoldenGate software, a container image can be created using container management command-line applications.
 A single `--build-arg` is needed to indicate the GoldenGate installer which was downloaded.
 
 To create a container image for GoldenGate for Oracle Database, use the following script:
 
 ```sh
 $ docker build --tag=oracle/goldengate:21.3.0.0.0 \
-                --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
+               --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
 Sending build context to Docker daemon
 ...
 Successfully tagged oracle/goldengate:21.3.0.0.0
 ```
 Similarly, for other Databases like BigData, MySQL, PostgreSQL, etc. provide the name of the zip file for the INSTALLER argument.
 
+### Changing the Base Image
+
+By default, the base container image used to create the Oracle GoldenGate container image is `oraclelinux:8`. This can be changed using the `BUILD_IMAGE` build argument. For example:
+
+```sh
+docker build --tag=oracle/goldengate:21.3.0.0.0 \
+             --build-arg BASE_IMAGE="localregistry/oraclelinux:8" \
+             --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
+```
+
+Oracle GoldenGate 21c requires a base container image with Oracle Linux 8 or later.
+
 ## Running Oracle GoldenGate in a Container
+
 Use the `docker run` command to create and start a container from the Oracle GoldenGate container image.
 
 ```sh
-$ docker run \
+docker run \
     --name <container name> \
     -p <host port>:443 \
     -e OGG_ADMIN=<admin user name> \
@@ -143,13 +159,15 @@ Oracle GoldenGate Administration Client for Oracle
 Version 21.3.0.0.0 ...
 ```
 
-### Running scripts before setup and on startup
-The container images can be configured to run scripts before setup and on startup. Currently, `.sh` extensions are supported. For setup scripts just mount the volume `/u01/ogg/scripts/setup` or extend the image to include scripts in this directory. For startup scripts just mount the volume `/u01/ogg/scripts/startup` or extend the image to include scripts in this directory. Both of those locations are static and the content is controlled by the volume mount.
+### Running Scripts Before Setup and on Startup
 
-The example below mounts the local directory myScripts to `/u01/ogg/scripts` which is then searched for custom startup scripts:
+The container images can be configured to run scripts before setup and on startup. Currently, `.sh` extensions are supported. For setup scripts just mount the volume `/u01/ogg/scripts/setup` or extend the image to include scripts in this directory. For startup scripts just mount the volume `/u01/ogg/scripts/startup` or extend the image to include scripts in this directory. Both of those locations
+are static and the content is controlled by the volume mount.
+
+The example below mounts the local directory `${PWD}/myScripts` to `/u01/ogg/scripts` which is then searched for custom startup scripts:
 
 ```sh
-$ docker run -v /myScripts:/u01/ogg/scripts oracle/goldengate:21.3.0.0.0
+docker run -v "${PWD}/myScripts:/u01/ogg/scripts" oracle/goldengate:21.3.0.0.0
 ```
 
 ## Known Issues
