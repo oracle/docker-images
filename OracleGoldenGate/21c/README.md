@@ -37,7 +37,7 @@ For more information about Oracle GoldenGate please see the [Oracle GoldenGate 2
 
 ## Build an Oracle GoldenGate Container Image
 
-Once you have downloaded the Oracle GoldenGate software, a container image can be created using the Docker command-line interface.
+Once you have downloaded the Oracle GoldenGate software, a container image can be created using container management command-line applications.
 A single `--build-arg` is needed to indicate the GoldenGate installer which was downloaded.
 
 To create a container image for GoldenGate for Oracle Database, use the following script:
@@ -53,9 +53,7 @@ Similarly, for other Databases like BigData, MySQL, PostgreSQL, etc. provide the
 
 ### Changing the Base Image
 
-By default, the base image used by Docker to build Oracle GoldenGate Docker image is `oraclelinux:8`, but this can be changed.
-
-Changing the base image for the new Docker image is done with the `BUILD_IMAGE` Docker build argument, like in this example:
+By default, the base container image used to create the Oracle GoldenGate container image is `oraclelinux:8`. This can be changed using the `BUILD_IMAGE` build argument. For example:
 
 ```sh
 docker build --tag=oracle/goldengate:21.3.0.0.0 \
@@ -63,7 +61,10 @@ docker build --tag=oracle/goldengate:21.3.0.0.0 \
              --build-arg INSTALLER=213000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
 ```
 
+Oracle GoldenGate 21c requires a base container image with Oracle Linux 8 or later.
+
 ## Running Oracle GoldenGate in a Container
+
 Use the `docker run` command to create and start a container from the Oracle GoldenGate container image.
 
 ```sh
@@ -163,10 +164,10 @@ Version 21.3.0.0.0 ...
 The container images can be configured to run scripts before setup and on startup. Currently, `.sh` extensions are supported. For setup scripts just mount the volume `/u01/ogg/scripts/setup` or extend the image to include scripts in this directory. For startup scripts just mount the volume `/u01/ogg/scripts/startup` or extend the image to include scripts in this directory. Both of those locations
 are static and the content is controlled by the volume mount.
 
-The example below mounts the local directory myScripts to `/u01/ogg/scripts` which is then searched for custom startup scripts:
+The example below mounts the local directory `${PWD}/myScripts` to `/u01/ogg/scripts` which is then searched for custom startup scripts:
 
 ```sh
-docker run -v /myScripts:/u01/ogg/scripts oracle/goldengate:21.3.0.0.0
+docker run -v "${PWD}/myScripts:/u01/ogg/scripts" oracle/goldengate:21.3.0.0.0
 ```
 
 ## Known Issues
