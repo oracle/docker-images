@@ -84,6 +84,11 @@ You should then be able to create a new Ruby on Rails application.
 * [`oraclelinux8-nodejs:14`](oraclelinux8/nodejs/14/Dockerfile)
 * [`oraclelinux8-nodejs:14-oracledb`](oraclelinux8/nodejs/14-oracledb/Dockerfile)
 * [`oraclelinux8-nodejs:16`](oraclelinux8/nodejs/16/Dockerfile)
+* [`oraclelinux8-nodejs:18`](oraclelinux8/nodejs/18/Dockerfile)
+
+**Tip:** support for `yarn` is included with `oraclelinux8-nodejs:18` but is
+opt-in. To activate `yarn`, run `corepack enable` when building your downstream
+image.
 
 ### PHP module
 
