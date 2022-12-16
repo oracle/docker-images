@@ -2,8 +2,6 @@
 name: Lint new or modified files using Super Linter
 
 on:
-  push:
-    branches-ignore: [main]
   pull_request:
     branches: [main]
 
