@@ -65,11 +65,9 @@ jobs:
           if [[ -z ${workflow} ]]; then
             # Push event - retrieve list of changed files
             git diff --name-only '${{ github.event.before }}..${{ github.event.after }}' > "${changes}"
-            compat=0
             if grep -q build-and-push-dev-images.yml "${changes}"; then
               echo "PUSH: Action updated, rebuilding all images"
               build_all=1
-              compat=1
             else
               echo "PUSH: Rebuilding changed images only"
               build_all=0
@@ -79,9 +77,9 @@ jobs:
             build_all=1
           fi
           matrix=$(
-            for ol in ${ol_list[*]}; do
+            for ol in "${ol_list[@]}"; do
               pushd "${ol}" >/dev/null || exit 1
-              for lang in ${lang_list[*]}; do
+              for lang in "${lang_list[@]}"; do
                 if [[ -d ${lang} ]]; then
                   pushd "${lang}" >/dev/null || exit 1
                   for dockerfile in */Dockerfile; do
@@ -114,18 +112,18 @@ jobs:
             skip_build=false
             matrix=$(jq --compact-output '{ "include": .}' <<<"${matrix}")
           fi
-          echo "::set-output name=matrix::${matrix}"
-          echo "::set-output name=skip_build::${skip_build}"
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+          echo "skip_build=${skip_build}" >> "$GITHUB_OUTPUT"
 
       - name: Lowercase repository owner
         id: repository_owner
         run: |
-          echo "::set-output name=repository_owner::$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          echo "repository_owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
 
       - name: Date stamp
         id: date_stamp
         run: |
-          echo "::set-output name=date_stamp::$(date +'%Y%m%d')"
+          echo "date_stamp=$(date +'%Y%m%d')" >> "$GITHUB_OUTPUT"
 
   build-image:
     name: Build image
@@ -159,7 +157,7 @@ jobs:
         with:
           context: OracleLinuxDevelopers/${{ matrix.ol }}/${{ matrix.lang }}/${{ matrix.tag }}
           platforms: linux/amd64
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/${{ matrix.ol }}-${{ matrix.lang }}:${{ matrix.tag }}-${{ needs.prepare.outputs.date_stamp }}${{ matrix.multi && '-amd64' || '' }}"
             "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/${{ matrix.ol }}-${{ matrix.lang }}:${{ matrix.tag }}${{ matrix.multi && '-amd64' || '' }}"
@@ -170,13 +168,13 @@ jobs:
         with:
           context: OracleLinuxDevelopers/${{ matrix.ol }}/${{ matrix.lang }}/${{ matrix.tag }}
           platforms: linux/arm64
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/${{ matrix.ol }}-${{ matrix.lang }}:${{ matrix.tag }}-${{ needs.prepare.outputs.date_stamp }}-arm64"
             "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/${{ matrix.ol }}-${{ matrix.lang }}:${{ matrix.tag }}-arm64"
 
       - name: Manifest
-        if: matrix.multi
+        if: matrix.multi && github.event_name != 'pull_request'
         run: |
           docker buildx imagetools create --tag \
             "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/${{ matrix.ol }}-${{ matrix.lang }}:${{ matrix.tag }}-${{ needs.prepare.outputs.date_stamp }}" \
