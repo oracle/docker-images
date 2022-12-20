@@ -2,7 +2,7 @@
 # specific to most specific file path to assign code ownership.
 #
 *                          @Djelibeybi @gvenzl @mriccell @rjeberhard
-/.github/*.yml             @Djelibeybi
+/.github/                  @Djelibeybi
 /.github/workflows         @Djelibeybi @AmedeeBulle
 /GraalVM/                  @mzachh
 /NoSQL/                    @dario-vega @mikebrey
@@ -18,10 +18,10 @@
 /OracleInstantClient/      @cjbj
 /OracleInternetDirectory/  @pratdash-orcl @kuldeepbshah
 /OracleJava/               @aureliogrb
-/OracleLinuxDevelopers/    @Djelibeybi @totalamateurhour @AmedeeBulle
+/OracleLinuxDevelopers/    @Djelibeybi @AmedeeBulle
 /OracleRestDataServices/   @gvenzl
 /OracleSOASuite/           @knvijay @rdas0405
-/OracleUnifiedDirectory/   @kuldeepbshah 
+/OracleUnifiedDirectory/   @kuldeepbshah
 /OracleUnifiedDirectorySM/ @kuldeepbshah
 /OracleVeridata/           @arnabnandioracle
 /OracleWebCenterContent/   @deboghos @pjadam
