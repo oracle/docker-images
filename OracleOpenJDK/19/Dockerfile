@@ -26,9 +26,10 @@ FROM oraclelinux:8
 MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
 
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk19.0.1/afdd2e245b014143b62ccb916125e3ce/10/GPL \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk19.0.2/fdb695a9d9064ad6b064dc6df578380c/7/GPL \
 	JAVA_HOME=/usr/java/jdk-19 \
 	LANG=en_US.UTF-8
+	
 
 # If you need the Java Version you can read it from the release file with 
 #JAVA_VERSION=$(sed -n '/^JAVA_VERSION="/{s///;s/"//;p;}' "$JAVA_HOME"/release);
@@ -49,7 +50,7 @@ RUN set -eux; \
     if [ "$ARCH" == "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL/openjdk-19.0.1_linux-${ARCH}_bin.tar.gz" ; \
+    JAVA_PKG="$JAVA_URL/openjdk-19.0.2_linux-${ARCH}_bin.tar.gz" ; \
 	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
