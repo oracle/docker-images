@@ -25,7 +25,7 @@
 
 FROM oraclelinux:7-slim as builder
 
-MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
+LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 RUN set -eux; \
 	yum install -y \
@@ -43,9 +43,10 @@ ENV JAVA_HOME=/usr/java/jdk-11
 
 ##
 COPY *.tar.gz /tmp/
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH=$(uname -m) && \
-    if [ "$ARCH" == "x86_64" ]; \
+	ARCH="$(uname -m)" && \
+    if [ "$ARCH" = "x86_64" ]; \
     then \
 		mv $(ls /tmp/jdk-11*_linux-x64_bin.tar.gz) /tmp/jdk.tar.gz ; \
         JAVA_SHA256=462073438928ed55e8d763e622bae5f101dc0a61bc716435fd7e426867d25ff2 ; \

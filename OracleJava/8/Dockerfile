@@ -25,7 +25,7 @@
 
 FROM oraclelinux:7-slim as builder
 
-MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
+LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 # Since the files is compressed as tar.gz first yum install gzip and tar
 RUN set -eux; \
@@ -46,6 +46,7 @@ ENV JAVA_PKG=server-jre-8u361-linux-x64.tar.gz \
 	JAVA_HOME=/usr/java/jdk-8
 
 COPY $JAVA_PKG /tmp/jdk.tgz
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \

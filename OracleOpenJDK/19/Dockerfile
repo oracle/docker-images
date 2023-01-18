@@ -23,7 +23,7 @@
 
 FROM oraclelinux:8 
 
-MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
+LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 
 ENV JAVA_URL=https://download.java.net/java/GA/jdk19.0.2/fdb695a9d9064ad6b064dc6df578380c/7/GPL \
@@ -37,6 +37,7 @@ ENV JAVA_URL=https://download.java.net/java/GA/jdk19.0.2/fdb695a9d9064ad6b064dc6
 ENV	PATH $JAVA_HOME/bin:$PATH
 	
 # Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
 	dnf -y update; \
 	dnf install -y \
@@ -47,7 +48,7 @@ RUN set -eux; \
 	rm -rf /var/cache/dnf; \
 	ARCH=$(uname -m) && \
 	# Java uses just x64 in the name of the tarball
-    if [ "$ARCH" == "x86_64" ]; \
+    if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
     JAVA_PKG="$JAVA_URL/openjdk-19.0.2_linux-${ARCH}_bin.tar.gz" ; \

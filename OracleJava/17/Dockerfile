@@ -25,7 +25,7 @@
 
 FROM oraclelinux:8 as builder
 
-MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
+LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 # Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
 RUN set -eux; \
@@ -41,10 +41,11 @@ ENV JAVA_URL=https://download.oracle.com/java/17/latest \
 	JAVA_HOME=/usr/java/jdk-17
 
 ##
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
 	ARCH=$(uname -m) && \
 	# Java uses just x64 in the name of the tarball
-    if [ "$ARCH" == "x86_64" ]; \
+    if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
     JAVA_PKG="$JAVA_URL/jdk-17_linux-${ARCH}_bin.tar.gz" ; \
