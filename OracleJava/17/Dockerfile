@@ -43,15 +43,15 @@ ENV JAVA_URL=https://download.oracle.com/java/17/latest \
 ##
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH=$(uname -m) && \
+	ARCH="$(uname -m)" && \
 	# Java uses just x64 in the name of the tarball
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL/jdk-17_linux-${ARCH}_bin.tar.gz" ; \
-	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
+    JAVA_PKG="$JAVA_URL"/jdk-17_linux-"${ARCH}"_bin.tar.gz ; \
+	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
-	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c; \
+	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c; \
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 	
