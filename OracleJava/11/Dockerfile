@@ -25,7 +25,7 @@
 
 FROM oraclelinux:7-slim as builder
 
-MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
+LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 RUN set -eux; \
 	yum install -y \
@@ -43,15 +43,16 @@ ENV JAVA_HOME=/usr/java/jdk-11
 
 ##
 COPY *.tar.gz /tmp/
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH=$(uname -m) && \
-    if [ "$ARCH" == "x86_64" ]; \
+	ARCH="$(uname -m)" && \
+    if [ "$ARCH" = "x86_64" ]; \
     then \
-		mv $(ls /tmp/jdk-11*_linux-x64_bin.tar.gz) /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=ec4e2d98dae4a5342543b8c37cc764f9c0069d358522919c70ccde374fbe199a ; \
+		mv "$(ls /tmp/jdk-11*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+        JAVA_SHA256=462073438928ed55e8d763e622bae5f101dc0a61bc716435fd7e426867d25ff2 ; \
     else \
-	    mv $(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz) /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=d68bb1a266d78869111f038a61ba0c88658e87f7fcf9b776f1159d92d5b823b6 ; \    	
+	    mv "$(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+    	JAVA_SHA256=9888c78f8e50c2c83d2aaa941b610e1263b91a96214fa3840d33e3e20c709256 ; \    	
     fi && \
 	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
@@ -63,7 +64,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.17 \
+ENV JAVA_VERSION=11.0.18 \
 	JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
