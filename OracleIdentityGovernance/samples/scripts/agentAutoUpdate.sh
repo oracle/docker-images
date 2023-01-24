@@ -13,23 +13,22 @@
 
 cd "$1" || exit
 mkdir -p newpackage || true
-#source $1/data/conf/config.properties
 
 cd newpackage || exit
 #Download upgrade cli
 wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/fFvMAmluNZpv4P5dCzH7VsyJUYra5AMxhLiBSOa3AZuul4KtycxDuJtyUyWaweU4/n/idjypktnxhrf/b/agcs_ido_agent_updater/o/idm-agcs-agent-cli-upgrade.jar
 
 #Get Agent Package
-agentVersion=$(unzip -q -c  "$1"/agent-lcm/idm-agcs-agent-lcm.jar META-INF/MANIFEST.MF | grep "Agent-Version: " | awk '{print $2}' | tr -d '\n' | tr -d '\r')
+agentVersion=$(unzip -q -c  "$1"/data/agent/agent-lcm/idm-agcs-agent-lcm.jar META-INF/MANIFEST.MF | grep "Agent-Version: " | awk '{print $2}' | tr -d '\n' | tr -d '\r')
 if [ -f "$1"/cacerts ]
  then
    java \
    -Djavax.net.ssl.trustStore="$1"/cacerts \
    -Djavax.net.ssl.trustStorePassword=changeit \
-   -DidoConfig.logDir="$1"/data/logs \
-   -DidoConfig.metricsDir="$1"/data/metrics \
-   -DidoConfig.walletDir="$1"/data/wallet \
-   -DidoConfig.workDir="$1"/data \
+   -DidoConfig.logDir="$1"/newpackage\
+   -DidoConfig.metricsDir="$1"/newpackage \
+   -DidoConfig.walletDir="$1"/newpackage \
+   -DidoConfig.workDir="$1"/newpackage \
    -cp idm-agcs-agent-cli-upgrade.jar \
    com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
    --config "$1"/data/conf/config.json \
@@ -40,9 +39,9 @@ if [ -f "$1"/cacerts ]
  else
    java \
    -DidoConfig.logDir="$1"/data/logs \
-   -DidoConfig.metricsDir="$1"/data/metrics \
-   -DidoConfig.walletDir="$1"/data/wallet \
-   -DidoConfig.workDir="$1"/data \
+   -DidoConfig.metricsDir="$1"/newpackage \
+   -DidoConfig.walletDir="$1"/newpackage \
+   -DidoConfig.workDir="$1"/newpackage \
    -cp idm-agcs-agent-cli-upgrade.jar \
    com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
    --config "$1"/data/conf/config.json \
@@ -53,10 +52,24 @@ if [ -f "$1"/cacerts ]
 fi
 
 # shellcheck disable=SC2181
-if [  "$?" != "0" ]
+if [  "$?" = "0" ]
    then
-     exit 1
+     if [ -f "$1"/cacerts ]
+      then
+        mkdir "$1"/upgrade/
+        cp "$1"/cacerts "$1"/upgrade/
+     fi
+     if [ -f "$1"/data/conf/config.properties ]
+           then
+             curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentManagement.sh -o agentManagement.sh;  \
+             sh agentManagement.sh --volume "$1" --agentpackage agent-package.zip \
+             --config "$1"/data/conf/config.properties \
+             --upgrade
+           else
+             curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentManagement.sh -o agentManagement.sh;  \
+             sh agentManagement.sh --volume "$1" --agentpackage agent-package.zip \
+             --upgrade
+     fi
 fi
 
-curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentManagement.sh -o agentManagement.sh;  sh agentManagement.sh --volume "$1" --agentpackage agent-package.zip --upgrade
-rm -r "$1"/newpackage
+rm -rf "$1"/newpackage
