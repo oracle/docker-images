@@ -213,6 +213,12 @@ if [ "${AI}" == "" ];
    echo AI=agent_"$(hostname -f)"_"$(date +%s)" >> $ENV_FILE_TEMP
 fi
 
+if [ "${AU}" == "" ];
+ then
+   AU=true
+   echo AU=true >> $ENV_FILE_TEMP
+fi
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i "" -e "s/__AGENT_ID__/${AI}/g" "$CONFDIR"/config.json
 else
@@ -492,6 +498,7 @@ install()
    then
      source "$ENV_FILE"
   fi
+
   validateEmpty "${AP}" "Agent Package" "--agentpackage"
   validateEmpty "${PV}" "Volume" "--volume"
   if [[ ! -f "${AP}" ]]
@@ -520,11 +527,97 @@ install()
   fetchAgentContainerImage
   isValidChecksum
   loadImage
+  if [ "$AU" == "true" ]
+     then
+       enableAutoUpgrade
+  fi
   echo "INFO: Agent installed successfully. You can start the agent now."
   echo "isInstallSuccess=true" >> "$ENV_FILE_TEMP"
   cp "$ENV_FILE_TEMP" "$ENV_FILE"
 }
 
+enableAutoUpgrade(){
+
+  if [ -f "$ENV_FILE_TEMP" ]
+     then
+       source "$ENV_FILE_TEMP"
+  fi
+
+  if [ -f "$ENV_FILE" ]
+     then
+       source "$ENV_FILE"
+  fi
+  validateEmpty "${PV}" "Volume" "--volume"
+  detectJDKversion
+
+  if [ $errorFlag == "true" ]; then
+             echo "ABORTED: Please rectify the errors. Use -h/--help option for help"
+             exit 1
+  fi
+  crontab -l > autoupdatercron
+  alreadyExists=$(grep -rnw autoupdatercron -e "${AI}")
+  if [[ "" != "${alreadyExists}" ]]
+     then
+      echo "INFO: Auto Upgrade for the agent with id "${AI}" already exists. "
+     else
+      echo "INFO: Setting Up Auto Upgrade of the agent with id "${AI}". "
+      javaPath=$(which java | rev | cut -c6- | rev)
+      proxyUri=$(cat "$PV"/data/conf/config.properties | grep "idoConfig.httpClientConfiguration.proxyUri" | cut -d'=' -f2)
+      echo "INFO: Proxy URL is "${proxyUri}""
+      if [[ "${proxyUri}" != "" ]]
+       then
+         echo "0 0 * * * export HTTPS_PROXY="${proxyUri}";https_proxy="${proxyUri}";export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
+       else
+         echo "0 0 * * * export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
+      fi
+      crontab autoupdatercron
+      rm autoupdatercron
+      currentCron=$(crontab -l)
+      if [ "" == "${currentCron}" ]
+         then
+           echo "INFO: No cron exists. Please try again."
+         else
+           echo "INFO: List of the current cron tabs"
+           echo "${currentCron}"
+           echo "INFO: Successfully Set Up Auto Upgrade of the agent with id "${AI}"."
+      fi
+  fi
+}
+
+disableAutoUpgrade(){
+  if [ -f "$ENV_FILE_TEMP" ]
+       then
+         source "$ENV_FILE_TEMP"
+  fi
+
+  if [ -f "$ENV_FILE" ]
+       then
+         source "$ENV_FILE"
+  fi
+  validateEmpty "${PV}" "Volume" "--volume"
+  if [ $errorFlag == "true" ]; then
+             echo "ABORTED: Please rectify the errors. Use -h/--help option for help"
+             exit 1
+  fi
+  crontab -l > autoupdatercron
+  ifExists=$(grep -rnw autoupdatercron -e "${AI}")
+    if [[ "" == "${ifExists}" ]]
+       then
+        echo "INFO: Auto Upgrade for the agent with id "${AI}" does not exist. "
+       else
+        echo "INFO: Removing Auto Upgrade of the agent with id "${AI}". "
+        crontab -l | grep -v "${AI}"  | crontab -
+        rm autoupdatercron
+        currentCron=$(crontab -l)
+        if [ "" == "${currentCron}" ]
+           then
+             echo "INFO: No cron exists now."
+           else
+             echo "${currentCron}"
+        fi
+        echo "INFO: Successfully Removed Auto Upgrade of the agent with id "${AI}"."
+    fi
+}
 start()
 {
   if [ -f "$ENV_FILE" ]
@@ -766,6 +859,7 @@ uninstall(){
   fi
   echo "INFO: Uninstalling Agent"
   kill
+  disableAutoUpgrade
   if [ -d "${PV}" ]
    then
     echo "INFO: Removing agent data from "${PV}"  "
@@ -842,6 +936,7 @@ Help()
    echo ""
    echo "--start                1. Starts the agent container
                        2. Starts the agent daemon"
+   echo "--setupautoupgrade     1. Setup Auto Upgrade of the agent"
    echo ""
    echo "--status               1. Displays the status of the agent"
    echo ""
@@ -891,6 +986,7 @@ while [[ $# -gt 0 ]]; do
         "-pv"|"--volume" ) createDir "$1"; echo PV=$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1") >> $ENV_FILE_TEMP; shift;;
         "-h"|"--help"           )  Help; exit 1;;
         "-ai"|"--agentid" ) echo AI="$1" >> $ENV_FILE_TEMP; shift;;
+        "-au"|"--autoupgrade" ) echo AU="$1" >> $ENV_FILE_TEMP; shift;;
         "-ap"|"--agentpackage" ) echo AP=$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1") >> $ENV_FILE_TEMP; shift;;
         "-c"|"--config" ) configOverride=$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1"); shift;;
         "-nc"|"--newcontainer" ) newContainer=true;;
@@ -901,6 +997,8 @@ while [[ $# -gt 0 ]]; do
         "-u"|"--uninstall"           ) uninstall; exit 1;;
         "-s"|"--start"           ) start; exit 1;;
         "-sa"|"--status"           ) status; exit 1;;
+        "-eau"|"--enableautoupgrade"  ) enableAutoUpgrade; exit 1;;
+        "-dau"|"--disableautoupgrade"  ) disableAutoUpgrade; exit 1;;
         *                   ) echo "ERROR: agentManagement: Invalid option: \""$opt"\"" >&2
                                                   exit 1;;
   esac
