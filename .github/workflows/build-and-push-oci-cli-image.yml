@@ -40,7 +40,7 @@ jobs:
       - name: Lowercase repository owner
         id: repo-owner
         run: |
-          echo "repo_owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+          echo "repo-owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
 
       - name: Log into GitHub Container Registry
         if: github.event_name != 'pull_request'
