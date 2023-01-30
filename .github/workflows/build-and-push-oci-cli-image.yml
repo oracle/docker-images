@@ -40,7 +40,7 @@ jobs:
       - name: Repository owner needs to be lowercase
         id: repo-owner
         run: |
-          REPO_OWNER=${{ github.repository_owner }}
+          REPO_OWNER="${{ github.repository_owner }}"
           echo "repo-owner=${REPO_OWNER,,}" >> $GITHUB_OUTPUT
 
       - name: Log into GitHub Container Registry
