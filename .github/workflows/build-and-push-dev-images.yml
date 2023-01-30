@@ -153,7 +153,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image - amd64
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: OracleLinuxDevelopers/${{ matrix.ol }}/${{ matrix.lang }}/${{ matrix.tag }}
           platforms: linux/amd64
@@ -163,7 +163,7 @@ jobs:
             "ghcr.io/${{ needs.prepare.outputs.repository_owner }}/${{ matrix.ol }}-${{ matrix.lang }}:${{ matrix.tag }}${{ matrix.multi && '-amd64' || '' }}"
 
       - name: Build image - arm64
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         if: matrix.multi
         with:
           context: OracleLinuxDevelopers/${{ matrix.ol }}/${{ matrix.lang }}/${{ matrix.tag }}
