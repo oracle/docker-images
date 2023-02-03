@@ -8,11 +8,12 @@ execution.  The container images can be extended with optional Instant Client
 packages for ODBC, or to include tools such as Oracle SQL\*Loader.
 
 The base images support building and using scripting language APIs that
-internally call OCI.  These include [Python's
-cx_Oracle](https://yum.oracle.com/oracle-linux-python.html), [Node.js's
+internally call OCI.  These include [Python's python-oracledb Thick
+mode](https://oracle.github.io/python-oracledb/), [Node.js's
 node-oracledb](https://yum.oracle.com/oracle-linux-nodejs.html), [PHP's
 OCI8](https://yum.oracle.com/oracle-linux-php.html), [Go's
-godror](https://godror.github.io/godror/) and [Ruby's
+godror](https://godror.github.io/godror/), [Rust's
+rust-oracle](https://github.com/kubo/rust-oracle), and [Ruby's
 ruby-oci8](https://www.rubydoc.info/github/kubo/ruby-oci8).
 
 ## About Oracle Instant Client
@@ -34,15 +35,15 @@ have other restrictions.
 Pre-built images for Instant Client are in the [GitHub Container
 Registry](https://github.com/orgs/oracle/packages):
 
-  https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient
-  https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient
+  [oracle/packages/container/package/oraclelinux8-instantclient](https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient)
+  [oracle/packages/container/package/oraclelinux7-instantclient](https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient)
 
 They are built from the Dockerfiles in this repository.
 
 For example, to pull an Oracle Linux 8 image with Oracle Instant Client 21c
 already installed, execute:
 
-```
+```bash
 docker pull ghcr.io/oracle/oraclelinux8-instantclient:21
 ```
 
@@ -54,7 +55,7 @@ registry.
 Change directory to [`oraclelinux7/21`](oraclelinux7/21) or
 [`oraclelinux8/21`](oraclelinux8/21) and run:
 
-```
+```bash
 docker build --pull -t oracle/instantclient:21 .
 ```
 
@@ -72,7 +73,7 @@ Applications using Oracle Call Interface (OCI) 21 can connect to Oracle Database
 Change directory to [`oraclelinux7/19`](oraclelinux7/19) or
 [`oraclelinux8/19`](oraclelinux8/19) and run:
 
-```
+```bash
 docker build --pull -t oracle/instantclient:19 .
 ```
 
@@ -90,7 +91,7 @@ restrictions.
 
 Change directory to [`oraclelinux7/18`](oraclelinux7/18) and run:
 
-```
+```bash
 docker build --pull -t oracle/instantclient:18 .
 ```
 
@@ -116,7 +117,7 @@ Place the downloaded Oracle Instant Client RPMs (from the previous step) in the
 [`oraclelinux7/12.2.0.1`](oraclelinux7/12.2.0.1) directory, then switch to that
 directory and run:
 
-```
+```bash
 docker build --pull -t oracle/instantclient:12.2.0.1 .
 ```
 
@@ -129,7 +130,7 @@ restrictions.
 These Dockerfiles include SQL\*Plus so you can interactively run a container to
 execute ad-hoc SQL and PL/SQL statements against your database, for example:
 
-```
+```bash
 docker run -ti --rm oracle/instantclient:19 sqlplus hr@example.com/orclpdb1
 ```
 
@@ -160,7 +161,7 @@ a secure host directory.  Then, when running a container, use a volume to mount
 the files to the default Instant Client network configuration file directory,
 for example:
 
-```
+```bash
 docker run -v /my/host/wallet_dir:/usr/lib/oracle/21/client64/lib/network/admin:Z,ro . . .
 ```
 
