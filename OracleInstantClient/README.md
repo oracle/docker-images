@@ -8,11 +8,12 @@ execution.  The container images can be extended with optional Instant Client
 packages for ODBC, or to include tools such as Oracle SQL\*Loader.
 
 The base images support building and using scripting language APIs that
-internally call OCI.  These include [Python's
-cx_Oracle](https://yum.oracle.com/oracle-linux-python.html), [Node.js's
+internally call OCI.  These include [Python's python-oracledb Thick
+mode](https://oracle.github.io/python-oracledb/), [Node.js's
 node-oracledb](https://yum.oracle.com/oracle-linux-nodejs.html), [PHP's
 OCI8](https://yum.oracle.com/oracle-linux-php.html), [Go's
-godror](https://godror.github.io/godror/) and [Ruby's
+godror](https://godror.github.io/godror/), [Rust's
+rust-oracle](https://github.com/kubo/rust-oracle), and [Ruby's
 ruby-oci8](https://www.rubydoc.info/github/kubo/ruby-oci8).
 
 ## About Oracle Instant Client

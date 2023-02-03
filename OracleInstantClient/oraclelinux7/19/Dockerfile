@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
 #
 # Container image template for Oracle Instant Client
 #
@@ -30,7 +30,7 @@
 # cwallet.sso.  You can use a container volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.17/client64/lib/network/admin:Z,ro . . .
+#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.18/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -72,7 +72,7 @@
 FROM oraclelinux:7-slim
 
 ARG release=19
-ARG update=17
+ARG update=18
 
 RUN  yum -y install oracle-release-el7 && \
      yum -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
