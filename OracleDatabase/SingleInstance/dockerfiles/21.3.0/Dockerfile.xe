@@ -5,14 +5,14 @@
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 21c Express Edition
-# 
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # None
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Run: 
+# Run:
 #      $ docker build -t oracle/database:21.3.0-xe -f Dockerfile.xe .
 #
 #
@@ -60,26 +60,28 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 # -------------
 COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $INSTALL_DIR/
 
-RUN cd $INSTALL_DIR && \
-    mkdir -p $ORACLE_BASE && \
-    mv $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $ORACLE_BASE/ && \
-    chmod ug+x *.sh && \
-    sync && \
-    ./$CHECK_SPACE_FILE && \
-    yum -y install expect && \
-    ./$SETUP_LINUX_FILE && \
-    chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
-    sed -i -r 's/(^session\s+include\s+system-auth)/# \1/' /etc/pam.d/su && \
-    unbuffer yum -y install $INSTALL_FILE_1 && \
-    yum -y remove expect && \
-    rm -rf /var/cache/yum && \
-    rm -rf /var/tmp/yum-* && \
-    mv $CONF_FILE /etc/sysconfig/ && \
-    cd $HOME && \
-    rm -rf $INSTALL_DIR && \
-    $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh && \
-    echo 'export ORACLE_SID=XE' > .bashrc
+WORKDIR $INSTALL_DIR
+RUN mkdir -p $ORACLE_BASE
+RUN mv $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $ORACLE_BASE/
+RUN chmod ug+x *.sh
+RUN sync
+RUN ./$CHECK_SPACE_FILE
+RUN yum -y install expect
+RUN ./$SETUP_LINUX_FILE
+RUN chown -R oracle:oinstall $ORACLE_BASE /home/oracle
+RUN sed -i -r 's/(^session\s+include\s+system-auth)/# \1/' /etc/pam.d/su
+RUN unbuffer yum -y install $INSTALL_FILE_1
+RUN yum -y remove expect
+RUN rm -rf /var/cache/yum
+RUN rm -rf /var/tmp/yum-*
+RUN mv $CONF_FILE /etc/sysconfig/
+
+
+WORKDIR $HOME
+RUN rm -rf $INSTALL_DIR
+RUN $ORACLE_BASE/oraInventory/orainstRoot.sh
+RUN $ORACLE_HOME/root.sh
+RUN echo 'export ORACLE_SID=XE' > .bashrc
 
 USER oracle
 WORKDIR /home/oracle
