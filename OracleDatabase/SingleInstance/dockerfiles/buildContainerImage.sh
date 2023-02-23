@@ -87,7 +87,9 @@ checkPodmanVersion() {
 checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
-  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version | printf "%.5s" }}'|| exit 0)
+  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version}}' | grep -oE '^[0-9]+\.[0-9]+')
+  # Ensure 23.0 becomes 23.00
+  DOCKER_VERSION=$(printf "%.2f" "${DOCKER_VERSION}")
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
