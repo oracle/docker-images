@@ -5,9 +5,9 @@ For more information about Oracle REST Data Services (ORDS) please see the [ORDS
 ## How to build and run
 This project offers sample Dockerfiles for Oracle REST Data Services
  
-To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+To assist in building the images, you can use the [buildContainerImage.sh](dockerfiles/buildContainerImage.sh) script. See below for instructions and usage.
 
-The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
+The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle REST Data Services Install Images
 **IMPORTANT:** You can provide the installation binaries of ORDS and put them into the `dockerfiles` folder. You only need to provide the binaries for the version you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/developer-tools/rest-data-services/downloads/index.html) and placed in `OracleRestDataServices/dockerfiles` directory. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!  
@@ -20,7 +20,7 @@ The image builds on top of the `oracle/serverjre:8` image which is also provided
 ./buildContainerImage.sh -o '--build-arg BASE_IMAGE=<local-image>'
 ```
 
-Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have done that go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
+Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have done that go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
     
