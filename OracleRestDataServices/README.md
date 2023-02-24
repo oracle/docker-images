@@ -1,22 +1,25 @@
 # Oracle REST Data Services on Docker
-Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users. 
+
+Sample Docker build files to facilitate installation, configuration, and environment setup for DevOps users.
 For more information about Oracle REST Data Services (ORDS) please see the [ORDS Documentation](http://www.oracle.com/technetwork/developer-tools/rest-data-services/documentation/index.html).
 
 ## How to build and run
+
 This project offers sample Dockerfiles for Oracle REST Data Services
- 
+
 To assist in building the images, you can use the [buildContainerImage.sh](dockerfiles/buildContainerImage.sh) script. See below for instructions and usage.
 
 The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
 ### Building Oracle REST Data Services Install Images
+
 **IMPORTANT:** You can provide the installation binaries of ORDS and put them into the `dockerfiles` folder. You only need to provide the binaries for the version you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/developer-tools/rest-data-services/downloads/index.html) and placed in `OracleRestDataServices/dockerfiles` directory. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!  
 
 **If no binaries are provided, [the latest ords zip](https://download.oracle.com/otn_software/java/ords/ords-latest.zip) file is downloaded automatically.**
 
 The image builds on top of the `oracle/serverjre:8` image which is also provided in this repository, see [OracleJava](../OracleJava). This base image is fetched from the container registry. So for successful fetch the user needs to login to the [contaienr-registry](container-registry.oracle.com) and accept the license agreement. The user can also build the `oracle/serverjre:8` image locally before building this image using the [OracleJava](../OracleJava) repo. After building this image locally, the user can run the following command:
 
-```
+```text
 ./buildContainerImage.sh -o '--build-arg BASE_IMAGE=<local-image>'
 ```
 
@@ -92,14 +95,17 @@ To run your ORDS Docker image use the **docker run** command as follows:
 Once the container has been started and ORDS configured you can send REST calls to ORDS.
 
 ## Known issues
+
 None
 
 ## Support
 
 ## License
+
 To download and run ORDS, regardless whether inside or outside a Docker container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project and GitHub [docker-images/OracleRestDataServices](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License (UPL), Version 1.0.
 
 ## Copyright
+
 Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
