@@ -19,12 +19,13 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 The image builds on top of the `oracle/serverjre:8` image which is also provided in this repository, see [OracleJava](../OracleJava). This base image is fetched from the container registry. So for successful fetch the user needs to login to the [contaienr-registry](container-registry.oracle.com) and accept the license agreement. The user can also build the `oracle/serverjre:8` image locally before building this image using the [OracleJava](../OracleJava) repo. After building this image locally, the user can run the following command:
 
-```text
+```bash
 ./buildContainerImage.sh -o '--build-arg BASE_IMAGE=<local-image>'
 ```
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have done that go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
 
+```bash
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
     
     Usage: buildContainerImage.sh [-i] [-o] [Docker build option]
@@ -37,6 +38,7 @@ Before you build the image make sure that you have provided the installation bin
     LICENSE UPL 1.0
     
     Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+```
 
 **IMPORTANT:** The resulting images will be an image with the ORDS binaries installed. On first startup of the container ORDS will be setup.
 
@@ -46,23 +48,30 @@ Before you run your ORDS Docker container you will have to specify a network in 
 In order to do so you need to create a [user-defined network](https://docs.docker.com/engine/userguide/networking/#user-defined-networks) first.
 This can be done via following command:
 
-    docker network create <your network name> 
+```bash
+    docker network create <your network name>
+```
 
 Once you have created the network you can double check by running:
 
+```bash
     docker network ls
+```
 
 You should see your network, amongst others, in the output.
 
 As a next step you will have to start your database container with the specified network. This can be done via the `docker run` `--network` option, for example:
 
+```bash
     docker run --name oracledb --network=<your network name> oracle/database:12.2.0.1-ee
+```
 
 The database container will be visible within the network by its name passed on with the `--name` option, in the example above **oracledb**.
 Once your database container is up and running and the database available, you can run a new ORDS container.
 
 To run your ORDS Docker image use the **docker run** command as follows:
 
+```bash
     docker run --name <container name> \
     --network=<name of your created network> \
     -p <host port>:8888 \
@@ -91,6 +100,7 @@ To run your ORDS Docker image use the **docker run** command as follows:
                           The data volume to use for the ORDS configuration files.
                           Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
                           If omitted the ORDS configuration files will not be persisted over container recreation.
+```
 
 Once the container has been started and ORDS configured you can send REST calls to ORDS.
 
