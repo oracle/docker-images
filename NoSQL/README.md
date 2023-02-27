@@ -105,9 +105,9 @@ Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false] 
 Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 22.3.32 2023-02-14
 19:38:03 UTC  Build id: 23acbda81a26 Edition: Community    isMasterBalanced: true      serviceStartTime: 2023-02-27 06:24:27 UTC
         Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2023-02-27 06:24:30 UTC       stateChangeTime: 2023-02-27 06:24:30 UTC        
-		availableStorageSize: 2 GB
+availableStorageSize: 2 GB
         Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 314 haPort: 5011 availableStorageSize: 9 GB storageType: HD      
-		serviceStartTime: 2023-02-27 06:24:33 UTC       stateChangeTime: 2023-02-27 06:24:34 UTC
+serviceStartTime: 2023-02-27 06:24:33 UTC       stateChangeTime: 2023-02-27 06:24:34 UTC
   
   kv-> put kv -key /SomeKey -value SomeValue
   Operation successful, record inserted.
