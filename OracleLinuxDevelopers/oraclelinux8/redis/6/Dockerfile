@@ -3,7 +3,7 @@
 
 FROM ghcr.io/oracle/oraclelinux:8
 
-RUN dnf -y module enable redis:5 && \
+RUN dnf -y module enable redis:6 && \
     dnf install -y redis && \
     rm -rf /var/cache/dnf
 
