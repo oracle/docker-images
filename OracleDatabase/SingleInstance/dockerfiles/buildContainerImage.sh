@@ -35,6 +35,14 @@ EOF
 
 }
 
+verlte() {
+  [ "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
+}
+
+verlt() {
+  [ "$1" = "$2" ] && return 1 || verlte $1 $2
+}
+
 # Validate packages
 checksumPackages() {
   if hash md5sum 2>/dev/null; then
@@ -71,15 +79,13 @@ checkPodmanVersion() {
   echo "Checking Podman version."
   PODMAN_VERSION=$("${CONTAINER_RUNTIME}" info --format '{{.host.BuildahVersion}}' 2>/dev/null ||
                    "${CONTAINER_RUNTIME}" info --format '{{.Host.BuildahVersion}}')
-  # Remove dot in Podman version
-  PODMAN_VERSION=${PODMAN_VERSION//./}
+  
+  res=$(verlt $PODMAN_VERSION $MIN_PODMAN_VERSION && echo "yes" || echo "no")
 
-  if [ -z "${PODMAN_VERSION}" ]; then
-    exit 1;
-  elif [ "${PODMAN_VERSION}" -lt "${MIN_PODMAN_VERSION//./}" ]; then
+  if [ res == "yes" ]; then
     echo "Podman version is below the minimum required version ${MIN_PODMAN_VERSION}"
     echo "Please upgrade your Podman installation to proceed."
-    exit 1;
+    exit 1
   fi
 }
 
@@ -88,14 +94,14 @@ checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
   DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version | printf "%.5s" }}'|| exit 0)
-  # Remove dot in Docker version
-  DOCKER_VERSION=${DOCKER_VERSION//./}
+  
+  res=$(verlt $DOCKER_VERSION $MIN_DOCKER_VERSION && echo "yes" || echo "no")
 
-  if [ "${DOCKER_VERSION}" -lt "${MIN_DOCKER_VERSION//./}" ]; then
+  if [ res == "yes" ]; then
     echo "Docker version is below the minimum required version ${MIN_DOCKER_VERSION}"
     echo "Please upgrade your Docker installation to proceed."
-    exit 1;
-  fi;
+    exit 1
+  fi
 }
 
 ##############
