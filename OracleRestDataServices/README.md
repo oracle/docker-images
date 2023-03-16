@@ -9,7 +9,7 @@ This project offers sample Dockerfiles for Oracle REST Data Services
 
 To assist in building the images, you can use the [buildContainerImage.sh](dockerfiles/buildContainerImage.sh) script. See below for instructions and usage.
 
-The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
+The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their preferred set of parameters.
 
 ### Building Oracle REST Data Services Install Images
 
@@ -18,7 +18,7 @@ The binaries can be downloaded from the [Oracle Technology Network](http://www.o
 
 **If no binaries are provided, [the latest ords zip](https://download.oracle.com/otn_software/java/ords/ords-latest.zip) file is downloaded automatically.**
 
-The image builds on top of the `oracle/serverjre:8` image which is also provided in this repository, see [OracleJava](../OracleJava). This base image is fetched from the container registry. So for successful fetch the user needs to login to the [contaienr-registry](container-registry.oracle.com) and accept the license agreement.\
+The image builds on top of the `oracle/serverjre:8` image which is also provided in this repository, see [OracleJava](../OracleJava). This base image is fetched from the container registry. So for successful fetch the user needs to login to the [container-registry](container-registry.oracle.com) and accept the license agreement.\
 The user can also build the `oracle/serverjre:8` image locally before building this image using the [OracleJava](../OracleJava) repo. After building this image locally, the user can run the following command:
 
 ```bash
@@ -46,7 +46,7 @@ Before you build the image make sure that you have provided the installation bin
 
 ### Running Oracle REST Data Services in a Docker container
 
-Before you run your ORDS Docker container you will have to specify a network in wich ORDS will communicate with the database you would like it to expose via REST.
+Before you run your ORDS Docker container you will have to specify a network in which ORDS will communicate with the database you would like it to expose via REST.
 In order to do so you need to create a [user-defined network](https://docs.docker.com/engine/userguide/networking/#user-defined-networks) first.
 This can be done via following command:
 
