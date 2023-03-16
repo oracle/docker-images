@@ -1,11 +1,11 @@
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
 FROM openjdk:17-oraclelinux8
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
-ARG KV_VERSION=21.2.46
+ARG KV_VERSION=22.3.32
 ARG DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 ARG DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
 ARG DOWNLOAD_LINK="${DOWNLOAD_ROOT}/${DOWNLOAD_FILE}"

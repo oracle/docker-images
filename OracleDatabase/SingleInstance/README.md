@@ -146,8 +146,8 @@ To run your Oracle Database image use the `docker run` command as follows:
 
 Once the container has been started and the database created you can connect to it just like to any other database:
 
-    sqlplus sys/<your password>@//localhost:1521/<your SID> as sysdba
-    sqlplus system/<your password>@//localhost:1521/<your SID>
+    sqlplus sys/<your password>@//localhost:1521/<your service name> as sysdba
+    sqlplus system/<your password>@//localhost:1521/<your service name>
     sqlplus pdbadmin/<your password>@//localhost:1521/<Your PDB name>
 
 The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
