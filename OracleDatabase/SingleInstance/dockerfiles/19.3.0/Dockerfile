@@ -35,7 +35,7 @@ LABEL "provider"="Oracle"                                               \
       "port.oemexpress"="5500"
 
 # Argument to control removal of components not needed after db software installation
-ARG SLIMMING=true
+ARG SLIMMING=false
 ARG INSTALL_FILE_1="LINUX.X64_193000_db_home.zip"
 
 # Environment variables required for this build (do NOT change)
@@ -79,6 +79,11 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
     LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib \
     CLASSPATH=$ORACLE_HOME/jlib:$ORACLE_HOME/rdbms/jlib
 
+# Environment variables for patching
+ENV HOST_PATCH_DIR="patches" \
+    PATCH_DIR=/opt/install/patches \
+    PATCH_DB_BINARIES_FILE="patchDBBinaries.sh"
+
 # Copy files needed during both installation and runtime
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
@@ -111,6 +116,14 @@ RUN chmod ug+x $INSTALL_DIR/*.sh && \
     sync && \
     $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE $DB_EDITION
 
+# Copy DB patches
+COPY --chown=oracle:dba $HOST_PATCH_DIR $PATCH_DB_BINARIES_FILE $PATCH_DIR/
+
+# Apply DB Patches
+RUN chmod ug+x $PATCH_DIR/*.sh && \
+    sync && \
+    $PATCH_DIR/$PATCH_DB_BINARIES_FILE
+
 
 
 #############################################
@@ -133,6 +146,19 @@ WORKDIR /home/oracle
 
 # Add a bashrc file to capitalize ORACLE_SID in the environment
 RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
+
+# Environment variables for patching
+ENV DATAPATCH_FILE="runDatapatch.sh" \
+    LSPATCHES_FILE="savePatchSummary.sh" \
+    SKIP_DATAPATCH=false
+
+# Copy script to run datapatch
+COPY --chown=oracle:dba $DATAPATCH_FILE $ORACLE_BASE/scripts/extensions/startup/
+RUN chmod ug+x $ORACLE_BASE/scripts/extensions/startup/*.sh && sync
+
+# Copy script to run lspatches
+COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup/
+RUN chmod ug+x $ORACLE_BASE/scripts/extensions/setup/*.sh && sync
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
