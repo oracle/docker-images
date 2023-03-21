@@ -1,7 +1,7 @@
 # Copyright (c) 2022, 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
-FROM openjdk:17-oraclelinux8
+FROM ghcr.io/graalvm/jdk:ol8-java17
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
@@ -17,13 +17,13 @@ ENV KV_PORT 5000
 ENV KV_HARANGE 5010-5020
 ENV KV_SERVICERANGE 5021-5049
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# hadolint ignore=DL4006
 RUN curl -OLs $DOWNLOAD_LINK  && \
     jar tf $DOWNLOAD_FILE | grep "kv-$KV_VERSION/lib" > extract.libs && \
     jar xf $DOWNLOAD_FILE @extract.libs && \
     rm -f $DOWNLOAD_FILE extract.libs
 
-WORKDIR "/kv-$KV_VERSION"
+WORKDIR "/app/kv-$KV_VERSION"
 
 COPY start-kvlite.sh .
 RUN chmod +x start-kvlite.sh
