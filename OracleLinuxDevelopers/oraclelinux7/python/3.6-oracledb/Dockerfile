@@ -8,11 +8,10 @@ RUN yum -y install oraclelinux-developer-release-el7 && \
                    python3-pip \
                    python3-setuptools \
                    python3-oracledb && \
+    # Optionally install Oracle Instant Client if you want to use python-oracledb Thick mode
+    # yum -y install oracle-instantclient-release-el7 && \
+    # yum -y install oracle-instantclient-basic && \
     rm -rf /var/cache/yum/*
 
-# Optionally install Oracle Instant Client to use python-oracledb Thick mode
-#RUN yum -y install oracle-instantclient-release-el7 && \
-#    yum -y install oracle-instantclient-basic && \
-#    rm -rf /var/cache/yum/*
 
-CMD ["/bin/python3","--version"]
+CMD ["/bin/python3", "--version"]
