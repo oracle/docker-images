@@ -1,21 +1,21 @@
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle OpenJDK 16
+# This is the Dockerfile for Oracle OpenJDK 20
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) openjdk-19.xx_linux-x64_bin.tar.gz
-#     Downloaded from https://jdk.java.net/19/
+# (1) openjdk-20.xx_linux-x64_bin.tar.gz
+#     Downloaded from https://jdk.java.net/20/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/openjdk:19 .
+#      $ docker build -t oracle/openjdk:20 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -26,8 +26,8 @@ FROM oraclelinux:8
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk19.0.2/fdb695a9d9064ad6b064dc6df578380c/7/GPL \
-	JAVA_HOME=/usr/java/jdk-19 \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk20/bdc68b4b9cbc4ebcb30745c85038d91d/36/GPL \
+	JAVA_HOME=/usr/java/jdk-20 \
 	LANG=en_US.UTF-8
 	
 
@@ -51,7 +51,7 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL"/openjdk-19.0.2_linux-"${ARCH}"_bin.tar.gz ; \
+    JAVA_PKG="$JAVA_URL"/openjdk-20_linux-"${ARCH}"_bin.tar.gz ; \
 	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c -; \
