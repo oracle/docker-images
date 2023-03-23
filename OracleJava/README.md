@@ -35,7 +35,7 @@ $ bash build.sh
 The Oracle Java images for JDK 17 and 20 use `oraclelinux:8` as the parent image.
 The Oracle Java image for JDK 11 and Server JRE 8 use `oraclelinux:7-slim` as the parent image.
 
-JDK 11 and Server JRE 8 allow for optionally building on `oraclelinux8:8` by using `Dockerfile.8` rather than `Dockerfile`.
+JDK 11 and Server JRE 8 allow for optionally building on `oraclelinux:8` by using `Dockerfile.8` rather than `Dockerfile`.
 
 e.g. to build JDK 11 with Oracle Linux 8 rather than the default Oracle Linux 7 run
 
