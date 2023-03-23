@@ -223,8 +223,8 @@ Similarly, to disable TCPS connections for the database, please use the followin
 
 To configure  wallet password, please use the following command:
 
-   # Setup TCPS for port 16002 and pass wallet password as argument
-   docker exec -it <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
+    # Setup TCPS for port 16002 and pass wallet password as argument
+    docker exec -it <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
 
 **NOTE**:
 

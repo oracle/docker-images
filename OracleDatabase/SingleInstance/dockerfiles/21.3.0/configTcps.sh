@@ -142,13 +142,13 @@ elif [[ "$1" =~ ^[0-9]+$ ]]; then
   TCPS_PORT=${TCPS_PORT:-"$1"}
   HOSTNAME="$2"
    # Optional wallet password
-  if [[ ! -z "$3" ]]; then
+  if [[ -n "$3" ]]; then
       WALLET_PWD="$3"
   fi
 else
   HOSTNAME="$1"
   # Optional wallet password
-  if [[ ! -z "$2" ]]; then
+  if [[ -n "$2" ]]; then
       WALLET_PWD="$2"
   fi
 fi
