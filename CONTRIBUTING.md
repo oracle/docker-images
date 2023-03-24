@@ -219,8 +219,8 @@ merged, but are generally frowned upon if breached.
   any defaults that are used if no input is provided.
 * If a custom value must be provided by the end-user, the build or run should
   gracefully fail if that value is not provided.
-  
-  ## Code of conduct
+
+## Code of conduct
 
 Follow the [Golden Rule](https://en.wikipedia.org/wiki/Golden_Rule). If you'd
 like more specific guidelines, see the [Contributor Covenant Code of Conduct][COC].
