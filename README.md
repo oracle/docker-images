@@ -72,3 +72,18 @@ open an [issue on GitHub](https://github.com/oracle/docker-images/issues).
 If you need general support with running containers on Oracle Linux, you can submit
 a question under the [Containers and Orchestration](https://community.oracle.com/tech/apps-infra/categories/containers-and-orchestration)
 category of the Applications and Infrastructure Community of Oracle Communities.
+
+## Contributing
+
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md)
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process
+
+## License
+
+Copyright (c) 2019, 2023 Oracle and/or its affiliates.
+
+Released under the Universal Permissive License v1.0 as shown at
+<https://oss.oracle.com/licenses/upl/>.
