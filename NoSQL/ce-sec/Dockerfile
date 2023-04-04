@@ -21,6 +21,18 @@ ENV KV_SERVICERANGE 5021-5049
 RUN microdnf -y install openssl-1.1.1k && microdnf clean all
 
 # hadolint ignore=DL4006
+RUN useradd -d /kvroot  -m -s /bin/bash -u 1000 nosql && \
+    mkdir -p /kvroot && \
+    chown -R nosql /kvroot && \
+    mkdir -p /shared_conf && \
+    chown -R nosql /shared_conf && \
+    chown -R nosql /app/
+
+USER nosql
+
+WORKDIR "/app"
+
+# hadolint ignore=DL4006
 RUN curl -OLs $DOWNLOAD_LINK  && \
     jar tf $DOWNLOAD_FILE | grep "kv-$KV_VERSION/lib" > extract.libs && \
     jar xf $DOWNLOAD_FILE @extract.libs && \
@@ -28,11 +40,10 @@ RUN curl -OLs $DOWNLOAD_LINK  && \
 
 WORKDIR "/app/kv-$KV_VERSION"
 
-COPY start-kvlite.sh .
+COPY --chown=nosql start-kvlite.sh .
 RUN chmod +x start-kvlite.sh
-COPY sec/* sec/
-RUN ls sec/*   && \
-    chmod +x sec/setup-http-proxy-sec.sh
+COPY --chown=nosql sec/* sec/
+RUN chmod +x sec/setup-http-proxy-sec.sh
 
 VOLUME ["/kvroot"]
 
