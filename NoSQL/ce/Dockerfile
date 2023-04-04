@@ -18,16 +18,27 @@ ENV KV_HARANGE 5010-5020
 ENV KV_SERVICERANGE 5021-5049
 
 # hadolint ignore=DL4006
-RUN curl -OLs $DOWNLOAD_LINK  && \
+RUN useradd -d /kvroot  -m -s /bin/bash -u 1000 nosql && \
+    mkdir -p /kvroot && \
+    chown -R nosql /kvroot && \
+    chown -R nosql /app/
+
+USER nosql
+
+WORKDIR "/app"
+
+# hadolint ignore=DL4006
+RUN curl -OLs $DOWNLOAD_LINK && \
     jar tf $DOWNLOAD_FILE | grep "kv-$KV_VERSION/lib" > extract.libs && \
     jar xf $DOWNLOAD_FILE @extract.libs && \
     rm -f $DOWNLOAD_FILE extract.libs
 
 WORKDIR "/app/kv-$KV_VERSION"
 
-COPY start-kvlite.sh .
+COPY --chown=nosql start-kvlite.sh .
 RUN chmod +x start-kvlite.sh
 
 VOLUME ["/kvroot"]
 
 CMD ["bash", "-c", "./start-kvlite.sh"]
+
