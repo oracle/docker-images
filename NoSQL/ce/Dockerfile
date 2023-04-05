@@ -18,12 +18,10 @@ ENV KV_HARANGE 5010-5020
 ENV KV_SERVICERANGE 5021-5049
 
 # hadolint ignore=DL4006
-RUN useradd -d /kvroot  -m -s /bin/bash -u 1000 nosql && \
-    mkdir -p /kvroot && \
-    chown -R nosql /kvroot && \
-    chown -R nosql /app/
+RUN useradd -d /kvroot  -m -s /bin/bash -u 1000 nosql-user && \
+    chown -R nosql-user /app/
 
-USER nosql
+USER nosql-user
 
 WORKDIR "/app"
 
@@ -35,10 +33,9 @@ RUN curl -OLs $DOWNLOAD_LINK && \
 
 WORKDIR "/app/kv-$KV_VERSION"
 
-COPY --chown=nosql start-kvlite.sh .
+COPY --chown=nosql-user start-kvlite.sh .
 RUN chmod +x start-kvlite.sh
 
 VOLUME ["/kvroot"]
 
 CMD ["bash", "-c", "./start-kvlite.sh"]
-

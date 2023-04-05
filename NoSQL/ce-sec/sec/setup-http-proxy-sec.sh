@@ -11,22 +11,19 @@ fi
 mkdir -p /kvroot/proxy/
 
 echo "Creating password"
-openssl rand -out sec/pwd -base64 14
-cp sec/pwd /kvroot/proxy/pwdin
-cp sec/pwd /kvroot/proxy/pwdout
-TMPPWD=$(cat sec/pwd)
+TMPPWD="$(gpg --gen-random --armor 2 8)$(gpg --gen-random --armor 2 8)"
 
 echo "Creating USER proxy_user"
 
 java -jar lib/sql.jar -helper-hosts localhost:5000 -store kvstore -security /kvroot/security/user.security <<EOF
-CREATE USER proxy_user IDENTIFIED BY "${TMPPWD}12aB@@";
+CREATE USER proxy_user IDENTIFIED BY "${TMPPWD}";
 EOF
 
 
 echo "Creating proxy secfiles"
 
 java -jar lib/kvstore.jar securityconfig pwdfile create -file /kvroot/proxy/proxy.passwd
-java -jar lib/kvstore.jar securityconfig pwdfile secret -file /kvroot/proxy/proxy.passwd -set -alias proxy_user -secret "${TMPPWD}12aB@@"
+java -jar lib/kvstore.jar securityconfig pwdfile secret -file /kvroot/proxy/proxy.passwd -set -alias proxy_user -secret "${TMPPWD}"
 cp /kvroot/security/client.trust /kvroot/proxy/client.trust
 cp /kvroot/security/client.security /kvroot/proxy/proxy.login
 echo "oracle.kv.auth.username=proxy_user" >> /kvroot/proxy/proxy.login
@@ -34,6 +31,10 @@ echo "oracle.kv.auth.pwdfile.file=proxy.passwd" >> /kvroot/proxy/proxy.login
 
 
 echo "Creating certificate"
+openssl rand -out sec/pwd -base64 14
+cp sec/pwd /kvroot/proxy/pwdin
+cp sec/pwd /kvroot/proxy/pwdout
+
 openssl req -x509 -days 365 -newkey rsa:4096 -keyout /kvroot/proxy/key.pem -out /kvroot/proxy/certificate.pem -subj "/CN=${HOSTNAME}" -passin file:/kvroot/proxy/pwdin -passout file:/kvroot/proxy/pwdout \
 -extensions san -config \
  <(echo "[req]";
