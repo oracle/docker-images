@@ -21,7 +21,7 @@ function setupNetworkConfig {
 
   # sqlnet.ora
   echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)
-  DISABLE_OOB=ON" > "$ORACLE_HOME"/network/admin/sqlnet.ora
+DISABLE_OOB=ON" > "$ORACLE_HOME"/network/admin/sqlnet.ora
 
   # listener.ora
   echo "LISTENER = 
