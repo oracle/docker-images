@@ -1,6 +1,6 @@
 # Build Extensions
 
-After creating the base image using buildDockerImage.sh, use buildExtensions.sh to build an extended image that will include all features present under the extensions folder.
+After creating the base image using buildContainerImage.sh, use buildExtensions.sh to build an extended image that will include all features present under the extensions folder.
 
 Once you have created the base image, go into the **extensions** folder and run the **buildExtensions.sh** script:
 

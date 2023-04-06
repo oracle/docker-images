@@ -347,8 +347,8 @@ For more information on [Oracle NoSQL][NOSQL] please review the
 
 Oracle NoSQL Community Edition is released under the [Apache 2.0 License][Apache-2.0].
 
-The Oracle NoSQL Database Community Edition image contains the Oracle OpenJDK which is
-licensed under the [GNU General Public License v2.0 with Classpath Exception][GPLv2+CE]
+The Oracle NoSQL Database Community Edition image image uses the GraalVM CE container image as its base image.
+It is licensed under the [GNU General Public License v2.0 with Classpath Exception][GraalVM-License]
 
 The files in this repository are licensed under the [Universal Permissive License 1.0](/LICENSE.txt)
 
@@ -358,9 +358,9 @@ Oracle provides no commercial support for the Oracle NoSQL Community Edition.
 
 ## Copyright
 
-Copyright (c) 2017, 2022 Oracle and/or its affiliates.
+Copyright (c) 2017, 2023 Oracle and/or its affiliates.
 
 [NOSQL]: http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html
 [DOCS]: https://docs.oracle.com/en/database/other-databases/nosql-database/index.html
 [Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/22.3/license/index.html#NSXLI-GUID-006E432E-1965-45A2-AEDE-204BD05E1560
-[GPLv2+CE]: http://openjdk.java.net/legal/gplv2+ce.html
+[GraalVM-License]: https://github.com/graalvm/container/blob/master/LICENSE.md

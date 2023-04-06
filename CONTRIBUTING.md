@@ -1,7 +1,7 @@
 # Contribution guidelines
 
 <!-- markdownlint-disable MD036 -->
-*Last updated: November 2022*
+*Last updated: March 2023*
 
 Oracle welcomes contributions to this repository from anyone.
 
@@ -12,7 +12,7 @@ submit your pull request.
 If you have any questions about a possible submission, we encourage you to start
 a discussion about the contribution to get feedback from other users.
 
-## Contributing to the Oracle Docker Images repository
+## Contributing code
 
 All contributors are expected to adhere to our [code of conduct](CODE_OF_CONDUCT.md).
 
@@ -44,6 +44,14 @@ If you wish to nominate additional or alternative users, they must be a visible
 member of the [Oracle GitHub Organisation](https://github.com/orgs/oracle/people/).
 
 Contact [Avi Miller](https://github.com/Djelibeybi) for more information.
+
+## Opening issues
+
+For bugs or enhancement requests, please file a GitHub issue unless it's
+security related. When filing a bug remember that the better written the bug is,
+the more likely it is to be fixed. If you think you've found a security
+vulnerability, do not raise a GitHub issue and follow the instructions in our
+[security policy](./SECURITY.md).
 
 ## Pull request process
 
@@ -212,4 +220,11 @@ merged, but are generally frowned upon if breached.
 * If a custom value must be provided by the end-user, the build or run should
   gracefully fail if that value is not provided.
 
-Copyright (c) 2017, 2022 Oracle and/or its affiliates.
+## Code of conduct
+
+Follow the [Golden Rule](https://en.wikipedia.org/wiki/Golden_Rule). If you'd
+like more specific guidelines, see the [Contributor Covenant Code of Conduct][COC].
+
+[COC]: https://www.contributor-covenant.org/version/1/4/code-of-conduct/
+
+Copyright (c) 2017, 2023 Oracle and/or its affiliates.

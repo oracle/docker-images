@@ -141,8 +141,16 @@ elif [[ "$1" =~ ^[0-9]+$ ]]; then
   # If TCPS_PORT is not set in the environment, honor the TCPS_PORT passed as the positional argument
   TCPS_PORT=${TCPS_PORT:-"$1"}
   HOSTNAME="$2"
+   # Optional wallet password
+  if [[ -n "$3" ]]; then
+      WALLET_PWD="$3"
+  fi
 else
   HOSTNAME="$1"
+  # Optional wallet password
+  if [[ -n "$2" ]]; then
+      WALLET_PWD="$2"
+  fi
 fi
 
 # Default TCPS_PORT value
