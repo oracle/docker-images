@@ -43,7 +43,8 @@ fi;
 
 # Create network related config files (sqlnet.ora, tnsnames.ora, listener.ora)
 mkdir -p $ORACLE_HOME/network/admin
-echo "NAME.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)" > $ORACLE_HOME/network/admin/sqlnet.ora
+echo "NAME.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)
+DISABLE_OOB=ON" > $ORACLE_HOME/network/admin/sqlnet.ora
 
 # Listener.ora
 echo "LISTENER = 
