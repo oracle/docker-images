@@ -257,7 +257,7 @@ BUILD_START=$(date '+%s')
 }
 
 # Remove dangling images (intermitten images with tag <none>)
-yes | "${CONTAINER_RUNTIME}" image prune > /dev/null
+yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))
