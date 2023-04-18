@@ -103,14 +103,14 @@ checkDockerVersion() {
 ##############
 
 # Go into dockerfiles directory
-cd $(dirname $0)
+cd "$(dirname "$0")"
 
 # Parameters
 ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
 # Obtaining the latest version to build
-VERSION="$(ls -1rd *.*.* | sed -n 1p)"
+VERSION="$(find -- *.*.* -type d | tail -n 1)"
 SKIPMD5=0
 declare -a BUILD_OPTS
 MIN_DOCKER_VERSION="17.09"
@@ -248,7 +248,7 @@ echo "Building image '${IMAGE_NAME}' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION=${EDITION} \
+       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
   echo ""
   echo "ERROR: Oracle Database container image was NOT successfully created."
@@ -257,7 +257,7 @@ BUILD_START=$(date '+%s')
 }
 
 # Remove dangling images (intermitten images with tag <none>)
-yes | "${CONTAINER_RUNTIME}" image prune > /dev/null
+yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))
