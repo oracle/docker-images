@@ -103,7 +103,7 @@ checkDockerVersion() {
 ##############
 
 # Go into dockerfiles directory
-cd $(dirname $0)
+cd "$(dirname $0)"
 
 # Parameters
 ENTERPRISE=0
@@ -248,7 +248,7 @@ echo "Building image '${IMAGE_NAME}' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION=${EDITION} \
+       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
   echo ""
   echo "ERROR: Oracle Database container image was NOT successfully created."
