@@ -154,12 +154,15 @@ Solutions to common issues when running Management Agent in a container are desc
 
 1. Management Agent registration failures due to old state files from a prior install
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD046 -->
     * Once a Management Agent instance is deregistered that instance must be shutdown and any associated state files must be removed from the filesystem. Starting a deregistered Management Agent instance again can result in unregistered agent failures. This situation can present itself when old state files from a prior installation are present on the filesystem and made available to a new Management Agent container deployment. Run the command given below on the host filesystem to perform the necessary cleanup on the bind mount location and perform the deployment again starting at the prerequisites step.
-<!-- markdownlint-enable MD013 -->
+
     ```shell
     # cleanup old files from prior installation
     $ rm -rf /home/$USER/oracle/
     ```
+<!-- markdownlint-enable MD046 -->
+<!-- markdownlint-enable MD013 -->
 
 ## Helpful commands
 
