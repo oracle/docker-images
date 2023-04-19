@@ -1,4 +1,5 @@
 # Oracle Management Agent Container Image
+
 **Important: The container files version 1.0.0 require elevated privileges to create a local system account used to run the Oracle Management Agent. In secure environments it is less desirable to allow privilege escalation and therefore the container files version 1.0.0 found here are no longer maintained, they simply exist here for historical references. Please use the latest container files instead which provide a more secure way to run both the container and the Oracle Management Agent.**
 
 This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux and Oracle OpenJDK 8.
@@ -7,12 +8,11 @@ The certification of Oracle Management Agent in a container does not require the
 repository. Customers and users are welcome to use them as starters, and customize/tweak, or create
 from scratch new scripts and Dockerfiles.
 
-
 ## How to build and run
 
 Oracle Management Agent image uses the official `oraclelinux:7-slim` container image as the base image.
 
-#### Prerequisites
+### Prerequisites
 
 1. [Download the Management Agent software](https://cloud.oracle.com/macs)
 
@@ -21,6 +21,7 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Copy the downloaded bundle to the same directory as the Dockerfile
 
     ```shell
+    # stage install bundle
     $ cp oracle.mgmt_agent.zip OracleManagementAgent/dockerfiles/1.0.0/
     ```
 
@@ -29,36 +30,43 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Copy the downloaded install key to the same directory as the Dockerfile
 
     ```shell
+    # stage install key
     $ cp input.rsp OracleManagementAgent/dockerfiles/1.0.0/
     ```
 
 1. Change to the directory in which the `Dockerfile` for this container image is located
 
     ```shell
+    # to build and run container from this location
     $ cd OracleManagementAgent/dockerfiles/1.0.0/
     ```
 
 1. Ensure your tenancy is configured correctly by [applying the documented prerequisites for deploying management agents](https://docs.oracle.com/en-us/iaas/management-agents/doc/perform-prerequisites-deploying-management-agents.html)
 
-#### Steps to build and run using Docker Compose
+### Steps to build and run using Docker Compose
 
 1. Create .env file to populate the hostname variable
+
     ```shell
+    # required environment settings
     $ echo "mgmtagent_hostname=mgmtagent912" > .env
     ```
+
     **Note: Chose a unique hostname as it will be used to identify Management Agent in the UI.**
 
 1. Use Docker Compose CLI to build and run a container image
 
     ```shell
+    # build and start container
     $ docker-compose up --build -d
     ```
 
-#### Steps to build and run using Docker CLI 
+### Steps to build and run using Docker CLI
 
 1. Build the container image
 
     ```shell
+    # build the container
     $ docker build -t oracle/mgmtagent-container .
     ```
 
@@ -83,6 +91,7 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Start a container
 
     ```shell
+    # start the container
     $ docker run -d --name mgmtagent-container --hostname mgmtagent1 -v mgmtagent-volume:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
     ```
 
@@ -100,10 +109,11 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Remove the Install Key (input.rsp) from the shared Docker volume Mountpoint after [verifying the new Management Agent is registered and visible in the main Management Agents page](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-46BE5661-012E-4557-B679-6456DBBEAA4A)
 
     ```shell
+    # remove install key after install
     $ rm  /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/input.rsp
     ```
 
-#### Steps to execute custom user operations
+### Steps to execute custom user operations
 
 Users can provide custom shell script commands to execute before starting Management Agent as described in the following steps
 
@@ -114,42 +124,49 @@ Users can provide custom shell script commands to execute before starting Manage
 1. Follow the steps to build and run a container and validate the output of `init-agent.sh` script is visible in the logs by running the following command
 
     ```shell
+    # inspect container output logs
     $ docker logs mgmtagent-container
     ```
 
-#### Helpful administration commands
+### Helpful administration commands
 
 1. Starting a stopped Management Agent Container
 
     ```shell
+    # start container and agent
     $ docker start mgmtagent-container
     ```
 
 1. Stopping a running Management Agent Container
 
     ```shell
+    # stop container and agent
     $ docker stop mgmtagent-container
     ```
 
 1. Inspecting logs of Management Agent Container
 
     ```shell
+    # inspect container and agent install logs
     $ docker logs mgmtagent-container
     ```
 
 1. Cleanup volume using Docker Compose
 
     ```shell
+    # stop container and cleanup volume
     $ docker-compose down --volumes
     ```
 
 1. Cleanup volume using Docker CLI
 
     ```shell
+    # cleanup volume
     $ docker volume rm mgmtagent-volume
     ```
 
 ## License
+
 To download and run the Oracle Management Agent, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
 Oracle Linux is licensed under the [Oracle Linux End-User License Agreement](https://oss.oracle.com/ol/EULA).
@@ -157,7 +174,9 @@ Oracle Linux is licensed under the [Oracle Linux End-User License Agreement](htt
 All scripts and files hosted in this project and GitHub [`docker-images/OracleManagementAgent`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Support
+
 Oracle Management Agent container image is supported for the Linux images listed [here](https://docs.oracle.com/en-us/iaas/management-agents/doc/perform-prerequisites-deploying-management-agents.html#GUID-BC5862F0-3E68-4096-B18E-C4462BC76271). For more details please see My Oracle Support.
 
 ## Copyright
+
 Copyright (c) 2022 Oracle and/or its affiliates.
