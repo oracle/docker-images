@@ -4,7 +4,7 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle OpenJDK 20
+# This is the Dockerfile for Oracle OpenJDK 20 on Oracle Linux 8
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -26,7 +26,7 @@ FROM oraclelinux:8
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk20/bdc68b4b9cbc4ebcb30745c85038d91d/36/GPL \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk20.0.1/b4887098932d415489976708ad6d1a4b/9/GPL \
 	JAVA_HOME=/usr/java/jdk-20 \
 	LANG=en_US.UTF-8
 	
@@ -51,7 +51,7 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL"/openjdk-20_linux-"${ARCH}"_bin.tar.gz ; \
+    JAVA_PKG="$JAVA_URL"/openjdk-20.0.1_linux-"${ARCH}"_bin.tar.gz ; \
 	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c -; \
