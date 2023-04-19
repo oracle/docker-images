@@ -1,7 +1,7 @@
 # Oracle Management Agent Container Image
-
+<!-- markdownlint-disable MD013 -->
 **Important: The container files version 1.0.0 require elevated privileges to create a local system account used to run the Oracle Management Agent. In secure environments it is less desirable to allow privilege escalation and therefore the container files version 1.0.0 found here are no longer maintained, they simply exist here for historical references. Please use the latest container files instead which provide a more secure way to run both the container and the Oracle Management Agent.**
-
+<!-- markdownlint-enable MD013 -->
 This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux and Oracle OpenJDK 8.
 
 The certification of Oracle Management Agent in a container does not require the use of any file presented in this
@@ -24,9 +24,9 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
     # stage install bundle
     $ cp oracle.mgmt_agent.zip OracleManagementAgent/dockerfiles/1.0.0/
     ```
-
+<!-- markdownlint-disable MD013 -->
 1. Follow the steps in the [Create Install Key](https://docs.oracle.com/en-us/iaas/management-agents/doc/management-agents-administration-tasks.html#GUID-C841426A-2C32-4630-97B6-DF11F05D5712) and [Configure a Response File](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-5D20D4A7-616C-49EC-A994-DA383D172486) sections of the [Management Agent](https://docs.oracle.com/en-us/iaas/management-agents/index.html) documentation to create an install key and save it locally as `input.rsp`.
-
+<!-- markdownlint-enable MD013 -->
 1. Copy the downloaded install key to the same directory as the Dockerfile
 
     ```shell

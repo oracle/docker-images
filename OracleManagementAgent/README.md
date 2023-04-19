@@ -5,9 +5,9 @@ This repository contains sample container configurations to facilitate installat
 The certification of Oracle Management Agent in a container does not require the use of any file presented in this
 repository. Customers and users are welcome to use them as starters, and customize/tweak, or create
 from scratch new scripts and Dockerfiles.
-
+<!-- markdownlint-disable MD013 -->
 **Note: The latest container files no longer require elevated privileges that were used to create a local system account in order to run the Oracle Management Agent and run the daemon process. The operator can now opt to create user accounts during image development (in Dockerfile) or at runtime they can simply provide the numeric UID and GID values that belong to a user found in the environment that hosts the container.**
-
+<!-- markdownlint-enable MD013 -->
 ## How to build and run
 
 Oracle Management Agent image uses the official `oraclelinux:8-slim` container image as the base image.
@@ -31,9 +31,9 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
     # to build and run container from this location
     $ cd OracleManagementAgent/dockerfiles/latest/
     ```
-
+<!-- markdownlint-disable MD013 -->
 1. Follow the steps in the [Create Install Key](https://docs.oracle.com/en-us/iaas/management-agents/doc/management-agents-administration-tasks.html#GUID-C841426A-2C32-4630-97B6-DF11F05D5712) and [Configure a Response File](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-5D20D4A7-616C-49EC-A994-DA383D172486) sections of the [Management Agent](https://docs.oracle.com/en-us/iaas/management-agents/index.html) documentation to create an install key and save it locally as `input.rsp` in the current directory.
-
+<!-- markdownlint-enable MD013 -->
 1. Create a bind mount location to persist container data
 
     ```shell
@@ -153,9 +153,9 @@ Solutions to common issues when running Management Agent in a container are desc
     * Ensure the install key exists at the required location
 
 1. Management Agent registration failures due to old state files from a prior install
-
+<!-- markdownlint-disable MD013 -->
     * Once a Management Agent instance is deregistered that instance must be shutdown and any associated state files must be removed from the filesystem. Starting a deregistered Management Agent instance again can result in unregistered agent failures. This situation can present itself when old state files from a prior installation are present on the filesystem and made available to a new Management Agent container deployment. Run the command given below on the host filesystem to perform the necessary cleanup on the bind mount location and perform the deployment again starting at the prerequisites step.
-
+<!-- markdownlint-enable MD013 -->
     ```shell
     # cleanup old files from prior installation
     $ rm -rf /home/$USER/oracle/
