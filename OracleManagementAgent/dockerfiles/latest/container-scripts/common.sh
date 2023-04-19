@@ -152,10 +152,12 @@ function load_agent_java_options()
 function discover_userinfo()
 {
   export AGENT_JAVA_OPTIONS=""
-  local uid=$(id -u 2>&1)|| true
+  local uid
+  uid=$(id -u 2>&1)|| true
   log "UID: $uid"
 
-  local gid=$(id -g 2>&1)|| true
+  local gid
+  gid=$(id -g 2>&1)|| true
   log "GID: $gid"
 
   local un_exitcode=0

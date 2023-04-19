@@ -13,12 +13,14 @@ BASE_DIR=/opt/oracle
 BOOTSTRAP_HOME="$BASE_DIR/bootstrap"
 SCRIPTS=$BOOTSTRAP_HOME/scripts
 PACKAGES=$BOOTSTRAP_HOME/packages
+# shellcheck disable=SC2034
 UPGRADE_STAGE=$BOOTSTRAP_HOME/upgrade
 CONFIG_FILE="$BASE_DIR/mgmtagent_secret/input.rsp"
 MGMTAGENT_HOME="$BASE_DIR/mgmt_agent"
 AUTOUPGRADE_BUNDLE="$MGMTAGENT_HOME/zip/oracle.mgmt_agent-??????.????.linux.zip"
 DOCKER_INSTALL_BUNDLE=$PACKAGES/oracle.mgmt_agent.zip
 LOGS_DIR="$BOOTSTRAP_HOME/logs"
+# shellcheck disable=SC2034
 LOGFILE="$LOGS_DIR/watchdog.log"
 PIDFILE="$LOGS_DIR/watchdog.pid"
 
@@ -31,7 +33,9 @@ export DOCKER_BASE_DIR=$BASE_DIR
 
 ###########################################################
 # Script imports
+# shellcheck source=/dev/null
 source "$SCRIPTS/common.sh"
+# shellcheck source=/dev/null
 source "$SCRIPTS/install_zip.sh"
 
 
