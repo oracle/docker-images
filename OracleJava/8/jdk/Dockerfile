@@ -28,11 +28,7 @@ FROM oraclelinux:7-slim as builder
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 # Since the files is compressed as tar.gz first yum install gzip and tar
-RUN set -eux; \
-	yum install -y \
-		gzip \
-		tar;
-
+RUN yum install -y gzip tar
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
