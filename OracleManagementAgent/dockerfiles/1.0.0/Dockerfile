@@ -25,15 +25,12 @@
 #		$ bash build.sh
 #
 
-FROM container-registry.oracle.com/os/oraclelinux:8-slim
+FROM oraclelinux:7-slim
 
 # Labels
 LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"         \
       "volume.data"="/opt/oracle"
-
-# Install yum package manager
-RUN microdnf -y install yum
 
 # Install packages to install and run Management Agent
 RUN set -eux; \
@@ -48,16 +45,15 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL C
 
 # Copy container scripts to initialize the environment and start Management Agent
-COPY ./container-scripts/*.sh /opt/oracle-mgmtagent-staging/scripts/
+COPY ./container-scripts/*.sh /opt/oracle-mgmtagent-bootstrap/scripts/
+RUN chmod 0544 /opt/oracle-mgmtagent-bootstrap/scripts/*.sh
 
 # Copy user provided scripts
-COPY ./user-scripts/init-agent.sh /opt/oracle-mgmtagent-staging/scripts/
+COPY ./user-scripts/init-agent.sh /opt/oracle-mgmtagent-bootstrap/scripts/
+RUN chmod 0544 /opt/oracle-mgmtagent-bootstrap/scripts/init-agent.sh
 
 # Copy Management Agent Installer Zip bundle
-COPY ./oracle.mgmt_agent.zip /opt/oracle-mgmtagent-staging/packages/
-
-# Set permissions
-RUN chmod -R 0777 /opt/oracle-mgmtagent-staging/
+COPY ./oracle.mgmt_agent.zip /opt/oracle-mgmtagent-bootstrap/packages/
 
 # Set watchdog as the entrypoint script (PID-1) for the container
-ENTRYPOINT ["/opt/oracle-mgmtagent-staging/scripts/initialize.sh"]
+ENTRYPOINT ["/opt/oracle-mgmtagent-bootstrap/scripts/watchdog.sh"]
