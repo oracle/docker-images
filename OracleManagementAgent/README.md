@@ -1,4 +1,5 @@
 # Oracle Management Agent Container Image
+
 This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux and Oracle OpenJDK 8.
 
 The certification of Oracle Management Agent in a container does not require the use of any file presented in this
@@ -11,7 +12,7 @@ from scratch new scripts and Dockerfiles.
 
 Oracle Management Agent image uses the official `oraclelinux:8-slim` container image as the base image.
 
-#### Prerequisites
+## Prerequisites
 
 1. [Download the Management Agent software](https://cloud.oracle.com/macs)
 
@@ -20,12 +21,14 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 1. Copy the downloaded bundle to the same directory as the `Dockerfile`
 
     ```shell
+    # stage install bundle
     $ cp oracle.mgmt_agent.zip OracleManagementAgent/dockerfiles/latest/
     ```
 
 1. Change to the directory in which the `Dockerfile` for this container image is located
 
     ```shell
+    # to build and run container from this location
     $ cd OracleManagementAgent/dockerfiles/latest/
     ```
 
@@ -34,24 +37,27 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 1. Create a bind mount location to persist container data
 
     ```shell
-    // Important: cleanup any old state files
+    # Important: cleanup any old state files
     $ rm -rf /home/$USER/oracle
     $ mkdir -p /home/$USER/oracle
     ```
 
 1. Ensure your tenancy is configured correctly by [applying the documented prerequisites for deploying management agents](https://docs.oracle.com/en-us/iaas/management-agents/doc/perform-prerequisites-deploying-management-agents.html)
 
-#### Steps to build and run using Docker Compose
+## Steps to build and run using Docker Compose
 
 1. Create .env file to populate the environment variables
 
     ```shell
+    # required environment settings
     $ echo "mgmtagent_hostname=mgmtagent912" > .env
     $ echo "DOCKER_BASE_DIR=$(/home/$USER/oracle)" >> .env
     $ echo "USERID=$(id -u)" >> .env
     $ echo "GROUPID=$(id -g)" >> .env
     ```
+
     **Notes:**
+
     * `USERID` is the numeric identifier assigned by Linux to each user, found by running `id -u <username>`
     * `GROUPID` is the numeric identifier assigned by Linux to each user group, found by running `id -g <username>`
     * Validate the `USERID` and `GROUPID` values are correct as having incorrect values can result in failure. Refer to the troubleshooting section on this page for specific examples of failure.
@@ -60,14 +66,16 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 1. Use Docker Compose CLI to build and run a container image
 
     ```shell
+    # build and start container
     $ docker-compose up --build -d
     ```
 
-#### Steps to build and run using Docker CLI 
+## Steps to build and run using Docker CLI
 
 1. Build the container image
 
     ```shell
+    # build the container
     $ docker build -t oracle/mgmtagent-container .
     ```
 
@@ -82,17 +90,21 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 1. Start a container
 
     ```shell
+    # set required environment values then start container
     $ export "USERID=$(id -u)"
     $ export "GROUPID=$(id -g)"
     $ docker run --user $USERID:$GROUPID -d --name mgmtagent-container --hostname mgmtagent1 -v /home/$USER/oracle/:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
     ```
+
     **Notes:**
     * `USERID` is the numeric identifier assigned by Linux to each user, found by running `id -u <username>`
     * `GROUPID` is the numeric identifier assigned by Linux to each user group, found by running `id -g <username>`
     * Validate the `USERID` and `GROUPID` values are correct as having incorrect values can result in failure. Refer to the troubleshooting section on this page for specific examples of failure.
     * Choose a unique hostname as it will be used to identify Management Agent in the UI.
 
+    <!-- markdownlint-disable MD036 -->
     **Description of Docker run parameters used above**
+    <!-- markdownlint-enable MD036 -->
     <!-- markdownlint-disable MD033 -->
     | Parameter | Description |
     | --------- | ----------- |
@@ -107,10 +119,11 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 1. Remove the Install Key (input.rsp) from the shared Docker volume Mountpoint after [verifying the new Management Agent is registered and visible in the main Management Agents page](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-46BE5661-012E-4557-B679-6456DBBEAA4A)
 
     ```shell
+    # remove install key after install
     $ rm  /home/$USER/oracle/mgmtagent_secret/input.rsp
     ```
 
-#### Steps to execute custom user operations
+## Steps to execute custom user operations
 
 Users can provide custom shell script commands to execute before starting Management Agent as described in the following steps
 
@@ -121,10 +134,11 @@ Users can provide custom shell script commands to execute before starting Manage
 1. Follow the steps to build and run a container and validate the output of `init-agent.sh` script is visible in the logs by running the following command
 
     ```shell
+    # inspect container output logs
     $ docker logs mgmtagent-container
     ```
 
-#### Troubleshooting
+## Troubleshooting
 
 Solutions to common issues when running Management Agent in a container are described in the following steps
 
@@ -143,32 +157,37 @@ Solutions to common issues when running Management Agent in a container are desc
     * Once a Management Agent instance is deregistered that instance must be shutdown and any associated state files must be removed from the filesystem. Starting a deregistered Management Agent instance again can result in unregistered agent failures. This situation can present itself when old state files from a prior installation are present on the filesystem and made available to a new Management Agent container deployment. Run the command given below on the host filesystem to perform the necessary cleanup on the bind mount location and perform the deployment again starting at the prerequisites step.
 
     ```shell
+    # cleanup old files from prior installation
     $ rm -rf /home/$USER/oracle/
     ```
 
-#### Helpful commands
+## Helpful commands
 
 1. Starting a stopped Management Agent Container
 
     ```shell
+    # start container and agent
     $ docker start mgmtagent-container
     ```
 
 1. Stopping a running Management Agent Container
 
     ```shell
+    # stop container and agent
     $ docker stop mgmtagent-container
     ```
 
 1. Inspecting logs of Management Agent Container
 
     ```shell
+    # inspect container and agent install logs
     $ docker logs mgmtagent-container
     ```
 
 1. Gathering UID and GID of a user from the host environment
 
     ```shell
+    # see creating a user account below
     $ id -u <username> # prints UID of user
     $ id -g <username> # prints GID of user
     ```
@@ -190,14 +209,17 @@ Solutions to common issues when running Management Agent in a container are desc
     ```
 
 ## Container Files for Older Releases
+
 The Oracle Management Agent older container files mentioned below are no longer actively maintained and they are kept in this repository for historical purposes only.
 
- * Oracle Management Agent container files version 1.0.0 [`docker-images/OracleManagementAgent/dockerfiles/1.0.0`](./dockerfiles/1.0.0)
+* Oracle Management Agent container files version 1.0.0 [`docker-images/OracleManagementAgent/dockerfiles/1.0.0`](./dockerfiles/1.0.0)
 
- **Notes:**
- * Oracle Management Agent container files version 1.0.0 require elevated privileges to run and therefore are not compatible with the latest version found in this repository. Upgrading a version 1.0.0 container to run with the latest container files is also not supported for the same reason.
+**Notes:**
+
+* Oracle Management Agent container files version 1.0.0 require elevated privileges to run and therefore are not compatible with the latest version found in this repository. Upgrading a version 1.0.0 container to run with the latest container files is also not supported for the same reason.
 
 ## License
+
 To download and run the Oracle Management Agent, regardless whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated at that page.
 
 Oracle Linux is licensed under the [Oracle Linux End-User License Agreement](https://oss.oracle.com/ol/EULA).
@@ -205,7 +227,9 @@ Oracle Linux is licensed under the [Oracle Linux End-User License Agreement](htt
 All scripts and files hosted in this project and GitHub [`docker-images/OracleManagementAgent`](./) repository, required to build the Docker images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
 ## Support
+
 Oracle Management Agent container image is supported for the Linux images listed [here](https://docs.oracle.com/en-us/iaas/management-agents/doc/perform-prerequisites-deploying-management-agents.html#GUID-BC5862F0-3E68-4096-B18E-C4462BC76271). For more details please see My Oracle Support.
 
 ## Copyright
+
 Copyright (c) 2022 Oracle and/or its affiliates.
