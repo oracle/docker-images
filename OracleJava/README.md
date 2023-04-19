@@ -1,6 +1,6 @@
 # Oracle Java in Containers
 
-This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project includes Dockerfiles based on Oracle Linux with JDK images of JDK 20, 17, 11, 8 and for Server JRE 8.
+This repository contains sample container configurations to facilitate installation and environment setup for DevOps users. This project provides container images based on Oracle Linux for JDK versions 20, 17, 11 and 8 as well as Server JRE 8.
 
 Oracle Java Server JRE provides the features from Oracle Java JDK commonly required for server-side applications (i.e. Running a Java EE application server). For more information about Server JRE, visit the [Understanding the Server JRE blog entry](https://blogs.oracle.com/java-platform-group/understanding-the-server-jre) from the Java Product Management team.
 
