@@ -1,22 +1,22 @@
-# Copyright (c) 2019, 2023 Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023 Oracle and/or its affiliates. 
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 11 on Oracle Linux 7
+# This is the Dockerfile for Oracle Server JRE 8
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) jdk-11.XX_linux-x64_bin.tar.gz or jdk-11.XX_linux-aarch64_bin.tar.gz
+# (1) server-jre-8uXX-linux-x64.tar.gz
 #     Download from https://www.oracle.com/java/technologies/downloads/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
+# Put the downloaded file in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/jdk:11 .
+#      $ docker build -t oracle/serverjre:8 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -27,57 +27,45 @@ FROM oraclelinux:7-slim as builder
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
+# Since the files is compressed as tar.gz first yum install gzip and tar
 RUN set -eux; \
 	yum install -y \
 		gzip \
 		tar;
-	
+
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
-
 
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
-ENV JAVA_HOME=/usr/java/jdk-11
+	
+ENV JAVA_HOME=/usr/java/jdk-8
 
-##
-COPY *.tar.gz /tmp/
+COPY server-jre-8u*-linux-x64.tar.gz /tmp/jdk.tgz
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH="$(uname -m)" && \
-    if [ "$ARCH" = "x86_64" ]; \
-    then \
-		mv "$(ls /tmp/jdk-11*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=192b208c2bc5c54b06df16a168c8cffcf0c7e09a6b83c15503066547544147a1 ; \
-    else \
-	    mv "$(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=ca0a62c1019f5370853a80d6e48b2690886dfae3a5ec294faad40cca867ae06f ; \    	
-    fi && \
-	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
+	JAVA_SHA256=9be0abcb22e01fb63efe7926b1b174082a325dff2bec12604cf776012a5be003 ; \
+	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
-	
-## Get a fresh version of SLIM for the final image	
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; 
+
+## Get a fresh version of SLIM for the final image
+
 FROM oraclelinux:7-slim
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_HOME=/usr/java/jdk-11
+ENV JAVA_HOME=/usr/java/jdk-8 
 
-ENV	PATH $JAVA_HOME/bin:$PATH	
+ENV	PATH $JAVA_HOME/bin:$PATH
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
-RUN set -eux; \
-# Update the base image
-	yum -y update; \
-	yum install -y \
-# JDK assumes freetype is available		
-		freetype fontconfig \
-	; \
+##
+RUN	yum -y update; \
 	rm -rf /var/cache/yum; \
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
@@ -87,6 +75,7 @@ RUN set -eux; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-	java -Xshare:dump; 
-
-CMD ["jshell"]
+# the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
+# See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
+	java -Xshare:dump;
+	
