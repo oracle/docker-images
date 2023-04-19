@@ -1,12 +1,28 @@
 #!/bin/bash
 #
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
 #
 # Script to create OUD instance based on the passed parameters.
 # 
+hostname=`hostname -f`
+host_name=`expr "$hostname" : '\([^.][^.]*\)\..*'`
+ordinal=`expr "$host_name" : '.*-\(.*\)'`
+if [ "$ordinal" == "0" ]; then
+    echo " Sourcing base properties"
+    if [[ -f "/u01/oracle/config-input/config-baseOUD.props" ]]; then
+    source "/u01/oracle/config-input/config-baseOUD.props"
+    fi
+fi
+
+if [[ "$ordinal" != "0" && ! -z "$ordinal" ]]; then
+    echo " Sourcing replication properties"
+    if [[ -f "/u01/oracle/config-input/config-replOUD.props" ]]; then
+    source "/u01/oracle/config-input/config-replOUD.props"
+    fi
+fi
 
 export BASE_DIR=${BASE_DIR:-/u01}
 export ORACLE_HOME=${ORACLE_HOME:-/u01/oracle}
