@@ -164,7 +164,7 @@ function deploy_agent_initial_plugins()
     
     # plugin(s) must be deployed from agent_inst/bin
     pushd "$MGMTAGENT_HOME/agent_inst/bin"
-    $java_exec $jvm_args -cp $java_cp $java_class &
+    $java_exec "$jvm_args" -cp "$java_cp" "$java_class" &
     log "$APPNAME plugin deployment outcome [status: $?]"
     popd
     return 0
