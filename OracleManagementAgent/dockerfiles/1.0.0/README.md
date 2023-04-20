@@ -179,4 +179,4 @@ Oracle Management Agent container image is supported for the Linux images listed
 
 ## Copyright
 
-Copyright (c) 2022 Oracle and/or its affiliates.
+Copyright (c) 2023 Oracle and/or its affiliates.
