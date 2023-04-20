@@ -6,7 +6,7 @@
 /.github/workflows         @Djelibeybi @AmedeeBulle
 /GraalVM/                  @mzachh
 /NoSQL/                    @dario-vega @mikebrey
-/OracleAccessManagement/   @pratdash-orcl
+/OracleAccessManagement/   @manjunathdhegde-2910
 /OracleBI/                 @sjvp
 /OracleCoherence/          @thegridman
 /OracleDatabase/           @gvenzl
@@ -16,7 +16,7 @@
 /OracleHTTPServer/         @Prabhat-Kishore
 /OracleIdentityGovernance/ @rishiagarwal-oracle
 /OracleInstantClient/      @cjbj
-/OracleInternetDirectory/  @pratdash-orcl @kuldeepbshah
+/OracleInternetDirectory/  @manjunathdhegde-2910 @kuldeepbshah
 /OracleJava/               @aureliogrb
 /OracleLinuxDevelopers/    @Djelibeybi @AmedeeBulle
 /OracleRestDataServices/   @gvenzl
