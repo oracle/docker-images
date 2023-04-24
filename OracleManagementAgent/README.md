@@ -14,46 +14,44 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 
 ## Prerequisites
 
-1. [Download the Management Agent software](https://cloud.oracle.com/macs)
+1. [Download the Oracle Management Agent software](https://cloud.oracle.com/macs)
 
     **Note: Select 'Downloads and Keys' then download 'Agent for LINUX (X86_64)' of the package type ZIP.**
 
 1. Copy the downloaded bundle to the same directory as the `Dockerfile`
 
     ```shell
-    # stage install bundle
-    $ cp oracle.mgmt_agent.zip OracleManagementAgent/dockerfiles/latest/
+    > cp oracle.mgmt_agent.zip OracleManagementAgent/dockerfiles/latest/
     ```
 
 1. Change to the directory in which the `Dockerfile` for this container image is located
 
     ```shell
-    # to build and run container from this location
-    $ cd OracleManagementAgent/dockerfiles/latest/
+    > cd OracleManagementAgent/dockerfiles/latest/
     ```
 <!-- markdownlint-disable MD013 -->
 1. Follow the steps in the [Create Install Key](https://docs.oracle.com/en-us/iaas/management-agents/doc/management-agents-administration-tasks.html#GUID-C841426A-2C32-4630-97B6-DF11F05D5712) and [Configure a Response File](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-5D20D4A7-616C-49EC-A994-DA383D172486) sections of the [Management Agent](https://docs.oracle.com/en-us/iaas/management-agents/index.html) documentation to create an install key and save it locally as `input.rsp` in the current directory.
 <!-- markdownlint-enable MD013 -->
-1. Create a bind mount location to persist container data
+1. Create a directory on the host in which to store persisitent data. This directory will be bind mounted into the container at runtime.
 
     ```shell
-    # Important: cleanup any old state files
-    $ rm -rf /home/$USER/oracle
-    $ mkdir -p /home/$USER/oracle
+    # take the example of a local user named myuser
+    > rm -rf /home/myuser/oracle
+    > mkdir -p /home/myuser/oracle
     ```
 
 1. Ensure your tenancy is configured correctly by [applying the documented prerequisites for deploying management agents](https://docs.oracle.com/en-us/iaas/management-agents/doc/perform-prerequisites-deploying-management-agents.html)
 
-## Steps to build and run using Docker Compose
+## Using Docker Compose
 
 1. Create .env file to populate the environment variables
 
     ```shell
-    # required environment settings
-    $ echo "mgmtagent_hostname=mgmtagent912" > .env
-    $ echo "DOCKER_BASE_DIR=$(/home/$USER/oracle)" >> .env
-    $ echo "USERID=$(id -u)" >> .env
-    $ echo "GROUPID=$(id -g)" >> .env
+    # required environment settings with example user named myuser
+    > echo "mgmtagent_hostname=mgmtagent912" > .env
+    > echo "DOCKER_BASE_DIR=/home/myuser/oracle" >> .env
+    > echo "USERID=$(id -u myuser)" >> .env
+    > echo "GROUPID=$(id -g myuser)" >> .env
     ```
 
     **Notes:**
@@ -66,34 +64,31 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 1. Use Docker Compose CLI to build and run a container image
 
     ```shell
-    # build and start container
-    $ docker-compose up --build -d
+    > docker-compose up --build -d
     ```
 
-## Steps to build and run using Docker CLI
+## Using Docker or Podman
 
 1. Build the container image
 
     ```shell
-    # build the container
-    $ docker build -t oracle/mgmtagent-container .
+    > docker build -t oracle/mgmtagent-container .
     ```
 
-1. Copy the Install Key (input.rsp) into the shared Docker volume Mountpoint
+1. Copy the Install Key (`input.rsp`) into the directory that will be bind mounted into the container and used for persistent storage
 
     ```shell
-    # create the mgmtagent_secret location to stage the install key
-    $ mkdir -p /home/$USER/oracle/mgmtagent_secret/
-    $ cp input.rsp /home/$USER/oracle/mgmtagent_secret/
+    > mkdir -p /home/myuser/oracle/mgmtagent_secret/
+    > cp input.rsp /home/myuser/oracle/mgmtagent_secret/
     ```
 
 1. Start a container
 
     ```shell
-    # set required environment values then start container
-    $ export "USERID=$(id -u)"
-    $ export "GROUPID=$(id -g)"
-    $ docker run --user $USERID:$GROUPID -d --name mgmtagent-container --hostname mgmtagent1 -v /home/$USER/oracle/:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
+    # set required environment values then start container with example user named myuser
+    $ export "USERID=$(id -u myuser)"
+    $ export "GROUPID=$(id -g myuser)"
+    $ docker run --user $USERID:$GROUPID -d --name mgmtagent-container --hostname mgmtagent1 -v /home/myuser/oracle/:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
     ```
 
     **Notes:**
@@ -116,16 +111,15 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
     | --restart unless-stopped | Unless explicitly stopped, this restart policy restarts mgmtagent-container automatically when docker restarts. |
     <!-- markdownlint-enable MD033 -->
 
-1. Remove the Install Key (input.rsp) from the shared Docker volume Mountpoint after [verifying the new Management Agent is registered and visible in the main Management Agents page](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-46BE5661-012E-4557-B679-6456DBBEAA4A)
+1. Remove the Install Key (input.rsp) from the host directory after [verifying the new Management Agent is registered and visible in the main Management Agents page](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-46BE5661-012E-4557-B679-6456DBBEAA4A)
 
     ```shell
-    # remove install key after install
-    $ rm  /home/$USER/oracle/mgmtagent_secret/input.rsp
+    > rm  /home/myuser/oracle/mgmtagent_secret/input.rsp
     ```
 
-## Steps to execute custom user operations
+## Running custom user operations
 
-Users can provide custom shell script commands to execute before starting Management Agent as described in the following steps
+You can provide a custom shell script that will run before the Management Agent starts by following these steps
 
 1. Refer to [init-agent.sh](dockerfiles/latest/user-scripts/init-agent.sh) in the user-scripts directory
 
@@ -134,13 +128,12 @@ Users can provide custom shell script commands to execute before starting Manage
 1. Follow the steps to build and run a container and validate the output of `init-agent.sh` script is visible in the logs by running the following command
 
     ```shell
-    # inspect container output logs
-    $ docker logs mgmtagent-container
+    > docker logs mgmtagent-container
     ```
 
 ## Troubleshooting
 
-Solutions to common issues when running Management Agent in a container are described in the following steps
+Below are some possible solutions to common issues that may occur when running the Oracle Management Agent in a container
 
 1. mkdir: cannot create directory '/opt/oracle/bootstrap': Permission denied
 
@@ -158,55 +151,48 @@ Solutions to common issues when running Management Agent in a container are desc
     * Once a Management Agent instance is deregistered that instance must be shutdown and any associated state files must be removed from the filesystem. Starting a deregistered Management Agent instance again can result in unregistered agent failures. This situation can present itself when old state files from a prior installation are present on the filesystem and made available to a new Management Agent container deployment. Run the command given below on the host filesystem to perform the necessary cleanup on the bind mount location and perform the deployment again starting at the prerequisites step.
 
     ```shell
-    # cleanup old files from prior installation
-    $ rm -rf /home/$USER/oracle/
+    > rm -rf /home/myuser/oracle/
     ```
 <!-- markdownlint-enable MD046 -->
 <!-- markdownlint-enable MD013 -->
 
 ## Helpful commands
 
-1. Starting a stopped Management Agent Container
+1. Starting a stopped Oracle Management Agent Container
 
     ```shell
-    # start container and agent
-    $ docker start mgmtagent-container
+    > docker start mgmtagent-container
     ```
 
-1. Stopping a running Management Agent Container
+1. Stopping a running Oracle Management Agent Container
 
     ```shell
-    # stop container and agent
-    $ docker stop mgmtagent-container
+    > docker stop mgmtagent-container
     ```
 
-1. Inspecting logs of Management Agent Container
+1. Inspecting the logs of a running Oracle Management Agent container
 
     ```shell
-    # inspect container and agent install logs
-    $ docker logs mgmtagent-container
+    > docker logs mgmtagent-container
     ```
 
 1. Gathering UID and GID of a user from the host environment
 
     ```shell
-    # see creating a user account below
-    $ id -u <username> # prints UID of user
-    $ id -g <username> # prints GID of user
+    > id -u <username> # prints UID of user
+    > id -g <username> # prints GID of user
     ```
 
 1. Creating a named user account during image development (optional)
 
     ```shell
-    # Commands given below can use used to precreate a user account in container image
-
-    $ groupadd -g <numeric-gid-value> <desired-groupname> # create group with gid
+    > groupadd -g <numeric-gid-value> <desired-groupname>
     # example:
-    $ groupadd -g 9100 agentadmingrp
+    > groupadd -g 9100 mygroup
 
-    $ useradd <desired-username> -u <numeric-uid-value> -g <numeric-gid-value> -m -s /bin/bash # create user with uid/gid
+    > useradd <desired-username> -u <numeric-uid-value> -g <numeric-gid-value> -m -s /bin/bash
     # example:
-    $ useradd agentadminusr -u 9200 -g 9100 -m -s /bin/bash
+    > useradd myuser -u 9200 -g 9100 -m -s /bin/bash
 
     # Note: Add useradd/groupadd to Dockerfile prefixed with the RUN directive to create user during image development
     ```
@@ -235,4 +221,4 @@ Oracle Management Agent container image is supported for the Linux images listed
 
 ## Copyright
 
-Copyright (c) 2023 Oracle and/or its affiliates.
+Copyright (c) 2022, 2023 Oracle and/or its affiliates.

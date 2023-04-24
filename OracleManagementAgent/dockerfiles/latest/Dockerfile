@@ -32,13 +32,10 @@ LABEL "provider"="Oracle"                                               \
       "issues"="https://github.com/oracle/docker-images/issues"         \
       "volume.data"="/opt/oracle"
 
-# Install yum package manager
-RUN microdnf -y install yum
-
 # Install packages to install and run Management Agent
 RUN set -eux; \
-    yum -y install \
-    java-1.8.0-openjdk-devel.x86_64 \
+    microdnf -y install \
+    java-1.8.0-openjdk \
     sudo \
     unzip \
     && rm -rf /var/cache/yum
@@ -57,7 +54,7 @@ COPY ./user-scripts/init-agent.sh /opt/oracle-mgmtagent-staging/scripts/
 COPY ./oracle.mgmt_agent.zip /opt/oracle-mgmtagent-staging/packages/
 
 # Set permissions
-RUN chmod -R 0777 /opt/oracle-mgmtagent-staging/
+RUN chmod -R 0755 /opt/oracle-mgmtagent-staging/
 
 # Set watchdog as the entrypoint script (PID-1) for the container
 ENTRYPOINT ["/opt/oracle-mgmtagent-staging/scripts/initialize.sh"]

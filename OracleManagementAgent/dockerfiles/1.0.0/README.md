@@ -21,8 +21,7 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Copy the downloaded bundle to the same directory as the Dockerfile
 
     ```shell
-    # stage install bundle
-    $ cp oracle.mgmt_agent.zip OracleManagementAgent/dockerfiles/1.0.0/
+    > cp oracle.mgmt_agent.zip OracleManagementAgent/dockerfiles/1.0.0/
     ```
 <!-- markdownlint-disable MD013 -->
 1. Follow the steps in the [Create Install Key](https://docs.oracle.com/en-us/iaas/management-agents/doc/management-agents-administration-tasks.html#GUID-C841426A-2C32-4630-97B6-DF11F05D5712) and [Configure a Response File](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-5D20D4A7-616C-49EC-A994-DA383D172486) sections of the [Management Agent](https://docs.oracle.com/en-us/iaas/management-agents/index.html) documentation to create an install key and save it locally as `input.rsp`.
@@ -30,15 +29,13 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Copy the downloaded install key to the same directory as the Dockerfile
 
     ```shell
-    # stage install key
-    $ cp input.rsp OracleManagementAgent/dockerfiles/1.0.0/
+    > cp input.rsp OracleManagementAgent/dockerfiles/1.0.0/
     ```
 
 1. Change to the directory in which the `Dockerfile` for this container image is located
 
     ```shell
-    # to build and run container from this location
-    $ cd OracleManagementAgent/dockerfiles/1.0.0/
+    > cd OracleManagementAgent/dockerfiles/1.0.0/
     ```
 
 1. Ensure your tenancy is configured correctly by [applying the documented prerequisites for deploying management agents](https://docs.oracle.com/en-us/iaas/management-agents/doc/perform-prerequisites-deploying-management-agents.html)
@@ -48,8 +45,7 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Create .env file to populate the hostname variable
 
     ```shell
-    # required environment settings
-    $ echo "mgmtagent_hostname=mgmtagent912" > .env
+    > echo "mgmtagent_hostname=mgmtagent912" > .env
     ```
 
     **Note: Chose a unique hostname as it will be used to identify Management Agent in the UI.**
@@ -57,8 +53,7 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Use Docker Compose CLI to build and run a container image
 
     ```shell
-    # build and start container
-    $ docker-compose up --build -d
+    > docker-compose up --build -d
     ```
 
 ### Steps to build and run using Docker CLI
@@ -66,33 +61,30 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Build the container image
 
     ```shell
-    # build the container
-    $ docker build -t oracle/mgmtagent-container .
+    > docker build -t oracle/mgmtagent-container .
     ```
 
 1. Create a Docker volume to share configs with the container
 
     ```shell
-    $ docker volume create mgmtagent-volume
+    > docker volume create mgmtagent-volume
 
     # identify the mount point location to use in next steps
-    $ docker volume inspect mgmtagent-volume|grep Mountpoint
+    > docker volume inspect mgmtagent-volume|grep Mountpoint
         "Mountpoint": "/var/lib/docker/volumes/mgmtagent-volume/_data",
     ```
 
 1. Copy the Install Key (input.rsp) into the shared Docker volume Mountpoint
 
     ```shell
-    # create any necessary dirs
-    $ mkdir -p /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret
-    $ cp input.rsp /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/
+    > mkdir -p /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret
+    > cp input.rsp /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/
     ```
 
 1. Start a container
 
     ```shell
-    # start the container
-    $ docker run -d --name mgmtagent-container --hostname mgmtagent1 -v mgmtagent-volume:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
+    > docker run -d --name mgmtagent-container --hostname mgmtagent1 -v mgmtagent-volume:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
     ```
 
     **Description of Docker run parameters used above**
@@ -109,8 +101,7 @@ Oracle Management Agent image uses the official `oraclelinux:7-slim` container i
 1. Remove the Install Key (input.rsp) from the shared Docker volume Mountpoint after [verifying the new Management Agent is registered and visible in the main Management Agents page](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-46BE5661-012E-4557-B679-6456DBBEAA4A)
 
     ```shell
-    # remove install key after install
-    $ rm  /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/input.rsp
+    > rm  /var/lib/docker/volumes/mgmtagent-volume/_data/mgmtagent_secret/input.rsp
     ```
 
 ### Steps to execute custom user operations
@@ -124,8 +115,7 @@ Users can provide custom shell script commands to execute before starting Manage
 1. Follow the steps to build and run a container and validate the output of `init-agent.sh` script is visible in the logs by running the following command
 
     ```shell
-    # inspect container output logs
-    $ docker logs mgmtagent-container
+    > docker logs mgmtagent-container
     ```
 
 ### Helpful administration commands
@@ -133,36 +123,31 @@ Users can provide custom shell script commands to execute before starting Manage
 1. Starting a stopped Management Agent Container
 
     ```shell
-    # start container and agent
-    $ docker start mgmtagent-container
+    > docker start mgmtagent-container
     ```
 
 1. Stopping a running Management Agent Container
 
     ```shell
-    # stop container and agent
-    $ docker stop mgmtagent-container
+    > docker stop mgmtagent-container
     ```
 
 1. Inspecting logs of Management Agent Container
 
     ```shell
-    # inspect container and agent install logs
-    $ docker logs mgmtagent-container
+    > docker logs mgmtagent-container
     ```
 
 1. Cleanup volume using Docker Compose
 
     ```shell
-    # stop container and cleanup volume
-    $ docker-compose down --volumes
+    > docker-compose down --volumes
     ```
 
 1. Cleanup volume using Docker CLI
 
     ```shell
-    # cleanup volume
-    $ docker volume rm mgmtagent-volume
+    > docker volume rm mgmtagent-volume
     ```
 
 ## License
