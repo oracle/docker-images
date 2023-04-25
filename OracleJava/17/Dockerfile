@@ -28,8 +28,7 @@ FROM oraclelinux:8 as builder
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 # Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
-RUN set -eux; \
-	dnf install -y tar; 
+RUN dnf install -y tar
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
