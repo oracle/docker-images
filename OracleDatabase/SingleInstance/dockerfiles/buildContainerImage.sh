@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014,2021 Oracle and/or its affiliates.
+# Copyright (c) 2014,2022,2023 Oracle and/or its affiliates.
 # 
 
 usage() {
@@ -29,7 +29,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014,2022 Oracle and/or its affiliates.
 
 EOF
 
@@ -87,7 +87,7 @@ checkPodmanVersion() {
 checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
-  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
+  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version | printf "%.5s" }}'|| exit 0)
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
@@ -110,11 +110,12 @@ ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
 # Obtaining the latest version to build
-VERSION="$(find -- *.*.* -type d | tail -n 1)"
+VERSION="$(ls -1rd *.*.* | sed -n 1p)"
 SKIPMD5=0
 declare -a BUILD_OPTS
 MIN_DOCKER_VERSION="17.09"
 MIN_PODMAN_VERSION="1.6.0"
+# Need to change this Containerfile
 DOCKERFILE="Dockerfile"
 IMAGE_NAME=""
 
@@ -178,6 +179,9 @@ elif [ ${EXPRESS} -eq 1 ]; then
   elif [ "${VERSION}" == "21.3.0" ]; then
     EDITION="xe"
     SKIPMD5=1
+  elif [ "${VERSION}" == "23.2.0" ]; then 
+    EDITION="free"
+    SKIPMD5=1
   elif [ "${VERSION}" == "11.2.0.2" ]; then
     EDITION="xe"
     BUILD_OPTS=("--shm-size=1G" "${BUILD_OPTS[@]}")
@@ -187,9 +191,15 @@ elif [ ${EXPRESS} -eq 1 ]; then
   fi;
 fi;
 
+# Go into version folder
+cd "${VERSION}" || {
+  echo "Could not find version directory '${VERSION}'";
+  exit 1;
+}
+
 # Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
-  DOCKERFILE="${DOCKERFILE}.${EDITION}"
+if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.2.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
+  DOCKERFILE=$( if [[ -f "Containerfile.${EDITION}" ]]; then echo "Containerfile.${EDITION}"; else echo "${DOCKERFILE}.${EDITION}";fi )
 fi;
 
 # Oracle Database image Name
@@ -197,12 +207,6 @@ fi;
 if [ -z "${IMAGE_NAME}" ]; then
   IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
 fi;
-
-# Go into version folder
-cd "${VERSION}" || {
-  echo "Could not find version directory '${VERSION}'";
-  exit 1;
-}
 
 if [ ! "${SKIPMD5}" -eq 1 ]; then
   checksumPackages
@@ -248,7 +252,7 @@ echo "Building image '${IMAGE_NAME}' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
+       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION=${EDITION} \
        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
   echo ""
   echo "ERROR: Oracle Database container image was NOT successfully created."
@@ -257,7 +261,7 @@ BUILD_START=$(date '+%s')
 }
 
 # Remove dangling images (intermitten images with tag <none>)
-yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
+yes | "${CONTAINER_RUNTIME}" image prune > /dev/null
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))
