@@ -24,7 +24,7 @@ on:
     inputs:
       ol:
         description: List of ol versions to build
-        default: 'oraclelinux7, oraclelinux8'
+        default: 'oraclelinux7, oraclelinux8, oraclelinux9'
         required: false
       lang:
         description: List of languages to build
@@ -33,7 +33,7 @@ on:
 
 # Default values for the builds triggered by the push event
 env:
-  ol: 'oraclelinux7, oraclelinux8'
+  ol: 'oraclelinux7, oraclelinux8, oraclelinux9'
   lang: 'gcc-toolset, golang, nodejs, nginx, php, python, redis, ruby'
 
 jobs:
