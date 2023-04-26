@@ -6,7 +6,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
-* Oracle Database 23c (23.2.0) Free Edition
+* Oracle Database 23c (23.2.0) Free 
 * Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
@@ -47,7 +47,7 @@ Before you build the image make sure that you have provided the installation bin
     
     LICENSE UPL 1.0
     
-    Copyright (c) 2014,2021,2023 Oracle and/or its affiliates.
+    Copyright (c) 2014,2023 Oracle and/or its affiliates.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
@@ -256,7 +256,7 @@ To configure  wallet password, please use the following command:
 
 To run your Oracle Database 23c FREE container image use the `docker run` command as follows:
 
-    docker run --name <container name> \
+    podman run --name <container name> \
     -p <host port>:1521 \
     -e ORACLE_PWD=<your database passwords> \
     -e ORACLE_CHARACTERSET=<your character set> \
@@ -287,9 +287,9 @@ Once the container has been started and the database created you can connect to 
     sqlplus system/<your password>@//localhost:1521/FREE
     sqlplus pdbadmin/<your password>@//localhost:1521/FREEPDB1
 
-On the first startup of the container a random password will be generated for the database if not provided. The password for those accounts can be changed via the `docker exec` command. **Note**, the container has to be running:
+On the first startup of the container a random password will be generated for the database if not provided. The password for those accounts can be changed via the `podman exec` command. **Note**, the container has to be running:
 
-    docker exec <container name> /opt/oracle/setPassword.sh <your password>
+    podman exec <container name> /opt/oracle/setPassword.sh <your password>
 
 **Important Note:**
 The ORACLE_SID for Oracle Database 23c FREE is always `FREE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the FREE build.

@@ -4,7 +4,7 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 23c Free
+# This is the Contatinerfile for Oracle Database 23c Free
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -13,7 +13,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run: 
-#      $ docker build -t oracle/database:23.2.0-free -f Dockerfile.free .
+#      $ podman build -t oracle/database:23.2.0-free -f Containerfile.free .
 #
 #
 # Pull base image
@@ -29,8 +29,7 @@ LABEL "provider"="Oracle"                                               \
       "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
       "volume.startup.location1"="/opt/oracle/scripts/startup"          \
       "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
-      "port.listener"="1521"                                            \
-      "port.apex"="8080"
+      "port.listener"="1521"                                            
 
 ARG INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23c-1.0-1.el8.x86_64.rpm"
 

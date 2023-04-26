@@ -22,7 +22,7 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
-   -f: creates images based on 'Free Edition'
+   -f: creates images based on Database 'Free' 
    -i: ignores the MD5 checksums
    -o: passes on container build option
 
@@ -30,7 +30,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014,2023 Oracle and/or its affiliates.
 
 EOF
 
@@ -191,9 +191,7 @@ elif [ ${EXPRESS} -eq 1 ]; then
     exit 1;
   fi;
 elif [ ${FREE} -eq 1 ]; then 
-  IFS="."
-  read -ra arr <<< "$VERSION"
-  if [ "${arr[0]}" -lt 23 ]; then 
+  if [ "$(cut -f1 -d.  <<< "$VERSION" )" -lt 23 ]; then 
     echo "Version ${VERSION} does not have Free Edition available.";
     exit 1;
   else 
