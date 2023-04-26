@@ -6,13 +6,13 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014,2022,2023 Oracle and/or its affiliates.
+# Copyright (c) 2014,2021 Oracle and/or its affiliates.
 # 
 
 usage() {
   cat << EOF
 
-Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x] [-i] [-o] [container build option]
+Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-o] [container build option]
 Builds a container image for Oracle Database.
 
 Parameters:
@@ -22,14 +22,15 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
+   -f: creates images based on 'Free Edition'
    -i: ignores the MD5 checksums
    -o: passes on container build option
 
-* select one edition only: -e, -s, or -x
+* select one edition only: -e, -s, -x, or -f
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2022 Oracle and/or its affiliates.
+Copyright (c) 2014,2021 Oracle and/or its affiliates.
 
 EOF
 
@@ -87,7 +88,7 @@ checkPodmanVersion() {
 checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
-  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version | printf "%.5s" }}'|| exit 0)
+  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
@@ -109,13 +110,13 @@ cd "$(dirname "$0")"
 ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
+FREE=0
 # Obtaining the latest version to build
-VERSION="$(ls -1rd *.*.* | sed -n 1p)"
+VERSION="$(find -- *.*.* -type d | tail -n 1)"
 SKIPMD5=0
 declare -a BUILD_OPTS
 MIN_DOCKER_VERSION="17.09"
 MIN_PODMAN_VERSION="1.6.0"
-# Need to change this Containerfile
 DOCKERFILE="Dockerfile"
 IMAGE_NAME=""
 
@@ -124,7 +125,7 @@ if [ "$#" -eq 0 ]; then
   exit 1;
 fi
 
-while getopts "hesxiv:t:o:" optname; do
+while getopts "hesxfiv:t:o:" optname; do
   case "${optname}" in
     "h")
       usage
@@ -141,6 +142,9 @@ while getopts "hesxiv:t:o:" optname; do
       ;;
     "x")
       EXPRESS=1
+      ;;
+    "f")
+      FREE=1
       ;;
     "v")
       VERSION="${OPTARG}"
@@ -166,7 +170,7 @@ done
 checkContainerRuntime
 
 # Which Edition should be used?
-if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
+if [ $((ENTERPRISE + STANDARD + EXPRESS + FREE)) -gt 1 ]; then
   usage
 elif [ ${ENTERPRISE} -eq 1 ]; then
   EDITION="ee"
@@ -179,9 +183,6 @@ elif [ ${EXPRESS} -eq 1 ]; then
   elif [ "${VERSION}" == "21.3.0" ]; then
     EDITION="xe"
     SKIPMD5=1
-  elif [ "${VERSION}" == "23.2.0" ]; then 
-    EDITION="free"
-    SKIPMD5=1
   elif [ "${VERSION}" == "11.2.0.2" ]; then
     EDITION="xe"
     BUILD_OPTS=("--shm-size=1G" "${BUILD_OPTS[@]}")
@@ -189,6 +190,9 @@ elif [ ${EXPRESS} -eq 1 ]; then
     echo "Version ${VERSION} does not have Express Edition available.";
     exit 1;
   fi;
+elif [ ${FREE} -eq 1 ]; then 
+  EDITION="free"
+  SKIPMD5=1
 fi;
 
 # Go into version folder
@@ -252,7 +256,7 @@ echo "Building image '${IMAGE_NAME}' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION=${EDITION} \
+       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
   echo ""
   echo "ERROR: Oracle Database container image was NOT successfully created."
@@ -261,7 +265,7 @@ BUILD_START=$(date '+%s')
 }
 
 # Remove dangling images (intermitten images with tag <none>)
-yes | "${CONTAINER_RUNTIME}" image prune > /dev/null
+yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))

@@ -6,7 +6,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
-* Oracle Database 23c Free
+* Oracle Database 23c (23.2.0) Free Edition
 * Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
@@ -38,11 +38,12 @@ Before you build the image make sure that you have provided the installation bin
        -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
-       -x: creates image based on 'Express/Free Edition'
+       -x: creates image based on 'Express Edition'
+       -f: creates image based on 'Free Edition'
        -i: ignores the MD5 checksums
        -o: passes on container build option
     
-    * select one edition only: -e, -s, or -x
+    * select one edition only: -e, -s, -x, or -f
     
     LICENSE UPL 1.0
     
@@ -82,7 +83,7 @@ After setting these environment variables, the container image can be built usin
 To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
-    -p <host port>:1521 -p <host port>:5500 -p <host port>:2484\
+    -p <host port>:1521 -p <host port>:5500 -p <host port>:2484 \
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
@@ -147,8 +148,8 @@ To run your Oracle Database image use the `docker run` command as follows:
 
 Once the container has been started and the database created you can connect to it just like to any other database:
 
-    sqlplus sys/<your password>@//localhost:1521/<your SID> as sysdba
-    sqlplus system/<your password>@//localhost:1521/<your SID>
+    sqlplus sys/<your password>@//localhost:1521/<your service name> as sysdba
+    sqlplus system/<your password>@//localhost:1521/<your service name>
     sqlplus pdbadmin/<your password>@//localhost:1521/<Your PDB name>
 
 The Oracle Database inside the container also has Oracle Enterprise Manager Express configured. To access OEM Express, start your browser and follow the URL:
@@ -221,6 +222,11 @@ Similarly, to disable TCPS connections for the database, please use the followin
 
     # Disable TCPS in the database
     docker exec -it <container name> /opt/oracle/configTcps.sh disable
+
+To configure  wallet password, please use the following command:
+
+    # Setup TCPS for port 16002 and pass wallet password as argument
+    docker exec -it <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
 
 **NOTE**:
 
