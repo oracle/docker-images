@@ -191,8 +191,15 @@ elif [ ${EXPRESS} -eq 1 ]; then
     exit 1;
   fi;
 elif [ ${FREE} -eq 1 ]; then 
-  EDITION="free"
-  SKIPMD5=1
+  IFS="."
+  read -ra arr <<< "$VERSION"
+  if [ "${arr[0]}" -lt 23 ]; then 
+    echo "Version ${VERSION} does not have Free Edition available.";
+    exit 1;
+  else 
+    EDITION="free"
+    SKIPMD5=1
+  fi;
 fi;
 
 # Go into version folder
@@ -205,6 +212,8 @@ cd "${VERSION}" || {
 if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.2.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
   DOCKERFILE=$( if [[ -f "Containerfile.${EDITION}" ]]; then echo "Containerfile.${EDITION}"; else echo "${DOCKERFILE}.${EDITION}";fi )
 fi;
+
+echo "$DOCKERFILE"
 
 # Oracle Database image Name
 # If provided using -t build option then use it; Otherwise, create with version and edition
