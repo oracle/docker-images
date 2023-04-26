@@ -39,7 +39,7 @@ Before you build the image make sure that you have provided the installation bin
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
        -x: creates image based on 'Express Edition'
-       -f: creates image based on 'Free Edition'
+       -f: creates image based on Database 'Free'
        -i: ignores the MD5 checksums
        -o: passes on container build option
     
