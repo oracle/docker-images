@@ -1,4 +1,4 @@
-# Copyright (c) 2019, 2022 Oracle and/or its affiliates. 
+# Copyright (c) 2019, 2023 Oracle and/or its affiliates. 
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -10,11 +10,11 @@
 # ----------------------------------
 #
 # (1) server-jre-8uXX-linux-x64.tar.gz
-#     Download from https://www.oracle.com/java/technologies/javase-server-jre8-downloads.html
+#     Download from https://www.oracle.com/java/technologies/downloads/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
+# Put the downloaded file in the same directory as this Dockerfile
 # Run:
 #      $ docker build -t oracle/serverjre:8 .
 #
@@ -28,12 +28,7 @@ FROM oraclelinux:7-slim as builder
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 # Since the files is compressed as tar.gz first yum install gzip and tar
-RUN set -eux; \
-	yum install -y \
-		gzip \
-		tar \
-	; \
-	rm -rf /var/cache/yum
+RUN yum install -y gzip tar
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -41,13 +36,13 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=server-jre-8u361-linux-x64.tar.gz \
-	JAVA_SHA256=413e658db77d33fc2587557d4b1093ca2268892d2c75e6298927db8bb8622d13 \
-	JAVA_HOME=/usr/java/jdk-8
+	
+ENV JAVA_HOME=/usr/java/jdk-8
 
-COPY $JAVA_PKG /tmp/jdk.tgz
+COPY server-jre-8u*-linux-x64.tar.gz /tmp/jdk.tgz
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
+	JAVA_SHA256=9be0abcb22e01fb63efe7926b1b174082a325dff2bec12604cf776012a5be003 ; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; 
@@ -59,9 +54,8 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=1.8.0_361 \
-	JAVA_HOME=/usr/java/jdk-8 
-	
+ENV JAVA_HOME=/usr/java/jdk-8 
+
 ENV	PATH $JAVA_HOME/bin:$PATH
 
 # Copy the uncompressed Java Runtime from the builder image
