@@ -84,11 +84,12 @@ jobs:
                   pushd "${lang}" >/dev/null || exit 1
                   for dockerfile in */Dockerfile; do
                     tag=$(dirname "${dockerfile}")
-                    arch="linux/amd64"
-                    multi=0
-                    if [[ ! ${tag} =~ oracledb && ! ( ${ol} = "oraclelinux7" && ${lang} =~ ^(nodejs|php|ruby)$ ) ]]; then
-                      arch="${arch},linux/arm64"
+                    if [[ -f ${tag}/.skip-arm64 ]]; then
+                      multi=0
+                      arch="linux/amd64"
+                    else
                       multi=1
+                      arch="linux/amd64,linux/arm64"
                     fi
                     if [[ ${build_all} -eq 1 ]] || grep -q "${ol}/${lang}/${tag}" "${changes}"; then
                       echo "${ol};${lang};${tag};${arch};${multi}"
