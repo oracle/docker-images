@@ -16,7 +16,7 @@ Oracle Management Agent image uses the official `oraclelinux:8-slim` container i
 
 1. [Download the Oracle Management Agent software](https://cloud.oracle.com/macs)
 
-> Note: Select 'Downloads and Keys' then download 'Agent for LINUX (X86_64)' of the package type ZIP.
+    > Note: Select 'Downloads and Keys' then download 'Agent for LINUX (X86_64)' of the package type ZIP.
 
 1. Copy the downloaded bundle to the same directory as the `Dockerfile`
 
@@ -47,7 +47,7 @@ Next, follow the steps to [Configure a Response File](https://docs.oracle.com/en
     useradd orclmgmtagntusr -u 9200 -g 9100 -m -s /bin/bash
     ```
 
-> Note: Remember to substitute `orclmgmtagntusr` and `orclmgmtagntgrp`, wherever applicable, with the desired user if you choose to skip this step.
+    > Note: Remember to substitute `orclmgmtagntusr` and `orclmgmtagntgrp`, wherever applicable, with the desired user if you choose to skip this step.
 
 1. Change ownership of the directory holding persistent data to the desired user.
 
@@ -74,7 +74,7 @@ Next, follow the steps to [Configure a Response File](https://docs.oracle.com/en
     docker-compose up --build -d
     ```
 
-## Using Docker
+## Using Docker or Podman
 
 1. Build the container image
 
@@ -97,7 +97,7 @@ Next, follow the steps to [Configure a Response File](https://docs.oracle.com/en
     docker run --user $USERID:$GROUPID -d --name mgmtagentcontainer1 --hostname mgmtagentcontainer1 -v /oracle-management-agent/:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
     ```
 
-> Note: Refer to [description of the recommended run parameters](https://docs.docker.com/engine/reference/run) used above
+    > Note: Refer to [description of the recommended run parameters](https://docs.docker.com/engine/reference/run) used above
 
 1. Remove the Install Key (`input.rsp`) from the host directory after [verifying the new Oracle Management Agent is registered and visible in the main Oracle Management Agent page](https://docs.oracle.com/en-us/iaas/management-agents/doc/install-management-agent-chapter.html#GUID-46BE5661-012E-4557-B679-6456DBBEAA4A)
 
