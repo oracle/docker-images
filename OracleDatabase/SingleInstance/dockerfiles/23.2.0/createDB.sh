@@ -150,14 +150,14 @@ if [ "${ORACLE_SID}" = "FREE" ]; then
   export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
   
   # Set character set
-  su -c 'sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" /etc/sysconfig/"$CONF_FILE"'
+  su -c "sed -i -e s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g /etc/sysconfig/$CONF_FILE"
 
   # Creating Database
-  su -c '/etc/init.d/oracle-free-23c configure << EOF
+  su -c "/etc/init.d/oracle-free-23c configure << EOF
 ${ORACLE_PWD}
 ${ORACLE_PWD}
 EOF
-'
+"
 # Setting up network config for FREE database
 setupNetworkConfigFREE;
 
@@ -226,12 +226,12 @@ if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
   # Creating the database using the dbca command
   if [ "${STANDBY_DB}" = "true" ]; then
     # Creating standby database
-    dbca -silent -createDuplicateDB -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -createAsStandby -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
+    dbca -silent -createDuplicateDB -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" "${DBCA_CRED_OPTIONS}" -sid "$ORACLE_SID" -createAsStandby -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
   else
     # Creating clone database after duplicating a primary database; CLONE_DB is set to true here
-    dbca -silent -createDuplicateDB -gdbName "$ORACLE_SID" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -databaseConfigType SINGLE -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
+    dbca -silent -createDuplicateDB -gdbName "$ORACLE_SID" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" "${DBCA_CRED_OPTIONS}" -sid "$ORACLE_SID" -databaseConfigType SINGLE -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
   fi
@@ -291,7 +291,7 @@ export ARCHIVELOG_DIR=$ORACLE_BASE/oradata/$ORACLE_SID/$ARCHIVELOG_DIR_NAME
 
 # Start LISTENER and run DBCA
 lsnrctl start &&
-dbca -silent -createDatabase -enableArchive "$ENABLE_ARCHIVELOG" -archiveLogDest "$ARCHIVELOG_DIR" ${DBCA_CRED_OPTIONS} -responseFile "$ORACLE_BASE"/dbca.rsp ||
+dbca -silent -createDatabase -enableArchive "$ENABLE_ARCHIVELOG" -archiveLogDest "$ARCHIVELOG_DIR" "${DBCA_CRED_OPTIONS}" -responseFile "$ORACLE_BASE"/dbca.rsp ||
  cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
  cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
 
