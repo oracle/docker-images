@@ -22,9 +22,12 @@ function moveFiles {
    mv "$ORACLE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   if [ -a "$ORACLE_HOME"/install/.docker_* ]; then
-      mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   fi;
+   for file in "$ORACLE_HOME"/install/.docker_*
+   do 
+      if [ -e "$file" ]; then 
+         mv "$file" "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+      fi;
+   done
 
    # oracle user does not have permissions in /etc, hence cp and not mv
    cp /etc/oratab "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
@@ -63,24 +66,24 @@ function symLinkFiles {
 ########### Undoing the symbolic links ############
 function undoSymLinkFiles {
 
-   if [ -L $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora ]; then
-      rm $ORACLE_BASE_CONFIG/dbs/spfile$ORACLE_SID.ora
+   if [ -L "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora ]; then
+      rm "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora
    fi;
 
-   if [ -L $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID ]; then
-      rm $ORACLE_BASE_CONFIG/dbs/orapw$ORACLE_SID
+   if [ -L "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID" ]; then
+      rm "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID"
    fi;
 
-   if [ -L $ORACLE_HOME/network/admin/sqlnet.ora ]; then
-      rm $ORACLE_HOME/network/admin/sqlnet.ora
+   if [ -L "$ORACLE_HOME"/network/admin/sqlnet.ora ]; then
+      rm "$ORACLE_HOME"/network/admin/sqlnet.ora
    fi;
 
-   if [ -L $ORACLE_HOME/network/admin/listener.ora ]; then
-      rm $ORACLE_HOME/network/admin/listener.ora
+   if [ -L "$ORACLE_HOME"/network/admin/listener.ora ]; then
+      rm "$ORACLE_HOME"/network/admin/listener.ora
    fi;
 
-   if [ -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
-      rm $ORACLE_HOME/network/admin/tnsnames.ora
+   if [ -L "$ORACLE_HOME"/network/admin/tnsnames.ora ]; then
+      rm "$ORACLE_HOME"/network/admin/tnsnames.ora
    fi;
 
 }
@@ -233,12 +236,12 @@ if [ "${ORACLE_SID}" != "FREE" ]; then
 fi;
 
 # Check whether database already exists
-if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
+if [ -f "$ORACLE_BASE"/oradata/."${ORACLE_SID}""${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
-   if [ ! -d "$ORACLE_BASE"/admin/$ORACLE_SID/adump ]; then
-      mkdir -p "$ORACLE_BASE"/admin/$ORACLE_SID/adump
+   if [ ! -d "$ORACLE_BASE"/admin/"$ORACLE_SID"/adump ]; then
+      mkdir -p "$ORACLE_BASE"/admin/"$ORACLE_SID"/adump
    fi;
    
    # Start database
@@ -257,32 +260,32 @@ else
   undoSymLinkFiles;
 
   # Remove database config files, if they exist
-  rm -f "$ORACLE_BASE_CONFIG"/dbs/spfile$ORACLE_SID.ora
-  rm -f "$ORACLE_BASE_CONFIG"/dbs/orapw$ORACLE_SID
+  rm -f "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora
+  rm -f "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID"
   rm -f "$ORACLE_HOME"/network/admin/sqlnet.ora
   rm -f "$ORACLE_HOME"/network/admin/listener.ora
   rm -f "$ORACLE_HOME"/network/admin/tnsnames.ora
 
   # Clean up incomplete database
-  rm -rf "$ORACLE_BASE"/oradata/$ORACLE_SID
+  rm -rf "$ORACLE_BASE"/oradata/"$ORACLE_SID"
   cp /etc/oratab oratab.bkp
   sed "/^#/!d" oratab.bkp > /etc/oratab
   rm -f oratab.bkp
   rm -rf "$ORACLE_BASE"/cfgtoollogs/dbca/$ORACLE_SID
-  rm -rf "$ORACLE_BASE"/admin/$ORACLE_SID
+  rm -rf "$ORACLE_BASE"/admin/"$ORACLE_SID"
 
   # clean up zombie shared memory/semaphores
   ipcs -m | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -m 2> /dev/null
   ipcs -s | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -s 2> /dev/null
 
   # Create database
-  "$ORACLE_BASE"/"$CREATE_DB_FILE" $ORACLE_SID "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
+  "$ORACLE_BASE"/"$CREATE_DB_FILE" "$ORACLE_SID" "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
 
   # Check whether database is successfully created
   if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
     # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
-    echo "$(date -Iseconds)" > "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
+    date -Iseconds > "$ORACLE_BASE"/oradata/."${ORACLE_SID}""${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata
