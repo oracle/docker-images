@@ -23,7 +23,7 @@ services:
   mgmtagent:
     build: .
 
-    # Image name reported by docker images listing
+    # Image name reported by container images listing
     image: oracle/mgmtagent-container
 
     # Internal hostname identifier for the container

@@ -18,7 +18,7 @@ UPGRADE_STAGE=$BOOTSTRAP_HOME/upgrade
 CONFIG_FILE="$BASE_DIR/mgmtagent_secret/input.rsp"
 MGMTAGENT_HOME="$BASE_DIR/mgmt_agent"
 AUTOUPGRADE_BUNDLE="$MGMTAGENT_HOME/zip/oracle.mgmt_agent-??????.????.linux.zip"
-DOCKER_INSTALL_BUNDLE=$PACKAGES/oracle.mgmt_agent.zip
+CONTAINER_INSTALL_BUNDLE=$PACKAGES/oracle.mgmt_agent.zip
 LOGS_DIR="$BOOTSTRAP_HOME/logs"
 # shellcheck disable=SC2034
 LOGFILE="$LOGS_DIR/watchdog.log"
@@ -76,7 +76,7 @@ function attempt_agent_upgrade()
   local upgrader_file
   upgrader_file=$(latest_upgrade_bundle "$AUTOUPGRADE_BUNDLE")
   local installer_file
-  installer_file=$(latest_upgrade_bundle "$DOCKER_INSTALL_BUNDLE")
+  installer_file=$(latest_upgrade_bundle "$CONTAINER_INSTALL_BUNDLE")
 
   if is_agent_upgrade_exist "$upgrader_file"; then
     upgrade_agent "$upgrader_file"
@@ -271,7 +271,7 @@ if ! is_agent_installed; then
     exit 1
   fi
 
-  install_bundle=$(latest_upgrade_bundle "$DOCKER_INSTALL_BUNDLE")
+  install_bundle=$(latest_upgrade_bundle "$CONTAINER_INSTALL_BUNDLE")
   install_agent "$install_bundle"
 fi
 

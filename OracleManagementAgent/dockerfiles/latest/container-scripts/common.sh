@@ -69,7 +69,7 @@ function version_greater_than()
 function version_parse()
 {
   local var=$1
-  if [ "${var}" == "${DOCKER_INSTALL_BUNDLE}" ]; then
+  if [ "${var}" == "${CONTAINER_INSTALL_BUNDLE}" ]; then
     var=$(unzip -l "${var}" | grep -Po 'oracle.mgmt_agent-\d{6}.\d{4}.linux.zip')
   fi
   var=${var##*/}
@@ -166,7 +166,7 @@ function discover_userinfo()
     log "Username is [${un_output}]"
   else
     log "INFO: $un_output"
-    log "Please refer to documentation on how to create a named user in container."
+    log "Please refer to documentation on how to create a nominated user in container."
     export AGENT_JAVA_OPTIONS="-Duser.name=${uid} "
   fi
 
@@ -176,6 +176,6 @@ function discover_userinfo()
     log "Groupname is [${gn_output}]"
   else
     log "INFO: $gn_output"
-    log "Please refer to documentation on how to create a named group in container."
+    log "Please refer to documentation on how to create a nominated group in container."
   fi
 }

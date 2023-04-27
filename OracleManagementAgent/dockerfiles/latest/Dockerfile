@@ -6,7 +6,7 @@
 # --------------------------
 # This is the Dockerfile for Oracle Management Agent
 #
-# Base image of this dockerfile is Oracle Linux 7 Slim docker image.
+# Base image of this dockerfile is Oracle Linux 8 Slim image.
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -33,8 +33,7 @@ LABEL "provider"="Oracle"                                               \
       "volume.data"="/opt/oracle"
 
 # Install packages to install and run Management Agent
-RUN set -eux; \
-    microdnf -y install \
+RUN microdnf -y install \
     java-1.8.0-openjdk \
     sudo \
     unzip \
