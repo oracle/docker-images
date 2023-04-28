@@ -4,12 +4,12 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 20
+# This is the Dockerfile for Oracle JDK 20 on Oracle Linux 8
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # This dockerfile will download a copy of JDK 20 from
-#	https://download.oracle.com/java/20/latest/jdk-20_linux-<ARCH>_bin.tar.gz if 
+#	https://download.oracle.com/java/20/latest/jdk-20_linux-<ARCH>_bin.tar.gz  
 # 
 # It will use either x64 or aarch64 depending on the target platform
 #
