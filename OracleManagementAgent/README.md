@@ -173,15 +173,15 @@ Below are some possible solutions to common issues that may occur when running t
 1. Creating a nominated user account during image development (optional)
 
     ```shell
-    > groupadd -g <numeric-gid-value> <desired-groupname>
+    groupadd -g <numeric-gid-value> <desired-groupname>
     # example:
-    > groupadd -g 9100 orclmgmtagntgrp
+    groupadd -g 9100 orclmgmtagntgrp
 
-    > useradd <desired-username> -u <numeric-uid-value> -g <numeric-gid-value> -m -s /bin/bash
+    useradd <desired-username> -u <numeric-uid-value> -g <numeric-gid-value> -m -s /bin/bash
     # example:
-    > useradd orclmgmtagntusr -u 9200 -g 9100 -m -s /bin/bash
+    useradd orclmgmtagntusr -u 9200 -g 9100 -m -s /bin/bash
 
-    # Note: Add useradd/groupadd to Dockerfile prefixed with the RUN directive to create user during image development
+    # Tip: Add useradd/groupadd to Dockerfile to create a nominated user during image development
     ```
 
 ## Container Files for Older Releases
