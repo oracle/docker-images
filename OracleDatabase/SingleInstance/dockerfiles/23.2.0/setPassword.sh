@@ -17,8 +17,10 @@ fi
 
 ORACLE_PWD=$1
 ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
-ORACLE_PDB="$(ls -dl "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ | grep -v -e pdbseed -e "${ARCHIVELOG_DIR_NAME:-archive_logs}"| awk '{print $9}' | cut -d/ -f6)"
+ORACLE_PDB="$(find "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ -type d  | grep -v -e pdbseed -e "${ARCHIVELOG_DIR_NAME:-archive_logs}" | cut -d/ -f6)"
+# shellcheck disable=SC2034
 ORAENV_ASK=NO
+# shellcheck source=/dev/null
 source oraenv
 
 sqlplus / as sysdba << EOF
