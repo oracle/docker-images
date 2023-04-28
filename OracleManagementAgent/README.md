@@ -87,13 +87,15 @@ Next, follow the steps to [Configure a Response File](https://docs.oracle.com/en
     ```shell
     mkdir -p /oracle-management-agent/mgmtagent_secret/
     cp input.rsp /oracle-management-agent/mgmtagent_secret/
+    chown -R orclmgmtagntusr:orclmgmtagntgrp /oracle-management-agent/mgmtagent_secret/
     ```
 
 1. Start a container
 
     ```shell
-    export "USERID=$(id -u orclmgmtagntusr)"
-    export "GROUPID=$(id -g orclmgmtagntusr)"
+    # commands given below expect user to be running in a bash shell
+    export USERID=$(id -u orclmgmtagntusr)
+    export GROUPID=$(id -g orclmgmtagntusr)
     docker run --user $USERID:$GROUPID -d --name mgmtagentcontainer1 --hostname mgmtagentcontainer1 -v /oracle-management-agent/:/opt/oracle:rw --restart unless-stopped oracle/mgmtagent-container:latest
     ```
 
