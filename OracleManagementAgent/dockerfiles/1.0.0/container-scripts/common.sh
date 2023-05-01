@@ -69,7 +69,7 @@ function version_greater_than()
 function version_parse()
 {
   local var=$1
-  if [ "${var}" == "${CONTAINER_INSTALL_BUNDLE}" ]; then
+  if [ "${var}" == "${DOCKER_INSTALL_BUNDLE}" ]; then
     var=$(unzip -l "${var}" | grep -Po 'oracle.mgmt_agent-\d{6}.\d{4}.linux.zip')
   fi
   var=${var##*/}
@@ -140,42 +140,7 @@ function load_agent_java_options()
   done < "$java_options_file"
 
   log "$APPNAME found java.options [values: $java_options]"
-  AGENT_JAVA_OPTIONS+=$(trim "$java_options")
+  AGENT_JAVA_OPTIONS=$(trim "$java_options")
   export AGENT_JAVA_OPTIONS
   return 0
-}
-
-###########################################################
-# Discover UID and GID values present in this environment
-# IFF username cannot be found then set system property
-# user.name for agent java process in AGENT_JAVA_OPTIONS
-function discover_userinfo()
-{
-  export AGENT_JAVA_OPTIONS=""
-  local uid
-  uid=$(id -u 2>&1)|| true
-  log "UID: $uid"
-
-  local gid
-  gid=$(id -g 2>&1)|| true
-  log "GID: $gid"
-
-  local un_exitcode=0
-  un_output=$(id -un 2>&1)|| un_exitcode=$?
-  if [ $un_exitcode -eq 0 ]; then
-    log "Username is [${un_output}]"
-  else
-    log "INFO: $un_output"
-    log "Please refer to documentation on how to create a nominated user in container."
-    export AGENT_JAVA_OPTIONS="-Duser.name=${uid} "
-  fi
-
-  local gn_exitcode=0
-  gn_output=$(id -gn 2>&1)|| gn_exitcode=$?
-  if [ $gn_exitcode -eq 0 ]; then
-    log "Groupname is [${gn_output}]"
-  else
-    log "INFO: $gn_output"
-    log "Please refer to documentation on how to create a nominated group in container."
-  fi
 }
