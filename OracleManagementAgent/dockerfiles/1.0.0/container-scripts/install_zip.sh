@@ -7,6 +7,7 @@
 ###########################################################
 # Unpack Management Agent install ZIP in non-service mode
 # Returns: 0 if unpack successful otherwise error code
+# Execute User Scope: elevated
 function _unpack_install_bundle()
 {
   local installer_file="$1"
@@ -23,6 +24,7 @@ function _unpack_install_bundle()
 ###########################################################
 # Unpack Management Agent downloaded upgrade ZIP
 # Returns: 0 if upgrade successful otherwise error code
+# Execute User Scope: elevated
 function _unpack_upgrade_bundle()
 {
   local upgrader_file="$1"
@@ -50,6 +52,7 @@ function _unpack_upgrade_bundle()
 ###########################################################
 # Install Management Agent ZIP in non-service mode
 # Returns: 0 if install successful otherwise error code
+# Execute User Scope: elevated
 function install_agent()
 {
   export SYSTEM_MANAGER_OVERRIDE=true
@@ -61,6 +64,7 @@ function install_agent()
 ###########################################################
 # Upgrade Management Agent using downloaded upgrade ZIP
 # Returns: 0 if upgrade successful otherwise error code
+# Execute User Scope: elevated
 function upgrade_with_install_bundle()
 {
   export SYSTEM_MANAGER_OVERRIDE=true
@@ -72,6 +76,7 @@ function upgrade_with_install_bundle()
 ###########################################################
 # Upgrade Management Agent using downloaded upgrade ZIP
 # Returns: 0 if upgrade successful otherwise error code
+# Execute User Scope: elevated
 function upgrade_agent()
 {
   export SYSTEM_MANAGER_OVERRIDE=true
