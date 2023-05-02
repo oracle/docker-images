@@ -1,4 +1,4 @@
-# # Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+# # Copyright (c) 2020, 2023, Oracle and/or its affiliates. All rights reserved.
 # #
 # # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # #
@@ -154,7 +154,7 @@ RUN patchzips=`ls ${PATCH_DIR}/p*.zip 2>/dev/null`; \
 
 FROM base as FINAL_BUILD
 
-RUN yum install -y libaio hostname && \
+RUN yum install -y libaio hostname perl && \
     rm -rf /var/cache/yum
 COPY --from=builder --chown=oracle:root  $BASE_DIR $BASE_DIR 
 RUN sed -i '/@@audit\/createCASBAudit.sql/s/@@audit\/createCASBAudit.sql/--@@audit\/createCASBAudit.sql/g' /u01/oracle/idm/common/sql/oam/sql/oam.sql && \

@@ -1,5 +1,5 @@
 [package-manager-packages]
-hostname
+libaio hostname perl
 
 [final-build-commands]
 
