@@ -28,7 +28,7 @@ if [ -d "$SCRIPTS_ROOT" ] && [ -n "$(ls -A "$SCRIPTS_ROOT")" ]; then
       case "$f" in
           *.sh)     
           echo "$0: running $f"; 
-          # shellcheck disable=SC1090
+          # shellcheck source=/dev/null
           . "$f" ;;
           *.sql)    echo "$0: running $f"; echo "exit" | "$ORACLE_HOME"/bin/sqlplus -s "/ as sysdba" @"$f"; echo ;;
           *)        echo "$0: ignoring $f" ;;

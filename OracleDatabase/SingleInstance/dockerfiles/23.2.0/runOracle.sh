@@ -22,11 +22,12 @@ function moveFiles {
    mv "$ORACLE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   # shellcheck disable=SC2144
-   if [ -a "$ORACLE_HOME"/install/.docker_* ]; then
-      mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   fi;
-
+   for file in "$ORACLE_HOME"/install/.docker_*
+   do 
+      if [ -e "$file" ]; then 
+         mv "$file" "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+      fi 
+   done
    # oracle user does not have permissions in /etc, hence cp and not mv
    cp /etc/oratab "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    
