@@ -9,6 +9,8 @@
 # It's assumed that setEnvVars.sh is already sourced before sourcing this script file.
 
 ## Function to set Java properties
+#shellcheck disable=SC2154,SC2166
+
 updateJavaProps() {
   echo "" >> ${OUD_INST_HOME}/config/java.properties
   #     Disabling Enpoint Identification for selected CLIs to allow connecting to OUD Instance with any hostname

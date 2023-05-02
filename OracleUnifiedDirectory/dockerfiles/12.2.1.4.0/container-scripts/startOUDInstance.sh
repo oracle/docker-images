@@ -8,6 +8,7 @@
 # Script to start OUD Instance
 # 
 
+# shellcheck disable=SC2154
 # Variables for this script to work
 source ${SCRIPT_DIR}/setEnvVars.sh
 source ${SCRIPT_DIR}/common_functions.sh
@@ -32,15 +33,7 @@ function term_oud() {
     ${OUD_INST_HOME}/bin/stop-ds >/dev/null 2>&1
 }
 
-# ---------------------------------------------------------------------------
-# SIGKILL handler
-# ---------------------------------------------------------------------------
-function kill_oud() {
-    echo "---------------------------------------------------------------"
-    echo "[$(date)] - SIGKILL received, shutting down OUD instance!"
-    echo "---------------------------------------------------------------"
-kill -9 $childPID
-}
+
 
 # Set SIGINT handler
 trap int_oud SIGINT
@@ -48,8 +41,7 @@ trap int_oud SIGINT
 # Set SIGTERM handler
 trap term_oud SIGTERM
 
-# Set SIGKILL handler
-trap kill_oud SIGKILL
+
 
 # Log OUD Instance Version related details
 if [ -f ${oudInstanceDetailsFile} ]

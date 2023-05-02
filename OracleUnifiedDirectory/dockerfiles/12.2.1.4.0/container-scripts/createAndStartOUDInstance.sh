@@ -9,6 +9,8 @@
 # 
 
 # Variables for this script to work
+
+# shellcheck disable=SC2154,SC2166,SC2046
 source ${SCRIPT_DIR}/setEnvVars.sh
 source ${SCRIPT_DIR}/common_functions.sh
 
