@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -56,7 +56,7 @@ RUN mkdir -p ${BASE_DIR} && \
     mkdir -p ${USER_PROJECTS_DIR} && \
     chown -R oracle:root ${USER_PROJECTS_DIR} && chmod -R 770 ${USER_PROJECTS_DIR} && \
     mkdir -p ${SCRIPT_DIR} && chown oracle:root ${SCRIPT_DIR} && \
-    yum install -y libaio hostname vi && \
+    yum install -y libaio hostname vi perl && \
     rm -rf /var/cache/yum
 
 # Builder Image for Installation of Binaries
