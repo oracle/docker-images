@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x] [-i] [-o] [container build option]
+Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-o] [container build option]
 Builds a container image for Oracle Database.
 
 Parameters:
@@ -22,14 +22,15 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
+   -f: creates images based on Database 'Free' 
    -i: ignores the MD5 checksums
    -o: passes on container build option
 
-* select one edition only: -e, -s, or -x
+* select one edition only: -e, -s, -x, or -f
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014,2023 Oracle and/or its affiliates.
 
 EOF
 
@@ -109,6 +110,7 @@ cd "$(dirname "$0")"
 ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
+FREE=0
 # Obtaining the latest version to build
 VERSION="$(find -- *.*.* -type d | tail -n 1)"
 SKIPMD5=0
@@ -123,7 +125,7 @@ if [ "$#" -eq 0 ]; then
   exit 1;
 fi
 
-while getopts "hesxiv:t:o:" optname; do
+while getopts "hesxfiv:t:o:" optname; do
   case "${optname}" in
     "h")
       usage
@@ -140,6 +142,9 @@ while getopts "hesxiv:t:o:" optname; do
       ;;
     "x")
       EXPRESS=1
+      ;;
+    "f")
+      FREE=1
       ;;
     "v")
       VERSION="${OPTARG}"
@@ -165,7 +170,7 @@ done
 checkContainerRuntime
 
 # Which Edition should be used?
-if [ $((ENTERPRISE + STANDARD + EXPRESS)) -gt 1 ]; then
+if [ $((ENTERPRISE + STANDARD + EXPRESS + FREE)) -gt 1 ]; then
   usage
 elif [ ${ENTERPRISE} -eq 1 ]; then
   EDITION="ee"
@@ -185,17 +190,14 @@ elif [ ${EXPRESS} -eq 1 ]; then
     echo "Version ${VERSION} does not have Express Edition available.";
     exit 1;
   fi;
-fi;
-
-# Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
-  DOCKERFILE="${DOCKERFILE}.${EDITION}"
-fi;
-
-# Oracle Database image Name
-# If provided using -t build option then use it; Otherwise, create with version and edition
-if [ -z "${IMAGE_NAME}" ]; then
-  IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
+elif [ ${FREE} -eq 1 ]; then 
+  if [ "$(cut -f1 -d.  <<< "$VERSION" )" -lt 23 ]; then 
+    echo "Version ${VERSION} does not have Free Edition available.";
+    exit 1;
+  else 
+    EDITION="free"
+    SKIPMD5=1
+  fi;
 fi;
 
 # Go into version folder
@@ -203,6 +205,19 @@ cd "${VERSION}" || {
   echo "Could not find version directory '${VERSION}'";
   exit 1;
 }
+
+# Which Dockerfile should be used?
+if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.2.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
+  DOCKERFILE=$( if [[ -f "Containerfile.${EDITION}" ]]; then echo "Containerfile.${EDITION}"; else echo "${DOCKERFILE}.${EDITION}";fi )
+fi;
+
+echo "$DOCKERFILE"
+
+# Oracle Database image Name
+# If provided using -t build option then use it; Otherwise, create with version and edition
+if [ -z "${IMAGE_NAME}" ]; then
+  IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
+fi;
 
 if [ ! "${SKIPMD5}" -eq 1 ]; then
   checksumPackages

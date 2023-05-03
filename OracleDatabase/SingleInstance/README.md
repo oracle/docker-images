@@ -6,6 +6,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
+* Oracle Database 23c (23.2.0) Free
 * Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
@@ -33,19 +34,20 @@ Before you build the image make sure that you have provided the installation bin
     
     Parameters:
        -v: version to build
-           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0
+           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.2.0
        -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
        -x: creates image based on 'Express Edition'
+       -f: creates image based on Database 'Free'
        -i: ignores the MD5 checksums
        -o: passes on container build option
     
-    * select one edition only: -e, -s, or -x
+    * select one edition only: -e, -s, -x, or -f
     
     LICENSE UPL 1.0
     
-    Copyright (c) 2014,2021 Oracle and/or its affiliates.
+    Copyright (c) 2014,2023 Oracle and/or its affiliates.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
@@ -249,6 +251,48 @@ To configure  wallet password, please use the following command:
 
     After certificate renewal, the client wallet should be updated by downloading it again.
 * Supports Oracle Database XE version 21.3.0 onwards.
+
+#### Running Oracle Database 23c FREE in a container
+
+To run your Oracle Database 23c FREE container image use the `docker run` command as follows:
+
+    podman run --name <container name> \
+    -p <host port>:1521 \
+    -e ORACLE_PWD=<your database passwords> \
+    -e ORACLE_CHARACTERSET=<your character set> \
+    -v [<host mount point>:]/opt/oracle/oradata \
+    oracle/database:23.2.0-free
+    
+    Parameters:
+       --name:        The name of the container (default: auto generated)
+       -p:            The port mapping of the host port to the container port.
+                      Two ports are exposed: 1521 (Oracle Listener), 5500 (EM Express)
+       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+       -e ORACLE_CHARACTERSET:
+                      The character set to use when creating the database (default: AL32UTF8)
+       -v /opt/oracle/oradata
+                      The data volume to use for the database.
+                      Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+                      If omitted the database will not be persisted over container recreation.
+       -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
+                      Optional: A volume with custom scripts to be run after database startup.
+                      For further details see the "Running scripts after setup and on startup" section below.
+       -v /opt/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
+                      Optional: A volume with custom scripts to be run after database setup.
+                      For further details see the "Running scripts after setup and on startup" section below.
+
+Once the container has been started and the database created you can connect to it just like to any other database:
+
+    sqlplus sys/<your password>@//localhost:1521/FREE as sysdba
+    sqlplus system/<your password>@//localhost:1521/FREE
+    sqlplus pdbadmin/<your password>@//localhost:1521/FREEPDB1
+
+On the first startup of the container a random password will be generated for the database if not provided. The password for those accounts can be changed via the `podman exec` command. **Note**, the container has to be running:
+
+    podman exec <container name> /opt/oracle/setPassword.sh <your password>
+
+**Important Note:**
+The ORACLE_SID for Oracle Database 23c FREE is always `FREE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the FREE build.
 
 #### Running Oracle Database 21c/18c Express Edition in a container
 
