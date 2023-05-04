@@ -1,36 +1,26 @@
-# Contribution guide
+# Contribution guidelines
+
+<!-- markdownlint-disable MD036 -->
+*Last updated: March 2023*
 
 Oracle welcomes contributions to this repository from anyone.
 
 If you want to submit a pull request to fix a bug or enhance an existing
-`Dockerfile`, please first open an issue and link to that issue when you
+`Dockerfile`, please open an issue first and link to that issue when you
 submit your pull request.
 
-If you have any questions about a possible submission, feel free to open
-an issue too.
+If you have any questions about a possible submission, we encourage you to start
+a discussion about the contribution to get feedback from other users.
 
-## Contributing to the Oracle Docker Images repository
+## Contributing code
 
 All contributors are expected to adhere to our [code of conduct](CODE_OF_CONDUCT.md).
 
-Pull requests are made under [the Oracle Contributor Agreement](https://oca.opensource.oracle.com/) (OCA).
-Only pull requests from committers that can be verified as having
-signed the OCA can be accepted.
-
-For pull requests to be accepted, the bottom of your commit message must have
-the following line using your name and e-mail address as it appears in the
-OCA Signatories list.
-
-```bash
-Signed-off-by: Your Name <you@example.org>
-```
-
-This will be automatically added to pull requests if you using the `signoff`
-parameter when committing your changes:
-
-```bash
-  git commit [--signoff|-S]
-```
+External contributions are only accepted from contributors who have signed the
+[the Oracle Contributor Agreement](https://oca.opensource.oracle.com/) (OCA).
+The [OCA Bot](https://github.com/apps/oracle-contributor-agreement) automatically
+checks every pull request and will provide a link for you to follow to sign
+the agreement if it can't find one for you.
 
 ## Oracle product ownership and responsibility
 
@@ -55,7 +45,15 @@ member of the [Oracle GitHub Organisation](https://github.com/orgs/oracle/people
 
 Contact [Avi Miller](https://github.com/Djelibeybi) for more information.
 
-### Pull request process
+## Opening issues
+
+For bugs or enhancement requests, please file a GitHub issue unless it's
+security related. When filing a bug remember that the better written the bug is,
+the more likely it is to be fixed. If you think you've found a security
+vulnerability, do not raise a GitHub issue and follow the instructions in our
+[security policy](./SECURITY.md).
+
+## Pull request process
 
 1. Fork this repository
 1. Create a branch in your fork to implement the changes. We recommend using
@@ -63,38 +61,52 @@ the issue number as part of your branch name, e.g. `1234-fixes`
 1. Ensure that any documentation is updated with the changes that are required
 by your fix.
 1. Ensure that any samples are updated if the base image has been changed.
-1. Submit the pull request. *Do not leave the pull request blank*. Explain exactly
+1. Submit a pull request. *Do not leave the pull request blank*. Explain exactly
 what your changes are meant to do and provide simple steps on how to validate
 your changes. Ensure that you reference the issue you created as well.
 We will assign the pull request to 2-3 people for review before it is merged.
 
-## Golden Rules
+## Guidelines for contributions
 
-We have some golden rules that we require all submitted `Dockerfiles` to abide
-by. These rules are provided by Oracle Global Product Security and may change
-at any time.
+All contributions must meet the following quality and style guidelines, regardless of whether
+they are made by an Oracle employee or not.
 
-Most of these are targeted at Oracle employees, but apply to anyone who submits
-a pull request.
+Oracle employees must ensure their membership of the Oracle GitHub Organization
+and their Oracle email address are publicly visible on their profile. This will
+allow the OCA Bot to properly identify you.
+
+### Code and documentation quality and style requirements
+
+All pull requests are checked by the following linters to ensure your contribution
+meets the default quality, style and formatting guidelines of each language:
+
+| Language     | Linter                                           |
+| ------------ | ------------------------------------------------ |
+| Dockerfiles | [hadolint](https://github.com/hadolint/hadolint) |
+| GitHub Actions | [actionlint](https://github.com/rhysd/actionlint) |
+| Markdown files | [markdownlint](https://github.com/igorshubovych/markdownlint-cli)
+| Shell scripts | [ShellCheck](https://github.com/koalaman/shellcheck) / [shfmt](https://github.com/mvdan/sh)
+
+You can use the provided [`lint`](./scripts/lint) script to run the linters
+locally before submitting a pull request. The script will scan all files from
+the current directory and below, so `cd` to a subdirectory before running the
+script to only scan a subset of files.
 
 ### Base image rules
 
 1. Extend an existing product image wherever possible. For example, if your
    product requires WebLogic, then extend the WebLogic image instead of creating
    your own WebLogic installation.
-1. If you can't extend an existing image, your image must use either the
-   `oraclelinux:8` (preferred) or `oraclelinux:7-slim` base image as these images are
+1. If you can't extend an existing product image, your image must use either the
+   `oraclelinux:8` (preferred) or `oraclelinux:8-slim` base image as these images are
    specifically designed to be the smallest possible install size. Both images are
    also updated whenever a security-related errata is published.
-   _(Updated Februrary 2021)_
-1. There is an `oraclelinux:8-slim` image available for use with statically built
-   microservices. It is half the size of `oraclelinux:8` but does not have native
-   support for modularity or `dnf`. _Do not use this image if you need to install_
-   _any additional packages. (Updated August 2021)._
+1. No new product images based on `oraclelinux:7` or `oraclelinux:7-slim` will be
+   accepted.
 1. Re-use existing scripts wherever possible. If a particular base image or
    script doesn't have the functionality you need, open an issue and work with
    the image owner to implement it.
-1. Specify a version in the `FROM` directive, i.e. use
+1. Specify only the major version of the base in the `FROM` directive, i.e. use
    `FROM oraclelinux:8` or `FROM java/serverjre:8`.
 1. All images must provide a `CMD` or `ENTRYPOINT`. If your image is designed
    to be extended, then this should output documentation on how to extend the
@@ -105,28 +117,45 @@ a pull request.
 
 Additional product-specific labels are listed below:
 
-<!-- markdownlint-disable MD033 -->
 | Label   | Value | Applicability |
 | -------- | ----- | ------------- |
-| provider | `Oracle` | All images |
-| issues | `https://github.com/oracle/docker-images/issues` | All images |
-| maintainer | Name of the maintainer | At the discretion of the author. |
-| volume(.`purpose`) | Use `volume` labels to describe the volumes of an image.
-<br/>If your image has multiple volumes, use qualified names to specify the
-purpose of each volume, for example `volume.data` for data to be persisted outside
-the container.<br/>Use hierarchical nesting for multiple volumes of the same type,
-for example:<br/><ul><li>`volume.data.dir1`</li><li>`volume.data.dir2`</li></ul>
-| Mandatory for all images that require persistent storage beyond the life of an
-individual container. |
-| port(.`purpose`) | Use `port` labels to describe the ports of an image.<br/>If
- your images has multiple ports, use qualified names to specify the purpose of
- each port, for example `port.app` for the port on which your application is
- reachable.<br/>Use hierarchical nesting for multiple ports of the same type,
- for example:<br/><ul><li>`port.app.http`</li><li>`port.app.https`</li></ul> |
- Mandatory for all images that require externally accessible port mappings. |
- <!-- markdownlint-enable MD033 -->
+| `provider` | `Oracle` | All images |
+| `issues` | `https://github.com/oracle/docker-images/issues` | All images |
+| `maintainer` | Name of the maintainer | At the discretion of the author. |
+| `volume[.purpose]` | See below | Mandatory for any image with persistent storage
+| `port[.purpose]` | See below | Mandatory for all images with port mappings |
 
-For example, for the Oracle Database 18c XE image we use the following labels:
+### Volume labels
+
+Use `volume` labels to describe the purpose of each volume available to
+containers that are created using your image.
+
+If your image provides multiple volumes, use qualified names to specify the
+purpose of each volume, e.g. `volume.data` would be for data created by the
+container while `volume.setup.scripts` would be the location of scripts used
+by the container during its setup process.
+
+Use hierarchical nesting for multiple volumes of the same type, for example:
+
+* `volume.data.dir1`
+* `volume.data.dir2`
+
+### Port labels
+
+Use `port` labels to describe the required port mappings needed when running
+a container based on your image.
+
+If your images uses multiple ports, use qualified names to specify the purpose of
+each port, e.g. `port.http` to specify the HTTP port on which your application is
+reachable.
+
+ Use hierarchical nesting for multiple ports of the same type:
+
+* `port.app.http`
+* `port.app.https`
+
+The Oracle Database XE image provides a good example of how to specify labels
+effectively:
 
 ```dockerfile
 LABEL "provider"="Oracle"                                   \
@@ -143,29 +172,29 @@ LABEL "provider"="Oracle"                                   \
 
 ### Security-related rules
 
+1. **No hard-coded passwords.** If passwords are required, generate them
+   on container startup using `openssl rand` or accept a password argument during
+   container startup (via `-e`).
+1. **No world-writeable directories or files.** Limit read and write to file
+   owners if possible, or groups at most. Do not allow anyone to write to files.
 1. Do not require the use of the `--privileged` flag when running a container.
 1. Do not run an SSH daemon (`sshd`) inside a container.
 1. Do not use host networking mode (`--net=host`) for a container.
-1. Do not hard-code any passwords. If passwords are required, generate them
-on container startup using `openssl rand` or accept a password argument during
-container startup (via `-e`).
 
 ### Documentation rules
 
 1. No Oracle host or domain names should be included in any code or examples.
    If an example domain name is required, use `example.com`.
-1. All documentation including `README.md` files needs to meet Oracle
+1. All documentation including `README.md` files must meet Oracle
    documentation standards. For content submitted by internal Oracle teams,
    it is recommended that your documentation team either write or at least
    review this content. Externally submitted documentation will be reviewed
    during the PR process.
-1. Wherever possible, refer to "container images" or just "images" in all
-   documentation, as well as in any script output.
-1. Only refer to Docker when specifically referring to that product.
-1. All build or usage examples should be based on Oracle Linux using either
-   [Container Runtime for Docker](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/)
-   on Oracle Linux 7 or [Podman](https://docs.oracle.com/en/operating-systems/oracle-linux/podman/)
-   on Oracle Linux 8.
+1. Docker and Podman are product names and trademarks and should only be used
+   when referring to those products specifically and both should be capitalised,
+   except when used in monospaced formatted command-line examples.
+1. All build or usage examples should be based on [Podman](https://docs.oracle.com/en/operating-systems/oracle-linux/podman/)
+   running on Oracle Linux 8 or Oracle Linux 9.
 
 ### Guidelines and recommendations
 
@@ -191,4 +220,11 @@ merged, but are generally frowned upon if breached.
 * If a custom value must be provided by the end-user, the build or run should
   gracefully fail if that value is not provided.
 
-*Copyright (c) 2017, 2021 Oracle and/or its affiliates.*
+## Code of conduct
+
+Follow the [Golden Rule](https://en.wikipedia.org/wiki/Golden_Rule). If you'd
+like more specific guidelines, see the [Contributor Covenant Code of Conduct][COC].
+
+[COC]: https://www.contributor-covenant.org/version/1/4/code-of-conduct/
+
+Copyright (c) 2017, 2023 Oracle and/or its affiliates.

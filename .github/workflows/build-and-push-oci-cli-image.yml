@@ -34,14 +34,13 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
-      - name: Setup Docker Buildx
+      - name: Setup Docker BuildX
         uses: docker/setup-buildx-action@v2
 
-      - name: Repository owner needs to be lowercase
+      - name: Lowercase repository owner
         id: repo-owner
         run: |
-          REPO_OWNER=${{ github.repository_owner }}
-          echo "::set-output name=repo-owner::${REPO_OWNER,,}"
+          echo "repo-owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
 
       - name: Log into GitHub Container Registry
         if: github.event_name != 'pull_request'
@@ -75,7 +74,7 @@ jobs:
 
       - name: Build and push image
         id: build-and-push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           build-args: |
             BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}

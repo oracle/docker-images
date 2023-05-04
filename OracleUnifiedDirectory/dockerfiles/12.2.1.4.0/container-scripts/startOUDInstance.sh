@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -8,6 +8,7 @@
 # Script to start OUD Instance
 # 
 
+# shellcheck disable=SC2154
 # Variables for this script to work
 source ${SCRIPT_DIR}/setEnvVars.sh
 source ${SCRIPT_DIR}/common_functions.sh
@@ -32,15 +33,7 @@ function term_oud() {
     ${OUD_INST_HOME}/bin/stop-ds >/dev/null 2>&1
 }
 
-# ---------------------------------------------------------------------------
-# SIGKILL handler
-# ---------------------------------------------------------------------------
-function kill_oud() {
-    echo "---------------------------------------------------------------"
-    echo "[$(date)] - SIGKILL received, shutting down OUD instance!"
-    echo "---------------------------------------------------------------"
-kill -9 $childPID
-}
+
 
 # Set SIGINT handler
 trap int_oud SIGINT
@@ -48,8 +41,7 @@ trap int_oud SIGINT
 # Set SIGTERM handler
 trap term_oud SIGTERM
 
-# Set SIGKILL handler
-trap kill_oud SIGKILL
+
 
 # Log OUD Instance Version related details
 if [ -f ${oudInstanceDetailsFile} ]
@@ -87,7 +79,7 @@ fi
 
 #####function call for Schema config OUD-12343
 #schema_config
-
+updateJavaProps
 # Start OUD instance
 echo "---------------------------------------------------------------"
 echo "[$(date)] - Start OUD instance (${OUD_INST_HOME}):"

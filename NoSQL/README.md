@@ -12,8 +12,16 @@ This container image uses a simplified version of the Oracle NoSQL Database call
  KVLite. KVLite runs as a single process that provides a single storage node and
  single storage shard. KVLite does not include replication or administration.
 
-> **Note:** KVLite is not intended for production deployment or performance
-> measurements.
+> **Note:** KVLite is NOT intended for production deployment or performance
+> measurements.  We recommend testing with data that is NOT considered sensitive
+> in nature. In other words, do not test with sensitive information such as
+> usernames, passwords, credit card information, medication information, etc.
+>
+> **Note:** There are 2 container images available, one using a secure configuration
+> and one using a non-secure configuration.    The primary difference is in the way
+> access is performed to KVLite.   We recommend using the secure setup, albeit
+> additional steps are needed during set up.  One advantage to using the secure
+> set up is it gives you exposure to what is needed to set up a secure KVStore.
 
 ## Quick start: pull the Oracle NoSQL Community Edition image
 
@@ -65,7 +73,7 @@ For example, to check the version of KVLite, use the `version` command:
 
 ```shell
 $ docker run --rm -ti --link kvlite:store oracle/nosql:ce  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
-21.2.46 2022-05-24 20:36:59 UTC  Build id: 1b73ce65d872 Edition: Community
+22.3.32 2023-02-14 19:38:03 UTC  Build id: 23acbda81a26 Edition: Community
 ```
 
 To check the size of the storage shard:
@@ -87,18 +95,20 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/kvstore.jar runadmin -host store -port 5000 -store kvstore
 
   kv-> ping
+  
 Pinging components of store kvstore based upon topology sequence #14
 10 partitions and 1 storage nodes
-Time: 2022-06-16 20:06:03 UTC   Version: 21.2.46
+Time: 2023-02-27 06:25:43 UTC   Version: 22.3.32
 Shard Status: healthy: 1 writable-degraded: 0 read-only: 0 offline: 0 total: 1
 Admin Status: healthy
 Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]   RN Status: online: 1 read-only: 0 offline: 0
-Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 21.2.46 2022-05-24
-20:36:59 UTC  Build id: 1b73ce65d872 Edition: Community    isMasterBalanced: true   serviceStartTime: 2022-06-16 19:56:24 UTC
-        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2022-06-16 19:56:27 UTC       stateChangeTime: 2022-06-16 19:56:26 UTC
-        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 293 haPort: 5011 availableStorageSize: 9 GB storageType: HD      serviceStartTime:
- 2022-06-16 19:56:28 UTC       stateChangeTime: 2022-06-16 19:56:29 UTC
-
+Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 22.3.32 2023-02-14
+19:38:03 UTC  Build id: 23acbda81a26 Edition: Community    isMasterBalanced: true      serviceStartTime: 2023-02-27 06:24:27 UTC
+        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2023-02-27 06:24:30 UTC       stateChangeTime: 2023-02-27 06:24:30 UTC        
+availableStorageSize: 2 GB
+        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 314 haPort: 5011 availableStorageSize: 9 GB storageType: HD      
+serviceStartTime: 2023-02-27 06:24:33 UTC       stateChangeTime: 2023-02-27 06:24:34 UTC
+  
   kv-> put kv -key /SomeKey -value SomeValue
   Operation successful, record inserted.
   kv-> get kv -key /SomeKey
@@ -165,7 +175,7 @@ be made via the Oracle NoSQL Database Proxy on the `KV_PROXY_PORT`.
 First, install the latest version of Oracle NoSQL on your remote host:
 
 ```shell
-KV_VERSION=21.2.46
+KV_VERSION=22.3.32
 rm -rf kv-$KV_VERSION
 DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
@@ -325,7 +335,7 @@ number used for the image tag:
 
 
 ```shell
-KV_VERSION=21.2.46 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce:$KV_VERSION" .
+KV_VERSION=22.3.32 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce:$KV_VERSION" .
 ```
 
 ## More information
@@ -337,8 +347,8 @@ For more information on [Oracle NoSQL][NOSQL] please review the
 
 Oracle NoSQL Community Edition is released under the [Apache 2.0 License][Apache-2.0].
 
-The Oracle NoSQL Database Community Edition image contains the Oracle OpenJDK which is
-licensed under the [GNU General Public License v2.0 with Classpath Exception][GPLv2+CE]
+The Oracle NoSQL Database Community Edition image image uses the GraalVM CE container image as its base image.
+It is licensed under the [GNU General Public License v2.0 with Classpath Exception][GraalVM-License]
 
 The files in this repository are licensed under the [Universal Permissive License 1.0](/LICENSE.txt)
 
@@ -348,9 +358,9 @@ Oracle provides no commercial support for the Oracle NoSQL Community Edition.
 
 ## Copyright
 
-Copyright (c) 2017, 2022 Oracle and/or its affiliates.
+Copyright (c) 2017, 2023 Oracle and/or its affiliates.
 
 [NOSQL]: http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html
 [DOCS]: https://docs.oracle.com/en/database/other-databases/nosql-database/index.html
-[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/license/index.html#NSXLI-GUID-006E432E-1965-45A2-AEDE-204BD05E1560
-[GPLv2+CE]: http://openjdk.java.net/legal/gplv2+ce.html
+[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/22.3/license/index.html#NSXLI-GUID-006E432E-1965-45A2-AEDE-204BD05E1560
+[GraalVM-License]: https://github.com/graalvm/container/blob/master/LICENSE.md

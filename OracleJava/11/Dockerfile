@@ -1,16 +1,16 @@
-# Copyright (c) 2019, 2022 Oracle and/or its affiliates.
+# Copyright (c) 2019, 2023 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 11
+# This is the Dockerfile for Oracle JDK 11 on Oracle Linux 7
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
 # (1) jdk-11.XX_linux-x64_bin.tar.gz or jdk-11.XX_linux-aarch64_bin.tar.gz
-#     Download from https://www.oracle.com/java/technologies/javase-jdk11-downloads.html
+#     Download from https://www.oracle.com/java/technologies/downloads/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
@@ -25,12 +25,10 @@
 
 FROM oraclelinux:7-slim as builder
 
-MAINTAINER Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>
+LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-RUN set -eux; \
-	yum install -y \
-		gzip \
-		tar;
+RUN yum install -y gzip tar
+		
 	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
@@ -43,15 +41,16 @@ ENV JAVA_HOME=/usr/java/jdk-11
 
 ##
 COPY *.tar.gz /tmp/
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH=$(uname -m) && \
-    if [ "$ARCH" == "x86_64" ]; \
+	ARCH="$(uname -m)" && \
+    if [ "$ARCH" = "x86_64" ]; \
     then \
-		mv $(ls /tmp/jdk-11*_linux-x64_bin.tar.gz) /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=4edc62ebb4359b276ea33abfd9a54bacb218b8f972603c20be9e415b8a59012c ; \
+		mv "$(ls /tmp/jdk-11*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+        JAVA_SHA256=192b208c2bc5c54b06df16a168c8cffcf0c7e09a6b83c15503066547544147a1 ; \
     else \
-	    mv $(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz) /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=546dca8e140abbcddbbb36f691817d81f7116b76e00e25ce2e0586bfee567f57 ; \    	
+	    mv "$(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+    	JAVA_SHA256=ca0a62c1019f5370853a80d6e48b2690886dfae3a5ec294faad40cca867ae06f ; \    	
     fi && \
 	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
@@ -63,8 +62,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=11.0.16.1 \
-	JAVA_HOME=/usr/java/jdk-11
+ENV JAVA_HOME=/usr/java/jdk-11
 
 ENV	PATH $JAVA_HOME/bin:$PATH	
 

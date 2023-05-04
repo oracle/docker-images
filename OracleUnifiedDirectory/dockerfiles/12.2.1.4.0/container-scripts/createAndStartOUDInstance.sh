@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl.
@@ -9,6 +9,8 @@
 # 
 
 # Variables for this script to work
+
+# shellcheck disable=SC2154,SC2166,SC2046
 source ${SCRIPT_DIR}/setEnvVars.sh
 source ${SCRIPT_DIR}/common_functions.sh
 
@@ -19,33 +21,10 @@ function _term() {
    $OUD_INST_HOME/bin/stop-ds
 }
 
-########### SIGKILL handler ############
-function _kill() {
-   echo "[$(date)] - SIGKILL received, shutting down the server!"
-   kill -9 $childPID
-}
 
 # Set SIGTERM handler
 trap _term SIGTERM
 
-# Set SIGKILL handler
-trap _kill SIGKILL
-
-# 
-updateJavaProps() {
-  echo "" >> ${OUD_INST_HOME}/config/java.properties
-  #	Disabling Enpoint Identification for selected CLIs to allow connecting to OUD Instance with any hostname
-  echo "dsconfig.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "dsreplication.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "uninstall.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "status.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "import-ldif.online.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "manage-suffix.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "ldapmodify.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "ldapsearch.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  echo "start-ds.java-args=-server -Xms256m -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
-  ${OUD_INST_HOME}/bin/dsjavaproperties
-}
 
 printEnvVars() {
 	echo "[$(date)] - Environment Variables which would influence OUD Instance setup and configuration"
@@ -549,17 +528,11 @@ else
 
        if [ "$ordinal" == "0" ]; then
          echo "[$(date)] - Calling createOUD_Directory"
-         if [[ -f "/u01/oracle/config-input/config-baseOUD.props" ]]; then
-          source "/u01/oracle/config-input/config-baseOUD.props"
-         fi
          createOUD_Directory
        fi
 
        if [[ "$ordinal" != "0" && ! -z "$ordinal" ]]; then
          echo "[$(date)] - Calling createOUD_DS2RS"
-        if [[ -f "/u01/oracle/config-input/config-replOUD.props" ]]; then
-         source "/u01/oracle/config-input/config-replOUD.props"
-        fi
          createOUD_DS2RS
        fi
       ;;

@@ -1,0 +1,26 @@
+---
+name: Lint new or modified files using Super Linter
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-new-modified-files:
+    name: Lint new or modified files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Git repository with history
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set environment variables
+        run: cat .github/super-linter.env >> "$GITHUB_ENV"
+
+      - name: Run Super Linter
+        uses: github/super-linter/slim@v5
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,30 @@
+#!/bin/bash -e
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
+#
+
+REPO_DIR="$(git rev-parse --show-toplevel)/"
+CURR_DIR="$PWD/"
+if [ "$REPO_DIR" != "$CURR_DIR" ]; then
+  FILTER_REGEX_INCLUDE="./${PWD/$REPO_DIR/}/.*"
+fi
+
+# Find a container runtime
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    {
+      echo "Error: no supported container runtime found."
+      exit 1
+    }
+}
+
+# Check that we have a container runtime installed
+checkContainerRuntime
+
+# Run the Super Linter container
+$CONTAINER_RUNTIME run --name super-linter --rm \
+  -e RUN_LOCAL=true --platform linux/amd64 \
+  -e FILTER_REGEX_INCLUDE="$FILTER_REGEX_INCLUDE" \
+  --env-file "$REPO_DIR/.github/super-linter.env" \
+  "${PROXY_SETTINGS[@]}" \
+  -v "$REPO_DIR:/tmp/lint" ghcr.io/github/super-linter:slim-latest
