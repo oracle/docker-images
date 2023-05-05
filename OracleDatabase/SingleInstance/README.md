@@ -21,7 +21,7 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE and 21c XE) and put them into the `dockerfiles/<version>` folder.
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 23c FREE) and put them into the `dockerfiles/<version>` folder.
 You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
 You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
