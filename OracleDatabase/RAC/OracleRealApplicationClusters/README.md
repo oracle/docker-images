@@ -217,7 +217,7 @@ Complete each prerequisite step in order, customized for your environment.
 
 2. Oracle RAC must run certain processes in real-time mode. To run processes inside a container in real-time mode, you must make changes to the Docker configuration files. For details, see the [`dockerd` documentation](https://docs.docker.com/engine/reference/commandline/dockerd/#examples). Edit the Docker Daemon based on Docker version:
 
-   - Check the Docker version. In the following output, the Oracle `docker-engine` version is 19.3.
+   - Check the Docker version. In the following output, the Oracle `docker-engine` version is 19.03.
 
     ```bash
     rpm -qa | grep docker
@@ -225,13 +225,13 @@ Complete each prerequisite step in order, customized for your environment.
     docker-engine-19.03.11.ol-9.el7.x86_64
     ```
 
-   - If Oracle `docker-engine` version is greater than or equal to 19.3: Edit `/usr/lib/systemd/system/docker.service` and add additional parameters in the `[Service]` section for the `dockerd` daemon:
+   - If Oracle `docker-engine` version is greater than or equal to 19.03: Edit `/usr/lib/systemd/system/docker.service` and add additional parameters in the `[Service]` section for the `dockerd` daemon:
 
     ```bash
     ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --cpu-rt-runtime=950000
     ```
 
-   - If Oracle docker-engine version is less than 19.3: Edit `/etc/sysconfig/docker` and add following
+   - If Oracle docker-engine version is less than 19.03: Edit `/etc/sysconfig/docker` and add following
 
     ```bash
     OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'
