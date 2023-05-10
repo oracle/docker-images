@@ -4,8 +4,10 @@
 FROM ghcr.io/oracle/oraclelinux:9
 
 RUN \
-    dnf -y install --setopt=tsflags=nodocs haproxy && \
+    dnf -y install haproxy && \
     rm -rf /var/cache/dnf
+
+EXPOSE 5000
 
 CMD ["/usr/sbin/haproxy", "-p", "/run/haproxy.pid", "-f", "/etc/haproxy/haproxy.cfg", "-W", "-db"]
 
