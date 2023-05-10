@@ -574,7 +574,7 @@ You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en
 
 **Notes**: 
  * You need to remove `--cpu-rt-runtime=95000 \` from container creation commands mentioned below in this document in [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman) and [Section 5.3: Adding a Oracle RAC Node using a container on Podman](#section-53-adding-a-oracle-rac-node-using-a-container-on-podman) to create the containers if you are running Oracle 8 with URKR7. You can check the details on [Oracle Linux and Unbreakable Enterprise Kernel (UEK) Releases](https://blogs.oracle.com/scoter/post/oracle-linux-and-unbreakable-enterprise-kernel-uek-releases)
- * You do not need to execute step 2 in this sectiom to create and enable `Podman-rac-cgroup.service`
+ * You do not need to execute step 2 in this section to create and enable `Podman-rac-cgroup.service`
  
 **IMPORTANT:** Completing prerequisite steps is a requirement for successful configuration.
 
