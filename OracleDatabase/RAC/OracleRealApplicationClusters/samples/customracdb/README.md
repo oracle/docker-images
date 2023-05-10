@@ -145,7 +145,7 @@ docker create -t -i \
 --cap-add=NET_ADMIN \
 -e NODE_VIP=172.16.1.161 \
 -e VIP_HOSTNAME=racnode2-vip \
--e PRIV_IP=192.168.17.152 \
+-e PRIV_IP=192.168.17.151 \
 -e PRIV_HOSTNAME=racnode2-priv \
 -e PUBLIC_IP=172.16.1.151 \
 -e PUBLIC_HOSTNAME=racnode2 \
@@ -229,7 +229,7 @@ docker create -t -i \
 --cap-add=NET_ADMIN \
 -e NODE_VIP=172.16.1.161 \
 -e VIP_HOSTNAME=racnode2-vip \
--e PRIV_IP=192.168.17.152 \
+-e PRIV_IP=192.168.17.151 \
 -e PRIV_HOSTNAME=racnode2-priv \
 -e PUBLIC_IP=172.16.1.151 \
 -e PUBLIC_HOSTNAME=racnode2 \
