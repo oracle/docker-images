@@ -5,7 +5,7 @@ Learn about container deployment options for Oracle Real Application Clusters (O
 ## Overview of Running Oracle RAC in Containers
 
 Oracle Real Application Clusters (Oracle RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications.
-Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms. 
+Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms.
 Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
 For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
@@ -407,7 +407,10 @@ To connect to the container execute the following command:
 # docker exec -i -t racnode1 /bin/bash
 ```
 
-If the install fails for any reason, log in to the container using the preceding command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
+If the install fails for any reason, log in to the container using the preceding command and check `/tmp/orod.log`.
+
+- You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs.
+- If the failure occurred during the database creation then check the database logs.
 
 ### Section 4.3: Adding an Oracle RAC Node using a Docker Container
 
@@ -1079,8 +1082,6 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
 - You must add `CV_ASSUME_DISTID=OEL8` inside the `Dockerfile` as an env variable.
 
 - Once the `19.3.0` Oracle RAC on Podman image is built, start building patched image with the download 19.16 RU and one-offs. To build the patch the image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
-
-- Make changes in `/opt/containers/envfile` in [Prepare the envfile](#prepare-the-envfile) sectoin as per 19c `Dockerfile`. You need to change all the contents based on 19c such as `GRID_HOME`, `ORACLE_HOME` and `ADDNODE_RSP` which you have used in `Dockerfile` while building the image.
 
 ## Section 11 : Support
 
