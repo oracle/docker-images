@@ -588,7 +588,9 @@ You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en
 
 **Notes**:
 
-- You need to remove `"--cpu-rt-runtime=95000 \"` from container creation commands mentioned below in this document in [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman) and [Section 5.3: Adding a Oracle RAC Node using a container on Podman](#section-53-adding-a-oracle-rac-node-using-a-container-on-podman) to create the containers if you are running Oracle 8 with URKR7.
+- You need to remove `"--cpu-rt-runtime=95000 \"` from container creation commands mentioned below in this document in following sections to create the containers if you are running Oracle 8 with URKR7:
+  - [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman).
+  - [Section 5.3: Adding a Oracle RAC Node using a container on Podman](#section-53-adding-a-oracle-rac-node-using-a-container-on-podman).
   
 - You can check the details on [Oracle Linux and Unbreakable Enterprise Kernel (UEK) Releases](https://blogs.oracle.com/scoter/post/oracle-linux-and-unbreakable-enterprise-kernel-uek-releases)
 
@@ -1056,7 +1058,7 @@ This project offers sample container files for Oracle Grid Infrastructure and Or
   
   - Stage it under dockerfiles/18.3.0 folder.
 
-- If you are planning to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. 
+- If you are planning to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database.
   
   - You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html).
   
