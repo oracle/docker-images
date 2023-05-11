@@ -4,7 +4,8 @@ Learn about container deployment options for Oracle Real Application Clusters (O
 
 ## Overview of Running Oracle RAC in Containers
 
-Oracle Real Application Clusters (Oracle RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
+Oracle Real Application Clusters (Oracle RAC) is an option to the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. 
+Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy to deploy software package.
 
 For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
@@ -32,21 +33,21 @@ To create an Oracle RAC environment, complete these steps in order:
       - [Deploying Oracle RAC Additional Node on Container with Block Devices on Docker](#deploying-oracle-rac-additional-node-on-container-with-block-devices-on-docker)
       - [Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Docker](#deploying-oracle-rac-additional-node-on-container-with-oracle-rac-storage-container-on-docker)
       - [Assign Network to additional Oracle RAC container](#assign-network-to-additional-oracle-rac-container)
-      - [Start Oracle RAC container](#start-oracle-rac-container)
-      - [Connect to the Oracle RAC container](#connect-to-the-oracle-rac-container-1)
+      - [Start Oracle RAC racnode2 container](#start-oracle-rac-racnode2-container)
+      - [Connect to the Oracle RAC racnode2 container](#connect-to-the-oracle-rac-racnode2-container)
   - [Section 5: Oracle RAC on Podman](#section-5-oracle-rac-on-podman)
     - [Section 5.1 : Prerequisites for Running Oracle RAC on Podman](#section-51--prerequisites-for-running-oracle-rac-on-podman)
     - [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman)
       - [Deploying Oracle RAC Containers with Block Devices on Podman](#deploying-oracle-rac-containers-with-block-devices-on-podman)
       - [Deploying Oracle RAC on Container With Oracle RAC Storage Container on Podman](#deploying-oracle-rac-on-container-with-oracle-rac-storage-container-on-podman)
-      - [Assign networks to Oracle RAC containers](#assign-networks-to-oracle-rac-containers-1)
-      - [Start the first container](#start-the-first-container-1)
-      - [Connect to the Oracle RAC container](#connect-to-the-oracle-rac-container-2)
+      - [Assign networks to Oracle RAC containers Created Using Podman](#assign-networks-to-oracle-rac-containers-created-using-podman)
+      - [Start the first container Created Using Podman](#start-the-first-container-created-using-podman)
+      - [Connect to the Oracle RAC container Created Using Podman](#connect-to-the-oracle-rac-container-created-using-podman)
     - [Section 5.3: Adding a Oracle RAC Node using a container on Podman](#section-53-adding-a-oracle-rac-node-using-a-container-on-podman)
       - [Deploying Oracle RAC Additional Node on Container with Block Devices on Podman](#deploying-oracle-rac-additional-node-on-container-with-block-devices-on-podman)
       - [Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Podman](#deploying-oracle-rac-additional-node-on-container-with-oracle-rac-storage-container-on-podman)
-      - [Assign Network to additional Oracle RAC container](#assign-network-to-additional-oracle-rac-container-1)
-      - [Start Oracle RAC container](#start-oracle-rac-container-1)
+      - [Assign Network to additional Oracle RAC container Created Using Podman](#assign-network-to-additional-oracle-rac-container-created-using-podman)
+      - [Start Oracle RAC container](#start-oracle-rac-container)
   - [Section 6: Connecting to an Oracle RAC Database](#section-6-connecting-to-an-oracle-rac-database)
   - [Section 7: Environment Variables for the First Node](#section-7-environment-variables-for-the-first-node)
   - [Section 8: Environment Variables for the Second and Subsequent Nodes](#section-8-environment-variables-for-the-second-and-subsequent-nodes)
@@ -97,7 +98,9 @@ Complete each of the following prerequisites:
     sysctl -p
     ```
 
-8. To resolve VIPs and SCAN IPs, we are using a DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). If you have a pre-configured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment. You must ensure that you have the`Podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
+8. To resolve VIPs and SCAN IPs, we are using a DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md).
+   - If you have a pre-configured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment.
+   - You must ensure that you have the`Podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
 
 9. If you are running RAC on Podman, you need to make sure you have installed the `podman-docker` rpm so that podman commands can be run using `docker` utility.
 10. The Oracle RAC `Dockerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationCluster/dockerfiles/<VERSION>` folder.
@@ -153,7 +156,9 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
   
 ## Section 3:  Network and Password Management
 
-1. Before you start the installation, you must plan your private and public network. You can create a network bridge on every container host so containers running within that host can communicate with each other.  For example, create `rac_pub1_nw` for the public network (`172.16.1.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing. In this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
+1. Before you start the installation, you must plan your private and public network. You can create a network bridge on every container host so containers running within that host can communicate with each other.  
+   - For example, create `rac_pub1_nw` for the public network (`172.16.1.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing.
+   - In this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
 
     ```bash
       # docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
@@ -405,7 +410,7 @@ If the install fails for any reason, log in to the container using the preceding
 
 ### Section 4.3: Adding an Oracle RAC Node using a Docker Container
 
-Before proceeding to the next step, ensure Oracle Grid Infrastructure is running and the Oracle RAC Database is open as per instructions in [Section 4.2: Setup Oracle RAC on Docker](#section-4.2-setup-oracle-rac-on-docker). Otherwise, the node addition process will fail.
+Before proceeding to the next step, ensure Oracle Grid Infrastructure is running and the Oracle RAC Database is open as per instructions in [Section 4.2: Setup Oracle RAC on Docker](#section-42-setup-oracle-rac-container-on-docker). Otherwise, the node addition process will fail.
 
 Refer the [Section 3:  Network and Password Management](#section-3--network-and-password-management) and setup the network on a container host based on your Oracle RAC environment. If you have already done the setup, ignore and proceed further.
 
@@ -423,7 +428,7 @@ sh /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_fil
 
 #### Deploying Oracle RAC Additional Node on Container with Block Devices on Docker
 
-If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Container with Oracle RAC Storage Container on Docker](#deploying-oracle-rac-node-2-on-container-with-oracle-rac-storage-container-on-docker).
+If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Container with Oracle RAC Storage Container on Docker](#deploying-oracle-rac-on-container-with-oracle-rac-storage-container).
 
 To create additional nodes, use the following command:
 
@@ -472,7 +477,7 @@ For details of all environment variables and parameters, refer to [Section 7](#s
 
 #### Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Docker
 
-If you are using physical block devices for shared storage, skip to [Deploying Oracle RAC on Container with Block Devices on Docker](#deploying-oracle-rac-node-2-on-container-with-block-devices-on-docker).
+If you are using physical block devices for shared storage, skip to [Deploying Oracle RAC on Container with Block Devices on Docker](#deploying-oracle-rac-on-container-with-block-devices-on-docker).
 
 Use the existing `racstorage:/oradata` volume when creating the additional container using the image.
 
@@ -533,7 +538,7 @@ Connect the private and public networks you created earlier to the container:
 # docker network connect rac_priv1_nw --ip 192.168.17.151 racnode2
 ```
 
-#### Start Oracle RAC container
+#### Start Oracle RAC racnode2 container
 
 Start the container
 
@@ -555,7 +560,7 @@ ORACLE RAC DATABASE IS READY TO USE!
 ####################################
 ```
 
-#### Connect to the Oracle RAC container
+#### Connect to the Oracle RAC racnode2 container
 
 To connect to the container execute the following command:
 
@@ -626,6 +631,7 @@ Complete each prerequisite step in order, customized for your environment.
 3. If SELINUX is enabled on the Podman host, then you must create an SELinux policy for Oracle RAC on Podman. For details about this procedure, see "How to Configure Podman for SELinux Mode" in the publication [Oracle Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racpd/target-configuration-oracle-rac-podman.html#GUID-59138DF8-3781-4033-A38F-E0466884D008).
 
 ### Section 5.2: Setup RAC Containers on Podman
+
 This section provides step by step procedure to deploy Oracle RAC on container with block devices and storage container. To understand the details of environment variable, refer For the details of environment variables [Section 7: Environment Variables for the First Node](#section-7-environment-variables-for-the-first-node)
 
 Refer the [Section 3:  Network and Password Management](#section-3--network-and-password-management) and setup the network on a container host based on your Oracle RAC environment. If you have already done the setup, ignore and proceed further.
@@ -689,7 +695,7 @@ Now create the Oracle RAC container using the image. For the details of environm
 
 #### Deploying Oracle RAC on Container With Oracle RAC Storage Container on Podman
 
-If you are using block devices, skip to the section [Deploying RAC Containers with Block Devices on Podman](#deploying-rac-containers-with-block-devices-on-podman).
+If you are using block devices, skip to the section [Deploying RAC Containers with Block Devices on Podman](#deploying-oracle-rac-containers-with-block-devices-on-podman).
 Now create the Oracle RAC container using the image.  You can use the following example to create a container:
 
   ```bash
@@ -737,7 +743,7 @@ Now create the Oracle RAC container using the image.  You can use the following 
 - Change environment variables such as `NODE_IP`, `PRIV_IP`, `PUBLIC_IP`,  `ASM_DEVICE_LIST`, `PWD_FILE`, and `PWD_KEY` based on your environment. Also, ensure you use the correct device names on each host.
 - You must have created the `racstorage` volume before the creation of the Oracle RAC Container. For details about the available environment variables, refer the [Section 7](#section-7-environment-variables-for-the-first-node).
 
-#### Assign networks to Oracle RAC containers
+#### Assign networks to Oracle RAC containers Created Using Podman
 
 You need to assign the Podman networks created in section 1 to containers. Execute the following commands:
 
@@ -747,7 +753,7 @@ You need to assign the Podman networks created in section 1 to containers. Execu
   # podman network connect rac_priv1_nw --ip 192.168.17.150  racnode1
   ```
 
-#### Start the first container
+#### Start the first container Created Using Podman
 
 To start the first container, run the following command:
 
@@ -769,7 +775,7 @@ ORACLE RAC DATABASE IS READY TO USE!
 ####################################
 ```
 
-#### Connect to the Oracle RAC container
+#### Connect to the Oracle RAC container Created Using Podman
 
 To connect to the container execute the following command:
 
@@ -902,7 +908,7 @@ For example:
 - You must have created **racstorage** volume before the creation of the Oracle RAC container.
 - You can change env variables such as IPs and ORACLE_PWD based on your env. For details about the env variables, refer the [Section 8](#section-8-environment-variables-for-the-second-and-subsequent-nodes).
 
-#### Assign Network to additional Oracle RAC container
+#### Assign Network to additional Oracle RAC container Created Using Podman
 
 Connect the private and public networks you created earlier to the container:
 

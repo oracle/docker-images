@@ -1,5 +1,4 @@
-Example of creating a custom Oracle RAC database
-=============================================
+# Example of creating a custom Oracle RAC database
 
 Once you have built your Oracle RAC docker image you can create a Oracle RAC database with a custom configuration by passing the responsefile for Oracle Grid and Database to the container.
 
@@ -22,7 +21,7 @@ mkdir -p /opt/containers/common_scripts
 ```
 
 * Copy the Oracle grid and database responsefile under /opt/containers/common_scripts.
-  * You can create responsefile, based on your environment. You can find the response file grid.rsp and dbca.rsp under <version> dir.
+  * You can create responsefile, based on your environment. You can find the response file grid.rsp and dbca.rsp under `<version>` dir.
     * In this README.MD, we have used pre-populated Oracle grid and database responsefiles. Copy them under `/opt/containers/common_scripts`.
 
 ```bash
@@ -30,7 +29,7 @@ cp docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/samples/custom
 cp docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/samples/customracdb/<version>/dbca_sample.rsp /opt/containers/common_scripts
 ```
 
-**Notes**: 
+**Notes**:
 
 * Using the sample responsefiles, you will be able to create 2 node RAC on containers.
 * You need to modify responsefiles based on your environment and pass them during container creation. You need to change or add following based on your enviornment:
@@ -55,7 +54,7 @@ For example:
 
 If you are using the Oracle Connection Manager for accessing the Oracle RAC Database from outside the host, you need to add following variable in the container creation command.
 
-```
+```bash
 -e CMAN_HOSTNAME=(CMAN_HOSTNAME) -e CMAN_IP=(CMAN_IP)
 ```
 
@@ -96,7 +95,7 @@ Repeat for each shared block device. In the example above, `/dev/xvde` is a shar
 
 Now create the Docker container using the image. For the details of environment variables, please refer to section 5. You can use following example to create a container:
 
-#### Create Racnode1
+#### Create Racnode1 with Block Devices
 
 ```bash
 docker create -t -i \
@@ -137,7 +136,7 @@ docker create -t -i \
 --name racnode1 oracle/database-rac:19.3.0
 ```
 
-#### Create Racnode2
+#### Create Racnode2 with Block Devices
 
 ```bash
 docker create -t -i \
@@ -183,7 +182,7 @@ docker create -t -i \
 
 Create RAC containers and utilize RAC storage containers for ASM devices:
 
-#### Create Racnode1
+#### Create Racnode1 with NFS Volume
 
 ```bash
 docker create -t -i \
@@ -224,7 +223,7 @@ docker create -t -i \
 --name racnode1 oracle/database-rac:19.3.0
 ```
 
-#### Create Racnode2
+#### Create Racnode2 with NFS Volume
 
 ```bash
 docker create -t -i \
@@ -273,7 +272,7 @@ docker create -t -i \
 
 You need to assign the Docker networks created in s[ection 1 of README.md](../../../OracleRealApplicationClusters/README.md) to containers. Please execute following commands:
 
-#### Attach the network to racnode1
+### Attach the network to racnode1
 
 ```bash
 # docker network disconnect bridge racnode1
@@ -281,7 +280,7 @@ You need to assign the Docker networks created in s[ection 1 of README.md](../..
 # docker network connect rac_priv1_nw --ip 192.168.17.150  racnode1
 ```
 
-#### Attach the network to racnode2
+### Attach the network to racnode2
 
 You need to assign the Docker networks created in section 1 to containers. Please execute following commands:
 
@@ -295,13 +294,13 @@ You need to assign the Docker networks created in section 1 to containers. Pleas
 
 You need to start the container. Please execute following command:
 
-#### Start Racnode2
+### Start Racnode2
 
 ```bash
 # docker start racnode2
 ```
 
-#### Reset the password
+### Reset the password
 
 Execute this step only on racnode2.
 
@@ -309,7 +308,7 @@ Execute this step only on racnode2.
 docker exec racnode2 /bin/bash -c "sudo /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_file common_os_pwdfile.enc --pwd_key_file pwd.key"
 ```
 
-#### Start Racnode1
+### Start Racnode1
 
 ```bash
 # docker start racnode1
@@ -339,6 +338,6 @@ To connect to the container execute following command:
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
 
-# Copyright
+## Copyright
 
 Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
