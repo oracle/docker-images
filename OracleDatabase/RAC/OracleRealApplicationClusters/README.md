@@ -55,8 +55,8 @@ To create an Oracle RAC environment, complete these steps in order:
     - [Docker](#docker)
     - [Podman](#podman)
   - [Section 11 : Support](#section-11--support)
-    - [Docker](#docker-1)
-    - [Podman](#podman-1)
+    - [Docker Support](#docker-support)
+    - [Podman Support](#podman-support)
   - [Section 12 : License](#section-12--license)
   - [Section 11 : Copyright](#section-11--copyright)
 
@@ -127,6 +127,7 @@ To run Oracle RAC using Oracle Container Runtime for Docker on multiple hosts, r
 To assist in building the images, you can use the [`buildContainerImage.sh`](https://github.com/oracle/docker-images/blob/master/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/buildContainerImage.sh) script. See the following for instructions and usage.
 
 ### Oracle RAC Container Image for Docker
+
 If you are planing to deploy Oracle RAC container image on Podman, skip to the section [Oracle RAC Container Image for Podman](#oracle-rac-container-image-for-podman).
 
   ```bash
@@ -135,12 +136,14 @@ If you are planing to deploy Oracle RAC container image on Podman, skip to the s
   ```
 
 ### Oracle RAC Container Image for Podman
+
 If you are planing to deploy Oracle RAC container image on Docker, skip to the section [Oracle RAC Container Image for Docker](#oracle-rac-container-image-for-docker).
 
- ```
+ ```bash
  ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8' -i
  #  for example ./buildContainerImage.sh -v 21.3.0
  ```
+
 - After the `21.3.0` Oracle RAC container image is built, start building a patched image with the download 21.7 RU and one-offs. To build the patch image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
 
 **Notes**
@@ -153,29 +156,31 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
 1. Before you start the installation, you must plan your private and public network. You can create a network bridge on every container host so containers running within that host can communicate with each other.  For example, create `rac_pub1_nw` for the public network (`172.16.1.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing. In this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
 
     ```bash
-    # docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
-    # docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
-    ```
+      # docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
+      # docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
+      ```
 
-- To run Oracle RAC using Oracle Container Runtime for Docker on multiple hosts, you will need to create a [Docker macvlan network](https://docs.docker.com/network/macvlan/) using the following commands:
+   - To run Oracle RAC using Oracle Container Runtime for Docker on multiple hosts, you will need to create a [Docker macvlan network](https://docs.docker.com/network/macvlan/) using the following commands:
 
-    ```bash
-    # docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
-    # docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
-    ```
+      ```bash
+      # docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
+      # docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
+      ```
 
 2. Specify the secret volume for resetting the grid, oracle, and database user password during node creation or node addition. The volume can be a shared volume among all the containers. For example:
 
     ```bash
     # mkdir /opt/.secrets/
     ```
-- If your environment uses Docker, run `openssl rand -hex 64 -out /opt/.secrets/pwd.key`. For Podman, run `openssl rand -hex -out /opt/.secrets/pwd.key`
-- Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for the  grid, oracle and database users. For this deployment scenario, it will be a common password for the grid, oracle, and database users. Run the command:
 
-    ```bash
-    # openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
-    # rm -f /opt/.secrets/common_os_pwdfile
-    ```
+   - If your environment uses Docker, run `openssl rand -hex 64 -out /opt/.secrets/pwd.key`. For Podman, run `openssl rand -hex -out /opt/.secrets/pwd.key`
+   - Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for the  grid, oracle and database users. For this deployment scenario, it will be a common password for the grid, oracle, and database users. Run the command:
+
+      ```bash
+      # openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
+      # rm -f /opt/.secrets/common_os_pwdfile
+      ```
+
 3. Create `rac_host_file` on both Podman and Docker hosts:
 
    ```bash
@@ -572,10 +577,12 @@ To create an Oracle RAC environment on Podman, complete each of these steps in o
 
 You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en/operating-systems/oracle-linux/Podman/) or later on Oracle Linux 8.5 or later to run Oracle RAC on Podman.
 
-**Notes**: 
- * You need to remove `--cpu-rt-runtime=95000 \` from container creation commands mentioned below in this document in [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman) and [Section 5.3: Adding a Oracle RAC Node using a container on Podman](#section-53-adding-a-oracle-rac-node-using-a-container-on-podman) to create the containers if you are running Oracle 8 with URKR7. You can check the details on [Oracle Linux and Unbreakable Enterprise Kernel (UEK) Releases](https://blogs.oracle.com/scoter/post/oracle-linux-and-unbreakable-enterprise-kernel-uek-releases)
- * You do not need to execute step 2 in this section to create and enable `Podman-rac-cgroup.service`
- 
+**Notes**:
+
+- You need to remove `"--cpu-rt-runtime=95000 \"` from container creation commands mentioned below in this document in [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman) and [Section 5.3: Adding a Oracle RAC Node using a container on Podman](#section-53-adding-a-oracle-rac-node-using-a-container-on-podman) to create the containers if you are running Oracle 8 with URKR7. You can check the details on [Oracle Linux and Unbreakable Enterprise Kernel (UEK) Releases](https://blogs.oracle.com/scoter/post/oracle-linux-and-unbreakable-enterprise-kernel-uek-releases)
+
+- You do not need to execute step 2 in this section to create and enable `Podman-rac-cgroup.service`
+
 **IMPORTANT:** Completing prerequisite steps is a requirement for successful configuration.
 
 Complete each prerequisite step in order, customized for your environment.
@@ -1016,45 +1023,54 @@ If you want to build a patched image based on a base 21.3.0 container image, the
 
 This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
   
-* Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
-* Oracle Database 19c (19.3) for Linux x86-64
-* Oracle Database 18c Oracle Grid Infrastructure (18.3) for Linux x86-64
-* Oracle Database 18c (18.3) for Linux x86-64
-* Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
-* Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
+- Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
+- Oracle Database 19c (19.3) for Linux x86-64
+
+- Oracle Database 18c Oracle Grid Infrastructure (18.3) for Linux x86-64
+
+- Oracle Database 18c (18.3) for Linux x86-64
+  
+- Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
+  
+- Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
   
  **Notes:**
 
-* Note that the Oracle RAC on Docker Container releases are supported only for test and development environments, but not for production environments.
-* If you are planning to build and deploy Oracle RAC 18.3.0, you need to download Oracle 18.3.0 Grid Infrastructure and Oracle Database 18.3.0 Database. You also need to download Patch# p28322130_183000OCWRU_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/18.3.0 folder.
-* If you are planning to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/12.2.0.1 folder.
+- Note that the Oracle RAC on Docker Container releases are supported only for test and development environments, but not for production environments.
+- If you are planning to build and deploy Oracle RAC 18.3.0, you need to download Oracle 18.3.0 Grid Infrastructure and Oracle Database 18.3.0 Database. You also need to download Patch# p28322130_183000OCWRU_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/18.3.0 folder.
+
+- If you are planning to build and deploy Oracle RAC 12.2.0.1, you need to download Oracle 12.2.0.1 Grid Infrastructure and Oracle Database 12.2.0.1 Database. You also need to download Patch# p27383741_122010_Linux-x86-64.zip from [Oracle Technology Network](https://www.oracle.com/technetwork/database/database-technologies/clusterware/downloads/docker-4418413.html). Stage it under dockerfiles/12.2.0.1 folder.
 
 ### Podman
 
 This project offers sample container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
 
-* Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
-* Oracle Database 19c (19.3) for Linux x86-64
+- Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
+- Oracle Database 19c (19.3) for Linux x86-64
   
  **Notes:**
 
-* Because Oracle RAC on Podman is supported on 19c from 19.16 or later, you must download the grid release update (RU) from [support.oracle.com](https://support.oracle.com/portal/). In this case, we downloaded RU `34130714`.
-* Download following one-offs for 19.16 from [support.oracle.com](https://support.oracle.com/portal/)
-  * `34339952`
-  * `32869666`
-* Before starting the next step, you must edit `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile`, change `oraclelinux:7-slim` to `oraclelinux:8`, and save the file.
-* You must add `CV_ASSUME_DISTID=OEL8` inside the `Dockerfile` as an env variable.
+- Because Oracle RAC on Podman is supported on 19c from 19.16 or later, you must download the grid release update (RU) from [support.oracle.com](https://support.oracle.com/portal/). In this case, we downloaded RU `34130714`.
 
-* Once the `19.3.0` Oracle RAC on Podman image is built, start building patched image with the download 19.16 RU and one-offs. To build the patch the image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
-* Make changes in `/opt/containers/envfile` in [Prepare the envfile](#prepare-the-envfile) sectoin as per 19c `Dockerfile`. You need to change all the contents based on 19c such as `GRID_HOME`, `ORACLE_HOME` and `ADDNODE_RSP` which you have used in `Dockerfile` while building the image.
+- Download following one-offs for 19.16 from [support.oracle.com](https://support.oracle.com/portal/)
+  - `34339952`
+  - `32869666`
+
+- Before starting the next step, you must edit `docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/19.3.0/Dockerfile`, change `oraclelinux:7-slim` to `oraclelinux:8`, and save the file.
+
+- You must add `CV_ASSUME_DISTID=OEL8` inside the `Dockerfile` as an env variable.
+
+- Once the `19.3.0` Oracle RAC on Podman image is built, start building patched image with the download 19.16 RU and one-offs. To build the patch the image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
+
+- Make changes in `/opt/containers/envfile` in [Prepare the envfile](#prepare-the-envfile) sectoin as per 19c `Dockerfile`. You need to change all the contents based on 19c such as `GRID_HOME`, `ORACLE_HOME` and `ADDNODE_RSP` which you have used in `Dockerfile` while building the image.
 
 ## Section 11 : Support
 
-### Docker
+### Docker Support
 
 At the time of this release, Oracle RAC on Docker is supported only on Oracle Linux 7. To see current details, refer the [Real Application Clusters Installation Guide for Docker Containers Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racdk/oracle-rac-on-docker.html).
 
-### Podman
+### Podman Support
 
 At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.5 later. To see current Linux support certifications, refer [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
 
