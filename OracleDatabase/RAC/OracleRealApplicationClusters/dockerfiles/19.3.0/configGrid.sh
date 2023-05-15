@@ -728,7 +728,7 @@ else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
 
-print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Setting Device permissions for RAC Install  on $node"
 
@@ -1008,7 +1008,7 @@ local oracle_home=$GRID_HOME
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
-print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
 
 
 for node in "${CLUSTER_NODES[@]}"; do
@@ -1087,7 +1087,7 @@ local stat;
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
-print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
 
 for node in "${CLUSTER_NODES[@]}"; do
 

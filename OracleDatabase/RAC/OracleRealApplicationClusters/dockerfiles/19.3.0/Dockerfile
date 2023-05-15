@@ -26,7 +26,7 @@ ARG BASE_OL_IMAGE=oraclelinux:7-slim
 # Pull base image
 # ---------------
 FROM $BASE_OL_IMAGE AS base
-
+ARG SLIMMING=false
 # Labels
 # ------
 LABEL "provider"="Oracle"                                               \
@@ -37,7 +37,6 @@ LABEL "provider"="Oracle"                                               \
       "port.oemexpress"="5500"
 
 # Argument to control removal of components not needed after db software installation
-ARG SLIMMING=false
 ARG INSTALL_FILE_1="LINUX.X64_193000_grid_home.zip"
 ARG INSTALL_FILE_2="LINUX.X64_193000_db_home.zip"
 ARG DB_EDITION="EE"
@@ -136,6 +135,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 #############################################
 
 FROM base AS builder
+ARG SLIMMING
 
 COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
 
@@ -168,6 +168,7 @@ RUN rm -f $INSTALL_DIR/install/* && \
 #############################################
 
 FROM base
+ARG SLIMMING
 
 COPY  --from=builder /u01 /u01
 

@@ -13,12 +13,9 @@
 #
 
 ####################### Variables and Constants #################
-declare -r FALSE=1
 declare -r TRUE=0
 declare -x GRID_USER='grid'          ## Default gris user is grid.
 declare -x DB_USER='oracle'      ## default oracle user is oracle.
-declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
-declare -r RAC_ENV_FILE="/etc/rac_env_vars"   ## RACENV FILE NAME
 declare -x GIMR_DB_FLAG='false'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
@@ -48,9 +45,6 @@ declare -x SCRIPT_ROOT               ## SCRIPT_ROOT will be set as per your COMM
 declare -r OSDBA='dba'
 declare -r OSASM='asmadmin'
 declare -r INSTALL_TYPE='CRS_ADDNODE'
-declare -r IPMI_FLAG='false'
-declare -r ASM_STORAGE_OPTION='ASM'
-declare -r GIMR_ON_NAS='false'
 declare -x SCAN_TYPE='LOCAL_SCAN'
 declare -x SHARED_SCAN
 declare -x DB_ASM_DISKGROUP='DATA'
@@ -75,7 +69,7 @@ progname=$(basename "$0")
 
 ############Sourcing Env file##########
 if [ -f "/etc/rac_env_vars" ]; then
-source "/etc/rac_env_vars"
+  source "/etc/rac_env_vars"
 fi
 ##########Source ENV file ends here####
 
@@ -142,7 +136,7 @@ if [ -z "${EXISTING_CLS_NODES}" ]; then
 	error_exit "For Node Addition, please provide the existing clustered node name."
 else
 	
-   if isStringExist ${EXISTING_CLS_NODES} ${PUBLIC_HOSTNAME}; then
+   if isStringExist "${EXISTING_CLS_NODES}" "${PUBLIC_HOSTNAME}"; then
 	  error_exit "EXISTING_CLS_NODES ${EXISTING_CLS_NODES} contains new node name ${PUBLIC_HOSTNAME}"
    fi
 
@@ -155,7 +149,7 @@ if [ -z "${EXISTING_CLS_NODE}" ]; then
 else
    print_message "Existing Node Name of the cluster is set to ${EXISTING_CLS_NODE}"
 
-if resolveip ${EXISTING_CLS_NODE}; then
+if resolveip "${EXISTING_CLS_NODE}"; then
  print_message "Existing Cluster node resolved to IP. Check passed"
 else
   error_exit "Existing Cluster node does not resolved to IP. Check Failed"
@@ -183,19 +177,19 @@ else
    print_message "RAC Node VIP hostname is set to ${VIP_HOSTNAME} "
 fi
 
-if [ -z ${SCAN_NAME} ]; then
+if [ -z "${SCAN_NAME}" ]; then
   print_message "SCAN_NAME set to the empty string"
 else
   print_message "SCAN_NAME name is ${SCAN_NAME}"
 fi
 
-if resolveip ${SCAN_NAME}; then
+if resolveip "${SCAN_NAME}"; then
  print_message "SCAN Name resolving to IP. Check Passed!"
 else
   error_exit "SCAN Name not resolving to IP. Check Failed!"
 fi
 
-if [ -z ${SCAN_IP} ]; then
+if [ -z "${SCAN_IP}" ]; then
    print_message "SCAN_IP set to the empty string"
 else
   print_message "SCAN_IP name is ${SCAN_IP}"
@@ -220,13 +214,13 @@ else
 fi
 
 
-if [ -z ${CMAN_HOSTNAME} ]; then
+if [ -z "${CMAN_HOSTNAME}" ]; then
   print_message  "CMAN_NAME set to the empty string"
 else
   print_message "CMAN_HOSTNAME name is ${CMAN_HOSTNAME}"
 fi
 
-if [ -z ${CMAN_IP} ]; then
+if [ -z "${CMAN_IP}" ]; then
    print_message "CMAN_IP set to the empty string"
 else
   print_message "CMAN_IP name is ${CMAN_IP}"
@@ -475,7 +469,7 @@ else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
 
-print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
 for node in "${CLUSTER_NODES[@]}"; do
 cmd='su - $USER -c "ssh $node sudo $ORACLE_HOME/root.sh"'
 eval $cmd
@@ -599,7 +593,7 @@ else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
 
-print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Setting Device permissions for RAC Install  on $node"
 
@@ -767,7 +761,7 @@ fi
 #cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $hostname -vip $vip_hostname\" | tee -a $logdir/cluvfy_check.txt"'
 #eval $cmd
 
-print_message "Nodes in the cluster ${CLUSTER_NODES[@]}"
+print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
 for cls_node in "${CLUSTER_NODES[@]}"; do
 print_message "ssh to the node $node and executing cvu checks on $cls_node"
 cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $cls_node\" | tee -a $logdir/cluvfy_check.txt"'
