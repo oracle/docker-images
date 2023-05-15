@@ -34,6 +34,7 @@ declare -x SINGLENIC='false'         ## Default value is false as we should use 
 declare -x PRIV_IP                   ## Pass PRIV_IP is not using SINGLE NIC
 declare -x CONFIGURE_GNS='false'     ## Default value set to false. However, under DSC checks, it is reverted to true.
 declare -x COMMON_SCRIPTS            ## COMMON SCRIPT Locations. Pass this env variable if you have custom responsefile for grid and other scripts for DB.
+declare -x PASSWORD_FILE='pwdfile'
 declare -x PRIV_HOSTNAME             ## if SINGLENIC=true then PRIV and PUB hostname will be same. Otherise pass it as env variable.
 declare -x CMAN_HOSTNAME             ## If you want to use connection manager to proxy the DB connections
 declare -x CMAN_IP                   ## CMAN_IP if you want to use connection manager to proxy the DB connections
@@ -250,6 +251,19 @@ fi
 
 read PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
 rm -f /tmp/${COMMON_OS_PWD_FILE}
+
+elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
+ cmd='openssl base64 -d -in "${SECRET_VOLUME}/${PASSWORD_FILE}" -out /tmp/"${PASSWORD_FILE}"'
+ eval $cmd
+
+ if [ $? -eq 0 ]; then
+   print_message "Password file generated"
+ else
+   error_exit "Error occurred during password file ${PASSWORD_FILE} generation"
+ fi
+
+  read PASSWORD < /tmp/${PASSWORD_FILE}
+  rm -f /tmp/${PASSWORD_FILE}
 else
  print_message "Password is empty string"
  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1

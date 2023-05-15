@@ -32,28 +32,41 @@ generate_pwd ()
 {
 
 if [ -f "${SECRET_VOLUME}/${PWD_FILE}" ] && [ -f "${SECRET_VOLUME}/${PWD_KEY}" ] ; then
-cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${PWD_FILE}" -out /tmp/${PWD_FILE} -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
+ cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${PWD_FILE}" -out /tmp/${PWD_FILE} -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval $cmd
+ eval $cmd
 
-if [ $? -eq 0 ]; then
-print_message "Password file generated"
+ if [ $? -eq 0 ]; then
+  print_message "Password file generated"
+ else
+  error_exit "Error occurred during common os password file generation"
+ fi
+
+ read PASSWORD < /tmp/"${PWD_FILE}"
+ rm -f /tmp/"${PWD_FILE}"
+ rm -f /tmp/${PWD_KEY}
+
+ if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
+   rm -f  "${SECRET_VOLUME}"/"${COMMON_OS_PWD_FILE}"
+   rm -f ${SECRET_VOLUME}/${PWD_KEY}
+ fi
+
+elif [ -f "${SECRET_VOLUME}/${PWD_FILE}" ]; then
+ cmd='openssl base64 -d -in "${SECRET_VOLUME}/${PWD_FILE}" -out /tmp/"${PWD_FILE}"'
+ eval $cmd
+
+ if [ $? -eq 0 ]; then
+   print_message "Password file generated"
+ else
+   error_exit "Error occurred during password file ${PWD_FILE} generation"
+ fi
+
+  read PASSWORD < /tmp/${PWD_FILE}
+  rm -f /tmp/${PWD_FILE}
+
 else
-error_exit "Error occurred during common os password file generation"
-fi
-
-read PASSWORD < /tmp/"${PWD_FILE}"
-rm -f /tmp/"${PWD_FILE}"
-rm -f /tmp/${PWD_KEY}
-
-if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
-rm -f  "${SECRET_VOLUME}"/"${COMMON_OS_PWD_FILE}"
-rm -f ${SECRET_VOLUME}/${PWD_KEY}
-fi
-
-else
- print_message "Password file or password key file is empty string! generating random password"
- PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
+  print_message "Password file or password key file is empty string! generating random password"
+  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
 fi
 
 if [ ! -z "${PASSWORD}" ]; then

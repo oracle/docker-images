@@ -22,6 +22,9 @@ declare -x PUBLIC_IP                      ## Computed based on Node name.
 declare -x PUBLIC_HOSTNAME                ## PUBLIC HOSTNAME set based on hostname
 declare -x NTPD_START='false'
 declare -x RESOLV_CONF_FILE='/etc/resolv.conf'
+declare -x RESET_FAILED_SYSTEMD='false'
+declare -x SET_CRONTAB="setCrontab.sh"
+declare -x RESET_FAILED_UNITS="resetFailedUnits.sh"
 
 progname="$(basename $0)"
 ######################## Variable and Constant declaration ends here ######
@@ -202,6 +205,31 @@ else
 fi
 
 }
+
+####################################### Set Resetting Failed Units ##########################
+resetFailedUnits()
+{
+if [ "${RESET_FAILED_SYSTEMD}" != 'false' ]; then
+
+   cp $SCRIPT_DIR/$RESET_FAILED_UNITS  /var/tmp/$RESET_FAILED_UNITS
+   chmod 755 /var/tmp/$RESET_FAILED_UNITS
+   print_message "Setting Crontab"
+   cmd='su - $GRID_USER -c "sudo crontab $SCRIPT_DIR/$SET_CRONTAB"'
+   eval $cmd
+
+   if [ $?  -eq 0 ];then
+     print_message "Sucessfully installed $SET_CRONTAB using crontab"
+  else
+    error_exit "Error occurred in crontab setup"
+  fi
+
+fi
+
+}
+
+
+#############################################################################################
+
 ####################################### Start NTPD ###################################################################
 startNTPD()
 {
@@ -318,6 +346,7 @@ SetupEtcHosts
 build_block_device_list
 build_gimr_block_device_list
 ####### Setup /etc/resolv.conf ######
+resetFailedUnits
 setupResolvconf
 print_message "#####################################################################"
 print_message " RAC setup will begin in 2 minutes                                   "

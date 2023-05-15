@@ -106,6 +106,7 @@ declare -x ORACLE_PWD_FILE
 declare -x GRID_PWD_FILE
 declare -x REMOVE_OS_PWD_FILES='false'
 declare -x DB_PWD_FILE
+declare -x PASSWORD_FILE='pwdfile'
 declare -x COMMON_OS_PWD_FILE='common_os_pwdfile.enc'
 declare -x CRS_NODES
 declare -x CRS_CONFIG_NODES
@@ -286,22 +287,35 @@ check_passwd_env_vars ()
 
 ##################  Checks for Password and Clustername and clustertype begins here ###########
 if [ -f "${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}" ]; then
-cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}" -out /tmp/${COMMON_OS_PWD_FILE} -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
+ cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}" -out /tmp/${COMMON_OS_PWD_FILE} -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval $cmd
+ eval $cmd
 
 if [ $? -eq 0 ]; then
-print_message "Password file generated"
+ print_message "Password file generated"
 else
-error_exit "Error occurred during common os password file generation"
+ error_exit "Error occurred during common os password file generation"
+fi
+ read PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
+ rm -f /tmp/${COMMON_OS_PWD_FILE}
+
+elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
+ cmd='openssl base64 -d -in "${SECRET_VOLUME}/${PASSWORD_FILE}" -out /tmp/"${PASSWORD_FILE}"'
+ eval $cmd
+
+ if [ $? -eq 0 ]; then
+   print_message "Password file generated"
+ else
+   error_exit "Error occurred during password file ${PASSWORD_FILE} generation"
+ fi
+
+  read PASSWORD < /tmp/${PASSWORD_FILE}
+  rm -f /tmp/${PASSWORD_FILE}
+else
+  print_message "Password is empty string"
+  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
 fi
 
-read PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
-rm -f /tmp/${COMMON_OS_PWD_FILE}
-else
- print_message "Password is empty string"
- PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
-fi
 
 if [ ! -z "${GRID_PWD_FILE}" ]; then
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${GRID_PWD_FILE}" -out "/tmp/${GRID_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'

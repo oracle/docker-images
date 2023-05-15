@@ -58,6 +58,7 @@ declare -x GNS_OPTIONS               ## By Default value will be CREATE_NEW_GNS
 declare -x GNSVIP_HOSTNAME            ## If you are using DSC or DHCP for grid.
 declare -x GNS_SUBDOMAIN             ## If you are using DHCP. 
 declare -x COMMON_SCRIPTS            ## COMMON SCRIPT Locations. Pass this env variable if you have custom responsefile for grid and other scripts for DB.
+declare -x PASSWORD_FILE='pwdfile'
 declare -x PRIV_HOSTNAME             ## if SINGLENIC=true then PRIV and PUB hostname will be same. Otherise pass it as env variable.
 declare -x CMAN_HOSTNAME             ## If you want to use connection manager to proxy the DB connections
 declare -x CMAN_IP                   ## CMAN_IP if you want to use connection manager to proxy the DB connections
@@ -298,9 +299,22 @@ fi
 
 read PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
 rm -f /tmp/${COMMON_OS_PWD_FILE}
+
+elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
+ cmd='openssl base64 -d -in "${SECRET_VOLUME}/${PASSWORD_FILE}" -out /tmp/"${PASSWORD_FILE}"'
+ eval $cmd
+
+ if [ $? -eq 0 ]; then
+   print_message "Password file generated"
+ else
+   error_exit "Error occurred during password file ${PASSWORD_FILE} generation"
+ fi
+
+  read PASSWORD < /tmp/${PASSWORD_FILE}
+  rm -f /tmp/${PASSWORD_FILE}
 else
- print_message "Password is empty string"
- PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
+  print_message "Password is empty string"
+  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
 fi
 
 if [ ! -z "${GRID_PWD_FILE}" ]; then
