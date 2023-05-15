@@ -386,7 +386,7 @@ if [ "${stat}" -ne 0 ]; then
 error_exit "ssh setup for Grid user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $GRID_USER  user"
 fi
 
-print_message "Running SSH setup for $DB_USER user between nodes ${CLUSTER_NODES[@]}"
+print_message "Running SSH setup for $DB_USER user between nodes ${CLUSTER_NODES[*]}"
 cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$ORACLE_PASSWORD\""'
 (eval $cmd) &
 ssh_pid=$!
@@ -469,7 +469,7 @@ else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
 
-print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
+print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
 cmd='su - $USER -c "ssh $node sudo $ORACLE_HOME/root.sh"'
 eval $cmd
@@ -593,7 +593,7 @@ else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
 
-print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
+print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Setting Device permissions for RAC Install  on $node"
 
@@ -761,7 +761,7 @@ fi
 #cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $hostname -vip $vip_hostname\" | tee -a $logdir/cluvfy_check.txt"'
 #eval $cmd
 
-print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
+print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for cls_node in "${CLUSTER_NODES[@]}"; do
 print_message "ssh to the node $node and executing cvu checks on $cls_node"
 cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $cls_node\" | tee -a $logdir/cluvfy_check.txt"'

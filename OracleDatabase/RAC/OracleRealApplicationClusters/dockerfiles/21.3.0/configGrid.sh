@@ -728,7 +728,7 @@ else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
 
-print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
+print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Setting Device permissions for RAC Install  on $node"
 
@@ -977,7 +977,7 @@ else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
 
-print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\"" 
+print_message "Nodes in the cluster ${CLUSTER_NODES[*]}" 
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Running root.sh on $node"
 cmd='su - $GRID_USER -c "ssh $node sudo systemctl reset-failed"'
@@ -1010,7 +1010,7 @@ local oracle_home=$GRID_HOME
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
-print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
+print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 
 
 for node in "${CLUSTER_NODES[@]}"; do
@@ -1089,7 +1089,7 @@ local stat;
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
-print_message "Nodes in the cluster \"${CLUSTER_NODES[@]}\""
+print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 
 for node in "${CLUSTER_NODES[@]}"; do
 
