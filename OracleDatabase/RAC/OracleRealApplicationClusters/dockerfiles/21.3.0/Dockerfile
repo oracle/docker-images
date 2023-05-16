@@ -143,6 +143,7 @@ COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_I
 RUN chmod 755 "$INSTALL_SCRIPTS"/*.sh
 
 ## Install software if SLIMMING is false
+# shelcheck disable=SC2086
 RUN if [ "${SLIMMING}x" != "truex" ]; then \
       sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
       sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
@@ -172,7 +173,7 @@ FROM base
 ARG SLIMMING
 
 COPY  --from=builder /u01 /u01
-
+# shelcheck disable=SC2086
 RUN if [ "${SLIMMING}x" != "truex" ]; then \
        $INVENTORY/orainstRoot.sh && \
        $GRID_HOME/root.sh && \
