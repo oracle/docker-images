@@ -11,11 +11,13 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
+# shellcheck disable=SC2181,SC2016,SC1091,SC2086
 
 ####################### Variables and Constants #################
 declare -r TRUE=0
 declare -x GRID_USER='grid'          ## Default gris user is grid.
 declare -x DB_USER='oracle'      ## default oracle user is oracle.
+declare -x logdir="/var/tmp"
 declare -x GIMR_DB_FLAG='false'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
@@ -243,7 +245,7 @@ else
 error_exit "Error occurred during common os password file generation"
 fi
 
-read PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
+read -r PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
 rm -f /tmp/${COMMON_OS_PWD_FILE}
 
 elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
@@ -256,14 +258,14 @@ elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
    error_exit "Error occurred during password file ${PASSWORD_FILE} generation"
  fi
 
-  read PASSWORD < /tmp/${PASSWORD_FILE}
+  read -r PASSWORD < /tmp/${PASSWORD_FILE}
   rm -f /tmp/${PASSWORD_FILE}
 else
  print_message "Password is empty string"
  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
 fi
 
-if [ ! -z "${GRID_PWD_FILE}" ]; then
+if [ -n "${GRID_PWD_FILE}" ]; then
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${GRID_PWD_FILE}" -out "/tmp/${GRID_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
 eval $cmd
@@ -274,14 +276,14 @@ else
 error_exit "Error occurred during Grid password file generation"
 fi
 
-read GRID_PASSWORD < /tmp/${GRID_PWD_FILE}
+read -r GRID_PASSWORD < /tmp/${GRID_PWD_FILE}
 rm -f /tmp/${GRID_PWD_FILE}
 else
   GRID_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for Grid user"
 fi
 
-if [ ! -z "${ORACLE_PWD_FILE}" ]; then
+if [ -n "${ORACLE_PWD_FILE}" ]; then
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${ORACLE_PWD_FILE}" -out "/tmp/${ORACLE_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
 eval $cmd
@@ -292,7 +294,7 @@ else
 error_exit "Error occurred during Oracle  password file generation"
 fi
 
-read ORACLE_PASSWORD < /tmp/${ORACLE_PWD_FILE}
+read -r ORACLE_PASSWORD < /tmp/${ORACLE_PWD_FILE}
 rm -f /tmp/${GRID_PWD_FILE}
 else
   ORACLE_PASSWORD="${PASSWORD}"
@@ -361,7 +363,7 @@ fi
 ########################################### SSH Function begin here ########################
 setupSSH()
 {
-local password
+##local password
 local ssh_pid
 local stat
 
@@ -372,10 +374,10 @@ fi
 
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$CRS_NODES"
-CLUSTER_NODES=$(echo $EXISTING_CLS_NODES | tr ',' ' ')
+CLUSTER_NODES=( "$(echo $EXISTING_CLS_NODES | tr ',' ' ')" ) 
 
-print_message "Cluster Nodes are $CLUSTER_NODES"
-print_message "Running SSH setup for $GRID_USER user between nodes ${CLUSTER_NODES}"
+print_message "Cluster Nodes are CLUSTER_NODES[*]"
+print_message "Running SSH setup for $GRID_USER user between nodes ${CLUSTER_NODES[*]}"
 cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$GRID_PASSWORD\""'
 (eval $cmd) &
 ssh_pid=$!
@@ -401,19 +403,19 @@ fi
 checkSSH ()
 {
 
-local password
+#local password
 local ssh_pid
 local stat
 local status
 
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$PUBLIC_HOSTNAME"
-CLUSTER_NODES=$(echo $EXISTING_CLS_NODES | tr ',' ' ')
+CLUSTER_NODES=( "$(echo $EXISTING_CLS_NODES | tr ',' ' ')" )
 
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
-echo $cmd
+echo "$cmd"
 
-for node in ${CLUSTER_NODES}
+for node in "${CLUSTER_NODES[@]}"
 do
 
 status=$(eval $cmd)
@@ -431,8 +433,8 @@ done
 
 status="NA"
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
- echo $cmd
-for node in ${CLUSTER_NODES}
+ echo "$cmd"
+for node in "${CLUSTER_NODES[@]}"
 do
 
 status=$(eval $cmd)
@@ -459,12 +461,13 @@ $INVENTORY/orainstRoot.sh
 
 runrootsh ()
 {
-
+# shellcheck disable=SC2034
 local ORACLE_HOME=$1
+
 local USER=$2
 
 if [ -z $CRS_NODES ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
@@ -516,8 +519,8 @@ CheckRemoteCluster ()
 local cmd;
 local stat;
 local node=$EXISTING_CLS_NODE
-local oracle_home=$GRID_HOME
-local ORACLE_HOME=$GRID_HOME
+##local oracle_home=$GRID_HOME
+#local ORACLE_HOME=$GRID_HOME
 
 print_message "Checking Cluster"
 
@@ -585,10 +588,10 @@ setDevicePermissions ()
 {
 
 local cmd
-local state=3
+#local state=3
 
 if [ -z $CRS_NODES ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
@@ -597,7 +600,7 @@ print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Setting Device permissions for RAC Install  on $node"
 
-if [ ! -z "${GIMR_DEVICE_LIST}" ];then
+if [ -n "${GIMR_DEVICE_LIST}" ];then
 
 print_message "Preapring GIMR Device list"
 IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
@@ -624,12 +627,13 @@ fi
 
 fi
 
-if [ ! -z "${ASM_DEVICE_LIST}" ];then
+if [ -n "${ASM_DEVICE_LIST}" ];then
 
 print_message "Preapring ASM Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
         local arr_device=${#devices[@]}
 if [ $arr_device -ne 0 ]; then
+        # shellcheck disable=SC2034
         for device in "${devices[@]}"
         do
         print_message "Changing Disk permission and ownership"
@@ -659,7 +663,7 @@ checkCluster ()
 {
 local cmd;
 local stat;
-local oracle_home=$GRID_HOME
+#local oracle_home=$GRID_HOME
 
 print_message "Checking Cluster"
 
@@ -742,13 +746,13 @@ cluvfyCheck()
 
 local node=$EXISTING_CLS_NODE
 local responsefile=$logdir/$ADDNODE_RSP
-local hostname=$PUBLIC_HOSTNAME
-local vip_hostname=$VIP_HOSTNAME
+# =$PUBLIC_HOSTNAME
+# local vip_hostname=$VIP_HOSTNAME
 local cmd
 local stat
 
 if [ -z $CRS_NODES ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
@@ -794,8 +798,8 @@ addGridNode ()
 
 local node=$EXISTING_CLS_NODE
 local responsefile=$logdir/$ADDNODE_RSP
-local hostname=$PUBLIC_HOSTNAME
-local vip_hostname=$VIP_HOSTNAME
+#local hostname=$PUBLIC_HOSTNAME
+#local vip_hostname=$VIP_HOSTNAME
 local cmd
 local stat
 
@@ -847,9 +851,9 @@ local stat=3
 local cmd
 
 if [ -z $CRS_NODES ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
-  CLUSTER_NODES=$( echo $CRS_NODES | tr ',' ' ' )
+  CLUSTER_NODES=( "$( echo $CRS_NODES | tr ',' ' ' )" )
 fi
 
 if [ -z "${ORACLE_SID}" ];then
@@ -860,7 +864,7 @@ if [ -z "${HOSTNAME}" ]; then
 error_exit "Hostname is not defined"
 fi
 
-
+# shellcheck disable=SC2034
 for new_node in "${CLUSTER_NODES[@]}"; do
 print_message "Adding DB Instance on $node"
 cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/bin/dbca -addInstance -silent  -nodeName $new_node  -gdbName $ORACLE_SID\" | tee -a $logfile"'

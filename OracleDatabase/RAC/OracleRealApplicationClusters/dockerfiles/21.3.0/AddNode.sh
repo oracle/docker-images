@@ -647,6 +647,7 @@ IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
 
 # shellcheck disable=SC2086
 if [ $arr_device -ne 0 ]; then
+         # shellcheck disable=SC2034
         for device in "${devices[@]}"
         do
         print_message "Changing Disk permission and ownership"
@@ -654,7 +655,7 @@ if [ $arr_device -ne 0 ]; then
         print_message "Command : $cmd execute on $node"
         eval "$cmd"
         unset cmd
-        cmd="su - $GRID_USER -c \"ssh $node sudo chmod 660 $device"\"
+        cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
         print_message "Command : $cmd execute on $node"
         eval "${cmd}"
         unset cmd
@@ -875,10 +876,10 @@ if [ -z "${HOSTNAME}" ]; then
 error_exit "Hostname is not defined"
 fi
 
-
+ # shellcheck disable=SC2034
 for new_node in "${CLUSTER_NODES[@]}"; do
 print_message "Adding DB Instance on $node"
-cmd="su - $DB_USER -c 'ssh $node \'$DB_HOME/bin/dbca -addInstance -silent  -nodeName $new_node  -gdbName $ORACLE_SID\' | tee -a ${logfile}'"
+cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/bin/dbca -addInstance -silent  -nodeName $new_node  -gdbName $ORACLE_SID\" | tee -a ${logfile}"'
 eval "${cmd}"
 done
 

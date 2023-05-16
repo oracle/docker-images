@@ -14,13 +14,15 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
+# shellcheck disable=SC2181,SC2016,SC1091,SC2086
+
 ####################### Variables and Constants #################
-declare -r FALSE=1
+
 declare -r TRUE=0
-declare -r RAC_ENV_FILE="/etc/rac_env_vars" 
+ 
 declare -x GRID_USER='grid'          ## Default gris user is grid.
 declare -x DB_USER='oracle'      ## default oracle user is oracle.
-declare -r ETCHOSTS="/etc/hosts"     ## /etc/hosts file location.
+declare -x logdir="/var/tmp"
 declare -r OSDBA='dba'                ## OSDBA group
 declare -r OSASM='asmadmin'          ## OSASM group
 declare -r INSTALL_TYPE='CRS_CONFIG' ## INSTALL TYPE default set to CRS_CONFIG
@@ -152,7 +154,7 @@ check_db_env_vars
 check_pub_host_name()
 {
 local domain_name
-local stat
+# local stat
 
 if [ -z "${PUBLIC_IP}" ]; then
     PUBLIC_IP=$(dig +short "$(hostname).$DOMAIN")
@@ -297,7 +299,7 @@ else
 error_exit "Error occurred during common os password file generation"
 fi
 
-read PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
+read -r PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
 rm -f /tmp/${COMMON_OS_PWD_FILE}
 
 elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
@@ -310,14 +312,14 @@ elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
    error_exit "Error occurred during password file ${PASSWORD_FILE} generation"
  fi
 
-  read PASSWORD < /tmp/${PASSWORD_FILE}
+  read -r PASSWORD < /tmp/${PASSWORD_FILE}
   rm -f /tmp/${PASSWORD_FILE}
 else
   print_message "Password is empty string"
   PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
 fi
 
-if [ ! -z "${GRID_PWD_FILE}" ]; then
+if [ -n "${GRID_PWD_FILE}" ]; then
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${GRID_PWD_FILE}" -out "/tmp/${GRID_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
 eval $cmd 
@@ -328,14 +330,14 @@ else
 error_exit "Error occurred during Grid password file generation"
 fi
 
-read GRID_PASSWORD < /tmp/${GRID_PWD_FILE}
+read -r GRID_PASSWORD < /tmp/${GRID_PWD_FILE}
 rm -f /tmp/${GRID_PWD_FILE}
 else
   GRID_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for Grid user"
 fi
 
-if [ ! -z "${ORACLE_PWD_FILE}" ]; then
+if [ -n "${ORACLE_PWD_FILE}" ]; then
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${ORACLE_PWD_FILE}" -out "/tmp/${ORACLE_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
 eval $cmd
@@ -347,14 +349,14 @@ else
 error_exit "Error occurred during Oracle  password file generation"
 fi
 
-read ORACLE_PASSWORD < /tmp/${ORACLE_PWD_FILE}
+read -r ORACLE_PASSWORD < /tmp/${ORACLE_PWD_FILE}
 rm -f /tmp/${GRID_PWD_FILE}
 else
   ORACLE_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for  Oracle user"
 fi
 
-if [ ! -z "${DB_PWD_FILE}" ]; then
+if [ -n "${DB_PWD_FILE}" ]; then
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${DB_PWD_FILE}" -out "/tmp/${DB_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
 eval $cmd
@@ -365,7 +367,7 @@ else
 error_exit "Error occurred during common database password file generation"
 fi
 
-read ORACLE_PWD < /tmp/${DB_PWD_FILE}
+read -r ORACLE_PWD < /tmp/${DB_PWD_FILE}
 rm -f /tmp/${DB_PWD_FILE}
 else
    ORACLE_PWD="${PASSWORD}"
@@ -553,9 +555,8 @@ eval $cmd
 checkSSH ()
 {
 
-local password
-local ssh_pid
-local stat
+# local password
+# local stat
 local status
 local CLUSTER_NODES
 
@@ -566,7 +567,7 @@ else
 fi
 
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
-echo $cmd
+echo "$cmd"
 
 for node in ${CLUSTER_NODES}
 do
@@ -586,7 +587,7 @@ done
 
 status="NA"
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
- echo $cmd
+ echo "$cmd"
 for node in ${CLUSTER_NODES}
 do
 
@@ -609,20 +610,20 @@ done
 ######################################### ASM Disk Functions ###################################
 build_block_device_list ()
 {
-local stat
+# local stat
 local count=1
 local temp_str
-local asmvol=$ASM_DISCOVERY_DIR
-local asmdisk
-local disk
-local minsize=50
-local size=0
-local cluster_name="oracle"
-local disk_name
+#local asmvol=$ASM_DISCOVERY_DIR
+#local asmdisk
+#local disk
+#local minsize=50
+#local size=0
+#local cluster_name="oracle"
+#local disk_name
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 
-if [ ! -z "${ASM_DEVICE_LIST}" ];then
+if [ -n "${ASM_DEVICE_LIST}" ];then
 
 print_message "Preapring Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
@@ -637,7 +638,7 @@ if [ $arr_device -ne 0 ]; then
         print_message "Changing Disk permission and ownership"
         chown $GRID_USER:asmadmin $device
         chmod 660 $device
-        count=$[$count+1]
+        count=$((count+1))
        done
 fi
 size=$(echo "$size" | awk '{byte =$1 /1024/1024**2 ; print byte}')
@@ -662,20 +663,20 @@ fi
 ######################################### GIMR DEVICE Block Device List Computation Begin here #####
 build_gimr_block_device_list ()
 {
-local stat
+# local stat
 local count=1
 local temp_str
-local asmvol=$ASM_DISCOVERY_DIR
-local asmdisk
-local disk
-local minsize=50
-local size=0
-local cluster_name="oracle"
-local disk_name
+#local asmvol=$ASM_DISCOVERY_DIR
+#local asmdisk
+#local disk
+##local minsize=50
+#local size=0
+#local cluster_name="oracle"
+#local disk_name
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 if [ "${CLUSTER_TYPE}" == "DOMAIN" ]; then
-if [ ! -z "${GIMR_DEVICE_LIST}" ];then
+if [ -n "${GIMR_DEVICE_LIST}" ];then
 
 print_message "Preapring Device list"
 IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
@@ -690,7 +691,7 @@ if [ $arr_device -ne 0 ]; then
         print_message "Changing Disk permission and ownership"
         chown $GRID_USER:asmadmin $device
         chmod 660 $device
-        count=$[$count+1]
+        count=$((count+1))
        done
 fi
 size=$(echo "$size" | awk '{byte =$1 /1024/1024**2 ; print byte}')
@@ -720,7 +721,7 @@ setDevicePermissions ()
 {
 
 local cmd
-local state=3
+#local state=3
 
 if [ -z $CRS_NODES ]; then
   CLUSTER_NODES=$PUBLIC_HOSTNAME
@@ -732,7 +733,7 @@ print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Setting Device permissions for RAC Install  on $node"
 
-if [ ! -z "${GIMR_DEVICE_LIST}" ];then
+if [ -n "${GIMR_DEVICE_LIST}" ];then
 
 print_message "Preapring GIMR Device list"
 IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
@@ -759,7 +760,7 @@ fi
 
 fi
 
-if [ ! -z "${ASM_DEVICE_LIST}" ];then
+if [ -n "${ASM_DEVICE_LIST}" ];then
 
 print_message "Preapring ASM Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
@@ -793,6 +794,7 @@ done
 ######################################## Set Device Permission Ends Here ################################
 
 ####################################### Network Function Begin here #############################
+#shellcheck disable=SC2120
 build_network ()
 {
 
@@ -915,11 +917,12 @@ fi
 cluvfy_checks ()
 {
 local responsefile=$logdir/$GRID_INSTALL_RSP
-local password=$PASSWORD
-local stat=3
+# local password=$PASSWORD
+# local stat=3
 local cmd
 local FAILED_CMDS
-local TIMESTAMP=$(date +%s)
+TIMESTAMP=$(date +%s)
+local TIMESTAMP
 
 if [ -f "$logdir/cluvfy_check.txt" ]; then
 print_message "Moving any exisiting cluvfy $logdir/cluvfy_check.txt to $logdir/cluvfy_check_$TIMESTAMP.txt"
@@ -954,8 +957,8 @@ fi
 RunConfigGrid()
 {
 local responsefile=$logdir/$GRID_INSTALL_RSP
-local password=$PASSWORD
-local stat=3
+#local password=$PASSWORD
+#local stat=3
 local cmd
 
 if [ "${SINGLENIC}" == 'true' ];then
@@ -969,10 +972,10 @@ fi
 runrootsh ()
 {
 local cmd
-local state=3
+#local state=3
 
 if [ -z $CRS_NODES ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 fi
@@ -988,8 +991,8 @@ done
 runpostrootsetps ()
 {
 local responsefile=$logdir/$GRID_INSTALL_RSP
-local password=$PASSWORD
-local stat=3
+#local password=$PASSWORD
+#local stat=3
 local cmd
 
 print_message "Running post root.sh steps to setup Grid env"
@@ -1003,8 +1006,8 @@ eval $cmd
 checkCluster ()
 {
 local cmd;
-local stat;
-local oracle_home=$GRID_HOME
+#local stat;
+#local oracle_home=$GRID_HOME
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
@@ -1083,7 +1086,7 @@ installCrontab()
 {
 print_message "Installing crontab to monitor systemd and reset the failed units"
 local cmd;
-local stat;
+#local stat;
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
@@ -1154,7 +1157,11 @@ fi
 
 createRACDB()
 {
-local responsefile=$logdir/$DBCA_RSP
+
+responsefile=$logdir/$DBCA_RSP
+# shellcheck disable=SC2034
+local responsefile
+
 local cmd
 # Replace place holders in response file
 cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'

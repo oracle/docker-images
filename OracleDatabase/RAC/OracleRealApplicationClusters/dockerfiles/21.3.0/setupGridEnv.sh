@@ -10,8 +10,9 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
+# shellcheck disable=SC2181,SC2016,SC1091,SC2086
+
 ####################### Variabes and Constants #################
-declare -r FALSE=1
 declare -r TRUE=0
 DNS_SERVER_FLAG='false'   # set this variable to true if you have DNS server. Then , it is not required to populate the /etc/hosts.
 declare -r ETCHOSTS="/etc/hosts"  #
@@ -26,11 +27,10 @@ declare -x RESET_FAILED_SYSTEMD='false'
 declare -x SET_CRONTAB="setCrontab.sh"
 declare -x RESET_FAILED_UNITS="resetFailedUnits.sh"
  
-progname=$(basename "$0")
 ######################## Variable and Constant declaration ends here ######
 
 if [ -f /etc/rac_env_vars ]; then
-source /etc/rac_env_vars
+ source /etc/rac_env_vars
 fi
 
 ###################Capture Process id and source functions.sh###############
@@ -49,7 +49,7 @@ local systemd_svc
 local systemctl_state
 
 # Setting default gateway
-if [ ! -z "${DEFAULT_GATEWAY}" ];then
+if [ -n "${DEFAULT_GATEWAY}" ];then
   ip route del default
   ip route add default via "$DEFAULT_GATEWAY"
 fi
@@ -102,18 +102,18 @@ build_block_device_list ()
 {
 local stat
 local count=1
-local temp_str
-local asmvol=$ASM_DISCOVERY_DIR
-local asmdisk
-local disk
-local minsize=50
-local size=0
-local cluster_name="oracle"
-local disk_name
+#local temp_str
+##local asmvol=$ASM_DISCOVERY_DIR
+#local asmdisk
+#local disk
+#local minsize=50
+#local size=0
+#local cluster_name="oracle"
+#local disk_name
 
 
 #if [ "${OP_TYPE}" == 'INSTALL' -o "${OP_TYPE}" == 'ADDNODE' ]; then
-if [ ! -z "${ASM_DEVICE_LIST}" ]; then
+if [ -n "${ASM_DEVICE_LIST}" ]; then
 print_message "Preapring Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
         local arr_device=${#devices[@]}
@@ -127,7 +127,7 @@ if [ $arr_device -ne 0 ]; then
               else
                 error_exit "Device $device does not exist! Please verify"
               fi
-                count=$[$count+1]
+                count=$((count+1))
        done
 fi
 else
@@ -143,18 +143,18 @@ build_gimr_block_device_list ()
 {
 local stat
 local count=1
-local temp_str
-local asmvol=$ASM_DISCOVERY_DIR
-local asmdisk
-local disk
-local minsize=50
-local size=0
-local cluster_name="oracle"
-local disk_name
+#local temp_str
+#local asmvol=$ASM_DISCOVERY_DIR
+#local asmdisk
+#local disk
+#local minsize=50
+#local size=0
+#local cluster_name="oracle"
+#local disk_name
 
 #if [ ${OP_TYPE} == 'INSTALL' ]; then
  if [ "${CLUSTER_TYPE}" == "DOMAIN" ]; then
-   if  [ ! -z "${GIMR_DEVICE_LIST}" ]; then
+   if  [ -n "${GIMR_DEVICE_LIST}" ]; then
 	print_message "Preapring Device list"
 	IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
         local arr_device=${#devices[@]}
@@ -164,7 +164,7 @@ local disk_name
 	        print_message "Changing Disk permission and ownership"
 	        chown $GRID_USER:$ASMADMIN_GROUP "$device"
 	        chmod 660 "$device"
-	        count=$[$count+1]
+	        count=$((count+1))
 	       done
 	fi
 else
@@ -179,9 +179,9 @@ setupResolvconf ()
 {
 local stat
 local count=1
-local temp_str
+#local temp_str
 
-   if  [ ! -z "${DNS_SERVERS}" ]; then
+   if  [ -n "${DNS_SERVERS}" ]; then
         print_message "Preapring Dns Servers list"
         IFS=', ' read -r -a dns_servers <<< "$DNS_SERVERS"
         local arr_dns=${#dns_servers[@]}
@@ -261,7 +261,7 @@ local HOST_LINE
 
 if [ "${DNS_SERVER_FLAG}" == 'false' ]; then
 
-if [ ! -z "$HOSTFILE" ]; then
+if [ -n "$HOSTFILE" ]; then
 cat "$COMMON_SCRIPTS"/"$HOSTFILE" > /etc/hosts
 else
 grep -P "127.0.0.1\tlocalhost.localdomain\tlocalhost" /etc/hosts
@@ -273,8 +273,9 @@ fi
 
 for HOSTNAME  in $PUBLIC_HOSTNAME $PRIV_HOSTNAME $VIP_HOSTNAME $SCAN_NAME $EXISTING_CLS_NODE $CMAN_HOSTNAME $GNSVIP_HOSTNAME;
 do
+#shellcheck disable=SC2143
 if [ -n "$(grep $HOSTNAME $ETCHOSTS)" ]; then
-print_message "$HOSTNAME already exists : $(grep $HOSTNAME $ETCHOSTS), no $ETCHOST update required"
+print_message "$HOSTNAME already exists : $(grep $HOSTNAME $ETCHOSTS), no $ETCHOSTS update required"
 else
  print_message  "Preparing host line for $HOSTNAME";
  if [ "${HOSTNAME}" == "${PUBLIC_HOSTNAME}" ]; then
@@ -299,21 +300,21 @@ else
            echo -e "$HOST_LINE" >> $ETCHOSTS
 elif [ "${HOSTNAME}" == "${SCAN_NAME}" ]; then
         unset HOST_LINE
-	if [ ! -z "$SCAN_IP" ];then
+	if [ -n "$SCAN_IP" ];then
 	  HOST_LINE="\n${SCAN_IP}\t${SCAN_NAME}.${DOMAIN}\t${SCAN_NAME}" 
           print_message "Adding $HOST_LINE to $ETCHOSTS"
           echo -e "$HOST_LINE" >> $ETCHOSTS
 	fi
 elif [ "${HOSTNAME}" == "${CMAN_HOSTNAME}" ]; then
         unset HOST_LINE
-        if [ ! -z "$CMAN_IP" ];then
+        if [ -n "$CMAN_IP" ];then
           HOST_LINE="\n${CMAN_IP}\t${CMAN_HOSTNAME}.${DOMAIN}\t${CMAN_HOSTNAME}"
           print_message "Adding $HOST_LINE to $ETCHOSTS"
           echo -e "$HOST_LINE" >> $ETCHOSTS
         fi
 elif [ "${HOSTNAME}" == "${GNSVIP_HOSTNAME}" ]; then
         unset HOST_LINE
-        if [ ! -z "$GNS_VIP" ];then
+        if [ -n "$GNS_VIP" ];then
           HOST_LINE="\n${GNS_VIP}\t${GNSVIP_HOSTNAME}.${DOMAIN}\t${GNSVIP_HOSTNAME}"
           print_message "Adding $HOST_LINE to $ETCHOSTS"
           echo -e "$HOST_LINE" >> $ETCHOSTS
