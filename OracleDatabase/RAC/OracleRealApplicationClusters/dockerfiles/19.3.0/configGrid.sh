@@ -558,18 +558,18 @@ checkSSH ()
 # local password
 # local stat
 local status
-local CLUSTER_NODES
+local CLUSTER_NODES1
 
 if [ -z "$CRS_NODES" ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES1=$PUBLIC_HOSTNAME
 else
-  CLUSTER_NODES=$( echo "$CRS_NODES" | tr ',' ' ' )
+  CLUSTER_NODES1=$( echo "$CRS_NODES" | tr ',' ' ' )
 fi
 # shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
 echo "$cmd"
 
-for node in ${CLUSTER_NODES}
+for node in ${CLUSTER_NODES1}
 do
 
 status=$(eval "$cmd")
@@ -589,7 +589,7 @@ status="NA"
 # shellcheck disable=SC2016
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
  echo "$cmd"
-for node in ${CLUSTER_NODES}
+for node in ${CLUSTER_NODES1}
 do
 
 status=$(eval "$cmd")

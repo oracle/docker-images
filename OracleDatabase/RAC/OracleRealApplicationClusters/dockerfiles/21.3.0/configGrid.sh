@@ -530,21 +530,21 @@ setupSSH()
 {
 local CLUSTER_NODES
 if [ -z "$CRS_NODES" ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES1=$PUBLIC_HOSTNAME
 else
-  CLUSTER_NODES=$( echo "$CRS_NODES" | tr ',' ' ' ) 
+  CLUSTER_NODES1=$( echo "$CRS_NODES" | tr ',' ' ' ) 
 fi
 
-print_message "SSh will be setup among $CLUSTER_NODES nodes"
+print_message "SSh will be setup among $CLUSTER_NODES1 nodes"
 
-print_message "Running SSH setup for $GRID_USER user between nodes $CLUSTER_NODES"
+print_message "Running SSH setup for $GRID_USER user between nodes $CLUSTER_NODES1"
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$GRID_PASSWORD\""'
+cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES1\" \"$GRID_PASSWORD\""'
 eval "$cmd"
 sleep 30
-print_message "Running SSH setup for $DB_USER user between nodes $CLUSTER_NODES"
+print_message "Running SSH setup for $DB_USER user between nodes $CLUSTER_NODES1"
 # shellcheck disable=SC2016
-cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$ORACLE_PASSWORD\""'
+cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES1\" \"$ORACLE_PASSWORD\""'
 eval "$cmd"
 }
 
@@ -552,18 +552,18 @@ checkSSH ()
 {
 
 local status
-local CLUSTER_NODES
+local CLUSTER_NODES1
 
 if [ -z "$CRS_NODES" ]; then
-  CLUSTER_NODES=$PUBLIC_HOSTNAME
+  CLUSTER_NODES1=$PUBLIC_HOSTNAME
 else
-  CLUSTER_NODES=$( echo "$CRS_NODES" | tr ',' ' ' )
+  CLUSTER_NODES1=$( echo "$CRS_NODES" | tr ',' ' ' )
 fi
 # shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
 echo "$cmd"
 
-for node in ${CLUSTER_NODES}
+for node in ${CLUSTER_NODES1}
 do
 
 status=$(eval "$cmd")

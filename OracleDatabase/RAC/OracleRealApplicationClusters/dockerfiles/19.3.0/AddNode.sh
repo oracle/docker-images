@@ -408,17 +408,19 @@ local ssh_pid
 local stat
 local status
 
-IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
+#IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$PUBLIC_HOSTNAME"
 # shellcheck disable=SC2086
-CLUSTER_NODES=( "$(echo $EXISTING_CLS_NODES | tr ',' ' ')" )
+CLUSTER_NODES1=$(echo \"$EXISTING_CLS_NODES\" | tr ',' ' ')
+
+print_message "Clusters for ssh check set to : $CLUSTER_NODES1"
+
 # shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
 echo "$cmd"
 
-for node in "${CLUSTER_NODES[@]}"
+for node in ${CLUSTER_NODES1}
 do
-
 status=$(eval "$cmd")
 
 if [[ $status == ok ]] ; then
@@ -436,7 +438,7 @@ status="NA"
 # shellcheck disable=SC2016
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
  echo "$cmd"
-for node in "${CLUSTER_NODES[@]}"
+for node in ${CLUSTER_NODES1}
 do
 
 status=$(eval "$cmd")
@@ -525,7 +527,7 @@ local node=$EXISTING_CLS_NODE
 
 print_message "Checking Cluster"
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crs\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check crs\""'
 
 
 if eval "$cmd";then
@@ -534,7 +536,7 @@ else
 error_exit "Cluster Check on remote node failed"
 fi
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check cluster\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check cluster\""'
 
 if eval "$cmd"; then
 print_message "Cluster Check went fine"
@@ -544,7 +546,7 @@ fi
 
 if [ ${GIMR_DB_FLAG} == 'true' ]; then
 # shellcheck disable=SC2016
-   cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
+   cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/srvctl status mgmtdb\""'
   
 
     if eval "$cmd"; then
@@ -554,25 +556,25 @@ if [ ${GIMR_DB_FLAG} == 'true' ]; then
     fi
 fi
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crsd\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check crsd\""'
 
 
-if "$cmd"; then
+if eval "$cmd"; then
 print_message "CRSD Check went fine"
 else
 error_exit "CRSD Check failed!"
 fi
 
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check cssd\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check cssd\""'
 
-if eval "cmd"; then
+if eval "$cmd"; then
 print_message "CSSD Check went fine"
 else
 error_exit "CSSD Check failed!"
 fi
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check evmd\""'
+cmd='su - $GRID_USER -c "ssh $node \"$GRID_HOME/bin/crsctl check evmd\""'
 
 if eval "$cmd"; then
 print_message "EVMD Check went fine"

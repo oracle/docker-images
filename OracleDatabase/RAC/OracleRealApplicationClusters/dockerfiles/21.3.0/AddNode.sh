@@ -384,12 +384,12 @@ fi
 
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$CRS_NODES"
-CLUSTER_NODES=( "$( echo "$EXISTING_CLS_NODES" | tr ',' ' ' )" )
+CLUSTER_NODES1=$( echo "$EXISTING_CLS_NODES" | tr ',' ' ' )
 
-print_message "Cluster Nodes are ${CLUSTER_NODES[*]}"
-print_message "Running SSH setup for $GRID_USER user between nodes ${CLUSTER_NODES[*]}"
+print_message "Cluster Nodes are ${CLUSTER_NODES1}"
+print_message "Running SSH setup for $GRID_USER user between nodes ${CLUSTER_NODES1}"
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$GRID_PASSWORD\""'
+cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES1}\"  \"$GRID_PASSWORD\""'
 (eval "${cmd}") &
 ssh_pid=$!
 wait $ssh_pid
@@ -399,9 +399,9 @@ if [ "${stat}" -ne 0 ]; then
 error_exit "ssh setup for Grid user failed!, please make sure you have pass the corect password. You need to make sure that password must be same on all the clustered nodes or the nodes set in existing_cls_nodes env variable for $GRID_USER  user"
 fi
 
-print_message "Running SSH setup for $DB_USER user between nodes ${CLUSTER_NODES[*]}"
+print_message "Running SSH setup for $DB_USER user between nodes ${CLUSTER_NODES1}"
 # shellcheck disable=SC2016
-cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$ORACLE_PASSWORD\""'
+cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES1}\"  \"$ORACLE_PASSWORD\""'
 (eval "${cmd}") &
 ssh_pid=$!
 wait $ssh_pid
@@ -419,14 +419,14 @@ local ssh_pid
 local stat
 local status
 
-IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
+#IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$PUBLIC_HOSTNAME"
-CLUSTER_NODES=( "$(echo "$EXISTING_CLS_NODES" | tr ',' ' ')" )
+CLUSTER_NODES1=$(echo "$EXISTING_CLS_NODES" | tr ',' ' ')
 
 cmd="su - $GRID_USER -c \"ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1\""
 echo "$cmd"
 
-for node in "${CLUSTER_NODES[@]}"
+for node in ${CLUSTER_NODES1}
 do
 
 status=$(eval "${cmd}")
@@ -445,7 +445,7 @@ done
 status="NA"
 cmd="su - $DB_USER -c \"ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1\""
  echo "$cmd"
-for node in "${CLUSTER_NODES[@]}"
+for node in ${CLUSTER_NODES1}
 do
 
 status=$(eval "$cmd")
