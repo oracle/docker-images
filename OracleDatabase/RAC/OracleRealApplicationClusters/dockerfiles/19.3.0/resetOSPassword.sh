@@ -10,6 +10,8 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
+# shellcheck disable=SC2181,SC2016,SC1091,SC2086
+
 declare -a cluster_nodes
 GRID_USER='grid'
 DB_USER='oracle'
@@ -42,7 +44,7 @@ else
 error_exit "Error occurred during common os password file generation"
 fi
 
-read PASSWORD < /tmp/${PWD_FILE}
+read -r PASSWORD < /tmp/${PWD_FILE}
 rm -f /tmp/${PWD_FILE}
 rm -f /tmp/${PWD_KEY}
 
@@ -62,14 +64,14 @@ elif [ -f "${SECRET_VOLUME}/${PWD_FILE}" ]; then
    error_exit "Error occurred during password file ${PWD_FILE} generation"
  fi
 
-  read PASSWORD < /tmp/${PWD_FILE}
+  read -r PASSWORD < /tmp/${PWD_FILE}
   rm -f /tmp/${PWD_FILE}
 else
  print_message "Password file or password key file is empty string! generating random password"
  PASSWORD=O$(openssl rand -base64 6 | tr -d "=+/")_1
 fi
 
-if [ ! -z ${PASSWORD} ]; then
+if [ -n "${PASSWORD}" ]; then
   PASSWD_VALUE="${PASSWORD}"
 fi
 
@@ -77,10 +79,12 @@ fi
 
 setNode () {
 if [ ! -f $GRID_HOME/bin/olsnodes ]; then
-cluster_nodes=( $(hostname) )
+cluster_nodes=( "$(hostname)" )
 else
-cluster_nodes=( $($GRID_HOME/bin/olsnodes | awk '{ print $1 }') )
-node_count=$($GRID_HOME/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
+
+cluster_nodes=( "$(${GRID_HOME}/bin/olsnodes | awk '{ print $1 }')" )
+# shellcheck disable=SC2034
+node_count=$("$GRID_HOME"/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
 fi
 }
 

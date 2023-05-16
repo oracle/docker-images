@@ -139,10 +139,10 @@ ARG SLIMMING
 
 COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
 
-RUN chmod 755 $INSTALL_SCRIPTS/*.sh
+RUN chmod 755 "${INSTALL_SCRIPTS}"/*.sh
 
 ## Install software if SLIMMING is false
-RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+RUN if [ "${SLIMMING}x" != "truex" ]; then \
       sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
       sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
       su  $GRID_USER -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
@@ -157,7 +157,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
       :; \
     fi
 
-RUN rm -f $INSTALL_DIR/install/* && \
+RUN rm -f "${INSTALL_DIR}"/install/* && \
     sync
 
 
@@ -172,7 +172,7 @@ ARG SLIMMING
 
 COPY  --from=builder /u01 /u01
 
-RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+RUN if [ "${SLIMMING}x" != "truex" ]; then \
        $INVENTORY/orainstRoot.sh && \
        $GRID_HOME/root.sh && \
        $DB_HOME/root.sh && \
@@ -198,4 +198,4 @@ WORKDIR $WORKDIR
 
 # Define default command to start Oracle Grid and RAC Database setup.
 
-ENTRYPOINT /usr/bin/$INITSH
+ENTRYPOINT [ "/usr/bin/$INITSH" ]
