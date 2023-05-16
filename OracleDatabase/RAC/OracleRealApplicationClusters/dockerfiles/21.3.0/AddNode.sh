@@ -15,7 +15,7 @@
 ####################### Variables and Constants #################
 declare -r TRUE=0
 declare -x GRID_USER='grid'          ## Default gris user is grid.
-declare -x logdir="/var/tmp"         ## Logdir location
+declare -x logdir="/tmp"         ## Logdir location
 declare -x DB_USER='oracle'      ## default oracle user is oracle.
 declare -x GIMR_DB_FLAG='false'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
@@ -767,8 +767,7 @@ cluvfyCheck()
 
 local node=$EXISTING_CLS_NODE
 local responsefile=$logdir/$ADDNODE_RSP
-#local hostname=$PUBLIC_HOSTNAME
-#local vip_hostname=$VIP_HOSTNAME
+
 local cmd
 local stat
 

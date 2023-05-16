@@ -16,7 +16,7 @@
 declare -r TRUE=0
 declare -x GRID_USER='grid'          ## Default gris user is grid.
 declare -x DB_USER='oracle'      ## default oracle user is oracle.
-declare -x logdir="/var/tmp"
+declare -x logdir="/tmp"
 declare -x GIMR_DB_FLAG='false'      ## GIMR DB Check by default is false
 declare -x DOMAIN                    ## Domain name will be computed based on hostname -d, otherwise pass it as env variable.
 declare -x PUBLIC_IP                 ## Computed based on Node name.
@@ -362,7 +362,6 @@ fi
 ########################################### SSH Function begin here ########################
 setupSSH()
 {
-##local password
 local ssh_pid
 local stat
 
@@ -405,7 +404,6 @@ fi
 checkSSH ()
 {
 
-#local password
 local ssh_pid
 local stat
 local status
@@ -524,8 +522,6 @@ CheckRemoteCluster ()
 local cmd;
 local stat;
 local node=$EXISTING_CLS_NODE
-##local oracle_home=$GRID_HOME
-#local ORACLE_HOME=$GRID_HOME
 
 print_message "Checking Cluster"
 # shellcheck disable=SC2016
@@ -590,7 +586,6 @@ setDevicePermissions ()
 {
 
 local cmd
-#local state=3
 
 if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
@@ -673,7 +668,6 @@ checkCluster ()
 {
 local cmd;
 local stat;
-#local oracle_home=$GRID_HOME
 
 print_message "Checking Cluster"
 # shellcheck disable=SC2016
@@ -751,8 +745,6 @@ cluvfyCheck()
 
 local node=$EXISTING_CLS_NODE
 local responsefile=$logdir/$ADDNODE_RSP
-# =$PUBLIC_HOSTNAME
-# local vip_hostname=$VIP_HOSTNAME
 local cmd
 local stat
 
@@ -804,8 +796,7 @@ addGridNode ()
 
 local node=$EXISTING_CLS_NODE
 local responsefile=$logdir/$ADDNODE_RSP
-#local hostname=$PUBLIC_HOSTNAME
-#local vip_hostname=$VIP_HOSTNAME
+
 local cmd
 local stat
 

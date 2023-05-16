@@ -21,7 +21,7 @@ declare -r TRUE=0
  
 declare -x GRID_USER='grid'          ## Default gris user is grid.
 declare -x DB_USER='oracle'      ## default oracle user is oracle.
-declare -x logdir="/var/tmp"
+declare -x logdir="/tmp"
 declare -r OSDBA='dba'                ## OSDBA group
 declare -r OSASM='asmadmin'          ## OSASM group
 declare -r INSTALL_TYPE='CRS_CONFIG' ## INSTALL TYPE default set to CRS_CONFIG
@@ -611,16 +611,10 @@ done
 ######################################### ASM Disk Functions ###################################
 build_block_device_list ()
 {
-# local stat
+
 local count=1
 local temp_str
-#local asmvol=$ASM_DISCOVERY_DIR
-#local asmdisk
-#local disk
-#local minsize=50
-#local size=0
-#local cluster_name="oracle"
-#local disk_name
+
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 
@@ -665,16 +659,9 @@ fi
 ######################################### GIMR DEVICE Block Device List Computation Begin here #####
 build_gimr_block_device_list ()
 {
-# local stat
 local count=1
 local temp_str
-#local asmvol=$ASM_DISCOVERY_DIR
-#local asmdisk
-#local disk
-##local minsize=50
-#local size=0
-#local cluster_name="oracle"
-#local disk_name
+
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 if [ "${CLUSTER_TYPE}" == "DOMAIN" ]; then
@@ -928,8 +915,7 @@ fi
 cluvfy_checks ()
 {
 local responsefile=$logdir/$GRID_INSTALL_RSP
-# local password=$PASSWORD
-# local stat=3
+
 local cmd
 local FAILED_CMDS
 TIMESTAMP=$(date +%s)
@@ -969,8 +955,7 @@ fi
 RunConfigGrid()
 {
 local responsefile=$logdir/$GRID_INSTALL_RSP
-#local password=$PASSWORD
-#local stat=3
+
 local cmd
 
 if [ "${SINGLENIC}" == 'true' ];then
@@ -985,7 +970,6 @@ fi
 runrootsh ()
 {
 local cmd
-#local state=3
 
 if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
@@ -1005,8 +989,7 @@ done
 runpostrootsetps ()
 {
 local responsefile=$logdir/$GRID_INSTALL_RSP
-#local password=$PASSWORD
-#local stat=3
+
 local cmd
 
 print_message "Running post root.sh steps to setup Grid env"
@@ -1020,8 +1003,6 @@ eval "$cmd"
 checkCluster ()
 {
 local cmd;
-#local stat;
-#local oracle_home=$GRID_HOME
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
@@ -1095,7 +1076,6 @@ installCrontab()
 {
 print_message "Installing crontab to monitor systemd and reset the failed units"
 local cmd;
-#local stat;
 
 IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
 
@@ -1167,9 +1147,8 @@ fi
 createRACDB()
 {
 
-responsefile=$logdir/$DBCA_RSP
 # shellcheck disable=SC2034
-local responsefile
+local responsefile=$logdir/$DBCA_RSP
 
 local cmd
 # Replace place holders in response file

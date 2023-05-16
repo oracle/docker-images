@@ -101,14 +101,6 @@ build_block_device_list ()
 {
 local stat
 local count=1
-#local temp_str
-#local asmvol=$ASM_DISCOVERY_DIR
-#local asmdisk
-#local disk
-#local minsize=50
-#local size=0
-#local cluster_name="oracle"
-#local disk_name
 
 
 #if [ "${OP_TYPE}" == 'INSTALL' -o "${OP_TYPE}" == 'ADDNODE' ]; then
@@ -142,14 +134,7 @@ build_gimr_block_device_list ()
 {
 local stat
 local count=1
-#local temp_str
-#local asmvol=$ASM_DISCOVERY_DIR
-#local asmdisk
-#local disk
-#local minsize=50
-#local size=0
-#local cluster_name="oracle"
-#local disk_name
+
 
 #if [ ${OP_TYPE} == 'INSTALL' ]; then
  if [ "${CLUSTER_TYPE}" == "DOMAIN" ]; then
@@ -178,7 +163,6 @@ setupResolvconf ()
 {
 local stat
 local count=1
-#local temp_str
 
    if  [ -n "${DNS_SERVERS}" ]; then
         print_message "Preapring Dns Servers list"
