@@ -11,7 +11,6 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# shellcheck disable=SC2181,SC2016,SC1091,SC2086
 
 ####################### Variables and Constants #################
 declare -r TRUE=0
@@ -70,6 +69,7 @@ progname=$(basename "$0")
 
 
 ############Sourcing Env file##########
+# shellcheck disable=SC1091
 if [ -f "/etc/rac_env_vars" ]; then
   source "/etc/rac_env_vars"
 fi
@@ -77,6 +77,7 @@ fi
 
 
 ###################Capture Process id and source functions.sh###############
+# shellcheck disable=SC1091
 source "$SCRIPT_DIR/functions.sh"
 ###########################sourcing of functions.sh ends here##############
 
@@ -235,11 +236,10 @@ fi
 check_passwd_env_vars()
 {
 if [ -f "${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}" ]; then
+# shellcheck disable=SC2016
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}" -out /tmp/${COMMON_OS_PWD_FILE} -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval $cmd
-
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Password file generated"
 else
 error_exit "Error occurred during common os password file generation"
@@ -249,10 +249,10 @@ read -r PASSWORD < /tmp/${COMMON_OS_PWD_FILE}
 rm -f /tmp/${COMMON_OS_PWD_FILE}
 
 elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
+# shellcheck disable=SC2016
  cmd='openssl base64 -d -in "${SECRET_VOLUME}/${PASSWORD_FILE}" -out /tmp/"${PASSWORD_FILE}"'
- eval $cmd
 
- if [ $? -eq 0 ]; then
+ if eval "$cmd"; then
    print_message "Password file generated"
  else
    error_exit "Error occurred during password file ${PASSWORD_FILE} generation"
@@ -266,36 +266,35 @@ else
 fi
 
 if [ -n "${GRID_PWD_FILE}" ]; then
+# shellcheck disable=SC2016
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${GRID_PWD_FILE}" -out "/tmp/${GRID_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Password file generated"
 else
 error_exit "Error occurred during Grid password file generation"
 fi
 
-read -r GRID_PASSWORD < /tmp/${GRID_PWD_FILE}
-rm -f /tmp/${GRID_PWD_FILE}
+read -r GRID_PASSWORD < /tmp/"${GRID_PWD_FILE}"
+rm -f /tmp/"${GRID_PWD_FILE}"
 else
   GRID_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for Grid user"
 fi
 
 if [ -n "${ORACLE_PWD_FILE}" ]; then
+# shellcheck disable=SC2016
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${ORACLE_PWD_FILE}" -out "/tmp/${ORACLE_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval $cmd
-
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Password file generated"
 else
 error_exit "Error occurred during Oracle  password file generation"
 fi
 
-read -r ORACLE_PASSWORD < /tmp/${ORACLE_PWD_FILE}
-rm -f /tmp/${GRID_PWD_FILE}
+read -r ORACLE_PASSWORD < /tmp/"${ORACLE_PWD_FILE}"
+rm -f /tmp/"${GRID_PWD_FILE}"
 else
   ORACLE_PASSWORD="${PASSWORD}"
   print_message "Common OS Password string is set for  Oracle user"
@@ -316,10 +315,10 @@ check_rspfile_env_vars ()
 if [ -z "${GRID_RESPONSE_FILE}" ];then
 print_message "GRID_RESPONSE_FILE env variable set to empty. $progname will use standard cluster responsefile"
 else
-if [ -f $COMMON_SCRIPTS/$GRID_RESPONSE_FILE ];then
-cp $COMMON_SCRIPTS/$GRID_RESPONSE_FILE $logdir/$GRID_RESPONSE_FILE
+if [ -f "$COMMON_SCRIPTS"/"$GRID_RESPONSE_FILE" ];then
+cp "$COMMON_SCRIPTS"/"$GRID_RESPONSE_FILE" "$logdir"/"$GRID_RESPONSE_FILE"
 else
-error_exit "$COMMON_SCRIPTS/$GRID_RESPONSE_FILE does not exist"
+error_exit "\"$COMMON_SCRIPTS\"/\"$GRID_RESPONSE_FILE\" does not exist"
 fi
 fi
 
@@ -367,19 +366,21 @@ setupSSH()
 local ssh_pid
 local stat
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CRS_NODES=$PUBLIC_HOSTNAME
 fi
 
 
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$CRS_NODES"
+# shellcheck disable=SC2086
 CLUSTER_NODES=( "$(echo $EXISTING_CLS_NODES | tr ',' ' ')" ) 
 
 print_message "Cluster Nodes are CLUSTER_NODES[*]"
 print_message "Running SSH setup for $GRID_USER user between nodes ${CLUSTER_NODES[*]}"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$GRID_PASSWORD\""'
-(eval $cmd) &
+(eval "$cmd") &
 ssh_pid=$!
 wait $ssh_pid
 stat=$?
@@ -389,8 +390,9 @@ error_exit "ssh setup for Grid user failed!, please make sure you have pass the 
 fi
 
 print_message "Running SSH setup for $DB_USER user between nodes ${CLUSTER_NODES[*]}"
+# shellcheck disable=SC2016
 cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"${CLUSTER_NODES}\"  \"$ORACLE_PASSWORD\""'
-(eval $cmd) &
+(eval "$cmd") &
 ssh_pid=$!
 wait $ssh_pid
 stat=$?
@@ -410,15 +412,16 @@ local status
 
 IFS=', ' read -r -a CLUSTER_NODES  <<< "$EXISTING_CLS_NODES"
 EXISTING_CLS_NODES+=",$PUBLIC_HOSTNAME"
+# shellcheck disable=SC2086
 CLUSTER_NODES=( "$(echo $EXISTING_CLS_NODES | tr ',' ' ')" )
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
 echo "$cmd"
 
 for node in "${CLUSTER_NODES[@]}"
 do
 
-status=$(eval $cmd)
+status=$(eval "$cmd")
 
 if [[ $status == ok ]] ; then
   print_message "SSH check fine for the $node"
@@ -432,12 +435,13 @@ fi
 done
 
 status="NA"
+# shellcheck disable=SC2016
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
  echo "$cmd"
 for node in "${CLUSTER_NODES[@]}"
 do
 
-status=$(eval $cmd)
+status=$(eval "$cmd")
 
 if [[ $status == ok ]] ; then
   print_message "SSH check fine for the $DB_USER@$node"
@@ -456,7 +460,7 @@ done
 ######################Add Node Functions ####################################
 runorainstroot()
 {
-$INVENTORY/orainstRoot.sh
+"$INVENTORY"/orainstRoot.sh
 }
 
 runrootsh ()
@@ -466,7 +470,7 @@ local ORACLE_HOME=$1
 
 local USER=$2
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -474,41 +478,42 @@ fi
 
 print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
+# shellcheck disable=SC2016
 cmd='su - $USER -c "ssh $node sudo $ORACLE_HOME/root.sh"'
-eval $cmd
+eval "$cmd"
 done
 
 }
 
 generate_response_file ()
 {
-cp $SCRIPT_DIR/$ADDNODE_RSP $logdir/$ADDNODE_RSP
-chmod 666 $logdir/$ADDNODE_RSP
+cp "$SCRIPT_DIR"/"$ADDNODE_RSP" "$logdir"/"$ADDNODE_RSP"
+chmod 666 "$logdir"/"$ADDNODE_RSP"
 
 
 if [ -z "${GRID_RESPONSE_FILE}" ]; then
 
-if [ -z ${CRS_CONFIG_NODES} ]; then
+if [ -z "${CRS_CONFIG_NODES}" ]; then
    CRS_CONFIG_NODES="$PUBLIC_HOSTNAME:$VIP_HOSTNAME:HUB"
    print_message "Clustered Nodes are set to $CRS_CONFIG_NODES"
 fi
 
-sed -i -e "s|###INVENTORY###|$INVENTORY|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $logdir/$ADDNODE_RSP
-sed -i -r "s|###PUBLIC_HOSTNAME###|$PUBLIC_HOSTNAME|g"  $logdir/$ADDNODE_RSP
-sed -i -r "s|###HOSTNAME_VIP###|$VIP_HOSTNAME|g"  $logdir/$ADDNODE_RSP
-sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###OSDBA###|$OSDBA|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###OSOPER###|$OSOPER|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###OSASM###|$OSASM|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" $logdir/$ADDNODE_RSP
-sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" $logdir/$ADDNODE_RSP
+sed -i -e "s|###INVENTORY###|$INVENTORY|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -r "s|###PUBLIC_HOSTNAME###|$PUBLIC_HOSTNAME|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -r "s|###HOSTNAME_VIP###|$VIP_HOSTNAME|g"  "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###INSTALL_TYPE###|$INSTALL_TYPE|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###OSDBA###|$OSDBA|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###OSOPER###|$OSOPER|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###OSASM###|$OSASM|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###SCAN_TYPE###|$SCAN_TYPE|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###SHARED_SCAN_FILE###|$SHARED_SCAN_FILE|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###DB_ASM_DISKGROUP###|$DB_ASM_DISKGROUP|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###CONFIGURE_AFD_FLAG###|$CONFIGURE_AFD_FLAG|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###CONFIGURE_RHPS_FLAG###|$CONFIGURE_RHPS_FLAG|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_FLAG###|$EXECUTE_ROOT_SCRIPT_FLAG|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###EXECUTE_ROOT_SCRIPT_METHOD###|$EXECUTE_ROOT_SCRIPT_METHOD|g" "$logdir"/"$ADDNODE_RSP"
+sed -i -e "s|###CRS_CONFIG_NODES###|$CRS_CONFIG_NODES|g" "$logdir"/"$ADDNODE_RSP"
 fi
 
 }
@@ -523,60 +528,57 @@ local node=$EXISTING_CLS_NODE
 #local ORACLE_HOME=$GRID_HOME
 
 print_message "Checking Cluster"
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crs\""'
-eval $cmd
 
-if [ $?  -eq 0 ];then
+
+if eval "$cmd";then
 print_message "Cluster Check on remote node passed"
 else
 error_exit "Cluster Check on remote node failed"
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check cluster\""'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Cluster Check went fine"
 else
 error_exit "Cluster  Check failed!"
 fi
 
 if [ ${GIMR_DB_FLAG} == 'true' ]; then
-
+# shellcheck disable=SC2016
    cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/srvctl status mgmtdb\""'
-   eval $cmd
+  
 
-    if [ $? -eq 0 ]; then
+    if eval "$cmd"; then
         print_message "MGMTDB Check went fine"
     else
          error_exit "MGMTDB Check failed!"
     fi
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check crsd\""'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+
+if "$cmd"; then
 print_message "CRSD Check went fine"
 else
 error_exit "CRSD Check failed!"
 fi
 
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check cssd\""'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "cmd"; then
 print_message "CSSD Check went fine"
 else
 error_exit "CSSD Check failed!"
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node \"$ORACLE_HOME/bin/crsctl check evmd\""'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "EVMD Check went fine"
 else
 error_exit "EVMD Check failed"
@@ -590,7 +592,7 @@ setDevicePermissions ()
 local cmd
 #local state=3
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -605,19 +607,23 @@ if [ -n "${GIMR_DEVICE_LIST}" ];then
 print_message "Preapring GIMR Device list"
 IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
         local arr_device=${#devices[@]}
+        # shellcheck disable=SC2086
 if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
         print_message "Changing Disk permission and ownership"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> /etc/rac_env_vars"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
@@ -632,20 +638,24 @@ if [ -n "${ASM_DEVICE_LIST}" ];then
 print_message "Preapring ASM Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
         local arr_device=${#devices[@]}
+        # shellcheck disable=SC2086
 if [ $arr_device -ne 0 ]; then
         # shellcheck disable=SC2034
         for device in "${devices[@]}"
         do
         print_message "Changing Disk permission and ownership"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> /etc/rac_env_vars"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
@@ -666,58 +676,53 @@ local stat;
 #local oracle_home=$GRID_HOME
 
 print_message "Checking Cluster"
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check crs"'
-eval $cmd
 
-if [ $?  -eq 0 ];then
+if eval "$cmd";then
 print_message "Cluster Check passed"
 else
 error_exit "Cluster Check failed"
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check cluster"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Cluster Check went fine"
 else
 error_exit "Cluster  Check failed!"
 fi
 
 if [ ${GIMR_DB_FLAG} == 'true' ]; then
+# shellcheck disable=SC2016
    cmd='su - $GRID_USER -c "$GRID_HOME/bin/srvctl status mgmtdb"'
-    eval $cmd
 
-   if [ $? -eq 0 ]; then
+   if eval "$cmd"; then
       print_message "MGMTDB Check went fine"
    else
       error_exit "MGMTDB Check failed!"
     fi
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check crsd"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "CRSD Check went fine"
 else
 error_exit "CRSD Check failed!"
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check cssd"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "CSSD Check went fine"
 else
 error_exit "CSSD Check failed!"
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl check evmd"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "EVMD Check went fine"
 else
 error_exit "EVMD Check failed"
@@ -732,11 +737,11 @@ checkClusterClass ()
 {
 print_message "Checking Cluster Class"
 local cluster_class
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/bin/crsctl get cluster class"'
-cluster_class=$(eval $cmd)
+cluster_class=$(eval "$cmd")
 print_message "Cluster class is $cluster_class"
-CLUSTER_TYPE=$(echo $cluster_class | awk -F \' '{ print $2 }' | awk '{ print $1 }')
+CLUSTER_TYPE=$(echo "$cluster_class" | awk -F \' '{ print $2 }' | awk '{ print $1 }')
 }
 
 
@@ -751,7 +756,7 @@ local responsefile=$logdir/$ADDNODE_RSP
 local cmd
 local stat
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
   IFS=', ' read -r -a CLUSTER_NODES <<< "$CRS_NODES"
@@ -768,8 +773,9 @@ fi
 print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for cls_node in "${CLUSTER_NODES[@]}"; do
 print_message "ssh to the node $node and executing cvu checks on $cls_node"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/runcluvfy.sh stage -pre nodeadd -n $cls_node\" | tee -a $logdir/cluvfy_check.txt"'
-eval $cmd
+eval "$cmd"
 done
 
 print_message "Checking $logdir/cluvfy_check.txt if there is any failed check."
@@ -780,7 +786,7 @@ p
 EOF
 )
 
-cat $logdir/cluvfy_check.txt > $STD_OUT_FILE
+cat $logdir/cluvfy_check.txt > "$STD_OUT_FILE"
 
 if [[ ${IGNORE_CVU_CHECKS} == 'true' ]]; then
 print_message "CVU Checks are ignored as IGNORE_CVU_CHECKS set to true. It is recommended to set IGNORE_CVU_CHECKS to false and meet all the cvu checks requirement. RAC installation might fail, if there are failed cvu checks."
@@ -804,15 +810,18 @@ local cmd
 local stat
 
 print_message "Copying $responsefile on remote node $node"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "scp $responsefile $node:$logdir"'
-eval $cmd
+eval "$cmd"
 
 print_message "Running GridSetup.sh on $node to add the node to existing cluster"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node  \"$GRID_HOME/gridSetup.sh -silent -waitForCompletion -noCopy -skipPrereqs -responseFile $responsefile\" | tee -a $logfile"'
-eval $cmd
+eval "$cmd"
 
 print_message "Node Addition performed. removing Responsefile"
-rm -f $responsefile
+rm -f "$responsefile"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node \"rm -f $responsefile\""'
 #eval $cmd
 
@@ -823,7 +832,7 @@ addDBNode ()
 {
 local node=$EXISTING_CLS_NODE
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
    new_node_hostname=$PUBLIC_HOSTNAME
 else
    new_node_hostname=$CRS_NODES
@@ -831,11 +840,10 @@ fi
 
 local stat=3
 local cmd
-
+# shellcheck disable=SC2016
 cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/addnode/addnode.sh \"CLUSTER_NEW_NODES={$new_node_hostname}\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs -noCopy  -silent\" | tee -a $logfile"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Node Addition went fine for $new_node_hostname"
 else
 error_exit "Node Addition failed for $new_node_hostname"
@@ -850,9 +858,10 @@ local node=$EXISTING_CLS_NODE
 local stat=3
 local cmd
 
-if [ -z $CRS_NODES ]; then
+if [ -z "$CRS_NODES" ]; then
   CLUSTER_NODES=( "$PUBLIC_HOSTNAME" )
 else
+# shellcheck disable=SC2086
   CLUSTER_NODES=( "$( echo $CRS_NODES | tr ',' ' ' )" )
 fi
 
@@ -867,8 +876,9 @@ fi
 # shellcheck disable=SC2034
 for new_node in "${CLUSTER_NODES[@]}"; do
 print_message "Adding DB Instance on $node"
+# shellcheck disable=SC2016
 cmd='su - $DB_USER -c "ssh $node \"$DB_HOME/bin/dbca -addInstance -silent  -nodeName $new_node  -gdbName $ORACLE_SID\" | tee -a $logfile"'
-eval $cmd
+eval "$cmd"
 done
 
 }
@@ -903,7 +913,7 @@ setremotelistener ()
 local status
 local cmd
 
-if resolveip $CMAN_HOSTNAME; then
+if resolveip "$CMAN_HOSTNAME"; then
 print_message "Executing script to set the remote listener"
 su - $DB_USER -c "$SCRIPT_DIR/$REMOTE_LISTENER_FILE $ORACLE_SID $SCAN_NAME $CMAN_HOSTNAME.$DOMAIN"
 fi
@@ -923,11 +933,11 @@ fi
 all_check
 print_message "Setting random password for root/$GRID_USER/$DB_USER user"
 print_message "Setting random password for $GRID_USER user"
-setpasswd $GRID_USER  $GRID_PASSWORD
+setpasswd $GRID_USER  "$GRID_PASSWORD"
 print_message "Setting random password for $DB_USER user"
-setpasswd $DB_USER $ORACLE_PASSWORD
+setpasswd $DB_USER "$ORACLE_PASSWORD"
 print_message "Setting random password for root user"
-setpasswd root $PASSWORD
+setpasswd root "$PASSWORD"
 
 ####  Setting up SSH #######
 setupSSH
@@ -945,7 +955,7 @@ cluvfyCheck
 print_message "Running Node Addition and cluvfy test for node $PUBLIC_HOSTNAME"
 addGridNode
 print_message "Running root.sh on node $PUBLIC_HOSTNAME"
-runrootsh $GRID_HOME  $GRID_USER
+runrootsh "$GRID_HOME"  "$GRID_USER"
 checkCluster
 print_message "Checking Cluster Class"
 checkClusterClass
@@ -958,7 +968,7 @@ if [ "${RUN_DBCA}" == 'true' ]; then
 print_message  "Performing DB Node addition"
 addDBNode
 print_message "Running root.sh"
-runrootsh $DB_HOME $DB_USER
+runrootsh "$DB_HOME" "$DB_USER"
 print_message "Adding DB Instance"
 addDBInst 
 print_message "Checking DB status"

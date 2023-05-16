@@ -9,7 +9,6 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# shellcheck disable=SC2181,SC2016,SC1091,SC2086
 
 declare -a cluster_nodes
 GRID_USER='grid'
@@ -19,9 +18,11 @@ PWD_KEY='pwd.key'
 SECRET_VOLUME='/run/secrets'
 declare -x REMOVE_OS_PWD_FILES='false'
 PASSWD_VALUE="NOPASSWD"
+# shellcheck disable=SC1091
 source /etc/rac_env_vars
 
 ###################Capture Process id and source functions.sh###############
+# shellcheck disable=SC1091
 source "$SCRIPT_DIR/functions.sh"
 ###########################sourcing of functions.sh ends here##############
 
@@ -33,11 +34,11 @@ generate_pwd ()
 {
 
 if [ -f "${SECRET_VOLUME}/${PWD_FILE}" ] && [ -f "${SECRET_VOLUME}/${PWD_KEY}" ] ; then
+# shellcheck disable=SC2016
  cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${PWD_FILE}" -out /tmp/${PWD_FILE} -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
- eval $cmd
 
- if [ $? -eq 0 ]; then
+ if eval "$cmd"; then
   print_message "Password file generated"
  else
   error_exit "Error occurred during common os password file generation"
@@ -45,25 +46,25 @@ if [ -f "${SECRET_VOLUME}/${PWD_FILE}" ] && [ -f "${SECRET_VOLUME}/${PWD_KEY}" ]
 
  read -r PASSWORD < /tmp/"${PWD_FILE}"
  rm -f /tmp/"${PWD_FILE}"
- rm -f /tmp/${PWD_KEY}
+ rm -f /tmp/"${PWD_KEY}"
 
  if [ "${REMOVE_OS_PWD_FILES}" == 'true' ]; then
    rm -f  "${SECRET_VOLUME}"/"${COMMON_OS_PWD_FILE}"
-   rm -f ${SECRET_VOLUME}/${PWD_KEY}
+   rm -f "${SECRET_VOLUME}"/"${PWD_KEY}"
  fi
 
 elif [ -f "${SECRET_VOLUME}/${PWD_FILE}" ]; then
+# shellcheck disable=SC2016
  cmd='openssl base64 -d -in "${SECRET_VOLUME}/${PWD_FILE}" -out /tmp/"${PWD_FILE}"'
- eval $cmd
 
- if [ $? -eq 0 ]; then
+ if eval "$cmd"; then
    print_message "Password file generated"
  else
    error_exit "Error occurred during password file ${PWD_FILE} generation"
  fi
 
-  read -r PASSWORD < /tmp/${PWD_FILE}
-  rm -f /tmp/${PWD_FILE}
+  read -r PASSWORD < /tmp/"${PWD_FILE}"
+  rm -f /tmp/"${PWD_FILE}"
 
 else
   print_message "Password file or password key file is empty string! generating random password"
@@ -80,7 +81,7 @@ setNode () {
 if [ ! -f "$GRID_HOME"/bin/olsnodes ]; then
 cluster_nodes=( "$(hostname)" )
 else
-# 
+# shellcheck disable=SC2086
 cluster_nodes=("$(\"$GRID_HOME\"/bin/olsnodes | awk '{ print $1 }')" )
 # shellcheck disable=SC2034
 node_count=$("$GRID_HOME"/bin/olsnodes -a | awk '{ print $1 }' | wc -l)
@@ -104,15 +105,15 @@ for node in "${cluster_nodes[@]}"
 do
 if [ ! -f "$GRID_HOME"/bin/olsnodes ]; then
 print_message "Resetting password for ${user} on the ${node}"
+# shellcheck disable=SC2016
 cmd='su - ${user} -c "sudo /usr/sbin/chpasswd <<<\"$user:$password\""'
 else
 print_message "Resetting password for ${user} on all the ${node}"
+# shellcheck disable=SC2016
 cmd='su - ${user} -c "ssh ${node} sudo /usr/sbin/chpasswd <<<\"$user:$password\""'
 fi
 
-eval $cmd
-
-if [ $? -eq 0 ]; then
+if "$cmd"; then
 print_message "Password reset seucessfuly on ${node} for $user"
 else
 print_message "Password reset failed on ${node} for $user"
@@ -141,6 +142,7 @@ LONGOPTS="help,op_type:,pwd_key_file:,pwd_file:,secret_volume:,remove_os_pwd_fil
 
 ARGS=$(getopt -o $SHORTOPTS --long $LONGOPTS --name "$PROGNAME" -- "$@" )
 
+# shellcheck disable=SC2181
 if [ $? != 0 ] ; then 
 error_exit  "Terminating... as error occurred during ARGS computation"; 
 fi

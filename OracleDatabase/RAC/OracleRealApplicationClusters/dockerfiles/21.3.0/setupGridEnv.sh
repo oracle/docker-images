@@ -10,8 +10,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-# shellcheck disable=SC2181,SC2016,SC1091,SC2086
-
 ####################### Variabes and Constants #################
 declare -r TRUE=0
 DNS_SERVER_FLAG='false'   # set this variable to true if you have DNS server. Then , it is not required to populate the /etc/hosts.
@@ -28,12 +26,13 @@ declare -x SET_CRONTAB="setCrontab.sh"
 declare -x RESET_FAILED_UNITS="resetFailedUnits.sh"
  
 ######################## Variable and Constant declaration ends here ######
-
+# shellcheck disable=SC1091
 if [ -f /etc/rac_env_vars ]; then
  source /etc/rac_env_vars
 fi
 
 ###################Capture Process id and source functions.sh###############
+# shellcheck disable=SC1091
 source "$SCRIPT_DIR/functions.sh"
 ###########################sourcing of functions.sh ends here##############
 
@@ -117,6 +116,7 @@ if [ -n "${ASM_DEVICE_LIST}" ]; then
 print_message "Preapring Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
         local arr_device=${#devices[@]}
+# shellcheck disable=SC2086
 if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
@@ -158,6 +158,7 @@ local count=1
 	print_message "Preapring Device list"
 	IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
         local arr_device=${#devices[@]}
+        # shellcheck disable=SC2086
 	if [ $arr_device -ne 0 ]; then
 	        for device in "${devices[@]}"
         	do
@@ -187,6 +188,7 @@ local count=1
         local arr_dns=${#dns_servers[@]}
         echo "search ${DOMAIN}" > ${RESOLV_CONF_FILE}
 #       sed -i '/127.0.0.11/d' ${RESOLV_CONF_FILE}
+# shellcheck disable=SC2086
         if [ $arr_dns -ne 0 ]; then
                 for dns in "${dns_servers[@]}"
                 do
@@ -211,13 +213,13 @@ resetFailedUnits()
 {
 if [ "${RESET_FAILED_SYSTEMD}" != 'false' ]; then
 
-   cp $SCRIPT_DIR/$RESET_FAILED_UNITS  /var/tmp/$RESET_FAILED_UNITS
+   cp "$SCRIPT_DIR"/"$RESET_FAILED_UNITS"  /var/tmp/$RESET_FAILED_UNITS
    chmod 755 /var/tmp/$RESET_FAILED_UNITS
    print_message "Setting Crontab"
+   # shellcheck disable=SC2016
    cmd='su - $GRID_USER -c "sudo crontab $SCRIPT_DIR/$SET_CRONTAB"'
-   eval $cmd
 
-   if [ $?  -eq 0 ];then
+   if eval "$cmd";then
      print_message "Sucessfully installed $SET_CRONTAB using crontab"
   else
     error_exit "Error occurred in crontab setup"
@@ -273,7 +275,7 @@ fi
 
 for HOSTNAME  in $PUBLIC_HOSTNAME $PRIV_HOSTNAME $VIP_HOSTNAME $SCAN_NAME $EXISTING_CLS_NODE $CMAN_HOSTNAME $GNSVIP_HOSTNAME;
 do
-#shellcheck disable=SC2143
+#shellcheck disable=SC2143,SC2086
 if [ -n "$(grep $HOSTNAME $ETCHOSTS)" ]; then
 print_message "$HOSTNAME already exists : $(grep $HOSTNAME $ETCHOSTS), no $ETCHOSTS update required"
 else

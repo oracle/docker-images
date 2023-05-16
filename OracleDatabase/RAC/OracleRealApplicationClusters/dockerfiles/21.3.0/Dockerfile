@@ -19,7 +19,7 @@
 # Run: 
 #      $ docker build -t oracle/database:21.3.0-rac . 
 
-# hadolint global ignore=DL3006,DL3025
+# hadolint ignore=DL3006,DL3025
 
 ARG BASE_OL_IMAGE=oraclelinux:7-slim
 
@@ -134,8 +134,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 # Start new stage for installing the grid and DB
 # -------------------------------------------
 #############################################
-
-from base AS builder
+FROM base AS builder
 ARG SLIMMING
 
 COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
@@ -199,5 +198,5 @@ VOLUME ["/common_scripts"]
 WORKDIR $WORKDIR
 
 # Define default command to start Oracle Grid and RAC Database setup.
-
+# hadolint ignore=DL3006,DL3025
 ENTRYPOINT /usr/bin/$INITSH

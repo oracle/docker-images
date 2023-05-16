@@ -21,7 +21,7 @@
 # Pull base image
 # ---------------
 
-# hadolint global ignore=DL3006,DL3025
+# hadolint ignore=DL3006,DL3025
 
 ARG BASE_OL_IMAGE=oraclelinux:7-slim
 
@@ -201,5 +201,5 @@ VOLUME ["/common_scripts"]
 WORKDIR $WORKDIR
 
 # Define default command to start Oracle Grid and RAC Database setup.
-
+# hadolint ignore=DL3006,DL3025
 ENTRYPOINT "/usr/bin/$INITSH" 

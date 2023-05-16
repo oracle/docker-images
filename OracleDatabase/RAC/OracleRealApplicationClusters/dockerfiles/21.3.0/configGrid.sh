@@ -13,7 +13,7 @@
 # Note :
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# shellcheck disable=SC2181,SC2016,SC1091,SC2086
+
 
 ####################### Variables and Constants #################
 declare -r TRUE=0 
@@ -118,6 +118,7 @@ progname=$(basename "$0")
 
 
 ############Sourcing Env file##########
+# shellcheck disable=SC1091
 if [ -f "/etc/rac_env_vars" ]; then
  source "/etc/rac_env_vars"
 fi
@@ -125,6 +126,7 @@ fi
 
 
 ###################Capture Process id and source functions.sh###############
+# shellcheck disable=SC1091
 source "$SCRIPT_DIR/functions.sh"
 ###########################sourcing of functions.sh ends here##############
 
@@ -286,11 +288,10 @@ check_passwd_env_vars ()
 
 ##################  Checks for Password and Clustername and clustertype begins here ###########
 if [ -f "${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}" ]; then
+# shellcheck disable=SC2016
  cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${COMMON_OS_PWD_FILE}" -out /tmp/${COMMON_OS_PWD_FILE} -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
- eval "$cmd"
-
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
  print_message "Password file generated"
 else
  error_exit "Error occurred during common os password file generation"
@@ -299,10 +300,10 @@ fi
  rm -f /tmp/${COMMON_OS_PWD_FILE}
 
 elif [ -f "${SECRET_VOLUME}/${PASSWORD_FILE}" ]; then
+# shellcheck disable=SC2016
  cmd='openssl base64 -d -in "${SECRET_VOLUME}/${PASSWORD_FILE}" -out /tmp/"${PASSWORD_FILE}"'
- eval "$cmd"
 
- if [ $? -eq 0 ]; then
+ if eval "$cmd"; then
    print_message "Password file generated"
  else
    error_exit "Error occurred during password file ${PASSWORD_FILE} generation"
@@ -317,11 +318,10 @@ fi
 
 
 if [ -n "${GRID_PWD_FILE}" ]; then
+# shellcheck disable=SC2016
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${GRID_PWD_FILE}" -out "/tmp/${GRID_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval "$cmd" 
-
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Password file generated"
 else
 error_exit "Error occurred during Grid password file generation"
@@ -335,12 +335,11 @@ else
 fi
 
 if [ -n "${ORACLE_PWD_FILE}" ]; then
+# shellcheck disable=SC2016
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${ORACLE_PWD_FILE}" -out "/tmp/${ORACLE_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval "$cmd"
 
-
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Password file generated"
 else
 error_exit "Error occurred during Oracle  password file generation"
@@ -354,11 +353,10 @@ else
 fi
 
 if [ -n "${DB_PWD_FILE}" ]; then
+# shellcheck disable=SC2016
 cmd='openssl enc -d -aes-256-cbc -in "${SECRET_VOLUME}/${DB_PWD_FILE}" -out "/tmp/${DB_PWD_FILE}" -pass file:"${SECRET_VOLUME}/${PWD_KEY}"'
 
-eval "$cmd"
-
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "Password file generated"
 else
 error_exit "Error occurred during common database password file generation"
@@ -541,10 +539,12 @@ fi
 print_message "SSh will be setup among $CLUSTER_NODES nodes"
 
 print_message "Running SSH setup for $GRID_USER user between nodes $CLUSTER_NODES"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $GRID_USER \"$GRID_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$GRID_PASSWORD\""'
 eval "$cmd"
 sleep 30
 print_message "Running SSH setup for $DB_USER user between nodes $CLUSTER_NODES"
+# shellcheck disable=SC2016
 cmd='su - $DB_USER -c "$EXPECT $SCRIPT_DIR/$SETUPSSH $DB_USER \"$DB_HOME/oui/prov/resources/scripts\"  \"$CLUSTER_NODES\" \"$ORACLE_PASSWORD\""'
 eval "$cmd"
 }
@@ -562,7 +562,7 @@ if [ -z "$CRS_NODES" ]; then
 else
   CLUSTER_NODES=$( echo "$CRS_NODES" | tr ',' ' ' )
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $GRID_USER@$node echo ok 2>&1"'
 echo "$cmd"
 
@@ -583,6 +583,7 @@ fi
 done
 
 status="NA"
+# shellcheck disable=SC2016
 cmd='su - $DB_USER -c "ssh -o BatchMode=yes -o ConnectTimeout=5 $DB_USER@$node echo ok 2>&1"'
  echo "$cmd"
 for node in ${CLUSTER_NODES}
@@ -625,6 +626,7 @@ if [ -n "${ASM_DEVICE_LIST}" ];then
 print_message "Preapring Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
         local arr_device=${#devices[@]}
+# shellcheck disable=SC2086
 if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
@@ -678,6 +680,7 @@ if [ -n "${GIMR_DEVICE_LIST}" ];then
 print_message "Preapring Device list"
 IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
         local arr_device=${#devices[@]}
+# shellcheck disable=SC2086
 if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
@@ -735,19 +738,23 @@ if [ -n "${GIMR_DEVICE_LIST}" ];then
 print_message "Preapring GIMR Device list"
 IFS=', ' read -r -a devices <<< "$GIMR_DEVICE_LIST"
         local arr_device=${#devices[@]}
+# shellcheck disable=SC2086
 if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
         print_message "Changing Disk permission and ownership"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo echo \"export GIMR_DEVICE_LIST=${GIMR_DEVICE_LIST}\" >> /etc/rac_env_vars"' 
         print_message "Command : $cmd execute on $node"
         eval $cmd
@@ -762,19 +769,23 @@ if [ -n "${ASM_DEVICE_LIST}" ];then
 print_message "Preapring ASM Device list"
 IFS=', ' read -r -a devices <<< "$ASM_DEVICE_LIST"
         local arr_device=${#devices[@]}
+# shellcheck disable=SC2086        
 if [ $arr_device -ne 0 ]; then
         for device in "${devices[@]}"
         do
         print_message "Changing Disk permission and ownership"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chown $GRID_USER:asmadmin $device"'
         print_message "Command : $cmd execute on $node"
         eval "$cmd"
         unset cmd
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo chmod 660 $device"'
         print_message "Command : $cmd execute on $node"
         eval $cmd
         unset cmd
         print_message "Populate Rac Env Vars on Remote Hosts"
+        # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "ssh $node sudo echo \"export ASM_DEVICE_LIST=${ASM_DEVICE_LIST}\" >> /etc/rac_env_vars"'
         print_message "Command : $cmd execute on $node"
         eval "$cmd"
@@ -928,8 +939,9 @@ mv "$logdir"/cluvfy_check.txt "$logdir"/cluvfy_check."$(date +%Y%m%d-%H%M%S)".tx
 fi
 
 print_message "Performing Cluvfy Checks"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/runcluvfy.sh stage -pre crsinst -responseFile $responsefile | tee -a  $logdir/cluvfy_check.txt"'
-eval $cmd
+eval "$cmd"
 
 print_message "Checking $logdir/cluvfy_check.txt if there is any failed check."
 FAILED_CMDS=$(sed -n -f - "$logdir"/cluvfy_check.txt << EOF
@@ -962,6 +974,7 @@ local cmd
 if [ "${SINGLENIC}" == 'true' ];then
  error_exit  "SINGLE NIC is not supported";
 else
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/gridSetup.sh -waitforcompletion -ignorePrereq  -silent -responseFile $responsefile"'
 eval "$cmd"
 fi
@@ -981,10 +994,12 @@ fi
 print_message "Nodes in the cluster ${CLUSTER_NODES[*]}" 
 for node in "${CLUSTER_NODES[@]}"; do
 print_message "Running root.sh on $node"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node sudo systemctl reset-failed"'
-eval $cmd
+eval "$cmd"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node sudo $GRID_HOME/root.sh"'
-eval $cmd
+eval "$cmd"
 done
 }
 
@@ -996,7 +1011,7 @@ local responsefile=$logdir/$GRID_INSTALL_RSP
 local cmd
 
 print_message "Running post root.sh steps to setup Grid env"
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "$GRID_HOME/gridSetup.sh -executeConfigTools -responseFile $responsefile -silent"'
 eval "$cmd"
 
@@ -1017,59 +1032,55 @@ print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
 
 print_message "Checking Cluster on $node"
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check crs"'
-eval $cmd
 
-if [ $?  -eq 0 ];then
+if eval "$cmd"];then
 print_message "Cluster Check passed"
 else
 error_exit "Cluster Check failed"
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check cluster"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+
+if eval "$cmd"; then
 print_message "Cluster Check went fine"
 else
 error_exit "Cluster  Check failed!"
 fi
 
 if [ ${GIMR_DB_FLAG} == 'true' ]; then
-
+# shellcheck disable=SC2016
    cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/srvctl status mgmtdb"'
-   eval $cmd
 
-   if [ $? -eq 0 ]; then
+   if eval "$cmd"; then
       print_message "MGMTDB Check went fine"
    else
       error_exit "MGMTDB Check failed!"
     fi
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check crsd"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "CRSD Check went fine"
 else
 error_exit "CRSD Check failed!"
 fi
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check cssd"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "$cmd"; then
 print_message "CSSD Check went fine"
 else
 error_exit "CSSD Check failed!"
 fi
 
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node $GRID_HOME/bin/crsctl check evmd"'
-eval $cmd
 
-if [ $? -eq 0 ]; then
+if eval "cmd"; then
 print_message "EVMD Check went fine"
 else
 error_exit "EVMD Check failed"
@@ -1095,21 +1106,20 @@ print_message "Nodes in the cluster ${CLUSTER_NODES[*]}"
 for node in "${CLUSTER_NODES[@]}"; do
 
 print_message "Copying file $RESET_FAILED_UNITS from $SCRIPT_DIR to /tmp"
-
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node sudo cp $SCRIPT_DIR/$RESET_FAILED_UNITS /tmp/$RESET_FAILED_UNITS"'
-eval "$cmd"
 
-if [ $?  -eq 0 ];then
+if eval "$cmd";then
 print_message "Copied the $RESET_FAILED_UNITS under /tmp"
 else
 error_exit "Error occurred during file copy"
 fi
 
 print_message "Setting Crontab"
+# shellcheck disable=SC2016
 cmd='su - $GRID_USER -c "ssh $node sudo crontab $SCRIPT_DIR/$CRONTAB_ENTRY"'
-eval "$cmd"
 
-if [ $?  -eq 0 ];then
+if eval "$cmd";then
 print_message "Sucessfully installed $CRONTAB_ENTRY using crontab"
 else
 error_exit "Error occurred in crontab setup"
@@ -1172,8 +1182,9 @@ rm -rf "$GRID_BASE"/diag/kfod
 sleep 1
 
 # Replace place holders in response file
+# shellcheck disable=SC2016
 cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'
-eval $cmd
+eval "$cmd"
 rm -f "$responsefile"
 }
 
