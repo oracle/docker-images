@@ -202,4 +202,4 @@ WORKDIR $WORKDIR
 
 # Define default command to start Oracle Grid and RAC Database setup.
 
-ENTRYPOINT [ "/usr/bin/$INITSH" ]
+ENTRYPOINT "/usr/bin/$INITSH" 
