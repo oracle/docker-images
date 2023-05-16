@@ -27,6 +27,7 @@ ARG BASE_OL_IMAGE=oraclelinux:7-slim
 
 # Pull base image
 # ---------------
+# hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 # Labels
@@ -144,7 +145,7 @@ COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_I
 RUN chmod 755 "${INSTALL_SCRIPTS}"/*.sh
 
 ## Install software if SLIMMING is false
-# shellcheck disable=SC2086
+# hadolint ignore=SC2086
 RUN if [ "${SLIMMING}x" != "truex" ]; then \
       sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
       sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
@@ -175,7 +176,7 @@ ARG SLIMMING
 
 COPY  --from=builder /u01 /u01
 
-# shellcheck disable=SC2086
+# hadolint ignore=SC2086
 RUN if [ "${SLIMMING}x" != "truex" ]; then \
        $INVENTORY/orainstRoot.sh && \
        $GRID_HOME/root.sh && \

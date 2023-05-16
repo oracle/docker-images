@@ -19,12 +19,13 @@
 # Run: 
 #      $ docker build -t oracle/database:21.3.0-rac . 
 
-# hadolint ignore=DL3006,DL3025
+
 
 ARG BASE_OL_IMAGE=oraclelinux:7-slim
 
 # Pull base image
 # ---------------
+# hadolint ignore=DL3006
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 
@@ -142,7 +143,7 @@ COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_I
 RUN chmod 755 "$INSTALL_SCRIPTS"/*.sh
 
 ## Install software if SLIMMING is false
-# shelcheck disable=SC2086
+# hadolint ignore=SC2086
 RUN if [ "${SLIMMING}x" != "truex" ]; then \
       sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
       sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
@@ -172,7 +173,7 @@ FROM base
 ARG SLIMMING
 
 COPY  --from=builder /u01 /u01
-# shelcheck disable=SC2086
+# hadolint ignore=SC2086
 RUN if [ "${SLIMMING}x" != "truex" ]; then \
        $INVENTORY/orainstRoot.sh && \
        $GRID_HOME/root.sh && \
