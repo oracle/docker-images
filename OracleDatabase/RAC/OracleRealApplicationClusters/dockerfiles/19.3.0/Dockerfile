@@ -126,7 +126,7 @@ ARG SLIMMING
 
 COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
 
-RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+RUN chmod 755 "$INSTALL_SCRIPTS/*.sh"  && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
@@ -140,26 +140,12 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 # Start new stage for installing the grid and DB
 # -------------------------------------------
 #############################################
-FROM base AS rac-image-slim-false
-ARG SLIMMING
-
-COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
-
-RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
-    sync && \
-    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
-    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
-    $INSTALL_DIR/install/$GRID_SETUP_FILE && \
-    $INSTALL_DIR/install/$DB_SETUP_FILE && \
-    rm -f "$INSTALL_DIR"/install/* && \
-    sync
-
 FROM base AS rac-image-slim-true
 ARG SLIMMING
 
 COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
 
-RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+RUN chmod 755 "$INSTALL_SCRIPTS"/*.sh  && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
@@ -168,6 +154,12 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     rm -f "$INSTALL_DIR"/install/* && \
     sync
 
+#############################################
+# -------------------------------------------
+# Start new stage for installing the grid and DB
+# -------------------------------------------
+#############################################
+# hadolint ignore=DL3006
 FROM rac-image-slim-${SLIMMING} AS builder
 ARG SLIMMING
 
@@ -192,11 +184,6 @@ RUN if [ "${SLIMMING}"x != "truex" ]; then \
       :; \
     fi
 
-RUN if [ "${SLIMMING}x" == 'truex' ]; then \
-      mkdir /u01 && \
-      :; \
-    fi
-
 RUN rm -f "${INSTALL_DIR}"/install/* && \
     sync
 
@@ -205,6 +192,7 @@ RUN rm -f "${INSTALL_DIR}"/install/* && \
 # Start new image for grid & database runtime
 # -------------------------------------------
 #############################################
+# hadolint ignore=DL3006
 FROM rac-image-slim-${SLIMMING} AS final
 
 # Setup Scripts
@@ -221,6 +209,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
        chmod 666 "${SCRIPT_DIR}"/*.rsp && \
        :; \
     fi && \
+    chmod 755 $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
     "$INSTALL_DIR"/install/"$FIXUP_PREQ_FILE" && \
     sync && \
     chmod 755 "$SCRIPT_DIR"/*.sh && \

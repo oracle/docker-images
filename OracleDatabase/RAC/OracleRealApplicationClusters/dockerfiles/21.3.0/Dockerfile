@@ -19,11 +19,12 @@
 # Run:
 #      $ docker build -t oracle/database:21.3.0-rac .
 
-# hadolint ignore=DL3006,DL3025
+
 ARG BASE_OL_IMAGE=oraclelinux:7-slim
 
 # Pull base image
 # ---------------
+# hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 
@@ -124,7 +125,7 @@ ARG SLIMMING
 
 COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
 
-RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+RUN chmod 755 "$INSTALL_SCRIPTS"/*.sh  && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
@@ -144,7 +145,7 @@ ARG SLIMMING
 
 COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
 
-RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+RUN chmod 755 "$INSTALL_SCRIPTS"/*.sh  && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
@@ -158,7 +159,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 # Start new stage for installing the grid and DB
 # -------------------------------------------
 #############################################
-
+# hadolint ignore=DL3006,DL3025
 FROM rac-image-slim-${SLIMMING} AS builder
 ARG SLIMMING
 
@@ -168,7 +169,6 @@ RUN chmod 755 "${INSTALL_SCRIPTS}"/*.sh
 
 ## Install software if SLIMMING is false
 # hadolint ignore=SC2086
-
 RUN if [ "${SLIMMING}x" != 'truex' ]; then \
       sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
       sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
@@ -184,7 +184,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
       :; \
     fi
 
-RUN rm -f $INSTALL_DIR/install/* && \
+RUN rm -f "$INSTALL_DIR"/install/* && \
     sync
 
 #############################################
@@ -192,6 +192,7 @@ RUN rm -f $INSTALL_DIR/install/* && \
 # Start new image for grid & database runtime
 # -------------------------------------------
 #############################################
+# hadolint ignore=DL3006,DL3025
 FROM rac-image-slim-${SLIMMING} AS final
 
 # Setup Scripts
@@ -201,12 +202,14 @@ COPY $RUN_FILE $INITSH $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $G
 
 COPY --from=builder /u01 /u01
 
+# hadolint ignore=SC2086
 RUN if [ "${SLIMMING}x" != 'truex' ]; then \
        $INVENTORY/orainstRoot.sh && \
        $GRID_HOME/root.sh && \
        $DB_HOME/root.sh && \
        :; \
     fi && \
+    chmod 755 $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
     $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
     sync && \
     chmod 755 $SCRIPT_DIR/*.sh && \
@@ -226,5 +229,5 @@ VOLUME ["/common_scripts"]
 WORKDIR $WORKDIR
 
 # Define default command to start Oracle Grid and RAC Database setup.
-
+# hadolint ignore=DL3025
 ENTRYPOINT /usr/bin/$INITSH
