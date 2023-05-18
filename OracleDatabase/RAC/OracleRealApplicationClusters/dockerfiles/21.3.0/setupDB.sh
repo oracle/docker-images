@@ -21,6 +21,7 @@ chown -R "${DB_USER}":oinstall "$DB_HOME"
 chown -R "${DB_USER}":oinstall "$INSTALL_SCRIPTS"
 chmod 775 "$INSTALL_SCRIPTS"
 
+# shellcheck disable=SC2129
 echo "export PATH=$DB_PATH" >> /home/"${DB_USER}"/.bashrc
 echo "export LD_LIBRARY_PATH=$DB_LD_LIBRARY_PATH" >> /home/"${DB_USER}"/.bashrc
 echo "export SCRIPT_DIR=$SCRIPT_DIR" >> /home/"${DB_USER}"/.bashrc

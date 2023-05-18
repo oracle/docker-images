@@ -16,6 +16,7 @@
 # Run:
 #      $ docker build -f Dockerfile -t oracle/rac-database:21.3.0-<patch level> .
 #
+# hadolint global ignore=DL3006,DL3025
 ARG BASE_RAC_IMAGE=oracle/database-rac:21.3.0
 
 # Pull base image
@@ -76,10 +77,10 @@ RUN $PATCH_INSTALL_DIR/$DB_PATCH_FILE $PATCH_INSTALL_DIR
 
 USER $USER
 
-RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
-    cp $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE $SCRIPT_DIR/$FIXUP_PREQ_FILE && \
+RUN "$PATCH_INSTALL_DIR"/"$FIXUP_PREQ_FILE"  && \
+    cp "$PATCH_INSTALL_DIR"/"$FIXUP_PREQ_FILE" "$SCRIPT_DIR"/"$FIXUP_PREQ_FILE" && \
     rm -rf /etc/oracle && \
-    rm -rf $PATCH_INSTALL_DIR
+    rm -rf "$PATCH_INSTALL_DIR"
 
 #############################################
 # -------------------------------------------
@@ -93,14 +94,14 @@ ARG USER
 COPY --from=builder /u01 /u01
 COPY --from=builder $SCRIPT_DIR $SCRIPT_DIR
 
-RUN chmod 755 $SCRIPT_DIR/* && \
-    $INVENTORY/orainstRoot.sh && \
-    $GRID_HOME/root.sh && \
-    $DB_HOME/root.sh && \
-    $SCRIPT_DIR/$FIXUP_PREQ_FILE && \
+RUN chmod 755 "$SCRIPT_DIR"/* && \
+    "$INVENTORY"/orainstRoot.sh && \
+    "$GRID_HOME"/root.sh && \
+    "$DB_HOME"/root.sh && \
+    "$SCRIPT_DIR"/"$FIXUP_PREQ_FILE" && \
     cp "$SCRIPT_DIR"/"$INITSH" /usr/bin/"$INITSH" && \
     chmod 755 /usr/bin/"$INITSH" && \
-    rm -f $SCRIPT_DIR/$FIXUP_PREQ_FILE
+    rm -f "$SCRIPT_DIR"/"$FIXUP_PREQ_FILE"
 
 USER $USER
 WORKDIR $WORKDIR

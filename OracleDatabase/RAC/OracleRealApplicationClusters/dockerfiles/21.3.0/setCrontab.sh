@@ -11,4 +11,4 @@
 #
 # shellcheck disable=SC2211
 # shellcheck disable=SC2035
-* * * * * /var/tmp/reset_failed_units.sh
+* * * * * /var/tmp/resetFailedUnits.sh

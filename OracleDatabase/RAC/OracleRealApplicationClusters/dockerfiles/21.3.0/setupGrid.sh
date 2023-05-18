@@ -10,8 +10,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-EDITION=$1
-
 # Create Directories
 mkdir -p "$GRID_BASE"
 mkdir -p "$GRID_HOME"
@@ -31,6 +29,7 @@ echo "${DB_USER}       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 echo "${GRID_USER}       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
 chmod 440 /etc/sudoers
 
+# shellcheck disable=SC2129
 echo "export PATH=$GRID_PATH" >> /home/"${GRID_USER}"/.bashrc
 echo "export LD_LIBRARY_PATH=$GRID_LD_LIBRARY_PATH" >> /home/"${GRID_USER}"/.bashrc
 echo "export SCRIPT_DIR=$SCRIPT_DIR" >> /home/"${GRID_USER}"/.bashrc

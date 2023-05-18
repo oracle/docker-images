@@ -106,6 +106,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
    EXPECT="/usr/bin/expect" \
    BIN="/usr/sbin" \
    container="true"
+
 # Use second ENV so that variable get substituted
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin \
@@ -115,10 +116,24 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
      DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
 
-# Copy binaries
-# -------------
-# COPY Binaries
+#############################################
+# -------------------------------------------
+# Start new stage for installing the grid and DB for slim image
+# -------------------------------------------
+#############################################
+FROM base AS rac-image-slim-false
+ARG SLIMMING
 
+COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
+
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GRID_SETUP_FILE && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -f "$INSTALL_DIR"/install/* && \
+    sync
 
 #############################################
 # -------------------------------------------
@@ -156,7 +171,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 FROM rac-image-slim-${SLIMMING} AS builder
 ARG SLIMMING
 
-COPY $GRID_SW_INSTALL_RSP $INSTALL_GRID_PATCH $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $INSTALL_GRID_BINARIES_FILE $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
+COPY $GRID_SW_INSTALL_RSP $INSTALL_GRID_PATCH $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $INSTALL_GRID_BINARIES_FILE $INSTALL_FILE_1* $INSTALL_FILE_2* $INSTALL_SCRIPTS/
 
 RUN chmod 755 "${INSTALL_SCRIPTS}"/*.sh
 
