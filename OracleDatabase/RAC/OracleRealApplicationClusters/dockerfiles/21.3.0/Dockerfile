@@ -5,27 +5,24 @@
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 21c Release 3 Real Application Clusters to build the container image
-# 
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) LINUX.X64_213000_db_home.zip
-# (2) LINUX.X64_213000_grid_home.zip 
+# (2) LINUX.X64_213000_grid_home.zip
 #     Download Oracle Grid 21c Release 3 Enterprise Edition for Linux x64
 #     Download Oracle Database 21c Release 3  Enterprise Edition for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Run: 
-#      $ docker build -t oracle/database:21.3.0-rac . 
-
-
+# Run:
+#      $ docker build -t oracle/database:21.3.0-rac .
 
 ARG BASE_OL_IMAGE=oraclelinux:7-slim
 
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 
@@ -86,7 +83,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     ENABLE_RAC_FILE="enableRAC.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
-    REMOTE_LISTENER_FILE="remoteListener.sh" \ 
+    REMOTE_LISTENER_FILE="remoteListener.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     GRID_HOME_CLEANUP="GridHomeCleanup.sh" \
     ORACLE_HOME_CLEANUP="OracleHomeCleanup.sh" \
@@ -114,13 +111,17 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
      DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
 
-# Copy binaries
 # -------------
-# COPY Binaries
-COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
-# Setup Scripts
-COPY $RUN_FILE $INITSH $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $GRID_INSTALL_RSP $DBCA_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $STOP_FILE $CHECK_DB_FILE $REMOTE_LISTENER_FILE $SETUPGRIDENV $DELNODE $RESET_OS_PASSWORD $MULTI_NODE_INSTALL $RESET_FAILED_UNITS $SET_CRONTAB $SCRIPT_DIR/
+#############################################
+# -------------------------------------------
+# Start new stage for installing the grid and DB for slim image
+# -------------------------------------------
+#############################################
+FROM base AS rac-image-slim-false
+ARG SLIMMING
+
+COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
 
 RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     sync && \
@@ -128,6 +129,27 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$GRID_SETUP_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -f "$INSTALL_DIR"/install/* && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the grid and DB for slim image
+# -------------------------------------------
+#############################################
+
+FROM base AS rac-image-slim-true
+ARG SLIMMING
+
+COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
+
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GRID_SETUP_FILE && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -f "$INSTALL_DIR"/install/* && \
     sync
 
 #############################################
@@ -135,16 +157,18 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 # Start new stage for installing the grid and DB
 # -------------------------------------------
 #############################################
-FROM base AS builder
+
+FROM rac-image-slim-${SLIMMING} AS builder
 ARG SLIMMING
 
-COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
+COPY $FIXUP_PREQ_FILE $GRID_SW_INSTALL_RSP $INSTALL_GRID_PATCH $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $INSTALL_GRID_BINARIES_FILE $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
 
-RUN chmod 755 "$INSTALL_SCRIPTS"/*.sh
+RUN chmod 755 "${INSTALL_SCRIPTS}"/*.sh
 
 ## Install software if SLIMMING is false
 # hadolint ignore=SC2086
-RUN if [ "${SLIMMING}x" != "truex" ]; then \
+
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
       sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
       sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
       su  $GRID_USER -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
@@ -159,22 +183,24 @@ RUN if [ "${SLIMMING}x" != "truex" ]; then \
       :; \
     fi
 
-RUN rm -f "$INSTALL_DIR"/install/* && \
+RUN rm -f $INSTALL_DIR/install/* && \
     sync
 
-
 #############################################
 # -------------------------------------------
-# Start new layer for grid & database runtime
+# Start new image for grid & database runtime
 # -------------------------------------------
 #############################################
+FROM rac-image-slim-${SLIMMING} AS final
 
-FROM base
-ARG SLIMMING
+# Setup Scripts
+COPY $FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
-COPY  --from=builder /u01 /u01
-# hadolint ignore=SC2086
-RUN if [ "${SLIMMING}x" != "truex" ]; then \
+COPY $RUN_FILE $INITSH $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $GRID_INSTALL_RSP $DBCA_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $STOP_FILE $CHECK_DB_FILE $REMOTE_LISTENER_FILE $SETUPGRIDENV $DELNODE $RESET_FAILED_UNITS $RESET_OS_PASSWORD $MULTI_NODE_INSTALL $SET_CRONTAB $SCRIPT_DIR/
+
+COPY --from=builder /u01 /u01
+
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
        $INVENTORY/orainstRoot.sh && \
        $GRID_HOME/root.sh && \
        $DB_HOME/root.sh && \
@@ -199,5 +225,5 @@ VOLUME ["/common_scripts"]
 WORKDIR $WORKDIR
 
 # Define default command to start Oracle Grid and RAC Database setup.
-# hadolint ignore=DL3006,DL3025
+
 ENTRYPOINT /usr/bin/$INITSH

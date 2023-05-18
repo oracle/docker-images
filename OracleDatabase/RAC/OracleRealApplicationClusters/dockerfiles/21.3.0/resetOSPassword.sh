@@ -113,7 +113,7 @@ print_message "Resetting password for ${user} on all the ${node}"
 cmd='su - ${user} -c "ssh ${node} sudo /usr/sbin/chpasswd <<<\"$user:$password\""'
 fi
 
-if "$cmd"; then
+if eval "$cmd"; then
 print_message "Password reset seucessfuly on ${node} for $user"
 else
 print_message "Password reset failed on ${node} for $user"

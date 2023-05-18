@@ -118,10 +118,17 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # COPY Binaries
-COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
-# Setup Scripts
-COPY $RUN_FILE $INITSH $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $GRID_INSTALL_RSP $DBCA_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $STOP_FILE $CHECK_DB_FILE $REMOTE_LISTENER_FILE $SETUPGRIDENV $DELNODE $RESET_FAILED_UNITS $RESET_OS_PASSWORD $MULTI_NODE_INSTALL $SET_CRONTAB $SCRIPT_DIR/
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the grid and DB
+# -------------------------------------------
+#############################################
+FROM base AS rac-image-slim-false
+ARG SLIMMING
+
+COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
 
 RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     sync && \
@@ -129,24 +136,33 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$GRID_SETUP_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -f "$INSTALL_DIR"/install/* && \
     sync
 
-#############################################
-# -------------------------------------------
-# Start new stage for installing the grid and DB
-# -------------------------------------------
-#############################################
-
-FROM base AS builder
+FROM base AS rac-image-slim-true
 ARG SLIMMING
 
-COPY $GRID_SW_INSTALL_RSP  $INSTALL_GRID_PATCH $INSTALL_GRID_BINARIES_FILE $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
+COPY $SETUP_LINUX_FILE $GRID_SETUP_FILE $DB_SETUP_FILE $CHECK_SPACE_FILE $INSTALL_SCRIPTS/
+
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GRID_SETUP_FILE && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -f "$INSTALL_DIR"/install/* && \
+    sync
+
+FROM rac-image-slim-${SLIMMING} AS builder
+ARG SLIMMING
+
+COPY $GRID_SW_INSTALL_RSP $INSTALL_GRID_PATCH $GRID_HOME_CLEANUP $ORACLE_HOME_CLEANUP $DB_INSTALL_RSP $INSTALL_DB_BINARIES_FILE $ENABLE_RAC_FILE $INSTALL_GRID_BINARIES_FILE $INSTALL_FILE_1 $INSTALL_FILE_2 $INSTALL_SCRIPTS/
 
 RUN chmod 755 "${INSTALL_SCRIPTS}"/*.sh
 
 ## Install software if SLIMMING is false
 # hadolint ignore=SC2086
-RUN if [ "${SLIMMING}x" != "truex" ]; then \
+RUN if [ "${SLIMMING}"x != "truex" ]; then \
       sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
       sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
       su  $GRID_USER -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
@@ -161,40 +177,47 @@ RUN if [ "${SLIMMING}x" != "truex" ]; then \
       :; \
     fi
 
+RUN if [ "${SLIMMING}x" == 'truex' ]; then \
+      mkdir /u01 && \
+      :; \
+    fi
+
 RUN rm -f "${INSTALL_DIR}"/install/* && \
     sync
-
 
 #############################################
 # -------------------------------------------
 # Start new image for grid & database runtime
 # -------------------------------------------
 #############################################
+FROM rac-image-slim-${SLIMMING} AS final
 
-FROM base
-ARG SLIMMING
+# Setup Scripts
+COPY $FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
-COPY  --from=builder /u01 /u01
+COPY $RUN_FILE $INITSH $ADDNODE $ADDNODE_RSP $SETUPSSH $FUNCTIONS $CONFIGGRID $GRID_INSTALL_RSP $DBCA_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $STOP_FILE $CHECK_DB_FILE $REMOTE_LISTENER_FILE $SETUPGRIDENV $DELNODE $RESET_FAILED_UNITS $RESET_OS_PASSWORD $MULTI_NODE_INSTALL $SET_CRONTAB $SCRIPT_DIR/
 
-# hadolint ignore=SC2086
-RUN if [ "${SLIMMING}x" != "truex" ]; then \
-       $INVENTORY/orainstRoot.sh && \
-       $GRID_HOME/root.sh && \
-       $DB_HOME/root.sh && \
+COPY --from=builder /u01 /u01
+
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+       "$INVENTORY"/orainstRoot.sh && \
+       "$GRID_HOME"/root.sh && \
+       "$DB_HOME"/root.sh && \
+       chmod 666 "${SCRIPT_DIR}"/*.rsp && \
        :; \
     fi && \
-    $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
+    "$INSTALL_DIR"/install/"$FIXUP_PREQ_FILE" && \
     sync && \
-    chmod 755 $SCRIPT_DIR/*.sh && \
-    chmod 666 $SCRIPT_DIR/*.rsp && \
+    chmod 755 "$SCRIPT_DIR"/*.sh && \
+    chmod 666 "$SCRIPT_DIR"/*.rsp && \
     echo "nohup $SCRIPT_DIR/runOracle.sh &" >> /etc/rc.local && \
     rm -f /etc/rc.d/init.d/oracle-database-preinstall-19c-firstboot && \
     chmod +x /etc/rc.d/rc.local  && \
-    cp $SCRIPT_DIR/$INITSH /usr/bin/$INITSH && \
-    chmod 755 /usr/bin/$INITSH && \
+    cp "$SCRIPT_DIR"/"$INITSH" /usr/bin/"$INITSH" && \
+    chmod 755 /usr/bin/"$INITSH" && \
     rm -f /etc/sysctl.d/99-oracle-database-preinstall-19c-sysctl.conf && \
     rm -f /etc/sysctl.d/99-sysctl.conf && \
-    rm -f $INSTALL_DIR/install/* && \
+    rm -f "$INSTALL_DIR"/install/* && \
     sync
 
 USER ${USER}

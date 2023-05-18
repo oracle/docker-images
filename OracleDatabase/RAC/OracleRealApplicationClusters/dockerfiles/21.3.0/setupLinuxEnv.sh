@@ -15,6 +15,5 @@
 # ------------------------------------------------------------
 mkdir /asmdisks && \
 mkdir /responsefiles  && \
-chmod ug+x /opt/scripts/startup/*.sh && \
-yum -y install systemd oracle-database-preinstall-21c vim passwd expect  sudo passwd openssl openssh-server hostname && \
+yum -y install systemd oracle-database-preinstall-21c vim crontabs passwd expect  sudo passwd openssl openssh-server hostname && \
 yum clean all 
