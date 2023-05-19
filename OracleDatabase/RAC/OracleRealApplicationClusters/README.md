@@ -116,6 +116,7 @@ Complete each of the following prerequisites:
         - `34339952`
         - `32869666`
 
+<!-- markdownlint-disable-next-line MD036 -->
 **Notes**
 
 - If you are planning to use a `DNSServer` container for SCAN IPs, VIPs resolution, then configure the DNSServer. For testing purposes only, use the Oracle `DNSServer` image to deploy a container providing DNS resolutions. Please check [OracleDNSServer](../OracleDNSServer/README.md) for details.
@@ -150,6 +151,7 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
 
 - After the `21.3.0` Oracle RAC container image is built, start building a patched image with the download 21.7 RU and one-offs. To build the patch image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
 
+<!-- markdownlint-disable-next-line MD036 -->
 **Notes**
 
 - The resulting images will contain the Oracle Grid Infrastructure binaries and Oracle RAC Database binaries.
@@ -193,7 +195,7 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
    # mkdir /opt/containers/
    # touch /opt/containers/rac_host_file
    ```
-
+<!-- markdownlint-disable-next-line MD036 -->
 **Notes**
 
 - To run Oracle RAC using Podman on multiple hosts, refer [Podman macvlan network](https://docs.podman.io/en/latest/markdown/podman-network-create.1.html).
@@ -675,6 +677,12 @@ Now create the Oracle RAC container using the image. For the details of environm
     --cap-add=NET_ADMIN \
     --cap-add=AUDIT_WRITE \
     --cap-add=AUDIT_CONTROL \
+    --memory 16G \
+    --memory-swap 32G \
+    --sysctl kernel.shmall=2097152 \
+    --sysctl "kernel.sem=250 32000 100 128" \
+    --sysctl kernel.shmmax=8589934592 \
+    --sysctl kernel.shmmni=4096 \  
     -e DNS_SERVERS="172.16.1.25" \
     -e NODE_VIP=172.16.1.160 \
     -e VIP_HOSTNAME=racnode1-vip  \
@@ -722,6 +730,12 @@ Now create the Oracle RAC container using the image.  You can use the following 
     --cap-add=NET_ADMIN \
     --cap-add=AUDIT_WRITE \
     --cap-add=AUDIT_CONTROL \
+    --memory 16G \
+    --memory-swap 32G \
+    --sysctl kernel.shmall=2097152 \
+    --sysctl "kernel.sem=250 32000 100 128" \
+    --sysctl kernel.shmmax=8589934592 \
+    --sysctl kernel.shmmni=4096 \    
     -e DNS_SERVERS="172.16.1.25" \
     -e NODE_VIP=172.16.1.160  \
     -e VIP_HOSTNAME=racnode1-vip  \
@@ -801,7 +815,6 @@ Refer the [Section 3:  Network and Password Management](#section-3--network-and-
 
 To understand the details of environment variable, refer For the details of environment variables [Section 8](#section-8-environment-variables-for-the-second-and-subsequent-nodes).
 
-
 Reset the password on the existing Oracle RAC node for SSH setup between an existing node in the cluster and the new node. Password must be the same on all the nodes for the `grid` and `oracle` users. Execute the following command on an existing node of the cluster.
 
 ```bash
@@ -836,6 +849,12 @@ To create additional nodes, use the following command:
   --cap-add=NET_ADMIN \
   --cap-add=AUDIT_CONTROL \
   --cap-add=AUDIT_WRITE \
+  --memory 16G \
+  --memory-swap 32G \
+  --sysctl kernel.shmall=2097152 \
+  --sysctl "kernel.sem=250 32000 100 128" \
+  --sysctl kernel.shmmax=8589934592 \
+  --sysctl kernel.shmmni=4096 \
   -e DNS_SERVERS="172.16.1.25" \
   -e EXISTING_CLS_NODES=racnode1 \
   -e NODE_VIP=172.16.1.161  \
@@ -887,6 +906,12 @@ For example:
   --cap-add=NET_ADMIN \
   --cap-add=AUDIT_WRITE \
   --cap-add=AUDIT_CONTROL \
+  --memory 16G \
+  --memory-swap 32G \
+  --sysctl kernel.shmall=2097152 \
+  --sysctl "kernel.sem=250 32000 100 128" \
+  --sysctl kernel.shmmax=8589934592 \
+  --sysctl kernel.shmmni=4096 \  
   -e DNS_SERVERS="172.16.1.25" \
   -e EXISTING_CLS_NODES=racnode1 \
   -e NODE_VIP=172.16.1.161  \
