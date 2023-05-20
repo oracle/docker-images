@@ -146,7 +146,8 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true "$DOCKEROPS" "$PROXY_SETTINGS" -t "$IMAGE_NAME" -f Dockerfile . || {
+# shellcheck disable=SC2086
+docker build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} -t ${IMAGE_NAME} -f Dockerfile . || {
   echo "There was an error building the image."
   exit 1
 }
