@@ -12,7 +12,7 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
 cd "$1" || exit
-if [ -d ""$1"/newpackage" ]
+if [ -d "$1"/newpackage ]
 then
     echo "There is already an upgrade in progress. Skipping this."
     exit
