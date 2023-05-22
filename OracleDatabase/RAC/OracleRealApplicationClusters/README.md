@@ -145,8 +145,9 @@ If you are planing to deploy Oracle RAC container image on Podman, skip to the s
 If you are planing to deploy Oracle RAC container image on Docker, skip to the section [Oracle RAC Container Image for Docker](#oracle-rac-container-image-for-docker).
 
  ```bash
- ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8' -i
- #  for example ./buildContainerImage.sh -v 21.3.0
+ ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 SLIMMING=true|false' -i
+
+ #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 SLIMMING=false'
  ```
 
 - After the `21.3.0` Oracle RAC container image is built, start building a patched image with the download 21.7 RU and one-offs. To build the patch image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
@@ -596,7 +597,7 @@ You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en
   
 - You can check the details on [Oracle Linux and Unbreakable Enterprise Kernel (UEK) Releases](https://blogs.oracle.com/scoter/post/oracle-linux-and-unbreakable-enterprise-kernel-uek-releases)
 
-- You do not need to execute step 2 in this section to create and enable `Podman-rac-cgroup.service`
+- You do not need to execute step 2 in this section to create and enable `Podman-rac-cgroup.service` when we are running OEL8 with UEKR7.
 
 **IMPORTANT:** Completing prerequisite steps is a requirement for successful configuration.
 
@@ -699,6 +700,10 @@ Now create the Oracle RAC container using the image. For the details of environm
     -e CMAN_IP=172.16.1.15 \
     -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
     -e PWD_KEY=pwd.key \
+    -e ORACLE_SID=ORCLCDB \
+   -e RESET_FAILED_SYSTEMD="true" \
+   -e DEFAULT_GATEWAY="172.16.1.1" \
+   -e TMPDIR=/var/tmp \
     --restart=always \
     --systemd=always \
     --cpu-rt-runtime=95000 \
@@ -752,6 +757,10 @@ Now create the Oracle RAC container using the image.  You can use the following 
     -e CMAN_IP=172.16.1.15 \
     -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
     -e PWD_KEY=pwd.key \
+    -e ORACLE_SID=ORCLCDB \
+    -e RESET_FAILED_SYSTEMD="true" \
+    -e DEFAULT_GATEWAY="172.16.1.1" \
+    -e TMPDIR=/var/tmp \
     --restart=always \
     --systemd=always \
     --cpu-rt-runtime=95000 \
@@ -871,6 +880,9 @@ To create additional nodes, use the following command:
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
   -e PWD_KEY=pwd.key \
+  -e RESET_FAILED_SYSTEMD="true" \
+  -e DEFAULT_GATEWAY="172.16.1.1" \
+  -e TMPDIR=/var/tmp \
   --systemd=always \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
@@ -928,6 +940,9 @@ For example:
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
   -e PWD_KEY=pwd.key \
+  -e RESET_FAILED_SYSTEMD="true" \
+  -e DEFAULT_GATEWAY="172.16.1.1" \
+  -e TMPDIR=/var/tmp \
   --systemd=always \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \

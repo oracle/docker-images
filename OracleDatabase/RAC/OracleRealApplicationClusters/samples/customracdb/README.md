@@ -386,6 +386,7 @@ podman create -t -i \
   --hostname racnodep1 \
   --volume /boot:/boot:ro \
   --tmpfs /dev/shm:rw,exec,size=4G \
+  --dns 172.16.1.25 \
   --volume /opt/containers/rac_host_file:/etc/hosts  \
   --volume /opt/containers/common_scripts:/common_scripts \
   --volume /opt/.secrets:/run/secrets:ro \
@@ -441,6 +442,8 @@ podman create -t -i \
   --tmpfs /dev/shm:rw,exec,size=4G \
   --volume /opt/containers/rac_host_file:/etc/hosts  \
   --volume /opt/.secrets1:/run/secrets:ro \
+   --volume /opt/containers/common_scripts:/common_scripts \
+   --dns 172.16.1.25 \
   --dns-search "example.info" \
   --device=/dev/xvde:/dev/asm_disk1 \
   --privileged=false \
@@ -471,6 +474,9 @@ podman create -t -i \
   -e CRS_NODES="racnode1,racnode2" \
   -e GRID_RESPONSE_FILE="grid_sample.rsp" \
   -e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
+  -e TMPDIR=/var/tmp \
+  -e RESET_FAILED_SYSTEMD="true" \
+  -e ORACLE_SID=ORCLCDB \
   --restart=always \
   --systemd=always \
   --ulimit rtprio=99  \
