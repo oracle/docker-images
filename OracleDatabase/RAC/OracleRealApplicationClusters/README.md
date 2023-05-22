@@ -116,6 +116,7 @@ Complete each of the following prerequisites:
         - `34339952`
         - `32869666`
 
+<!-- markdownlint-disable-next-line MD036 -->
 **Notes**
 
 - If you are planning to use a `DNSServer` container for SCAN IPs, VIPs resolution, then configure the DNSServer. For testing purposes only, use the Oracle `DNSServer` image to deploy a container providing DNS resolutions. Please check [OracleDNSServer](../OracleDNSServer/README.md) for details.
@@ -144,12 +145,14 @@ If you are planing to deploy Oracle RAC container image on Podman, skip to the s
 If you are planing to deploy Oracle RAC container image on Docker, skip to the section [Oracle RAC Container Image for Docker](#oracle-rac-container-image-for-docker).
 
  ```bash
- ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8' -i
- #  for example ./buildContainerImage.sh -v 21.3.0
+ ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 SLIMMING=true|false' -i
+
+ #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 SLIMMING=false'
  ```
 
 - After the `21.3.0` Oracle RAC container image is built, start building a patched image with the download 21.7 RU and one-offs. To build the patch image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
 
+<!-- markdownlint-disable-next-line MD036 -->
 **Notes**
 
 - The resulting images will contain the Oracle Grid Infrastructure binaries and Oracle RAC Database binaries.
@@ -193,7 +196,7 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
    # mkdir /opt/containers/
    # touch /opt/containers/rac_host_file
    ```
-
+<!-- markdownlint-disable-next-line MD036 -->
 **Notes**
 
 - To run Oracle RAC using Podman on multiple hosts, refer [Podman macvlan network](https://docs.podman.io/en/latest/markdown/podman-network-create.1.html).
@@ -594,7 +597,7 @@ You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en
   
 - You can check the details on [Oracle Linux and Unbreakable Enterprise Kernel (UEK) Releases](https://blogs.oracle.com/scoter/post/oracle-linux-and-unbreakable-enterprise-kernel-uek-releases)
 
-- You do not need to execute step 2 in this section to create and enable `Podman-rac-cgroup.service`
+- You do not need to execute step 2 in this section to create and enable `Podman-rac-cgroup.service` when we are running Oracle Linux 8 with Unbreakable Enterprise Kernel R7.
 
 **IMPORTANT:** Completing prerequisite steps is a requirement for successful configuration.
 
@@ -675,6 +678,12 @@ Now create the Oracle RAC container using the image. For the details of environm
     --cap-add=NET_ADMIN \
     --cap-add=AUDIT_WRITE \
     --cap-add=AUDIT_CONTROL \
+    --memory 16G \
+    --memory-swap 32G \
+    --sysctl kernel.shmall=2097152 \
+    --sysctl "kernel.sem=250 32000 100 128" \
+    --sysctl kernel.shmmax=8589934592 \
+    --sysctl kernel.shmmni=4096 \  
     -e DNS_SERVERS="172.16.1.25" \
     -e NODE_VIP=172.16.1.160 \
     -e VIP_HOSTNAME=racnode1-vip  \
@@ -691,6 +700,10 @@ Now create the Oracle RAC container using the image. For the details of environm
     -e CMAN_IP=172.16.1.15 \
     -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
     -e PWD_KEY=pwd.key \
+    -e ORACLE_SID=ORCLCDB \
+   -e RESET_FAILED_SYSTEMD="true" \
+   -e DEFAULT_GATEWAY="172.16.1.1" \
+   -e TMPDIR=/var/tmp \
     --restart=always \
     --systemd=always \
     --cpu-rt-runtime=95000 \
@@ -722,6 +735,12 @@ Now create the Oracle RAC container using the image.  You can use the following 
     --cap-add=NET_ADMIN \
     --cap-add=AUDIT_WRITE \
     --cap-add=AUDIT_CONTROL \
+    --memory 16G \
+    --memory-swap 32G \
+    --sysctl kernel.shmall=2097152 \
+    --sysctl "kernel.sem=250 32000 100 128" \
+    --sysctl kernel.shmmax=8589934592 \
+    --sysctl kernel.shmmni=4096 \    
     -e DNS_SERVERS="172.16.1.25" \
     -e NODE_VIP=172.16.1.160  \
     -e VIP_HOSTNAME=racnode1-vip  \
@@ -738,6 +757,10 @@ Now create the Oracle RAC container using the image.  You can use the following 
     -e CMAN_IP=172.16.1.15 \
     -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
     -e PWD_KEY=pwd.key \
+    -e ORACLE_SID=ORCLCDB \
+    -e RESET_FAILED_SYSTEMD="true" \
+    -e DEFAULT_GATEWAY="172.16.1.1" \
+    -e TMPDIR=/var/tmp \
     --restart=always \
     --systemd=always \
     --cpu-rt-runtime=95000 \
@@ -801,7 +824,6 @@ Refer the [Section 3:  Network and Password Management](#section-3--network-and-
 
 To understand the details of environment variable, refer For the details of environment variables [Section 8](#section-8-environment-variables-for-the-second-and-subsequent-nodes).
 
-
 Reset the password on the existing Oracle RAC node for SSH setup between an existing node in the cluster and the new node. Password must be the same on all the nodes for the `grid` and `oracle` users. Execute the following command on an existing node of the cluster.
 
 ```bash
@@ -836,6 +858,12 @@ To create additional nodes, use the following command:
   --cap-add=NET_ADMIN \
   --cap-add=AUDIT_CONTROL \
   --cap-add=AUDIT_WRITE \
+  --memory 16G \
+  --memory-swap 32G \
+  --sysctl kernel.shmall=2097152 \
+  --sysctl "kernel.sem=250 32000 100 128" \
+  --sysctl kernel.shmmax=8589934592 \
+  --sysctl kernel.shmmni=4096 \
   -e DNS_SERVERS="172.16.1.25" \
   -e EXISTING_CLS_NODES=racnode1 \
   -e NODE_VIP=172.16.1.161  \
@@ -852,6 +880,9 @@ To create additional nodes, use the following command:
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
   -e PWD_KEY=pwd.key \
+  -e RESET_FAILED_SYSTEMD="true" \
+  -e DEFAULT_GATEWAY="172.16.1.1" \
+  -e TMPDIR=/var/tmp \
   --systemd=always \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
@@ -887,6 +918,12 @@ For example:
   --cap-add=NET_ADMIN \
   --cap-add=AUDIT_WRITE \
   --cap-add=AUDIT_CONTROL \
+  --memory 16G \
+  --memory-swap 32G \
+  --sysctl kernel.shmall=2097152 \
+  --sysctl "kernel.sem=250 32000 100 128" \
+  --sysctl kernel.shmmax=8589934592 \
+  --sysctl kernel.shmmni=4096 \  
   -e DNS_SERVERS="172.16.1.25" \
   -e EXISTING_CLS_NODES=racnode1 \
   -e NODE_VIP=172.16.1.161  \
@@ -903,6 +940,9 @@ For example:
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
   -e PWD_KEY=pwd.key \
+  -e RESET_FAILED_SYSTEMD="true" \
+  -e DEFAULT_GATEWAY="172.16.1.1" \
+  -e TMPDIR=/var/tmp \
   --systemd=always \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
