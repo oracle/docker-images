@@ -356,6 +356,7 @@ validate()
 }
 
 info(){
+  agentImageVersion=$(echo "$imageName" | cut -d':' -f2)
   echo "Agent Id           : $AI"
 
   if [ "$containerRuntime" == "docker" ]
@@ -367,7 +368,7 @@ info(){
   fi
   echo "Install Location   : $PV"
   echo "Agent Package used : $AP"
-  echo "Agent Version      : $agentVersion"
+  echo "Agent Version      : $agentImageVersion"
   echo "Logs directory     : "${PV}"/data/logs"
 
 }
@@ -566,9 +567,9 @@ enableAutoUpgrade(){
       echo "INFO: Proxy URL is "${proxyUri}""
       if [[ "${proxyUri}" != "" ]]
        then
-         echo "0 0 * * * export HTTPS_PROXY="${proxyUri}";https_proxy="${proxyUri}";export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
+         echo "*/30 * * * * export HTTPS_PROXY="${proxyUri}";https_proxy="${proxyUri}";export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
        else
-         echo "0 0 * * * export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
+         echo "*/30 * * * * export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
       fi
       crontab autoupdatercron
       rm autoupdatercron
@@ -582,6 +583,26 @@ enableAutoUpgrade(){
            echo "INFO: Successfully Set Up Auto Upgrade of the agent with id "${AI}"."
       fi
   fi
+}
+
+autoUpgrade(){
+  if [ -f "$ENV_FILE_TEMP" ]
+     then
+       source "$ENV_FILE_TEMP"
+  fi
+
+  if [ -f "$ENV_FILE" ]
+     then
+       source "$ENV_FILE"
+  fi
+  validateEmpty "${PV}" "Volume" "--volume"
+  detectJDKversion
+
+  if [ $errorFlag == "true" ]; then
+             echo "ABORTED: Please rectify the errors. Use -h/--help option for help"
+             exit 1
+  fi
+  curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}"
 }
 
 disableAutoUpgrade(){
@@ -780,6 +801,8 @@ upgrade()
   start
   echo "INFO: Test Upgrade is successful"
   kill
+  #remove the crontab from upgrade
+  crontab -l | grep -v "${AI}"  | crontab -
 
   #change to the installed directory, this sets the ENV_FILE to the older config
   createDir "${installedPV}"
@@ -789,6 +812,8 @@ upgrade()
   createBackup
   echo "INFO: Removing the old agent"
   kill
+  #removing the cron of older agent
+  crontab -l | grep -v "${AI}"  | crontab -
 
   echo "INFO: Copying new wallet"
   cp -rf "${PV}/upgrade/data/wallet" "${PV}"/data
@@ -815,6 +840,34 @@ upgrade()
   cp -f "$ENV_FILE_TEMP" "$ENV_FILE"
 
   start
+  crontab -l > autoupdatercron
+  alreadyExists=$(grep -rnw autoupdatercron -e "${AI}")
+  if [[ "" != "${alreadyExists}" ]]
+     then
+      echo "INFO: Auto Upgrade for the agent with id "${AI}" is already setup. "
+     else
+      echo "INFO: Setting Up Auto Upgrade of the agent with id "${AI}". "
+      javaPath=$(which java | rev | cut -c6- | rev)
+      proxyUri=$(cat "$PV"/data/conf/config.properties | grep "idoConfig.httpClientConfiguration.proxyUri" | cut -d'=' -f2)
+      echo "INFO: Proxy URL is "${proxyUri}""
+      if [[ "${proxyUri}" != "" ]]
+       then
+         echo "*/30 * * * * export HTTPS_PROXY="${proxyUri}";https_proxy="${proxyUri}";export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
+       else
+         echo "*/30 * * * * export PATH="${javaPath}":$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o "${PV}"/agentAutoUpdate.sh;sh "${PV}"/agentAutoUpdate.sh "${PV}" "${AI}" " >> autoupdatercron
+      fi
+      crontab autoupdatercron
+      rm autoupdatercron
+      currentCron=$(crontab -l)
+      if [ "" == "${currentCron}" ]
+         then
+           echo "INFO: No cron exists. Please try again."
+         else
+           echo "INFO: List of the current cron tabs"
+           echo "${currentCron}"
+           echo "INFO: Successfully Set Up Auto Upgrade of the agent with id "${AI}"."
+      fi
+  fi
   rm -rf "${PV}/upgrade"
 }
 
@@ -991,7 +1044,8 @@ while [[ $# -gt 0 ]]; do
         "-c"|"--config" ) configOverride=$(cd "$(dirname "$1")"; pwd -P)/$(basename "$1"); shift;;
         "-nc"|"--newcontainer" ) newContainer=true;;
         "-i"|"--install"           ) install; exit 1;;
-        "-up"|"--upgrade"           )  upgrade; exit 1;;
+        "-up"|"--upgrade"           )  autoUpgrade; exit 1;;
+        "-iu"|"--internalUpgrade"           )  upgrade; exit 1;;
         "-st"|"--stop"           ) stop; exit 1;;
         "-rs"|"--restart"           ) restart; exit 1;;
         "-u"|"--uninstall"           ) uninstall; exit 1;;

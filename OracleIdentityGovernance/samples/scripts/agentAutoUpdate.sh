@@ -12,6 +12,13 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
 cd "$1" || exit
+if [ -d "$1"/newpackage ]
+then
+    echo "There is already an upgrade in progress. Skipping this."
+    exit
+else
+    echo "Starting Auto upgrade Process..."
+fi
 mkdir -p newpackage || true
 
 cd newpackage || exit
@@ -64,11 +71,11 @@ if [  "$?" = "0" ]
              curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentManagement.sh -o agentManagement.sh;  \
              sh agentManagement.sh --volume "$1" --agentpackage agent-package.zip \
              --config "$1"/data/conf/config.properties \
-             --upgrade
+             --internalUpgrade
            else
              curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentManagement.sh -o agentManagement.sh;  \
              sh agentManagement.sh --volume "$1" --agentpackage agent-package.zip \
-             --upgrade
+             --internalUpgrade
      fi
 fi
 
