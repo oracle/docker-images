@@ -31,23 +31,26 @@ read Databasename
 # ---- Create Log file ----
 echo SPOOL OIM_APPS_HRMS_TARGET.log >> run.sql
 
-read -p "Would you like to create new user for connector operations [y/n]:" NEWUSER
-if [[ $NEWUSER =~ ^(yes|y) ]] 
+echo "Would you like to create new user for connector operations [y/n]: \c"
+read NEWUSER
+
+if echo "$NEWUSER" | grep -qE "^(yes|y)"
 then
  NEWUSER=Y 
- read -p "Are you running this script with EBS target 12.1.x [y/n]:" EBS121X
+ echo "Are you running this script with EBS target 12.1.x [y/n]: \c"
+ read EBS121X
 
- if [[ $EBS121X =~ ^(yes|y) ]] 
+ if echo "$EBS121X" | grep -qE "^(yes|y)"
  then
   EBS121X=Y 
- elif [[ $EBS121X =~ ^(no|n) ]] 
+ elif echo "$EBS121X" | grep -qE "^(no|n)"
  then
   EBS121X=N 
  else
    echo "Invalid Option"
    exit
  fi
-elif [[ $NEWUSER =~ ^(no|n) ]] 
+elif echo "$NEWUSER" | grep -qE "^(no|n)"
 then
  NEWUSER=N 
 else
@@ -65,7 +68,7 @@ echo @OIM_TYPES.pck >> run.sql
 echo @OIM_FND_GLOBAL.pck >> run.sql
 echo @OIM_EBSHRMS_SCHEMA_PKG.pck >> run.sql
 echo @OIM_EMPLOYEE_WRAPPER.pck >> run.sql
-if [[ $NEWUSER =~ ^(Y) ]] 
+if echo "$NEWUSER" | grep -qE "^(Y)"
 then
 echo @OIM_EMPLOYEE_ADDRESS_WRAPPER.pck >> run.sql
 else
@@ -75,7 +78,7 @@ fi
 echo prompt Disconnecting APPS >> run.sql
 echo disconn >> run.sql
 # --- If user wants to create new user ---------------
-if [[ $NEWUSER =~ ^(Y) ]] 
+if echo "$NEWUSER" | grep -qE "^(Y)"
 then
 # ---- Connecting to DataBase through System user----
 echo prompt Connecting to $Systemuser >> run.sql
@@ -84,7 +87,7 @@ echo connect $Systemuser@$Databasename >>run.sql
 # ---- Creating the DataBase User---
 echo @OimHRMSUser.sql >> run.sql
 
-if [[ $EBS121X =~ ^(Y) ]] 
+if echo "$EBS121X" | grep -qE "^(Y)"
 then
  # ---- Executing grant on procedures/packages and Tables----
  echo @OimHRMSUserGrants.sql >> run.sql
@@ -95,7 +98,7 @@ echo @OimHRMSUserAcl.sql >> run.sql
 echo prompt Disconnecting $Systemuser >> run.sql
 echo disconn >> run.sql
 
-if [[ $EBS121X =~ ^(N) ]] 
+if echo "$EBS121X" | grep -qE "^(N)"
 then
  # ---- Connecting to DataBase through APPS user----
  echo prompt Connecting to APPS >> run.sql
