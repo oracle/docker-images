@@ -84,7 +84,7 @@ function configure_netservices() {
    echo "WALLET_LOCATION = (SOURCE = (METHOD = FILE)(METHOD_DATA = (DIRECTORY = $WALLET_LOC)))
 SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/{sqlnet.ora,listener.ora} > /dev/null
 
-  # Disable OOB in sqlnet.ora
+  # Disable OOB in sqlnet.ora of db wallet
    echo "DISABLE_OOB=ON" >> "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/sqlnet.ora
 
    # Add listener for TCPS
