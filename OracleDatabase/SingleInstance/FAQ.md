@@ -116,8 +116,8 @@ This error occurs when the database cannot find a data file (used for tablespace
 ### Setup Database
 Below are the steps to run Oracle Database 23c Free on Apple ARM M1 machine
 
-1. Install Podman Lima on Mac (Reference: https://github.com/lima-vm/lima)
-    
+1. Install [Podman Lima](https://github.com/lima-vm/lima) on Mac
+
     ```$ brew install podman lima```
 
 2. Start a lima instance (vm)
@@ -138,7 +138,7 @@ Below are the steps to run Oracle Database 23c Free on Apple ARM M1 machine
 
     ```$ podman run -e ORACLE_PWD=<password> -d -P container-registry.oracle.com/database/free:latest```
 
-6. Check whether the database came up healthy. 
+6. Check whether the database came up healthy.
 
     ```sh
     $ podman ps -a
@@ -148,8 +148,8 @@ Below are the steps to run Oracle Database 23c Free on Apple ARM M1 machine
 
 ### Connect
 We need to get a Java based SQL client on Apple M1 due to unavailability of native SQL client.
-1. Install Java from https://download.oracle.com/java/20/latest/jdk-20_macos-aarch64_bin.dmg
-2. Install SQLcl from https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip
+1. Install [Java](https://download.oracle.com/java/20/latest/jdk-20_macos-aarch64_bin.dmg)
+2. Install [SQLcl](https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip)
 3. Test the connection:
 
     ```$ sqlcl/bin/sql sys/<ORACLE_PWD>@localhost:<PORT>/FREE as sysdba```
