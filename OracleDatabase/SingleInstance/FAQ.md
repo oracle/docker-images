@@ -110,3 +110,50 @@ Refer to the [module documentation](https://python-oracledb.readthedocs.io/en/la
 ## ORA-01157: cannot identify/lock data file
 
 This error occurs when the database cannot find a data file (used for tablespaces) that was previously present. This is most likely because the data file has been located outside the volume in a previous container and was hence not persisted. Ensure that when you add tablespaces and/or data files that they are located within the volume location, i.e. $ORACLE_BASE/oradata/$ORACLE_SID, (e.g. `/opt/oracle/oradata/XE`).
+
+## Running Oracle Database 23c Free on Apple based ARM M1 chip
+
+### Setup Database
+Below are the steps to run Oracle Database 23c Free on Apple ARM M1 machine
+
+1. Install Podman Lima on Mac (Reference: https://github.com/lima-vm/lima)
+    
+    ```$ brew install podman lima```
+
+2. Start a lima instance (vm)
+
+    ```$ limactl start --name podman-amd64  --set='.arch = "x86_64" | .memory = "10GiB"'  template://podman```
+
+    Wait for the VM to boot up. Above command may error out if the VM takes a while to boot up. Ultimately it comes up fine.
+
+3. Set the address or hostname of the lima container runtime
+
+    ```$ export CONTAINER_HOST=unix://Users/$USER/.lima/podman-amd64/sock/podman.sock```
+
+4. Pull the oracle database 23c free image
+
+    ```$ podman pull container-registry.oracle.com/database/free:latest```
+
+5. Run the container with the pulled image
+
+    ```$ podman run -e ORACLE_PWD=<password> -d -P container-registry.oracle.com/database/free:latest```
+
+6. Check whether the database came up healthy. 
+
+    ```sh
+    $ podman ps -a
+        CONTAINER ID  IMAGE                                               COMMAND               CREATED        STATUS                  PORTS                    NAMES 
+        825dcbd3e822  container-registry.oracle.com/database/free:latest  /bin/sh -c exec $...  4 minutes ago  Up 4 minutes (healthy)  0.0.0.0:42439->1521/tcp  hopeful_yalow
+    ```
+
+### Connect
+We need to get a Java based SQL client on Apple M1 due to unavailability of native SQL client.
+1. Install Java from https://download.oracle.com/java/20/latest/jdk-20_macos-aarch64_bin.dmg
+2. Install SQLcl from https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip
+3. Test the connection:
+
+    ```$ sqlcl/bin/sql sys/<ORACLE_PWD>@localhost:<PORT>/FREE as sysdba```
+
+    ORACLE_PWD is the password given in step 5 above
+
+    PORT is 42439 in above e.g. (Step 6 output of "podman ps -a").
