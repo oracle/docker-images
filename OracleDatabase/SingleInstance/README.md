@@ -240,12 +240,12 @@ To configure  wallet password, please use the following command:
         docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
 
 * The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files.
-* To easily connect with the database via TCPS users can use EZCONNECT (easy connect naming method) as shown:
+* To connect to the database via TCPS use EZCONNECT (easy connect naming method) as shown:
 
         sqlplus sys@tcps://<host>:<port>/<service_name>?wallet_location=<wallet_directory> as sysdba
         # service_name could be ORACLE_SID or ORACLE_PDB
         # port is mapped port of host where container is running
-        # wallet_directory is where client walllet is copied to.
+        # wallet_directory is where client wallet is copied to.
 
 * The certificate used with TCPS has validity for 1 year. After the certificate is expired, you can renew it using the following command:
 
