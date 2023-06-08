@@ -236,16 +236,26 @@ To configure  wallet password, please use the following command:
 * The container port at which TCPS listener is listening (i.e. 2484) should be exposed and mapped to some host port using `-p <host-port>:2484` option in the `docker run` command. It is required to connect to the database from the outside world using TCPS.
 * When TCPS is enabled, a self-signed certificate will be created. For users' convenience, a client-side wallet is prepared and stored at the location `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect to the database. The sample command to download the client wallet is as follows:
 
-        # ORACLE_SID default value is ORCLCDB
-        docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
+    # ORACLE_SID default value is ORCLCDB
+    docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination wallet directory>
 
 * The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files.
-* To connect to the database via TCPS use EZCONNECT (easy connect naming method) as shown:
+* To connect to the database via TCPS you can use SQL*Plus as shown:
 
-        sqlplus sys@tcps://<host>:<port>/<service_name>?wallet_location=<wallet_directory> as sysdba
-        # service_name could be ORACLE_SID or ORACLE_PDB
+        sqlplus sys@tcps://<host>:<port>/<service_name>?wallet_location=<destination wallet directory> as sysdba
         # port is mapped port of host where container is running
-        # wallet_directory is where client wallet is copied to.
+        # destination wallet directory is where client wallet is copied to.
+
+    OR
+
+* Edit the `HOST` and `PORT` fields in the tnsnames.ora accordingly.
+* After tnsnames.ora is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
+
+        # Connecting Enterprise Edition
+        sqlplus sys@ORCLCDB as sysdba
+        # Connecting Express Edition
+        sqlplus sys@XE as sysdba
+
 
 * The certificate used with TCPS has validity for 1 year. After the certificate is expired, you can renew it using the following command:
 
