@@ -115,10 +115,10 @@ Refer to the [module documentation](https://python-oracledb.readthedocs.io/en/la
 
 This error occurs when the database cannot find a data file (used for tablespaces) that was previously present. This is most likely because the data file has been located outside the volume in a previous container and was hence not persisted. Ensure that when you add tablespaces and/or data files that they are located within the volume location, i.e. $ORACLE_BASE/oradata/$ORACLE_SID, (e.g. `/opt/oracle/oradata/XE`).
 
-## Running Oracle Database 23c Free on Apple based ARM M1 chip
+## Running Oracle Database 23c Free on Apple Silicon (ARM) chip
 
 ### Setup Database
-Below are the steps to run Oracle Database 23c Free on Apple ARM M1 machine
+Below are the steps to run Oracle Database 23c Free on Apple Silicon (ARM) machine
 
 1. Install [Podman Lima](https://github.com/lima-vm/lima) on Mac
 
@@ -171,8 +171,26 @@ Below are the steps to run Oracle Database 23c Free on Apple ARM M1 machine
 
 2. Test the connection:
 
-    ```$HOME/Downloads/instantclient_19_8/sqlplus sys/<ORACLE_PWD>@localhost:<PORT>/FREE as sysdba```
+   ```$HOME/Downloads/instantclient_19_8/sqlplus sys@localhost:<PORT>/FREE as sysdba```
 
-    ORACLE_PWD is the password given in step 5 above
+   ```$HOME/Downloads/instantclient_19_8/sqlplus system@localhost:<PORT>/FREE```
+
+   ```$HOME/Downloads/instantclient_19_8/sqlplus pdbadmin@localhost:<PORT>/FREEPDB1```
 
     PORT is 42439 in above e.g. (Step 6 output of "podman ps -a").
+
+Alternative (Using SQLcl):
+
+1. Install [Java](https://download.oracle.com/java/20/latest/jdk-20_macos-aarch64_bin.dmg)
+
+2. Install [SQLcl](https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip)
+
+3. Test the connection:
+
+   ```sqlcl/bin/sql sys@localhost:<PORT>/FREE as sysdba```
+
+   ```sqlcl/bin/sql system@localhost:<PORT>/FREE```
+
+   ```sqlcl/bin/sql pdbadmin@localhost:<PORT>/FREEPDB1```
+
+   PORT is 42439 in above e.g. (Step 6 output of "podman ps -a").
