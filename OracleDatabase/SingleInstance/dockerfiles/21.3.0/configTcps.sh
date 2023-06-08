@@ -121,7 +121,7 @@ function disable_tcps() {
 ################## MAIN ###################
 ###########################################
 
-ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
+export ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
 # Export ORACLE_PDB value
 if [ "$ORACLE_SID" == "XE" ]; then
   export ORACLE_PDB="XEPDB1"
@@ -130,8 +130,6 @@ else
 fi
 ORACLE_PDB=${ORACLE_PDB^^}
 
-# Export ORACLE_SID value
-export ORACLE_SID=${ORACLE_SID}
 
 
 # Oracle wallet location which stores the certificate
