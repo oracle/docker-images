@@ -98,6 +98,9 @@ SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$OR
 function reconfigure_listener() {
   lsnrctl stop
   lsnrctl start
+
+  # To quickly register a service
+  echo 'alter system register;' | sqlplus -s / as sysdba
 }
 
 # Function for disabling the tcps and restore the previous Oracle Net configuration
@@ -123,6 +126,9 @@ ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
 # Export ORACLE_PDB value
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 ORACLE_PDB=${ORACLE_PDB^^}
+
+# Export ORACLE_SID value
+export ORACLE_SID=${ORACLE_SID}
 
 # Oracle wallet location which stores the certificate
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
@@ -173,8 +179,12 @@ EOF
 
 echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
+if [ -n "${HOSTNAME}" ]; then
+        DN="CN=${HOSTNAME}"
+fi
+
 # Create a self-signed certificate using orapki utility; VALIDITY: 365 days
-orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=localhost" -keysize 2048 -self_signed -validity 365 <<EOF
+orapki wallet add -wallet "${WALLET_LOC}" -dn "${DN}" -keysize 2048 -self_signed -validity 365 <<EOF
 ${WALLET_PWD}
 EOF
 
@@ -182,7 +192,7 @@ EOF
 reconfigure_listener
 
 # Export the cert to be updated in the client wallet
-orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=localhost" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+orapki wallet export -wallet "${WALLET_LOC}" -dn "${DN}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
 EOF
  
