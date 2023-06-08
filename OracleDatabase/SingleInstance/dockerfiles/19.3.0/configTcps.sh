@@ -122,7 +122,9 @@ function disable_tcps() {
 ################## MAIN ###################
 ###########################################
 
-export ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
+export ORACLE_SID
+ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
+
 # Export ORACLE_PDB value
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 ORACLE_PDB=${ORACLE_PDB^^}
