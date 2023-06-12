@@ -1,6 +1,14 @@
-REM --------------------------------------------------------------------
-REM    Script file for Creating a service account in EBS target for HRMS
-REM ---------------------------------------------------------------------
+
+REM Copyright (c) 2023 Oracle and/or its affiliates.
+REM 
+REM Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+REM 
+REM  Author: OIG Development
+REM 
+REM  Description: Script file for Creating a service account in EBS target For HRMS
+REM 
+REM 
+REM  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
 echo off
 if exist run.sql del run.sql

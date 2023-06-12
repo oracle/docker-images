@@ -1,3 +1,13 @@
+-- Copyright (c) 2023 Oracle and/or its affiliates.
+-- 
+-- Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+-- 
+--  Author: OIG Development
+-- 
+--  Description: Script file for CREATING synonym of procedures/packages and Tables required for HRMS
+--  
+--  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
 create or replace PACKAGE OIM_EMPLOYEE_ADDRESS_WRAPPER AUTHID CURRENT_USER AS
 
     PROCEDURE create_person_address_api (person_id IN number ,primary_flag IN varchar2 ,style IN varchar2 ,date_from IN date ,date_to IN date ,address_type IN varchar2 ,address_line1 IN varchar2 ,address_line2 IN varchar2 ,address_line3 IN varchar2 ,town_or_city IN varchar2 ,region_1 IN varchar2 ,region_2 IN varchar2 ,region_3 IN varchar2 ,postal_code IN varchar2 ,country IN varchar2 ,telephone_number_1 IN varchar2 ,telephone_number_2 IN varchar2 ,telephone_number_3 IN varchar2 ,address_id OUT number ,object_version_number OUT number );

@@ -1,7 +1,16 @@
 #!/bin/sh
-# --------------------------------------------------------------------
-#    Script file for Creating a service account in EBS target For HRMS
-# --------------------------------------------------------------------
+#
+# Copyright (c) 2023 Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+# Author: OIG Development
+#
+# Description: Script file for Creating a service account in EBS target For HRMS
+#
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
 
 if [ -f run.sql ]
 then

@@ -1,3 +1,13 @@
+-- Copyright (c) 2023 Oracle and/or its affiliates.
+-- 
+-- Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+-- 
+--  Author: OIG Development
+-- 
+--  Description: Script file for CREATING synonym of procedures/packages and Tables required for HRMS
+--  
+--  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
 create or replace package OIM_FND_GLOBAL is
 
 -- Public function and procedure declarations

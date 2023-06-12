@@ -1,3 +1,13 @@
+-- Copyright (c) 2023 Oracle and/or its affiliates.
+-- 
+-- Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+-- 
+--  Author: OIG Development
+-- 
+--  Description: Script file for CREATING synonym of procedures/packages and Tables required for HRMS
+--  
+--  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
 create or replace PACKAGE OIM_EMPLOYEE_WRAPPER AS
 
  PROCEDURE create_person_api (hire_date IN date ,business_group_id IN number ,last_name IN varchar2 ,first_name IN varchar2 ,sex IN varchar2 ,person_type_id IN number ,
