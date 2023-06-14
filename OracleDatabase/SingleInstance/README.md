@@ -243,6 +243,7 @@ To configure  wallet password, please use the following command:
 * To connect to the database via TCPS you can use SQL*Plus as shown:
 
         sqlplus sys@tcps://<host>:<port>/<service_name>?wallet_location=<destination wallet directory> as sysdba
+        # Default value for host is localhost unless specified while running configTcps.sh
         # port is mapped port of host where container is running
         # destination wallet directory is where client wallet is copied to.
 
