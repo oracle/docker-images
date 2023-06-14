@@ -20,7 +20,7 @@ cp "$STAGING_HOME/scripts/watchdog.sh" "$BOOTSTRAP_HOME/scripts/"
 cp "$STAGING_HOME/scripts/common.sh" "$BOOTSTRAP_HOME/scripts/"
 cp "$STAGING_HOME/scripts/install_zip.sh" "$BOOTSTRAP_HOME/scripts/"
 cp "$STAGING_HOME/scripts/init-agent.sh" "$BOOTSTRAP_HOME/scripts/"
-chmod 544 "$BOOTSTRAP_HOME/scripts"/*
+chmod 744 "$BOOTSTRAP_HOME/scripts"/*
 
 cp "$STAGING_HOME/packages/oracle.mgmt_agent.zip" "$BOOTSTRAP_HOME/packages"
 
