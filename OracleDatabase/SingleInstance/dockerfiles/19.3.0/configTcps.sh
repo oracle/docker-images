@@ -179,12 +179,8 @@ EOF
 
 echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
-if [ -n "${HOSTNAME}" ]; then
-        DN="CN=${HOSTNAME}"
-fi
-
 # Create a self-signed certificate using orapki utility; VALIDITY: 365 days
-orapki wallet add -wallet "${WALLET_LOC}" -dn "${DN}" -keysize 2048 -self_signed -validity 365 <<EOF
+orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -keysize 2048 -self_signed -validity 365 <<EOF
 ${WALLET_PWD}
 EOF
 
@@ -192,7 +188,7 @@ EOF
 reconfigure_listener
 
 # Export the cert to be updated in the client wallet
-orapki wallet export -wallet "${WALLET_LOC}" -dn "${DN}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
 EOF
  
