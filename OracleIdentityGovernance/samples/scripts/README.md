@@ -1,10 +1,10 @@
 # Scripts for connectors
 
-### Oracle EBS HRMS
+## Oracle EBS HRMS
 
 Directory Oracle_EBS_HRMS contains script files for creating a service account in EBS target For HRMS
 
-### Oracle EBS UM
+## Oracle EBS UM
 
 Directory Oracle_EBS_UM contains script files for creating a service account in EBS target For UM
 
