@@ -218,17 +218,17 @@ To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=
 To enable TCPS connections after the database is created, please use the following sample command:
 
     # Creates Listener for TCPS at container port 2484
-    docker exec -it <container name> /opt/oracle/configTcps.sh
+    docker exec <container name> /opt/oracle/configTcps.sh
 
 Similarly, to disable TCPS connections for the database, please use the following command:
 
     # Disable TCPS in the database
-    docker exec -it <container name> /opt/oracle/configTcps.sh disable
+    docker exec <container name> /opt/oracle/configTcps.sh disable
 
 To configure  wallet password, please use the following command:
 
     # Setup TCPS for port 16002 and pass wallet password as argument
-    docker exec -it <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
+    docker exec <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
 
 **NOTE**:
 
@@ -237,10 +237,20 @@ To configure  wallet password, please use the following command:
 * When TCPS is enabled, a self-signed certificate will be created. For users' convenience, a client-side wallet is prepared and stored at the location `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect to the database. The sample command to download the client wallet is as follows:
 
         # ORACLE_SID default value is ORCLCDB
-        docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
+        docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination wallet directory>
 
-* The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files. You should edit the `HOST` and `PORT` fields accordingly in the `tnsnames.ora` before connecting using TCPS.
-* After `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL\*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
+* The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files.
+* To connect to the database via TCPS you can use SQL*Plus as shown:
+
+        sqlplus sys@tcps://<host>:<port>/<service_name>?wallet_location=<destination wallet directory> as sysdba
+        # Default value for host is localhost unless specified while running configTcps.sh
+        # port is mapped port of host where container is running
+        # destination wallet directory is where client wallet is copied to.
+
+    OR
+
+* Edit the `HOST` and `PORT` fields in the tnsnames.ora accordingly.
+* After tnsnames.ora is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
 
         # Connecting Enterprise Edition
         sqlplus sys@ORCLCDB as sysdba
@@ -249,7 +259,7 @@ To configure  wallet password, please use the following command:
 
 * The certificate used with TCPS has validity for 1 year. After the certificate is expired, you can renew it using the following command:
 
-        docker exec -it <container name> /opt/oracle/configTcps.sh
+        docker exec <container name> /opt/oracle/configTcps.sh
 
     After certificate renewal, the client wallet should be updated by downloading it again.
 * Supports Oracle Database XE version 21.3.0 onwards.

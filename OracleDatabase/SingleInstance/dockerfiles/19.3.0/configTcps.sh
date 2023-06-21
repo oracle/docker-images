@@ -84,6 +84,9 @@ function configure_netservices() {
    echo "WALLET_LOCATION = (SOURCE = (METHOD = FILE)(METHOD_DATA = (DIRECTORY = $WALLET_LOC)))
 SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/{sqlnet.ora,listener.ora} > /dev/null
 
+   # Disable OOB in sqlnet.ora of DB wallet
+   echo "DISABLE_OOB=ON" >> "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/sqlnet.ora
+   
    # Add listener for TCPS
    sed -i "/TCP/a\
 \ \ \ \ (ADDRESS = (PROTOCOL = TCPS)(HOST = 0.0.0.0)(PORT = ${TCPS_PORT}))
@@ -95,6 +98,9 @@ SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$OR
 function reconfigure_listener() {
   lsnrctl stop
   lsnrctl start
+
+  # To quickly register a service
+  echo 'alter system register;' | sqlplus -s / as sysdba
 }
 
 # Function for disabling the tcps and restore the previous Oracle Net configuration
@@ -116,10 +122,13 @@ function disable_tcps() {
 ################## MAIN ###################
 ###########################################
 
+export ORACLE_SID
 ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
+
 # Export ORACLE_PDB value
 export ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 ORACLE_PDB=${ORACLE_PDB^^}
+
 
 # Oracle wallet location which stores the certificate
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
@@ -171,7 +180,7 @@ EOF
 echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
 # Create a self-signed certificate using orapki utility; VALIDITY: 365 days
-orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=localhost" -keysize 2048 -self_signed -validity 365 <<EOF
+orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -keysize 2048 -self_signed -validity 365 <<EOF
 ${WALLET_PWD}
 EOF
 
@@ -179,7 +188,7 @@ EOF
 reconfigure_listener
 
 # Export the cert to be updated in the client wallet
-orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=localhost" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
 EOF
  
