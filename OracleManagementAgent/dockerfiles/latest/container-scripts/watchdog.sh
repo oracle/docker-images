@@ -158,13 +158,13 @@ function deploy_agent_initial_plugins()
     local java_exec
     java_exec=$(/bin/sh $MGMTAGENT_HOME/agent_inst/bin/javaPath.sh)
     log "Java executable path: [$java_exec]"
-    local java_cp="$MGMTAGENT_HOME/$current_version/jlib/agent-configure-*.jar"
+    local java_cp="$MGMTAGENT_HOME/$current_version/jlib"
     local java_class="oracle.polaris.configure.DeployPlugins"
     local jvm_args="-Djava.security.egd=file:///dev/./urandom"
     
     # plugin(s) must be deployed from agent_inst/bin
     pushd "$MGMTAGENT_HOME/agent_inst/bin"
-    $java_exec "$jvm_args" -cp "$java_cp" "$java_class" &
+    $java_exec "$jvm_args" -cp "$java_cp/"agent-configure-*.jar "$java_class" &
     log "$APPNAME plugin deployment outcome [status: $?]"
     popd
     return 0
