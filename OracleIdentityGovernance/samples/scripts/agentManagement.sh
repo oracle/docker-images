@@ -348,6 +348,7 @@ hasDockerPermissions()
 
 isWriteAccessOnVolume()
 {
+  # shellcheck disable=SC2012
   permissions=$(ls -ld "$PV" | awk '{print $1}')
   if [ "$permissions" != "drwxrwxr-x" ] && [ "$permissions" != "drwxrwxrwx" ] && [ "$permissions" != "drwxrwxr-x." ] && [ "$permissions" != "drwxrwxrwx." ]; then
     echo "ERROR: Volume does not have required permissions. Make sure to have 775"
