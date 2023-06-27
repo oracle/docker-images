@@ -45,6 +45,7 @@ createDir(){
   AGENTDIR="$absoluteVolumePath"/data/agent;
   METRICSDIR="$absoluteVolumePath"/data/metrics;
   BUNDLEDIR="$absoluteVolumePath"/data/bundle-home;
+  CUSTOMJARSDIR="$absoluteVolumePath"/data/customJars;
 
   if [ ! -d "$CONFDIR" ]
   then
@@ -80,6 +81,12 @@ createDir(){
   then
     echo "INFO: Creating bundle-home directory"
     mkdir -p  "$BUNDLEDIR";
+  fi
+
+  if [ ! -d "$CUSTOMJARSDIR" ]
+    then
+      echo "INFO: Creating custom driver jars directory"
+      mkdir -p  "$CUSTOMJARSDIR";
   fi
 
   if [ -d "$absoluteVolumePath"/data ]
