@@ -820,6 +820,15 @@ upgrade()
 
   #install the upgrade
   operation=upgrade
+  # Following copies the customJars from the install location to the upgrade directory
+  if [ -d "${installedPV}/data/customJars" ]
+   then
+     if [ "$(ls -A "${installedPV}/data/customJars")" ]
+        then
+          echo "INFO: Copying custom jars"
+          cp -rf "${installedPV}/data/customJars" "${PV}/upgrade/data"
+    fi
+  fi
   install
   #install also loads the image, so we can get the new image here
   newimage="${imageName}"
