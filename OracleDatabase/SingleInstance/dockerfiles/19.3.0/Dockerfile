@@ -20,7 +20,8 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim as base
+ARG BASE_IMAGE=oraclelinux:7-slim
+FROM ${BASE_IMAGE} as base
 
 # Labels
 # ------
