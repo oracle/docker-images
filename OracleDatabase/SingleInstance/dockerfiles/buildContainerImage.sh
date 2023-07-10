@@ -170,7 +170,7 @@ done
 checkContainerRuntime
 
 # Only 19c EE is supported on ARM64 platform
-if [ $(arch) == "aarch64" ] || [ $(arch) == "arm64" ]; then
+if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   BUILD_OPTS=("--build-arg" "BASE_IMAGE=oraclelinux:8" "${BUILD_OPTS[@]}")
   PLATFORM=".arm64"
   if { [ "${VERSION}" == "19.3.0" ] && [ "${ENTERPRISE}" -eq 1 ]; }; then
