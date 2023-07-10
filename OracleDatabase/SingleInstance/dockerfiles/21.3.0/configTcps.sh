@@ -30,6 +30,7 @@ ${WALLET_PWD}
 ${WALLET_PWD}
 EOF
 
+if [ "${CUSTOM_CERTS}" == false ]; then
     # Add the certificate
     orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert /tmp/"$(hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
@@ -37,6 +38,11 @@ EOF
 
     # Removing cert from /tmp location
     rm /tmp/"$(hostname)"-certificate.crt
+else
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert ${CLIENT_CERT_LOCATON} <<EOF
+${WALLET_PWD}
+EOF
+fi
 
     # Generate tnsnames.ora and sqlnet.ora for the consumption by the client
     echo "${ORACLE_SID}=
@@ -139,9 +145,23 @@ WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
 
 # Random wallet Password
 WALLET_PWD=$(openssl rand -hex 8)
+# Random pkcs12 file Password
+PKCS12_PWD=$(openssl rand -hex 8)
 
 # Client wallet location
 CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet/${ORACLE_SID}"
+
+# Client Cert location
+CLIENT_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/client/*.pem #Client1.pem
+
+# Server Cert location
+SERVER_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/server/*.pem #RootCA.pem
+
+# Client key location
+CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/client/*.key #Client1.key
+
+# Default CUSTOM_CERT value
+CUSTOM_CERTS=false
 
 # Disable TCPS control flow
 if [ "${1^^}" == "DISABLE" ]; then
@@ -151,15 +171,36 @@ elif [[ "$1" =~ ^[0-9]+$ ]]; then
   # If TCPS_PORT is not set in the environment, honor the TCPS_PORT passed as the positional argument
   TCPS_PORT=${TCPS_PORT:-"$1"}
   HOSTNAME="$2"
+    # Optional custom certs parameter
+  if [[ -n "$3" ]]; then
+      if [ "${3^^}" == "CUSTOM_CERTS" ]; then
+      CUSTOM_CERTS=true
+      fi
+  fi
+   # Optional wallet password
+  if [[ -n "$4" ]]; then
+      WALLET_PWD="$3"
+  fi
+   # Optional pkcs12 file Password
+  if [[ -n "$5" ]]; then
+      PKCS12_PWD="$5"
+  fi
+   
+else
+  HOSTNAME="$1"
+   # Optional custom certs parameter
+  if [[ -n "$2" ]]; then
+      if [ "${2^^}" == "CUSTOM_CERTS" ]; then
+      CUSTOM_CERTS=true
+      fi
+  fi
    # Optional wallet password
   if [[ -n "$3" ]]; then
       WALLET_PWD="$3"
   fi
-else
-  HOSTNAME="$1"
-  # Optional wallet password
-  if [[ -n "$2" ]]; then
-      WALLET_PWD="$2"
+   # Optional pkcs12 file Password
+  if [[ -n "$4" ]]; then
+      PKCS12_PWD="$4"
   fi
 fi
 
@@ -183,18 +224,36 @@ EOF
 
 echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 
-# Create a self-signed certificate using orapki utility; VALIDITY: 365 days
-orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -keysize 2048 -self_signed -validity 365 <<EOF
+if [ "${CUSTOM_CERTS}" == false ]; then
+    # Create a self-signed certificate using orapki utility; VALIDITY: 365 days
+    echo "Creating self-signed certs"
+    orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -keysize 2048 -self_signed -validity 365 <<EOF
 ${WALLET_PWD}
 EOF
+else
+    # creating pkcs12 file in case of custom certs
+    echo "Creating pkcs12 file"
+    openssl pkcs12 -export -in ${CLIENT_CERT_LOCATON}  -inkey ${CLIENT_KEY_LOCATON} -certfile ${SERVER_CERT_LOCATON} -out /tmp/"$(hostname)"-open.p12 -password pass:${PKCS12_PWD}
 
+    # Adding custom pkcs12 file in database server wallet
+    echo "Importing pkcs12 file in server wallet"
+    orapki wallet import_pkcs12 -wallet "${WALLET_LOC}"  -pkcs12file /tmp/"$(hostname)"-open.p12 <<EOF
+${WALLET_PWD}
+${PKCS12_PWD}
+EOF
+
+    # Removing pkcs12 file from /tmp location
+    rm /tmp/"$(hostname)"-open.p12
+fi
 # Reconfigure listener to enable TCPS (Reload wouldn't work here)
 reconfigure_listener
 
-# Export the cert to be updated in the client wallet
-orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+if [ "${CUSTOM_CERTS}" == false ]; then
+    # Export the cert to be updated in the client wallet
+    orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
 EOF
+fi
 
 # Update the client wallet
 setupClientWallet
