@@ -230,6 +230,24 @@ To configure  wallet password, please use the following command:
     # Setup TCPS for port 16002 and pass wallet password as argument
     docker exec <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
 
+To use custom certificates instead of self-signed cerificates:
+
+* Create a folder called 'certs', put your Certificate and Key files in this folder, the files needs to be named 'cert.crt', 'client.crt' and 'client.key'.
+
+    mkdir -p certs/{client,server}
+    cp client_cert_file.crt certs/client/client.crt
+    cp client_key_file.key certs/client/client.key
+    cp Root_cert_file.crt certs/server/cert.crt
+
+* If container is already running, use following commands to copy 'certs' directory into container
+   
+    docker cp /certs/ <container name>:/opt/oracle/oradata/
+    docker exec <container name> /opt/oracle/configTcps.sh
+
+
+otherwise, mount the 'cert' directory into container while running the container using '-v' option. 
+    
+
 **NOTE**:
 
 * Only database server authentication is supported (no mTLS).
