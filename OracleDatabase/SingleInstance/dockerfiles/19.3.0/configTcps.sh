@@ -158,6 +158,10 @@ CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/client/client.key #client.key
 # Default CUSTOM_CERT value
 CUSTOM_CERTS=false
 
+if [[ -f $CLIENT_CERT_LOCATON && -f $SERVER_CERT_LOCATON && -f $CLIENT_KEY_LOCATON ]]; then
+  CUSTOM_CERTS=true
+fi
+
 # Disable TCPS control flow
 if [ "${1^^}" == "DISABLE" ]; then
   disable_tcps
@@ -166,29 +170,6 @@ elif [[ "$1" =~ ^[0-9]+$ ]]; then
   # If TCPS_PORT is not set in the environment, honor the TCPS_PORT passed as the positional argument
   TCPS_PORT=${TCPS_PORT:-"$1"}
   HOSTNAME="$2"
-    # Optional custom certs parameter
-  if [[ -n "$3" ]]; then
-      if [ "${3^^}" == "CUSTOM_CERTS" ]; then
-      CUSTOM_CERTS=true
-      fi
-  fi
-   # Optional wallet password
-  if [[ -n "$4" ]]; then
-      WALLET_PWD="$3"
-  fi
-   # Optional pkcs12 file Password
-  if [[ -n "$5" ]]; then
-      PKCS12_PWD="$5"
-  fi
-   
-else
-  HOSTNAME="$1"
-   # Optional custom certs parameter
-  if [[ -n "$2" ]]; then
-      if [ "${2^^}" == "CUSTOM_CERTS" ]; then
-      CUSTOM_CERTS=true
-      fi
-  fi
    # Optional wallet password
   if [[ -n "$3" ]]; then
       WALLET_PWD="$3"
@@ -196,6 +177,17 @@ else
    # Optional pkcs12 file Password
   if [[ -n "$4" ]]; then
       PKCS12_PWD="$4"
+  fi
+   
+else
+  HOSTNAME="$1"
+   # Optional wallet password
+  if [[ -n "$2" ]]; then
+      WALLET_PWD="$2"
+  fi
+   # Optional pkcs12 file Password
+  if [[ -n "$3" ]]; then
+      PKCS12_PWD="$3"
   fi
 fi
 
