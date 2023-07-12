@@ -139,7 +139,6 @@ fi
 ORACLE_PDB=${ORACLE_PDB^^}
 
 
-
 # Oracle wallet location which stores the certificate
 WALLET_LOC="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/.tls-wallet"
 
@@ -152,13 +151,13 @@ PKCS12_PWD=$(openssl rand -hex 8)
 CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet/${ORACLE_SID}"
 
 # Client Cert location
-CLIENT_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/client/*.pem #Client1.pem
+CLIENT_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/client/client.crt #client.crt
 
 # Server Cert location
-SERVER_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/server/*.pem #RootCA.pem
+SERVER_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/server/cert.crt #cert.crt (RootCA Cert)
 
 # Client key location
-CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/client/*.key #Client1.key
+CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/client/client.key #client.key
 
 # Default CUSTOM_CERT value
 CUSTOM_CERTS=false
