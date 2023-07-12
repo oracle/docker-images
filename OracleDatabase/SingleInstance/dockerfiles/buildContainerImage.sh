@@ -40,7 +40,7 @@ EOF
 checksumPackages() {
   if hash md5sum 2>/dev/null; then
     echo "Checking if required packages are present and valid..."   
-    if ! md5sum -c "Checksum.${EDITION}"; then
+    if ! md5sum -c "Checksum.${EDITION}${PLATFORM}"; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder ${VERSION}."
       exit 1;
@@ -168,6 +168,18 @@ done
 
 # Check that we have a container runtime installed
 checkContainerRuntime
+
+# Only 19c EE is supported on ARM64 platform
+if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
+  BUILD_OPTS=("--build-arg" "BASE_IMAGE=oraclelinux:8" "${BUILD_OPTS[@]}")
+  PLATFORM=".arm64"
+  if { [ "${VERSION}" == "19.3.0" ] && [ "${ENTERPRISE}" -eq 1 ]; }; then
+    BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=LINUX.ARM64_1919000_db_home.zip" "${BUILD_OPTS[@]}")
+  else
+    echo "Currently only 19c enterprise edition is supported on ARM64 platform.";
+    exit 1;
+  fi;
+fi;
 
 # Which Edition should be used?
 if [ $((ENTERPRISE + STANDARD + EXPRESS + FREE)) -gt 1 ]; then
