@@ -134,7 +134,7 @@ fi
 # Github issue #711
 # Issue with hostname command. Resolution for /opt/oracle/runOracle.sh: line 135: hostname: command not found
 if cat /etc/hostname | grep -q "_"; then
-   echo "Error: The hostname must not contained any '_'".
+   echo "Error: The hostname must not contain any '_'".
    echo "Your current hostname is '$(cat /etc/hostname)'"
 fi;
 
