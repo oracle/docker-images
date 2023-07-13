@@ -132,9 +132,10 @@ fi
 
 # Check that hostname doesn't container any "_"
 # Github issue #711
-if hostname | grep -q "_"; then
-   echo "Error: The hostname must not container any '_'".
-   echo "Your current hostname is '$(hostname)'"
+# Issue with hostname command. Resolution for /opt/oracle/runOracle.sh: line 135: hostname: command not found
+if cat /etc/hostname | grep -q "_"; then
+   echo "Error: The hostname must not contained any '_'".
+   echo "Your current hostname is '$(cat /etc/hostname)'"
 fi;
 
 # Set SIGINT handler
