@@ -32,14 +32,14 @@ EOF
 
 if [ "${CUSTOM_CERTS}" == false ]; then
     # Add the certificate
-    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert "/tmp/$(hostname)-certificate.crt" <<EOF
 ${WALLET_PWD}
 EOF
 
     # Removing cert from /tmp location
     rm /tmp/"$(hostname)"-certificate.crt
 else
-    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert ${CLIENT_CERT_LOCATON} <<EOF
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert "${CLIENT_CERT_LOCATON}" <<EOF
 ${WALLET_PWD}
 EOF
 fi
@@ -224,7 +224,7 @@ EOF
 else
     # creating pkcs12 file in case of custom certs
     echo "Creating pkcs12 file"
-    openssl pkcs12 -export -in ${CLIENT_CERT_LOCATON}  -inkey ${CLIENT_KEY_LOCATON} -certfile ${SERVER_CERT_LOCATON} -out /tmp/"$(hostname)"-open.p12 -password pass:${PKCS12_PWD}
+    openssl pkcs12 -export -in "${CLIENT_CERT_LOCATON}"  -inkey "${CLIENT_KEY_LOCATON}" -certfile "${SERVER_CERT_LOCATON}" -out /tmp/"$(hostname)"-open.p12 -password pass:"${PKCS12_PWD}"
 
     # Adding custom pkcs12 file in database server wallet
     echo "Importing pkcs12 file in server wallet"

@@ -240,7 +240,7 @@ To use custom certificates instead of self-signed cerificates:
         cp Root_cert_file.crt certs/server/cert.crt
 
 * If container is already running, use following commands to copy `certs` directory into container
-   
+
         docker cp /certs/ <container name>:/opt/oracle/oradata/
         docker exec <container name> /opt/oracle/configTcps.sh
 
