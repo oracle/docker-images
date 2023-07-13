@@ -14,14 +14,7 @@ An example would be: `docker run ... -e TZ="Europe/Vienna" oracle/database:12.2.
 
 ## Can I run Oracle Database containers on Apple M1 (Arm) devices?
 
-Oracle Database does not support the Arm architecture and will not run on Apple M1 silicon. You will see errors during the build process:
-
-```plain
-error: `sed: can't read /etc/security/limits.d/oracle-database-preinstall-18c.conf: No such file or directory`
-```
-
-This is caused by the Oracle Linux base image which does work on Arm not being able to install the Oracle Database preinstall requirements
-which are not available for that architecture.
+Oracle Database 19c Enterprise Edition is now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder before running the buildContainerImage.sh script.
 
 ## checkSpace.sh: ERROR - There is not enough space available in the container
 

@@ -20,7 +20,9 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim as base
+ARG BASE_IMAGE=oraclelinux:7-slim
+# hadolint ignore=DL3006
+FROM ${BASE_IMAGE} as base
 
 # Labels
 # ------
@@ -107,9 +109,9 @@ COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_RSP $INSTALL_DB_BINARIES_FILE $
 
 # Install DB software binaries
 USER oracle
-RUN chmod ug+x $INSTALL_DIR/*.sh && \
+RUN chmod ug+x "$INSTALL_DIR"/*.sh && \
     sync && \
-    $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE $DB_EDITION
+    "$INSTALL_DIR"/"$INSTALL_DB_BINARIES_FILE" $DB_EDITION
 
 
 
@@ -125,17 +127,18 @@ USER oracle
 COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
 
 USER root
-RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh
+RUN "$ORACLE_BASE"/oraInventory/orainstRoot.sh && \
+    "$ORACLE_HOME"/root.sh
 
 USER oracle
 WORKDIR /home/oracle
 
 # Add a bashrc file to capitalize ORACLE_SID in the environment
+# hadolint ignore=SC2016
 RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
-CMD exec $ORACLE_BASE/$RUN_FILE
+CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]

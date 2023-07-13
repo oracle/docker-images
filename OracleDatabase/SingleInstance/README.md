@@ -23,6 +23,9 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 **IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 23c FREE) and put them into the `dockerfiles/<version>` folder.
 You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
+
+**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition is now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
+
 You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
