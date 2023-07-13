@@ -31,12 +31,12 @@ ${WALLET_PWD}
 EOF
 
     # Add the certificate
-    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert /tmp/"$(cat /etc/hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
 EOF
 
     # Removing cert from /tmp location
-    rm /tmp/"$(hostname)"-certificate.crt
+    rm /tmp/"$(cat /etc/hostname)"-certificate.crt
 
     # Generate tnsnames.ora and sqlnet.ora for the consumption by the client
     echo "${ORACLE_SID}=
@@ -188,7 +188,7 @@ EOF
 reconfigure_listener
 
 # Export the cert to be updated in the client wallet
-orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -cert /tmp/"$(cat /etc/hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
 EOF
  
