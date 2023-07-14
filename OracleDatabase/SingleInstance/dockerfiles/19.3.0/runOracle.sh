@@ -230,7 +230,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 . "$ORACLE_BASE/$RELINK_BINARY_FILE"
 
 # Check whether database already exists
-if [ -f "$ORACLE_BASE"/oradata/."${ORACLE_SID}${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
+if [ -f "$ORACLE_BASE/oradata/.${ORACLE_SID}${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
@@ -275,7 +275,7 @@ else
   if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
     # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
-    echo "$(date -Iseconds)" > "$ORACLE_BASE"/oradata/."${ORACLE_SID}${CHECKPOINT_FILE_EXTN}"
+    date -Iseconds > "$ORACLE_BASE"/oradata/."${ORACLE_SID}${CHECKPOINT_FILE_EXTN}"
   fi
 
   # Move database operational files to oradata
