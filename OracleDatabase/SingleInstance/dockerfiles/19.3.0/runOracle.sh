@@ -113,8 +113,8 @@ EOF
 
 # Only EE is supported for 19c on ARM64 platform
 if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
-  if [ "${ORACLE_EDITION}" != "enterprise" ]; then
-    echo "Currently only 19c enterprise edition is supported on ARM64 platform.";
+  if [ "${ORACLE_EDITION^^}" != "ENTERPRISE" ]; then
+    echo "${ORACLE_EDITION} edition is not supported on ARM64 platform.";
     exit 1;
   fi;
 fi;
