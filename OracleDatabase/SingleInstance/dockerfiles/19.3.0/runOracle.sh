@@ -111,6 +111,14 @@ EOF
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ###################################
 
+# Only EE is supported for 19c on ARM64 platform
+if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
+  if [ "${ORACLE_EDITION}" != "enterprise" ]; then
+    echo "Currently only 19c enterprise edition is supported on ARM64 platform.";
+    exit 1;
+  fi;
+fi;
+
 # Check whether container has enough memory
 if [[ -f /sys/fs/cgroup/cgroup.controllers ]]; then
    memory=$(cat /sys/fs/cgroup/memory.max)
