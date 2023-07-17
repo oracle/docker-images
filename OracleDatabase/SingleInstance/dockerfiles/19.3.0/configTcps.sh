@@ -149,16 +149,13 @@ CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet/${ORACLE_SID}"
 # Client Cert location
 CLIENT_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/client/client.crt #client.crt
 
-# Server Cert location
-SERVER_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/server/cert.crt #cert.crt (RootCA Cert)
-
 # Client key location
 CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/client/client.key #client.key
 
 # Default CUSTOM_CERT value
 CUSTOM_CERTS=false
 
-if [[ -f $CLIENT_CERT_LOCATON && -f $SERVER_CERT_LOCATON && -f $CLIENT_KEY_LOCATON ]]; then
+if [[ -f $CLIENT_CERT_LOCATON && -f $CLIENT_KEY_LOCATON ]]; then
   CUSTOM_CERTS=true
 fi
 
@@ -220,7 +217,7 @@ EOF
 else
     # creating pkcs12 file in case of custom certs
     echo "Creating pkcs12 file"
-    openssl pkcs12 -export -in "${CLIENT_CERT_LOCATON}"  -inkey "${CLIENT_KEY_LOCATON}" -certfile "${SERVER_CERT_LOCATON}" -out /tmp/"$(hostname)"-open.p12 -password pass:"${PKCS12_PWD}"
+    openssl pkcs12 -export -in "${CLIENT_CERT_LOCATON}"  -inkey "${CLIENT_KEY_LOCATON}" -out /tmp/"$(hostname)"-open.p12 -password pass:"${PKCS12_PWD}"
 
     # Adding custom pkcs12 file in database server wallet
     echo "Importing pkcs12 file in server wallet"
