@@ -25,8 +25,7 @@ FROM oraclelinux:8
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-
-ENV JAVA_URL=https://download.java.net/java/GA/jdk20.0.1/b4887098932d415489976708ad6d1a4b/9/GPL \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk20.0.2/6e380f22cbe7469fa75fb448bd903d8e/9/GPL \
 	JAVA_HOME=/usr/java/jdk-20 \
 	LANG=en_US.UTF-8
 	
