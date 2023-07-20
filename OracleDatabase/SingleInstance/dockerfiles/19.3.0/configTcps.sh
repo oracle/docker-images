@@ -171,20 +171,12 @@ elif [[ "$1" =~ ^[0-9]+$ ]]; then
   if [[ -n "$3" ]]; then
       WALLET_PWD="$3"
   fi
-   # Optional pkcs12 file Password
-  if [[ -n "$4" ]]; then
-      PKCS12_PWD="$4"
-  fi
    
 else
   HOSTNAME="$1"
    # Optional wallet password
   if [[ -n "$2" ]]; then
       WALLET_PWD="$2"
-  fi
-   # Optional pkcs12 file Password
-  if [[ -n "$3" ]]; then
-      PKCS12_PWD="$3"
   fi
 fi
 
