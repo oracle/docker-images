@@ -235,14 +235,14 @@ To configure  wallet password, please use the following command:
 
 To use custom certificates instead of self-signed cerificates:
 
-* Create a folder called `certs`, put your Certificate and Key files in this folder, the files needs to be named `client.crt` and `client.key`.
+* Create a folder called `certs`, put your Certificate and Key files in this folder, the files needs to be named `cert.crt` and `key.key`.
 
-        mkdir -p certs/client/
-        cp client_cert_file.crt certs/client/client.crt
-        cp client_key_file.key certs/client/client.key
+        mkdir -p certs/
+        cp cert_file.crt certs/cert.crt
+        cp key_file.key certs/key.key
 
-* Place this folder `certs` in host directory which you have mounted at /opt/oracle/oradata/ in the container. Now, enabling tcps while running container will use this for tcps connection.
-* If container is already running, use following commands to copy `certs` directory into mounted host directory and then run confiTcps.sh script as shown.
+* Place this folder `certs` in host directory which is mounted at /opt/oracle/oradata/ in the container. Now, enabling tcps while running container will use these certs for tcps connection.
+* If container is already running, use following commands to copy `certs` directory into mounted host directory and then run configTcps.sh script as shown.
 
         cp /certs/ <host directory mounted in container>
         docker exec <container name> /opt/oracle/configTcps.sh    
