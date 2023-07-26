@@ -154,7 +154,7 @@ CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet/${ORACLE_SID}"
 CLIENT_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/cert.crt # certificate file
 
 # Client key location
-CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/key.key # client key
+CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/client.key # client key
 
 # Default CUSTOM_CERT value
 CUSTOM_CERTS=false
