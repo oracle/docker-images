@@ -243,7 +243,7 @@ There are two ways to enable TCPS connections for the database:
 
         5. Run following command to set up tcps connection using these certificates
         
-                podman exec -it <container name> env TCPS_CERTS_LOCATION=<container certs location>  /opt/oracle/configTcps.sh
+                docker exec <container name> env TCPS_CERTS_LOCATION=<container certs location>  /opt/oracle/configTcps.sh
 
 To disable TCPS connections for the database, please use the following command:
 
