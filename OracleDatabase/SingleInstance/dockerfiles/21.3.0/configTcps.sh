@@ -150,17 +150,18 @@ PKCS12_PWD=$(openssl rand -hex 8)
 # Client wallet location
 CLIENT_WALLET_LOC="${ORACLE_BASE}/oradata/clientWallet/${ORACLE_SID}"
 
-# Client Cert location
-CLIENT_CERT_LOCATON="${ORACLE_BASE}"/oradata/certs/cert.crt # certificate file
-
-# Client key location
-CLIENT_KEY_LOCATON="${ORACLE_BASE}"/oradata/certs/client.key # client key
-
 # Default CUSTOM_CERT value
 CUSTOM_CERTS=false
 
-if [[ -f $CLIENT_CERT_LOCATON && -f $CLIENT_KEY_LOCATON ]]; then
+if [[ -z $TCPS_CERTS_LOCATION ]]; then
+  CUSTOM_CERTS=false
+else
   CUSTOM_CERTS=true
+  # Client Cert location
+  CLIENT_CERT_LOCATON="${TCPS_CERTS_LOCATION}"/cert.crt # certificate file
+
+  # Client key location
+  CLIENT_KEY_LOCATON="${TCPS_CERTS_LOCATION}"/client.key # client key
 fi
 
 # Disable TCPS control flow

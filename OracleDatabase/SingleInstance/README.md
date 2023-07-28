@@ -140,6 +140,9 @@ To run your Oracle Database image use the `docker run` command as follows:
        -e ENABLE_TCPS:
                       To enable TCPS connections for Oracle Database.
                       Supported by Oracle Database 19.3 onwards.
+       -e TCPS_CERTS_LOCATION:
+                      To provide location of user certificates in container to enable tcps connection
+                      Supported by Oracle Database 19.3 onwards.
        -v /opt/oracle/oradata
                       The data volume to use for the database.
                       Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
@@ -214,16 +217,34 @@ In case this parameter is set `true` and passed to `docker run` command while re
 There are two ways to enable TCPS connections for the database:
 
 1. Enable TCPS while creating the database.
+
+    * Using Self Signed certificates
+        * Use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
+    * Using your own certificates
+        * Use the `-e ENABLE_TCPS=true` and `-e TCPS_CERTS_LOCATION=<container location of certs>` option with the `docker run` command. Also mount a local host directory at `TCPS_CERTS_LOCATION` in container using `-v` option.
+        * Keep your Certificate and Key files in `cert.crt` and `client.key` respectively in this local host directory.
+        * `cert.cert` file needs to have Root/Intermediate certificate followed by client certificate at the end.
+            
 2. Enable TCPS after the database is created.
 
-To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
+    * Using Self Signed certificates
+        * docker exec <container name> /opt/oracle/configTcps.sh
+    * Using your own certificates
+        * Keep your Certificate and Key files in `cert.crt` and `client.key` respectively.
+        * `cert.cert` file needs to have Root/Intermediate certificate followed by client certificate at the end.
+        * Either place both files in a host directory mounted in container or directly copy both files in container.
+        * `TCPS_CERTS_LOCATION` is container directory where certs are copied or mounted at.
 
-To enable TCPS connections after the database is created, please use the following sample command:
+            docker cp cert.crt <container name>:<TCPS_CERTS_LOCATION>
+            docker cp client.key <container name>:<TCPS_CERTS_LOCATION>
+            or
+            cp {cert.crt,client.key} <local mounted directory>
 
-    # Creates Listener for TCPS at container port 2484
-    docker exec <container name> /opt/oracle/configTcps.sh
+        5. Run following command to set up tcps connection using these certificates
+        
+            podman exec -it <container name> env TCPS_CERTS_LOCATION=<container certs location>  /opt/oracle/configTcps.sh
 
-Similarly, to disable TCPS connections for the database, please use the following command:
+To disable TCPS connections for the database, please use the following command:
 
     # Disable TCPS in the database
     docker exec <container name> /opt/oracle/configTcps.sh disable
@@ -232,21 +253,6 @@ To configure  wallet password, please use the following command:
 
     # Setup TCPS for port 16002 and pass wallet password as argument
     docker exec <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
-
-To use custom certificates instead of self-signed cerificates:
-
-* Create a folder called `certs`, put your Certificate and Key files in this folder, the files needs to be named `cert.crt` and `client.key`.
-* `cert.cert` file needs to have Root/Intermediate certificate followed by client certificate at the end.
-
-        mkdir -p certs/
-        cp cert_file.crt certs/cert.crt
-        cp client_key_file.key certs/client.key
-
-* Place this folder `certs` in host directory which is mounted at /opt/oracle/oradata/ in the container. Now, enabling tcps while running container will use these certs for tcps connection.
-* If container is already running, use following commands to copy `certs` directory into mounted host directory and then run configTcps.sh script as shown.
-
-        cp /certs/ <host directory mounted in container>
-        docker exec <container name> /opt/oracle/configTcps.sh    
 
 **NOTE**:
 
