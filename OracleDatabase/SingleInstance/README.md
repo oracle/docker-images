@@ -220,7 +220,7 @@ There are two ways to enable TCPS connections for the database:
 
     * With Self Signed Certificates
         * Use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
-    * With User provided SSL Certifcates
+    * With User provided SSL Certificates
         * Use the `-e ENABLE_TCPS=true` and `-e TCPS_CERTS_LOCATION=<location of certs in container>` option with the `docker run` command. Also mount a local host directory (containing `cert.crt` and `client.key`) at `TCPS_CERTS_LOCATION` using `-v` option.
         * `cert.cert` is a certificate chain in the order of root, followed by intermediate and then client certificate.
             
@@ -230,7 +230,7 @@ There are two ways to enable TCPS connections for the database:
 
             docker exec <container name> /opt/oracle/configTcps.sh
 
-    * With User provided SSL Certifcates
+    * With User provided SSL Certificates
         * `cert.cert` is a certificate chain in the order of root, followed by intermediate and then client certificate.
         *  Copy your `cert.crt` and `client.key` files into the container at `TCPS_CERTS_LOCATION` using the following command
          
