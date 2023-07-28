@@ -223,7 +223,7 @@ There are two ways to enable TCPS connections for the database:
     * With User provided SSL Certificates
         * Use the `-e ENABLE_TCPS=true` and `-e TCPS_CERTS_LOCATION=<location of certs in container>` option with the `docker run` command. Also mount a local host directory (containing `cert.crt` and `client.key`) at `TCPS_CERTS_LOCATION` using `-v` option.
         * `cert.cert` is a certificate chain in the order of root, followed by intermediate and then client certificate.
-   
+
 2. Enable TCPS after the database is created.
 
     * With Self Signed Certificates
