@@ -228,6 +228,7 @@ There are two ways to enable TCPS connections for the database:
 2. Enable TCPS after the database is created.
 
     * Using Self Signed certificates
+
             docker exec <container name> /opt/oracle/configTcps.sh
     * Using your own certificates
         * Keep your Certificate and Key files in `cert.crt` and `client.key` respectively.
