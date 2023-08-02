@@ -151,7 +151,7 @@ if [ "${ORACLE_SID}" = "XE" ]; then
   export ORACLE_PWD=${ORACLE_PWD:-"$(openssl rand -hex 8)"}
   
   # Set character set
-  su -c "sed -i -e \"s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g\" /etc/sysconfig/\"$CONF_FILE\""
+  su -c "sed -i -e \"s|^CHARSET=.*$|CHARSET=$ORACLE_CHARACTERSET|g\" /etc/sysconfig/\"$CONF_FILE\""
 
   # Creating Database
   su -c "/etc/init.d/oracle-xe-21c configure << EOF
