@@ -79,7 +79,7 @@ RUN cd $INSTALL_DIR && \
     rm -rf $INSTALL_DIR && \
     $ORACLE_BASE/oraInventory/orainstRoot.sh && \
     $ORACLE_HOME/root.sh && \
-	echo 'export ORACLE_SID=XE' >> /home/oracle/.bashrc && \
+    echo 'export ORACLE_SID=XE' >> /home/oracle/.bashrc && \
     chown oracle.oinstall /home/oracle/.bashrc
 
 USER oracle
