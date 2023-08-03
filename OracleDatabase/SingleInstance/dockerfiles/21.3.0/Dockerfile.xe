@@ -60,8 +60,10 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 # -------------
 COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $INSTALL_DIR/
 
-RUN cd $INSTALL_DIR && \
-    mkdir -p $ORACLE_BASE && \
+WORKDIR $INSTALL_DIR
+
+# hadolint ignore=DL3003,DL3033,SC2035
+RUN mkdir -p $ORACLE_BASE && \
     mv $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $ORACLE_BASE/ && \
     chmod ug+x *.sh && \
     sync && \
@@ -79,7 +81,8 @@ RUN cd $INSTALL_DIR && \
     rm -rf $INSTALL_DIR && \
     $ORACLE_BASE/oraInventory/orainstRoot.sh && \
     $ORACLE_HOME/root.sh && \
-    echo 'export ORACLE_SID=XE' > .bashrc
+    echo 'export ORACLE_SID=XE' >> /home/oracle/.bashrc && \
+    chown oracle.oinstall /home/oracle/.bashrc
 
 USER oracle
 WORKDIR /home/oracle
@@ -87,4 +90,4 @@ WORKDIR /home/oracle
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
-CMD exec $ORACLE_BASE/$RUN_FILE
+CMD [ "/bin/bash", "-c", "$ORACLE_BASE/$RUN_FILE" ]

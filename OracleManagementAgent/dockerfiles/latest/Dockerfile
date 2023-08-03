@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -6,7 +6,7 @@
 # --------------------------
 # This is the Dockerfile for Oracle Management Agent
 #
-# Base image of this dockerfile is Oracle Linux 7 Slim docker image.
+# Base image of this dockerfile is Oracle Linux 8 Slim image.
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -25,7 +25,7 @@
 #		$ bash build.sh
 #
 
-FROM oraclelinux:7-slim
+FROM container-registry.oracle.com/os/oraclelinux:8-slim
 
 # Labels
 LABEL "provider"="Oracle"                                               \
@@ -33,9 +33,8 @@ LABEL "provider"="Oracle"                                               \
       "volume.data"="/opt/oracle"
 
 # Install packages to install and run Management Agent
-RUN set -eux; \
-    yum -y install \
-    java-1.8.0-openjdk-devel.x86_64 \
+RUN microdnf -y install \
+    java-1.8.0-openjdk \
     sudo \
     unzip \
     && rm -rf /var/cache/yum
@@ -45,15 +44,16 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL C
 
 # Copy container scripts to initialize the environment and start Management Agent
-COPY ./container-scripts/*.sh /opt/oracle-mgmtagent-bootstrap/scripts/
-RUN chmod 0544 /opt/oracle-mgmtagent-bootstrap/scripts/*.sh
+COPY ./container-scripts/*.sh /opt/oracle-mgmtagent-staging/scripts/
 
 # Copy user provided scripts
-COPY ./user-scripts/init-agent.sh /opt/oracle-mgmtagent-bootstrap/scripts/
-RUN chmod 0544 /opt/oracle-mgmtagent-bootstrap/scripts/init-agent.sh
+COPY ./user-scripts/init-agent.sh /opt/oracle-mgmtagent-staging/scripts/
 
 # Copy Management Agent Installer Zip bundle
-COPY ./oracle.mgmt_agent.zip /opt/oracle-mgmtagent-bootstrap/packages/
+COPY ./oracle.mgmt_agent.zip /opt/oracle-mgmtagent-staging/packages/
+
+# Set permissions
+RUN chmod -R 0755 /opt/oracle-mgmtagent-staging/
 
 # Set watchdog as the entrypoint script (PID-1) for the container
-ENTRYPOINT ["/opt/oracle-mgmtagent-bootstrap/scripts/watchdog.sh"]
+ENTRYPOINT ["/opt/oracle-mgmtagent-staging/scripts/initialize.sh"]

@@ -6,6 +6,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
+* Oracle Database 23c (23.2.0) Free
 * Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
@@ -20,8 +21,11 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE and 21c XE) and put them into the `dockerfiles/<version>` folder.
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 23c FREE) and put them into the `dockerfiles/<version>` folder.
 You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
+
+**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition is now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
+
 You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
@@ -33,19 +37,20 @@ Before you build the image make sure that you have provided the installation bin
     
     Parameters:
        -v: version to build
-           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0
+           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.2.0
        -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
        -x: creates image based on 'Express Edition'
+       -f: creates image based on Database 'Free'
        -i: ignores the MD5 checksums
        -o: passes on container build option
     
-    * select one edition only: -e, -s, or -x
+    * select one edition only: -e, -s, -x, or -f
     
     LICENSE UPL 1.0
     
-    Copyright (c) 2014,2021 Oracle and/or its affiliates.
+    Copyright (c) 2014,2023 Oracle and/or its affiliates.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
@@ -82,6 +87,7 @@ To run your Oracle Database image use the `docker run` command as follows:
 
     docker run --name <container name> \
     -p <host port>:1521 -p <host port>:5500 -p <host port>:2484 \
+    --ulimit nofile=1024:65536 --ulimit nproc=2047:16384 --ulimit stack=10485760:33554432 --ulimit memlock=3221225472 \
     -e ORACLE_SID=<your SID> \
     -e ORACLE_PDB=<your PDB name> \
     -e ORACLE_PWD=<your database passwords> \
@@ -100,6 +106,7 @@ To run your Oracle Database image use the `docker run` command as follows:
        --name:        The name of the container (default: auto generated).
        -p:            The port mapping of the host port to the container port.
                       The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 2484 (TCPS Listener Port if TCPS is enabled).
+       --ulimit:      Resource limits. Update according to Oracle Database documentation.
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
@@ -132,6 +139,9 @@ To run your Oracle Database image use the `docker run` command as follows:
                       Supported by Oracle Database 19.3 onwards.
        -e ENABLE_TCPS:
                       To enable TCPS connections for Oracle Database.
+                      Supported by Oracle Database 19.3 onwards.
+       -e TCPS_CERTS_LOCATION:
+                      Location of user provided SSL certificates for TCPS connection
                       Supported by Oracle Database 19.3 onwards.
        -v /opt/oracle/oradata
                       The data volume to use for the database.
@@ -207,19 +217,38 @@ In case this parameter is set `true` and passed to `docker run` command while re
 There are two ways to enable TCPS connections for the database:
 
 1. Enable TCPS while creating the database.
+
+    * With Self Signed Certificates
+        * Use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
+    * With User provided SSL Certificates
+        * Use the `-e ENABLE_TCPS=true` and `-e TCPS_CERTS_LOCATION=<location of certs in container>` option with the `docker run` command. Also mount a local host directory (containing `cert.crt` and `client.key`) at `TCPS_CERTS_LOCATION` using `-v` option.
+        * `cert.cert` is a certificate chain in the order of root, followed by intermediate and then client certificate.
+
 2. Enable TCPS after the database is created.
 
-To enable TCPS connections while creating the database, use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
+    * With Self Signed Certificates
 
-To enable TCPS connections after the database is created, please use the following sample command:
+            docker exec <container name> /opt/oracle/configTcps.sh
 
-    # Creates Listener for TCPS at container port 2484
-    docker exec -it <container name> /opt/oracle/configTcps.sh
+    * With User provided SSL Certificates
+        * `cert.cert` is a certificate chain in the order of root, followed by intermediate and then client certificate.
+        * Copy your `cert.crt` and `client.key` files into the container at `TCPS_CERTS_LOCATION` using the following command
 
-Similarly, to disable TCPS connections for the database, please use the following command:
+                docker cp cert.crt client.key <container name>:<TCPS_CERTS_LOCATION>
+
+        * Run following command to set up tcps connection using these certificates
+
+                docker exec <container name> env TCPS_CERTS_LOCATION=<location of certs in container>  /opt/oracle/configTcps.sh
+
+To disable TCPS connections for the database, please use the following command:
 
     # Disable TCPS in the database
-    docker exec -it <container name> /opt/oracle/configTcps.sh disable
+    docker exec <container name> /opt/oracle/configTcps.sh disable
+
+To configure  wallet password, please use the following command:
+
+    # Setup TCPS for port 16002 and pass wallet password as argument
+    docker exec <container name> /opt/oracle/configTcps.sh 16002 localhost <WALLET_PWD>
 
 **NOTE**:
 
@@ -228,10 +257,20 @@ Similarly, to disable TCPS connections for the database, please use the followin
 * When TCPS is enabled, a self-signed certificate will be created. For users' convenience, a client-side wallet is prepared and stored at the location `/opt/oracle/oradata/clientWallet/$ORACLE_SID`. You can use this client wallet along with SQL\*Plus to connect to the database. The sample command to download the client wallet is as follows:
 
         # ORACLE_SID default value is ORCLCDB
-        docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination directory>
+        docker cp <container name>:/opt/oracle/oradata/clientWallet/<ORACLE_SID> <destination wallet directory>
 
-* The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files. You should edit the `HOST` and `PORT` fields accordingly in the `tnsnames.ora` before connecting using TCPS.
-* After `tnsnames.ora` is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL\*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
+* The client wallet directory above will include wallet files, along with sample `sqlnet.ora` and `tnsnames.ora` files.
+* To connect to the database via TCPS you can use SQL*Plus as shown:
+
+        sqlplus sys@tcps://<host>:<port>/<service_name>?wallet_location=<destination wallet directory> as sysdba
+        # Default value for host is localhost unless specified while running configTcps.sh
+        # port is mapped port of host where container is running
+        # destination wallet directory is where client wallet is copied to.
+
+    OR
+
+* Edit the `HOST` and `PORT` fields in the tnsnames.ora accordingly.
+* After tnsnames.ora is modified, go inside the downloaded client wallet directory and set TNS_ADMIN for SQL*Plus by using the `export TNS_ADMIN=$(pwd)` command. Then users can connect via TCPS with, for example, the following commands:
 
         # Connecting Enterprise Edition
         sqlplus sys@ORCLCDB as sysdba
@@ -240,10 +279,52 @@ Similarly, to disable TCPS connections for the database, please use the followin
 
 * The certificate used with TCPS has validity for 1 year. After the certificate is expired, you can renew it using the following command:
 
-        docker exec -it <container name> /opt/oracle/configTcps.sh
+        docker exec <container name> /opt/oracle/configTcps.sh
 
     After certificate renewal, the client wallet should be updated by downloading it again.
 * Supports Oracle Database XE version 21.3.0 onwards.
+
+#### Running Oracle Database 23c FREE in a container
+
+To run your Oracle Database 23c FREE container image use the `docker run` command as follows:
+
+    podman run --name <container name> \
+    -p <host port>:1521 \
+    -e ORACLE_PWD=<your database passwords> \
+    -e ORACLE_CHARACTERSET=<your character set> \
+    -v [<host mount point>:]/opt/oracle/oradata \
+    oracle/database:23.2.0-free
+    
+    Parameters:
+       --name:        The name of the container (default: auto generated)
+       -p:            The port mapping of the host port to the container port.
+                      Two ports are exposed: 1521 (Oracle Listener), 5500 (EM Express)
+       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+       -e ORACLE_CHARACTERSET:
+                      The character set to use when creating the database (default: AL32UTF8)
+       -v /opt/oracle/oradata
+                      The data volume to use for the database.
+                      Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+                      If omitted the database will not be persisted over container recreation.
+       -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
+                      Optional: A volume with custom scripts to be run after database startup.
+                      For further details see the "Running scripts after setup and on startup" section below.
+       -v /opt/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
+                      Optional: A volume with custom scripts to be run after database setup.
+                      For further details see the "Running scripts after setup and on startup" section below.
+
+Once the container has been started and the database created you can connect to it just like to any other database:
+
+    sqlplus sys/<your password>@//localhost:1521/FREE as sysdba
+    sqlplus system/<your password>@//localhost:1521/FREE
+    sqlplus pdbadmin/<your password>@//localhost:1521/FREEPDB1
+
+On the first startup of the container a random password will be generated for the database if not provided. The password for those accounts can be changed via the `podman exec` command. **Note**, the container has to be running:
+
+    podman exec <container name> /opt/oracle/setPassword.sh <your password>
+
+**Important Note:**
+The ORACLE_SID for Oracle Database 23c FREE is always `FREE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the FREE build.
 
 #### Running Oracle Database 21c/18c Express Edition in a container
 

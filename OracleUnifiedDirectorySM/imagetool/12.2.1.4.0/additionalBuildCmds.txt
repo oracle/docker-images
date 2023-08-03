@@ -1,5 +1,5 @@
 [package-manager-packages]
-hostname
+libaio hostname perl
 
 [before-jdk-install]
 # Instructions/Commands to be executed Before JDK install

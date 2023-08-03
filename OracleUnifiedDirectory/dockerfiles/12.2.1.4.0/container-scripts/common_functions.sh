@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2023, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
@@ -8,7 +8,30 @@
 # Script for common functions which can be used while OUD instance setup/configuration.
 # It's assumed that setEnvVars.sh is already sourced before sourcing this script file.
 
+## Function to set Java properties
+#shellcheck disable=SC2154,SC2166
+
+updateJavaProps() {
+  echo "" >> ${OUD_INST_HOME}/config/java.properties
+  #     Disabling Enpoint Identification for selected CLIs to allow connecting to OUD Instance with any hostname
+  echo "dsconfig.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  echo "dsreplication.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  echo "uninstall.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  echo "status.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  echo "import-ldif.online.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  echo "manage-suffix.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  echo "ldapmodify.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  echo "ldapsearch.java-args=-client -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  if [[ $serverTuning == "jvm-default" ]];then
+  echo "start-ds.java-args=-server -Xms256m -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true" >> ${OUD_INST_HOME}/config/java.properties
+  else
+  echo "start-ds.java-args=$serverTuning" >> ${OUD_INST_HOME}/config/java.properties
+  fi
+  ${OUD_INST_HOME}/bin/dsjavaproperties
+}
+
 ## Function to restart OUD Instance
+
 restartOUD() {
   echo "[$(date)] - restartOUD - Stopping..." 2>&1 | tee -a ${oudInstanceConfigStatus}
   ${OUD_INST_HOME}/bin/stop-ds 2>&1 | tee -a ${stopDsCmdLogs}

@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# Copyright (c) 2022, Oracle and/or its affiliates.
+# Copyright (c) 2022, 2023, Oracle and/or its affiliates.
 #
 
 REPO_DIR="$(git rev-parse --show-toplevel)/"
@@ -23,7 +23,7 @@ checkContainerRuntime
 
 # Run the Super Linter container
 $CONTAINER_RUNTIME run --name super-linter --rm \
-  -e RUN_LOCAL=true \
+  -e RUN_LOCAL=true --platform linux/amd64 \
   -e FILTER_REGEX_INCLUDE="$FILTER_REGEX_INCLUDE" \
   --env-file "$REPO_DIR/.github/super-linter.env" \
   "${PROXY_SETTINGS[@]}" \

@@ -5,7 +5,7 @@
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for a patched Oracle Database 21c Release 3
-# 
+#
 # REQUIREMETNS FOR THIS IMAGE
 # ----------------------------------
 # The oracle/rac-database:21.3.0 image has to exist
@@ -13,14 +13,16 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put the downloaded patch(es) into the sub folders patch/0NN
-# Run: 
-#      $ docker build -f Dockerfile -t oracle/rac-database:21.3.0-<patch level> . 
+# Run:
+#      $ docker build -f Dockerfile -t oracle/rac-database:21.3.0-<patch level> .
 #
+# hadolint global ignore=DL3006,DL3025
 ARG BASE_RAC_IMAGE=oracle/database-rac:21.3.0
 
 # Pull base image
 # ---------------
-FROM $BASE_RAC_IMAGE
+FROM $BASE_RAC_IMAGE as builder
+ARG RAC_SLIM_IMAGE
 
 # Labels
 # ------
@@ -33,7 +35,6 @@ LABEL "provider"="Oracle"                                            \
       "port.oemexpress"="5500"
 
 # Argument to control removal of components not needed after db software installation
-ARG SLIMMING=false
 ARG PATCH_DIR="patches"
 ARG DB_EDITION="EE"
 ARG USER="root"
@@ -41,7 +42,7 @@ ARG WORKDIR="/rac-work-dir"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-USER root 
+USER $USER
 
 ENV PATCH_DIR=$PATCH_DIR \
     GRID_PATCH_FILE="applyGridPatches.sh" \
@@ -50,7 +51,7 @@ ENV PATCH_DIR=$PATCH_DIR \
     DB_USER="oracle" \
     USER=$USER \
     WORKDIR=$WORKDIR \
-    GRID_USER="grid"  
+    GRID_USER="grid"
 
 # Use second ENV so that variable get substituted
 ENV PATCH_INSTALL_DIR=/tmp/patches
@@ -74,11 +75,33 @@ USER oracle
 
 RUN $PATCH_INSTALL_DIR/$DB_PATCH_FILE $PATCH_INSTALL_DIR
 
-USER root
+USER $USER
 
-RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
+RUN "$PATCH_INSTALL_DIR"/"$FIXUP_PREQ_FILE"  && \
+    cp "$PATCH_INSTALL_DIR"/"$FIXUP_PREQ_FILE" "$SCRIPT_DIR"/"$FIXUP_PREQ_FILE" && \
     rm -rf /etc/oracle && \
-    rm -rf $PATCH_INSTALL_DIR
+    rm -rf "$PATCH_INSTALL_DIR"
+
+#############################################
+# -------------------------------------------
+# Start new stage for grid/DB with Slim image
+# -------------------------------------------
+#############################################
+
+FROM $RAC_SLIM_IMAGE as final
+ARG USER
+
+COPY --from=builder /u01 /u01
+COPY --from=builder $SCRIPT_DIR $SCRIPT_DIR
+
+RUN chmod 755 "$SCRIPT_DIR"/* && \
+    "$INVENTORY"/orainstRoot.sh && \
+    "$GRID_HOME"/root.sh && \
+    "$DB_HOME"/root.sh && \
+    "$SCRIPT_DIR"/"$FIXUP_PREQ_FILE" && \
+    cp "$SCRIPT_DIR"/"$INITSH" /usr/bin/"$INITSH" && \
+    chmod 755 /usr/bin/"$INITSH" && \
+    rm -f "$SCRIPT_DIR"/"$FIXUP_PREQ_FILE"
 
 USER $USER
 WORKDIR $WORKDIR

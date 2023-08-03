@@ -24,17 +24,17 @@ on:
     inputs:
       ol:
         description: List of ol versions to build
-        default: 'oraclelinux7, oraclelinux8'
+        default: 'oraclelinux7, oraclelinux8, oraclelinux9'
         required: false
       lang:
         description: List of languages to build
-        default: 'gcc-toolset, golang, nginx, nodejs, php, python, redis, ruby'
+        default: 'gcc-toolset, golang, nginx, nodejs, php, python, redis, ruby, haproxy'
         required: false
 
 # Default values for the builds triggered by the push event
 env:
-  ol: 'oraclelinux7, oraclelinux8'
-  lang: 'gcc-toolset, golang, nodejs, nginx, php, python, redis, ruby'
+  ol: 'oraclelinux7, oraclelinux8, oraclelinux9'
+  lang: 'gcc-toolset, golang, nodejs, nginx, php, python, redis, ruby, haproxy'
 
 jobs:
   prepare:
@@ -84,11 +84,12 @@ jobs:
                   pushd "${lang}" >/dev/null || exit 1
                   for dockerfile in */Dockerfile; do
                     tag=$(dirname "${dockerfile}")
-                    arch="linux/amd64"
-                    multi=0
-                    if [[ ! ${tag} =~ oracledb && ! ( ${ol} = "oraclelinux7" && ${lang} =~ ^(nodejs|php|ruby)$ ) ]]; then
-                      arch="${arch},linux/arm64"
+                    if [[ -f ${tag}/.skip-arm64 ]]; then
+                      multi=0
+                      arch="linux/amd64"
+                    else
                       multi=1
+                      arch="linux/amd64,linux/arm64"
                     fi
                     if [[ ${build_all} -eq 1 ]] || grep -q "${ol}/${lang}/${tag}" "${changes}"; then
                       echo "${ol};${lang};${tag};${arch};${multi}"
