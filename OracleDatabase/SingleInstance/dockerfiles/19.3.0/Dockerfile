@@ -5,7 +5,7 @@
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 19c
-# 
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) db_home.zip
@@ -15,8 +15,8 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/database:19.3.0-${EDITION} . 
+# Run:
+#      $ docker build -t oracle/database:19.3.0-${EDITION} .
 #
 # Pull base image
 # ---------------
@@ -37,7 +37,6 @@ LABEL "provider"="Oracle"                                               \
       "port.oemexpress"="5500"
 
 # Argument to control removal of components not needed after db software installation
-ARG SLIMMING=false
 ARG INSTALL_FILE_1="LINUX.X64_193000_db_home.zip"
 
 # Environment variables required for this build (do NOT change)
@@ -60,7 +59,6 @@ ENV ORACLE_BASE=/opt/oracle \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
     CONFIG_TCPS_FILE="configTcps.sh" \
-    SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
     ARCHIVELOG_DIR_NAME=archive_logs \
     # To clone a database referred by PRIMARY_DB_CONN_STR
@@ -122,9 +120,9 @@ RUN chmod ug+x "$INSTALL_DIR"/*.sh && \
 COPY --chown=oracle:dba $HOST_PATCH_DIR $PATCH_DB_BINARIES_FILE $PATCH_DIR/
 
 # Apply DB Patches
-RUN chmod ug+x $PATCH_DIR/*.sh && \
+RUN chmod ug+x "$PATCH_DIR"/*.sh && \
     sync && \
-    $PATCH_DIR/$PATCH_DB_BINARIES_FILE
+    "$PATCH_DIR"/"$PATCH_DB_BINARIES_FILE"
 
 
 
@@ -157,14 +155,14 @@ ENV DATAPATCH_FILE="runDatapatch.sh" \
 
 # Copy script to run datapatch
 COPY --chown=oracle:dba $DATAPATCH_FILE $ORACLE_BASE/scripts/extensions/startup/
-RUN chmod ug+x $ORACLE_BASE/scripts/extensions/startup/*.sh && sync
+RUN chmod ug+x "$ORACLE_BASE"/scripts/extensions/startup/*.sh && sync
 
 # Copy script to run lspatches
 COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup/
-RUN chmod ug+x $ORACLE_BASE/scripts/extensions/setup/*.sh && sync
+RUN chmod ug+x "$ORACLE_BASE"/scripts/extensions/setup/*.sh && sync
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
-# Define default command to start Oracle Database. 
+# Define default command to start Oracle Database.
 CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]

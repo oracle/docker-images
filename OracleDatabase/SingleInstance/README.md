@@ -63,10 +63,15 @@ You may extend the image with your own Dockerfile and create the users and table
 The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8.
 You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
 
-**NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension.
-So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
+#### Building container images with patches
 
-    ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
+**NOTE**: This section applies to 19c or higher. Earlier versions do not have patching extension support.
+
+You may apply patches when building the Oracle Database container. Multiple one-offs can be applied in a single build but only 1 RU can be applied.
+
+Download the release update and one-offs and place them under the `dockerfiles/<version>/patches/release_update` and `dockerfiles/<version>/patches/one_offs` directories respectively.
+
+Once the patches have been placed in the correct directories, use the `buildContainerImage.sh` script to build the image with patches applied.
 
 #### Building the container images using Podman
 

@@ -13,4 +13,4 @@
 LSPATCHES_FILE="${ORACLE_SID}.lspatches"
 LSPATCHES_FILE_PATH="${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/${LSPATCHES_FILE}"
 
-$ORACLE_HOME/OPatch/opatch lspatches > ${LSPATCHES_FILE_PATH};
+"$ORACLE_HOME"/OPatch/opatch lspatches > "${LSPATCHES_FILE_PATH}";
