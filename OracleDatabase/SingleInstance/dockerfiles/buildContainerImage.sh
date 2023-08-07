@@ -277,10 +277,12 @@ fi
 # ################## #
 
 if [ ${PATCHING} -eq 1 ]; then
+  # Setting SLIMMING to false to support patching
+  BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
+
   # BUILD THE BASE FOR REUSE (replace all environment variables)
   "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
-        --build-arg SLIMMING=false --target base \
+        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" --target base \
         -t "${IMAGE_NAME}-base" -f "${DOCKERFILE}" . || {
     echo ""
     echo "ERROR: Base for reuse was NOT successfully created."
