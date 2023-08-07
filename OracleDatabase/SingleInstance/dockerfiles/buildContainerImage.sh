@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-o] [container build option]
+Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-o] [container build option]
 Builds a container image for Oracle Database.
 
 Parameters:
@@ -24,6 +24,7 @@ Parameters:
    -x: creates image based on 'Express Edition'
    -f: creates images based on Database 'Free' 
    -i: ignores the MD5 checksums
+   -p: support patching
    -o: passes on container build option
 
 * select one edition only: -e, -s, -x, or -f
@@ -111,6 +112,7 @@ ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
 FREE=0
+PATCHING=0
 # Obtaining the latest version to build
 VERSION="$(find -- *.*.* -type d | tail -n 1)"
 SKIPMD5=0
@@ -125,7 +127,7 @@ if [ "$#" -eq 0 ]; then
   exit 1;
 fi
 
-while getopts "hesxfiv:t:o:" optname; do
+while getopts "hesxfiv:t:o:p" optname; do
   case "${optname}" in
     "h")
       usage
@@ -145,6 +147,9 @@ while getopts "hesxfiv:t:o:" optname; do
       ;;
     "f")
       FREE=1
+      ;;
+    "p")
+      PATCHING=1
       ;;
     "v")
       VERSION="${OPTARG}"
@@ -270,6 +275,19 @@ fi
 # ################## #
 # BUILDING THE IMAGE #
 # ################## #
+
+if [ ${PATCHING} -eq 1 ]; then
+  # BUILD THE BASE FOR REUSE (replace all environment variables)
+  "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
+        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
+        --build-arg SLIMMING=false --target base \
+        -t "${IMAGE_NAME}-base" -f "${DOCKERFILE}" . || {
+    echo ""
+    echo "ERROR: Base for reuse was NOT successfully created."
+    exit 1
+  }
+fi
+
 echo "Building image '${IMAGE_NAME}' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
