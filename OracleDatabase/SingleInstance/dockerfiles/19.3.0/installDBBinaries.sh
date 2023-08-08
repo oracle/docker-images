@@ -55,3 +55,6 @@ unzip "$INSTALL_FILE_1" && \
 rm "$INSTALL_FILE_1"    && \
 "$ORACLE_HOME"/runInstaller -silent -force -waitforcompletion -responsefile "$INSTALL_DIR"/"$INSTALL_RSP" -ignorePrereqFailure && \
 cd "$HOME"
+
+# runInstaller will return exit code 6, but we want this script to complete successfully
+exit 0;
