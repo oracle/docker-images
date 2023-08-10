@@ -2,7 +2,7 @@
 # 
 # Since: Mar, 2020
 # Author: mohammed.qureshi@oracle.com
-# Description: Build script for building Docker Image Extensions
+# Description: Build script for building Container Image Extensions
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
@@ -15,8 +15,8 @@ SCRIPT_NAME=$(basename $0)
 usage() {
   cat << EOF
 
-Usage: $SCRIPT_NAME -a -x [extensions] -b [base image]  -t [image name] [-o] [Docker build option]
-Builds one of more Docker Image Extensions.
+Usage: $SCRIPT_NAME -a -x [extensions] -b [base image] -t [image name] -v [version] [-o] [container build option]
+Builds one of more Container Image Extensions.
   
 Parameters:
    -a: Build all extensions
@@ -24,7 +24,9 @@ Parameters:
        Choose from : $(for i in $(cd "$SCRIPT_DIR" && ls -d */); do echo -n "${i%%/}  "; done)
    -b: Base image to use
    -t: name:tag for the extended image
-   -o: passes on Docker build option
+   -v: version to build (needed for patching)
+       Choose one of: 19.3.0  21.3.0
+   -o: passes on Container build option
 
 LICENSE UPL 1.0
 
@@ -34,6 +36,16 @@ EOF
 
 }
 
+# Check container runtime
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
+
 ##############
 #### MAIN ####
 ##############
@@ -41,15 +53,16 @@ EOF
 # Parameters
 DOCKEROPS=""
 DOCKERFILE="Dockerfile"
-BASE_IMAGE="oracle/database:19.3.0-ee"
+BASE_IMAGE="oracle/database:21.3.0-ee"
 IMAGE_NAME="oracle/database:ext"
+VERSION="21.3.0"
 
 if [ "$#" -eq 0 ]; then
   usage;
   exit 1;
 fi
 
-while getopts "ax:b:t:o:h" optname; do
+while getopts "ax:b:t:v:o:h" optname; do
   case "$optname" in
     a)
       EXTENSIONS=$(for i in $(cd "$SCRIPT_DIR" && ls -d */); do echo -n "${i%%/}  "; done)
@@ -63,6 +76,9 @@ while getopts "ax:b:t:o:h" optname; do
     t)
       IMAGE_NAME="$OPTARG"
       ;;
+    v)
+      VERSION="$OPTARG"
+      ;;
     o)
       DOCKEROPS="$OPTARG"
       ;;
@@ -72,15 +88,13 @@ while getopts "ax:b:t:o:h" optname; do
       ;;
     *)
     # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+      echo "Unknown error while processing options inside buildContainerImage.sh"
       ;;
   esac
 done
 
-echo "=========================="
-echo "DOCKER info:"
-docker info
-echo "=========================="
+# Check that we have a container runtime installed
+checkContainerRuntime
 
 # Proxy settings
 PROXY_SETTINGS=""
@@ -118,11 +132,25 @@ for x in $EXTENSIONS; do
     echo "Could not find extension directory '$x'";
     exit 1;
   }
-  docker build --force-rm=true --build-arg BASE_IMAGE="$BASE_IMAGE" \
+
+  if [ "$x" == "patching" ]; then 
+    if [ "$( (ls patches/one_offs && ls patches/release_update) | wc -l)" -eq 0 ]; then
+      echo "Patches Missing. Skipping Patching Extension"
+      if [ "$EXTENSIONS" == "patching" ]; then
+        exit
+      fi
+      cd ..
+      continue
+    fi
+    # BUILD THE LINUX BASE FOR REUSE
+    ../../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"
+  fi
+
+  "${CONTAINER_RUNTIME}" build --force-rm=true --build-arg BASE_IMAGE="$BASE_IMAGE" \
        $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f $DOCKERFILE . || {
   echo ""
-  echo "ERROR: Oracle Database Docker Image was NOT successfully created."
-  echo "ERROR: Check the output and correct any reported problems with the docker build operation."
+  echo "ERROR: Oracle Database Container Image was NOT successfully created."
+  echo "ERROR: Check the output and correct any reported problems with the container build operation."
   exit 1
   }
   BASE_IMAGE="$IMAGE_NAME"
@@ -130,7 +158,7 @@ for x in $EXTENSIONS; do
 done
 
 # Remove dangling images (intermitten images with tag <none>)
-docker image prune -f > /dev/null
+"${CONTAINER_RUNTIME}" image prune -f > /dev/null
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
@@ -139,7 +167,7 @@ echo ""
 echo ""
 
 cat<<EOF
-  Oracle Database Docker Image extended:
+  Oracle Database Container Image extended:
 
     --> $IMAGE_NAME
 
