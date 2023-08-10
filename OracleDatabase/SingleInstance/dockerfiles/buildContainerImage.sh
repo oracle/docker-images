@@ -239,6 +239,9 @@ echo "$DOCKERFILE"
 # If provided using -t build option then use it; Otherwise, create with version and edition
 if [ -z "${IMAGE_NAME}" ]; then
   IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
+  if [ ${BASE_ONLY} -eq 1 ]; then
+    IMAGE_NAME="oracle/database:${VERSION}-base"
+  fi
 fi;
 
 if [ ${BASE_ONLY} -eq 0 ] && [ ! "${SKIPMD5}" -eq 1 ]; then
@@ -277,48 +280,48 @@ if [ ${#PROXY_SETTINGS[@]} -gt 0 ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
 
-# ################## #
-# BUILDING THE IMAGE #
-# ################## #
-
 if [ ${PATCHING} -eq 1 ]; then
   # Setting SLIMMING to false to support patching
   BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
 fi
 
-echo "Building base linux image '${IMAGE_NAME}-base' ..."
+# ####################### #
+# BUILDING THE BASE IMAGE #
+# ####################### #
 
+if [ ${BASE_ONLY} -eq 1 ]; then
+  echo "Building base linux image '${IMAGE_NAME}' ..."
+  # BUILD THE LINUX BASE FOR REUSE (replace all environment variables)
+  "${CONTAINER_RUNTIME}" build --force-rm=true \
+        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --target base \
+        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
+    echo ""
+    echo "ERROR: Linux base for reuse was NOT successfully created."
+    exit 1
+  }
+  # Remove dangling images (intermitten images with tag <none>)
+  yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
+  exit
+fi
+
+# ################## #
+# BUILDING THE IMAGE #
+# ################## #
+echo "Building image '${IMAGE_NAME}' ..."
+
+# BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-
-# BUILD THE LINUX BASE FOR REUSE (replace all environment variables)
 "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-      "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" --target base \
-      -t "${IMAGE_NAME}"-base -f "${DOCKERFILE}" . || {
+      "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
+      -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
   echo ""
-  echo "ERROR: Base for reuse was NOT successfully created."
+  echo "ERROR: Oracle Database container image was NOT successfully created."
+  echo "ERROR: Check the output and correct any reported problems with the build operation."
   exit 1
 }
 
-if [ ${BASE_ONLY} -eq 0 ]; then
-  echo "Building image '${IMAGE_NAME}' ..."
-
-  # BUILD THE IMAGE (replace all environment variables)
-  "${CONTAINER_RUNTIME}" build --force-rm=true \
-        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
-        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
-    echo ""
-    echo "ERROR: Oracle Database container image was NOT successfully created."
-    echo "ERROR: Check the output and correct any reported problems with the build operation."
-    exit 1
-  }
-fi
-
 # Remove dangling images (intermitten images with tag <none>)
 yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
-
-if [ ${BASE_ONLY} -eq 1 ]; then
-  exit
-fi
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))

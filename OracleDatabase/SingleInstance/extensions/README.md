@@ -6,7 +6,7 @@ Once you have created the base image, go into the **extensions** folder and run 
 
     [oracle@localhost dockerfiles]$ ./buildExtensions.sh -h
 
-    Usage: buildExtensions.sh -a -x [extensions] -b [base image]  -t [image name] [-o] [Docker build option]
+    Usage: buildExtensions.sh -a -x [extensions] -b [base image]  -t [image name] -v [version] [-o] [Docker build option]
     Builds one of more Docker Image Extensions.
 
     Parameters:
@@ -15,6 +15,8 @@ Once you have created the base image, go into the **extensions** folder and run 
            Choose from : patching
        -b: Base image to use
        -t: name:tag for the extended image
+       -v: version to build (must provide for patching)
+           Choose one of: 19.3.0  21.3.0
        -o: passes on Docker build option
 
 LICENSE UPL 1.0

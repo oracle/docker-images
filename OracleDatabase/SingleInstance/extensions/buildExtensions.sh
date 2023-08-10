@@ -24,7 +24,7 @@ Parameters:
        Choose from : $(for i in $(cd "$SCRIPT_DIR" && ls -d */); do echo -n "${i%%/}  "; done)
    -b: Base image to use
    -t: name:tag for the extended image
-   -v: version to build (needed for patching)
+   -v: version to build (must provide for patching)
        Choose one of: 19.3.0  21.3.0
    -o: passes on Container build option
 
@@ -143,7 +143,7 @@ for x in $EXTENSIONS; do
       continue
     fi
     # BUILD THE LINUX BASE FOR REUSE
-    ../../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"
+    ../../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
   fi
 
   "${CONTAINER_RUNTIME}" build --force-rm=true --build-arg BASE_IMAGE="$BASE_IMAGE" \
