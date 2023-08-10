@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014,2021 Oracle and/or its affiliates.
+# Copyright (c) 2014,2023 Oracle and/or its affiliates.
 # 
 
 usage() {
@@ -24,8 +24,8 @@ Parameters:
    -x: creates image based on 'Express Edition'
    -f: creates images based on Database 'Free' 
    -i: ignores the MD5 checksums
-   -p: build patched container image by applying patching extension
-   -b: build linux base only
+   -p: creates and extends image using the patching extension
+   -b: build base stage only (Used by extensions)
    -o: passes on container build option
 
 * select one edition only: -e, -s, -x, or -f

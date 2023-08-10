@@ -44,8 +44,8 @@ Before you build the image make sure that you have provided the installation bin
        -x: creates image based on 'Express Edition'
        -f: creates image based on Database 'Free'
        -i: ignores the MD5 checksums
-       -p: build patched container image by applying patching extension
-       -b: build linux base only
+       -p: creates and extends image using the patching extension
+       -b: build base stage only (Used by extensions)
        -o: passes on container build option
     
     * select one edition only: -e, -s, -x, or -f
@@ -72,7 +72,7 @@ So, to use patching extension one should use additional build argument `-o '--bu
 
     ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
 
-Now, you can also build patched container images directly using **buildContainerImage.sh** script by passing extra parameter -p. Please note that you will have to provide the database version specific release-update and one-offs and put them into the `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively. In this case, SLIMMING is set to **false**. Example command for building the container image is as follows:
+Patched container images can now be built by specifying the parameter -p. Download the database version specific release update and one-offs and place them into the `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively. In this case, SLIMMING is internally set to **false**. Example command for building the patched container image is as follows:
 
     ./buildContainerImage.sh -e -v 21.3.0 -p
 
@@ -507,4 +507,4 @@ All scripts and files hosted in this project and GitHub [docker-images/OracleDat
 
 ## Copyright
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014,2023 Oracle and/or its affiliates.

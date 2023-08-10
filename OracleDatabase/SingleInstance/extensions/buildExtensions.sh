@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
 # 
 
 SCRIPT_DIR=$(dirname $0)
@@ -23,14 +23,13 @@ Parameters:
    -x: Space separated extensions to build. Defaults to all
        Choose from : $(for i in $(cd "$SCRIPT_DIR" && ls -d */); do echo -n "${i%%/}  "; done)
    -b: Base image to use
+   -v: Base version to extend (example 21.3.0)
    -t: name:tag for the extended image
-   -v: version to build (must provide for patching)
-       Choose one of: 19.3.0  21.3.0
    -o: passes on Container build option
 
 LICENSE UPL 1.0
 
-Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
 
 EOF
 
