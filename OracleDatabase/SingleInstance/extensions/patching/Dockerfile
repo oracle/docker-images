@@ -34,17 +34,16 @@ COPY --chown=oracle:dba $HOST_PATCH_DIR $PATCH_DB_BINARIES_FILE $PATCH_DIR/
 RUN chmod ug+x $PATCH_DIR/*.sh && \
     sync && \
     $PATCH_DIR/$PATCH_DB_BINARIES_FILE && \
-    rm -rf $PATCH_DIR/* $ORACLE_HOME/.patch_storage
+    rm -rf $PATCH_DIR/* $ORACLE_HOME/.patch_storage $ORACLE_HOME/.opatchauto_storage
 
 
 ## New stage for minimal layer size
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE}-base
 ENV DATAPATCH_FILE="runDatapatch.sh" \
     LSPATCHES_FILE="savePatchSummary.sh" \
     SKIP_DATAPATCH=false
 
-# Extn name
-ARG EXTENSION_NAME="patching"
+USER oracle
 
 # Copying patched oracle_base from previous layer
 COPY --from=patching $ORACLE_BASE $ORACLE_BASE
@@ -57,20 +56,19 @@ RUN chmod ug+x $ORACLE_BASE/scripts/extensions/startup/*.sh && sync
 COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup/
 RUN chmod ug+x $ORACLE_BASE/scripts/extensions/setup/*.sh && sync
 
-# backup origin runOracle
-RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
-    mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN"
+USER root
+RUN "$ORACLE_BASE"/oraInventory/orainstRoot.sh && \
+    "$ORACLE_HOME"/root.sh
 
-# Copy updated runOracle.sh
-COPY  --chown=oracle:dba $RUN_FILE $ORACLE_BASE/
-RUN mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
+USER oracle
+WORKDIR /home/oracle
 
-# Append a call to main runOracle
-RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
-        mv "$ORACLE_BASE/$RUN_FILE.extended" "$ORACLE_BASE/$RUN_FILE" ; \
-     else echo ". $ORACLE_BASE/$RUN_FILE.orig" > "$ORACLE_BASE/$RUN_FILE" ; fi ; \
-     if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
-        sed  -i "1i . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
-     fi && \
-     chmod ug+x $ORACLE_BASE/*.sh && sync
+# Add a bashrc file to capitalize ORACLE_SID in the environment
+# hadolint ignore=SC2016
+RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
+HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
+   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+
+# Define default command to start Oracle Database. 
+CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
