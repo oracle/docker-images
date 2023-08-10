@@ -12,7 +12,7 @@
 usage() {
   cat << EOF
 
-Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-o] [container build option]
+Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-b] [-o] [container build option]
 Builds a container image for Oracle Database.
 
 Parameters:
@@ -24,7 +24,8 @@ Parameters:
    -x: creates image based on 'Express Edition'
    -f: creates images based on Database 'Free' 
    -i: ignores the MD5 checksums
-   -p: support patching
+   -p: build patched container image by applying patching extension
+   -b: build linux base only
    -o: passes on container build option
 
 * select one edition only: -e, -s, -x, or -f
@@ -113,6 +114,7 @@ STANDARD=0
 EXPRESS=0
 FREE=0
 PATCHING=0
+BASE_ONLY=0
 # Obtaining the latest version to build
 VERSION="$(find -- *.*.* -type d | tail -n 1)"
 SKIPMD5=0
@@ -127,7 +129,7 @@ if [ "$#" -eq 0 ]; then
   exit 1;
 fi
 
-while getopts "hesxfiv:t:o:p" optname; do
+while getopts "hesxfiv:t:o:pb" optname; do
   case "${optname}" in
     "h")
       usage
@@ -150,6 +152,9 @@ while getopts "hesxfiv:t:o:p" optname; do
       ;;
     "p")
       PATCHING=1
+      ;;
+    "b")
+      BASE_ONLY=1
       ;;
     "v")
       VERSION="${OPTARG}"
@@ -236,7 +241,7 @@ if [ -z "${IMAGE_NAME}" ]; then
   IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
 fi;
 
-if [ ! "${SKIPMD5}" -eq 1 ]; then
+if [ ${BASE_ONLY} -eq 0 ] && [ ! "${SKIPMD5}" -eq 1 ]; then
   checksumPackages
 else
   echo "Ignored MD5 checksum."
@@ -279,32 +284,41 @@ fi
 if [ ${PATCHING} -eq 1 ]; then
   # Setting SLIMMING to false to support patching
   BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
+fi
 
-  # BUILD THE BASE FOR REUSE (replace all environment variables)
-  "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" --target base \
-        -t "${IMAGE_NAME}-base" -f "${DOCKERFILE}" . || {
+echo "Building base linux image '${IMAGE_NAME}-base' ..."
+
+BUILD_START=$(date '+%s')
+
+# BUILD THE LINUX BASE FOR REUSE (replace all environment variables)
+"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
+      "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" --target base \
+      -t "${IMAGE_NAME}"-base -f "${DOCKERFILE}" . || {
+  echo ""
+  echo "ERROR: Base for reuse was NOT successfully created."
+  exit 1
+}
+
+if [ ${BASE_ONLY} -eq 0 ]; then
+  echo "Building image '${IMAGE_NAME}' ..."
+
+  # BUILD THE IMAGE (replace all environment variables)
+  "${CONTAINER_RUNTIME}" build --force-rm=true \
+        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
+        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
     echo ""
-    echo "ERROR: Base for reuse was NOT successfully created."
+    echo "ERROR: Oracle Database container image was NOT successfully created."
+    echo "ERROR: Check the output and correct any reported problems with the build operation."
     exit 1
   }
 fi
 
-echo "Building image '${IMAGE_NAME}' ..."
-
-# BUILD THE IMAGE (replace all environment variables)
-BUILD_START=$(date '+%s')
-"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
-       -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
-  echo ""
-  echo "ERROR: Oracle Database container image was NOT successfully created."
-  echo "ERROR: Check the output and correct any reported problems with the build operation."
-  exit 1
-}
-
 # Remove dangling images (intermitten images with tag <none>)
 yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
+
+if [ ${BASE_ONLY} -eq 1 ]; then
+  exit
+fi
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))
@@ -320,3 +334,8 @@ cat << EOF
   Build completed in ${BUILD_ELAPSED} seconds.
   
 EOF
+
+# BUILD THE PATCHED IMAGE BY APPLYING PATCHING EXTENSION
+if [ ${PATCHING} -eq 1 ]; then
+  ../../extensions/buildExtensions.sh -b "${IMAGE_NAME}" -t "${IMAGE_NAME}"-ext -v ${VERSION} -x 'patching'
+fi
