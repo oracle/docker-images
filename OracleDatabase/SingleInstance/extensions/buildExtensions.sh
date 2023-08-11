@@ -124,7 +124,7 @@ fi
 BUILD_START=$(date '+%s')
 
 # BUILD THE LINUX BASE FOR REUSE
-$(dirname $SCRIPT_DIR)/dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
 
 cd "$SCRIPT_DIR"
 for x in $EXTENSIONS; do
