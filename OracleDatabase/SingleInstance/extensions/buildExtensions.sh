@@ -123,6 +123,9 @@ fi
 
 BUILD_START=$(date '+%s')
 
+# BUILD THE LINUX BASE FOR REUSE
+$(dirname $SCRIPT_DIR)/dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+
 cd "$SCRIPT_DIR"
 for x in $EXTENSIONS; do
   echo "Building extension $x..."
@@ -141,8 +144,6 @@ for x in $EXTENSIONS; do
       cd ..
       continue
     fi
-    # BUILD THE LINUX BASE FOR REUSE
-    ../../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
   fi
 
   "${CONTAINER_RUNTIME}" build --force-rm=true --build-arg BASE_IMAGE="$BASE_IMAGE" \
@@ -152,9 +153,12 @@ for x in $EXTENSIONS; do
   echo "ERROR: Check the output and correct any reported problems with the container build operation."
   exit 1
   }
+  "${CONTAINER_RUNTIME}" tag “$BASE_IMAGE”-base “$IMAGE_NAME”-base
   BASE_IMAGE="$IMAGE_NAME"
   cd ..
 done
+
+"${CONTAINER_RUNTIME}" rmi -f "$BASE_IMAGE"-base
 
 # Remove dangling images (intermitten images with tag <none>)
 "${CONTAINER_RUNTIME}" image prune -f > /dev/null
