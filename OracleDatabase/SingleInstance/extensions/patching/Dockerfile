@@ -65,8 +65,9 @@ RUN "$ORACLE_BASE"/oraInventory/orainstRoot.sh && \
 
 USER oracle
 
-HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+# Using checkDBLockStatus.sh if k8s extension was applied, otherwise, using checkDBStatus.sh
+HEALTHCHECK --interval=1m --start-period=20m --timeout=30s \
+   CMD if [ -e $ORACLE_BASE/$CHECK_DB_LOCK_FILE ]; then $ORACLE_BASE/$CHECK_DB_LOCK_FILE ; else $ORACLE_BASE/$CHECK_DB_FILE ; fi >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
 CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
