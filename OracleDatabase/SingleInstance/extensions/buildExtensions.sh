@@ -153,7 +153,7 @@ for x in $EXTENSIONS; do
   echo "ERROR: Check the output and correct any reported problems with the container build operation."
   exit 1
   }
-  "${CONTAINER_RUNTIME}" tag “$BASE_IMAGE”-base “$IMAGE_NAME”-base
+  "${CONTAINER_RUNTIME}" tag $BASE_IMAGE-base $IMAGE_NAME-base
   BASE_IMAGE="$IMAGE_NAME"
   cd ..
 done
