@@ -56,7 +56,6 @@ ENV ORACLE_BASE=/opt/oracle \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
-    HEALTHCHECK_FILE=$ORACLE_BASE/$CHECK_DB_FILE \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
@@ -139,7 +138,7 @@ WORKDIR /home/oracle
 RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
-   CMD $HEALTHCHECK_FILE >/dev/null || exit 1
+   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
 CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]

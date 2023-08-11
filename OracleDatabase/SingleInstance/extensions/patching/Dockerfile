@@ -41,7 +41,8 @@ RUN chmod ug+x $PATCH_DIR/*.sh && \
 FROM ${BASE_IMAGE}-base
 ENV DATAPATCH_FILE="runDatapatch.sh" \
     LSPATCHES_FILE="savePatchSummary.sh" \
-    SKIP_DATAPATCH=false
+    SKIP_DATAPATCH=false \
+    CHECK_DB_LOCK_FILE="checkDBLockStatus.sh"
 
 USER oracle
 WORKDIR /home/oracle
@@ -65,7 +66,7 @@ RUN "$ORACLE_BASE"/oraInventory/orainstRoot.sh && \
 USER oracle
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
-   CMD $HEALTHCHECK_FILE >/dev/null || exit 1
+   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
 CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
