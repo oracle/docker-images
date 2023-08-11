@@ -44,6 +44,7 @@ ENV DATAPATCH_FILE="runDatapatch.sh" \
     SKIP_DATAPATCH=false
 
 USER oracle
+WORKDIR /home/oracle
 
 # Copying patched oracle_base from previous layer
 COPY --from=patching $ORACLE_BASE $ORACLE_BASE
@@ -54,21 +55,17 @@ RUN chmod ug+x $ORACLE_BASE/scripts/extensions/startup/*.sh && sync
 
 # Copy script to run lspatches
 COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup/
-RUN chmod ug+x $ORACLE_BASE/scripts/extensions/setup/*.sh && sync
+RUN chmod ug+x $ORACLE_BASE/scripts/extensions/setup/*.sh && sync && \
+    echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 USER root
 RUN "$ORACLE_BASE"/oraInventory/orainstRoot.sh && \
     "$ORACLE_HOME"/root.sh
 
 USER oracle
-WORKDIR /home/oracle
-
-# Add a bashrc file to capitalize ORACLE_SID in the environment
-# hadolint ignore=SC2016
-RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+   CMD $HEALTHCHECK_FILE >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
 CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
