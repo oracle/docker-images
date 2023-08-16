@@ -42,7 +42,11 @@ FROM ${BASE_IMAGE}-base
 ENV DATAPATCH_FILE="runDatapatch.sh" \
     LSPATCHES_FILE="savePatchSummary.sh" \
     SKIP_DATAPATCH=false \
-    CHECK_DB_LOCK_FILE="checkDBLockStatus.sh"
+    STARTUP_FILE=startUp.sh \
+    SHUT_DB_FILE=shutDown.sh \
+    LOCKING_SCRIPT=lock.py \
+    SWAP_LOCK_FILE=swapLocks.sh \
+    CHECK_DB_LOCK_FILE=checkDBLockStatus.sh
 
 USER oracle
 WORKDIR /home/oracle
