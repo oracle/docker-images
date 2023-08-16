@@ -123,10 +123,11 @@ fi
 
 BUILD_START=$(date '+%s')
 
+cd "$SCRIPT_DIR"
+
 # BUILD THE LINUX BASE FOR REUSE
 ../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
 
-cd "$SCRIPT_DIR"
 for x in $EXTENSIONS; do
   echo "Building extension $x..."
   # Go into version folder
