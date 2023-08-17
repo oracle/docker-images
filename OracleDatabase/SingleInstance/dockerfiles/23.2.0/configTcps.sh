@@ -39,9 +39,12 @@ EOF
     # Removing cert from /tmp location
     rm /tmp/"$(hostname)"-certificate.crt
 else
-    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert "${CLIENT_CERT_LOCATON}" <<EOF
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert "${CLIENT_CERT_LOCATION_TEMP}" <<EOF
 ${WALLET_PWD}
 EOF
+
+    # removing temp cert file
+    rm "${CLIENT_CERT_LOCATION_TEMP}"
 fi
 
     # Generate tnsnames.ora and sqlnet.ora for the consumption by the client
@@ -122,6 +125,14 @@ function disable_tcps() {
   rm -rf "$WALLET_LOC" "$CLIENT_WALLET_LOC"
 }
 
+# Function to first/top certificate in chain certificate file
+function remove_top_cert() {
+    input_file="$CLIENT_CERT_LOCATION"
+    temp_file="$CLIENT_CERT_LOCATION_TEMP"
+
+    #Removing the first occurence of following  pattern
+    sed '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/{0,/-----END CERTIFICATE-----/d}' "$input_file" > "$temp_file"
+}
 
 ###########################################
 ################## MAIN ###################
@@ -154,11 +165,18 @@ if [[ -z "${TCPS_CERTS_LOCATION}" ]]; then
   CUSTOM_CERTS=false
 else
   CUSTOM_CERTS=true
-  # Client Cert location
-  CLIENT_CERT_LOCATON="${TCPS_CERTS_LOCATION}"/cert.crt # certificate file
+
+  # Client Cert location (from user)
+  CLIENT_CERT_LOCATION="${TCPS_CERTS_LOCATION}"/cert.crt # certificate file
+
+  # Client Cert location (top removed)
+  CLIENT_CERT_LOCATION_TEMP="${TCPS_CERTS_LOCATION}"/cert_temp.crt # certificate file
 
   # Client key location
   CLIENT_KEY_LOCATON="${TCPS_CERTS_LOCATION}"/client.key # client key
+
+  # removing top certificate from user given chain certificate file
+  remove_top_cert  
 fi
 
 # Disable TCPS control flow
@@ -211,7 +229,7 @@ EOF
 else
     # creating pkcs12 file in case of custom certs
     echo "Creating pkcs12 file"
-    openssl pkcs12 -export -in "${CLIENT_CERT_LOCATON}"  -inkey "${CLIENT_KEY_LOCATON}"  -out /tmp/"$(hostname)"-open.p12 -password pass:"${PKCS12_PWD}"
+    openssl pkcs12 -export -in "${CLIENT_CERT_LOCATION}"  -inkey "${CLIENT_KEY_LOCATON}"  -out /tmp/"$(hostname)"-open.p12 -password pass:"${PKCS12_PWD}"
   
     # Adding custom pkcs12 file in database server wallet
     echo "Importing pkcs12 file in server wallet"
