@@ -112,11 +112,10 @@ if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
-
-# shellcheck disable=SC2154
 if [ "$PROXY_SETTINGS" != "" ]; then
   echo "Proxy settings were found and will be used during the build."
 fi

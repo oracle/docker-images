@@ -34,8 +34,8 @@ COPY --chown=oracle:dba $HOST_PATCH_DIR $PATCH_DB_BINARIES_FILE $PATCH_DIR/
 # Apply DB Patch
 RUN chmod ug+x "$PATCH_DIR"/*.sh && \
     sync && \
-    $PATCH_DIR/$PATCH_DB_BINARIES_FILE && \
-    rm -rf $PATCH_DIR/* $ORACLE_HOME/.patch_storage $ORACLE_HOME/.opatchauto_storage
+    "$PATCH_DIR/$PATCH_DB_BINARIES_FILE" && \
+    rm -rf "$PATCH_DIR"/* "$ORACLE_HOME"/.patch_storage "$ORACLE_HOME"/.opatchauto_storage
 
 
 ## New stage for minimal layer size
@@ -62,6 +62,7 @@ RUN chmod ug+x "$ORACLE_BASE"/scripts/extensions/startup/*.sh && sync
 
 # Copy script to run lspatches
 COPY --chown=oracle:dba $LSPATCHES_FILE $ORACLE_BASE/scripts/extensions/setup/
+# hadolint ignore=SC2016
 RUN chmod ug+x "$ORACLE_BASE"/scripts/extensions/setup/*.sh && sync && \
     echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
