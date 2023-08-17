@@ -285,18 +285,18 @@ if [ ${PATCHING} -eq 1 ]; then
   BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
 fi
 
-# ####################### #
-# BUILDING THE BASE IMAGE #
-# ####################### #
+# ############################# #
+# BUILDING THE BASE STAGE IMAGE #
+# ############################# #
 
 if [ ${BASE_ONLY} -eq 1 ]; then
-  echo "Building base linux image '${IMAGE_NAME}' ..."
-  # BUILD THE LINUX BASE FOR REUSE (replace all environment variables)
+  echo "Building base stage image '${IMAGE_NAME}' ..."
+  # BUILD THE BASE STAGE IMAGE (replace all environment variables)
   "${CONTAINER_RUNTIME}" build --force-rm=true \
         "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --target base \
         -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
     echo ""
-    echo "ERROR: Linux base for reuse was NOT successfully created."
+    echo "ERROR: Base stage image was NOT successfully created."
     exit 1
   }
   # Remove dangling images (intermitten images with tag <none>)
