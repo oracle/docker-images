@@ -340,5 +340,5 @@ EOF
 
 # EXTEND THE BUILT IMAGE BY APPLYING PATCHING EXTENSION
 if [ ${PATCHING} -eq 1 ]; then
-  ../../extensions/buildExtensions.sh -b "${IMAGE_NAME}" -t "${IMAGE_NAME}"-ext -v ${VERSION} -x 'patching'
+  ../../extensions/buildExtensions.sh -b "${IMAGE_NAME}" -t "${IMAGE_NAME}"-ext -v "${VERSION}" -x 'patching'
 fi

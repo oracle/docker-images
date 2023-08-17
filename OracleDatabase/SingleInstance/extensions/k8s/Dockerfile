@@ -18,6 +18,7 @@
 #
 
 ARG BASE_IMAGE=oracle/database:19.3.0-ee
+# hadolint ignore=DL3006
 FROM ${BASE_IMAGE}
 
 # Extn name
@@ -32,7 +33,8 @@ ENV STARTUP_FILE=startUp.sh \
     CHECK_DB_LOCK_FILE=checkDBLockStatus.sh
 
 # Turn on dnfs
-RUN cd $ORACLE_HOME/rdbms/lib && make -f ins_rdbms.mk dnfs_on
+# hadolint ignore=DL3003
+RUN cd "$ORACLE_HOME"/rdbms/lib && make -f ins_rdbms.mk dnfs_on
 
 # Updated Health Check
 HEALTHCHECK --interval=1m --start-period=15m \

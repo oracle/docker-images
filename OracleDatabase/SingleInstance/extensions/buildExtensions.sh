@@ -9,8 +9,8 @@
 # Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
 # 
 
-SCRIPT_DIR=$(dirname $0)
-SCRIPT_NAME=$(basename $0)
+SCRIPT_DIR=$(dirname "$0")
+SCRIPT_NAME=$(basename "$0")
 
 usage() {
   cat << EOF
@@ -21,7 +21,7 @@ Builds one of more Container Image Extensions.
 Parameters:
    -a: Build all extensions
    -x: Space separated extensions to build. Defaults to all
-       Choose from : $(for i in $(cd "$SCRIPT_DIR" && ls -d */); do echo -n "${i%%/}  "; done)
+       Choose from : $(for i in $(cd "$SCRIPT_DIR" && ls -d -- */); do echo -n "${i%%/}  "; done)
    -b: Base image to use
    -v: Base version to extend (example 21.3.0)
    -t: name:tag for the extended image
@@ -64,7 +64,7 @@ fi
 while getopts "ax:b:t:v:o:h" optname; do
   case "$optname" in
     a)
-      EXTENSIONS=$(for i in $(cd "$SCRIPT_DIR" && ls -d */); do echo -n "${i%%/}  "; done)
+      EXTENSIONS=$(for i in $(cd "$SCRIPT_DIR" && ls -d -- */); do echo -n "${i%%/}  "; done)
       ;;
     x)
       EXTENSIONS="$OPTARG"
@@ -97,14 +97,17 @@ checkContainerRuntime
 
 # Proxy settings
 PROXY_SETTINGS=""
+# shellcheck disable=SC2154
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
@@ -113,6 +116,7 @@ if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "$PROXY_SETTINGS" != "" ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
@@ -147,6 +151,7 @@ for x in $EXTENSIONS; do
     fi
   fi
 
+  # shellcheck disable=SC2086
   "${CONTAINER_RUNTIME}" build --force-rm=true --build-arg BASE_IMAGE="$BASE_IMAGE" \
        $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f $DOCKERFILE . || {
   echo ""
@@ -154,7 +159,7 @@ for x in $EXTENSIONS; do
   echo "ERROR: Check the output and correct any reported problems with the container build operation."
   exit 1
   }
-  "${CONTAINER_RUNTIME}" tag $BASE_IMAGE-base $IMAGE_NAME-base
+  "${CONTAINER_RUNTIME}" tag "$BASE_IMAGE"-base "$IMAGE_NAME"-base
   BASE_IMAGE="$IMAGE_NAME"
   cd ..
 done
@@ -165,7 +170,7 @@ done
 "${CONTAINER_RUNTIME}" image prune -f > /dev/null
 
 BUILD_END=$(date '+%s')
-BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
+BUILD_ELAPSED=$(( BUILD_END - BUILD_START ))
 
 echo ""
 echo ""
