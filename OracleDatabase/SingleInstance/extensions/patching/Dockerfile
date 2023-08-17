@@ -32,10 +32,10 @@ ENV HOST_PATCH_DIR="patches" \
 COPY --chown=oracle:dba $HOST_PATCH_DIR $PATCH_DB_BINARIES_FILE $PATCH_DIR/
 
 # Apply DB Patch
-RUN chmod ug+x "$PATCH_DIR"/*.sh && \
+RUN chmod ug+x $PATCH_DIR/*.sh && \
     sync && \
-    "$PATCH_DIR/$PATCH_DB_BINARIES_FILE" && \
-    rm -rf $PATCH_DIR/* "$ORACLE_HOME"/.patch_storage "$ORACLE_HOME"/.opatchauto_storage
+    $PATCH_DIR/$PATCH_DB_BINARIES_FILE && \
+    rm -rf $PATCH_DIR/* $ORACLE_HOME/.patch_storage $ORACLE_HOME/.opatchauto_storage
 
 
 ## New stage for minimal layer size
