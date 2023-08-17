@@ -39,12 +39,12 @@ EOF
     # Removing cert from /tmp location
     rm /tmp/"$(hostname)"-certificate.crt
 else
-    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert "${CLIENT_CERT_LOCATION_TEMP}" <<EOF
+    orapki wallet add -wallet "${CLIENT_WALLET_LOC}" -trusted_cert -cert "${INTERMEDIATE_CERT_LOCATION}" <<EOF
 ${WALLET_PWD}
 EOF
 
     # removing temp cert file
-    rm "${CLIENT_CERT_LOCATION_TEMP}"
+    rm "${INTERMEDIATE_CERT_LOCATION}"
 fi
 
     # Generate tnsnames.ora and sqlnet.ora for the consumption by the client
@@ -125,13 +125,13 @@ function disable_tcps() {
   rm -rf "$WALLET_LOC" "$CLIENT_WALLET_LOC"
 }
 
-# Function to first/top certificate in chain certificate file
-function remove_top_cert() {
+# Function to extract intermediate/root certificate from chained certificate file
+function extract_intermediate_certs() {
     input_file="$CLIENT_CERT_LOCATION"
-    temp_file="$CLIENT_CERT_LOCATION_TEMP"
+    temp_file="$INTERMEDIATE_CERT_LOCATION"
 
     #Removing the first occurence of following  pattern
-    sed '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/{0,/-----END CERTIFICATE-----/d}' "$input_file" > "$temp_file"
+    sed '{0,/-END CERTIFICATE-/d}' "$input_file" > "$temp_file"
 }
 
 ###########################################
@@ -169,14 +169,14 @@ else
   # Client Cert location (from user)
   CLIENT_CERT_LOCATION="${TCPS_CERTS_LOCATION}"/cert.crt # certificate file
 
-  # Client Cert location (top removed)
-  CLIENT_CERT_LOCATION_TEMP="${TCPS_CERTS_LOCATION}"/cert_temp.crt # certificate file
+  # Intermediate Cert location (Extracted from user provided chained certificate)
+  INTERMEDIATE_CERT_LOCATION="${TCPS_CERTS_LOCATION}"/cert_temp.crt # certificate file
 
   # Client key location
   CLIENT_KEY_LOCATION="${TCPS_CERTS_LOCATION}"/client.key # client key
 
-  # removing top certificate from user given chain certificate file
-  remove_top_cert  
+  # Extracting intermediate certificate from user given chain certificate file
+  extract_intermediate_certs  
 fi
 
 # Disable TCPS control flow
