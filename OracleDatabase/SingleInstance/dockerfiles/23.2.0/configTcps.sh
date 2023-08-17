@@ -173,7 +173,7 @@ else
   CLIENT_CERT_LOCATION_TEMP="${TCPS_CERTS_LOCATION}"/cert_temp.crt # certificate file
 
   # Client key location
-  CLIENT_KEY_LOCATON="${TCPS_CERTS_LOCATION}"/client.key # client key
+  CLIENT_KEY_LOCATION="${TCPS_CERTS_LOCATION}"/client.key # client key
 
   # removing top certificate from user given chain certificate file
   remove_top_cert  
@@ -229,7 +229,7 @@ EOF
 else
     # creating pkcs12 file in case of custom certs
     echo "Creating pkcs12 file"
-    openssl pkcs12 -export -in "${CLIENT_CERT_LOCATION}"  -inkey "${CLIENT_KEY_LOCATON}"  -out /tmp/"$(hostname)"-open.p12 -password pass:"${PKCS12_PWD}"
+    openssl pkcs12 -export -in "${CLIENT_CERT_LOCATION}"  -inkey "${CLIENT_KEY_LOCATION}"  -out /tmp/"$(hostname)"-open.p12 -password pass:"${PKCS12_PWD}"
   
     # Adding custom pkcs12 file in database server wallet
     echo "Importing pkcs12 file in server wallet"
