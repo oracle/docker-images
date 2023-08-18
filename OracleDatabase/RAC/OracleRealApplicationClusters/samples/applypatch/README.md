@@ -11,14 +11,14 @@
 ## Build Oracle RAC Slim and Base Image
 
 - Create RAC slim image based on the version you want build the patched images. This image will be used during multi-stage build to minimize the size requirements.
-  - Change directory to `<GIT_CLONE_REPO>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters dockerfiles`
+  - Change directory to `<GIT_CLONE_REPO>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles`
   - Build the RAC slim image
 
     ```bash
-     ./buildContainerImage.sh -v <VERSION> -i -p -o ‘--build-arg BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true
+     ./buildContainerImage.sh -v <VERSION> -i -p -o '--build-arg BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true'
 
      Example:
-     ./buildContainerImage.sh -v 21.3.0 -i -p -o ‘--build-arg BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true
+     ./buildContainerImage.sh -v 21.3.0 -i -p -o '--build-arg BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true'
     ```
 
 **Note**: For Docker, you need to change `BASE_OL_IMAGE` to `oraclelinux:7-slim`.
@@ -81,7 +81,7 @@ This is useful if you want to install multiple patches at once. The script will 
   - Following is an example of building patched image using 21.3.0. Note that `BASE_RAC_IMAGE=oracle/database-rac:21.3.0` set to 21.3.0. You need to set BASE_RAC_IMAGE based on your environment.
 
  ```bash
- /buildPatchedContainerImage.sh -v 21.3.0 -p 21.7.0  -o '--build-arg BASE_RAC_IMAGE=localhost/oracle/database-rac:19.3.0 --build-arg RAC_SLIM_IMAGE=localhost/oracle/database-rac:21.3.0-slim'
+ ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.7.0  -o '--build-arg BASE_RAC_IMAGE=localhost/oracle/database-rac:21.3.0 --build-arg RAC_SLIM_IMAGE=localhost/oracle/database-rac:21.3.0-slim'
  ```
 
 **Important:** It is not supported to apply patches on already existing databases. You will have to create a new, patched database container image. You can use the PDB unplug/plug functionality to carry over your PDB into the patched container database!

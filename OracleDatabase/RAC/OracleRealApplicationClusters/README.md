@@ -136,9 +136,9 @@ To assist in building the images, you can use the [`buildContainerImage.sh`](htt
 If you are planing to deploy Oracle RAC container image on Podman, skip to the section [Oracle RAC Container Image for Podman](#oracle-rac-container-image-for-podman).
 
   ```bash
-  ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true|false'
+  ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=true|false'
 
- #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=false'
+ #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=false'
   ```
 
 ### Oracle RAC Container Image for Podman
