@@ -157,7 +157,7 @@ else
   CLIENT_CERT_LOCATION="${TCPS_CERTS_LOCATION}"/cert.crt # certificate file
 
    # Intermediate Cert location (Extracted from user provided chained certificate)
-  INTERMEDIATE_CERT_LOCATION="${TCPS_CERTS_LOCATION}"/cert_temp.crt # certificate file
+  INTERMEDIATE_CERT_LOCATION="/tmp/cert_temp.crt" # certificate file
 
    # Client key location
   CLIENT_KEY_LOCATION="${TCPS_CERTS_LOCATION}"/client.key # client key
