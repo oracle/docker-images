@@ -424,7 +424,7 @@ status(){
       fi
   elif [ "$containerRuntime" = "podman" ]
   then
-      if [ "$(podman ps -a -f "name=$AI" --format '{{.Names}}')" ]
+      if [ "$(podman ps -f "name=$AI" --format '{{.Names}}')" ]
       then
          podman exec "$AI" /bin/bash -c 'agent --config /app/data/conf/config.json ido lcm -i status_check; if [[ "$?" == "0" ]] ; then echo AGENT_RUNNING_NORMALLY > /app/data/conf/status.txt; elif [[ "$?" == "1" ]] ; then echo AGENT_SHUTDOWN_IN_PROGRESS > /app/data/conf/status.txt; else echo AGENT_SHUTDOWN > /app/data/conf/status.txt; fi ;' >/dev/null
          agentDaemonStatus
