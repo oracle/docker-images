@@ -125,15 +125,6 @@ function disable_tcps() {
   rm -rf "$WALLET_LOC" "$CLIENT_WALLET_LOC"
 }
 
-# Function to extract intermediate/root certificate from chained certificate file
-function extract_intermediate_certs() {
-    input_file="$CLIENT_CERT_LOCATION"
-    temp_file="$INTERMEDIATE_CERT_LOCATION"
-
-    #Removing the first occurence of following  pattern
-    sed '{0,/-END CERTIFICATE-/d}' "$input_file" > "$temp_file"
-}
-
 ###########################################
 ################## MAIN ###################
 ###########################################
@@ -176,7 +167,8 @@ else
   CLIENT_KEY_LOCATION="${TCPS_CERTS_LOCATION}"/client.key # client key
 
   # Extracting intermediate certificate from user given chain certificate file
-  extract_intermediate_certs 
+  # Removing the first occurence of following  pattern
+  sed '{0,/-END CERTIFICATE-/d}' "$CLIENT_CERT_LOCATION" > "$INTERMEDIATE_CERT_LOCATION" 
 fi
 
 # Disable TCPS control flow
