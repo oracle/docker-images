@@ -582,11 +582,12 @@ enableAutoUpgrade(){
      else
       echo "INFO: Setting Up Auto Upgrade of the agent with id ${AI}. "
       javaPath=$(which java | rev | cut -c6- | rev)
-      proxyUri=$("$PV"/data/conf/config.properties | grep "idoConfig.httpClientConfiguration.proxyUri" | cut -d'=' -f2)
+      # shellcheck disable=SC2002
+      proxyUri=$(cat "$PV"/data/conf/config.properties | grep "idoConfig.httpClientConfiguration.proxyUri" | cut -d'=' -f2)
       echo "INFO: Proxy URL is ${proxyUri}"
       if [ "${proxyUri}" != "" ]
        then
-         echo "*/30 * * * * export HTTPS_PROXY=${proxyUri};https_proxy=${proxyUri};export PATH=${javaPath}:$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o ${PV}/agentAutoUpdate.sh;sh ${PV}/agentAutoUpdate.sh ${PV} ${AI} " >> autoupdatercron
+         echo "*/30 * * * * export HTTPS_PROXY=${proxyUri};export https_proxy=${proxyUri};export PATH=${javaPath}:$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o ${PV}/agentAutoUpdate.sh;sh ${PV}/agentAutoUpdate.sh ${PV} ${AI} " >> autoupdatercron
        else
          echo "*/30 * * * * export PATH=${javaPath}:$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o ${PV}/agentAutoUpdate.sh;sh ${PV}/agentAutoUpdate.sh ${PV} ${AI} " >> autoupdatercron
       fi
@@ -829,6 +830,7 @@ upgrade()
           cp -rf "${installedPV}/data/customJars" "${PV}/upgrade/data"
     fi
   fi
+
   install
   #install also loads the image, so we can get the new image here
   newimage="${imageName}"
@@ -883,11 +885,12 @@ upgrade()
      else
       echo "INFO: Setting Up Auto Upgrade of the agent with id ${AI}. "
       javaPath=$(which java | rev | cut -c6- | rev)
-      proxyUri=$("$PV"/data/conf/config.properties | grep "idoConfig.httpClientConfiguration.proxyUri" | cut -d'=' -f2)
+      # shellcheck disable=SC2002
+      proxyUri=$(cat "$PV"/data/conf/config.properties | grep "idoConfig.httpClientConfiguration.proxyUri" | cut -d'=' -f2)
       echo "INFO: Proxy URL is ${proxyUri}"
       if [ "${proxyUri}" != "" ]
        then
-         echo "*/30 * * * * export HTTPS_PROXY=${proxyUri};https_proxy=${proxyUri};export PATH=${javaPath}:$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o ${PV}/agentAutoUpdate.sh;sh ${PV}/agentAutoUpdate.sh ${PV} ${AI} " >> autoupdatercron
+         echo "*/30 * * * * export HTTPS_PROXY=${proxyUri};export https_proxy=${proxyUri};export PATH=${javaPath}:$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o ${PV}/agentAutoUpdate.sh;sh ${PV}/agentAutoUpdate.sh ${PV} ${AI} " >> autoupdatercron
        else
          echo "*/30 * * * * export PATH=${javaPath}:$PATH;curl https://raw.githubusercontent.com/oracle/docker-images/main/OracleIdentityGovernance/samples/scripts/agentAutoUpdate.sh -o ${PV}/agentAutoUpdate.sh;sh ${PV}/agentAutoUpdate.sh ${PV} ${AI} " >> autoupdatercron
       fi

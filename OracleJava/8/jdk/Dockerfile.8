@@ -45,10 +45,10 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
     then \
 		mv "$(ls /tmp/jdk-8*-linux-x64.tar.gz)" /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=948d8e4ed98652d7c8fcfb157c8f5d87b68093ffd031eb154cf6e809979a46fe ; \
+        JAVA_SHA256=036aeb193d4262e27c74d9ade316dc50a026fba0255467d12fc73db49d20ce8c ; \
     else \
 	    mv "$(ls /tmp/jdk-8*-linux-aarch64.tar.gz)" /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=94793adad257a3eefc4098d786a145357393af48b67cd861d2e7ae87d7e7ecc9 ; \    	
+    	JAVA_SHA256=7db2e4893da151cb15787421100d76ffd3e88801166431de80ea02dd84109333 ; \    	
     fi && \
 	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
