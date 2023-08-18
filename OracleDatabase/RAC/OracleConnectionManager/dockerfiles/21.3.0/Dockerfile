@@ -62,6 +62,7 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE  && \
     sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
+    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
     su oracle -c "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
     $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \

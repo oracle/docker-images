@@ -54,5 +54,5 @@ sed -i -e "s|###INVENTORY###|$INVENTORY|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP
 # Install Oracle binaries
 mkdir -p /home/grid/.ssh && \
 chmod 700 /home/grid/.ssh && \
-unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $GRID_HOME && \ 
+unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $GRID_HOME && \
 $GRID_HOME/gridSetup.sh -silent -responseFile $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP -ignorePrereqFailure || true

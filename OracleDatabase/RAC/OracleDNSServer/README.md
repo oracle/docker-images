@@ -62,6 +62,6 @@ you should see the following in docker logs output:
 
 ```
 #################################################
-runOracle.sh: RACDNSServer is up and running!
+DNS Server IS READY TO USE!
 #################################################
 ```
