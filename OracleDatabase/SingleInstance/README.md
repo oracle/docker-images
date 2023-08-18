@@ -32,7 +32,7 @@ Before you build the image make sure that you have provided the installation bin
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
     
-    Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x] [-i] [-o] [container build option]
+    Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-b] [-o] [container build option]
     Builds a container image for Oracle Database.
     
     Parameters:
@@ -44,6 +44,8 @@ Before you build the image make sure that you have provided the installation bin
        -x: creates image based on 'Express Edition'
        -f: creates image based on Database 'Free'
        -i: ignores the MD5 checksums
+       -p: creates and extends image using the patching extension
+       -b: build base stage only (Used by extensions)
        -o: passes on container build option
     
     * select one edition only: -e, -s, -x, or -f
@@ -63,10 +65,16 @@ You may extend the image with your own Dockerfile and create the users and table
 The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8.
 You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
 
+#### Building patched container images
+
 **NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension.
 So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
 
     ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
+
+Patched container images can now be built by specifying the parameter -p. Download the database version specific release update and one-offs and place them into the `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively. In this case, SLIMMING is internally set to **false**. Example command for building the patched container image is as follows:
+
+    ./buildContainerImage.sh -e -v 21.3.0 -p
 
 #### Building the container images using Podman
 
@@ -499,4 +507,4 @@ All scripts and files hosted in this project and GitHub [docker-images/OracleDat
 
 ## Copyright
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014,2023 Oracle and/or its affiliates.
