@@ -49,6 +49,7 @@ ARG WORKDIR="/rac-work-dir"
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 # Linux Env Variable
+# hadolint ignore=DL3044
 ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DIR=/opt/scripts \
 # Grid Env variables
