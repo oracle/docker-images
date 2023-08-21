@@ -43,7 +43,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     container="true" 
 # Use second ENV so that variable get substituted
-# Hadolint ignore=DL3044
+# hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH \
      SCRIPT_DIR=$INSTALL_DIR/startup \
