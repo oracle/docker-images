@@ -6,13 +6,13 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014,2021 Oracle and/or its affiliates.
+# Copyright (c) 2014,2023 Oracle and/or its affiliates.
 # 
 
 usage() {
   cat << EOF
 
-Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-o] [container build option]
+Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-b] [-o] [container build option]
 Builds a container image for Oracle Database.
 
 Parameters:
@@ -24,6 +24,8 @@ Parameters:
    -x: creates image based on 'Express Edition'
    -f: creates images based on Database 'Free' 
    -i: ignores the MD5 checksums
+   -p: creates and extends image using the patching extension
+   -b: build base stage only (Used by extensions)
    -o: passes on container build option
 
 * select one edition only: -e, -s, -x, or -f
@@ -111,6 +113,8 @@ ENTERPRISE=0
 STANDARD=0
 EXPRESS=0
 FREE=0
+PATCHING=0
+BASE_ONLY=0
 # Obtaining the latest version to build
 VERSION="$(find -- *.*.* -type d | tail -n 1)"
 SKIPMD5=0
@@ -125,7 +129,7 @@ if [ "$#" -eq 0 ]; then
   exit 1;
 fi
 
-while getopts "hesxfiv:t:o:" optname; do
+while getopts "hesxfiv:t:o:pb" optname; do
   case "${optname}" in
     "h")
       usage
@@ -145,6 +149,12 @@ while getopts "hesxfiv:t:o:" optname; do
       ;;
     "f")
       FREE=1
+      ;;
+    "p")
+      PATCHING=1
+      ;;
+    "b")
+      BASE_ONLY=1
       ;;
     "v")
       VERSION="${OPTARG}"
@@ -229,9 +239,12 @@ echo "$DOCKERFILE"
 # If provided using -t build option then use it; Otherwise, create with version and edition
 if [ -z "${IMAGE_NAME}" ]; then
   IMAGE_NAME="oracle/database:${VERSION}-${EDITION}"
+  if [ ${BASE_ONLY} -eq 1 ]; then
+    IMAGE_NAME="oracle/database:${VERSION}-base"
+  fi
 fi;
 
-if [ ! "${SKIPMD5}" -eq 1 ]; then
+if [ ${BASE_ONLY} -eq 0 ] && [ ! "${SKIPMD5}" -eq 1 ]; then
   checksumPackages
 else
   echo "Ignored MD5 checksum."
@@ -267,6 +280,30 @@ if [ ${#PROXY_SETTINGS[@]} -gt 0 ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
 
+if [ ${PATCHING} -eq 1 ]; then
+  # Setting SLIMMING to false to support patching
+  BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
+fi
+
+# ############################# #
+# BUILDING THE BASE STAGE IMAGE #
+# ############################# #
+
+if [ ${BASE_ONLY} -eq 1 ]; then
+  echo "Building base stage image '${IMAGE_NAME}' ..."
+  # BUILD THE BASE STAGE IMAGE (replace all environment variables)
+  "${CONTAINER_RUNTIME}" build --force-rm=true \
+        "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --target base \
+        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
+    echo ""
+    echo "ERROR: Base stage image was NOT successfully created."
+    exit 1
+  }
+  # Remove dangling images (intermitten images with tag <none>)
+  yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
+  exit
+fi
+
 # ################## #
 # BUILDING THE IMAGE #
 # ################## #
@@ -275,8 +312,8 @@ echo "Building image '${IMAGE_NAME}' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
-       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
-       -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
+      "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
+      -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
   echo ""
   echo "ERROR: Oracle Database container image was NOT successfully created."
   echo "ERROR: Check the output and correct any reported problems with the build operation."
@@ -300,3 +337,8 @@ cat << EOF
   Build completed in ${BUILD_ELAPSED} seconds.
   
 EOF
+
+# EXTEND THE BUILT IMAGE BY APPLYING PATCHING EXTENSION
+if [ ${PATCHING} -eq 1 ]; then
+  ../../extensions/buildExtensions.sh -b "${IMAGE_NAME}" -t "${IMAGE_NAME}"-ext -v "${VERSION}" -x 'patching'
+fi
