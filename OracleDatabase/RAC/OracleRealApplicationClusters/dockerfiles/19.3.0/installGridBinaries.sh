@@ -11,7 +11,7 @@
 # 
 
 EDITION=$1
-export PATCH_NUMBER=$2
+PATCH_NUMBER=$2
 
 # Check whether edition has been passed on
 if [ "$EDITION" == "" ]; then
@@ -42,21 +42,17 @@ if [ "$GRID_HOME" == "" ]; then
 fi;
 
 
-temp_var1=$(hostname)
+temp_var1=`hostname`
 
 # Replace place holders
 # ---------------------
-sed -i -e "s|###HOSTNAME###|$temp_var1|g" "$INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP" && \
-sed -i -e "s|###INSTALL_TYPE###|CRS_SWONLY|g" "$INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP" && \
-sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" "$INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP" && \
-sed -i -e "s|###INVENTORY###|$INVENTORY|g" "$INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP"
+sed -i -e "s|###HOSTNAME###|$temp_var1|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
+sed -i -e "s|###INSTALL_TYPE###|CRS_SWONLY|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
+sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
+sed -i -e "s|###INVENTORY###|$INVENTORY|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP
 
 # Install Oracle binaries
 mkdir -p /home/grid/.ssh && \
 chmod 700 /home/grid/.ssh && \
-if unzip -q "$INSTALL_SCRIPTS/$INSTALL_FILE_1" -d "$GRID_HOME"
-then
-	"$GRID_HOME/gridSetup.sh" -silent -responseFile "$INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP" -ignorePrereqFailure
-else
-	true
-fi
+unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $GRID_HOME && \ 
+$GRID_HOME/gridSetup.sh -silent -responseFile $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP -ignorePrereqFailure || true
