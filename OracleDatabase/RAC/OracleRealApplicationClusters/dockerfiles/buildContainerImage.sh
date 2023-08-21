@@ -95,8 +95,10 @@ done
 # Oracle Database Image Name
 if [ "${IMAGE_NAME}"x = "x" ] && [ "${SLIM}" == "true" ]; then
    IMAGE_NAME="oracle/database-rac:${VERSION}-slim"
+   STAGE_NAME="final-slim"
 elif [ "${IMAGE_NAME}"x = "x" ] && [ "${SLIM}" == "false" ]; then
    IMAGE_NAME="oracle/database-rac:${VERSION}"
+   STAGE_NAME="final"
 else
    echo "Image name is passed as an variable"
 fi
@@ -147,12 +149,13 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 # shellcheck disable=SC2086
-docker build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} -t ${IMAGE_NAME} -f Dockerfile . || {
+docker build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} -t ${IMAGE_NAME} -f Dockerfile . --target ${STAGE_NAME} || {
   echo "There was an error building the image."
   exit 1
 }
 BUILD_END=$(date '+%s')
-BUILD_ELAPSED=$( "$BUILD_END" - "$BUILD_START" )
+# shellcheck disable=SC2154,SC2003
+BUILD_ELAPSED=$(expr "$BUILD_END" - "$BUILD_START")
 
 echo ""
 # shellcheck disable=SC2181,SC2320

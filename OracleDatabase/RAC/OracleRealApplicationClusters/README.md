@@ -101,7 +101,7 @@ Complete each of the following prerequisites:
 
 8. To resolve VIPs and SCAN IPs, we are using a DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md).
    - If you have a pre-configured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment.
-   - You must ensure that you have the`Podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
+   - You must ensure that you have the`podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
 
 9. If you are running RAC on Podman, you need to make sure you have installed the `podman-docker` rpm so that podman commands can be run using `docker` utility.
 10. The Oracle RAC `Dockerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationCluster/dockerfiles/<VERSION>` folder.
@@ -136,8 +136,9 @@ To assist in building the images, you can use the [`buildContainerImage.sh`](htt
 If you are planing to deploy Oracle RAC container image on Podman, skip to the section [Oracle RAC Container Image for Podman](#oracle-rac-container-image-for-podman).
 
   ```bash
-  ./buildContainerImage.sh -v <Software Version>
-  #  for example ./buildContainerImage.sh -v 21.3.0
+  ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=true|false'
+
+ #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=false'
   ```
 
 ### Oracle RAC Container Image for Podman
@@ -145,9 +146,9 @@ If you are planing to deploy Oracle RAC container image on Podman, skip to the s
 If you are planing to deploy Oracle RAC container image on Docker, skip to the section [Oracle RAC Container Image for Docker](#oracle-rac-container-image-for-docker).
 
  ```bash
- ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 SLIMMING=true|false' -i
+ ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true|false'
 
- #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 SLIMMING=false'
+ #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=false'
  ```
 
 - After the `21.3.0` Oracle RAC container image is built, start building a patched image with the download 21.7 RU and one-offs. To build the patch image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
@@ -180,9 +181,9 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
 
     ```bash
     # mkdir /opt/.secrets/
+    # openssl rand -out /opt/.secrets/pwd.key -hex 64 
     ```
 
-   - If your environment uses Docker, run `openssl rand -hex 64 -out /opt/.secrets/pwd.key`. For Podman, run `openssl rand -hex -out /opt/.secrets/pwd.key`
    - Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for the  grid, oracle and database users. For this deployment scenario, it will be a common password for the grid, oracle, and database users. Run the command:
 
       ```bash
@@ -591,7 +592,7 @@ You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en
 
 **Notes**:
 
-- You need to remove `"--cpu-rt-runtime=95000 \"` from container creation commands mentioned below in this document in following sections to create the containers if you are running Oracle 8 with URKR7:
+- You need to remove `"--cpu-rt-runtime=95000 \"` from container creation commands mentioned below in this document in following sections to create the containers if you are running Oracle 8 with UEKR7:
   - [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman).
   - [Section 5.3: Adding a Oracle RAC Node using a container on Podman](#section-53-adding-a-oracle-rac-node-using-a-container-on-podman).
   
@@ -779,7 +780,7 @@ Now create the Oracle RAC container using the image.  You can use the following 
 You need to assign the Podman networks created in section 1 to containers. Execute the following commands:
 
   ```bash
-  # podman network disconnect bridge racnode1
+  # podman network disconnect podman racnode1
   # podman network connect rac_pub1_nw --ip 172.16.1.150 racnode1
   # podman network connect rac_priv1_nw --ip 192.168.17.150  racnode1
   ```
@@ -961,7 +962,7 @@ For example:
 Connect the private and public networks you created earlier to the container:
 
 ```bash
-# podman network disconnect bridge racnode2
+# podman network disconnect podman racnode2
 # podman network connect rac_pub1_nw --ip 172.16.1.151 racnode2
 # podman network connect rac_priv1_nw --ip 192.168.17.151 racnode2
 ```
