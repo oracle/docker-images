@@ -11,7 +11,7 @@
 # 
 
 EDITION=$1
-PATCH_NUMBER=$2
+export PATCH_NUMBER=$2
 
 # Check whether edition has been passed on
 if [ "$EDITION" == "" ]; then
