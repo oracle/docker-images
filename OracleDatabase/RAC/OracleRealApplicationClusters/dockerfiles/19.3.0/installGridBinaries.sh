@@ -11,6 +11,7 @@
 # 
 
 EDITION=$1
+# shellcheck disable=SC2034
 PATCH_NUMBER=$2
 
 # Check whether edition has been passed on
@@ -41,11 +42,12 @@ if [ "$GRID_HOME" == "" ]; then
    exit 1;
 fi;
 
-
+# shellcheck disable=SC2006
 temp_var1=`hostname`
 
 # Replace place holders
 # ---------------------
+# shellcheck disable=SC2086,SC1101
 sed -i -e "s|###HOSTNAME###|$temp_var1|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
 sed -i -e "s|###INSTALL_TYPE###|CRS_SWONLY|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
 sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
@@ -54,5 +56,6 @@ sed -i -e "s|###INVENTORY###|$INVENTORY|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP
 # Install Oracle binaries
 mkdir -p /home/grid/.ssh && \
 chmod 700 /home/grid/.ssh && \
+# shellcheck disable=SC2086,SC1101
 unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $GRID_HOME && \ 
 $GRID_HOME/gridSetup.sh -silent -responseFile $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP -ignorePrereqFailure || true
