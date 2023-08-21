@@ -43,6 +43,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     container="true" 
 # Use second ENV so that variable get substituted
+# hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH \
      SCRIPT_DIR=$INSTALL_DIR/startup \
@@ -79,4 +80,5 @@ WORKDIR /home/oracle
 EXPOSE 1521 5500
 
 # Define default command to start Oracle Database.
+# hadolint ignore=DL3025
 CMD exec $SCRIPT_DIR/$RUN_FILE

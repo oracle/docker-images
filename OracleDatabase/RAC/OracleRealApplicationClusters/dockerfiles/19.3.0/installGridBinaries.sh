@@ -9,9 +9,9 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-
 EDITION=$1
-export PATCH_NUMBER=$2
+# shellcheck disable=SC2034
+PATCH_NUMBER=$2
 
 # Check whether edition has been passed on
 if [ "$EDITION" == "" ]; then
@@ -41,17 +41,19 @@ if [ "$GRID_HOME" == "" ]; then
    exit 1;
 fi;
 
-
+# shellcheck disable=SC2006
 temp_var1=`hostname`
 
 # Replace place holders
 # ---------------------
+# shellcheck disable=SC2086,SC1101
 sed -i -e "s|###HOSTNAME###|$temp_var1|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
 sed -i -e "s|###INSTALL_TYPE###|CRS_SWONLY|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
 sed -i -e "s|###GRID_BASE###|$GRID_BASE|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP && \
 sed -i -e "s|###INVENTORY###|$INVENTORY|g" $INSTALL_SCRIPTS/$GRID_SW_INSTALL_RSP
 
 # Install Oracle binaries
+# shellcheck disable=SC2015,SC2086
 mkdir -p /home/grid/.ssh && \
 chmod 700 /home/grid/.ssh && \
 unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $GRID_HOME && \
