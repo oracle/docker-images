@@ -232,12 +232,16 @@ if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
   # Creating the database using the dbca command
   if [ "${STANDBY_DB}" = "true" ]; then
     # Creating standby database
-    dbca -silent -createDuplicateDB -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" "${DBCA_CRED_OPTIONS}" -sid "$ORACLE_SID" -createAsStandby -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
+    # Ignoring shell check so as to treat DB_CREDS as to separate args to dbca
+    # shellcheck disable=SC2086
+    dbca -silent -createDuplicateDB -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -createAsStandby -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
   else
     # Creating clone database after duplicating a primary database; CLONE_DB is set to true here
-    dbca -silent -createDuplicateDB -gdbName "$ORACLE_SID" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" "${DBCA_CRED_OPTIONS}" -sid "$ORACLE_SID" -databaseConfigType SINGLE -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
+    # Ignoring shell check so as to treat DB_CREDS as to separate args to dbca
+    # shellcheck disable=SC2086
+    dbca -silent -createDuplicateDB -gdbName "$ORACLE_SID" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -databaseConfigType SINGLE -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
       cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
   fi
