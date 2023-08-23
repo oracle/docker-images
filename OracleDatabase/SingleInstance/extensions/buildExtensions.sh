@@ -158,7 +158,9 @@ for x in $EXTENSIONS; do
   echo "ERROR: Check the output and correct any reported problems with the container build operation."
   exit 1
   }
-  "${CONTAINER_RUNTIME}" tag "$BASE_IMAGE"-base "$IMAGE_NAME"-base
+  if "${CONTAINER_RUNTIME}" image inspect "${BASE_IMAGE}"-base >/dev/null 2>&1; then
+      "${CONTAINER_RUNTIME}" tag "$BASE_IMAGE"-base "$IMAGE_NAME"-base
+  fi
   BASE_IMAGE="$IMAGE_NAME"
   cd ..
 done
