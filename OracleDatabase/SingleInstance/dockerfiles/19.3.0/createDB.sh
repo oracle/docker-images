@@ -194,6 +194,7 @@ setupNetworkConfig;
 export ARCHIVELOG_DIR=$ORACLE_BASE/oradata/$ORACLE_SID/$ARCHIVELOG_DIR_NAME
 
 # Start LISTENER and run DBCA
+# Ignoring shell check so as to treat DB_CREDS as to separate args to dbca
 # shellcheck disable=SC2086
 lsnrctl start &&
 dbca -silent -createDatabase -enableArchive "$ENABLE_ARCHIVELOG" -archiveLogDest "$ARCHIVELOG_DIR" ${DBCA_CRED_OPTIONS} -responseFile "$ORACLE_BASE"/dbca.rsp ||
