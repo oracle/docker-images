@@ -285,14 +285,16 @@ if [ ${PATCHING} -eq 1 ]; then
   BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
 fi
 
+if [ ! -e "${DOCKERFILE}" ]; then
+  echo "ERROR: ${DOCKERFILE} doesn't exist"
+  exit 1
+fi
+
 # ############################# #
 # BUILDING THE BASE STAGE IMAGE #
 # ############################# #
 
 if [ ${BASE_ONLY} -eq 1 ]; then
-  if [ ! -e "${DOCKERFILE}" ]; then
-    exit
-  fi
   echo "Building base stage image '${IMAGE_NAME}' ..."
   # BUILD THE BASE STAGE IMAGE (replace all environment variables)
   "${CONTAINER_RUNTIME}" build --force-rm=true \

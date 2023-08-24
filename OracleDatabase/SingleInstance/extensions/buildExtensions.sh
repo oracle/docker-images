@@ -128,8 +128,10 @@ BUILD_START=$(date '+%s')
 
 cd "$SCRIPT_DIR"
 
-# BUILD THE LINUX BASE FOR REUSE
-../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+if [ "$EXTENSIONS" != "prebuiltdb" ]; then 
+  # BUILD THE LINUX BASE FOR REUSE
+  ../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+fi
 
 for x in $EXTENSIONS; do
   echo "Building extension $x..."
