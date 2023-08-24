@@ -18,9 +18,10 @@ Once you have created the base image, go into the **extensions** folder and run 
        -t: name:tag for the extended image
        -o: passes on Docker build option
 
-### Customizing Prebuilt DB extension
+## Customizing Prebuilt DB extension
 
-Prebuilt DB container images can be custom built with user provided setup scripts. Currently `sh` and `sql` extensions are supported. Place the custom setup scripts in `/extensions/prebuiltdb/setup` directory before running the `prebuiltdb` extension. SQL scripts will be executed as sysdba, shell scripts will be executed as the current user. To ensure proper order it is recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
+Prebuilt DB container images can be custom built with user provided setup scripts. Currently `sh` and `sql` extensions are supported. Place the custom setup scripts in `/extensions/prebuiltdb/setup` directory before running the `prebuiltdb` extension. 
+SQL scripts will be executed as sysdba, shell scripts will be executed as the current user. To ensure proper order it is recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
 
 LICENSE UPL 1.0
 
