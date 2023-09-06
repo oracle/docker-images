@@ -128,8 +128,10 @@ BUILD_START=$(date '+%s')
 
 cd "$SCRIPT_DIR"
 
-# BUILD THE LINUX BASE FOR REUSE
-../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+if [ "$EXTENSIONS" != "prebuiltdb" ]; then 
+  # BUILD THE LINUX BASE FOR REUSE
+  ../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+fi
 
 for x in $EXTENSIONS; do
   echo "Building extension $x..."
@@ -158,7 +160,9 @@ for x in $EXTENSIONS; do
   echo "ERROR: Check the output and correct any reported problems with the container build operation."
   exit 1
   }
-  "${CONTAINER_RUNTIME}" tag "$BASE_IMAGE"-base "$IMAGE_NAME"-base
+  if "${CONTAINER_RUNTIME}" image inspect "${BASE_IMAGE}"-base >/dev/null 2>&1; then
+      "${CONTAINER_RUNTIME}" tag "$BASE_IMAGE"-base "$IMAGE_NAME"-base
+  fi
   BASE_IMAGE="$IMAGE_NAME"
   cd ..
 done

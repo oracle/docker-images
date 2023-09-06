@@ -285,6 +285,11 @@ if [ ${PATCHING} -eq 1 ]; then
   BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
 fi
 
+if [ ! -e "${DOCKERFILE}" ]; then
+  echo "ERROR: ${DOCKERFILE} doesn't exist"
+  exit 1
+fi
+
 # ############################# #
 # BUILDING THE BASE STAGE IMAGE #
 # ############################# #
