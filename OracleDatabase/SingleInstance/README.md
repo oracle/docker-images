@@ -2,6 +2,32 @@
 
 Sample container build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Database Online Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/index.html).
 
+* [How to build and run](#how-to-build-and-run)
+  * [Building Oracle Database container images](#building-oracle-database-container-images)
+    * [Building patched container images](#building-patched-container-images)
+    * [Building the container images using Podman](#building-the-container-images-using-podman)
+  * [Running Oracle Database in a container](#running-oracle-database-in-a-container)
+    * [Running Oracle Database Enterprise and Standard Edition 2 in a container](#running-oracle-database-enterprise-and-standard-edition-2-in-a-container)
+    * [Securely specifying the password when using Podman (Supported from 19.3.0 onwards)](#securely-specifying-the-password-when-using-podman-supported-from-1930-onwards)
+    * [Selecting the Edition (Supported from 19.3.0 release)](#selecting-the-edition-supported-from-1930-release)
+    * [Setting the SGA and PGA memory (Supported from 19.3.0 release)](#setting-the-sga-and-pga-memory-supported-from-1930-release)
+    * [Setting the CPU_COUNT and PROCESSES (Supported from 19.3.0 release)](#setting-the-cpu_count-and-processes-supported-from-1930-release)
+    * [Changing the admin accounts passwords](#changing-the-admin-accounts-passwords)
+    * [Enabling archive log mode while creating the database](#enabling-archive-log-mode-while-creating-the-database)
+    * [Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)](#configuring-tcps-connections-for-oracle-database-supported-from-version-1930-onwards)
+    * [Running Oracle Database 23c FREE in a container](#running-oracle-database-23c-free-in-a-container)
+    * [Running Oracle Database 21c/18c Express Edition in a container](#running-oracle-database-21c18c-express-edition-in-a-container)
+    * [Running Oracle Database 11gR2 Express Edition in a container](#running-oracle-database-11gr2-express-edition-in-a-container)
+  * [Containerizing an on-premise database (Supported from version 19.3.0 release)](#containerizing-an-on-premise-database-supported-from-version-1930-release)
+  * [Deploying Oracle Database on Kubernetes](#deploying-oracle-database-on-kubernetes)
+  * [Running SQL*Plus in a container](#running-sqlplus-in-a-container)
+  * [Running scripts after setup and on startup](#running-scripts-after-setup-and-on-startup)
+* [Known issues](#known-issues)
+* [Frequently asked questions](#frequently-asked-questions)
+* [Support](#support)
+* [License](#license)
+* [Copyright](#copyright)
+
 ## How to build and run
 
 This project offers sample Dockerfiles for:
