@@ -13,7 +13,7 @@ The `buildContainerImage.sh` script can assist with building the images. See bel
 
 The `buildContainerImage.sh` script is a utility shell script that performs MD5 checks and is an easy way to get started. Users can also use the docker build command to build an image with custom configuration parameters. To run the script, go into the `dockerfiles` folder and run the `buildContainerImage.sh` script:
 
-```
+```bash
 ./buildContainerImage.sh-v <Software Version>
 ./buildContainerImage.sh -v latest
 ```
@@ -21,14 +21,14 @@ NOTE: To build the DNS server image, pass the version latest to `buildContainerI
 
 For detailed usage instructions, please execute the following command:
 
-```
+```bash
 ./buildContainerImage.sh -h
 ```
 
 ## Create bridge
 Before you create the DNS server container, ensure you have created the required network bridges so you can attach the DNS server to the correct bridge.
 
-```
+```bash
 docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
 ```
 **Note:** You can change the subnet according to your environment.
@@ -36,7 +36,7 @@ docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
 ### Running RAC DNS server container
 Execute following command to create the container:
 
-```
+```bash
 docker run -d  --name racdns \
  --hostname rac-dns  \
  --dns-search="example.com" \
@@ -54,14 +54,14 @@ In the above example, we used **172.16.1.0/24** subnet for the DNS server. You c
 
 To check the DNS server container/services creation logs, please tail the Docker logs. It may take up to 2 minutes for the racdns container to start completely.
 
-```
+```bash
 docker logs -f racdns
 ```
 
 you should see the following in docker logs output:
 
-```
+```bash
 #################################################
-runOracle.sh: RACDNSServer is up and running!
+DNS Server IS READY TO USE!
 #################################################
 ```

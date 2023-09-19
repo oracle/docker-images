@@ -2,6 +2,32 @@
 
 Sample container build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Database Online Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/index.html).
 
+* [How to build and run](#how-to-build-and-run)
+  * [Building Oracle Database container images](#building-oracle-database-container-images)
+    * [Building patched container images](#building-patched-container-images)
+    * [Building the container images using Podman](#building-the-container-images-using-podman)
+  * [Running Oracle Database in a container](#running-oracle-database-in-a-container)
+    * [Running Oracle Database Enterprise and Standard Edition 2 in a container](#running-oracle-database-enterprise-and-standard-edition-2-in-a-container)
+    * [Securely specifying the password when using Podman (Supported from 19.3.0 onwards)](#securely-specifying-the-password-when-using-podman-supported-from-1930-onwards)
+    * [Selecting the Edition (Supported from 19.3.0 release)](#selecting-the-edition-supported-from-1930-release)
+    * [Setting the SGA and PGA memory (Supported from 19.3.0 release)](#setting-the-sga-and-pga-memory-supported-from-1930-release)
+    * [Setting the CPU_COUNT and PROCESSES (Supported from 19.3.0 release)](#setting-the-cpu_count-and-processes-supported-from-1930-release)
+    * [Changing the admin accounts passwords](#changing-the-admin-accounts-passwords)
+    * [Enabling archive log mode while creating the database](#enabling-archive-log-mode-while-creating-the-database)
+    * [Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)](#configuring-tcps-connections-for-oracle-database-supported-from-version-1930-onwards)
+    * [Running Oracle Database 23c FREE in a container](#running-oracle-database-23c-free-in-a-container)
+    * [Running Oracle Database 21c/18c Express Edition in a container](#running-oracle-database-21c18c-express-edition-in-a-container)
+    * [Running Oracle Database 11gR2 Express Edition in a container](#running-oracle-database-11gr2-express-edition-in-a-container)
+  * [Containerizing an on-premise database (Supported from version 19.3.0 release)](#containerizing-an-on-premise-database-supported-from-version-1930-release)
+  * [Deploying Oracle Database on Kubernetes](#deploying-oracle-database-on-kubernetes)
+  * [Running SQL*Plus in a container](#running-sqlplus-in-a-container)
+  * [Running scripts after setup and on startup](#running-scripts-after-setup-and-on-startup)
+* [Known issues](#known-issues)
+* [Frequently asked questions](#frequently-asked-questions)
+* [Support](#support)
+* [License](#license)
+* [Copyright](#copyright)
+
 ## How to build and run
 
 This project offers sample Dockerfiles for:
@@ -32,7 +58,7 @@ Before you build the image make sure that you have provided the installation bin
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
     
-    Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x] [-i] [-o] [container build option]
+    Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-b] [-o] [container build option]
     Builds a container image for Oracle Database.
     
     Parameters:
@@ -44,6 +70,8 @@ Before you build the image make sure that you have provided the installation bin
        -x: creates image based on 'Express Edition'
        -f: creates image based on Database 'Free'
        -i: ignores the MD5 checksums
+       -p: creates and extends image using the patching extension
+       -b: build base stage only (Used by extensions)
        -o: passes on container build option
     
     * select one edition only: -e, -s, -x, or -f
@@ -63,10 +91,16 @@ You may extend the image with your own Dockerfile and create the users and table
 The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8.
 You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
 
+#### Building patched container images
+
 **NOTE**: This section is intended for container images 19c or higher which has patching extension support. By default, SLIMMING is **true** to remove some components from the image with the intention of making the image slimmer. These removed components cause problems while patching after building patching extension.
 So, to use patching extension one should use additional build argument `-o '--build-arg SLIMMING=false'` while building the container image. Example command for building the container image is as follows:
 
     ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
+
+Patched container images can now be built by specifying the parameter -p. Download the database version specific release update and one-offs and place them into the `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively. In this case, SLIMMING is internally set to **false**. Example command for building the patched container image is as follows:
+
+    ./buildContainerImage.sh -e -v 21.3.0 -p
 
 #### Building the container images using Podman
 
@@ -222,7 +256,7 @@ There are two ways to enable TCPS connections for the database:
         * Use the `-e ENABLE_TCPS=true` option with the `docker run` command. A listener endpoint will be created at the container port 2484 for TCPS.
     * With User provided SSL Certificates
         * Use the `-e ENABLE_TCPS=true` and `-e TCPS_CERTS_LOCATION=<location of certs in container>` option with the `docker run` command. Also mount a local host directory (containing `cert.crt` and `client.key`) at `TCPS_CERTS_LOCATION` using `-v` option.
-        * `cert.cert` is a certificate chain in the order of root, followed by intermediate and then client certificate.
+        * `cert.cert` is a certificate chain in the order of client, followed by intermediate and then root certificate.
 
 2. Enable TCPS after the database is created.
 
@@ -231,7 +265,7 @@ There are two ways to enable TCPS connections for the database:
             docker exec <container name> /opt/oracle/configTcps.sh
 
     * With User provided SSL Certificates
-        * `cert.cert` is a certificate chain in the order of root, followed by intermediate and then client certificate.
+        * `cert.cert` is a certificate chain in the order of client, followed by intermediate and then root certificate.
         * Copy your `cert.crt` and `client.key` files into the container at `TCPS_CERTS_LOCATION` using the following command
 
                 docker cp cert.crt client.key <container name>:<TCPS_CERTS_LOCATION>
@@ -499,4 +533,4 @@ All scripts and files hosted in this project and GitHub [docker-images/OracleDat
 
 ## Copyright
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014,2023 Oracle and/or its affiliates.

@@ -18,6 +18,7 @@
 #
 
 ARG BASE_IMAGE=oracle/database:21.3.0-ee
+# hadolint ignore=DL3006
 FROM ${BASE_IMAGE}
 
 ARG ORACLE_SID
@@ -33,5 +34,7 @@ ENV ORACLE_PDB=${ORACLE_PDB}
 ENV ORACLE_PWD=${ORACLE_PWD}
 ENV AUTO_MEM_CALCULATION=${AUTO_MEM_CALCULATION:-false}
 
+COPY --chown=oracle:dba setup/* "$ORACLE_BASE"/scripts/extensions/setup
+
 # Creating the database
-RUN $ORACLE_BASE/$RUN_FILE --nowait
+RUN "$ORACLE_BASE/$RUN_FILE" --nowait
