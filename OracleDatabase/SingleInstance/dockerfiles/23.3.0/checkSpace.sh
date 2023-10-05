@@ -10,7 +10,7 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-# CONF_FILE env var is set only for XE Database
+# CONF_FILE env var is set only for FREE Database
 if [ "${ORACLE_SID}" = "FREE" ]; then
   REQUIRED_SPACE_GB=13
 else
