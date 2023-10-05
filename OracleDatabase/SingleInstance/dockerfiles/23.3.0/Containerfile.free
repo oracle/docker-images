@@ -31,7 +31,7 @@ LABEL "provider"="Oracle"                                               \
       "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
       "port.listener"="1521"                                            
 
-ARG INSTALL_FILE_1="oracle-database-free-23c-1.0-1.el8.x86_64.rpm"
+ARG INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23c-1.0-1.el8.x86_64.rpm"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
