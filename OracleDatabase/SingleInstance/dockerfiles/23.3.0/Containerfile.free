@@ -82,12 +82,9 @@ RUN mkdir -p "$ORACLE_BASE" && \
 
 FROM base AS builder 
 
-# Copy DB install file
-ADD $INSTALL_FILE_1 $INSTALL_DIR/ 
-
 # Install DB software binaries
 RUN yum -y install expect && \
-    unbuffer yum -y localinstall "$INSTALL_DIR/$INSTALL_FILE_1"
+    unbuffer yum -y install "$INSTALL_FILE_1"
 
 
 #############################################
