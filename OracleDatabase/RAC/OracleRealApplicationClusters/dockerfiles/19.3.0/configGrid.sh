@@ -114,6 +114,7 @@ declare -x CRS_CONFIG_NODES
 declare -x ANSIBLE_INSTALL='false'
 declare -x GIMR_FLAG='false'
 declare -x RUN_DBCA='true'
+declare -x IGNORE_PREREQ=false
 
 progname=$(basename "$0")
 ###################### Variabes and Constants declaration ends here  ####################
@@ -962,7 +963,13 @@ if [ "${SINGLENIC}" == 'true' ];then
  error_exit  "SINGLE NIC is not supported";
 else
 # shellcheck disable=SC2016
-cmd='su - $GRID_USER -c "$GRID_HOME/gridSetup.sh -waitforcompletion -ignorePrereq  -silent -responseFile $responsefile"'
+  if [ "${IGNORE_PREREQ}" = true ]; then
+      # shellcheck disable=SC2016
+      cmd='su - $GRID_USER -c "$GRID_HOME/gridSetup.sh -waitforcompletion -silent -responseFile $responsefile"'
+  else
+      # shellcheck disable=SC2016
+      cmd='su - $GRID_USER -c "$GRID_HOME/gridSetup.sh -waitforcompletion -ignorePrereq  -silent -responseFile $responsefile"'
+  fi
 eval "$cmd"
 fi
 }
@@ -1153,7 +1160,13 @@ local responsefile=$logdir/$DBCA_RSP
 local cmd
 # Replace place holders in response file
 # shellcheck disable=SC2016
-cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'
+  if [ "${IGNORE_PREREQ}" = true ]; then
+  # shellcheck disable=SC2016
+        cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -createDatabase -responseFile $responsefile"'
+    else
+  # shellcheck disable=SC2016
+        cmd='su - $DB_USER -c "$DB_HOME/bin/dbca -silent -ignorePreReqs -createDatabase -responseFile $responsefile"'
+  fi
 eval "$cmd"
 }
 

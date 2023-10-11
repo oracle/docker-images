@@ -112,7 +112,7 @@ declare -x CRS_CONFIG_NODES
 declare -x ANSIBLE_INSTALL='false'
 declare -x GIMR_FLAG='false'
 declare -x RUN_DBCA='true'
-declare -x IGNORE_PREREQ=true
+declare -x IGNORE_PREREQ=false
 
 
 progname=$(basename "$0")
