@@ -229,7 +229,7 @@ cd "${VERSION}" || {
 }
 
 # Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.2.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
+if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.3.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
   DOCKERFILE=$( if [[ -f "Containerfile.${EDITION}" ]]; then echo "Containerfile.${EDITION}"; else echo "${DOCKERFILE}.${EDITION}";fi )
 fi;
 
@@ -283,6 +283,11 @@ fi
 if [ ${PATCHING} -eq 1 ]; then
   # Setting SLIMMING to false to support patching
   BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
+fi
+
+if [ ! -e "${DOCKERFILE}" ]; then
+  echo "ERROR: ${DOCKERFILE} doesn't exist"
+  exit 1
 fi
 
 # ############################# #

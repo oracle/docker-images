@@ -282,6 +282,7 @@ runAgent(){
            then
              docker exec "$AI" /bin/bash -c "agent ido start --config /app/data/conf/config.json &"
           fi
+
       elif [ ! "$(docker ps -f "name=$AI" --format '{{.Names}}')" ]
       then
          echo "INFO: Starting existing container $AI "
@@ -300,6 +301,12 @@ runAgent(){
           fi
       else
          echo "WARN: Agent is already running"
+      fi
+      # removing older image in case of upgrade
+      if [ "$operation" = "postUpgrade" ]
+       then
+         echo "INFO: Removing older image ${installedImageName}"
+         docker image rmi "${installedImageName}" || true
       fi
   elif [ "$containerRuntime" = "podman" ]
   then
@@ -344,6 +351,12 @@ runAgent(){
 
       else
          echo "WARN: Agent is already running"
+      fi
+      # removing older image in case of upgrade
+      if [ "$operation" = "postUpgrade" ]
+       then
+         echo "INFO: Removing older image ${installedImageName} "
+         podman image rmi "${installedImageName}" || true
       fi
   fi
 }
@@ -800,6 +813,7 @@ upgrade()
   echo "INFO: Upgrading Agent with id ${AI} "
   installedPV="${PV}"
   installedAgentId="${AI}"
+  installedImageName="${imageName}"
   #generate a new agent id for upgrade using old agent id
   AI="${installedAgentId}"_upgrade
   newAgentId=${AI}

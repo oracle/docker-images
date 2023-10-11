@@ -43,6 +43,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     container="true" 
 # Use second ENV so that variable get substituted
+# hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH \
      SCRIPT_DIR=$INSTALL_DIR/startup \
@@ -62,6 +63,7 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE  && \
     sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
+    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
     su oracle -c "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
     $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
@@ -78,4 +80,5 @@ WORKDIR /home/oracle
 EXPOSE 1521 5500
 
 # Define default command to start Oracle Database.
+# hadolint ignore=DL3025
 CMD exec $SCRIPT_DIR/$RUN_FILE
