@@ -43,6 +43,7 @@ ARG INSTALL_FILE_2="LINUX.X64_213000_db_home.zip"
 ARG DB_EDITION="EE"
 ARG USER="root"
 ARG WORKDIR="/rac-work-dir"
+ARG IGNORE_PREREQ=false
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -103,7 +104,8 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
    CRONTAB_ENTRY="crontabEntry" \
    EXPECT="/usr/bin/expect" \
    BIN="/usr/sbin" \
-   container="true"
+   container="true" \
+   IGNORE_PREREQ=$IGNORE_PREREQ
 # Use second ENV so that variable get substituted
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin \
