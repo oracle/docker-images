@@ -155,7 +155,7 @@ docker build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} -t $
 }
 BUILD_END=$(date '+%s')
 # shellcheck disable=SC2154,SC2003
-BUILD_ELAPSED=$(expr "$BUILD_END" - "$BUILD_START")
+BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 
 echo ""
 # shellcheck disable=SC2181,SC2320
