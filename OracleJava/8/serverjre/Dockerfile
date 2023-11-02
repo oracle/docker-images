@@ -42,7 +42,7 @@ ENV JAVA_HOME=/usr/java/jdk-8
 COPY server-jre-8u*-linux-x64.tar.gz /tmp/jdk.tgz
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	JAVA_SHA256=03bdb10d5e1aaf09e5ff9e99a18966ca2609e4cc4b4d1916432b09f39aeeaf2e ; \
+	JAVA_SHA256=03454fe3a293ad3179bcc00f09dc4ced38dea77ad4f952d0d4154d9cc1f87160 ; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; 
