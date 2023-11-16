@@ -112,6 +112,7 @@ image.
 * [`oraclelinux8-python:3.6-oracledb`](oraclelinux8/python/3.6-oracledb/Dockerfile)
 * [`oraclelinux8-python:3.8`](oraclelinux8/python/3.8/Dockerfile)
 * [`oraclelinux8-python:3.9`](oraclelinux8/python/3.9/Dockerfile)
+* [`oraclelinux8-python:3.11`](oraclelinux8/python/3.11/Dockerfile)
 
 ### Ruby module
 
