@@ -36,11 +36,12 @@ checksumPackages() {
     echo "Checking if required packages are present and valid..."
     md5sum -c Checksum
     # shellcheck disable=SC2181
-    if [ "$?" -ne 0 ]; then
+    status=$?
+    if [ "$status" -ne 0 ]; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
       # shellcheck disable=SC2320
-      exit $?
+      exit "$status"
     fi
   else
     echo "Ignored MD5 sum, 'md5sum' command not available.";
