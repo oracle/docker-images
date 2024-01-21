@@ -11,12 +11,9 @@ services:
     volumes:
       - /boot:/boot:ro
       - /opt/.secrets:/run/secrets:ro
-      - /dev/shm
       - /opt/containers/rac_host_file:/etc/hosts
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     tmpfs:
       - /dev/shm:rw,exec,size=4G
-      - /run
     privileged: false
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
@@ -62,3 +59,19 @@ services:
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
+
+networks:
+  rac_pub1_nw:
+    name: ${PUBLIC_NETWORK_NAME}
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "${PUBLIC_NETWORK_SUBNET}"
+  rac_priv1_nw:
+    name: ${PRIVATE_NETWORK_NAME}
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "${PRIVATE_NETWORK_SUBNET}"

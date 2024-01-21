@@ -32,12 +32,9 @@ services:
     volumes:
       - /boot:/boot:ro
       - /opt/.secrets:/run/secrets:ro
-      - /dev/shm
       - /opt/containers/rac_host_file:/etc/hosts
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     tmpfs:
       - /dev/shm:rw,exec,size=4G
-      - /run
     privileged: false
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
