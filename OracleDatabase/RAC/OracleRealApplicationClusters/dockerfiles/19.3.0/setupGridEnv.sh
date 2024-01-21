@@ -213,13 +213,15 @@ resetFailedUnits()
                         print_message "$SERVICE_NAME is not running."
                 fi
 
+        # shellcheck disable=SC2086
         cp $SCRIPT_DIR/$RESET_FAILED_UNITS  /var/tmp/$RESET_FAILED_UNITS
         chmod 755 /var/tmp/$RESET_FAILED_UNITS
         print_message "Setting Crontab"
         # shellcheck disable=SC2016
         cmd='su - $GRID_USER -c "sudo crontab $SCRIPT_DIR/$SET_CRONTAB"'
+        # shellcheck disable=SC2086
         eval $cmd
-
+        # shellcheck disable=SC2181
         if [ $?  -eq 0 ];then
         print_message "Sucessfully installed $SET_CRONTAB using crontab"
         else
