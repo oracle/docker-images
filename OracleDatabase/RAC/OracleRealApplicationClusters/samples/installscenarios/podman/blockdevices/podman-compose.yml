@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: '3'
 services:
   racdns:
     container_name: ${DNS_CONTAINER_NAME}
@@ -22,34 +22,10 @@ services:
     networks:
       rac_pub1_nw:
         ipv4_address: ${DNS_PUBLIC_IP}
-  racnode-storage:
-    container_name: ${STORAGE_CONTAINER_NAME}
-    hostname: ${STORAGE_HOST_NAME}
-    image: ${STORAGE_IMAGE_NAME}
-    dns_search: ${DNS_DOMAIN}
-    volumes:
-      - ${NFS_STORAGE_VOLUME}:/oradata
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    tmpfs:
-      - /run
-    cap_add:
-      - SYS_ADMIN
-      - AUDIT_WRITE
-    healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'NFS Server is up and running'` -ge 1 ]; then exit 0; else exit 1; fi"]
-      interval: ${HEALTHCHECK_INTERVAL}
-      timeout: ${HEALTHCHECK_TIMEOUT}
-      retries: ${HEALTHCHECK_RETRIES}
-    networks:
-      rac_priv1_nw:
-        ipv4_address: ${STORAGE_PRIVATE_IP}
   racnode1:
-    depends_on:
-      racdns:
-        condition: service_healthy
     container_name: ${RACNODE1_CONTAINER_NAME}
     hostname: ${RACNODE1_HOST_NAME}
-    image: ${RACNODE1_IMAGE_NAME}
+    image: ${RACNODE_IMAGE_NAME}
     restart: always
     dns: ${DNS_PUBLIC_IP}
     dns_search: ${DNS_DOMAIN}
@@ -59,7 +35,6 @@ services:
       - /dev/shm
       - /opt/containers/rac_host_file:/etc/hosts
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - racstorage:/oradata
     tmpfs:
       - /dev/shm:rw,exec,size=4G
       - /run
@@ -81,16 +56,26 @@ services:
       CMAN_IP: ${CMAN_IP}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
+      ORACLE_SID: ${ORACLE_SID}
+      RESET_FAILED_SYSTEMD: "true"
+      DEFAULT_GATEWAY: ${DEFAULT_GATEWAY}
+      TMPDIR: /var/tmp
     ulimits:
       rtprio: 99
     cap_add:
       - SYS_RESOURCE
       - NET_ADMIN
       - SYS_NICE
+      - AUDIT_WRITE
+      - AUDIT_CONTROL
+    sysctls:
+        - kernel.shmall=2097152
+        - kernel.shmmax=8589934592
+        - kernel.shmmni=4096
+        - 'kernel.sem=250 32000 100 128'
     devices:
       - "${ASM_DISK1}:${ASM_DEVICE1}"
       - "${ASM_DISK2}:${ASM_DEVICE2}"
-    cpu_rt_runtime: 95000
     networks:
       - rac_pub1_nw
       - rac_priv1_nw
@@ -141,6 +126,3 @@ networks:
       driver: default
       config:
         - subnet: "${PRIVATE_NETWORK_SUBNET}"
-volumes:
-  racstorage:
-    external: true
