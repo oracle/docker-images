@@ -59,6 +59,7 @@ services:
       CMAN_IP: ${CMAN_IP}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
+      RESET_FAILED_SYSTEMD: "true"
     ulimits:
       rtprio: 99
     cap_add:

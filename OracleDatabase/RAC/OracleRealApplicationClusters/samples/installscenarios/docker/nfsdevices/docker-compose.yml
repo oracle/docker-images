@@ -49,7 +49,7 @@ services:
         condition: service_healthy
     container_name: ${RACNODE1_CONTAINER_NAME}
     hostname: ${RACNODE1_HOST_NAME}
-    image: ${RACNODE1_IMAGE_NAME}
+    image: ${RACNODE_IMAGE_NAME}
     restart: always
     dns: ${DNS_PUBLIC_IP}
     dns_search: ${DNS_DOMAIN}
@@ -81,6 +81,7 @@ services:
       CMAN_IP: ${CMAN_IP}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
+      RESET_FAILED_SYSTEMD: "true"
     ulimits:
       rtprio: 99
     cap_add:

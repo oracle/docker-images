@@ -35,6 +35,7 @@ services:
       ORACLE_SID: ${ORACLE_DBNAME}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
+      RESET_FAILED_SYSTEMD: "true"
     devices:
       - "${ASM_DISK1}:${ASM_DEVICE1}"
       - "${ASM_DISK2}:${ASM_DEVICE2}"
@@ -68,6 +69,3 @@ networks:
       driver: default
       config:
         - subnet: "${PRIVATE_NETWORK_SUBNET}"
-volumes:
-  racstorage:
-    external: true
