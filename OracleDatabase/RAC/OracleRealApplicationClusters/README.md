@@ -803,7 +803,7 @@ racnode-cman  | 01-19-2024 16:35:33 UTC :  : ###################################
 racnode-cman  | 01-19-2024 16:35:33 UTC :  : cman started sucessfully
 ```
 
-Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks. 
+Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks.
 
 In case, of MCVLAN or IPVLAN networks, you may want to edit `docker-compose.yml` file are per your needs and respective environment variables.
 
