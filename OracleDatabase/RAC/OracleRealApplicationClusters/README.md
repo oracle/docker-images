@@ -593,7 +593,7 @@ ls -lrt $DOCKER_CONFIG/cli-plugins
 curl -SL https://github.com/docker/compose/releases/download/v2.23.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
 ls -lrt $DOCKER_CONFIG/cli-plugins
 chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-``` 
+```
 ### Deploying Oracle RAC on Container with Block Devices on Docker with Docker Compose
 
 In order to setup Oracle RAC on Docker with Block Devices with Docker Compose, first lets identify necessary variables to export that will be used by `docker-compose.yml` file later. Below is one example of exporting necessary variables related to docker network, DNS container, RAC Container and CMAN container discussed in this repo.
@@ -684,7 +684,9 @@ racnode-cman  | 01-19-2024 16:35:33 UTC :  : ###################################
 racnode-cman  | 01-19-2024 16:35:33 UTC :  : cman started sucessfully
 ```
 
-Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks. In case, of MCVLAN or IPVLAN networks, you may want to edit `docker-compose.yml` file are per your needs and respective environment variables.
+Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks.
+
+In case, of MCVLAN or IPVLAN networks, you may want to edit `docker-compose.yml` file are per your needs and respective environment variables.
 
 ### Deploying Oracle RAC on Container With Oracle RAC Storage Container with Docker Compose
 In order to setup Oracle RAC on Docker with Oracle RAC Storage Container with Docker Compose, lets first make sure `nfs-utils` rpm package is installed in Docker Host machine.
@@ -801,7 +803,9 @@ racnode-cman  | 01-19-2024 16:35:33 UTC :  : ###################################
 racnode-cman  | 01-19-2024 16:35:33 UTC :  : cman started sucessfully
 ```
 
-Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks. In case, of MCVLAN or IPVLAN networks, you may want to edit `docker-compose.yml` file are per your needs and respective environment variables.
+Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks. 
+
+In case, of MCVLAN or IPVLAN networks, you may want to edit `docker-compose.yml` file are per your needs and respective environment variables.
 
 ## Section 4.5: Adding Oracle RAC Container on Docker with Docker Compose
 ### Deploying Oracle RAC Additional Node on Container with Block Devices on Docker with Docker Compose
