@@ -9,6 +9,14 @@ Example of how to apply a custom patch or Release Update (RU) to the image. You 
 
 Example of how to create 2 node RAC based on sample responsefiles provided under customracdb/<version> folder. You can create multinode rac using responsefiles based on your environment. For details, pelase refer [README.MD of customracdb](./customracdb/README.md).
 
+# racdockercompose
+
+Example of how to create 2 node RAC based with Docker Compose. You can create singlenode rac using docker compose based on your environment. For details, pelase refer [README.MD of racdockercompose](./racdockercompose/README.md).
+
+# racpodmancompose
+
+Example of how to create 2 node RAC based with Podman Compose. You can create singlenode rac using podman compose based on your environment. For details, pelase refer [README.MD of racpodmancompose](./racpodmancompose/README.md).
+
 # Copyright
 
 Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.

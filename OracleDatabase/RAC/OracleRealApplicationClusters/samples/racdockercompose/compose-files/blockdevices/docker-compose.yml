@@ -28,7 +28,7 @@ services:
         condition: service_healthy
     container_name: ${RACNODE1_CONTAINER_NAME}
     hostname: ${RACNODE1_HOST_NAME}
-    image: ${RACNODE1_IMAGE_NAME}
+    image: ${RACNODE_IMAGE_NAME}
     restart: always
     dns: ${DNS_PUBLIC_IP}
     dns_search: ${DNS_DOMAIN}
