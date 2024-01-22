@@ -216,7 +216,7 @@ resetFailedUnits()
         cp "$SCRIPT_DIR/$RESET_FAILED_UNITS"  "/var/tmp/$RESET_FAILED_UNITS"
         chmod 755 "/var/tmp/$RESET_FAILED_UNITS"
         print_message "Setting Crontab"
-        cmd='su - $GRID_USER -c "sudo crontab $SCRIPT_DIR/$SET_CRONTAB"'
+        cmd="su - $GRID_USER -c \"sudo crontab $SCRIPT_DIR/$SET_CRONTAB\""
         eval "$cmd"
         if [ $? ]; then
         print_message "Sucessfully installed $SET_CRONTAB using crontab"
