@@ -1,4 +1,4 @@
-# Example of creating a Oracle RAC database with Podman Compose
+# Example of creating an Oracle RAC database with Podman Compose
 
 Once you have built your Oracle RAC container image, you can create a Oracle RAC database with Podman Compose on Single Host via Bridge Network as example given below.
 
