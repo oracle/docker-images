@@ -36,6 +36,7 @@ To create an Oracle RAC environment, complete these steps in order:
       - [Assign Network to additional Oracle RAC container](#assign-network-to-additional-oracle-rac-container)
       - [Start Oracle RAC racnode2 container](#start-oracle-rac-racnode2-container)
       - [Connect to the Oracle RAC racnode2 container](#connect-to-the-oracle-rac-racnode2-container)
+    - [Section 4.4: Setup Oracle RAC Container on Docker with Docker Compose](#section-44-setup-oracle-rac-container-on-docker-with-docker-compose)
   - [Section 5: Oracle RAC on Podman](#section-5-oracle-rac-on-podman)
     - [Section 5.1 : Prerequisites for Running Oracle RAC on Podman](#section-51--prerequisites-for-running-oracle-rac-on-podman)
     - [Section 5.2: Setup RAC Containers on Podman](#section-52-setup-rac-containers-on-podman)
@@ -49,6 +50,7 @@ To create an Oracle RAC environment, complete these steps in order:
       - [Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Podman](#deploying-oracle-rac-additional-node-on-container-with-oracle-rac-storage-container-on-podman)
       - [Assign Network to additional Oracle RAC container Created Using Podman](#assign-network-to-additional-oracle-rac-container-created-using-podman)
       - [Start Oracle RAC container](#start-oracle-rac-container)
+    - [Section 5.4: Setup Oracle RAC Container on Podman with Podman Compose](#section-54-setup-oracle-rac-container-on-podman-with-podman-compose)
   - [Section 6: Connecting to an Oracle RAC Database](#section-6-connecting-to-an-oracle-rac-database)
   - [Section 7: Environment Variables for the First Node](#section-7-environment-variables-for-the-first-node)
   - [Section 8: Environment Variables for the Second and Subsequent Nodes](#section-8-environment-variables-for-the-second-and-subsequent-nodes)
@@ -578,6 +580,18 @@ To connect to the container execute the following command:
 
 If the node addition fails, log in to the container using the preceding command and review `/tmp/orod.log`. You can also review the Grid Infrastructure logs i.e. `$GRID_BASE/diag/crs` and check for failure logs. If the node creation has failed during the database creation process, then check DB logs.
 
+## Section 4.4: Setup Oracle RAC Container on Docker with Docker Compose
+
+Oracle RAC database can also be deployed with Docker Compose. An example of how to install Oracle RAC Database on Single Host via Bridge Network is explained in this [README.md](./samples/racdockercompose/README.md)
+
+Same section covers various below scenarios as well with docker compose-
+1. Deploying Oracle RAC on Container with Block Devices on Docker with Docker Compose
+2. Deploying Oracle RAC on Container With Oracle RAC Storage Container with Docker Compose
+3. Deploying Oracle RAC Additional Node on Container with Block Devices on Docker with Docker Compose
+4. Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Docker with Docker Compose
+
+***Note:*** Docker and Docker Compose is not supported with OL8. You need OL7.9 with UEK R5 or R6.
+
 ## Section 5: Oracle RAC on Podman
 
 If you are deploying Oracle RAC On Docker, skip to [Section 4: Oracle RAC on Docker](#section-4-oracle-rac-on-docker)
@@ -988,6 +1002,15 @@ You should see the database creation success message at the end.
 ORACLE RAC DATABASE IS READY TO USE!
 ####################################
 ```
+## Section 5.4: Setup Oracle RAC Container on Podman with Podman Compose
+
+Oracle RAC database can also be deployed with podman Compose. An example of how to install Oracle RAC Database on Single Host via Bridge Network is explained in this [README.md](./samples/racpodmancompose/README.md)
+
+Same section covers various below scenarios as well with podman compose-
+1. Deploying Oracle RAC on Container with Block Devices on Podman with Podman Compose
+2. Deploying Oracle RAC Additional Node on Container with Block Devices on Podman with Podman Compose
+
+***Note:*** Podman and Podman Compose is not supported with OL7. You need OL8.8 with UEK R7.
 
 ## Section 6: Connecting to an Oracle RAC Database
 
