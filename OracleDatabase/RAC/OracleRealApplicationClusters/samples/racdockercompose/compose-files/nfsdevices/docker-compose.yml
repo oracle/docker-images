@@ -110,7 +110,7 @@ services:
     image: ${CMAN_IMAGE_NAME}
     dns_search: ${DNS_DOMAIN}
     environment:
-      DOMAIN_NAME: ${DNS_DOMAIN}
+      DOMAIN: ${DNS_DOMAIN}
       PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
       SCAN_NAME: ${SCAN_NAME}
       SCAN_IP: ${SCAN_IP}

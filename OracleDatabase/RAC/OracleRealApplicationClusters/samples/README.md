@@ -19,4 +19,4 @@ Example of how to create a 2-node RAC based on Podman Compose. You can create a 
 
 Copyright
 ---------
-Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.

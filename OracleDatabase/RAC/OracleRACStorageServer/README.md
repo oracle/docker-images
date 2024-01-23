@@ -13,7 +13,7 @@ Refer below instructions for setup of NFS Container for RAC -
 - [NFS Server installation on Host](#nfs-server-installation-on-host)
 - [Running RACStorageServer container](#running-racstorageserver-container)
   - [RAC Storage Container for Podman Host Machine](#rac-storage-container-for-podman-host-machine)
-  - [RAC Storage container for Docker Host Machine](#rac-storage-container-for-docker-host-machine)        
+  - [RAC Storage container for Docker Host Machine](#rac-storage-container-for-docker-host-machine)
 - [Create NFS Volume](#create-nfs-volume)
 - [Copyright](#copyright)
 
@@ -82,9 +82,9 @@ yum -y install nfs-utils
   
 ### Running RACStorageServer Podman container
 
-#### Prerequisites for RAC Storage Container for Podman Host 
+#### Prerequisites for RAC Storage Container for Podman Host
 
-Create placeholder for NFS storage and make sure it is empty - 
+Create placeholder for NFS storage and make sure it is empty -
 ```bash
 export ORACLE_DBNAME=ORCLCDB
 mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
@@ -117,7 +117,7 @@ To check the racstorage container/services creation logs , please tail docker lo
 ```bash
 podman exec racnode-storage tail -f /tmp/storage_setup.log
 ```
-You would see successful message like below- 
+You would see successful message like below -
 ```bash
 #################################################
  Setup Completed                                 
@@ -192,6 +192,6 @@ racstorage
 
 **IMPORTANT:** The NFS volume must be `/oradata` which you will export to RAC containers for ASM storage. It will take 10 minutes for setting up NFS server.
 
-# Copyright
+## Copyright
 
-Copyright (c) 2014-2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.

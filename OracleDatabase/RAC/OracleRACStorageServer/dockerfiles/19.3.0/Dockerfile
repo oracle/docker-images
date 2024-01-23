@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -15,10 +15,6 @@
 # Pull base image
 # ---------------
 FROM oraclelinux:7-slim
-
-# Maintainer
-# ----------
-MAINTAINER Paramdeep saini <paramdeep.saini@oracle.com>, Sanjay Singh <sanjay.singh@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -58,4 +54,4 @@ WORKDIR /home/oracle
 
 # Define default command to start Oracle Database.
 
-CMD exec $SCRIPT_DIR/$RUN_FILE
+CMD ["exec", "$SCRIPT_DIR/$RUN_FILE"]

@@ -416,4 +416,4 @@ If the install fails for any reason, log in to container using the above command
 
 ## Copyright
 
-Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
