@@ -185,6 +185,7 @@ After copying compose file, you can bring up DNS Container, RAC Container and CM
 podman-compose up -d ${DNS_CONTAINER_NAME}
 podman-compose logs ${DNS_CONTAINER_NAME}
 
+
 01-21-2024 18:03:46 UTC : : ################################################
 01-21-2024 18:03:46 UTC : : DNS Server IS READY TO USE!
 01-21-2024 18:03:46 UTC : : ################################################
@@ -348,6 +349,7 @@ podman-compose logs -f ${RACNODE2_CONTAINER_NAME}
 01-21-2024 18:41:55 UTC :  : ####################################
 ```
 
+
 ### Section 4.2: Add Additional Node in Existing Oracle RAC Cluster with NFS Volume
 
 In order to add additional node in existing Oracle RAC on Podman with NFS Storage Devices with Podman Compose, first lets identify necessary variables to export that will be used by `podman-compose.yml` file later. Below is one example of exporting necessary variables related to additional RAC Container with NFS Storage.
@@ -407,7 +409,6 @@ racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
 racnode2  | 01-20-2024 06:15:35 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
 racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
 ```
-
 #### Connect to the RAC container
 
 To connect to the container execute following command:

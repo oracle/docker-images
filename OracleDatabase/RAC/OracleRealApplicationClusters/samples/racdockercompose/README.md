@@ -245,8 +245,8 @@ racdns  | 01-21-2024 08:46:31 UTC :  : DNS Server Started Successfully
 ```bash
 #----- Bring up Storage Container-----
 docker compose up -d ${STORAGE_CONTAINER_NAME}
-
 docker compose logs -f ${STORAGE_CONTAINER_NAME}
+
 racnode-storage  | ####################################################
 racnode-storage  |  NFS Server is up and running                      
 racnode-storage  |  Create NFS volume for /oradata/        
