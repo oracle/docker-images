@@ -55,7 +55,7 @@ services:
       - rac_pub1_nw
       - rac_priv1_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "su - grid -c 'srvctl status database -d ORCLCDB'| grep -q 'is running on node'"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

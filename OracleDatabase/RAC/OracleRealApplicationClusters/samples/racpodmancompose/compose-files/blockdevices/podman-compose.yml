@@ -15,7 +15,7 @@ services:
     cap_add:
       - SYS_ADMIN
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'DNS Server IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "if nslookup $SCAN_NAME; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
@@ -77,16 +77,11 @@ services:
       - rac_pub1_nw
       - rac_priv1_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "su - grid -c 'srvctl status database -d ORCLCDB'| grep -q 'is running on node'"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
   racnode-cman:
-    depends_on:
-      racdns:
-        condition: service_healthy
-      racnode1:
-        condition: service_healthy
     container_name: ${CMAN_CONTAINER_NAME}
     hostname: ${CMAN_HOST_NAME}
     image: ${CMAN_IMAGE_NAME}
@@ -104,7 +99,9 @@ services:
       rac_pub1_nw:
         ipv4_address: ${CMAN_PUBLIC_IP}
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'CONNECTION MANAGER IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test:
+        - CMD-SHELL
+        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1 && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/${CMAN_VERSION}/client_1/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
