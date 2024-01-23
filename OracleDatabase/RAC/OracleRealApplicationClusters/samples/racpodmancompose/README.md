@@ -225,7 +225,7 @@ In case, of MCVLAN or IPVLAN networks, you may want to edit `podman-compose.yml`
 
 Once pre-requisites for NFS Storage Devices and above necessary variables are exported, copy `podman-compose.yml` file from [this location](./samples/racpodmancompose/compose-files/nfsdevices/)
 
-Create placeholder for NFS storage and make sure it is empty - 
+Create placeholder for NFS storage and make sure it is empty -
 ```bash
 export ORACLE_DBNAME=ORCLCDB
 mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
@@ -335,15 +335,15 @@ After copying compose file, you can bring up additional RAC Container by followi
 
 ```bash
 #-----Bring up racnode2----------
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME}
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME} && \
 podman-compose stop ${RACNODE2_CONTAINER_NAME}
 podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 podman network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 podman network connect  ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
 podman network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
+podman-compose exec ${RACNODE2_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod.log"
 
-podman-compose logs -f ${RACNODE2_CONTAINER_NAME}
 01-21-2024 18:41:55 UTC :  : ####################################
 01-21-2024 18:41:55 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
 01-21-2024 18:41:55 UTC :  : ####################################
@@ -397,14 +397,15 @@ After copying compose file, you can bring up additional RAC Container by followi
 
 ```bash
 #-----Bring up racnode2----------
-docker compose up -d ${RACNODE2_CONTAINER_NAME} && docker compose stop ${RACNODE2_CONTAINER_NAME}
-docker network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
-docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
-docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
-docker network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
-docker compose start ${RACNODE2_CONTAINER_NAME}
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME} && \
+podman-compose stop ${RACNODE2_CONTAINER_NAME}
+podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
+podman network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
+podman network connect  ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
+podman network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
+podman-compose start ${RACNODE2_CONTAINER_NAME}
+podman-compose exec ${RACNODE2_CONTAINER_NAME} /bin/bash -c "/var/tmp/resetFailedUnits.sh && tail -f /tmp/orod.log"
 
-docker compose logs -f ${RACNODE2_CONTAINER_NAME}
 racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
 racnode2  | 01-20-2024 06:15:35 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
 racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################

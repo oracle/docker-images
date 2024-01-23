@@ -107,7 +107,7 @@ services:
     image: ${CMAN_IMAGE_NAME}
     dns_search: ${DNS_DOMAIN}
     environment:
-      DOMAIN_NAME: ${DNS_DOMAIN}
+      DOMAIN: ${DNS_DOMAIN}
       PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
       SCAN_NAME: ${SCAN_NAME}
       SCAN_IP: ${SCAN_IP}
@@ -121,7 +121,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1 && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/${CMAN_VERSION}/client_1/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
+        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/cman && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/cman/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

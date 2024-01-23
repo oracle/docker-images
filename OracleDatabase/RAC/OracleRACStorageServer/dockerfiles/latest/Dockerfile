@@ -16,10 +16,6 @@
 # ---------------
 FROM oraclelinux:8
 
-# Maintainer
-# ----------
-MAINTAINER Paramdeep saini <paramdeep.saini@oracle.com>, Sanjay Singh <sanjay.singh@oracle.com>
-
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 # Linux Env Variable
