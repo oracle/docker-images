@@ -275,7 +275,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Con
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
   ```bash
-  # dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
+  # dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
   ```
 
 Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
@@ -669,7 +669,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Con
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
   ```bash
-  # dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
+  # dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
   ```
 
 Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
