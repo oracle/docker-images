@@ -35,8 +35,8 @@ EOF
 
 # Parameters
 VERSION="latest"
-DOCKEROPS=("$DOCKEROPS")
-PROXY_SETTINGS=("$PROXY_SETTINGS")
+DOCKEROPS=("${DOCKEROPS[@]}")
+PROXY_SETTINGS=("${PROXY_SETTINGS[@]}")
 
 while getopts "hiv:o:" optname; do
   case "$optname" in
