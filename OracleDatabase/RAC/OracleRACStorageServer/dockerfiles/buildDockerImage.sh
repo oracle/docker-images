@@ -50,6 +50,7 @@ while getopts "hiv:o:" optname; do
       ;;
     "?")
       usage
+      # shellcheck disable=SC2317
       exit 1
       ;;
     *)

@@ -11,6 +11,7 @@
 #
 
 if [ -f /etc/storage_env_vars ]; then
+# shellcheck disable=SC1091
   source /etc/storage_env_vars
 else
   echo "Warning: /etc/storage_env_vars not found. Some environment variables may not be set."
@@ -20,7 +21,6 @@ logfile="/tmp/storage_setup.log"
 
 touch $logfile
 chmod 666 $logfile
-progname="$(basename "$0")"
 
 ####################### Constants #################
 export REQUIRED_SPACE_GB=55
@@ -84,7 +84,7 @@ check_space ()
 			     echo "$ORADATA/asm_disk0$count.img file already exist! Skipping file creation" | tee -a $logfile
 		     fi
 
-		     count=$(($count+1))
+		     count=$((count + 1))
 	     done
 
 	     FILE_COUNT=$(find "$ORADATA" -maxdepth 1 -type f -name 'asm_disk0*' | wc -l)
@@ -111,8 +111,7 @@ check_space ()
 	     systemctl status rpcbind.service | tee -a $logfile
 
 	     echo "Setting up /etc/exports"
- 	     cat "$SCRIPT_DIR/$EXPORTFILE" | tee -a /etc/exports
-
+ 	     tee -a /etc/exports < "$SCRIPT_DIR/$EXPORTFILE"
 
 	     echo "Exporting File System"
 	     sudo /usr/sbin/exportfs -r | tee -a $logfile

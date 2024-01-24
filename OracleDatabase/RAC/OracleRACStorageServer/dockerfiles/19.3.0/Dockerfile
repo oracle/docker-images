@@ -54,4 +54,4 @@ WORKDIR /home/oracle
 
 # Define default command to start Oracle Database.
 
-CMD exec $SCRIPT_DIR/$RUN_FILE
+CMD ["exec", "$SCRIPT_DIR/$RUN_FILE"]
