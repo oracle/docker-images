@@ -50,7 +50,7 @@ services:
       ASM_DEVICE_LIST: ${ASM_DEVICE_LIST}
       ASM_DISCOVERY_DIR: ${ASM_DISCOVERY_DIR}
       CMAN_HOSTNAME: ${CMAN_HOSTNAME}
-      CMAN_IP: ${CMAN_IP}
+      CMAN_PUBLIC_IP: ${CMAN_PUBLIC_IP}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
       ORACLE_SID: ${ORACLE_SID}
@@ -101,7 +101,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1 && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/${CMAN_VERSION}/client_1/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
+        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/cman && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/cman/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

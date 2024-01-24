@@ -72,7 +72,7 @@ export ASM_DEVICE2="/dev/asm-disk2"
 export ASM_DEVICE_LIST="${ASM_DEVICE1},${ASM_DEVICE2}"
 export ORACLE_SID="ORCLCDB"
 export CMAN_HOSTNAME="racnode-cman1"
-export CMAN_IP=172.16.1.15
+export CMAN_PUBLIC_IP=172.16.1.15
 export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
 export PWD_KEY="pwd.key"
 export CMAN_CONTAINER_NAME=racnode-cman
@@ -364,21 +364,17 @@ export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
 export PRIVATE_NETWORK_NAME="rac_priv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
-export DEFAULT_GATEWAY="172.16.1.1"
 export INSTALL_NODE=racnode1
 export SCAN_NAME="racnode-scan"
 export SCAN_IP=172.16.1.70
 export ASM_DISCOVERY_DIR="/dev/"
-export PWD_KEY="pwd.key"
 export ASM_DISCOVERY_DIR="/oradata"
 export ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
 export ORACLE_SID="ORCLCDB"
-export CMAN_HOSTNAME="racnode-cman1"
 export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
 export PWD_KEY="pwd.key"
 export STORAGE_PRIVATE_IP=192.168.17.80
 export NFS_STORAGE_VOLUME="/scratch/stage/rac-storage/$ORACLE_DBNAME"
-export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
 export RACNODE2_CONTAINER_NAME=racnode2
 export RACNODE2_HOST_NAME=racnode2
 export RACNODE_IMAGE_NAME="localhost/oracle/database-rac:21.3.0-21.13.0"
@@ -404,7 +400,7 @@ podman network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 podman network connect  ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
 podman network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman-compose exec ${RACNODE2_CONTAINER_NAME} /bin/bash -c "/var/tmp/resetFailedUnits.sh && tail -f /tmp/orod.log"
+podman-compose exec ${RACNODE2_CONTAINER_NAME} /bin/bash -c "systemctl reset-failed && tail -f /tmp/orod.log"
 
 racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
 racnode2  | 01-20-2024 06:15:35 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
@@ -423,4 +419,4 @@ If the install fails for any reason, log in to container using the above command
 
 ## Copyright
 
-Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
