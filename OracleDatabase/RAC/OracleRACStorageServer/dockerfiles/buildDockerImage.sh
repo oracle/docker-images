@@ -35,7 +35,8 @@ EOF
 
 # Parameters
 VERSION="latest"
-DOCKEROPS=""
+DOCKEROPS=($DOCKEROPS)
+PROXY_SETTINGS=($PROXY_SETTINGS)
 
 while getopts "hiv:o:" optname; do
   case "$optname" in
@@ -74,7 +75,6 @@ docker info
 echo "=========================="
 
 # Proxy settings
-PROXY_SETTINGS=""
 if [ -n "${http_proxy-}" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
@@ -103,7 +103,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-if docker build --force-rm=true --no-cache=true "$DOCKEROPS" "$PROXY_SETTINGS" -t "$IMAGE_NAME" -f Dockerfile .; then
+if docker build --force-rm=true --no-cache=true "${DOCKEROPS[@]}" "${PROXY_SETTINGS[@]}" -t "$IMAGE_NAME" -f Dockerfile .; then
   BUILD_END=$(date '+%s')
   BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 
