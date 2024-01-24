@@ -275,7 +275,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Con
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
   ```bash
-  # dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
+  # dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
   ```
 
 Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
@@ -669,7 +669,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Con
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
   ```bash
-  # dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
+  # dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
   ```
 
 Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
@@ -1008,9 +1008,11 @@ Oracle RAC database can also be deployed with podman Compose. An example of how 
 
 Same section covers various below scenarios as well with podman compose-
 1. Deploying Oracle RAC on Container with Block Devices on Podman with Podman Compose
-2. Deploying Oracle RAC Additional Node on Container with Block Devices on Podman with Podman Compose
+2. Deploying Oracle RAC on Container with NFS Devices on Podman with Podman Compose
+3. Deploying Oracle RAC Additional Node on Container with Block Devices on Podman with Podman Compose
+4. Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Podman with Podman Compose
 
-***Note:*** Podman and Podman Compose is not supported with OL7. You need OL8.8 with UEK R7.
+***Note:*** Podman and Podman Compose is not supported with OL7. You need minimum OL8.8 with UEK R7.
 
 ## Section 6: Connecting to an Oracle RAC Database
 
@@ -1167,4 +1169,4 @@ All scripts and files hosted in this repository which are required to build the 
 
 ## Section 11 : Copyright
 
-Copyright (c) 2014-2022 Oracle and/or its affiliates.
+Copyright (c) 2014-2024 Oracle and/or its affiliates.

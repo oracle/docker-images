@@ -84,6 +84,7 @@ export DNS_DOMAIN="example.com"
 export CMAN_PUBLIC_IP=172.16.1.15
 export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export CMAN_PUBLIC_HOSTNAME="racnode-cman1"
+export CMAN_VERSION="19.3.0"
 ```
 
 ### Section 2.2: Preparing Environment Variables for RAC with NFS Storage Devices
@@ -133,12 +134,13 @@ export DNS_DOMAIN="example.com"
 export CMAN_PUBLIC_IP=172.16.1.15
 export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export CMAN_PUBLIC_HOSTNAME="racnode-cman1"
+export CMAN_VERSION="19.3.0"
 export STORAGE_CONTAINER_NAME="racnode-storage"
 export STORAGE_HOST_NAME="racnode-storage"
 export STORAGE_IMAGE_NAME="oracle/rac-storage-server:19.3.0"
 export ORACLE_DBNAME="ORCLCDB"
 export STORAGE_PRIVATE_IP=192.168.17.25
-export NFS_STORAGE_VOLUME="/scratch/docker_volumes/asm_vol/$ORACLE_DBNAME"
+export NFS_STORAGE_VOLUME="/docker_volumes/asm_vol/$ORACLE_DBNAME"
 ```
 ## Section 3 : Deploy the RAC Container
 
@@ -195,8 +197,7 @@ racdns  | 01-21-2024 08:46:31 UTC :  : DNS Server Started Successfully
 
 ```bash
 #-----Bring up racnode1----------
-docker compose up -d ${RACNODE1_CONTAINER_NAME}
-docker compose stop ${RACNODE1_CONTAINER_NAME}
+docker compose up -d ${RACNODE1_CONTAINER_NAME} && docker compose stop ${RACNODE1_CONTAINER_NAME}
 docker network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
 docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
 docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE1_PUBLIC_IP} ${RACNODE1_CONTAINER_NAME}
@@ -243,9 +244,9 @@ racdns  | 01-21-2024 08:46:31 UTC :  : DNS Server Started Successfully
 
 ```bash
 #----- Bring up Storage Container-----
-docker compose up -d racnode-storage
+docker compose up -d ${STORAGE_CONTAINER_NAME}
+docker compose logs -f ${STORAGE_CONTAINER_NAME}
 
-docker compose logs -f racnode-storage
 racnode-storage  | ####################################################
 racnode-storage  |  NFS Server is up and running                      
 racnode-storage  |  Create NFS volume for /oradata/        
@@ -263,8 +264,7 @@ docker volume create --driver local \
 
 ```bash
 #-----Bring up racnode1----------
-docker compose up -d ${RACNODE1_CONTAINER_NAME}
-docker compose stop ${RACNODE1_CONTAINER_NAME}
+docker compose up -d ${RACNODE1_CONTAINER_NAME} && docker compose stop ${RACNODE1_CONTAINER_NAME}
 docker network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
 docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
 docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE1_PUBLIC_IP} ${RACNODE1_CONTAINER_NAME}
@@ -336,8 +336,7 @@ After copying compose file, you can bring up additional RAC Container by followi
 
 ```bash
 #-----Bring up racnode2----------
-docker compose up -d ${RACNODE2_CONTAINER_NAME}
-docker compose stop ${RACNODE2_CONTAINER_NAME}
+docker compose up -d ${RACNODE2_CONTAINER_NAME} && docker compose stop ${RACNODE2_CONTAINER_NAME}
 docker network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
@@ -390,8 +389,7 @@ After copying compose file, you can bring up additional RAC Container by followi
 
 ```bash
 #-----Bring up racnode2----------
-docker compose up -d ${RACNODE2_CONTAINER_NAME}
-docker compose stop ${RACNODE2_CONTAINER_NAME}
+docker compose up -d ${RACNODE2_CONTAINER_NAME} && docker compose stop ${RACNODE2_CONTAINER_NAME}
 docker network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
@@ -418,4 +416,4 @@ If the install fails for any reason, log in to container using the above command
 
 ## Copyright
 
-Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.

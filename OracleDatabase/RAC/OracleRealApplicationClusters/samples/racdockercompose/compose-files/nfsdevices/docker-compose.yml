@@ -15,7 +15,7 @@ services:
     cap_add:
       - SYS_ADMIN
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'DNS Server IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "if nslookup $SCAN_NAME; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
@@ -36,7 +36,9 @@ services:
       - SYS_ADMIN
       - AUDIT_WRITE
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'NFS Server is up and running'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test:
+        - CMD-SHELL
+        - /bin/bash -c "ls -lrt /oradata/ && showmount -e | grep '/oradata'"
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
@@ -93,7 +95,7 @@ services:
       - rac_pub1_nw
       - rac_priv1_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "su - grid -c 'srvctl status database -d ORCLCDB'| grep -q 'is running on node'"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
@@ -108,7 +110,7 @@ services:
     image: ${CMAN_IMAGE_NAME}
     dns_search: ${DNS_DOMAIN}
     environment:
-      DOMAIN_NAME: ${DNS_DOMAIN}
+      DOMAIN: ${DNS_DOMAIN}
       PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
       SCAN_NAME: ${SCAN_NAME}
       SCAN_IP: ${SCAN_IP}
@@ -120,7 +122,9 @@ services:
       rac_pub1_nw:
         ipv4_address: ${CMAN_PUBLIC_IP}
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'CONNECTION MANAGER IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test:
+        - CMD-SHELL
+        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1 && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/${CMAN_VERSION}/client_1/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

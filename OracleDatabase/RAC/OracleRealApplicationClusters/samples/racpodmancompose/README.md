@@ -6,10 +6,13 @@ Once you have built your Oracle RAC container image, you can create a Oracle RAC
   - [Section 1 : Prerequisites for RAC Database on Podman with Podman Compose](#section-1--prerequisites-for-rac-database-on-podman-with-podman-compose)
   - [Section 2 : Preparing Environment Variables](#section-2--preparing-environment-variables)
     - [Section 2.1: Preparing Environment Variables for RAC with Block Devices](#section-21-preparing-environment-variables-for-rac-with-block-devices)
+    - [Section 2.2: Preparing Environment Variables for RAC with NFS Storage Devices](#section-22-preparing-environment-variables-for-rac-with-nfs-storage-devices)
   - [Section 3 : Deploy the RAC Container](#section-3--deploy-the-rac-container)
     - [Section 3.1: Deploy the RAC Container with Block Devices](#section-31-deploy-the-rac-container-with-block-devices)
+    - [Section 3.2: Deploy the RAC Container with NFS Storage Devices](#section-32-deploy-the-rac-container-with-nfs-storage-devices)
   - [Section 4: Add Additional Node in Existing Oracle RAC Cluster](#section-4-add-additional-node-in-existing-oracle-rac-cluster)
     - [Section 4.1: Add Additional Node in Existing Oracle RAC Cluster with Block Devices](#section-41-add-additional-node-in-existing-oracle-rac-cluster-with-block-devices)
+    - [Section 4.2: Add Additional Node in Existing Oracle RAC Cluster with NFS Volume](#section-42-add-additional-node-in-existing-oracle-rac-cluster-with-nfs-volume)
   - [Section 5: Connect to the RAC container](#connect-to-the-rac-container)
   - [Copyright](#copyright)
 
@@ -69,7 +72,7 @@ export ASM_DEVICE2="/dev/asm-disk2"
 export ASM_DEVICE_LIST="${ASM_DEVICE1},${ASM_DEVICE2}"
 export ORACLE_SID="ORCLCDB"
 export CMAN_HOSTNAME="racnode-cman1"
-export CMAN_IP=172.16.1.15
+export CMAN_PUBLIC_IP=172.16.1.15
 export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
 export PWD_KEY="pwd.key"
 export CMAN_CONTAINER_NAME=racnode-cman
@@ -78,6 +81,64 @@ export CMAN_IMAGE_NAME="oracle/client-cman:21.3.0"
 export CMAN_PUBLIC_IP=172.16.1.15
 export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export CMAN_PUBLIC_HOSTNAME="racnode-cman1"
+export CMAN_VERSION="21.3.0"
+```
+### Section 2.2: Preparing Environment Variables for RAC with NFS Storage Devices
+
+In order to setup Oracle RAC on Podman with Oracle RAC Storage Container with Podman Compose, lets first make sure `nfs-utils` rpm package is installed in Podman Host machine.
+```bash
+yum -y install nfs-utils
+```
+
+Lets identify necessary variables to export that will be used by `podman-compose.yml` file later. Below is one example of exporting necessary variables related to docker network, DNS container, Storage Container, RAC Container and CMAN container discussed in this repo.
+```bash
+export DNS_CONTAINER_NAME=racdns
+export DNS_HOST_NAME=rac-dns
+export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"
+export DNS_DOMAIN="example.com"
+export RAC_NODE_NAME_PREFIX="racnode"
+export HEALTHCHECK_INTERVAL=30s
+export HEALTHCHECK_TIMEOUT=3s
+export HEALTHCHECK_RETRIES=240
+export DNS_PUBLIC_IP=172.16.1.25
+export RACNODE1_CONTAINER_NAME=racnode1
+export RACNODE1_HOST_NAME=racnode1
+export RACNODE_IMAGE_NAME="localhost/oracle/database-rac:21.3.0-21.13.0"
+export RACNODE1_NODE_VIP=172.16.1.160
+export RACNODE1_VIP_HOSTNAME="racnode1-vip"
+export RACNODE1_PRIV_IP=192.168.17.150
+export RACNODE1_PRIV_HOSTNAME="racnode1-priv"
+export RACNODE1_PUBLIC_IP=172.16.1.150
+export RACNODE1_PUBLIC_HOSTNAME="racnode1"
+export DEFAULT_GATEWAY="172.16.1.1"
+export PUBLIC_NETWORK_NAME="rac_pub1_nw"
+export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
+export PRIVATE_NETWORK_NAME="rac_priv1_nw"
+export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
+export INSTALL_NODE=racnode1
+export SCAN_NAME="racnode-scan"
+export SCAN_IP=172.16.1.70
+export ASM_DISCOVERY_DIR="/dev/"
+export PWD_KEY="pwd.key"
+export ASM_DISCOVERY_DIR="/oradata"
+export ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
+export ORACLE_SID="ORCLCDB"
+export CMAN_HOSTNAME="racnode-cman1"
+export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
+export PWD_KEY="pwd.key"
+export CMAN_CONTAINER_NAME=racnode-cman
+export CMAN_HOST_NAME=racnode-cman1
+export CMAN_IMAGE_NAME="oracle/client-cman:21.3.0"
+export CMAN_PUBLIC_IP=172.16.1.15
+export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
+export CMAN_PUBLIC_HOSTNAME="racnode-cman1"
+export CMAN_VERSION="21.3.0"
+export STORAGE_CONTAINER_NAME="racnode-storage"
+export STORAGE_HOST_NAME="racnode-storage"
+export STORAGE_IMAGE_NAME="localhost/oracle/rac-storage-server:latest"
+export ORACLE_DBNAME="ORCLCDB"
+export STORAGE_PRIVATE_IP=192.168.17.80
+export NFS_STORAGE_VOLUME="/scratch/stage/rac-storage/$ORACLE_DBNAME"
 ```
 
 ## Section 3 : Deploy the RAC Container
@@ -89,8 +150,8 @@ All containers will share a host file for name resolution.  The shared hostfile 
 For example:
 
 ```bash
-# mkdir /opt/containers
-# touch /opt/containers/rac_host_file
+mkdir /opt/containers
+touch /opt/containers/rac_host_file
 ```
 
 **Note:** Do not modify `/opt/containers/rac_host_file` from podman host. It will be managed from within the containers.
@@ -109,7 +170,7 @@ rm -f /opt/.secrets/common_os_pwdfile
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
 ```bash
-# dd if=/dev/zero of=/dev/xvde  bs=8k count=100000
+dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
 ```
 
 Repeat for each shared block device. In the example above, `/dev/xvde` is a shared Xen virtual block device.
@@ -122,6 +183,8 @@ After copying compose file, you can bring up DNS Container, RAC Container and CM
 ```bash
 #---------Bring up DNS------------
 podman-compose up -d ${DNS_CONTAINER_NAME}
+podman-compose logs ${DNS_CONTAINER_NAME}
+
 
 01-21-2024 18:03:46 UTC : : ################################################
 01-21-2024 18:03:46 UTC : : DNS Server IS READY TO USE!
@@ -130,15 +193,15 @@ podman-compose up -d ${DNS_CONTAINER_NAME}
 
 ```bash
 #-----Bring up racnode1----------
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up --no-deps -d ${RACNODE1_CONTAINER_NAME}
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME}
 podman-compose stop ${RACNODE1_CONTAINER_NAME}
 podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
 podman network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
 podman network connect  ${PUBLIC_NETWORK_NAME} --ip ${RACNODE1_PUBLIC_IP} ${RACNODE1_CONTAINER_NAME}
 podman network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE1_PRIV_IP} ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE1_CONTAINER_NAME}
+podman-compose exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod.log"
 
-podman-compose logs -f ${RACNODE1_CONTAINER_NAME}
 racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
 racnode1  | 01-19-2024 16:34:24 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
 racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
@@ -146,9 +209,80 @@ racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
 
 ```bash
 #-----Bring up CMAN----------
-podman-compose up --no-deps -d ${CMAN_CONTAINER_NAME}
-
+podman-compose up -d ${CMAN_CONTAINER_NAME}
 podman-compose logs ${CMAN_CONTAINER_NAME}
+
+01-21-2024 17:32:55 UTC :  : ################################################
+01-21-2024 17:32:55 UTC :  :  CONNECTION MANAGER IS READY TO USE!           
+01-21-2024 17:32:55 UTC :  : ################################################
+```
+
+Note: Podman compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks.
+
+In case, of MCVLAN or IPVLAN networks, you may want to edit `podman-compose.yml` file are per your needs and respective environment variables.
+
+### Section 3.2: Deploy the RAC Container with NFS Storage Devices
+
+Once pre-requisites for NFS Storage Devices and above necessary variables are exported, copy `podman-compose.yml` file from [this location](./samples/racpodmancompose/compose-files/nfsdevices/)
+
+Create placeholder for NFS storage and make sure it is empty -
+```bash
+export ORACLE_DBNAME=ORCLCDB
+mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
+rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
+```
+
+After copying compose file, you can bring up DNS Container, Storage Container, RAC Container and CMAN container by following below commands-
+```bash
+#---------Bring up DNS------------
+podman-compose up -d ${DNS_CONTAINER_NAME}
+podman-compose logs ${DNS_CONTAINER_NAME}
+
+01-21-2024 18:03:46 UTC : : ################################################
+01-21-2024 18:03:46 UTC : : DNS Server IS READY TO USE!
+01-21-2024 18:03:46 UTC : : ################################################
+```
+
+```bash
+#----- Bring up Storage Container-----
+podman-compose --podman-run-args="-t -i --systemd=always" up -d ${STORAGE_CONTAINER_NAME}
+podman-compose exec ${STORAGE_CONTAINER_NAME} tail -f /tmp/storage_setup.log
+
+#################################################
+ Setup Completed                                 
+#################################################
+```
+
+```bash
+#----------Create NFS volume--------------
+podman volume create --driver local \
+--opt type=nfs \
+--opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+--opt device=192.168.17.80:/oradata \
+racstorage
+```
+
+```bash
+#-----Bring up racnode1----------
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME} && \
+podman-compose stop ${RACNODE1_CONTAINER_NAME}
+podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
+podman network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
+podman network connect  ${PUBLIC_NETWORK_NAME} --ip ${RACNODE1_PUBLIC_IP} ${RACNODE1_CONTAINER_NAME}
+podman network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE1_PRIV_IP} ${RACNODE1_CONTAINER_NAME}
+podman-compose start ${RACNODE1_CONTAINER_NAME}
+podman-compose exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod.log"
+
+racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
+racnode1  | 01-19-2024 16:34:24 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
+racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
+```
+
+```bash
+#-----Bring up CMAN----------
+podman-compose up -d ${CMAN_CONTAINER_NAME}
+podman-compose logs ${CMAN_CONTAINER_NAME}
+
 01-21-2024 17:32:55 UTC :  : ################################################
 01-21-2024 17:32:55 UTC :  :  CONNECTION MANAGER IS READY TO USE!           
 01-21-2024 17:32:55 UTC :  : ################################################
@@ -201,20 +335,77 @@ After copying compose file, you can bring up additional RAC Container by followi
 
 ```bash
 #-----Bring up racnode2----------
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up --no-deps -d ${RACNODE2_CONTAINER_NAME}
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME} && \
 podman-compose stop ${RACNODE2_CONTAINER_NAME}
 podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 podman network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 podman network connect  ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
 podman network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
+podman-compose exec ${RACNODE2_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod.log"
 
-podman-compose logs -f ${RACNODE2_CONTAINER_NAME}
 01-21-2024 18:41:55 UTC :  : ####################################
 01-21-2024 18:41:55 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
 01-21-2024 18:41:55 UTC :  : ####################################
 ```
 
+
+### Section 4.2: Add Additional Node in Existing Oracle RAC Cluster with NFS Volume
+
+In order to add additional node in existing Oracle RAC on Podman with NFS Storage Devices with Podman Compose, first lets identify necessary variables to export that will be used by `podman-compose.yml` file later. Below is one example of exporting necessary variables related to additional RAC Container with NFS Storage.
+```bash
+export HEALTHCHECK_INTERVAL=30s
+export HEALTHCHECK_TIMEOUT=3s
+export HEALTHCHECK_RETRIES=240
+export DNS_HOST_NAME=rac-dns
+export DNS_DOMAIN="example.com"
+export PUBLIC_NETWORK_NAME="rac_pub1_nw"
+export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
+export PRIVATE_NETWORK_NAME="rac_priv1_nw"
+export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
+export DNS_PUBLIC_IP=172.16.1.25
+export INSTALL_NODE=racnode1
+export SCAN_NAME="racnode-scan"
+export SCAN_IP=172.16.1.70
+export ASM_DISCOVERY_DIR="/dev/"
+export ASM_DISCOVERY_DIR="/oradata"
+export ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
+export ORACLE_SID="ORCLCDB"
+export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
+export PWD_KEY="pwd.key"
+export STORAGE_PRIVATE_IP=192.168.17.80
+export NFS_STORAGE_VOLUME="/scratch/stage/rac-storage/$ORACLE_DBNAME"
+export RACNODE2_CONTAINER_NAME=racnode2
+export RACNODE2_HOST_NAME=racnode2
+export RACNODE_IMAGE_NAME="localhost/oracle/database-rac:21.3.0-21.13.0"
+export RACNODE2_NODE_VIP=172.16.1.161
+export RACNODE2_VIP_HOSTNAME="racnode2-vip"
+export RACNODE2_PRIV_IP=192.168.17.151
+export RACNODE2_PRIV_HOSTNAME="racnode2-priv"
+export RACNODE2_PUBLIC_IP=172.16.1.151
+export RACNODE2_PUBLIC_HOSTNAME="racnode2"
+export ORACLE_DBNAME="ORCLCDB"
+```
+Once necessary variables are exported, copy `podman-compose-additional.yml` file from [this location](./samples/racpodmancompose/compose-files/nfsdevices/) and rename it as `podman-compose.yml`
+
+
+After copying compose file, you can bring up additional RAC Container by following below commands-
+
+```bash
+#-----Bring up racnode2----------
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME} && \
+podman-compose stop ${RACNODE2_CONTAINER_NAME}
+podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
+podman network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
+podman network connect  ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
+podman network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
+podman-compose start ${RACNODE2_CONTAINER_NAME}
+podman-compose exec ${RACNODE2_CONTAINER_NAME} /bin/bash -c "systemctl reset-failed && tail -f /tmp/orod.log"
+
+racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
+racnode2  | 01-20-2024 06:15:35 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
+racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
+```
 #### Connect to the RAC container
 
 To connect to the container execute following command:
@@ -228,4 +419,4 @@ If the install fails for any reason, log in to container using the above command
 
 ## Copyright
 
-Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.

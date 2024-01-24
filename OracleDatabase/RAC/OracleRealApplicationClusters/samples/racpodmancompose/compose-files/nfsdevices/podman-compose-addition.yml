@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: '3'
 services:
   racnode2:
     container_name: ${RACNODE2_CONTAINER_NAME}
@@ -11,17 +11,14 @@ services:
     volumes:
       - /boot:/boot:ro
       - /opt/.secrets:/run/secrets:ro
-      - /dev/shm
       - /opt/containers/rac_host_file:/etc/hosts
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - racstorage:/oradata
     tmpfs:
       - /dev/shm:rw,exec,size=4G
-      - /run
     privileged: false
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
-      EXISTING_CLS_NODES: ${INSTALL_NODE} 
+      EXISTING_CLS_NODES: ${INSTALL_NODE}
       NODE_VIP: ${RACNODE2_NODE_VIP}
       VIP_HOSTNAME: ${RACNODE2_VIP_HOSTNAME}
       PRIV_IP: ${RACNODE2_PRIV_IP}
@@ -33,9 +30,9 @@ services:
       DOMAIN: ${DNS_DOMAIN}
       ASM_DEVICE_LIST: ${ASM_DEVICE_LIST}
       ASM_DISCOVERY_DIR: ${ASM_DISCOVERY_DIR}
-      ORACLE_SID: ${ORACLE_DBNAME}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
+      ORACLE_SID: ${ORACLE_SID}
       RESET_FAILED_SYSTEMD: "true"
     ulimits:
       rtprio: 99
@@ -43,7 +40,13 @@ services:
       - SYS_RESOURCE
       - NET_ADMIN
       - SYS_NICE
-    cpu_rt_runtime: 95000
+      - AUDIT_WRITE
+      - AUDIT_CONTROL
+    sysctls:
+        - kernel.shmall=2097152
+        - kernel.shmmax=8589934592
+        - kernel.shmmni=4096
+        - 'kernel.sem=250 32000 100 128'
     networks:
       - rac_pub1_nw
       - rac_priv1_nw

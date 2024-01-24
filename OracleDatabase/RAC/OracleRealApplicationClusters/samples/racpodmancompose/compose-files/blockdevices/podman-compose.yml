@@ -15,7 +15,7 @@ services:
     cap_add:
       - SYS_ADMIN
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'DNS Server IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "if nslookup $SCAN_NAME; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
@@ -50,7 +50,7 @@ services:
       ASM_DEVICE_LIST: ${ASM_DEVICE_LIST}
       ASM_DISCOVERY_DIR: ${ASM_DISCOVERY_DIR}
       CMAN_HOSTNAME: ${CMAN_HOSTNAME}
-      CMAN_IP: ${CMAN_IP}
+      CMAN_PUBLIC_IP: ${CMAN_PUBLIC_IP}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
       ORACLE_SID: ${ORACLE_SID}
@@ -77,22 +77,17 @@ services:
       - rac_pub1_nw
       - rac_priv1_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "su - grid -c 'srvctl status database -d ORCLCDB'| grep -q 'is running on node'"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
   racnode-cman:
-    depends_on:
-      racdns:
-        condition: service_healthy
-      racnode1:
-        condition: service_healthy
     container_name: ${CMAN_CONTAINER_NAME}
     hostname: ${CMAN_HOST_NAME}
     image: ${CMAN_IMAGE_NAME}
     dns_search: ${DNS_DOMAIN}
     environment:
-      DOMAIN_NAME: ${DNS_DOMAIN}
+      DOMAIN: ${DNS_DOMAIN}
       PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
       SCAN_NAME: ${SCAN_NAME}
       SCAN_IP: ${SCAN_IP}
@@ -104,7 +99,9 @@ services:
       rac_pub1_nw:
         ipv4_address: ${CMAN_PUBLIC_IP}
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod.log | grep -c 'CONNECTION MANAGER IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test:
+        - CMD-SHELL
+        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/cman && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/cman/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
