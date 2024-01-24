@@ -58,5 +58,5 @@ VOLUME ["/oradata"]
 WORKDIR /workdir
 
 # Define default command to start Oracle Database.
-# shellcheck disable=SC2086
+# shellcheck disable=DL3025
 ENTRYPOINT /usr/bin/$INITSH

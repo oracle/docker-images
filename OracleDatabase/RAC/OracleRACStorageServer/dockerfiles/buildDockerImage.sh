@@ -35,8 +35,8 @@ EOF
 
 # Parameters
 VERSION="latest"
-DOCKEROPS=($DOCKEROPS)
-PROXY_SETTINGS=($PROXY_SETTINGS)
+DOCKEROPS=("$DOCKEROPS")
+PROXY_SETTINGS=("$PROXY_SETTINGS")
 
 while getopts "hiv:o:" optname; do
   case "$optname" in
@@ -47,7 +47,7 @@ while getopts "hiv:o:" optname; do
       VERSION="$OPTARG"
       ;;
     "o")
-      DOCKEROPS="$OPTARG"
+      DOCKEROPS=("$OPTARG")
       ;;
     "?")
       usage
@@ -76,21 +76,21 @@ echo "=========================="
 
 # Proxy settings
 if [ -n "${http_proxy-}" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
+  PROXY_SETTINGS+=("--build-arg http_proxy=${http_proxy}")
 fi
 
 if [ -n "${https_proxy-}" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
+  PROXY_SETTINGS+=("--build-arg https_proxy=${https_proxy}")
 fi
 
 if [ -n "${ftp_proxy-}" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
+  PROXY_SETTINGS+=("--build-arg ftp_proxy=${ftp_proxy}")
 fi
 
 if [ -n "${no_proxy-}" ]; then
-  PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
+  PROXY_SETTINGS+=("--build-arg no_proxy=${no_proxy}")
 fi
-
+# shellcheck disable=SC2128
 if [ -n "$PROXY_SETTINGS" ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
