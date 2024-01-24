@@ -53,5 +53,5 @@ VOLUME ["/oradata"]
 WORKDIR /home/oracle
 
 # Define default command to start Oracle Database.
-
-CMD ["exec", "$SCRIPT_DIR/$RUN_FILE"]
+# shellcheck disable=SC2086
+CMD exec $SCRIPT_DIR/$RUN_FILE

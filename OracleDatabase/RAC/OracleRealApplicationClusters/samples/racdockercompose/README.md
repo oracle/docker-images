@@ -140,7 +140,7 @@ export STORAGE_HOST_NAME="racnode-storage"
 export STORAGE_IMAGE_NAME="oracle/rac-storage-server:19.3.0"
 export ORACLE_DBNAME="ORCLCDB"
 export STORAGE_PRIVATE_IP=192.168.17.25
-export NFS_STORAGE_VOLUME="/scratch/docker_volumes/asm_vol/$ORACLE_DBNAME"
+export NFS_STORAGE_VOLUME="/docker_volumes/asm_vol/$ORACLE_DBNAME"
 ```
 ## Section 3 : Deploy the RAC Container
 
