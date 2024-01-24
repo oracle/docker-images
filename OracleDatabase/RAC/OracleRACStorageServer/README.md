@@ -13,7 +13,7 @@ Refer below instructions for setup of NFS Container for RAC -
 - [NFS Server installation on Host](#nfs-server-installation-on-host)
 - [Running RACStorageServer container](#running-racstorageserver-container)
   - [RAC Storage Container for Podman Host Machine](#rac-storage-container-for-podman-host-machine)
-  - [RAC Storage container for Docker Host Machine](#rac-storage-container-for-docker-host-machine)    
+  - [RAC Storage container for Docker Host Machine](#rac-storage-container-for-docker-host-machine)
 - [Create NFS Volume](#create-nfs-volume)
 - [Copyright](#copyright)
 

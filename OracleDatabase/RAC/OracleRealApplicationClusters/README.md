@@ -1008,9 +1008,11 @@ Oracle RAC database can also be deployed with podman Compose. An example of how 
 
 Same section covers various below scenarios as well with podman compose-
 1. Deploying Oracle RAC on Container with Block Devices on Podman with Podman Compose
-2. Deploying Oracle RAC Additional Node on Container with Block Devices on Podman with Podman Compose
+2. Deploying Oracle RAC on Container with NFS Devices on Podman with Podman Compose
+3. Deploying Oracle RAC Additional Node on Container with Block Devices on Podman with Podman Compose
+4. Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Podman with Podman Compose
 
-***Note:*** Podman and Podman Compose is not supported with OL7. You need OL8.8 with UEK R7.
+***Note:*** Podman and Podman Compose is not supported with OL7. You need minimum OL8.8 with UEK R7.
 
 ## Section 6: Connecting to an Oracle RAC Database
 
