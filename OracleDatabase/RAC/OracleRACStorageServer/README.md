@@ -41,7 +41,10 @@ You would see successful build message similar like below-
 ### How to build NFS Storage Container Image on Docker Host
 You need to make sure that you have atleast 60GB space available for container to create the files for RAC storage.
 
-**IMPORTANT:** If you are behind the proxy, you need to set http_proxy env variable based on your enviornment before building the image.
+**IMPORTANT:** If you are behind the proxy, you need to set http_proxy env variable based on your enviornment before building the image. Please ensure that you have the `podman-docker` package installed on your OL8 Podman host to run the command using the docker utility.
+```bash
+dnf install podman-docker -y
+```
 
 To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
@@ -59,21 +62,16 @@ For detailed usage of command, please execute folowing command:
 ## Create Bridge Network
 Before creating container, create the bridge private network for NFS storage container.
 
-On Docker host-
+On the host-
 ```bash
 docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
-```
-
-On Podman host-
-```bash
-podman network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
 ```
 
 **Note:** You can change subnet according to your environment.
 
 
 ## NFS Server installation on Host
-You must install NFS server rpms on  host to utilize NFS volumes in containers.
+Ensure to install NFS server rpms on  host to utilize NFS volumes in containers-
 
 ```bash
 yum -y install nfs-utils
@@ -105,7 +103,7 @@ podman run -d -t \
  --cap-add NET_ADMIN \
  --volume /scratch/stage/rac-storage/$ORACLE_DBNAME:/oradata \
  --network=rac_priv1_nw \
- --ip=192.168.17.80 \
+ --ip=192.168.17.25 \
  --systemd=always \
  --restart=always \
  --name racnode-storage \
@@ -171,16 +169,6 @@ Create NFS volume for /oradata
 Create NFS volume using following command on Podman Host:
 
 ```bash
-podman volume create --driver local \
---opt type=nfs \
---opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
---opt device=192.168.17.80:/oradata \
-racstorage
-```
-
-Create NFS volume using following command on Docker Host:
-
-```bash
 docker volume create --driver local \
 --opt type=nfs \
 --opt   o=addr=192.168.17.25,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
@@ -188,7 +176,7 @@ docker volume create --driver local \
 racstorage
 ```
 
-**IMPORTANT:** If you are not using 192.168.17.0/24 subnet then you need to change **addr=192.168.17.80** based on your environment.
+**IMPORTANT:** If you are not using 192.168.17.0/24 subnet then you need to change **addr=192.168.17.25** based on your environment.
 
 **IMPORTANT:** The NFS volume must be `/oradata` which you will export to RAC containers for ASM storage. It will take 10 minutes for setting up NFS server.
 
