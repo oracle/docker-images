@@ -62,7 +62,7 @@ To create an Oracle RAC environment, complete these steps in order:
     - [Docker Support](#docker-support)
     - [Podman Support](#podman-support)
   - [Section 12 : License](#section-12--license)
-  - [Section 11 : Copyright](#section-11--copyright)
+  - [Section 13 : Copyright](#section-13--copyright)
 
 ## Section 1 : Prerequisites for running Oracle RAC in containers
 
@@ -103,9 +103,9 @@ Complete each of the following prerequisites:
 
 8. To resolve VIPs and SCAN IPs, we are using a DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md).
    - If you have a pre-configured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment.
-   - You must ensure that you have the`podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
+   - Ensure that you have the`podman-docker` package installed on your OL8 Podman host to run the command using the `docker` utility.
 
-9. If you are running RAC on Podman, you need to make sure you have installed the `podman-docker` rpm so that podman commands can be run using `docker` utility.
+9. If you are running RAC on Podman, make sure that you have installed the `podman-docker` rpm so that podman commands can be run using `docker` utility.
 10. The Oracle RAC `Dockerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html) and stage them under `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationCluster/dockerfiles/<VERSION>` folder.
 
     - Oracle Database 21c Grid Infrastructure (21.3) for Linux x86-64
@@ -114,9 +114,9 @@ Complete each of the following prerequisites:
     - If you are deploying Oracle RAC on Podman then execute following, otherwise skip to next section.
       - Because Oracle RAC on Podman is supported on Release 21c (21.7) or later, you must download the grid release update (RU) from [support.oracle.com](https://support.oracle.com/portal/). In this case, we downloaded RU `34155589`.
 
-      - Download the following one-off patches for release 21.7 from [support.oracle.com](https://support.oracle.com/portal/)
-        - `34339952`
-        - `32869666`
+      - Download the following one-off patches for release 21.13 from [support.oracle.com](https://support.oracle.com/portal/)
+        - `36031790`
+        - `36041222`
 
 <!-- markdownlint-disable-next-line MD036 -->
 **Notes**
@@ -168,36 +168,36 @@ If you are planing to deploy Oracle RAC container image on Docker, skip to the s
    - In this document we reference the public network on `172.16.1.0/24` and the private network on `192.168.17.0/24`.
 
     ```bash
-      # docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
-      # docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
+      docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
+      docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
       ```
 
    - To run Oracle RAC using Oracle Container Runtime for Docker on multiple hosts, you will need to create a [Docker macvlan network](https://docs.docker.com/network/macvlan/) using the following commands:
 
       ```bash
-      # docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
-      # docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
+      docker network create -d macvlan --subnet=172.16.1.0/24 --gateway=172.16.1.1 -o parent=eth0 rac_pub1_nw
+      docker network create -d macvlan --subnet=192.168.17.0/24 --gateway=192.168.17.1 -o parent=eth1 rac_priv1_nw
       ```
 
 2. Specify the secret volume for resetting the grid, oracle, and database user password during node creation or node addition. The volume can be a shared volume among all the containers. For example:
 
     ```bash
-    # mkdir /opt/.secrets/
-    # openssl rand -out /opt/.secrets/pwd.key -hex 64 
+    mkdir /opt/.secrets/
+    openssl rand -out /opt/.secrets/pwd.key -hex 64 
     ```
 
    - Edit the `/opt/.secrets/common_os_pwdfile` and seed the password for the  grid, oracle and database users. For this deployment scenario, it will be a common password for the grid, oracle, and database users. Run the command:
 
       ```bash
-      # openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
-      # rm -f /opt/.secrets/common_os_pwdfile
+      openssl enc -aes-256-cbc -salt -in /opt/.secrets/common_os_pwdfile -out /opt/.secrets/common_os_pwdfile.enc -pass file:/opt/.secrets/pwd.key
+      rm -f /opt/.secrets/common_os_pwdfile
       ```
 
 3. Create `rac_host_file` on both Podman and Docker hosts:
 
    ```bash
-   # mkdir /opt/containers/
-   # touch /opt/containers/rac_host_file
+   mkdir /opt/containers/
+   touch /opt/containers/rac_host_file
    ```
 <!-- markdownlint-disable-next-line MD036 -->
 **Notes**
@@ -275,7 +275,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Con
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
   ```bash
-  # dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
+  dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
   ```
 
 Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
@@ -283,7 +283,7 @@ Repeat for each shared block device. In the preceding example, `/dev/xvde` is a 
 Now create the Oracle RAC container using the image. You can use the following example to create a container:
 
   ```bash
-  # docker create -t -i \
+  docker create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
     --volume /dev/shm \
@@ -314,6 +314,7 @@ Now create the Oracle RAC container using the image. You can use the following e
     -e CMAN_IP=172.16.1.15 \
     -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
     -e PWD_KEY=pwd.key \
+    -e RESET_FAILED_SYSTEMD="true" \
     --restart=always --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
     --cpu-rt-runtime=95000 --ulimit rtprio=99  \
     --name racnode1 \
@@ -329,7 +330,7 @@ If you are using block devices, skip to the section [Deploying Oracle RAC on Con
 Now create the Oracle RAC container using the image. You can use the following example to create a container:
 
   ```bash
-  # docker create -t -i \
+  docker create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
     --volume /dev/shm \
@@ -359,6 +360,7 @@ Now create the Oracle RAC container using the image. You can use the following e
     -e CMAN_IP=172.16.1.15 \
     -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
     -e PWD_KEY=pwd.key \
+    -e RESET_FAILED_SYSTEMD="true" \
     --restart=always \
     --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
     --cpu-rt-runtime=95000 \
@@ -378,9 +380,9 @@ Now create the Oracle RAC container using the image. You can use the following e
 You need to assign the Docker networks created in section 1 to containers. Execute the following commands:
 
   ```bash
-  # docker network disconnect bridge racnode1
-  # docker network connect rac_pub1_nw --ip 172.16.1.150 racnode1
-  # docker network connect rac_priv1_nw --ip 192.168.17.150  racnode1
+  docker network disconnect bridge racnode1
+  docker network connect rac_pub1_nw --ip 172.16.1.150 racnode1
+  docker network connect rac_priv1_nw --ip 192.168.17.150  racnode1
   ```
 
 #### Start the first container
@@ -388,13 +390,13 @@ You need to assign the Docker networks created in section 1 to containers. Execu
 To start the first container, run the following command:
 
   ```bash
-  # docker start racnode1
+  docker start racnode1
   ```
 
 It can take at least 40 minutes or longer to create the first node of the cluster. To check the logs, use the following command from another terminal session:
 
   ```bash
-  # docker logs -f racnode1
+  docker logs -f racnode1
   ```
 
 You should see the database creation success message at the end:
@@ -410,7 +412,7 @@ You should see the database creation success message at the end:
 To connect to the container execute the following command:
 
 ```bash
-# docker exec -i -t racnode1 /bin/bash
+docker exec -i -t racnode1 /bin/bash
 ```
 
 If the install fails for any reason, log in to the container using the preceding command and check `/tmp/orod.log`.
@@ -443,7 +445,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Con
 To create additional nodes, use the following command:
 
 ```bash
-# docker create -t -i \
+docker create -t -i \
   --hostname racnode2 \
   --volume /dev/shm \
   --tmpfs /dev/shm:rw,exec,size=4G  \
@@ -475,6 +477,7 @@ To create additional nodes, use the following command:
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
   -e PWD_KEY=pwd.key \
+  -e RESET_FAILED_SYSTEMD="true" \
   --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
@@ -494,7 +497,7 @@ Use the existing `racstorage:/oradata` volume when creating the additional conta
 For example:
 
 ```bash
-# docker create -t -i \
+docker create -t -i \
   --hostname racnode2 \
   --volume /dev/shm \
   --tmpfs /dev/shm:rw,exec,size=4G  \
@@ -525,6 +528,7 @@ For example:
   -e OP_TYPE=ADDNODE \
   -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
   -e PWD_KEY=pwd.key \
+  -e RESET_FAILED_SYSTEMD="true" \
   --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
   --cpu-rt-runtime=95000 \
   --ulimit rtprio=99  \
@@ -543,9 +547,9 @@ For example:
 Connect the private and public networks you created earlier to the container:
 
 ```bash
-# docker network disconnect bridge racnode2
-# docker network connect rac_pub1_nw --ip 172.16.1.151 racnode2
-# docker network connect rac_priv1_nw --ip 192.168.17.151 racnode2
+docker network disconnect bridge racnode2
+docker network connect rac_pub1_nw --ip 172.16.1.151 racnode2
+docker network connect rac_priv1_nw --ip 192.168.17.151 racnode2
 ```
 
 #### Start Oracle RAC racnode2 container
@@ -553,13 +557,13 @@ Connect the private and public networks you created earlier to the container:
 Start the container
 
 ```bash
-# docker start racnode2
+docker start racnode2
 ```
 
 To check the database logs, tail the logs using the following command:
 
 ```bash
-# docker logs -f racnode2
+docker logs -f racnode2
 ```
 
 You should see the database creation success message at the end.
@@ -575,7 +579,7 @@ ORACLE RAC DATABASE IS READY TO USE!
 To connect to the container execute the following command:
 
 ```bash
-# docker exec -i -t racnode2 /bin/bash
+docker exec -i -t racnode2 /bin/bash
 ```
 
 If the node addition fails, log in to the container using the preceding command and review `/tmp/orod.log`. You can also review the Grid Infrastructure logs i.e. `$GRID_BASE/diag/crs` and check for failure logs. If the node creation has failed during the database creation process, then check DB logs.
@@ -669,7 +673,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC on Con
 Make sure the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
   ```bash
-  # dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
+  dd if=/dev/zero of=/dev/xvde  bs=8k count=10000
   ```
 
 Repeat for each shared block device. In the preceding example, `/dev/xvde` is a shared Xen virtual block device.
@@ -677,7 +681,7 @@ Repeat for each shared block device. In the preceding example, `/dev/xvde` is a 
 Now create the Oracle RAC container using the image. For the details of environment variables, refer to section 7. You can use the following example to create a container:
 
   ```bash
-  # podman create -t -i \
+  podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
     --tmpfs /dev/shm:rw,exec,size=4G \
@@ -724,7 +728,7 @@ Now create the Oracle RAC container using the image. For the details of environm
     --cpu-rt-runtime=95000 \
     --ulimit rtprio=99  \
     --name racnode1 \
-    localhost/oracle/database-rac:21.3.0-21.7.0
+    localhost/oracle/database-rac:21.3.0-21.13.0
   ```
 
 **Note:** Change environment variables such as `NODE_IP`, `PRIV_IP`, `PUBLIC_IP`,  `ASM_DEVICE_LIST`, `PWD_FILE`, and `PWD_KEY` based on your environment. Also, ensure you use the correct device names on each host.
@@ -735,7 +739,7 @@ If you are using block devices, skip to the section [Deploying RAC Containers wi
 Now create the Oracle RAC container using the image.  You can use the following example to create a container:
 
   ```bash
-  # podman create -t -i \
+  podman create -t -i \
     --hostname racnode1 \
     --volume /boot:/boot:ro \
     --tmpfs /dev/shm:rw,exec,size=4G \
@@ -781,7 +785,7 @@ Now create the Oracle RAC container using the image.  You can use the following 
     --cpu-rt-runtime=95000 \
     --ulimit rtprio=99  \
     --name racnode1 \
-    localhost/oracle/database-rac:21.3.0-21.7.0
+    localhost/oracle/database-rac:21.3.0-21.13.0
   ```
 
 **Notes:**
@@ -794,9 +798,9 @@ Now create the Oracle RAC container using the image.  You can use the following 
 You need to assign the Podman networks created in section 1 to containers. Execute the following commands:
 
   ```bash
-  # podman network disconnect podman racnode1
-  # podman network connect rac_pub1_nw --ip 172.16.1.150 racnode1
-  # podman network connect rac_priv1_nw --ip 192.168.17.150  racnode1
+  podman network disconnect podman racnode1
+  podman network connect rac_pub1_nw --ip 172.16.1.150 racnode1
+  podman network connect rac_priv1_nw --ip 192.168.17.150  racnode1
   ```
 
 #### Start the first container Created Using Podman
@@ -804,7 +808,7 @@ You need to assign the Podman networks created in section 1 to containers. Execu
 To start the first container, run the following command:
 
   ```bash
-  # podman start racnode1
+  podman start racnode1
   ```
 
 It can take at least 40 minutes or longer to create the first node of the cluster. To check the database logs, tail the logs using the following command:
@@ -856,7 +860,7 @@ If you are using an NFS volume, skip to the section [Deploying Oracle RAC Additi
 To create additional nodes, use the following command:
 
 ```bash
-# podman create -t -i \
+podman create -t -i \
   --hostname racnode2 \
   --tmpfs /dev/shm:rw,exec,size=4G  \
   --volume /boot:/boot:ro \
@@ -903,7 +907,7 @@ To create additional nodes, use the following command:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  localhost/oracle/database-rac:21.3.0-21.7.0
+  localhost/oracle/database-rac:21.3.0-21.13.0
 ```
 
 For details of all environment variables and parameters, refer to [Section 8](#section-8-environment-variables-for-the-second-and-subsequent-nodes).
@@ -917,7 +921,7 @@ Use the existing `racstorage:/oradata` volume when creating the additional conta
 For example:
 
 ```bash
-# podman create -t -i \
+podman create -t -i \
   --hostname racnode2 \
   --tmpfs /dev/shm:rw,exec,size=4G  \
   --volume /boot:/boot:ro \
@@ -963,7 +967,7 @@ For example:
   --ulimit rtprio=99  \
   --restart=always \
   --name racnode2 \
-  localhost/oracle/database-rac:21.3.0-21.7.0
+  localhost/oracle/database-rac:21.3.0-21.13.0
 ```
 
 **Notes:**
@@ -976,9 +980,9 @@ For example:
 Connect the private and public networks you created earlier to the container:
 
 ```bash
-# podman network disconnect podman racnode2
-# podman network connect rac_pub1_nw --ip 172.16.1.151 racnode2
-# podman network connect rac_priv1_nw --ip 192.168.17.151 racnode2
+podman network disconnect podman racnode2
+podman network connect rac_pub1_nw --ip 172.16.1.151 racnode2
+podman network connect rac_priv1_nw --ip 192.168.17.151 racnode2
 ```
 
 #### Start Oracle RAC container
@@ -986,7 +990,7 @@ Connect the private and public networks you created earlier to the container:
 Start the container
 
 ```bash
-# podman start racnode2
+podman start racnode2
 ```
 
 To check the database logs, tail the logs using the following command:
@@ -1167,6 +1171,6 @@ To download and run Oracle Grid and Database, regardless of whether inside or ou
 
 All scripts and files hosted in this repository which are required to build the container  images are, unless otherwise noted, released under UPL 1.0 license.
 
-## Section 11 : Copyright
+## Section 13 : Copyright
 
 Copyright (c) 2014-2024 Oracle and/or its affiliates.
