@@ -1,7 +1,7 @@
 ---
 version: '3'
 services:
-  racdns:
+  rac-dnsserver:
     container_name: ${DNS_CONTAINER_NAME}
     hostname: ${DNS_HOST_NAME}
     image: ${DNS_IMAGE_NAME}
@@ -9,19 +9,18 @@ services:
     environment:
       SETUP_DNS_CONFIG_FILES: "setup_true"
       DOMAIN_NAME: ${DNS_DOMAIN}
-      RAC_NODE_NAME_PREFIX: ${RAC_NODE_NAME_PREFIX}
-    sysctls:
-        - net.ipv6.conf.all.disable_ipv6=1
+      RAC_NODE_NAME_PREFIXP: ${RAC_NODE_NAME_PREFIXP}
+      WEBMIN_ENABLED: false
     cap_add:
-      - SYS_ADMIN
+      - AUDIT_WRITE
     healthcheck:
       test: ["CMD-SHELL", "if nslookup $SCAN_NAME; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
     networks:
-      rac_pub1_nw:
-        ipv4_address: ${DNS_PUBLIC_IP}
+      - rac_pub1_nw
+      - rac_priv1_nw
   racnode-storage:
     container_name: ${STORAGE_CONTAINER_NAME}
     hostname: ${STORAGE_HOST_NAME}
@@ -44,7 +43,7 @@ services:
     networks:
       rac_priv1_nw:
         ipv4_address: ${STORAGE_PRIVATE_IP}
-  racnode1:
+  racnodep1:
     container_name: ${RACNODE1_CONTAINER_NAME}
     hostname: ${RACNODE1_HOST_NAME}
     image: ${RACNODE_IMAGE_NAME}
@@ -101,7 +100,7 @@ services:
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
-  racnode-cman:
+  racnodepc1-cman:
     container_name: ${CMAN_CONTAINER_NAME}
     hostname: ${CMAN_HOST_NAME}
     image: ${CMAN_IMAGE_NAME}

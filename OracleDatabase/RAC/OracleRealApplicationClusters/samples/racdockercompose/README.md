@@ -18,11 +18,12 @@ Once you have built your Oracle RAC container image, you can create a Oracle RAC
 
 ## Section 1 : Prerequisites for RAC Database on Docker with Docker Compose
 
-**IMPORTANT :** You must execute all the steps specified in this section (customized for your environment) before you proceed to the next section. Docker and Docker Compose is not supported with OL8. You need OL7.9 with UEK R5 or R6.
+**IMPORTANT :** You must execute all the steps specified in this section (customized for your environment) before you proceed to the next section. Docker and Docker Compose is not supported with OL8. You need OL7.9 with UEK R5 or R6. This guide and example is mainly for development and testing purposes only.
 
-- Create DNS docker image and container, if you are planing to use DNS container for testing. Please refer [DNS Container README.MD](../../../OracleDNSServer/README.md). You can skip this step if you are planing to use **your own DNS Server**.
+- It is assumed that before proceeding further you have executed the pre-requisites from [Section 1 : Prerequisites for running Oracle RAC in containers](../../../OracleRealApplicationClusters/README.md)  and [Section 4.1 : Prerequisites for Running Oracle RAC on Docker](../../../OracleRealApplicationClusters/README.md) for Single Docker Host Machine .
+- Create DNS docker image, if you are planing to use DNS container for testing. Please refer [DNS Container README.MD](../../../OracleDNSServer/README.md). You can skip this step if you are planing to use **your own DNS Server**.
 - Create Oracle Connection Manager Docker image.Please refer [RAC Oracle Connection Manager README.MD](../../../OracleConnectionManager/README.md) for details.
-- Execute the [Section 1 : Prerequisites for running Oracle RAC in containers](../../../OracleRealApplicationClusters/README.md).
+
 - If you have not built the Oracle RAC container image, execute the steps in [Section 2: Building Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md) based on your environment.
 
 In order to setup RAC on Docker with Docker Compose, latest `docker compose` binary is required from [respective website](https://github.com/docker/compose/releases). This is example of how to install `docker compose` executable v2.23.1 from github-
@@ -44,19 +45,20 @@ In order to setup Oracle RAC on Docker with Block Devices with Docker Compose, f
 export HEALTHCHECK_INTERVAL=30s
 export HEALTHCHECK_TIMEOUT=3s
 export HEALTHCHECK_RETRIES=240
-export DNS_CONTAINER_NAME=racdns
+export DNS_CONTAINER_NAME=rac-dnsserver
 export DNS_HOST_NAME=rac-dns
 export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"
 export DNS_DOMAIN="example.com"
-export RAC_NODE_NAME_PREFIX="racnode"
+export RAC_NODE_NAME_PREFIXD="racnoded"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
+export PRIVATE_NETWORK_NAME="rac_priv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
-export INSTALL_NODE=racnode1
-export SCAN_NAME="racnode-scan"
-export SCAN_IP=172.16.1.70
+export DNS_PRIVATE_IP=192.168.17.25
+export INSTALL_NODE=racnoded1
+export SCAN_NAME="racnodedc1-scan"
+export SCAN_IP=172.16.1.230
 export ASM_DISCOVERY_DIR="/dev/"
 export PWD_KEY="pwd.key"
 export ASM_DISK1="/dev/oracleoci/oraclevdd"
@@ -64,26 +66,24 @@ export ASM_DISK2="/dev/oracleoci/oraclevde"
 export ASM_DEVICE1="/dev/asm-disk1"
 export ASM_DEVICE2="/dev/asm-disk2"
 export ASM_DEVICE_LIST="${ASM_DEVICE1},${ASM_DEVICE2}"
-export CMAN_HOSTNAME="racnode-cman1"
-export CMAN_IP=172.16.1.15
 export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
 export PWD_KEY="pwd.key"
-export RACNODE1_CONTAINER_NAME=racnode1
-export RACNODE1_HOST_NAME=racnode1
+export RACNODE1_CONTAINER_NAME=racnoded1
+export RACNODE1_HOST_NAME=racnoded1
 export RACNODE_IMAGE_NAME="oracle/database-rac:19.3.0"
-export RACNODE1_NODE_VIP=172.16.1.160
-export RACNODE1_VIP_HOSTNAME="racnode1-vip"
-export RACNODE1_PRIV_IP=192.168.17.150
-export RACNODE1_PRIV_HOSTNAME="racnode1-priv"
-export RACNODE1_PUBLIC_IP=172.16.1.150
-export RACNODE1_PUBLIC_HOSTNAME="racnode1"
-export CMAN_CONTAINER_NAME=racnode-cman
-export CMAN_HOST_NAME=racnode-cman1
+export RACNODE1_NODE_VIP=172.16.1.130
+export RACNODE1_VIP_HOSTNAME="racnoded1-vip"
+export RACNODE1_PRIV_IP=192.168.17.100
+export RACNODE1_PRIV_HOSTNAME="racnoded1-priv"
+export RACNODE1_PUBLIC_IP=172.16.1.100
+export RACNODE1_PUBLIC_HOSTNAME="racnoded1"
+export CMAN_CONTAINER_NAME=racnodedc1-cman
 export CMAN_IMAGE_NAME="oracle/client-cman:19.3.0"
 export DNS_DOMAIN="example.com"
-export CMAN_PUBLIC_IP=172.16.1.15
+export CMAN_PUBLIC_IP=172.16.1.164
+export CMAN_HOSTNAME="racnodedc1-cman"
 export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
-export CMAN_PUBLIC_HOSTNAME="racnode-cman1"
+export CMAN_PUBLIC_HOSTNAME="racnodec1-cman"
 export CMAN_VERSION="19.3.0"
 ```
 
@@ -94,52 +94,51 @@ In order to setup Oracle RAC on Docker with Oracle RAC Storage Container with Do
 yum -y install nfs-utils
 ```
 
-Lets identify necessary variables to export that will be used by `docker-compose.yml` file later. Below is one example of exporting necessary variables related to docker network, DNS container, Storage Container, RAC Container and CMAN container discussed in this repo.
+Lets identify necessary variables to export that will be used by `docker-compose.yml` file later. Below is one example of exporting necessary variables related to docker network, DNS container, Storage Container, RAC Container and CMAN container discussed in this guide. Change as per your requirements.
 ```bash
 export HEALTHCHECK_INTERVAL=30s
 export HEALTHCHECK_TIMEOUT=3s
 export HEALTHCHECK_RETRIES=240
-export DNS_CONTAINER_NAME=racdns
+export DNS_CONTAINER_NAME=rac-dnsserver
 export DNS_HOST_NAME=rac-dns
 export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"
 export DNS_DOMAIN="example.com"
-export RAC_NODE_NAME_PREFIX="racnode"
+export RAC_NODE_NAME_PREFIXD="racnoded"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
+export PRIVATE_NETWORK_NAME="rac_priv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
-export INSTALL_NODE=racnode1
-export SCAN_NAME="racnode-scan"
-export SCAN_IP=172.16.1.70
-export ASM_DISCOVERY_DIR="/oradata"
-export ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
-export CMAN_HOSTNAME="racnode-cman1"
-export CMAN_IP=172.16.1.15
-export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
+export DNS_PRIVATE_IP=192.168.17.25
+export INSTALL_NODE=racnoded1
+export SCAN_NAME="racnodedc1-scan"
+export SCAN_IP=172.16.1.230
 export PWD_KEY="pwd.key"
-export RACNODE1_CONTAINER_NAME=racnode1
-export RACNODE1_HOST_NAME=racnode1
+export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
+export RACNODE1_CONTAINER_NAME=racnoded1
+export RACNODE1_HOST_NAME=racnoded1
 export RACNODE_IMAGE_NAME="oracle/database-rac:19.3.0"
-export RACNODE1_NODE_VIP=172.16.1.160
-export RACNODE1_VIP_HOSTNAME="racnode1-vip"
-export RACNODE1_PRIV_IP=192.168.17.150
-export RACNODE1_PRIV_HOSTNAME="racnode1-priv"
-export RACNODE1_PUBLIC_IP=172.16.1.150
-export RACNODE1_PUBLIC_HOSTNAME="racnode1"
-export CMAN_CONTAINER_NAME=racnode-cman
-export CMAN_HOST_NAME=racnode-cman1
+export RACNODE1_NODE_VIP=172.16.1.130
+export RACNODE1_VIP_HOSTNAME="racnoded1-vip"
+export RACNODE1_PRIV_IP=192.168.17.100
+export RACNODE1_PRIV_HOSTNAME="racnoded1-priv"
+export RACNODE1_PUBLIC_IP=172.16.1.100
+export RACNODE1_PUBLIC_HOSTNAME="racnoded1"
+export CMAN_CONTAINER_NAME=racnodedc1-cman
+export CMAN_PUBLIC_IP=172.16.1.164
+export CMAN_HOSTNAME="racnodedc1-cman"
 export CMAN_IMAGE_NAME="oracle/client-cman:19.3.0"
 export DNS_DOMAIN="example.com"
-export CMAN_PUBLIC_IP=172.16.1.15
 export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
-export CMAN_PUBLIC_HOSTNAME="racnode-cman1"
+export CMAN_PUBLIC_HOSTNAME="racnodec1-cman"
 export CMAN_VERSION="19.3.0"
+export ASM_DISCOVERY_DIR="/oradata"
+export ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
 export STORAGE_CONTAINER_NAME="racnode-storage"
 export STORAGE_HOST_NAME="racnode-storage"
 export STORAGE_IMAGE_NAME="oracle/rac-storage-server:19.3.0"
 export ORACLE_DBNAME="ORCLCDB"
-export STORAGE_PRIVATE_IP=192.168.17.25
+export STORAGE_PRIVATE_IP=192.168.17.80
 export NFS_STORAGE_VOLUME="/docker_volumes/asm_vol/$ORACLE_DBNAME"
 ```
 ## Section 3 : Deploy the RAC Container
@@ -151,8 +150,8 @@ All containers will share a host file for name resolution.  The shared hostfile 
 For example:
 
 ```bash
-# mkdir /opt/containers
-# touch /opt/containers/rac_host_file
+mkdir /opt/containers
+touch /opt/containers/rac_host_file
 ```
 
 **Note:** Do not modify `/opt/containers/rac_host_file` from docker host. It will be managed from within the containers.
@@ -180,19 +179,24 @@ Repeat for each shared block device. In the example above, `/dev/xvde` is a shar
 
 ### Section 3.1: Deploy the RAC Container with Block Devices
 
-Once pre-requisites and above necessary variables are exported, copy `docker-compose.yml` file from [this location](./samples/racdockercompose/compose-files/blockdevices/)
+Once pre-requisites and above necessary variables are exported, copy `docker-compose.yml` file from [this location](./compose-files/blockdevices/docker-compose.yml) and `cd` to same directory where you have copied `docker-compose` file before running `docker compose` commands.
 
 After copying compose file, you can bring up DNS Container, RAC Container and CMAN container in order by following below commands-
 ```bash
 #---------Bring up DNS------------
-docker compose up -d racdns
+docker compose up -d ${DNS_CONTAINER_NAME} && docker compose stop ${DNS_CONTAINER_NAME}
+docker network disconnect ${PUBLIC_NETWORK_NAME} ${DNS_CONTAINER_NAME}
+docker network disconnect ${PRIVATE_NETWORK_NAME} ${DNS_CONTAINER_NAME}
+docker network connect ${PUBLIC_NETWORK_NAME} --ip ${DNS_PUBLIC_IP} ${DNS_CONTAINER_NAME}
+docker network connect ${PRIVATE_NETWORK_NAME} --ip ${DNS_PRIVATE_IP} ${DNS_CONTAINER_NAME}
+docker compose start ${DNS_CONTAINER_NAME}
+docker compose logs ${DNS_CONTAINER_NAME} 
 
-docker compose logs racdns 
-racdns  | 01-21-2024 08:46:31 UTC :  : DNS Server started sucessfully
-racdns  | 01-21-2024 08:46:31 UTC :  : ################################################
-racdns  | 01-21-2024 08:46:31 UTC :  :  DNS Server IS READY TO USE!           
-racdns  | 01-21-2024 08:46:31 UTC :  : ################################################
-racdns  | 01-21-2024 08:46:31 UTC :  : DNS Server Started Successfully
+rac-dnsserver  | 01-30-2024 10:51:51 UTC :  : DNS Server started successfully
+rac-dnsserver  | 01-30-2024 10:51:51 UTC :  : ################################################
+rac-dnsserver  | 01-30-2024 10:51:51 UTC :  :  DNS Server IS READY TO USE!            
+rac-dnsserver  | 01-30-2024 10:51:51 UTC :  : ################################################
+rac-dnsserver  | 01-30-2024 10:51:51 UTC :  : DNS Server Started Successfully
 ```
 
 ```bash
@@ -203,43 +207,63 @@ docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE1_CONTAINER_NAME}
 docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE1_PUBLIC_IP} ${RACNODE1_CONTAINER_NAME}
 docker network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE1_PRIV_IP} ${RACNODE1_CONTAINER_NAME}
 docker compose start ${RACNODE1_CONTAINER_NAME}
-
 docker compose logs -f ${RACNODE1_CONTAINER_NAME}
-racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
-racnode1  | 01-19-2024 16:34:24 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
-racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
+
+racnoded1  | 01-31-2024 09:09:56 UTC :  : #################################################################
+racnoded1  | 01-31-2024 09:09:56 UTC :  :  Oracle Database ORCLCDB is up and running on racnoded1    
+racnoded1  | 01-31-2024 09:09:56 UTC :  : #################################################################
+racnoded1  | 01-31-2024 09:09:56 UTC :  : Running User Script oracle user
+racnoded1  | 01-31-2024 09:09:56 UTC :  : Setting Remote Listener
+racnoded1  | 01-31-2024 09:09:56 UTC :  : 172.16.1.164
+racnoded1  | 01-31-2024 09:09:56 UTC :  : Executing script to set the remote listener
+racnoded1  | 01-31-2024 09:09:58 UTC :  : ####################################
+racnoded1  | 01-31-2024 09:09:58 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
+racnoded1  | 01-31-2024 09:09:58 UTC :  : ####################################
 ```
 
 ```bash
 #-----Bring up CMAN----------
 docker compose up -d ${CMAN_CONTAINER_NAME}
-
 docker compose logs -f ${CMAN_CONTAINER_NAME}
-cnode-cman  | 01-19-2024 16:35:33 UTC :  : ################################################
-racnode-cman  | 01-19-2024 16:35:33 UTC :  :  CONNECTION MANAGER IS READY TO USE!           
-racnode-cman  | 01-19-2024 16:35:33 UTC :  : ################################################
-racnode-cman  | 01-19-2024 16:35:33 UTC :  : cman started sucessfully
+
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : cman started sucessfully
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : ################################################
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  :  CONNECTION MANAGER IS READY TO USE!            
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : ################################################
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : cman started sucessfully
 ```
 
-Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks.
+Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to DNS and RAC container while stopping it in between. Also, above example is specific to bridge networks on a Single Docker Host.
 
 In case, of MCVLAN or IPVLAN networks, you may want to edit `docker-compose.yml` file are per your needs and respective environment variables.
 
 ### Section 3.2: Deploy the RAC Container with NFS Storage Devices
 
-Once pre-requisites for NFS Storage Devices and above necessary variables are exported, copy `docker-compose.yml` file from [this location](./samples/racdockercompose/compose-files/nfsdevices/)
+Once pre-requisites for NFS Storage Devices and above necessary variables are exported, copy `docker-compose.yml` file from [this location](./compose-files/nfsdevices/docker-compose.yml) and `cd` to same directory where you have copied `docker-compose.yml` file before running `docker compose` commands.
+
+Create placeholder for NFS storage and make sure it is empty -
+```bash
+export ORACLE_DBNAME=ORCLCDB
+mkdir -p /docker_volumes/asm_vol/$ORACLE_DBNAME
+rm -rf /docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
+```
 
 After copying compose file, you can bring up DNS Container, Storage Container, RAC Container and CMAN container by following below commands-
 ```bash
 #---------Bring up DNS------------
-docker compose up -d racdns
+docker compose up -d ${DNS_CONTAINER_NAME} && docker compose stop ${DNS_CONTAINER_NAME}
+docker network disconnect ${PUBLIC_NETWORK_NAME} ${DNS_CONTAINER_NAME}
+docker network disconnect ${PRIVATE_NETWORK_NAME} ${DNS_CONTAINER_NAME}
+docker network connect ${PUBLIC_NETWORK_NAME} --ip ${DNS_PUBLIC_IP} ${DNS_CONTAINER_NAME}
+docker network connect ${PRIVATE_NETWORK_NAME} --ip ${DNS_PRIVATE_IP} ${DNS_CONTAINER_NAME}
+docker compose start ${DNS_CONTAINER_NAME}
+docker compose logs ${DNS_CONTAINER_NAME} 
 
-docker compose logs racdns 
-racdns  | 01-21-2024 08:46:31 UTC :  : DNS Server started sucessfully
-racdns  | 01-21-2024 08:46:31 UTC :  : ################################################
-racdns  | 01-21-2024 08:46:31 UTC :  :  DNS Server IS READY TO USE!           
-racdns  | 01-21-2024 08:46:31 UTC :  : ################################################
-racdns  | 01-21-2024 08:46:31 UTC :  : DNS Server Started Successfully
+rac-dnsserver  | 01-31-2024 07:22:06 UTC :  : DNS Server started successfully
+rac-dnsserver  | 01-31-2024 07:22:06 UTC :  : ################################################
+rac-dnsserver  | 01-31-2024 07:22:06 UTC :  :  DNS Server IS READY TO USE!            
+rac-dnsserver  | 01-31-2024 07:22:06 UTC :  : ################################################
+rac-dnsserver  | 01-31-2024 07:22:06 UTC :  : DNS Server Started Successfully
 ```
 
 ```bash
@@ -257,8 +281,8 @@ racnode-storage  | ####################################################
 #-----Create docker volume---
 docker volume create --driver local \
   --opt type=nfs \
-  --opt o=addr=192.168.17.25,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
-  --opt device=192.168.17.25:/oradata \
+  --opt o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+  --opt device=192.168.17.80:/oradata \
   racstorage
 ```
 
@@ -280,12 +304,13 @@ racnode1  | 01-19-2024 16:34:24 UTC :  : ####################################
 ```bash
 #-----Bring up CMAN----------
 docker compose up -d ${CMAN_CONTAINER_NAME}
-
 docker compose logs -f ${CMAN_CONTAINER_NAME}
-cnode-cman  | 01-19-2024 16:35:33 UTC :  : ################################################
-racnode-cman  | 01-19-2024 16:35:33 UTC :  :  CONNECTION MANAGER IS READY TO USE!           
-racnode-cman  | 01-19-2024 16:35:33 UTC :  : ################################################
-racnode-cman  | 01-19-2024 16:35:33 UTC :  : cman started sucessfully
+
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : cman started sucessfully
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : ################################################
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  :  CONNECTION MANAGER IS READY TO USE!            
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : ################################################
+racnodedc1-cman  | 01-31-2024 10:35:00 UTC :  : cman started sucessfully
 ```
 
 Note: Docker compose currently doesn't supports assigning multiple network IP address via compose file. Due to this limitation, above commands are specificically assigning required public and private networks to RAC container while stopping it in between. Also, above example is specific to bridge networks.
@@ -295,22 +320,22 @@ In case, of MCVLAN or IPVLAN networks, you may want to edit `docker-compose.yml`
 ## Section 4: Add Additional Node in Existing Oracle RAC Cluster
 
 ### Section 4.1: Add Additional Node in Existing Oracle RAC Cluster with Block Devices
-In order to add additional node in existing Oracle RAC on Docker with Block Devices with Docker Compose, first lets identify necessary variables to export that will be used by `docker-compose.yml` file later. Below is one example of exporting necessary variables related to additional RAC Container with Block Devices.
+In order to add additional node in existing Oracle RAC on Docker with Block Devices with Docker Compose, first lets identify necessary variables to export that will be used by `docker-compose.yml` file later. Below is one example of exporting necessary variables related to additional RAC Container with Block Devices. Change these as per your environment.
 ```bash
 export HEALTHCHECK_INTERVAL=30s
 export HEALTHCHECK_TIMEOUT=3s
 export HEALTHCHECK_RETRIES=240
-export DNS_HOST_NAME=rac-dns
+export DNS_HOST_NAME=rac-dnsserver
 export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"
 export DNS_DOMAIN="example.com"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
+export PRIVATE_NETWORK_NAME="rac_priv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
-export INSTALL_NODE=racnode1
-export SCAN_NAME="racnode-scan"
-export SCAN_IP=172.16.1.70
+export INSTALL_NODE=racnoded1
+export SCAN_NAME="racnodedc1-scan"
+export SCAN_IP=172.16.1.230
 export ASM_DISCOVERY_DIR="/dev/"
 export ASM_DISK1="/dev/oracleoci/oraclevdd"
 export ASM_DISK2="/dev/oracleoci/oraclevde"
@@ -319,18 +344,18 @@ export ASM_DEVICE2="/dev/asm-disk2"
 export ASM_DEVICE_LIST="${ASM_DEVICE1},${ASM_DEVICE2}"
 export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
 export PWD_KEY="pwd.key"
-export RACNODE2_CONTAINER_NAME=racnode2
-export RACNODE2_HOST_NAME=racnode2
+export RACNODE2_CONTAINER_NAME=racnoded2
+export RACNODE2_HOST_NAME=racnoded2
 export RACNODE_IMAGE_NAME="oracle/database-rac:19.3.0"
-export RACNODE2_NODE_VIP=172.16.1.161
-export RACNODE2_VIP_HOSTNAME="racnode2-vip"
-export RACNODE2_PRIV_IP=192.168.17.151
-export RACNODE2_PRIV_HOSTNAME="racnode2-priv"
-export RACNODE2_PUBLIC_IP=172.16.1.151
-export RACNODE2_PUBLIC_HOSTNAME="racnode2"
+export RACNODE2_NODE_VIP=172.16.1.131
+export RACNODE2_VIP_HOSTNAME="racnoded2-vip"
+export RACNODE2_PRIV_IP=192.168.17.101
+export RACNODE2_PRIV_HOSTNAME="racnoded2-priv"
+export RACNODE2_PUBLIC_IP=172.16.1.101
+export RACNODE2_PUBLIC_HOSTNAME="racnoded2"
 export ORACLE_DBNAME="ORCLCDB"
 ```
-Once necessary variables are exported, copy `docker-compose-additional.yml` file from [this location](./samples/racdockercompose/compose-files/blockdevices/) and rename it as `docker-compose.yml`
+Once necessary variables are exported, copy `docker-compose-addition.yml` file from [this location](./compose-files/blockdevices/docker-compose-addition.yml) and rename it as `docker-compose.yml`
 
 After copying compose file, you can bring up additional RAC Container by following below commands-
 
@@ -342,11 +367,16 @@ docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
 docker network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
 docker compose start ${RACNODE2_CONTAINER_NAME}
-
 docker compose logs -f ${RACNODE2_CONTAINER_NAME}
-racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
-racnode2  | 01-20-2024 06:15:35 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
-racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
+
+racnoded2  | 01-30-2024 13:34:52 UTC :  : #################################################################
+racnoded2  | 01-30-2024 13:34:52 UTC :  :  Oracle Database ORCLCDB is up and running on racnoded2    
+racnoded2  | 01-30-2024 13:34:52 UTC :  : #################################################################
+racnoded2  | 01-30-2024 13:34:52 UTC :  : Running User Script for  oracle user
+racnoded2  | 01-30-2024 13:34:52 UTC :  : Setting Remote Listener
+racnoded2  | 01-30-2024 13:34:52 UTC :  : ####################################
+racnoded2  | 01-30-2024 13:34:52 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
+racnoded2  | 01-30-2024 13:34:52 UTC :  : ####################################
 ```
 
 ### Section 4.2: Add Additional Node in Existing Oracle RAC Cluster with NFS Volume
@@ -356,33 +386,33 @@ In order to add additional node in existing Oracle RAC on Docker with NFS Storag
 export HEALTHCHECK_INTERVAL=30s
 export HEALTHCHECK_TIMEOUT=3s
 export HEALTHCHECK_RETRIES=240
-export DNS_HOST_NAME=rac-dns
+export DNS_HOST_NAME=rac-dnsserver
 export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"
 export DNS_DOMAIN="example.com"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
+export PRIVATE_NETWORK_NAME="rac_priv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
-export INSTALL_NODE=racnode1
-export SCAN_NAME="racnode-scan"
-export SCAN_IP=172.16.1.70
+export INSTALL_NODE=racnoded1
+export SCAN_NAME="racnodedc1-scan"
+export SCAN_IP=172.16.1.230
 export ASM_DISCOVERY_DIR="/oradata"
 export ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
 export COMMON_OS_PWD_FILE="common_os_pwdfile.enc"
 export PWD_KEY="pwd.key"
-export RACNODE2_CONTAINER_NAME=racnode2
-export RACNODE2_HOST_NAME=racnode2
+export RACNODE2_CONTAINER_NAME=racnoded2
+export RACNODE2_HOST_NAME=racnoded2
 export RACNODE_IMAGE_NAME="oracle/database-rac:19.3.0"
-export RACNODE2_NODE_VIP=172.16.1.161
-export RACNODE2_VIP_HOSTNAME="racnode2-vip"
-export RACNODE2_PRIV_IP=192.168.17.151
-export RACNODE2_PRIV_HOSTNAME="racnode2-priv"
-export RACNODE2_PUBLIC_IP=172.16.1.151
-export RACNODE2_PUBLIC_HOSTNAME="racnode2"
+export RACNODE2_NODE_VIP=172.16.1.131
+export RACNODE2_VIP_HOSTNAME="racnoded2-vip"
+export RACNODE2_PRIV_IP=192.168.17.101
+export RACNODE2_PRIV_HOSTNAME="racnoded2-priv"
+export RACNODE2_PUBLIC_IP=172.16.1.101
+export RACNODE2_PUBLIC_HOSTNAME="racnoded2"
 export ORACLE_DBNAME="ORCLCDB"
 ```
-Once necessary variables are exported, copy `docker-compose-additional.yml` file from [this location](./samples/racdockercompose/compose-files/nfsdevices/) and rename it as `docker-compose.yml`
+Once necessary variables are exported, copy `docker-compose-addition.yml` file from [this location](./compose-files/nfsdevices/docker-compose-addition.yml) and rename it as `docker-compose.yml`
 
 
 After copying compose file, you can bring up additional RAC Container by following below commands-
@@ -395,11 +425,16 @@ docker network disconnect ${PRIVATE_NETWORK_NAME} ${RACNODE2_CONTAINER_NAME}
 docker network connect ${PUBLIC_NETWORK_NAME} --ip ${RACNODE2_PUBLIC_IP} ${RACNODE2_CONTAINER_NAME}
 docker network connect ${PRIVATE_NETWORK_NAME} --ip ${RACNODE2_PRIV_IP} ${RACNODE2_CONTAINER_NAME}
 docker compose start ${RACNODE2_CONTAINER_NAME}
-
 docker compose logs -f ${RACNODE2_CONTAINER_NAME}
-racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
-racnode2  | 01-20-2024 06:15:35 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
-racnode2  | 01-20-2024 06:15:35 UTC :  : ####################################
+
+racnoded2  | 01-31-2024 10:45:54 UTC :  : #################################################################
+racnoded2  | 01-31-2024 10:45:54 UTC :  :  Oracle Database ORCLCDB is up and running on racnoded2    
+racnoded2  | 01-31-2024 10:45:54 UTC :  : #################################################################
+racnoded2  | 01-31-2024 10:45:54 UTC :  : Running User Script for  oracle user
+racnoded2  | 01-31-2024 10:45:54 UTC :  : Setting Remote Listener
+racnoded2  | 01-31-2024 10:45:54 UTC :  : ####################################
+racnoded2  | 01-31-2024 10:45:54 UTC :  : ORACLE RAC DATABASE IS READY TO USE!
+racnoded2  | 01-31-2024 10:45:54 UTC :  : ####################################
 ```
 
 

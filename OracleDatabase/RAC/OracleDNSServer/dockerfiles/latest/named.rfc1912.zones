@@ -51,3 +51,21 @@ zone "###REVERSEIP###.in-addr.arpa" IN {
       file "###DOMAIN_NAME###.rzone";
       allow-update { none; };
 };
+
+zone "###PRIVATE_DOMAIN_NAME###" IN {
+        type master;
+        file "###PRIVATE_DOMAIN_NAME###.zone";
+        allow-update { none; };
+};
+
+zone "###PRIVATE_REVERSEIP###.in-addr.arpa" IN {
+      type master;
+      file "###PRIVATE_DOMAIN_NAME###.rzone";
+      allow-update { none; };
+};
+
+zone "eot.internal.us.oracle.com" IN {
+      type forward;
+      forward only;
+      forwarders { 172.16.1.178 port 53; };
+};
