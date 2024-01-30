@@ -31,7 +31,7 @@ ONE_OFFS_LIST=()
 if ls $ONE_OFFS_DIR/*.zip 2> /dev/null; then
     for patch_zip in $ONE_OFFS_DIR/*.zip; do
         patch_no=$(echo ${patch_zip##*/} | cut -d_ -f1 | cut -dp -f2)
-        if [ $patch_no == "6880880" ]; then
+        if [[ $patch_zip =~ "6880880" ]]; then
             echo "Removing directory ${ORACLE_HOME}/OPatch";
             rm -rf ${ORACLE_HOME}/OPatch;
             echo "Unzipping OPatch archive $patch_zip to ${ORACLE_HOME}";
