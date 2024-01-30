@@ -92,7 +92,10 @@ FROM $RAC_SLIM_IMAGE as final
 ARG USER
 
 COPY --from=builder /u01 /u01
-COPY --from=builder $SCRIPT_DIR $SCRIPT_DIR
+RUN mkdir -p /tmp/scripts
+COPY --from=builder $SCRIPT_DIR /tmp/scripts
+RUN cp -rn /tmp/scripts/* $SCRIPT_DIR/ && \
+    rm -rf /tmp/scripts
 
 RUN chmod 755 "$SCRIPT_DIR"/* && \
     "$INVENTORY"/orainstRoot.sh && \

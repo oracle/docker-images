@@ -90,4 +90,4 @@ This is useful if you want to install multiple patches at once. The script will 
 
 ## Copyright
 
-Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.

@@ -14,7 +14,7 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim
+FROM oraclelinux:8
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -24,6 +24,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     EXPORTFILE=exportfile \
     RUN_FILE="runOracle.sh" \
     SUDO_SETUP_FILE="setupSudo.sh" \
+    INITSH="initsh" \
     BIN="/usr/sbin" \
     ORADATA="/oradata" \
     container="true" 
@@ -37,7 +38,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install  \
 COPY $SETUP_LINUX_FILE $SUDO_SETUP_FILE $INSTALL_SCRIPTS/
 
 # Setup Scripts
-COPY $RUN_FILE $EXPORTFILE $SCRIPT_DIR/
+COPY $RUN_FILE $EXPORTFILE $INITSH $SCRIPT_DIR/
 
 RUN  chmod 755 $INSTALL_DIR/install/*.sh && \
      $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
@@ -46,12 +47,16 @@ RUN  chmod 755 $INSTALL_DIR/install/*.sh && \
    
 RUN  rm -rf $INSTALL_DIR/install && \
     chmod 755 $SCRIPT_DIR/*.sh && \
+    echo "nohup $SCRIPT_DIR/runOracle.sh &" >> /etc/rc.local && \
+    chmod +x /etc/rc.d/rc.local  && \
+    cp $SCRIPT_DIR/$INITSH /usr/bin/$INITSH && \
+    chmod 755 /usr/bin/$INITSH && \ 
     chmod 666 $SCRIPT_DIR/$EXPORTFILE
 
-USER  oracle
+USER root 
 VOLUME ["/oradata"]
-WORKDIR /home/oracle
+WORKDIR /workdir
 
 # Define default command to start Oracle Database.
 # hadolint ignore=DL3025
-CMD exec $SCRIPT_DIR/$RUN_FILE
+ENTRYPOINT /usr/bin/$INITSH
