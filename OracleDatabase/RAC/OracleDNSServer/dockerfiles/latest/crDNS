@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "Creating RAC DNS Container"
+ /usr/bin/docker create -t -i --hostname racdns1 --dns-search=example.info --cap-add=AUDIT_WRITE -e DOMAIN_NAME="example.info" -e PRIVATE_DOMAIN_NAME="example-priv.info" -e WEBMIN_ENABLED=false -e RAC_NODE_NAME_PREFIXD="racnoded" -e RAC_NODE_NAME_PREFIXP="racnodep" -e SETUP_DNS_CONFIG_FILES="setup_true" -e CORP_DNS_DOMAIN_1="us.oracle.com" -e CORP_DNS_DOMAIN_2="dbdevtestphx.oraclevcn.com" -e CORP_DNS_SERVERS="100.96.241.2,100.96.241.194" --privileged=false --name rac-dnsserver1 localhost/oracle/rac-dnsserver:latest1
+
+sleep 2
+
+echo "Attaching to networks"
+docker network disconnect podman rac-dnsserver1
+/usr/bin/docker network connect rac_enp1s0pub1_nw --ip 172.20.1.252 rac-dnsserver1
+/usr/bin/docker network connect rac_enp2s0priv1_nw --ip 192.168.100.252 rac-dnsserver1
+
+sleep 2
+
+echo "Starting the DNS container"
+/usr/bin/docker start rac-dnsserver1
+
+/usr/bin/docker logs -f rac-dnsserver1
