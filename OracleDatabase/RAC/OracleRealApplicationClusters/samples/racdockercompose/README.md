@@ -445,7 +445,7 @@ racnoded2  | 01-31-2024 10:45:54 UTC :  : ####################################
 To connect to the container execute following command:
 
 ```bash
-# docker exec -i -t racnode1 /bin/bash
+docker exec -i -t racnoded1 /bin/bash
 ```
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.

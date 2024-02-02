@@ -437,7 +437,7 @@ podman-compose exec ${RACNODE2_CONTAINER_NAME} /bin/bash -c "systemctl reset-fai
 To connect to the container execute following command:
 
 ```bash
-# podman exec -i -t racnodep1 /bin/bash
+podman exec -i -t racnodep1 /bin/bash
 ```
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.

@@ -713,7 +713,7 @@ Now create the Oracle RAC container using the image. For the details of environm
     --sysctl kernel.shmall=2097152 \
     --sysctl "kernel.sem=250 32000 100 128" \
     --sysctl kernel.shmmax=8589934592 \
-    --sysctl kernel.shmmni=4096 \  
+    --sysctl kernel.shmmni=4096 \
     -e DNS_SERVERS="172.16.1.25" \
     -e NODE_VIP=172.16.1.200 \
     -e VIP_HOSTNAME=racnodep1-vip  \
