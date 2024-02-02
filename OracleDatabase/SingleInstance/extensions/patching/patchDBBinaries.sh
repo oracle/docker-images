@@ -13,6 +13,7 @@
 RU_DIR="${PATCH_DIR}/release_update"
 ONE_OFFS_DIR="${PATCH_DIR}/one_offs"
 
+# shellcheck disable=SC2012
 ru_count=$(ls "$RU_DIR"/*.zip 2> /dev/null | wc -l)
 if [ "$ru_count" -ge 2 ]; then
     echo "Error: Only 1 Release Update can be applied."
