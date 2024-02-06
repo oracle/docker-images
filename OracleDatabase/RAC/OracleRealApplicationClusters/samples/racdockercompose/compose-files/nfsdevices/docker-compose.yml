@@ -1,7 +1,7 @@
 ---
 version: "3"
 services:
-  racdns:
+  rac-dnsserver:
     container_name: ${DNS_CONTAINER_NAME}
     hostname: ${DNS_HOST_NAME}
     image: ${DNS_IMAGE_NAME}
@@ -9,19 +9,18 @@ services:
     environment:
       SETUP_DNS_CONFIG_FILES: "setup_true"
       DOMAIN_NAME: ${DNS_DOMAIN}
-      RAC_NODE_NAME_PREFIX: ${RAC_NODE_NAME_PREFIX}
-    sysctls:
-        - net.ipv6.conf.all.disable_ipv6=1
+      RAC_NODE_NAME_PREFIXD: ${RAC_NODE_NAME_PREFIXD}
+      WEBMIN_ENABLED: false
     cap_add:
-      - SYS_ADMIN
+      - AUDIT_WRITE
     healthcheck:
       test: ["CMD-SHELL", "if nslookup $SCAN_NAME; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
     networks:
-      rac_pub1_nw:
-        ipv4_address: ${DNS_PUBLIC_IP}
+      - rac_pub1_nw
+      - rac_priv1_nw
   racnode-storage:
     container_name: ${STORAGE_CONTAINER_NAME}
     hostname: ${STORAGE_HOST_NAME}
@@ -45,9 +44,9 @@ services:
     networks:
       rac_priv1_nw:
         ipv4_address: ${STORAGE_PRIVATE_IP}
-  racnode1:
+  racnoded1:
     depends_on:
-      racdns:
+      rac-dnsserver:
         condition: service_healthy
     container_name: ${RACNODE1_CONTAINER_NAME}
     hostname: ${RACNODE1_HOST_NAME}
@@ -80,7 +79,7 @@ services:
       ASM_DEVICE_LIST: ${ASM_DEVICE_LIST}
       ASM_DISCOVERY_DIR: ${ASM_DISCOVERY_DIR}
       CMAN_HOSTNAME: ${CMAN_HOSTNAME}
-      CMAN_IP: ${CMAN_IP}
+      CMAN_IP: ${CMAN_PUBLIC_IP}
       COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
       PWD_KEY: ${PWD_KEY}
       RESET_FAILED_SYSTEMD: "true"
@@ -99,14 +98,14 @@ services:
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
-  racnode-cman:
+  racnodedc1-cman:
     depends_on:
-      racdns:
+      rac-dnsserver:
         condition: service_healthy
-      racnode1:
+      racnoded1:
         condition: service_healthy
     container_name: ${CMAN_CONTAINER_NAME}
-    hostname: ${CMAN_HOST_NAME}
+    hostname: ${CMAN_HOSTNAME}
     image: ${CMAN_IMAGE_NAME}
     dns_search: ${DNS_DOMAIN}
     environment:
@@ -124,7 +123,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1 && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/${CMAN_VERSION}/client_1/bin/cmctl show service -c ${CMAN_HOST_NAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
+        - /bin/bash -c "export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1 && export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/${CMAN_VERSION}/client_1/bin/cmctl show service -c ${CMAN_HOSTNAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

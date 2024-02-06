@@ -1,5 +1,5 @@
 #!/bin/python3
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 
 ##
 ##  d e p l o y m e n t - i n i t . p y
@@ -134,9 +134,22 @@ def get_digest_authentication():
     return requests.auth.HTTPDigestAuth(userName, credential)
 
 
-def get_service_config(serviceName):
+def get_ogg_version():
+    """Retrieve the version of the Oracle GoldenGate installation"""
+    url = 'http://' + service_address + ':' + str(service_ports['ServiceManager']) + '/services/v2/config/summary'
+    response = get_requests_session().get(url, headers=rest_call_headers, auth=get_digest_authentication())
+    if response.status_code == 200:
+        response_json = response.json()
+        if 'response' in response_json and \
+           'build'    in response_json['response'] and \
+           'version'  in response_json['response']['build']:
+            return       response_json['response']['build']['version']
+    return None
+
+
+def get_service_config(deploymentName, serviceName):
     """Retrieve the configuration of a service from Service Manager"""
-    url = 'http://' + service_address + ':' + str(service_ports['ServiceManager']) + '/services/v2/deployments/' + os.environ['OGG_DEPLOYMENT'] + '/services/' + serviceName
+    url = 'http://' + service_address + ':' + str(service_ports['ServiceManager']) + '/services/v2/deployments/' + deploymentName + '/services/' + serviceName
     response = get_requests_session().get(url, headers=rest_call_headers, auth=get_digest_authentication())
     if response.status_code == 200:
         response_json = response.json()
@@ -146,9 +159,9 @@ def get_service_config(serviceName):
     return None
 
 
-def set_service_config(serviceName, config):
+def set_service_config(deploymentName, serviceName, config):
     """Sets the configuration of a service in Service Manager and restart the service"""
-    url = 'http://' + service_address + ':' + str(service_ports['ServiceManager']) + '/services/v2/deployments/' + os.environ['OGG_DEPLOYMENT'] + '/services/' + serviceName
+    url = 'http://' + service_address + ':' + str(service_ports['ServiceManager']) + '/services/v2/deployments/' + deploymentName + '/services/' + serviceName
     body = {
         'config': config,
         'status': 'restart'
@@ -161,11 +174,11 @@ def set_service_config(serviceName, config):
     return None
 
 
-def reset_service_configuration(serviceName):
+def reset_service_configuration(deploymentName, serviceName):
     """Reset the network configuration for a service to listen on and accept connections from the service host address only"""
-    config = get_service_config(serviceName)
+    config = get_service_config(deploymentName, serviceName)
     config['network'] = get_network_config(service_ports[serviceName])
-    set_service_config(serviceName, config)
+    set_service_config(deploymentName, serviceName, config)
 
 
 def option(name, value = None):
@@ -203,8 +216,12 @@ def establish_service_manager(hasServiceManager):
             option('nonsecure')
         subprocess.call(shell_command, shell=True, env=deployment_env)
         wait_for_service(service_ports['ServiceManager'])
+        version = get_ogg_version()
+        if version[0:2] >= '23':
+            reset_service_configuration('ServiceManager', 'ServiceManager')
         terminate_process('ServiceManager')
-        reset_servicemanager_configuration()
+        if version[0:2] <= '21':
+            reset_servicemanager_configuration()
 
     return subprocess.call(os.path.join(deployment_env['OGG_HOME'], 'bin', 'ServiceManager'), env=deployment_env)
 
@@ -249,7 +266,7 @@ def create_ogg_deployment():
 
     for serviceName in ('adminsrvr', 'distsrvr', 'recvsrvr', 'pmsrvr'):
         wait_for_service(service_ports[serviceName])
-        reset_service_configuration(serviceName)
+        reset_service_configuration(deployment_env['OGG_DEPLOYMENT'], serviceName)
 
 
 def main():

@@ -1,15 +1,15 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2017,2021 Oracle and/or its affiliates.
+# Copyright (c) 2018-2024 Oracle and/or its affiliates. All rights reserved.
 #
-# Since: January, 2017
-# Author: sanjay.singh@oracle.com,  paramdeep.saini@oracle.com
-# Description: 
+# Since: January, 2018
+# Author: paramdeep.saini@oracle.com
+# Description: Common functions for CMAN 
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-
+# shellcheck disable=SC1091
 source /tmp/envfile
 
 export logfile=/tmp/orod.log
@@ -19,7 +19,8 @@ export STD_ERR_FILE="/proc/self/fd/2"
 
 ###### Function Related to printing messages and exit the script if error occurred ##################
 error_exit() {
-local NOW=$(date +"%m-%d-%Y %T %Z")
+        local NOW
+        NOW=$(date +"%m-%d-%Y %T %Z")
         # Display error message and exit
 #       echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
         echo "${NOW} : ${PROGNAME}: ${1:-"Unknown Error"}" | tee -a $logfile  > $STD_OUT_FILE
@@ -28,7 +29,8 @@ local NOW=$(date +"%m-%d-%Y %T %Z")
 
 print_message ()
 {
-        local NOW=$(date +"%m-%d-%Y %T %Z")
+        local NOW
+        NOW=$(date +"%m-%d-%Y %T %Z")
         # Display  message and return
         echo "${NOW} : ${PROGNAME} : ${1:-"Unknown Message"}" | tee -a $logfile  > $STD_OUT_FILE
         return $?
@@ -44,7 +46,8 @@ resolveip(){
     then
         return 1
     else
-        local ip=$( getent hosts "$host" | awk '{print $1}' )
+        local ip
+        ip=$(getent hosts "$host" | awk '{print $1}')
         if [ -z "$ip" ] 
         then
             ip=$( dig +short "$host" )

@@ -29,6 +29,7 @@ To assist in building the images, you can use the [buildDockerImage.sh](dockerfi
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
 
 ```bash
+cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles
 ./buildDockerImage.sh -v latest
 ```
 You would see successful build message similar like below-
@@ -51,11 +52,13 @@ To assist in building the images, you can use the [buildDockerImage.sh](dockerfi
 The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
 
 ```bash
+cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles
 ./buildDockerImage.sh -v 19.3.0
 ```
 
 For detailed usage of command, please execute folowing command:
 ```bash
+cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles
 ./buildDockerImage.sh -h
 ```
 
@@ -86,7 +89,7 @@ Create placeholder for NFS storage and make sure it is empty -
 ```bash
 export ORACLE_DBNAME=ORCLCDB
 mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
-rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
+rm -rf /scratch/stage/rac-storage/$ORACLE_DBNAME/asm_disk0*
 ```
 
 #### RAC Storage Container for Podman Host Machine
@@ -103,7 +106,7 @@ podman run -d -t \
  --cap-add NET_ADMIN \
  --volume /scratch/stage/rac-storage/$ORACLE_DBNAME:/oradata \
  --network=rac_priv1_nw \
- --ip=192.168.17.25 \
+ --ip=192.168.17.80 \
  --systemd=always \
  --restart=always \
  --name racnode-storage \
@@ -128,6 +131,14 @@ In the above example, we used **192.168.17.0/24** subnet for NFS server. You can
 
 **Note** : If SELINUX is enabled on the Podman host, then you must create an SELinux policy for Oracle RAC on Podman. For details about this procedure, see "How to Configure Podman for SELinux Mode" in the publication [Oracle Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racpd/target-configuration-oracle-rac-podman.html#GUID-59138DF8-3781-4033-A38F-E0466884D008).
 
+#### Prerequisites for RAC Storage Container for Docker Host
+
+Create placeholder for NFS storage and make sure it is empty -
+```bash
+export ORACLE_DBNAME=ORCLCDB
+mkdir -p /docker_volumes/asm_vol/$ORACLE_DBNAME
+rm -rf /docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
+```
 
 #### RAC Storage container for Docker Host Machine
 Execute following command to create the container:
@@ -137,7 +148,7 @@ export ORACLE_DBNAME=ORCLCDB
 docker run -d -t --hostname racnode-storage \
 --dns-search=example.com  --cap-add SYS_ADMIN --cap-add AUDIT_WRITE \
 --volume /docker_volumes/asm_vol/$ORACLE_DBNAME:/oradata --init \
---network=rac_priv1_nw --ip=192.168.17.25 --tmpfs=/run  \
+--network=rac_priv1_nw --ip=192.168.17.80 --tmpfs=/run  \
 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --name racnode-storage oracle/rac-storage-server:19.3.0
 ```
@@ -171,8 +182,8 @@ Create NFS volume using following command on Podman Host:
 ```bash
 docker volume create --driver local \
 --opt type=nfs \
---opt   o=addr=192.168.17.25,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
---opt device=192.168.17.25:/oradata \
+--opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+--opt device=192.168.17.80:/oradata \
 racstorage
 ```
 

@@ -1,7 +1,7 @@
 ---
 version: "3"
 services:
-  racnode2:
+  racnoded2:
     container_name: ${RACNODE2_CONTAINER_NAME}
     hostname: ${RACNODE2_HOST_NAME}
     image: ${RACNODE_IMAGE_NAME}

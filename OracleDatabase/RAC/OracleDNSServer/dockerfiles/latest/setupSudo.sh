@@ -1,14 +1,14 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2019,2021 Oracle and/or its affiliates.
+# Copyright (c) 2018-2024 Oracle and/or its affiliates. All rights reserved.
 #
-# Since: January, 2019
-# Author: sanjay.singh@oracle.com,  paramdeep.saini@oracle.com
-# Description:
-#
+# Since: January, 2018
+# Author: paramdeep.saini@oracle.com
+# Description: Sets up the unix environment for DB installation.
+# 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-#
+# 
 
 chmod 666 /etc/sudoers
 echo "orcladmin       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
