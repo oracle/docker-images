@@ -98,7 +98,8 @@ So, to use patching extension one should use additional build argument `-o '--bu
 
     ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
 
-Patched container images can now be built by specifying the parameter -p. Download the database version specific release update and one-offs and place them into the `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively. In this case, SLIMMING is internally set to **false**. Example command for building the patched container image is as follows:
+Patched container images can now be built by specifying the parameter -p. Download the database version specific release update and one-offs and place them under `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively.
+If opatch is required, download and place the zip file for patch 6880880 under `extensions/patching/patches/one_offs` folder. In this case, SLIMMING is internally set to **false**. Example command for building the patched container image is as follows:
 
     ./buildContainerImage.sh -e -v 21.3.0 -p
 
