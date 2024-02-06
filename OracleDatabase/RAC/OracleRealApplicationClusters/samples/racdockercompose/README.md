@@ -52,7 +52,7 @@ export DNS_DOMAIN="example.com"
 export RAC_NODE_NAME_PREFIXD="racnoded"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_priv1_nw"
+export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
 export DNS_PRIVATE_IP=192.168.17.25
@@ -85,6 +85,7 @@ export CMAN_HOSTNAME="racnodedc1-cman"
 export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export CMAN_PUBLIC_HOSTNAME="racnodec1-cman"
 export CMAN_VERSION="19.3.0"
+export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1
 ```
 
 ### Section 2.2: Preparing Environment Variables for RAC with NFS Storage Devices
@@ -106,7 +107,7 @@ export DNS_DOMAIN="example.com"
 export RAC_NODE_NAME_PREFIXD="racnoded"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_priv1_nw"
+export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
 export DNS_PRIVATE_IP=192.168.17.25
@@ -132,6 +133,7 @@ export DNS_DOMAIN="example.com"
 export CMAN_PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export CMAN_PUBLIC_HOSTNAME="racnodec1-cman"
 export CMAN_VERSION="19.3.0"
+export ORACLE_HOME=/u01/app/oracle/product/${CMAN_VERSION}/client_1
 export ASM_DISCOVERY_DIR="/oradata"
 export ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
 export STORAGE_CONTAINER_NAME="racnode-storage"
@@ -330,7 +332,7 @@ export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"
 export DNS_DOMAIN="example.com"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_priv1_nw"
+export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
 export INSTALL_NODE=racnoded1
@@ -391,7 +393,7 @@ export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"
 export DNS_DOMAIN="example.com"
 export PUBLIC_NETWORK_NAME="rac_pub1_nw"
 export PUBLIC_NETWORK_SUBNET="172.16.1.0/24"
-export PRIVATE_NETWORK_NAME="rac_priv1_nw"
+export PRIVATE_NETWORK_NAME="rac_pzriv1_nw"
 export PRIVATE_NETWORK_SUBNET="192.168.17.0/24"
 export DNS_PUBLIC_IP=172.16.1.25
 export INSTALL_NODE=racnoded1
@@ -443,7 +445,7 @@ racnoded2  | 01-31-2024 10:45:54 UTC :  : ####################################
 To connect to the container execute following command:
 
 ```bash
-# docker exec -i -t racnode1 /bin/bash
+docker exec -i -t racnoded1 /bin/bash
 ```
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
