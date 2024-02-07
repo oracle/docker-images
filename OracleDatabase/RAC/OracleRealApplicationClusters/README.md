@@ -613,7 +613,7 @@ To create an Oracle RAC environment on Podman, complete each of these steps in o
 
 ### Section 5.1 : Prerequisites for Running Oracle RAC on Podman
 
-You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en/operating-systems/oracle-linux/Podman/) or later on Oracle Linux 8.5 or later to run Oracle RAC on Podman.
+You must install and configure [Podman release 4.0.2](https://docs.oracle.com/en/operating-systems/oracle-linux/podman/podman-InstallingPodmanandRelatedUtilities.html#podman-install) or later on Oracle Linux 8.5 or later to run Oracle RAC on Podman.
 
 **Notes**:
 
