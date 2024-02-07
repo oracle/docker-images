@@ -80,7 +80,9 @@ Ensure to install NFS server rpms on  host to utilize NFS volumes in containers-
 yum -y install nfs-utils
 ```
 ## Running RACStorageServer container
-  
+
+### RAC Storage container for Docker Host Machine
+
 #### Prerequisites for RAC Storage Container for Docker Host
 
 Create placeholder for NFS storage and make sure it is empty -
@@ -90,7 +92,6 @@ mkdir -p /docker_volumes/asm_vol/$ORACLE_DBNAME
 rm -rf /docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
 ```
 
-#### RAC Storage container for Docker Host Machine
 Execute following command to create the container:
 
 ```bash
@@ -124,7 +125,7 @@ Create NFS volume for /oradata
 #################################################
 ```
 
-### Running RACStorageServer Podman container
+### RAC Storage Container for Podman Host Machine
 
 #### Prerequisites for RAC Storage Container for Podman Host
 
@@ -135,9 +136,7 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/$ORACLE_DBNAME/asm_disk0*
 ```
 
-#### RAC Storage Container for Podman Host Machine
-
-If you are building RAC storage container using Podman , you can use following command.
+Execute following command to create the container:
 
 ```bash
 export ORACLE_DBNAME=ORCLCDB
