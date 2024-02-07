@@ -271,6 +271,8 @@ podman-compose logs ${DNS_CONTAINER_NAME}
 podman-compose --podman-run-args="-t -i --systemd=always" up -d ${STORAGE_CONTAINER_NAME}
 podman-compose exec ${STORAGE_CONTAINER_NAME} tail -f /tmp/storage_setup.log
 
+Export list for racnode-storage:
+/oradata *
 #################################################
  Setup Completed                                 
 #################################################
