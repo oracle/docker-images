@@ -7,37 +7,17 @@ Refer below instructions for setup of NFS Container for RAC -
 
 - [Oracle ASM on NFS Server for RAC testing](#oracle-asm-on-nfs-server-for-rac-testing)
 - [How to build NFS Storage Container Image](#how-to-build-nfs-storage-container-image)
-  - [How to build NFS Storage Container Image on Podman Host](#how-to-build-nfs-storage-container-image-on-podman-host)
   - [How to build NFS Storage Container Image on Docker Host](#how-to-build-nfs-storage-container-image-on-docker-host)
+  - [How to build NFS Storage Container Image on Podman Host](#how-to-build-nfs-storage-container-image-on-podman-host)
 - [Create Bridge Network](#create-bridge-network)
 - [NFS Server installation on Host](#nfs-server-installation-on-host)
 - [Running RACStorageServer container](#running-racstorageserver-container)
-  - [RAC Storage Container for Podman Host Machine](#rac-storage-container-for-podman-host-machine)
   - [RAC Storage container for Docker Host Machine](#rac-storage-container-for-docker-host-machine)
+  - [RAC Storage Container for Podman Host Machine](#rac-storage-container-for-podman-host-machine)
 - [Create NFS Volume](#create-nfs-volume)
 - [Copyright](#copyright)
 
 ## How to build NFS Storage Container Image
-### How to build NFS Storage Container Image on Podman Host
-
-You need to make sure that you have atleast 60GB space available for container to create the files for RAC storage.
-
-**IMPORTANT:** If you are behind the proxy, you need to set `http_proxy` and `https_proxy` env variable based on your enviornment before building the image.
-
-To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
-
-The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
-
-```bash
-cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles
-./buildDockerImage.sh -v latest
-```
-You would see successful build message similar like below-
-```bash
- Oracle RAC Storage Server Podman Image version latest is ready to be extended: 
-    
-    --> oracle/rac-storage-server:latest
-```
 
 ### How to build NFS Storage Container Image on Docker Host
 You need to make sure that you have atleast 60GB space available for container to create the files for RAC storage.
@@ -61,6 +41,26 @@ For detailed usage of command, please execute folowing command:
 cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles
 ./buildDockerImage.sh -h
 ```
+### How to build NFS Storage Container Image on Podman Host
+
+You need to make sure that you have atleast 60GB space available for container to create the files for RAC storage.
+
+**IMPORTANT:** If you are behind the proxy, you need to set `http_proxy` and `https_proxy` env variable based on your enviornment before building the image.
+
+To assist in building the images, you can use the [buildDockerImage.sh](dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+
+The `buildDockerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters. Go into the **dockerfiles** folder and run the **buildDockerImage.sh** script:
+
+```bash
+cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRACStorageServer/dockerfiles
+./buildDockerImage.sh -v latest
+```
+You would see successful build message similar like below-
+```bash
+ Oracle RAC Storage Server Podman Image version latest is ready to be extended: 
+    
+    --> oracle/rac-storage-server:latest
+```
 
 ## Create Bridge Network
 Before creating container, create the bridge private network for NFS storage container.
@@ -80,8 +80,52 @@ Ensure to install NFS server rpms on  host to utilize NFS volumes in containers-
 yum -y install nfs-utils
 ```
 ## Running RACStorageServer container
-  
-### Running RACStorageServer Podman container
+
+### RAC Storage container for Docker Host Machine
+
+#### Prerequisites for RAC Storage Container for Docker Host
+
+Create placeholder for NFS storage and make sure it is empty -
+```bash
+export ORACLE_DBNAME=ORCLCDB
+mkdir -p /docker_volumes/asm_vol/$ORACLE_DBNAME
+rm -rf /docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
+```
+
+Execute following command to create the container:
+
+```bash
+export ORACLE_DBNAME=ORCLCDB
+docker run -d -t --hostname racnode-storage \
+--dns-search=example.com  --cap-add SYS_ADMIN --cap-add AUDIT_WRITE \
+--volume /docker_volumes/asm_vol/$ORACLE_DBNAME:/oradata --init \
+--network=rac_priv1_nw --ip=192.168.17.80 --tmpfs=/run  \
+--volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+--name racnode-storage oracle/rac-storage-server:19.3.0
+```
+
+**IMPORTANT:** During the container startup 5 files named as `asm_disk0[1-5].img` will be created under /oradata.If the files are already present, they will not be recreated.These files can be used for ASM storage in RAC containers.
+
+**NOTE**: Expose directory to container which has atleast 60GB. In the above  example, we are using `/docker_volumes/asm_vol/$ORACLE_DBNAME` and you need to change values according to your env. Inside container, it will be /oradata and do not change this.
+
+In the above example, we used **192.168.17.0/24** subnet for NFS server. You can change the subnet values according to your environment. Also, SELINUX must be disabled or in permissive mode in Docker Host Machine.
+
+To check the racstorage container/services creation logs , please tail docker logs. It will take 10 minutes to create the racnode-storage container service.
+
+```bash
+docker logs -f racnode-storage
+```
+
+you should see following in docker logs output:
+
+```bash
+#################################################
+runOracle.sh: NFS Server is up and running
+Create NFS volume for /oradata
+#################################################
+```
+
+### RAC Storage Container for Podman Host Machine
 
 #### Prerequisites for RAC Storage Container for Podman Host
 
@@ -92,9 +136,7 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/$ORACLE_DBNAME/asm_disk0*
 ```
 
-#### RAC Storage Container for Podman Host Machine
-
-If you are building RAC storage container using Podman , you can use following command.
+Execute following command to create the container:
 
 ```bash
 export ORACLE_DBNAME=ORCLCDB
@@ -131,48 +173,6 @@ In the above example, we used **192.168.17.0/24** subnet for NFS server. You can
 
 **Note** : If SELINUX is enabled on the Podman host, then you must create an SELinux policy for Oracle RAC on Podman. For details about this procedure, see "How to Configure Podman for SELinux Mode" in the publication [Oracle Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racpd/target-configuration-oracle-rac-podman.html#GUID-59138DF8-3781-4033-A38F-E0466884D008).
 
-#### Prerequisites for RAC Storage Container for Docker Host
-
-Create placeholder for NFS storage and make sure it is empty -
-```bash
-export ORACLE_DBNAME=ORCLCDB
-mkdir -p /docker_volumes/asm_vol/$ORACLE_DBNAME
-rm -rf /docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
-```
-
-#### RAC Storage container for Docker Host Machine
-Execute following command to create the container:
-
-```bash
-export ORACLE_DBNAME=ORCLCDB
-docker run -d -t --hostname racnode-storage \
---dns-search=example.com  --cap-add SYS_ADMIN --cap-add AUDIT_WRITE \
---volume /docker_volumes/asm_vol/$ORACLE_DBNAME:/oradata --init \
---network=rac_priv1_nw --ip=192.168.17.80 --tmpfs=/run  \
---volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
---name racnode-storage oracle/rac-storage-server:19.3.0
-```
-
-**IMPORTANT:** During the container startup 5 files named as `asm_disk0[1-5].img` will be created under /oradata.If the files are already present, they will not be recreated.These files can be used for ASM storage in RAC containers.
-
-**NOTE**: Expose directory to container which has atleast 60GB. In the above  example, we are using `/docker_volumes/asm_vol/$ORACLE_DBNAME` and you need to change values according to your env. Inside container, it will be /oradata and do not change this.
-
-In the above example, we used **192.168.17.0/24** subnet for NFS server. You can change the subnet values according to your environment. Also, SELINUX must be disabled or in permissive mode in Docker Host Machine.
-
-To check the racstorage container/services creation logs , please tail docker logs. It will take 10 minutes to create the racnode-storage container service.
-
-```bash
-docker logs -f racnode-storage
-```
-
-you should see following in docker logs output:
-
-```bash
-#################################################
-runOracle.sh: NFS Server is up and running
-Create NFS volume for /oradata
-#################################################
-```
 
 **IMPORTANT:** During the container startup 5 files named as `asm_disk0[1-5].img` will be created under /oradata.If the files are already present, they will not be recreated.These files can be used for ASM storage in RAC containers.
 

@@ -18,11 +18,12 @@ Once you have built your Oracle RAC container image, you can create a Oracle RAC
 
 ## Section 1 : Prerequisites for RAC Database on Docker with Docker Compose
 
-**IMPORTANT :** You must execute all the steps specified in this section (customized for your environment) before you proceed to the next section. Docker and Docker Compose is not supported with OL8. You need OL7.9 with UEK R5 or R6. This guide and example is mainly for development and testing purposes only.
+**IMPORTANT :** You must execute all the steps specified in this section (customized for your environment) before you proceed to the next section. Docker and Docker Compose is not supported with OL8. You need OL7.9 with UEK R5 or above. This guide and example is mainly for development and testing purposes only.
 
 - It is assumed that before proceeding further you have executed the pre-requisites from [Section 1 : Prerequisites for running Oracle RAC in containers](../../../OracleRealApplicationClusters/README.md)  and [Section 4.1 : Prerequisites for Running Oracle RAC on Docker](../../../OracleRealApplicationClusters/README.md) for Single Docker Host Machine .
 - Create DNS docker image, if you are planing to use DNS container for testing. Please refer [DNS Container README.MD](../../../OracleDNSServer/README.md). You can skip this step if you are planing to use **your own DNS Server**.
 - Create Oracle Connection Manager Docker image.Please refer [RAC Oracle Connection Manager README.MD](../../../OracleConnectionManager/README.md) for details.
+- Create Storage Server Docker image, if you are planning to use NFS Storage Devices provided in this guide.Please refer [How to build NFS Storage Container Image](../../../OracleRACStorageServer/README.md) for details.
 
 - If you have not built the Oracle RAC container image, execute the steps in [Section 2: Building Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md) based on your environment.
 
@@ -250,6 +251,15 @@ mkdir -p /docker_volumes/asm_vol/$ORACLE_DBNAME
 rm -rf /docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
 ```
 
+```bash
+#-----Create docker volume---
+docker volume create --driver local \
+  --opt type=nfs \
+  --opt o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+  --opt device=192.168.17.80:/oradata \
+  racstorage
+```
+
 After copying compose file, you can bring up DNS Container, Storage Container, RAC Container and CMAN container by following below commands-
 ```bash
 #---------Bring up DNS------------
@@ -277,15 +287,6 @@ racnode-storage  | ####################################################
 racnode-storage  |  NFS Server is up and running                      
 racnode-storage  |  Create NFS volume for /oradata/        
 racnode-storage  | ####################################################
-```
-
-```bash
-#-----Create docker volume---
-docker volume create --driver local \
-  --opt type=nfs \
-  --opt o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
-  --opt device=192.168.17.80:/oradata \
-  racstorage
 ```
 
 ```bash

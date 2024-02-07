@@ -232,13 +232,22 @@ In case, of MCVLAN or IPVLAN networks, you may want to edit `podman-compose.yml`
 
 ### Section 3.2: Deploy the RAC Container with NFS Storage Devices
 
-Once pre-requisites for NFS Storage Devices and above necessary variables are exported, copy `podman-compose.yml` file from [this location](./samples/racpodmancompose/compose-files/nfsdevices/)
+Once pre-requisites for NFS Storage Devices and above necessary variables are exported, copy `podman-compose.yml` file from [this location](./compose-files/nfsdevices/podman-compose.yml)
 
 Create placeholder for NFS storage and make sure it is empty -
 ```bash
 export ORACLE_DBNAME=ORCLCDB
 mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
+```
+
+```bash
+#----------Create NFS volume--------------
+podman volume create --driver local \
+--opt type=nfs \
+--opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+--opt device=192.168.17.80:/oradata \
+racstorage
 ```
 
 After copying compose file, you can bring up DNS Container, Storage Container, RAC Container and CMAN container by following below commands-
@@ -262,18 +271,11 @@ podman-compose logs ${DNS_CONTAINER_NAME}
 podman-compose --podman-run-args="-t -i --systemd=always" up -d ${STORAGE_CONTAINER_NAME}
 podman-compose exec ${STORAGE_CONTAINER_NAME} tail -f /tmp/storage_setup.log
 
+Export list for racnode-storage:
+/oradata *
 #################################################
  Setup Completed                                 
 #################################################
-```
-
-```bash
-#----------Create NFS volume--------------
-podman volume create --driver local \
---opt type=nfs \
---opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
---opt device=192.168.17.80:/oradata \
-racstorage
 ```
 
 ```bash
