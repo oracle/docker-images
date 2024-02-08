@@ -92,6 +92,12 @@ In order to setup Oracle RAC on Podman with Oracle RAC Storage Container with Po
 yum -y install nfs-utils
 ```
 
+If SELinux is enabled on Podman Host (you can check by running `sestatus` command), then execute below to make SELinux policy as `permissive` and reboot host machine. This will allow permissions to write to `asm-disks*` in the `/oradata` folder inside the podman containers-
+```bash
+sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
+reboot
+```
+
 Lets identify necessary variables to export that will be used by `podman-compose.yml` file later. Below is one example of exporting necessary variables related to docker network, DNS container, Storage Container, RAC Container and CMAN container discussed in this repo.
 ```bash
 export HEALTHCHECK_INTERVAL=30s
@@ -239,12 +245,6 @@ Create placeholder for NFS storage and make sure it is empty -
 export ORACLE_DBNAME=ORCLCDB
 mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
-```
-
-If SELinux is enabled on Podman Host (you can check by running `sestatus` command), then execute below. This will allow permissions to write to /oradata inside racnode-storage container later-
-```bash
-semanage fcontext -a -t container_file_t /scratch/stage/rac-storage/ORCLCDB
-restorecon -vF  /scratch/stage/rac-storage/ORCLCDB
 ```
 
 After copying compose file, you can bring up DNS Container, Storage Container, RAC Container and CMAN container by following below commands-
