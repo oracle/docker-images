@@ -136,6 +136,12 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/$ORACLE_DBNAME/asm_disk0*
 ```
 
+If SELinux is enabled and enforcing on Podman Host (you can check by running `sestatus` command), then execute below. This will allow permissions to write to /oradata inside racnode-storage container later-
+```bash
+semanage fcontext -a -t container_file_t /scratch/stage/rac-storage/ORCLCDB
+restorecon -vF  /scratch/stage/rac-storage/ORCLCDB
+```
+
 Execute following command to create the container:
 
 ```bash

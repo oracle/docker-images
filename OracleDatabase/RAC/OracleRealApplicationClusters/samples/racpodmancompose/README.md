@@ -241,13 +241,10 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
 ```
 
+If SELinux is enabled on Podman Host (you can check by running `sestatus` command), then execute below. This will allow permissions to write to /oradata inside racnode-storage container later-
 ```bash
-#----------Create NFS volume--------------
-podman volume create --driver local \
---opt type=nfs \
---opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
---opt device=192.168.17.80:/oradata \
-racstorage
+semanage fcontext -a -t container_file_t /scratch/stage/rac-storage/ORCLCDB
+restorecon -vF  /scratch/stage/rac-storage/ORCLCDB
 ```
 
 After copying compose file, you can bring up DNS Container, Storage Container, RAC Container and CMAN container by following below commands-
@@ -277,6 +274,16 @@ Export list for racnode-storage:
  Setup Completed                                 
 #################################################
 ```
+
+```bash
+#----------Create NFS volume--------------
+podman volume create --driver local \
+--opt type=nfs \
+--opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+--opt device=192.168.17.80:/oradata \
+racstorage
+```
+
 
 ```bash
 #-----Bring up racnode1----------
