@@ -14,7 +14,7 @@ Once you have built your Oracle RAC container image, you can create a Oracle RAC
     - [Section 4.1: Add Additional Node in Existing Oracle RAC Cluster with Block Devices](#section-41-add-additional-node-in-existing-oracle-rac-cluster-with-block-devices)
     - [Section 4.2: Add Additional Node in Existing Oracle RAC Cluster with NFS Volume](#section-42-add-additional-node-in-existing-oracle-rac-cluster-with-nfs-volume)
   - [Section 5: Connect to the RAC container](#connect-to-the-rac-container)
-  - [Cleanup Environment](#cleanup-environment)
+  - [Cleanup RAC Environment](#cleanup-rac-environment)
   - [Copyright](#copyright)
 
 ## Section 1 : Prerequisites for RAC Database on Docker with Docker Compose
