@@ -14,6 +14,7 @@ Once you have built your Oracle RAC container image, you can create a Oracle RAC
     - [Section 4.1: Add Additional Node in Existing Oracle RAC Cluster with Block Devices](#section-41-add-additional-node-in-existing-oracle-rac-cluster-with-block-devices)
     - [Section 4.2: Add Additional Node in Existing Oracle RAC Cluster with NFS Volume](#section-42-add-additional-node-in-existing-oracle-rac-cluster-with-nfs-volume)
   - [Section 5: Connect to the RAC container](#connect-to-the-rac-container)
+  - [Cleanup RAC Environment](#cleanup-rac-environment)
   - [Copyright](#copyright)
 
 ## Section 1 : Prerequisites for RAC Database on Podman with Podman Compose
@@ -90,6 +91,12 @@ export CMAN_VERSION="21.3.0"
 In order to setup Oracle RAC on Podman with Oracle RAC Storage Container with Podman Compose, lets first make sure `nfs-utils` rpm package is installed in Podman Host machine.
 ```bash
 yum -y install nfs-utils
+```
+
+If SELinux is enabled on Podman Host (you can check by running `sestatus` command), then execute below to make SELinux policy as `permissive` and reboot host machine. This will allow permissions to write to `asm-disks*` in the `/oradata` folder inside the podman containers-
+```bash
+sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
+reboot
 ```
 
 Lets identify necessary variables to export that will be used by `podman-compose.yml` file later. Below is one example of exporting necessary variables related to docker network, DNS container, Storage Container, RAC Container and CMAN container discussed in this repo.
@@ -241,15 +248,6 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
 ```
 
-```bash
-#----------Create NFS volume--------------
-podman volume create --driver local \
---opt type=nfs \
---opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
---opt device=192.168.17.80:/oradata \
-racstorage
-```
-
 After copying compose file, you can bring up DNS Container, Storage Container, RAC Container and CMAN container by following below commands-
 ```bash
 #---------Bring up DNS------------
@@ -277,6 +275,16 @@ Export list for racnode-storage:
  Setup Completed                                 
 #################################################
 ```
+
+```bash
+#----------Create NFS volume--------------
+podman volume create --driver local \
+--opt type=nfs \
+--opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
+--opt device=192.168.17.80:/oradata \
+racstorage
+```
+
 
 ```bash
 #-----Bring up racnode1----------
@@ -444,6 +452,38 @@ podman exec -i -t racnodep1 /bin/bash
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
 
+## Cleanup RAC Environment
+Below commands can be executed to cleanup above RAC Environment -
+
+### Cleanup RAC based on Block Devices
+```bash
+#----Cleanup RAC Containers-----
+podman rm -f racnodep1 racnodep2 rac-dnsserver racnodepc1-cman 
+#----Cleanup Disks--------------
+dd if=/dev/zero of=/dev/oracleoci/oraclevde  bs=8k count=10000 status=progress && dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000 status=progress
+#----Cleanup Files and Folders--
+rm -rf /opt/containers /opt/.secrets
+#----Cleanup Docker Networks--
+podman network rm -f rac_pub1_nw rac_zriv1_nw
+#----Cleanup Docker Images--
+podman rmi -f localhost/oracle/rac-dnsserver:latest localhost/oracle/database-rac:21.3.0-21.13.0 localhost/oracle/client-cman:21.3.0
+```
+
+### Cleanup RAC based on NFS Storage Devices
+```bash
+#----Cleanup RAC Containers-----
+podman rm -f racnodep1 racnodep2 rac-dnsserver racnode-storage racnodepc1-cman 
+#----Cleanup Files and Folders--
+rm -rf /opt/containers /opt/.secrets
+export ORACLE_DBNAME=ORCLCDB
+rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
+#----Cleanup Docker Volumes---
+podman volume -f racstorage
+#----Cleanup Docker Networks--
+podman network rm -f rac_pub1_nw rac_priv1_nw
+#----Cleanup Docker Images--
+podman rmi -f localhost/oracle/rac-dnsserver:latest localhost/oracle/rac-storage-server:latest localhost/oracle/database-rac:21.3.0-21.13.0 localhost/oracle/client-cman:21.3.0
+```
 
 ## Copyright
 

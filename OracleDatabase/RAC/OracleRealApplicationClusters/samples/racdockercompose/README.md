@@ -14,6 +14,7 @@ Once you have built your Oracle RAC container image, you can create a Oracle RAC
     - [Section 4.1: Add Additional Node in Existing Oracle RAC Cluster with Block Devices](#section-41-add-additional-node-in-existing-oracle-rac-cluster-with-block-devices)
     - [Section 4.2: Add Additional Node in Existing Oracle RAC Cluster with NFS Volume](#section-42-add-additional-node-in-existing-oracle-rac-cluster-with-nfs-volume)
   - [Section 5: Connect to the RAC container](#connect-to-the-rac-container)
+  - [Cleanup RAC Environment](#cleanup-rac-environment)
   - [Copyright](#copyright)
 
 ## Section 1 : Prerequisites for RAC Database on Docker with Docker Compose
@@ -451,6 +452,38 @@ docker exec -i -t racnoded1 /bin/bash
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
 
+## Cleanup RAC Environment
+Below commands can be executed to cleanup above RAC Environment -
+
+### Cleanup RAC based on Block Devices
+```bash
+#----Cleanup RAC Containers-----
+docker rm -f racnoded1 racnoded2 rac-dnsserver racnodedc1-cman 
+#----Cleanup Disks--------------
+dd if=/dev/zero of=/dev/oracleoci/oraclevde  bs=8k count=10000 status=progress && dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000 status=progress
+#----Cleanup Files and Folders--
+rm -rf /opt/containers /opt/.secrets
+#----Cleanup Docker Networks--
+docker network rm -f rac_pub1_nw rac_pzriv1_nw
+#----Cleanup Docker Images--
+docker rmi -f oracle/rac-dnsserver:latest oracle/database-rac:19.3.0 oracle/client-cman:19.3.0
+```
+
+### Cleanup RAC based on NFS Storage Devices
+```bash
+#----Cleanup RAC Containers-----
+docker rm -f racnoded1 racnoded2 rac-dnsserver racnode-storage racnodedc1-cman 
+#----Cleanup Files and Folders--
+rm -rf /opt/containers /opt/.secrets
+export ORACLE_DBNAME=ORCLCDB
+rm -rf /docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
+#----Cleanup Docker Volumes---
+docker volume -f racstorage
+#----Cleanup Docker Networks--
+docker network rm -f rac_pub1_nw rac_pzriv1_nw
+#----Cleanup Docker Images--
+docker rmi -f oracle/rac-dnsserver:latest oracle/rac-storage-server:19.3.0 oracle/database-rac:19.3.0 oracle/client-cman:19.3.0
+```
 
 ## Copyright
 

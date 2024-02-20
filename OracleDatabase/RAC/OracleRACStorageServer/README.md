@@ -136,6 +136,12 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/$ORACLE_DBNAME/asm_disk0*
 ```
 
+If SELinux is enabled on Podman Host (you can check by running `sestatus` command), then execute below to make SELinux policy as `permissive` and reboot the host machine. This will allow permissions to write to `asm-disks*` in the `/oradata` folder inside the podman containers-
+```bash
+sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
+reboot
+```
+
 Execute following command to create the container:
 
 ```bash

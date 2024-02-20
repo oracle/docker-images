@@ -38,8 +38,8 @@ docker network create --driver=bridge --subnet=192.168.17.0/24 rac_priv1_nw
 ```
 **Note:** You can change the subnet according to your environment.
 
-### Running RAC DNS server container
-Execute following command to create the container on Docker Host:
+## Running RAC DNS server container
+### Execute following command to create the container on Docker Host
 
 ```bash
 docker create --hostname racdns \
@@ -61,7 +61,7 @@ docker network connect rac_priv1_nw --ip 192.168.17.25 rac-dnsserver
 docker start rac-dnsserver
 ```
 
-Execute following command to create the container on Podman Host:
+### Execute following command to create the container on Podman Host
 
 ```bash
 podman create --hostname racdns \
