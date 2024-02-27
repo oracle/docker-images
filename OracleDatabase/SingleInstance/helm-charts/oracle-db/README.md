@@ -71,7 +71,7 @@ The following tables lists the configurable parameters of the Oracle  Database c
 | -------------------------------      | -------------------------------            | ---------------------------------------------------------- |
 | oracle_sid                           | Database name (ORACLE_SID)                 | ORCLCDB                                                    |
 | oracle_pdb                           | PDB name                                   | ORCLPDB1                                                   |
-| oracle_pwd                           | SYS, SYSTEM and PDBADMIN password         | Auto generated                                             |
+| oracle_pwd                           | SYS, SYSTEM and PDBADMIN password          | Auto generated                                             |
 | oracle_characterset                  | The character set to use                   | AL32UTF8                                                   |
 | oracle_edition                       | The database edition                       | enterprise                                                 |
 | persistence.size                     | Size of persistence storage                | 100g                                                       |
