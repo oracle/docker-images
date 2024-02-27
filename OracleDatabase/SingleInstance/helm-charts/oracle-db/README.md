@@ -13,22 +13,22 @@ Clone the repo and execute the following command to generate oracle-db-1.0.0.tgz
 
 The Oracle Database Chart contains the Oracle Database 19c running on Oracle Linux 7. This image contains a default database in a multitenant configuration with one pdb.
 
-For more information on Oracle Database 19c refer to http://docs.oracle.com/en/database/
+For more information on Oracle Database 19c refer to [Oracle Database Online Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/index.html).
 
 ## Prerequisites
 
 - Kubernetes 1.12+
 - Helm 2.x or 3.x
-- NFS PV: https://kubernetes.io/docs/concepts/storage/volumes/#nfs
+- [NFS PV](https://kubernetes.io/docs/concepts/storage/volumes/#nfs)
 - Using Oracle Database Docker image requires you to accept terms of service
 - Create image pull secrets
-    
+
     kubectl create secret docker-registry regcred --docker-server=container-registry.oracle.com --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
-    
+
 
 ## Using Oracle  Database Docker image
 ### Accepting the terms of service
-From the https://container-registry.oracle.com website accept `Terms of Service` for Oracle Database Enterprise Edition.
+From the [Oracle Container Registry](https://container-registry.oracle.com) website accept `Terms of Service` for Oracle Database Enterprise Edition.
 
 
 ## Installing the Chart
