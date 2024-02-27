@@ -6,7 +6,7 @@ Database 19c is an industry leading relational database server.
 A Helm chart is used for packaging the deployment yamls to simplify install in Kubernetes. The chart is available at [helm-charts/oracle-db](./) directory.
 Clone the repo and execute the following command to generate oracle-db-1.0.0.tgz
 
-    $ helm package helm-charts/oracle-db
+    helm package helm-charts/oracle-db
 
 
 ## Introduction
@@ -22,9 +22,9 @@ For more information on Oracle Database 19c refer to http://docs.oracle.com/en/d
 - NFS PV: https://kubernetes.io/docs/concepts/storage/volumes/#nfs
 - Using Oracle Database Docker image requires you to accept terms of service
 - Create image pull secrets
-    ``` 
-    $ kubectl create secret docker-registry regcred --docker-server=container-registry.oracle.com --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
-    ```
+    
+    kubectl create secret docker-registry regcred --docker-server=container-registry.oracle.com --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+    
 
 ## Using Oracle  Database Docker image
 ### Accepting the terms of service
@@ -36,13 +36,13 @@ From the https://container-registry.oracle.com website accept `Terms of Service`
 To install the chart with the release name `db19c`:
 
 Helm 3.x syntax
-```
-$ helm install db19c oracle-db-1.0.0.tgz
-```
+
+    helm install db19c oracle-db-1.0.0.tgz
+
 Helm 2.x syntax
-```
-$ helm install --name db19c oracle-db-1.0.0.tgz
-```
+
+    helm install --name db19c oracle-db-1.0.0.tgz
+
 
 The command deploys Oracle Database on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
@@ -53,13 +53,13 @@ The command deploys Oracle Database on the Kubernetes cluster in the default con
 To uninstall/delete the `db19c` deployment:
 
 Helm 3.x syntax
-```
-$ helm uninstall db19c 
-```
+
+    helm uninstall db19c 
+
 Helm 2.x syntax
-```
-$ helm delete db19c
-```
+
+    helm delete db19c
+
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
@@ -86,26 +86,26 @@ The following tables lists the configurable parameters of the Oracle  Database c
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 Helm 3.x syntax
-```
-$ helm install db19c --set oracle_sid=ORCL,oracle_pdb=prod oracle-db-1.0.0.tgz
-```
+
+    helm install db19c --set oracle_sid=ORCL,oracle_pdb=prod oracle-db-1.0.0.tgz
+
 Helm 2.x syntax
-```
-$ helm install --name db19c --set oracle_sid=ORCL,oracle_pdb=prod oracle-db-1.0.0.tgz
-```
+
+    helm install --name db19c --set oracle_sid=ORCL,oracle_pdb=prod oracle-db-1.0.0.tgz
+
 
 The above command sets  the Oracle Database name to 'ORCL' and PDB name to 'prod'.
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
 Helm 3.x syntax
-```
-$ helm install db19c -f values.yaml oracle-db-1.0.0.tgz
-```
+
+    helm install db19c -f values.yaml oracle-db-1.0.0.tgz
+
 Helm 2.x syntax
-```
-$ helm install --name db19c -f values.yaml oracle-db-1.0.0.tgz
-```
+
+    helm install --name db19c -f values.yaml oracle-db-1.0.0.tgz
+
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
 
