@@ -5,9 +5,9 @@ Database 19c is an industry leading relational database server.
 ## Getting started
 A Helm chart is used for packaging the deployment yamls to simplify install in Kubernetes. The chart is available at [helm-charts/oracle-db](./) directory.
 Clone the repo and execute the following command to generate oracle-db-1.0.0.tgz
-```
-$ helm package helm-charts/oracle-db
-```
+
+    $ helm package helm-charts/oracle-db
+
 
 ## Introduction
 
@@ -108,12 +108,12 @@ $ helm install --name db19c -f values.yaml oracle-db-1.0.0.tgz
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
- 
+
 
 ## Persistence
 
 The [Oracle Database](https://www.oracle.com) image stores the Oracle Database data files  and configurations at the `/opt/oracle/oradata` path of the container.
 
-Persistent Volume Claims are used to keep the data across deployments. 
+Persistent Volume Claims are used to keep the data across deployments.
 See the [Configuration](#configuration) section to configure the PVC or to disable persistence.
 
