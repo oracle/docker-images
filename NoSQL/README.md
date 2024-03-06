@@ -73,7 +73,7 @@ For example, to check the version of KVLite, use the `version` command:
 
 ```shell
 $ docker run --rm -ti --link kvlite:store oracle/nosql:ce  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
-22.3.32 2023-02-14 19:38:03 UTC  Build id: 23acbda81a26 Edition: Community
+23.3.30 2023-12-01 19:37:33 UTC  Build id: c5db6593507b Edition: Community
 ```
 
 To check the size of the storage shard:
@@ -98,16 +98,14 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   
 Pinging components of store kvstore based upon topology sequence #14
 10 partitions and 1 storage nodes
-Time: 2023-02-27 06:25:43 UTC   Version: 22.3.32
+Time: 2024-02-28 08:20:36 UTC   Version: 23.3.30
 Shard Status: healthy: 1 writable-degraded: 0 read-only: 0 offline: 0 total: 1
 Admin Status: healthy
 Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]   RN Status: online: 1 read-only: 0 offline: 0
-Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 22.3.32 2023-02-14
-19:38:03 UTC  Build id: 23acbda81a26 Edition: Community    isMasterBalanced: true      serviceStartTime: 2023-02-27 06:24:27 UTC
-        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2023-02-27 06:24:30 UTC       stateChangeTime: 2023-02-27 06:24:30 UTC        
-availableStorageSize: 2 GB
-        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 314 haPort: 5011 availableStorageSize: 9 GB storageType: HD      
-serviceStartTime: 2023-02-27 06:24:33 UTC       stateChangeTime: 2023-02-27 06:24:34 UTC
+Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 23.3.30 2023-12-01 19:37:33 UTC  Build id: c5db6593507b Edition: Community    isMasterBalanced: true        serviceStartTime: 2024-02-28 08:11:20 UTC
+        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2024-02-28 08:11:23 UTC       stateChangeTime: 2024-02-28 08:11:23 UTC        availableStorageSize: 2 GB
+        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 508 haPort: 5011 availableStorageSize: 6 GB storageType: HD      serviceStartTime: 2024-02-28 08:11:25 UTC       stateChangeTime: 2024-02-28 08:11:25 UTC
+
   
   kv-> put kv -key /SomeKey -value SomeValue
   Operation successful, record inserted.
@@ -175,7 +173,7 @@ be made via the Oracle NoSQL Database Proxy on the `KV_PROXY_PORT`.
 First, install the latest version of Oracle NoSQL on your remote host:
 
 ```shell
-KV_VERSION=22.3.32
+KV_VERSION=23.3.30
 rm -rf kv-$KV_VERSION
 DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
@@ -335,7 +333,7 @@ number used for the image tag:
 
 
 ```shell
-KV_VERSION=22.3.32 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce:$KV_VERSION" .
+KV_VERSION=23.3.30 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce:$KV_VERSION" .
 ```
 
 ## More information
@@ -358,9 +356,9 @@ Oracle provides no commercial support for the Oracle NoSQL Community Edition.
 
 ## Copyright
 
-Copyright (c) 2017, 2023 Oracle and/or its affiliates.
+Copyright (c) 2017, 2024 Oracle and/or its affiliates.
 
 [NOSQL]: http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html
 [DOCS]: https://docs.oracle.com/en/database/other-databases/nosql-database/index.html
-[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/22.3/license/index.html#NSXLI-GUID-006E432E-1965-45A2-AEDE-204BD05E1560
+[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/23.3/license/index.html#GUID-006E432E-1965-45A2-AEDE-204BD05E1560
 [GraalVM-License]: https://github.com/graalvm/container/blob/master/LICENSE.md
