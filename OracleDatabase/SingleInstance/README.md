@@ -2,31 +2,32 @@
 
 Sample container build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Database Online Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/index.html).
 
-* [How to build and run](#how-to-build-and-run)
-  * [Building Oracle Database container images](#building-oracle-database-container-images)
-    * [Building patched container images](#building-patched-container-images)
-    * [Building the container images using Podman](#building-the-container-images-using-podman)
-  * [Running Oracle Database in a container](#running-oracle-database-in-a-container)
-    * [Running Oracle Database Enterprise and Standard Edition 2 in a container](#running-oracle-database-enterprise-and-standard-edition-2-in-a-container)
-    * [Securely specifying the password when using Podman (Supported from 19.3.0 onwards)](#securely-specifying-the-password-when-using-podman-supported-from-1930-onwards)
-    * [Selecting the Edition (Supported from 19.3.0 release)](#selecting-the-edition-supported-from-1930-release)
-    * [Setting the SGA and PGA memory (Supported from 19.3.0 release)](#setting-the-sga-and-pga-memory-supported-from-1930-release)
-    * [Setting the CPU_COUNT and PROCESSES (Supported from 19.3.0 release)](#setting-the-cpu_count-and-processes-supported-from-1930-release)
-    * [Changing the admin accounts passwords](#changing-the-admin-accounts-passwords)
-    * [Enabling archive log mode while creating the database](#enabling-archive-log-mode-while-creating-the-database)
-    * [Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)](#configuring-tcps-connections-for-oracle-database-supported-from-version-1930-onwards)
-    * [Running Oracle Database 23c FREE in a container](#running-oracle-database-23c-free-in-a-container)
-    * [Running Oracle Database 21c/18c Express Edition in a container](#running-oracle-database-21c18c-express-edition-in-a-container)
-    * [Running Oracle Database 11gR2 Express Edition in a container](#running-oracle-database-11gr2-express-edition-in-a-container)
-  * [Containerizing an on-premise database (Supported from version 19.3.0 release)](#containerizing-an-on-premise-database-supported-from-version-1930-release)
-  * [Deploying Oracle Database on Kubernetes](#deploying-oracle-database-on-kubernetes)
-  * [Running SQL*Plus in a container](#running-sqlplus-in-a-container)
-  * [Running scripts after setup and on startup](#running-scripts-after-setup-and-on-startup)
-* [Known issues](#known-issues)
-* [Frequently asked questions](#frequently-asked-questions)
-* [Support](#support)
-* [License](#license)
-* [Copyright](#copyright)
+- [Oracle Database container images](#oracle-database-container-images)
+  - [How to build and run](#how-to-build-and-run)
+    - [Building Oracle Database container images](#building-oracle-database-container-images)
+      - [Building patched container images](#building-patched-container-images)
+      - [Building the container images using Podman](#building-the-container-images-using-podman)
+    - [Running Oracle Database in a container](#running-oracle-database-in-a-container)
+      - [Running Oracle Database Enterprise and Standard Edition 2 in a container](#running-oracle-database-enterprise-and-standard-edition-2-in-a-container)
+      - [Securely specifying the password when using Podman (Supported from 19.3.0 onwards)](#securely-specifying-the-password-when-using-podman-supported-from-1930-onwards)
+      - [Selecting the Edition (Supported from 19.3.0 release)](#selecting-the-edition-supported-from-1930-release)
+      - [Setting the SGA and PGA memory (Supported from 19.3.0 release)](#setting-the-sga-and-pga-memory-supported-from-1930-release)
+      - [Setting the CPU\_COUNT and PROCESSES (Supported from 19.3.0 release)](#setting-the-cpu_count-and-processes-supported-from-1930-release)
+      - [Changing the admin accounts passwords](#changing-the-admin-accounts-passwords)
+      - [Enabling archive log mode while creating the database](#enabling-archive-log-mode-while-creating-the-database)
+      - [Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)](#configuring-tcps-connections-for-oracle-database-supported-from-version-1930-onwards)
+      - [Running Oracle Database 23c FREE in a container](#running-oracle-database-23c-free-in-a-container)
+      - [Running Oracle Database 21c/18c Express Edition in a container](#running-oracle-database-21c18c-express-edition-in-a-container)
+      - [Running Oracle Database 11gR2 Express Edition in a container](#running-oracle-database-11gr2-express-edition-in-a-container)
+    - [Containerizing an on-premise database (Supported from version 19.3.0 release)](#containerizing-an-on-premise-database-supported-from-version-1930-release)
+    - [Deploying Oracle Database on Kubernetes](#deploying-oracle-database-on-kubernetes)
+    - [Running SQL\*Plus in a container](#running-sqlplus-in-a-container)
+    - [Running scripts after setup and on startup](#running-scripts-after-setup-and-on-startup)
+  - [Known issues](#known-issues)
+  - [Frequently asked questions](#frequently-asked-questions)
+  - [Support](#support)
+  - [License](#license)
+  - [Copyright](#copyright)
 
 ## How to build and run
 
@@ -57,10 +58,10 @@ You also have to make sure to have internet connectivity for yum. Note that you 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
-    
+
     Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-b] [-o] [container build option]
     Builds a container image for Oracle Database.
-    
+
     Parameters:
        -v: version to build
            Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.3.0
@@ -73,11 +74,11 @@ Before you build the image make sure that you have provided the installation bin
        -p: creates and extends image using the patching extension
        -b: build base stage only (Used by extensions)
        -o: passes on container build option
-    
+
     * select one edition only: -e, -s, -x, or -f
-    
+
     LICENSE UPL 1.0
-    
+
     Copyright (c) 2014,2023 Oracle and/or its affiliates.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
@@ -136,7 +137,7 @@ To run your Oracle Database image use the `docker run` command as follows:
     -e ENABLE_TCPS=true \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:21.3.0-ee
-    
+
     Parameters:
        --name:        The name of the container (default: auto generated).
        -p:            The port mapping of the host port to the container port.
@@ -152,10 +153,10 @@ To run your Oracle Database image use the `docker run` command as follows:
                       The target aggregate PGA memory in MB that should be used for all server processes attached to the instance (optional).
                       Supported by Oracle Database 19.3 onwards.
        -e INIT_CPU_COUNT:
-                      Specifies the number of CPUs available for Oracle Database to use. 
+                      Specifies the number of CPUs available for Oracle Database to use.
                       On CPUs with multiple CPU threads, it specifies the total number of available CPU threads (optional).
        -e INIT_PROCESSES:
-                      Specifies the maximum number of operating system user processes that can simultaneously connect to Oracle Database. 
+                      Specifies the maximum number of operating system user processes that can simultaneously connect to Oracle Database.
                       Its value should allow for all background processes such as locks, job queue processes, and parallel execution processes (optional).
        -e AUTO_MEM_CALCULATION:
                       To enable auto calculation of the DBCA total memory limit during the database creation, based on
@@ -329,7 +330,7 @@ To run your Oracle Database 23c FREE container image use the `docker run` comman
     -e ORACLE_CHARACTERSET=<your character set> \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:23.3.0-free
-    
+
     Parameters:
        --name:        The name of the container (default: auto generated)
        -p:            The port mapping of the host port to the container port.
@@ -371,7 +372,7 @@ To run your Oracle Database 21c, or 18c Express Edition container image use the 
     -e ORACLE_CHARACTERSET=<your character set> \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:21.3.0-xe
-    
+
     Parameters:
        --name:        The name of the container (default: auto generated)
        -p:            The port mapping of the host port to the container port.
@@ -400,6 +401,13 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
     https://localhost:5500/em/
 
+Your browser will give you a security warning for `https`. Ignore it and continue. The site will not work with `http`.
+
+Your login credentials are:
+- Username - `SYS`
+- Password - whatever you chose
+- Container name - `XEPDB1`
+
 On the first startup of the container a random password will be generated for the database if not provided. The password for those accounts can be changed via the `docker exec` command. **Note**, the container has to be running:
 
     docker exec <container name> /opt/oracle/setPassword.sh <your password>
@@ -417,7 +425,7 @@ To run your Oracle Database Express Edition container image use the `docker run`
     -e ORACLE_PWD=<your database passwords> \
     -v [<host mount point>:]/u01/app/oracle/oradata \
     oracle/database:11.2.0.2-xe
-    
+
     Parameters:
        --name:        The name of the container (default: auto generated)
        --shm-size:    Amount of Linux shared memory
@@ -506,7 +514,7 @@ After the database is setup and/or started the scripts in those folders will be 
 SQL scripts will be executed as sysdba, shell scripts will be executed as the current user. To ensure proper order it is
 recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
 
-**Note:** The startup scripts will also be executed after the first time database setup is complete.  
+**Note:** The startup scripts will also be executed after the first time database setup is complete.
 **Note:** For 11gR2 Express Edition only, use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/`.
 
 The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
