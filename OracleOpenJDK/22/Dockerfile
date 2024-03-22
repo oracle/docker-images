@@ -1,21 +1,21 @@
-# Copyright (c) 2022, 2023 Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle OpenJDK 21 on Oracle Linux 8
+# This is the Dockerfile for Oracle OpenJDK 22 on Oracle Linux 8
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) openjdk-21.xx_linux-x64_bin.tar.gz
-#     Downloaded from https://jdk.java.net/21/
+# (1) openjdk-22.xx_linux-x64_bin.tar.gz
+#     Downloaded from https://jdk.java.net/22/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/openjdk:21 .
+#      $ docker build -t oracle/openjdk:22 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -25,8 +25,8 @@ FROM oraclelinux:8
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk21.0.2/f2283984656d49d69e91c558476027ac/13/GPL \
-	JAVA_HOME=/usr/java/jdk-21 \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk22/830ec9fcccef480bb3e73fb7ecafe059/36/GPL \
+	JAVA_HOME=/usr/java/jdk-22 \
 	LANG=en_US.UTF-8
 	
 
@@ -50,7 +50,7 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL"/openjdk-21.0.2_linux-"${ARCH}"_bin.tar.gz ; \
+    JAVA_PKG="$JAVA_URL"/openjdk-22_linux-"${ARCH}"_bin.tar.gz ; \
 	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c -; \
