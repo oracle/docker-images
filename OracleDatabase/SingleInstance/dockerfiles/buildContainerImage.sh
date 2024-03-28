@@ -1,13 +1,13 @@
 #!/bin/bash -e
-# 
+#
 # Since: April, 2016
 # Author: gerald.venzl@oracle.com
 # Description: Build script for building Oracle Database container images.
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 # Copyright (c) 2014,2023 Oracle and/or its affiliates.
-# 
+#
 
 usage() {
   cat << EOF
@@ -22,7 +22,7 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
-   -f: creates images based on Database 'Free' 
+   -f: creates images based on Database 'Free'
    -i: ignores the MD5 checksums
    -p: creates and extends image using the patching extension
    -b: build base stage only (Used by extensions)
@@ -41,7 +41,7 @@ EOF
 # Validate packages
 checksumPackages() {
   if hash md5sum 2>/dev/null; then
-    echo "Checking if required packages are present and valid..."   
+    echo "Checking if required packages are present and valid..."
     if ! md5sum -c "Checksum.${EDITION}${PLATFORM}"; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder ${VERSION}."
@@ -90,9 +90,11 @@ checkPodmanVersion() {
 checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
-  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
+  DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version}}'|| exit 0)
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
+  # Remove the OS identifier if present, e.g. "-ol"
+  DOCKER_VERSION=${DOCKER_VERSION/%-*/}
 
   if [ "${DOCKER_VERSION}" -lt "${MIN_DOCKER_VERSION//./}" ]; then
     echo "Docker version is below the minimum required version ${MIN_DOCKER_VERSION}"
@@ -212,11 +214,11 @@ elif [ ${EXPRESS} -eq 1 ]; then
     echo "Version ${VERSION} does not have Express Edition available.";
     exit 1;
   fi;
-elif [ ${FREE} -eq 1 ]; then 
-  if [ "$(cut -f1 -d.  <<< "$VERSION" )" -lt 23 ]; then 
+elif [ ${FREE} -eq 1 ]; then
+  if [ "$(cut -f1 -d.  <<< "$VERSION" )" -lt 23 ]; then
     echo "Version ${VERSION} does not have Free Edition available.";
     exit 1;
-  else 
+  else
     EDITION="free"
     SKIPMD5=1
   fi;
@@ -335,12 +337,12 @@ echo ""
 echo ""
 
 cat << EOF
-  Oracle Database container image for '${EDITION}' version ${VERSION} is ready to be extended: 
-    
+  Oracle Database container image for '${EDITION}' version ${VERSION} is ready to be extended:
+
     --> ${IMAGE_NAME}
 
   Build completed in ${BUILD_ELAPSED} seconds.
-  
+
 EOF
 
 # EXTEND THE BUILT IMAGE BY APPLYING PATCHING EXTENSION
