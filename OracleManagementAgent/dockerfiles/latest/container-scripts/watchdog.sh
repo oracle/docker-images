@@ -194,6 +194,27 @@ function is_agent_alive()
   return 1
 }
 
+###########################################################
+# Upsert properties with its overriding configMap
+function agent_prop_upsert()
+{
+  log "invoking agent property upsert"
+  # while upgrading from previous binary, the script will not be available
+  # before the upgrade completes
+  if [ ! -f $MGMTAGENT_HOME/agent_inst/bin/agent_prop_upsert.sh ]; then
+    log "skipping property upsert"
+  else
+    # if the agent is alive then stop it first and then do the property update
+    if is_agent_alive; then
+	  stop_agent
+    fi
+
+    # upsert emd.properties
+    prop_file=$MGMTAGENT_HOME/agent_inst/config/emd.properties
+    config_map=$BASE_DIR/mgmtagent_agent_config/emd.properties
+    eval "/bin/sh $MGMTAGENT_HOME/agent_inst/bin/agent_prop_upsert.sh $prop_file $config_map 'Modifiable Properties'"
+  fi
+}
 
 ###########################################################
 # Start Management Agent and wait for startup to complete
@@ -255,6 +276,9 @@ function start_watchdog()
   while true; do
     if ! is_agent_alive; then
       attempt_agent_upgrade
+      # previous binary will not consist the agent_prop_upsert.sh,
+      # so the upgrade needs to happen first
+      agent_prop_upsert
     fi
 
     start_agent || stop_agent
@@ -278,6 +302,9 @@ fi
 if ! is_agent_configured; then
   configure_agent
 fi
+
+# for fresh install
+agent_prop_upsert
 
 start_watchdog
 sleep 10
