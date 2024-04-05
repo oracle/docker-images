@@ -217,6 +217,33 @@ function agent_prop_upsert()
 }
 
 ###########################################################
+# cleans up mgmt_agent dir if a new cleanup id is provided
+function cleanup_agent_dir()
+{
+	log "initiating mgmt_agent dir cleanup"
+	
+	if [ -v POD_CLEANUP_ID ]; then
+		# create the cleanup dir to maintain the marker files
+		cleanup_id_dir="$BASE_DIR/cleanup_ids"
+		mkdir -p $cleanup_id_dir
+		
+	    cleanup_id_file="$cleanup_id_dir/$POD_CLEANUP_ID.txt"
+	    
+	    if [ ! -f $cleanup_id_file ]; then
+		    log "$cleanup_id_file not found"
+		    rm -rf $MGMTAGENT_HOME
+		    echo "cleanup successfully done" > $cleanup_id_file
+		    log "cleanup completed"
+		  else
+		  	log "$cleanup_id_file found. skipping cleanup"
+		fi
+	    
+	else
+	    log "cleanup id not set. skipping cleanup"
+	fi
+}
+
+###########################################################
 # Start Management Agent and wait for startup to complete
 # Returns: 0 if agent successfully started otherwise 1
 function start_agent()
@@ -289,6 +316,8 @@ function start_watchdog()
 
 ###########################################################
 # Main script execution
+cleanup_agent_dir
+
 if ! is_agent_installed; then
   if [ ! -f "$CONFIG_FILE" ]; then
     log "$APPNAME install key (input.rsp) value [$CONFIG_FILE] is invalid or does not exist"
