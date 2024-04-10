@@ -1,4 +1,4 @@
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2024, Oracle and/or its affiliates.
 ARG           BASE_IMAGE=oraclelinux:8
 #  hadolint ignore=DL3006
 FROM        ${BASE_IMAGE}

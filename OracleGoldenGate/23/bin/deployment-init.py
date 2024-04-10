@@ -1,8 +1,7 @@
-#!/bin/python3
+#!/usr/bin/env python3
 ## Copyright (c) 2021, 2024, Oracle and/or its affiliates.
 
 ##
-##  d e p l o y m e n t - i n i t . p y
 ##  Initialize OGG Deployment
 ##
 
