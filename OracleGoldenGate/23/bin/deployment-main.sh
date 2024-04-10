@@ -1,14 +1,12 @@
 #!/bin/bash
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2024, Oracle and/or its affiliates.
 set -e
 
 ##
-##  d e p l o y m e n t - m a i n . s h
 ##  Execute OGG Deployment
 ##
 
 ##
-##  a b o r t
 ##  Terminate with an error message
 ##
 function abort() {
@@ -36,7 +34,6 @@ NGINX_KEY="$(awk '$1 == "ssl_certificate_key" { gsub(/;/, ""); print $NF; exit }
 export OGG_DEPLOYMENT OGG_ADMIN NGINX_CRT NGINX_KEY
 
 ##
-##  g e n e r a t e P a s s w o r d
 ##  If not already specified, generate a random password with:
 ##  - at least one uppercase character
 ##  - at least one lowercase character
@@ -61,7 +58,6 @@ function generatePassword {
 }
 
 ##
-##  l o c a t e _ j a v a
 ##  Locate the Java installation and set JAVA_HOME
 ##
 function locate_java() {
@@ -76,7 +72,6 @@ function locate_java() {
 }
 
 ##
-##  l o c a t e _ l  i  b _  j  v  m
 ##  Locate the shared library libjvm.so and set LD_LIBRARY_PATH
 ##
 function locate_lib_jvm() {
@@ -94,7 +89,6 @@ function locate_lib_jvm() {
 }
 
 ##
-##  r u n _ a s _ o g g
 ##  Return a string used for running a process as the 'ogg' user
 ##
 function run_as_ogg() {
@@ -106,7 +100,6 @@ function run_as_ogg() {
 }
 
 ##
-##  s e t u p _ d e p l o y m e n t _ d i r e c t o r i e s
 ##  Create and set permissions for directories for the deployment
 ##
 function setup_deployment_directories() {
@@ -125,7 +118,6 @@ function setup_deployment_directories() {
 }
 
 ##
-##  r u n _ u s e r _ s c r i p t s
 ##  Run custom scripts in the container before and after GoldenGate starts
 ##
 function run_user_scripts {
@@ -145,7 +137,6 @@ function run_user_scripts {
 }
 
 ##
-##  s t a r t _ o g g
 ##  Initialize and start the OGG installation
 ##
 function start_ogg() {
@@ -155,8 +146,7 @@ function start_ogg() {
 }
 
 ##
-##  s t a r t _ n g i n x
-##  Start the NGinx reverse proxy daemon
+##  Start the reverse proxy daemon
 ##
 function start_nginx() {
     [[ ! -f "${NGINX_CRT}" || ! -f "${NGINX_KEY}" ]] && {

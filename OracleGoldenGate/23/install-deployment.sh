@@ -1,5 +1,5 @@
 #!/bin/bash
-## Copyright (c) 2022, Oracle and/or its affiliates.
+## Copyright (c) 2024, Oracle and/or its affiliates.
 set -e
 
 : "${INSTALLER:?}"
@@ -9,12 +9,10 @@ ORA_HOME="/u01/app"
 INSTALLER="/tmp/installer.zip"
 
 ##
-##  i n s t a l l - d e p l o y m e n t . s h
 ##  Install the deployment from a "ShipHome" ZIP file
 ##
 
 ##
-##  a b o r t
 ##  Terminate with an error message
 ##
 function abort() {
@@ -23,7 +21,6 @@ function abort() {
 }
 
 ##
-##  r u n _ a s _ o g g
 ##  Return a string used for running a process as the 'ogg' user
 ##
 function run_as_ogg() {
@@ -35,7 +32,6 @@ function run_as_ogg() {
 }
 
 ##
-##  o g g _ i n s t a l l e r _ s e t u p
 ##  Unpack the OGG installation software
 ##
 function ogg_installer_setup() {
@@ -46,7 +42,6 @@ function ogg_installer_setup() {
 }
 
 ##
-## o g g _ i n s t a l l _ o p t i o n
 ## Get the INSTALL_OPTION.
 ##
 function ogg_install_option() {
@@ -62,7 +57,6 @@ function ogg_install_option() {
 }
 
 ##
-##  o g g _ i n s t a l l
 ##  Perform an OGG installation
 ##
 function ogg_install() {

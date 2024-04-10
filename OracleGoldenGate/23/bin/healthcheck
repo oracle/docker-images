@@ -1,8 +1,7 @@
 #!/bin/bash
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2024, Oracle and/or its affiliates.
 
 ##
-##  h e a l t h c h e c k
 ##  Check the health of all services in the deployment.
 ##
 

@@ -1,12 +1,11 @@
 #!/bin/bash
-## Copyright (c) 2021, Oracle and/or its affiliates.
+## Copyright (c) 2024, Oracle and/or its affiliates.
 set -e
 
 : "${NGINX_CRT:?}"
 : "${NGINX_KEY:?}"
 
 ##
-##  c r e a t e _ c e r t i f i c a t e
 ##  Create a self-signed certificate/key pair
 ##
 function create_certificate() {
