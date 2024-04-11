@@ -25,7 +25,7 @@ This project was tested with:
 
 - Oracle GoldenGate 23.4 Microservices for Oracle on Linux x86-64
 
-**IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that
+**IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](https://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that
 for you. You also must have Internet connectivity when building the container image for the package manager to perform additional software installations.
 
 All shell commands in this document assume the usage of Bash shell.
@@ -176,7 +176,7 @@ None
 
 All scripts and files hosted in this project and GitHub [docker-images/OracleGoldenGate](../) repository required to build the container images are, unless otherwise noted, released under the Universal Permissive License (UPL), Version 1.0.  See [LICENSE](/LICENSE) for details.
 
-To download and run Oracle GoldenGate, regardless of whether inside or outside a container, you must download the binaries from the [Oracle Technology Network](http://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html) and accept the license indicated on that page.
+To download and run Oracle GoldenGate, regardless of whether inside or outside a container, you must download the binaries from the [Oracle Technology Network](https://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html) and accept the license indicated on that page.
 
 ## Copyright
 
