@@ -1,11 +1,11 @@
-# Oracle GoldenGate 23 Microservices Edition Container Images
+# Oracle GoldenGate 23ai Microservices Edition Container Images
 
 Sample container image build files to provide an installation of Oracle GoldenGate for DevOps users.
-These instructions apply to building container images for Oracle GoldenGate version 23.
+These instructions apply to building container images for Oracle GoldenGate version 23ai.
 
 ## Contents
 
-- [Oracle GoldenGate 23 Microservices Edition Container Images](#oracle-goldengate-23-microservices-edition-container-images)
+- [Oracle GoldenGate 23ai Microservices Edition Container Images](#oracle-goldengate-23ai-microservices-edition-container-images)
   - [Contents](#contents)
   - [Before You Start](#before-you-start)
   - [Build an Oracle GoldenGate Container Image](#build-an-oracle-goldengate-container-image)
@@ -30,7 +30,7 @@ for you. You also must have Internet connectivity when building the container im
 
 All shell commands in this document assume the usage of Bash shell.
 
-For more information about Oracle GoldenGate please see the [Oracle GoldenGate 23 On-line Documentation](https://docs.oracle.com/en/middleware/goldengate/core/23/index.html).
+For more information about Oracle GoldenGate please see the [Oracle GoldenGate 23ai On-line Documentation](https://docs.oracle.com/en/middleware/goldengate/core/23/index.html).
 
 ## Build an Oracle GoldenGate Container Image
 
@@ -59,7 +59,7 @@ docker build --tag=oracle/goldengate:23.4 \
              --build-arg INSTALLER=234000_fbo_ggs_Linux_x64_Oracle_services_shiphome.zip .
 ```
 
-Oracle GoldenGate 23 requires a base container image with Oracle Linux 8 or later.
+Oracle GoldenGate 23ai requires a base container image with Oracle Linux 8 or later.
 
 ## Running Oracle GoldenGate in a Container
 

@@ -1,4 +1,4 @@
-# Oracle GoldenGate 23 Microservices Edition on Docker
+# Oracle GoldenGate 23ai Microservices Edition on Docker
 
 ## Samples
 
