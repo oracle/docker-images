@@ -7,6 +7,7 @@ set -e
 ##
 
 packages=(java-17-openjdk jq libaio libnsl nginx perl python39 python39-requests python39-psutil tar unzip xz)
+packages+=(unixODBC libpq)                      ## Required for PostgreSQL
 
 function success() {
     echo "Packages installed after ${sequence} attempts"
