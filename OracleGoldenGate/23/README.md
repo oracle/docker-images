@@ -24,6 +24,7 @@ These instructions apply to building container images for Oracle GoldenGate vers
 This project was tested with:
 
 - Oracle GoldenGate 23.4 Microservices for Oracle on Linux x86-64
+- Oracle GoldenGate 23.4 Microservices for PostgreSQL on Linux x86-64
 
 **IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](https://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that
 for you. You also must have Internet connectivity when building the container image for the package manager to perform additional software installations.
