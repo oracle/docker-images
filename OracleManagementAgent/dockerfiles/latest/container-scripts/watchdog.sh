@@ -229,10 +229,10 @@ function cleanup_agent_dir()
 		
 	    cleanup_id_file="$cleanup_id_dir/$POD_CLEANUP_ID.txt"
 	    
-	    if [ ! -f $cleanup_id_file ]; then
+	    if [ ! -f "$cleanup_id_file" ]; then
 		    log "$cleanup_id_file not found"
 		    rm -rf $MGMTAGENT_HOME
-		    echo "cleanup successfully done" > $cleanup_id_file
+		    echo "cleanup successfully done" > "$cleanup_id_file"
 		    log "cleanup completed"
 		  else
 		  	log "$cleanup_id_file found. skipping cleanup"
