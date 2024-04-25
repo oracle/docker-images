@@ -5,7 +5,7 @@ FROM ghcr.io/graalvm/jdk:ol8-java17
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
-ARG KV_VERSION=23.3.30
+ARG KV_VERSION=23.3.32
 ARG DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 ARG DOWNLOAD_FILE="community-edition-${KV_VERSION}.zip"
 ARG DOWNLOAD_LINK="${DOWNLOAD_ROOT}/${DOWNLOAD_FILE}"
