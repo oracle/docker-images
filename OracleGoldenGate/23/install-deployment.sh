@@ -35,10 +35,10 @@ function run_as_ogg() {
 ##  Unpack the OGG installation software
 ##
 function ogg_installer_setup() {
-    [[ -f "${INSTALLER}" ]]                     || abort "Source file '${INSTALLER}' does not exist"
+    [[ -f "${INSTALLER}" ]] || abort "Source file '${INSTALLER}' does not exist"
     mkdir "/tmp/installer"
     unzip -q "${INSTALLER}" -d "/tmp/installer" || abort "Unzip operation failed for '${INSTALLER}'"
-    chmod -R o=g-w             "/tmp/installer"
+    chmod -R o=g-w "/tmp/installer"
 }
 
 ##
@@ -60,11 +60,11 @@ function ogg_install_option() {
 ##  Perform an OGG installation
 ##
 function ogg_install() {
-    mkdir -p         "${OGG_HOME}"
+    mkdir -p "${OGG_HOME}"
     chown -R ogg:ogg "$(dirname "${OGG_HOME}")"
     installer="$(find /tmp/installer -name runInstaller | head -1)"
     if [[ -n "${installer}" ]]; then
-        cat<<EOF >"/tmp/installer.rsp"
+        cat <<EOF >"/tmp/installer.rsp"
 oracle.install.responseFileVersion=/oracle/install/rspfmt_ogginstall_response_schema_v20_0_0
 INSTALL_OPTION=${INSTALL_OPTION:-$(ogg_install_option)}
 SOFTWARE_LOCATION=${OGG_HOME}

@@ -11,7 +11,7 @@ set -e
 function create_certificate() {
     local config
     config="$(mktemp)"
-    cat<<EOF > "${config}"
+    cat <<EOF >"${config}"
 [req]
 distinguished_name = distinguished_name
 x509_extensions    = x509_extensions
@@ -24,10 +24,10 @@ CN                 = GoldenGate Deployment
 extendedKeyUsage   = serverAuth
 EOF
     mkdir -p "$(dirname "${NGINX_CRT}")"
-    openssl req -x509 -sha256                              \
-            -newkey rsa:2048 -nodes -keyout "${NGINX_KEY}"  \
-            -days $((365 * 3))      -out    "${NGINX_CRT}" \
-            -config "${config}"
+    openssl req -x509 -sha256 \
+        -newkey rsa:2048 -nodes -keyout "${NGINX_KEY}" \
+        -days $((365 * 3)) -out "${NGINX_CRT}" \
+        -config "${config}"
     rm "${config}"
 }
 

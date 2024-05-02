@@ -14,22 +14,22 @@ function abort() {
     exit 1
 }
 
-:     "${OGG_DEPLOYMENT:=Local}"
-:     "${OGG_ADMIN:=oggadmin}"
-:     "${OGG_LISTEN_ON:=127.0.0.1}"
+: "${OGG_DEPLOYMENT:=Local}"
+: "${OGG_ADMIN:=oggadmin}"
+: "${OGG_LISTEN_ON:=127.0.0.1}"
 
-:     "${OGG_DEPLOYMENT_HOME:?}"
+: "${OGG_DEPLOYMENT_HOME:?}"
 [[ -d "${OGG_DEPLOYMENT_HOME}" ]] || abort "Deployment storage, '${OGG_DEPLOYMENT_HOME}', not found."
-:     "${OGG_TEMPORARY_FILES:?}"
+: "${OGG_TEMPORARY_FILES:?}"
 [[ -d "${OGG_TEMPORARY_FILES}" ]] || abort "Deployment temporary storage, '${OGG_TEMPORARY_FILES}', not found."
-:     "${OGG_HOME:?}"
-[[ -d "${OGG_HOME}"            ]] || abort "Deployment runtime, '${OGG_HOME}'. not found."
+: "${OGG_HOME:?}"
+[[ -d "${OGG_HOME}" ]] || abort "Deployment runtime, '${OGG_HOME}'. not found."
 
-:     "${OGG_DEPLOYMENT_SCRIPTS:?}"
+: "${OGG_DEPLOYMENT_SCRIPTS:?}"
 [[ -d "${OGG_DEPLOYMENT_SCRIPTS}" ]] || abort "OGG deployment scripts storage, '${OGG_DEPLOYMENT_SCRIPTS}', not found."
 
-NGINX_CRT="$(awk '$1 == "ssl_certificate"     { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
-NGINX_KEY="$(awk '$1 == "ssl_certificate_key" { gsub(/;/, ""); print $NF; exit }' < /etc/nginx/nginx.conf)"
+NGINX_CRT="$(awk '$1 == "ssl_certificate"     { gsub(/;/, ""); print $NF; exit }' </etc/nginx/nginx.conf)"
+NGINX_KEY="$(awk '$1 == "ssl_certificate_key" { gsub(/;/, ""); print $NF; exit }' </etc/nginx/nginx.conf)"
 
 export OGG_DEPLOYMENT OGG_ADMIN NGINX_CRT NGINX_KEY
 
@@ -40,14 +40,14 @@ export OGG_DEPLOYMENT OGG_ADMIN NGINX_CRT NGINX_KEY
 ##  - at least one digit character
 ##
 function generatePassword {
-    if [[ -n "${OGG_ADMIN_PWD}" || -d  "${OGG_DEPLOYMENT_HOME}/Deployment/etc" ]]; then
+    if [[ -n "${OGG_ADMIN_PWD}" || -d "${OGG_DEPLOYMENT_HOME}/Deployment/etc" ]]; then
         return
     fi
     local password
     password="$(openssl rand -base64 9)-$(openssl rand -base64 3)"
-    if [[ "${password}" != "${password/[A-Z]/_}" && \
-          "${password}" != "${password/[a-z]/_}" && \
-          "${password}" != "${password/[0-9]/_}" ]]; then
+    if [[ "${password}" != "${password/[A-Z]/_}" &&
+        "${password}" != "${password/[a-z]/_}" &&
+        "${password}" != "${password/[0-9]/_}" ]]; then
         export OGG_ADMIN_PWD="${password}"
         echo "----------------------------------------------------------------------------------"
         echo "--  Password for OGG administrative user '${OGG_ADMIN}' is '${OGG_ADMIN_PWD}'"
@@ -83,7 +83,7 @@ function locate_lib_jvm() {
         echo "Warning: The shared library libjvm.so cannot be located."
     else
         local JVM_LIBRARY_PATH
-        JVM_LIBRARY_PATH="$(dirname "${libjvm}" )"
+        JVM_LIBRARY_PATH="$(dirname "${libjvm}")"
         export LD_LIBRARY_PATH=$JVM_LIBRARY_PATH:$LD_LIBRARY_PATH
     fi
 }
@@ -103,35 +103,35 @@ function run_as_ogg() {
 ##  Create and set permissions for directories for the deployment
 ##
 function setup_deployment_directories() {
-    rm    -fr        "${OGG_DEPLOYMENT_HOME}"/Deployment/var/{run,temp,lib/db} \
-                     "${OGG_TEMPORARY_FILES}"/{run,temp}
-    mkdir -p         "${OGG_TEMPORARY_FILES}"/{run,temp,db} \
-                     "${OGG_DEPLOYMENT_HOME}"/Deployment/var/lib
-    ln -s            "${OGG_TEMPORARY_FILES}"/run  "${OGG_DEPLOYMENT_HOME}"/Deployment/var/run
-    ln -s            "${OGG_TEMPORARY_FILES}"/temp "${OGG_DEPLOYMENT_HOME}"/Deployment/var/temp
-    ln -s            "${OGG_TEMPORARY_FILES}"/db   "${OGG_DEPLOYMENT_HOME}"/Deployment/var/lib/db
+    rm -fr "${OGG_DEPLOYMENT_HOME}"/Deployment/var/{run,temp,lib/db} \
+        "${OGG_TEMPORARY_FILES}"/{run,temp}
+    mkdir -p "${OGG_TEMPORARY_FILES}"/{run,temp,db} \
+        "${OGG_DEPLOYMENT_HOME}"/Deployment/var/lib
+    ln -s "${OGG_TEMPORARY_FILES}"/run "${OGG_DEPLOYMENT_HOME}"/Deployment/var/run
+    ln -s "${OGG_TEMPORARY_FILES}"/temp "${OGG_DEPLOYMENT_HOME}"/Deployment/var/temp
+    ln -s "${OGG_TEMPORARY_FILES}"/db "${OGG_DEPLOYMENT_HOME}"/Deployment/var/lib/db
 
-    chown    ogg:ogg "${OGG_DEPLOYMENT_HOME}" "${OGG_TEMPORARY_FILES}"
-    chmod    0750    "${OGG_DEPLOYMENT_HOME}" "${OGG_TEMPORARY_FILES}"
-    find             "${OGG_DEPLOYMENT_HOME}" "${OGG_TEMPORARY_FILES}" -mindepth 1 -maxdepth 1 -not -name '.*' -exec \
-    chown -R ogg:ogg {} \;
+    chown ogg:ogg "${OGG_DEPLOYMENT_HOME}" "${OGG_TEMPORARY_FILES}"
+    chmod 0750 "${OGG_DEPLOYMENT_HOME}" "${OGG_TEMPORARY_FILES}"
+    find "${OGG_DEPLOYMENT_HOME}" "${OGG_TEMPORARY_FILES}" -mindepth 1 -maxdepth 1 -not -name '.*' -exec \
+        chown -R ogg:ogg {} \;
 }
 
 ##
 ##  Run custom scripts in the container before and after GoldenGate starts
 ##
 function run_user_scripts {
-    local scripts="${1}";
+    local scripts="${1}"
     while read -r script; do
         case "${script}" in
-            *.sh)
-                echo "Running script '${script}'"
-                # shellcheck disable=SC1090
-                source "${script}"
-                ;;
-            *)
-                echo "Ignoring '${script}'"
-                ;;
+        *.sh)
+            echo "Running script '${script}'"
+            # shellcheck disable=SC1090
+            source "${script}"
+            ;;
+        *)
+            echo "Ignoring '${script}'"
+            ;;
         esac
     done < <(find "${scripts}" -type f | sort)
 }
@@ -162,8 +162,8 @@ function start_nginx() {
 ##
 function termination_handler() {
     [[ -z "${ogg_pid}" ]] || {
-        kill  "${ogg_pid}"
-        unset    ogg_pid
+        kill "${ogg_pid}"
+        unset ogg_pid
     }
     [[ ! -f "/var/run/nginx.pid" ]] || {
         /usr/sbin/nginx -s stop
@@ -175,7 +175,7 @@ function termination_handler() {
 ##  Signal Handling for this script
 ##
 function signal_handling() {
-    trap -                   SIGTERM SIGINT
+    trap - SIGTERM SIGINT
     trap termination_handler SIGTERM SIGINT
 }
 
