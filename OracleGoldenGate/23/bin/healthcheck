@@ -6,11 +6,11 @@
 ##
 
 declare -A Ports=([nginx]=443
-                  [ServiceManager]=9011
-                  [adminsrvr]=9012
-                  [distsrvr]=9013
-                  [recvsrvr]=9014
-                  [pmsrvr]=9015)
+    [ServiceManager]=9011
+    [adminsrvr]=9012
+    [distsrvr]=9013
+    [recvsrvr]=9014
+    [pmsrvr]=9015)
 
 function service_healthy() {
     local serviceName="${1}" health healthy
