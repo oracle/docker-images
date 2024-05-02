@@ -1,0 +1,10 @@
+[*.sh]
+binary_next_line = true
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+keep_padding = true
+shell_variant = bash
+space_redirects = true
+switch_case_indent = true
+trim_trailing_whitespace = true
