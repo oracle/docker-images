@@ -5,7 +5,7 @@
 ##  Check the health of all services in the deployment.
 ##
 
-declare -A Ports=([nginx]=443
+declare -A Ports=([nginx]=80
     [ServiceManager]=9011
     [adminsrvr]=9012
     [distsrvr]=9013
