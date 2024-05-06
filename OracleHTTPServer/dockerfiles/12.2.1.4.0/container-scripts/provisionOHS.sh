@@ -1,6 +1,6 @@
 #!/bin/bash
 # Author: prabhat.kishore@oracle.com
-# Copyright (c) 2017-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -17,7 +17,7 @@
 function _term() {
    echo "Stopping container."
    echo "SIGTERM received, shutting down the server!"
-   ${WLST_HOME}/wlst.sh /u01/oracle/container-scripts/stop-ohs.py
+   ${WLST_HOME}/wlst.sh /u01/oracle/stop-ohs.py
    ${DOMAIN_HOME}/bin/stopNodeManager.sh
 }
 
@@ -41,12 +41,12 @@ echo "OHS_COMPONENT_NAME=${OHS_COMPONENT_NAME:?"Please set OHS_COMPONENT_NAME"}"
 export MW_HOME ORACLE_HOME DOMAIN_NAME OHS_COMPONENT_NAME
 
 
-#Set WL_HOME, WLST_HOME, DOMAIN_HOME and NODEMGR_HOME
+#Set WL_HOME, WLST_HOME, DOMAIN_HOME, NODEMGR_HOME, and LOGS_DIR
 WL_HOME=${ORACLE_HOME}/wlserver
 WLST_HOME=${ORACLE_HOME}/oracle_common/common/bin
 echo "WLST_HOME=${WLST_HOME}"
 
-DOMAIN_HOME=${ORACLE_HOME}/user_projects/domains/${DOMAIN_NAME}
+DOMAIN_HOME=${ORACLE_HOME}/ohssa/user_projects/domains/${DOMAIN_NAME}
 export DOMAIN_HOME
 echo "DOMAIN_HOME=${DOMAIN_HOME}"
 
@@ -58,6 +58,10 @@ PATH=$PATH:/usr/java/default/bin:/u01/oracle/ohssa/oracle_common/common/bin
 export PATH
 echo "PATH=${PATH}"
 
+LOG_DIR=${ORACLE_HOME}/logs
+export  LOG_DIR
+echo "LOG_DIR=${LOG_DIR}"
+
 #  Set JAVA_OPTIONS and JAVA_HOME for node manager
 JAVA_OPTIONS="${JAVA_OPTIONS} -Dweblogic.RootDirectory=${DOMAIN_HOME}"
 export JAVA_OPTIONS
@@ -65,6 +69,7 @@ export JAVA_OPTIONS
 JAVA_HOME=${ORACLE_HOME}/oracle_common/jdk/jre
 export JAVA_HOME
  
+mkdir -p $ORACLE_HOME/bootdir
 PROPERTIES_FILE=/u01/oracle/bootdir/domain.properties
 export PROPERTIES_FILE
 
@@ -96,23 +101,24 @@ if [ -z "$NM_PASSWORD" ]; then
    exit
 fi
     
-wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/container-scripts/create-sa-ohs-domain.py
+wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
-echo "username=$NM_USER" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
-echo "password=$NM_PASSWORD" >> /u01/oracle/ohssa/user_projects/domains/ohsDomain/config/nodemanager/nm_password.properties
-mv /u01/oracle/container-scripts/helloWorld.html ${ORACLE_HOME}/user_projects/domains/ohsDomain/config/fmwconfig/components/OHS/ohs1/htdocs/helloWorld.html
+echo "username=$NM_USER" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.properties
+echo "password=$NM_PASSWORD" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.properties
+mv /u01/oracle/helloWorld.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/ohs1/htdocs/helloWorld.html
 
 fi
 
 # Start node manager
-${DOMAIN_HOME}/bin/startNodeManager.sh > /u01/oracle/logs/nodemanager$$.log 2>&1 &
+mkdir ${LOG_DIR}
+${DOMAIN_HOME}/bin/startNodeManager.sh > ${LOG_DIR}/nodemanager$$.log 2>&1 &
 statusfile=/tmp/notifyfifo.$$
 
 #Check if Node Manager is up and running by inspecting logs
 mkfifo "${statusfile}" || exit 1
 {
     # run tail in the background so that the shell can kill tail when notified that grep has exited
-    tail -f /u01/oracle/logs/nodemanager$$.log &
+    tail -f  ${LOG_DIR}/nodemanager$$.log &
     # remember tail's PID
     tailpid=$!
     # wait for notification that grep has exited
@@ -123,7 +129,7 @@ mkfifo "${statusfile}" || exit 1
 } | {
     grep -m 1 "Secure socket listener started on port 5556"
     # notify the first pipeline stage that grep is done
-        echo "RUNNING"> /u01/oracle/logs/Nodemanage$$.status
+        echo "RUNNING"> ${LOG_DIR}/Nodemanage$$.status
         echo "Node manager is running"
     echo >${statusfile}
 }
@@ -136,9 +142,9 @@ configureWLSProxyPlugin.sh
 fi
 
 #Start OHS component only if Node Manager is up
-if [ -f /u01/oracle/logs/Nodemanage$$.status ]; then
+if [ -f ${LOG_DIR}/Nodemanage$$.status ]; then
 echo "Node manager running, hence starting OHS server"
-${WLST_HOME}/wlst.sh -loadProperties $PROPERTIES_FILE /u01/oracle/container-scripts/start-ohs.py
+${WLST_HOME}/wlst.sh -loadProperties $PROPERTIES_FILE /u01/oracle/start-ohs.py
 echo "OHS server has been started "
 fi
 
