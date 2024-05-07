@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2023 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2024 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: August, 2022
 # Author: abhishek.by.kumar@oracle.com
@@ -95,6 +95,9 @@ SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$OR
 
    # Disable OOB in sqlnet.ora of DB wallet
    echo "DISABLE_OOB=ON" >> "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/sqlnet.ora
+
+   # To prevent Oracle from running out of processes because of abnormal client terminations
+   echo "SQLNET.EXPIRE_TIME=3" >> "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/sqlnet.ora
 
    # Add listener for TCPS
    sed -i "/TCP/a\

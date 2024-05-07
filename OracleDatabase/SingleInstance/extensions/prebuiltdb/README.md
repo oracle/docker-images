@@ -8,12 +8,13 @@ The configurable parameters while building this extension are as follows:
 - ORACLE_PDB
 - ORACLE_PWD
 - ENABLE_ARCHIVELOG
+- ENABLE_FORCE_LOGGING
 - AUTO_MEM_CALCULATION
 
 Example command for building this extension is as:
 
 ```
-./buildExtensions.sh -b <base-image> -t <target-image> -x 'prebuiltdb' -o '--build-arg ORACLE_SID=<Database SID> --build-arg ENABLE_ARCHIVELOG=true --build-arg ORACLE_PWD=<database-password>'
+./buildExtensions.sh -b <base-image> -t <target-image> -x 'prebuiltdb' -o '--build-arg ORACLE_SID=<Database SID> --build-arg ENABLE_ARCHIVELOG=true --build-arg ENABLE_FORCE_LOGGING=true --build-arg ORACLE_PWD=<database-password>'
 ```
 
 The detailed instructions for building extensions are [here](../README.md).
