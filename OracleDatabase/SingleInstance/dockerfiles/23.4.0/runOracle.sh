@@ -17,14 +17,12 @@ function moveFiles {
       mkdir -p "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    fi;
 
-   mv "$ORACLE_BASE_CONFIG"/dbs "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   mv "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
+   mv "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID" "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   if [ -a "$ORACLE_HOME"/install/.docker_* ]; then
-      mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   fi;
-
+   find "$ORACLE_HOME"/install/ -name ".docker_*"  -exec  mv {} "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/  \;
    # oracle user does not have permissions in /etc, hence cp and not mv
    cp /etc/oratab "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    
@@ -158,11 +156,13 @@ else
    fi;
 fi;
 
-export ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
+ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
+export ORACLE_PWD
 
 # Setting up TDE_WALLET_PWD if podman secret is passed on
 if [ -e '/run/secrets/tde_wallet_pwd' ]; then
-   export TDE_WALLET_PWD="$(cat '/run/secrets/tde_wallet_pwd')"
+   TDE_WALLET_PWD="$(cat '/run/secrets/tde_wallet_pwd')"
+   export TDE_WALLET_PWD
 fi
 
 # Sanitizing env for FREE
@@ -222,6 +222,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
 # Call relinkOracleBinary.sh before the database is created or started
 if [ "${ORACLE_SID}" != "FREE" ]; then
+   # shellcheck source=/dev/null
    source "$ORACLE_BASE/$RELINK_BINARY_FILE"
 fi;
 

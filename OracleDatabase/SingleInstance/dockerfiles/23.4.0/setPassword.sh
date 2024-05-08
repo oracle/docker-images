@@ -22,6 +22,7 @@ if [ "$ORACLE_SID" == "FREE" ]; then
 fi
 ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
 ORACLE_PDB=${ORACLE_PDB^^}
+# shellcheck disable=SC2034
 ORAENV_ASK=NO
 source oraenv
 

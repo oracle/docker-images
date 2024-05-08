@@ -77,7 +77,8 @@ EOF
 ################ MAIN #######################
 #############################################
 
-export ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
+ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
+export ORACLE_PWD
 
 # Sanitizing env for FREE Database
 if [ "${ORACLE_SID}" = "FREE" ]; then
