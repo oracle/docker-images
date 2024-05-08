@@ -219,12 +219,12 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
     # Running the Oracle Database 21c XE image with the secret
     podman run -d --name=<container_name> --secret=oracle_pwd oracle/database:21.3.0-xe
 
-##### Encrypting database password (Supported from 23.4.0 onwards) 
+##### Encrypting database password (Supported from 23.4.0 onwards)
 
-Users can generate public-private key pair and pass database password (encrypted) and decryption (private) key to the container securely. 
+Users can generate public-private key pair and pass database password (encrypted) and decryption (private) key to the container securely.
 
 * Generate public-private key pair.
-        
+
         openssl genrsa -out key.pem
         openssl rsa -in key.pem -out key.pub -pubout
 
@@ -244,7 +244,7 @@ Users can generate public-private key pair and pass database password (encrypted
         podman secret create oracle_pwd_privkey key.pem
 
 * Run the Oracle Database 23ai FREE image with the secrets
-    
+
         podman run -td --name=<container_name> --secret=oracle_pwd --secret=oracle_pwd_privkey oracle/database:23.4.0-free
 
 #### Selecting the Edition (Supported from 19.3.0 release)
@@ -535,7 +535,8 @@ Set up a podman network for inter-container communication using the following co
 
     Ensure that your Primary Database container is up and running and in a healthy state.
 
-    **Note:** Enable archive logging and optionally force logging in the Primary Database to support True Cache. These are not enabled by default in the prebuilt database image. You need to run the preceding podman run command with the host mount point (empty directory) so that a new database setup will start with these options enabled. Otherwise, you must run sql commands manually from the pri-db-free container to enable these options.
+    **Note:** Enable archive logging and optionally force logging in the Primary Database to support True Cache. These are not enabled by default in the prebuilt database image.
+You need to run the preceding podman run command with the host mount point (empty directory) so that a new database setup will start with these options enabled. Otherwise, you must run sql commands manually from the pri-db-free container to enable these options.
 
 * Launch the Oracle Database Free True Cache container using the `podman run` command as follows:
 
