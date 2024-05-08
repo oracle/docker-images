@@ -1,22 +1,22 @@
-# Copyright (c) 2019, 2023 Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 11 on Oracle Linux 8
+# This is the Dockerfile for Oracle JDK 22 on Oracle Linux 8
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-#
-# (1) jdk-11.XX_linux-x64_bin.tar.gz or jdk-11.XX_linux-aarch64_bin.tar.gz
-#     Download from https://www.oracle.com/java/technologies/downloads/
+# This dockerfile will download a copy of JDK 22 from
+#	https://download.oracle.com/java/22/latest/jdk-22_linux-<ARCH>_bin.tar.gz  
+# 
+# It will use either x64 or aarch64 depending on the target platform
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/jdk:11 .
+#      $ docker build -t oracle/jdk:22 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -27,51 +27,53 @@ FROM oraclelinux:8 as builder
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-RUN dnf install -y tar
-
+# Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
+RUN set -eux; \
+	dnf install -y tar; 
+	
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
-
-ENV JAVA_HOME=/usr/java/jdk-11
+	
+ENV JAVA_URL=https://download.oracle.com/java/22/latest \
+	JAVA_HOME=/usr/java/jdk-22
 
 ##
-COPY *.tar.gz /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
 	ARCH="$(uname -m)" && \
+	# Java uses just x64 in the name of the tarball
     if [ "$ARCH" = "x86_64" ]; \
-    then \
-		mv "$(ls /tmp/jdk-11*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=e73531c1b09cb6e618d4d3617f622acfb05bd9afea2f1539aa4cf452a24eb3bc ; \
-    else \
-	    mv "$(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=34c22df9bb58a97f92e4fffdd6961e56b9b4387a5055f8f4a98b361168e881cc ; \
+        then ARCH="x64"; \
     fi && \
-	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
+    JAVA_PKG="$JAVA_URL"/jdk-22_linux-"${ARCH}"_bin.tar.gz ; \
+	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
+	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
+	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
-
-## Get a fresh version of OL8 for the final image
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
+	
+## Get a fresh version of OL8 for the final image	
 FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
+ENV	JAVA_HOME=/usr/java/jdk-22
+ENV	PATH $JAVA_HOME/bin:$PATH	
 
-ENV JAVA_HOME=/usr/java/jdk-11
-
-ENV	PATH $JAVA_HOME/bin:$PATH
+# If you need the Java Version you can read it from the release file with 
+# JAVA_VERSION=$(sed -n '/^JAVA_VERSION="/{s///;s/"//;p;}' "$JAVA_HOME"/release);
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
+# Ensure we get the latest OL 8 updates available at build time
 	dnf -y update; \
+# JDK assumes freetype is available	
 	dnf install -y \
-# JDK assumes freetype is available
 		freetype fontconfig \
 	; \
 	rm -rf /var/cache/dnf; \
@@ -81,8 +83,6 @@ RUN set -eux; \
 		base="$(basename "$bin")"; \
 		[ ! -e "/usr/bin/$base" ]; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done; \
-# -Xshare:dump will create a CDS archive to improve startup in subsequent runs
-	java -Xshare:dump;
-
+	done;
+	
 CMD ["jshell"]

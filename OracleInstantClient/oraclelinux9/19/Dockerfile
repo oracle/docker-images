@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
 # Container image template for Oracle Instant Client
 #
@@ -8,8 +8,8 @@
 # --------------------------------------------
 #
 # Execute:
-#      $ podman build --pull -t oraclelinux8-instantclient:19 .
-#      $ podman run -ti --rm oraclelinux8-instantclient:19 sqlplus /nolog
+#      $ podman build --pull -t oraclelinux9-instantclient:19 .
+#      $ podman run -ti --rm oraclelinux9-instantclient:19 sqlplus /nolog
 #
 # NOTES
 # -----
@@ -30,7 +30,7 @@
 # cwallet.sso.  You can use a container volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.22/client64/lib/network/admin:Z,ro . . .
+#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.19/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -44,8 +44,8 @@
 # ORACLE INSTANT CLIENT PACKAGES
 # ------------------------------
 #
-# Instant Client 19c Packages for Oracle Linux 8 are available from
-#   https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html
+# Instant Client 19c Packages for Oracle Linux 9 are available from
+#   https://yum.oracle.com/repo/OracleLinux/OL9/oracle/instantclient/x86_64/index.html
 # Also see https://yum.oracle.com/oracle-instant-client.html
 #
 # Base - one of these packages is required to run applications and tools
@@ -65,16 +65,16 @@
 # ------------------
 #
 # A prebuilt container from this Dockerfile is available from
-#   https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient
+#   https://github.com/orgs/oracle/packages/container/package/oraclelinux9-instantclient
 # and can be pulled with:
-#   podman pull ghcr.io/oracle/oraclelinux8-instantclient:19
+#   podman pull ghcr.io/oracle/oraclelinux9-instantclient:19
 
-FROM oraclelinux:8
+FROM oraclelinux:9
 
 ARG release=19
-ARG update=22
+ARG update=19
 
-RUN  dnf -y install oracle-release-el8 && \
+RUN  dnf -y install oracle-instantclient-release-el9 && \
      dnf -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
      rm -rf /var/cache/dnf
 

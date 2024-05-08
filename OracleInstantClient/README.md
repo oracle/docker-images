@@ -9,8 +9,8 @@ packages for ODBC, or to include tools such as Oracle SQL\*Loader.
 
 The base images support building and using scripting language APIs that
 internally call OCI.  These include [Python's python-oracledb Thick
-mode](https://oracle.github.io/python-oracledb/), [Node.js's
-node-oracledb](https://yum.oracle.com/oracle-linux-nodejs.html), [PHP's
+mode](https://oracle.github.io/python-oracledb/), [Node.js's node-oracledb
+Thick mode](https://yum.oracle.com/oracle-linux-nodejs.html), [PHP's
 OCI8](https://yum.oracle.com/oracle-linux-php.html), [Go's
 godror](https://godror.github.io/godror/), [Rust's
 rust-oracle](https://github.com/kubo/rust-oracle), and [Ruby's
@@ -35,6 +35,7 @@ have other restrictions.
 Pre-built images for Instant Client are in the [GitHub Container
 Registry](https://github.com/orgs/oracle/packages):
 
+  [oracle/packages/container/package/oraclelinux9-instantclient](https://github.com/orgs/oracle/packages/container/package/oraclelinux9-instantclient)
   [oracle/packages/container/package/oraclelinux8-instantclient](https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient)
   [oracle/packages/container/package/oraclelinux7-instantclient](https://github.com/orgs/oracle/packages/container/package/oraclelinux7-instantclient)
 
@@ -70,16 +71,19 @@ Applications using Oracle Call Interface (OCI) 21 can connect to Oracle Database
 
 ## Building Oracle Instant Client 19 Images
 
-Change directory to [`oraclelinux7/19`](oraclelinux7/19) or
-[`oraclelinux8/19`](oraclelinux8/19) and run:
+Change directory to [`oraclelinux7/19`](oraclelinux7/19),
+[`oraclelinux8/19`](oraclelinux8/19), or [`oraclelinux9/19`](oraclelinux9/19)
+and run:
 
 ```bash
 docker build --pull -t oracle/instantclient:19 .
 ```
 
-The build process automatically installs Instant Client using RPMs directly from
-the [Oracle Instant Client repository
-(OL8)](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html)
+The build process automatically installs Instant Client using RPMs directly
+from the [Oracle Instant Client repository
+(OL9)](https://yum.oracle.com/repo/OracleLinux/OL9/oracle/instantclient/x86_64/index.html),
+[Oracle Instant Client repository
+(OL8)](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html),
 or [Oracle Instant Client repository
 (OL7)](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html).
 
