@@ -22,7 +22,7 @@ security features are welcome on GitHub Issues.
 Security updates will be released on a regular cadence. Many of our projects
 will typically release security fixes in conjunction with the
 [Oracle Critical Patch Update][4] program. Additional
-information, including past advisories, is available on our [security alerts][4]
+information, including past advisories, is available on our [security alerts][5]
 page.
 
 ## Security-related information
@@ -35,4 +35,6 @@ sufficiently hardened for production use.
 [1]: mailto:secalert_us@oracle.com
 [2]: https://www.oracle.com/corporate/security-practices/assurance/vulnerability/reporting.html
 [3]: https://www.oracle.com/security-alerts/encryptionkey.html
-[4]: https://www.oracle.com/security-alerts/
+[4]: https://www.oracle.com/security-alerts/#CriticalPatchUpdates
+[5]: https://www.oracle.com/security-alerts/
+
