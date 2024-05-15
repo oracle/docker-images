@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2023 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2024 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: November, 2016
 # Author: gerald.venzl@oracle.com
@@ -32,12 +32,8 @@ function moveFiles {
 ########### Symbolic link DB files ############
 function symLinkFiles {
 
-   if [ ! -L "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora ]; then
-      ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/spfile"$ORACLE_SID".ora "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora
-   fi;
-   
-   if [ ! -L "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID" ]; then
-      ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/orapw"$ORACLE_SID" "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID"
+   if [ ! -L "$ORACLE_BASE_CONFIG"/dbs ]; then
+      rm -rf "$ORACLE_BASE_CONFIG"/dbs && ln -s "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/dbs "$ORACLE_BASE_CONFIG"
    fi;
    
    if [ ! -L "$ORACLE_HOME"/network/admin/sqlnet.ora ]; then
@@ -60,24 +56,20 @@ function symLinkFiles {
 ########### Undoing the symbolic links ############
 function undoSymLinkFiles {
 
-   if [ -L "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora ]; then
-      rm "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora
+   if [ -L $ORACLE_BASE_CONFIG/dbs ]; then
+      rm $ORACLE_BASE_CONFIG/dbs && mkdir $ORACLE_BASE_CONFIG/dbs
    fi;
 
-   if [ -L "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID" ]; then
-      rm "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID"
+   if [ -L $ORACLE_HOME/network/admin/sqlnet.ora ]; then
+      rm $ORACLE_HOME/network/admin/sqlnet.ora
    fi;
 
-   if [ -L "$ORACLE_HOME"/network/admin/sqlnet.ora ]; then
-      rm "$ORACLE_HOME"/network/admin/sqlnet.ora
+   if [ -L $ORACLE_HOME/network/admin/listener.ora ]; then
+      rm $ORACLE_HOME/network/admin/listener.ora
    fi;
 
-   if [ -L "$ORACLE_HOME"/network/admin/listener.ora ]; then
-      rm "$ORACLE_HOME"/network/admin/listener.ora
-   fi;
-
-   if [ -L "$ORACLE_HOME"/network/admin/tnsnames.ora ]; then
-      rm "$ORACLE_HOME"/network/admin/tnsnames.ora
+   if [ -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
+      rm $ORACLE_HOME/network/admin/tnsnames.ora
    fi;
 
 }
@@ -122,7 +114,7 @@ export ALLOCATED_MEMORY=$((${memory:=2147483648}/1024/1024))
 # Github issue #219: Prevent integer overflow,
 # only check if memory digits are less than 11 (single GB range and below) 
 if [[ ${memory} != "max" && ${#memory} -lt 11 && ${memory} -lt 2147483648 ]]; then
-    echo "Error: The container does not have enough memory allocated."
+    echo "Error: The container doesn't have enough memory allocated."
     echo "A database container needs at least 2 GB of memory."
     echo "You currently only have $ALLOCATED_MEMORY MB allocated to the container."
     exit 1;
@@ -164,10 +156,13 @@ else
    fi;
 fi;
 
-# Setting up ORACLE_PWD if podman secret is passed on
-if [ -e '/run/secrets/oracle_pwd' ]; then
-   ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
-   export ORACLE_PWD
+ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
+export ORACLE_PWD
+
+# Setting up TDE_WALLET_PWD if podman secret is passed on
+if [ -e '/run/secrets/tde_wallet_pwd' ]; then
+   TDE_WALLET_PWD="$(cat '/run/secrets/tde_wallet_pwd')"
+   export TDE_WALLET_PWD
 fi
 
 # Sanitizing env for FREE
@@ -232,17 +227,17 @@ if [ "${ORACLE_SID}" != "FREE" ]; then
 fi;
 
 # Check whether database already exists
-if [ -f "$ORACLE_BASE"/oradata/."${ORACLE_SID}""${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
+if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d "$ORACLE_BASE"/oradata/"${ORACLE_SID}" ]; then
    symLinkFiles;
    
    # Make sure audit file destination exists
-   if [ ! -d "$ORACLE_BASE"/admin/"$ORACLE_SID"/adump ]; then
-      mkdir -p "$ORACLE_BASE"/admin/"$ORACLE_SID"/adump
+   if [ ! -d "$ORACLE_BASE"/admin/$ORACLE_SID/adump ]; then
+      mkdir -p "$ORACLE_BASE"/admin/$ORACLE_SID/adump
    fi;
    
    # Start database
    if [ "${ORACLE_SID}" = "FREE" ]; then
-      su -c '/etc/init.d/oracle-free-23c start'
+      su -c '/etc/init.d/oracle-free-23ai start'
    else
       "$ORACLE_BASE"/"$START_FILE";
    fi
@@ -256,34 +251,45 @@ else
   undoSymLinkFiles;
 
   # Remove database config files, if they exist
-  rm -f "$ORACLE_BASE_CONFIG"/dbs/spfile"$ORACLE_SID".ora
-  rm -f "$ORACLE_BASE_CONFIG"/dbs/orapw"$ORACLE_SID"
+  rm -f "$ORACLE_BASE_CONFIG"/dbs/spfile$ORACLE_SID.ora
+  rm -f "$ORACLE_BASE_CONFIG"/dbs/orapw$ORACLE_SID
   rm -f "$ORACLE_HOME"/network/admin/sqlnet.ora
   rm -f "$ORACLE_HOME"/network/admin/listener.ora
   rm -f "$ORACLE_HOME"/network/admin/tnsnames.ora
 
   # Clean up incomplete database
-  rm -rf "$ORACLE_BASE"/oradata/"$ORACLE_SID"
+  rm -rf "$ORACLE_BASE"/oradata/$ORACLE_SID
   cp /etc/oratab oratab.bkp
   sed "/^#/!d" oratab.bkp > /etc/oratab
   rm -f oratab.bkp
-  rm -rf "$ORACLE_BASE"/cfgtoollogs/dbca/"$ORACLE_SID"
-  rm -rf "$ORACLE_BASE"/admin/"$ORACLE_SID"
+  rm -rf "$ORACLE_BASE"/cfgtoollogs/dbca/$ORACLE_SID
+  rm -rf "$ORACLE_BASE"/admin/$ORACLE_SID
 
   # clean up zombie shared memory/semaphores
   ipcs -m | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -m 2> /dev/null
   ipcs -s | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -s 2> /dev/null
 
   # Create database
-  "$ORACLE_BASE"/"$CREATE_DB_FILE" "$ORACLE_SID" "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
+  "$ORACLE_BASE"/"$CREATE_DB_FILE" $ORACLE_SID "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
 
-  # Check whether database is successfully created
-  if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
-    # Create a checkpoint file if database is successfully created
-    # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
-    date -Iseconds > "$ORACLE_BASE"/oradata/."${ORACLE_SID}""${CHECKPOINT_FILE_EXTN}"
-  fi
-
+   for i in 1 2 4 8; do
+      "$ORACLE_BASE"/"$CHECK_DB_FILE";
+      ret=$?
+      # Check whether database is successfully created
+      if [ $ret -eq 0 ]; then
+         # Create a checkpoint file if database is successfully created
+         # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
+         echo "$(date -Iseconds)" > "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
+         break
+      elif [ $ret -eq 5 ]; then
+         # PDB is in mounted state
+         echo "PDB is in mounted state. Waiting for $i seconds."
+         sleep $i
+      else
+         break
+      fi
+   done
+  
   # Move database operational files to oradata
   moveFiles;
 
@@ -300,9 +306,18 @@ else
 
 fi;
 
-# Check whether database is up and running
-"$ORACLE_BASE"/"$CHECK_DB_FILE"
-status=$?
+for i in 1 2 4 8; do
+   # Check whether database is up and running
+   "$ORACLE_BASE"/"$CHECK_DB_FILE"
+   status=$?
+   if [ $status -eq 5 ]; then
+      # PDB is in mounted state
+      echo "PDB is in mounted state. Waiting for $i seconds."
+      sleep $i
+   else
+      break
+   fi
+done
 
 # Check whether database is up and running
 if [ $status -eq 0 ]; then
