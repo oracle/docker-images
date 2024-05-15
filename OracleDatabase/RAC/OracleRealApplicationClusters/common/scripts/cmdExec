@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#############################
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Author: paramdeep.saini@oracle.com
+############################
+
+TIMESTAMP=$(date "+%Y-%m-%d")
+LOGFILE="/tmp/oracle_rac_cmd_${TIMESTAMP}.log"
+# shellcheck disable=SC2145
+echo "$(date -u) : $@" >> "$LOGFILE" 
+
+cmd=("$@")
+# shellcheck disable=SC2128
+$cmd
+# shellcheck disable=SC2181
+if [ $? -eq 0 ]; then
+  exit 0
+else
+  exit 127
+fi

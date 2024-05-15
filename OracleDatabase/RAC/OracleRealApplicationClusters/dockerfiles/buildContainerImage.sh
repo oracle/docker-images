@@ -6,7 +6,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2014,2021 Oracle and/or its affiliates.
+# Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
 #
 
 usage() {
@@ -24,7 +24,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2021 Oracle and/or its affiliates.
+Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
 
 EOF
   exit 0
@@ -36,11 +36,12 @@ checksumPackages() {
     echo "Checking if required packages are present and valid..."
     md5sum -c Checksum
     # shellcheck disable=SC2181
-    if [ "$?" -ne 0 ]; then
+    status=$?
+    if [ "$status" -ne 0 ]; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
       # shellcheck disable=SC2320
-      exit $?
+      exit "$status"
     fi
   else
     echo "Ignored MD5 sum, 'md5sum' command not available.";

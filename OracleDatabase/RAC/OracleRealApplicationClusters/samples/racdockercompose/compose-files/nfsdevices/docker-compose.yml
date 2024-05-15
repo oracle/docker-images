@@ -1,0 +1,147 @@
+---
+version: "3"
+services:
+  rac-dnsserver:
+    container_name: ${DNS_CONTAINER_NAME}
+    hostname: ${DNS_HOST_NAME}
+    image: ${DNS_IMAGE_NAME}
+    dns_search: ${DNS_DOMAIN}
+    environment:
+      SETUP_DNS_CONFIG_FILES: "setup_true"
+      DOMAIN_NAME: ${DNS_DOMAIN}
+      RAC_NODE_NAME_PREFIXD: ${RAC_NODE_NAME_PREFIXD}
+      WEBMIN_ENABLED: false
+    cap_add:
+      - AUDIT_WRITE
+    healthcheck:
+      test: ["CMD-SHELL", "if nslookup $SCAN_NAME; then exit 0; else exit 1; fi"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+    networks:
+      - rac_pub1_nw
+      - rac_priv1_nw
+  racnode-storage:
+    container_name: ${STORAGE_CONTAINER_NAME}
+    hostname: ${STORAGE_HOST_NAME}
+    image: ${STORAGE_IMAGE_NAME}
+    dns_search: ${DNS_DOMAIN}
+    volumes:
+      - ${NFS_STORAGE_VOLUME}:/oradata
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    tmpfs:
+      - /run
+    cap_add:
+      - SYS_ADMIN
+      - AUDIT_WRITE
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/bash -c "ls -lrt /oradata/ && showmount -e | grep '/oradata'"
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+    networks:
+      rac_priv1_nw:
+        ipv4_address: ${STORAGE_PRIVATE_IP}
+  racnoded1:
+    depends_on:
+      rac-dnsserver:
+        condition: service_healthy
+    container_name: ${RACNODE1_CONTAINER_NAME}
+    hostname: ${RACNODE1_HOST_NAME}
+    image: ${RACNODE_IMAGE_NAME}
+    restart: always
+    dns: ${DNS_PUBLIC_IP}
+    dns_search: ${DNS_DOMAIN}
+    volumes:
+      - /boot:/boot:ro
+      - /opt/.secrets:/run/secrets:ro
+      - /dev/shm
+      - /opt/containers/rac_host_file:/etc/hosts
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - racstorage:/oradata
+    tmpfs:
+      - /dev/shm:rw,exec,size=4G
+      - /run
+    privileged: false
+    environment:
+      DNS_SERVERS: ${DNS_PUBLIC_IP}
+      NODE_VIP: ${RACNODE1_NODE_VIP}
+      VIP_HOSTNAME: ${RACNODE1_VIP_HOSTNAME}
+      PRIV_IP: ${RACNODE1_PRIV_IP}
+      PRIV_HOSTNAME: ${RACNODE1_PRIV_HOSTNAME}
+      OP_TYPE: INSTALL
+      PUBLIC_IP: ${RACNODE1_PUBLIC_IP}
+      PUBLIC_HOSTNAME: ${RACNODE1_PUBLIC_HOSTNAME}
+      SCAN_NAME: ${SCAN_NAME}
+      DOMAIN: ${DNS_DOMAIN}
+      ASM_DEVICE_LIST: ${ASM_DEVICE_LIST}
+      ASM_DISCOVERY_DIR: ${ASM_DISCOVERY_DIR}
+      CMAN_HOSTNAME: ${CMAN_HOSTNAME}
+      CMAN_IP: ${CMAN_PUBLIC_IP}
+      COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
+      PWD_KEY: ${PWD_KEY}
+      RESET_FAILED_SYSTEMD: "true"
+    ulimits:
+      rtprio: 99
+    cap_add:
+      - SYS_RESOURCE
+      - NET_ADMIN
+      - SYS_NICE
+    cpu_rt_runtime: 95000
+    networks:
+      - rac_pub1_nw
+      - rac_priv1_nw
+    healthcheck:
+      test: ["CMD-SHELL", "su - grid -c 'srvctl status database -d ORCLCDB'| grep -q 'is running on node'"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+  racnodedc1-cman:
+    depends_on:
+      rac-dnsserver:
+        condition: service_healthy
+      racnoded1:
+        condition: service_healthy
+    container_name: ${CMAN_CONTAINER_NAME}
+    hostname: ${CMAN_HOSTNAME}
+    image: ${CMAN_IMAGE_NAME}
+    dns_search: ${DNS_DOMAIN}
+    environment:
+      DOMAIN: ${DNS_DOMAIN}
+      PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
+      SCAN_NAME: ${SCAN_NAME}
+      SCAN_IP: ${SCAN_IP}
+      PUBLIC_IP: ${CMAN_PUBLIC_IP}
+    privileged: false
+    ports:
+      - 1521:1521
+    networks:
+      rac_pub1_nw:
+        ipv4_address: ${CMAN_PUBLIC_IP}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/bash -c "export LD_LIBRARY_PATH=${ORACLE_HOME}/lib && /u01/app/oracle/product/${CMAN_VERSION}/client_1/bin/cmctl show service -c ${CMAN_HOSTNAME}.${DNS_DOMAIN} | grep -q 'Instance \"cman\", status READY'"
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+networks:
+  rac_pub1_nw:
+    name: ${PUBLIC_NETWORK_NAME}
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "${PUBLIC_NETWORK_SUBNET}"
+  rac_priv1_nw:
+    name: ${PRIVATE_NETWORK_NAME}
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "${PRIVATE_NETWORK_SUBNET}"
+volumes:
+  racstorage:
+    external: true

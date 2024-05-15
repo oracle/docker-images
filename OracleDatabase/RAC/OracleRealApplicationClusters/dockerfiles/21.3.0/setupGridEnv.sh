@@ -194,24 +194,40 @@ fi
 ####################################### Set Resetting Failed Units ##########################
 resetFailedUnits()
 {
-if [ "${RESET_FAILED_SYSTEMD}" != 'false' ]; then
+        if [ "${RESET_FAILED_SYSTEMD}" != 'false' ]; then
+                # Define the service name
+                SERVICE_NAME="rhnsd"
 
-   cp "$SCRIPT_DIR"/"$RESET_FAILED_UNITS"  /var/tmp/$RESET_FAILED_UNITS
-   chmod 755 /var/tmp/$RESET_FAILED_UNITS
-   print_message "Setting Crontab"
-   # shellcheck disable=SC2016
-   cmd='su - $GRID_USER -c "sudo crontab $SCRIPT_DIR/$SET_CRONTAB"'
+                # Check if the service is running
+                if pgrep -x "$SERVICE_NAME" >/dev/null; then
+                        print_message "$SERVICE_NAME is running."
 
-   if eval "$cmd";then
-     print_message "Sucessfully installed $SET_CRONTAB using crontab"
-  else
-    error_exit "Error occurred in crontab setup"
-  fi
+                        # Check if the service is responding
+                        if ! systemctl is-active --quiet "$SERVICE_NAME"; then
+                                print_message "$SERVICE_NAME is not responding. Stopping the service."
+                                systemctl stop "$SERVICE_NAME"
+                                systemctl disable "$SERVICE_NAME"
+                                print_message "$SERVICE_NAME stopped."
+                        else
+                                print_message "$SERVICE_NAME is responsive. No action needed."
+                        fi
+                else
+                        print_message "$SERVICE_NAME is not running."
+                fi
 
-fi
+        cp "$SCRIPT_DIR/$RESET_FAILED_UNITS"  "/var/tmp/$RESET_FAILED_UNITS"
+        chmod 755 "/var/tmp/$RESET_FAILED_UNITS"
+        print_message "Setting Crontab"
+        cmd="su - $GRID_USER -c \"sudo crontab $SCRIPT_DIR/$SET_CRONTAB\""
+        eval "$cmd"
+        if [ $? ]; then
+        print_message "Sucessfully installed $SET_CRONTAB using crontab"
+        else
+        error_exit "Error occurred in crontab setup"
+        fi
 
+        fi
 }
-
 
 #############################################################################################
 ####################################### Start NTPD ###################################################################
@@ -324,6 +340,7 @@ fi
 print_message "Process id of the program : $TOP_ID"
 ##### start ntpd #######
 startNTPD
+resetFailedUnits
 pre_grid_deploy_steps
 checkHostName
 SetupEtcHosts
