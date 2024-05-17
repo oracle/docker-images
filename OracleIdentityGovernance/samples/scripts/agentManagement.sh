@@ -264,11 +264,11 @@ runAgent(){
    then
       if [ ! "$(docker ps -a -f "name=$AI" --format '{{.Names}}')" ]
       then
-         echo "INFO: Starting new container using network mode $NETWORK"
+         echo "INFO: Starting new container."
           if [ -f "$CONFDIR"/config.properties ]; then
-              docker run -d --network "$NETWORK" --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+              docker run -d --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           else
-              docker run -d --network "$NETWORK" -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+              docker run -d -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           fi
          docker exec "$AI" /bin/bash -c 'agent ido validate --config /app/data/conf/config.json; if [[ "$?" != "0" ]] ; then echo VALIDATE_FAILED > /app/data/conf/status.txt; else echo VALIDATE_SUCCESS > /app/data/conf/status.txt; fi ;'
           validateStatus=$(cat "$CONFDIR"/status.txt)
@@ -312,11 +312,11 @@ runAgent(){
   then
       if [ ! "$(podman ps -a -f "name=$AI" --format '{{.Names}}')" ]
       then
-         echo "INFO: Starting new container using network mode $NETWORK"
+         echo "INFO: Starting new container."
           if [ -f "$CONFDIR"/config.properties ]; then
-            podman run -d --network "$NETWORK" --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+            podman run -d --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           else
-            podman run -d --network "$NETWORK" -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+            podman run -d -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           fi
 
          podman exec "$AI" /bin/bash -c 'agent ido validate --config /app/data/conf/config.json; if [[ "$?" != "0" ]] ; then echo VALIDATE_FAILED > /app/data/conf/status.txt; else echo VALIDATE_SUCCESS > /app/data/conf/status.txt; fi ;'
@@ -692,10 +692,6 @@ start()
   if [ -f "$configOverride" ]; then
    kill
   fi
-  if [ "$NETWORK" = "" ];
-       then
-          NETWORK="host"
-  fi
   runAgent
   echo ""
   agentVersion=$(grep agentVersion "$CONFDIR"/config.json | awk '{ print $2 }' | sed 's/,//g')
@@ -1034,8 +1030,6 @@ Help()
    echo "-ap|--agentpackage     No(Required in validate,install
                        and upgrade)                            \"\"                                Agent Package Path"
    echo "-c|--config            No                                      -                                 Path of the custom config property file"
-   echo "-n|--network           No                                      host                              Configuration to change the network type
-                                                                                                 of the container runtime."
    echo "-pv|--volume           Yes                                     -                                 Directory to persist agent data such as
                                                                                                  configuration, wallet, logs, etc."
 
@@ -1101,7 +1095,6 @@ while [ $# -gt 0 ]; do
         "-pv"|"--volume" ) createDir "$1"; echo PV="$(cd "$(dirname "$1")" || exit 1; pwd -P)"/"$(basename "$1")" >> "$ENV_FILE_TEMP"; shift;;
         "-h"|"--help"           )  Help; exit 1;;
         "-ai"|"--agentid" ) echo AI="$1" >> "$ENV_FILE_TEMP"; shift;;
-        "-n"|"--network" ) echo NETWORK="$1" >> "$ENV_FILE_TEMP"; shift;;
         "-au"|"--autoupgrade" ) echo AU="$1" >> "$ENV_FILE_TEMP"; shift;;
         "-ap"|"--agentpackage" ) echo AP="$(cd "$(dirname "$1")" || exit 1; pwd -P)"/"$(basename "$1")" >> "$ENV_FILE_TEMP"; shift;;
         "-c"|"--config" ) configOverride=$(cd "$(dirname "$1")" || exit 1; pwd -P)/$(basename "$1"); shift;;
