@@ -91,12 +91,7 @@ createDir(){
 
   if [ -d "$absoluteVolumePath"/data ]
   then
-    if [ "$(podman --version 2>/dev/null)" ]
-     then
-      chmod -R 777 "$absoluteVolumePath"/data >/dev/null 2>&1
-     else
       chmod -R 775 "$absoluteVolumePath"/data >/dev/null 2>&1
-    fi
   fi
 
 
@@ -314,9 +309,9 @@ runAgent(){
       then
          echo "INFO: Starting new container."
           if [ -f "$CONFDIR"/config.properties ]; then
-            podman run -d --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+            podman run -d --user root --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           else
-            podman run -d -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+            podman run -d --user root -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           fi
 
          podman exec "$AI" /bin/bash -c 'agent ido validate --config /app/data/conf/config.json; if [[ "$?" != "0" ]] ; then echo VALIDATE_FAILED > /app/data/conf/status.txt; else echo VALIDATE_SUCCESS > /app/data/conf/status.txt; fi ;'
@@ -820,12 +815,7 @@ upgrade()
 
   #createDir changes the current working directory
   mkdir -p "${PV}/upgrade"
-  if [ "$(podman --version 2>/dev/null)" ]
-     then
-      chmod -R 777 "${PV}/upgrade" >/dev/null 2>&1
-     else
-      chmod -R 775 "${PV}/upgrade" >/dev/null 2>&1
-  fi
+  chmod -R 775 "${PV}/upgrade" >/dev/null 2>&1
 
   createDir "${PV}/upgrade"
 # shellcheck disable=SC2129
