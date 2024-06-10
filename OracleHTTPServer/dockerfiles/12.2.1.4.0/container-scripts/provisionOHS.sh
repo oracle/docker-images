@@ -1,5 +1,4 @@
 #!/bin/bash
-# Author: prabhat.kishore@oracle.com
 # Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
@@ -105,7 +104,41 @@ wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/crea
 # Set the NM username and password in the properties file
 echo "username=$NM_USER" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.properties
 echo "password=$NM_PASSWORD" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.properties
-mv /u01/oracle/helloWorld.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/ohs1/htdocs/helloWorld.html
+mv /u01/oracle/helloWorld.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs/helloWorld.html
+
+echo "Copying Configuration to OHS Instance"
+cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -name '.*' | xargs rm -rf
+
+conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
+if [ $conf -gt 0 ]
+then
+   echo "Copying root .conf files $OHS_COMPONENT_NAME"
+   cp  -L /u01/oracle/config/httpd/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME
+fi
+
+htdocs=$(ls -l /u01/oracle/config/htdocs/*.html 2>/dev/null | wc -l)
+if [ $htdocs -gt 0 ]
+then
+   echo "Copying htdocs to OHS Instance"
+   cp  -L /u01/oracle/config/htdocs/*.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs
+fi
+
+if [ "$DEPLOY_WG" = "true" ]
+then
+    echo "Deploying Webgate"
+    cd $ORACLE_HOME/webgate/ohs/tools/deployWebGate/
+    ./deployWebGateInstance.sh -w ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME -oh $ORACLE_HOME
+    cd $ORACLE_HOME/webgate/ohs/tools/setup/InstallTools
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
+    ./EditHttpConf -w ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME -oh $ORACLE_HOME
+    echo "Adding OAP API exclusion to webgate.conf"
+    echo "<LocationMatch \"/iam/access/binding/api/v10/oap\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate.conf
+    echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate.conf
+    echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate.conf
+    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate -name '.*' | xargs rm -rf
+else
+    echo "Dont Deploy WG"
+fi
 
 fi
 

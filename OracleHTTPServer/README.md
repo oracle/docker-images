@@ -75,4 +75,4 @@ To download and run Oracle JDK regardless of inside or outside a Docker containe
 All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v1.0.
 
 ## Copyright
-Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2019, 2024, Oracle and/or its affiliates. All rights reserved.
