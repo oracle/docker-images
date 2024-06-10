@@ -15,7 +15,7 @@ To build, run:
 
 
 ### Providing the Node Manager password
-The user name and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker runtime with the -v option to the image directory /u01/oracle/bootdir. The properties file enables the scripts to configure the correct authentication for the Node Manager.
+The user name and password must be supplied in a domain.properties file located in a HOST directory that you will map at container runtime with the -v option to the image directory /u01/oracle/bootdir. The properties file enables the scripts to configure the correct authentication for the Node Manager.
 
 The format of the domain.properties file is key=value pair:
 username=mynodemanagerusername
@@ -35,21 +35,21 @@ To stop the OHS instance, execute the following command:
       docker stop ohs (Assuming the name of conatiner is 'ohs')
 
 
-To look at the Docker Container logs run:
+To look at the Container logs run:
 
         $ docker logs --details <Container-id>
 
 
 ## Support
-Oracle HTTP Server on Docker is supported by Oracle.
+Oracle HTTP Server is supported in containers by Oracle.
 
 
 ## License
-To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
+To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
-To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that pge.
+To download and run Oracle JDK regardless of inside or outside a container, you must download the binary from Oracle website and accept the license indicated at that pge.
 
-All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v1.0.
+All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the images are, unless otherwise noted, released under the Universal Permissive License v1.0.
 
 ## Copyright
 Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
