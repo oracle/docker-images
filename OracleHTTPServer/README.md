@@ -1,7 +1,7 @@
-Oracle HTTP Server on Docker
-===============
+Oracle HTTP Server in containers
+===================================
 This project includes quick start dockerfiles and samples for standalone Oracle HTTP Server based on Oracle Linux and Oracle JDK 8 (Server).
-The certification of OHS on Docker does not require the use of any file presented in this repository.
+The certification of OHS in containers does not require the use of any file presented in this repository.
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
 ## How to Build and Run
@@ -14,9 +14,9 @@ You must first download the Oracle Server JRE binary and drop in folder `../Orac
 
         $ cd ../OracleJava/java-8
         $ sh build.sh
-You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com) or the [Docker Store](https://store.docker.com/images/oracle-serverjre-8).
+You can also pull the Oracle Server JRE 8 image from [Oracle Container Registry](https://container-registry.oracle.com).
 
-### Building OHS Docker Image
+### Building OHS Container Image
 IMPORTANT: You have to download the OHS binary and put it in place (see .download files inside dockerfiles/).
 
 Download the required package (see .download file) and drop them in the version folder (12.2.1.4.0). Then go into the **dockerfiles** folder and run the **buildDockerImage.sh** script as root providing the version name with -v option.
@@ -26,7 +26,7 @@ Download the required package (see .download file) and drop them in the version 
 IMPORTANT: The resulting image will have a  pre-configured domain. 
 
 ### Providing the Node Manager password
-The user name and password must be supplied in a domain.properties file located in a HOST directory that you will map at Docker runtime with the -v option to the image directory /u01/oracle/bootdir. The properties file enables the scripts to configure the correct authentication for the Node Manager.
+The user name and password must be supplied in a domain.properties file located in a HOST directory that you will map at runtime with the -v option to the image directory /u01/oracle/bootdir. The properties file enables the scripts to configure the correct authentication for the Node Manager.
 
 The format of the domain.properties file is key=value pair:
 username=mynodemanagerusername
@@ -58,21 +58,21 @@ To stop the OHS instance, execute the following command:
       docker stop ohs (Assuming the name of conatiner is 'ohs')
 
 
-To look at the Docker Container logs run:
+To look at the Container logs run:
 
         $ docker logs --details <Container-id>
 
 
 ## Support
-Oracle HTTP Server on Docker is supported by Oracle.
+Oracle HTTP Server in containers  is supported by Oracle.
 
 
 ## License
-To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
+To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
-To download and run Oracle JDK regardless of inside or outside a Docker container, you must download the binary from Oracle website and accept the license indicated at that pge.
+To download and run Oracle JDK regardless of inside or outside a container, you must download the binary from Oracle website and accept the license indicated at that pge.
 
-All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the Docker images are, unless otherwise noted, released under the Universal Permissive License v1.0.
+All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the images are, unless otherwise noted, released under the Universal Permissive License v1.0.
 
 ## Copyright
 Copyright (c) 2019, 2024, Oracle and/or its affiliates. All rights reserved.
