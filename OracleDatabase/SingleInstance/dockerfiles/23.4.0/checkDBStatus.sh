@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2023 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2024 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: May, 2017
 # Author: gerald.venzl@oracle.com
@@ -27,7 +27,7 @@ EOF
    # Store return code from SQL*Plus
    ret=$?
 
-   if [ $ret -eq 0 ] && [ "$DB_ROLE" != "PRIMARY" ] && [ "$DB_ROLE" != "PHYSICAL STANDBY" ]; then
+   if [ $ret -eq 0 ] && [ "$DB_ROLE" != "PRIMARY" ] && [ "$DB_ROLE" != "PHYSICAL STANDBY" ] && [ "$DB_ROLE" != "TRUE CACHE" ]; then
       exit 1
    elif [ $ret -ne 0 ]; then
       exit 3
@@ -48,9 +48,13 @@ EOF
    # Store return code from SQL*Plus
    ret=$?
 
-   if [ $ret -eq 0 ] && [ "$DB_ROLE" = "PRIMARY" ] && ! echo "$PDB_OPEN_MODE" | grep -q "READ WRITE"; then
+   if [ $ret -eq 0 ] && echo "$PDB_OPEN_MODE" | grep -q "MOUNTED"; then
+      exit 5
+   elif [ $ret -eq 0 ] && [ "$DB_ROLE" = "PRIMARY" ] && ! echo "$PDB_OPEN_MODE" | grep -q "READ WRITE"; then
       exit 2
    elif [ $ret -eq 0 ] && [ "$DB_ROLE" = "PHYSICAL STANDBY" ] && [ "$PDB_OPEN_MODE" != "READ ONLY" ]; then
+      exit 2
+   elif [ $ret -eq 0 ] && [ "$DB_ROLE" = "TRUE CACHE" ] && [ "$PDB_OPEN_MODE" != "READ ONLY" ]; then
       exit 2
    elif [ $ret -ne 0 ]; then
       exit 3
@@ -73,11 +77,8 @@ EOF
 ################ MAIN #######################
 #############################################
 
-# Setting up ORACLE_PWD if podman secret is passed on
-if [ -e '/run/secrets/oracle_pwd' ]; then
-   ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
-   export ORACLE_PWD
-fi
+ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
+export ORACLE_PWD
 
 # Sanitizing env for FREE Database
 if [ "${ORACLE_SID}" = "FREE" ]; then

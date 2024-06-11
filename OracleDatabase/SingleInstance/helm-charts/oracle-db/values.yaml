@@ -11,7 +11,7 @@ oracle_sid: ORCLCDB
 ##This parameter modifies the name of the PDB. The default value is set to ORCLPDB1.
 oracle_pdb: ORCLPDB1
 
-## The Oracle Database SYS, SYSTEM and PDB_ADMIN password. Defaults to a randomly generated password
+## The Oracle Database SYS, SYSTEM and PDBADMIN password. Defaults to a randomly generated password
 oracle_pwd:
 
 ## The character set to use when creating the database. Defaults to AL32UTF8
