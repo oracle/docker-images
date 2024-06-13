@@ -301,7 +301,7 @@ runAgent(){
       if [ "$operation" = "postUpgrade" ]
        then
          echo "INFO: Removing older image ${installedImageName}"
-         docker image rmi "${installedImageName}" || true
+         docker image rm "${installedImageName}" || true
       fi
   elif [ "$containerRuntime" = "podman" ]
   then
@@ -351,7 +351,7 @@ runAgent(){
       if [ "$operation" = "postUpgrade" ]
        then
          echo "INFO: Removing older image ${installedImageName} "
-         podman image rmi "${installedImageName}" || true
+         podman image rm "${installedImageName}" || true
       fi
   fi
 }
