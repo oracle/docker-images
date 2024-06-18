@@ -740,7 +740,7 @@ kill()
   if [ "$containerRuntime" = "docker" ] && [ "$(docker ps -a -f "name=$AI" --format '{{.Names}}')" ]
   then
 
-      if [ ! "$operation" = "upgrade" ]
+      if [ ! "$operation" = "upgrade" ] && [ ! "$operation" = "postUpgrade" ]
       then
         docker exec "$AI" /bin/bash -c "agent --config /app/data/conf/config.json ido lcm -i graceful_shutdown;"
         echo "INFO: Waiting for running operations to complete. It may take some time"
@@ -749,7 +749,7 @@ kill()
       docker rm -f "$AI"
   elif [ "$containerRuntime" = "podman" ] && [ "$(podman ps -a -f "name=$AI" --format '{{.Names}}')" ]
   then
-      if [ ! "$operation" = "upgrade" ]
+      if [ ! "$operation" = "upgrade" ] && [ ! "$operation" = "postUpgrade" ]
       then
         podman exec "$AI" /bin/bash -c "agent --config /app/data/conf/config.json ido lcm -i graceful_shutdown;"
         echo "INFO: Waiting for running operations to complete. It may take some time"
