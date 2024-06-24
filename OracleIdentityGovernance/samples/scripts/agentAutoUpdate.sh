@@ -44,18 +44,33 @@ if [ -f "$1"/cacerts ]
    -co "$1"/data/conf/config.properties \
    -cv "$agentVersion"
  else
-   java \
-   -DidoConfig.logDir="$1"/data/logs \
-   -DidoConfig.metricsDir="$1"/newpackage \
-   -DidoConfig.walletDir="$1"/newpackage \
-   -DidoConfig.workDir="$1"/newpackage \
-   -cp idm-agcs-agent-cli-upgrade.jar \
-   com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
-   --config "$1"/data/conf/config.json \
-   ido autoRunUpdate \
-   -ip "$1" \
-   -co "$1"/data/conf/config.properties \
-   -cv "$agentVersion"
+   if [ -f "$1"/data/conf/config.properties ]
+    then
+      java \
+      -DidoConfig.logDir="$1"/data/logs \
+      -DidoConfig.metricsDir="$1"/newpackage \
+      -DidoConfig.walletDir="$1"/newpackage \
+      -DidoConfig.workDir="$1"/newpackage \
+      -cp idm-agcs-agent-cli-upgrade.jar \
+      com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
+      --config "$1"/data/conf/config.json \
+      ido autoRunUpdate \
+      -ip "$1" \
+      -co "$1"/data/conf/config.properties \
+      -cv "$agentVersion"
+    else
+      java \
+      -DidoConfig.logDir="$1"/data/logs \
+      -DidoConfig.metricsDir="$1"/newpackage \
+      -DidoConfig.walletDir="$1"/newpackage \
+      -DidoConfig.workDir="$1"/newpackage \
+      -cp idm-agcs-agent-cli-upgrade.jar \
+      com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
+      --config "$1"/data/conf/config.json \
+      ido autoRunUpdate \
+      -ip "$1" \
+      -cv "$agentVersion"
+   fi
 fi
 
 # shellcheck disable=SC2181
