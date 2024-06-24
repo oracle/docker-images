@@ -30,7 +30,7 @@ function _kill() {
 trap _term SIGTERM
 
 # Set SIGKILL handler
-trap _kill SIGKILL
+#trap _kill SIGKILL
 
 echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "ORACLE_HOME=${ORACLE_HOME:?"Please set ORACLE_HOME"}"

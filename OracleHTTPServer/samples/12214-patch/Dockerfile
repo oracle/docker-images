@@ -22,10 +22,6 @@
 # ---------------
 FROM oracle/ohs:12.2.1.4.0
 
-# Maintainer
-# ----------
-MAINTAINER Prabhat Kishore <prabhat.kishore@oracle.com>
-
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV PATCH_PKG="p36393221_122140_Linux-x86-64.zip" 
