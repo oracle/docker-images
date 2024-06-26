@@ -26,6 +26,10 @@ services:
     # Image name reported by container images listing
     image: oracle/mgmtagent-container
 
+    # Environment properties
+    environment:
+      - DISABLE_JRE_DEFAULT_SECURITY_PROPERTIES_FILE=${DISABLE_JRE_DEFAULT_SECURITY_PROPERTIES_FILE}
+
     # Internal hostname identifier for the container
     hostname: ${mgmtagent_hostname}
 
