@@ -7,6 +7,7 @@ on:
     paths:
       - 'OracleInstantClient/*/19/*'
       - 'OracleInstantClient/*/21/*'
+      - 'OracleInstantClient/*/23/*'
       - '.github/workflows/build-and-push-instantclient-images.yml'
   workflow_dispatch:
 
@@ -40,7 +41,7 @@ jobs:
             if grep -q build-and-push-instantclient-images.yml "${changes}"; then
               echo "PUSH: Action updated: rebuilding all images"
               ol="oraclelinux7 oraclelinux8 oraclelinux9"
-              ic="19 21"
+              ic="19 21 23"
             else
               echo "PUSH: Rebuilding changed images only"
               if grep -q oraclelinux7 "${changes}"; then
@@ -58,11 +59,14 @@ jobs:
               if grep -q /21/ "${changes}"; then
                 ic="${ic} 21"
               fi
+              if grep -q /23/ "${changes}"; then
+                ic="${ic} 23"
+              fi
             fi
           else
             echo "MANUAL: Rebuilding all"
             ol="oraclelinux7 oraclelinux8 oraclelinux9"
-            ic="19 21"
+            ic="19 21 23"
           fi
           echo "Rebuilding: ${ol} ${ic}"
           echo "ol=${ol}" >> $GITHUB_OUTPUT
