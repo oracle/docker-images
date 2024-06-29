@@ -68,7 +68,7 @@
 # and can be pulled with:
 #   podman pull ghcr.io/oracle/oraclelinux9-instantclient:23
 
-FROM oraclelinux:8
+FROM oraclelinux:9
 
 RUN  dnf -y install oracle-instantclient-release-23ai-el9 && \
      dnf -y install oracle-instantclient-basic oracle-instantclient-devel oracle-instantclient-sqlplus && \
