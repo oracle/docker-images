@@ -88,7 +88,10 @@ jobs:
           do
             for i in ${{ steps.linux-version.outputs.ic }}
             do
-              if [[ ${o} = "oraclelinux9" && ${i} != "19" ]]; then
+              if [[ ${o} = "oraclelinux7" && ${i} = "23" ]]; then
+                continue
+              fi
+              if [[ ${o} = "oraclelinux9" && ${i} = "21" ]]; then
                 continue
               fi
               docker build --tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i} OracleInstantClient/${o}/${i}
@@ -101,7 +104,10 @@ jobs:
           do
             for i in ${{ steps.linux-version.outputs.ic }}
             do
-              if [[ ${o} = 'oraclelinux9' && ${i} != '19' ]]; then
+              if [[ ${o} = "oraclelinux7" && ${i} = "23" ]]; then
+                continue
+              fi
+              if [[ ${o} = "oraclelinux9" && ${i} = "21" ]]; then
                 continue
               fi
               docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i}
