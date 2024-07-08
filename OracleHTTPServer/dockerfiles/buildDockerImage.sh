@@ -82,20 +82,23 @@ fi
 # Proxy settings
 PROXY_SETTINGS=""
 #Default Proxy settings to no_proxy
-PROXY="no_proxy"
-if [ "$PROXY" != "http_proxy" ]; then
+http_proxy=""
+https_proxy=""
+ftp_proxy=""
+no_proxy=""
+if [ "$http_proxy" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
 
-if [ "$PROXY" != "https_proxy" ]; then
+if [ "$https_proxy" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
-if [ "$PROXY" != "ftp_proxy" ]; then
+if [ "$ftp_proxy" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
-if [ "$PROXY" != "no_proxy" ]; then
+if [ "$no_proxy" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
 

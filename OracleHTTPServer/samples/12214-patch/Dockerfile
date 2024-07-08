@@ -34,7 +34,7 @@ COPY $PATCH_PKG /u01/
 # --------------------------------------------
 USER oracle
 WORKDIR /u01
-RUN  cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG  && cd - && \
+RUN  $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG  && cd - && \
      cd /u01/36393221 && $ORACLE_HOME/OPatch/opatch apply -silent && \
      rm /u01/$PATCH_PKG
 

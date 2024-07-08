@@ -60,7 +60,6 @@ To look at the Container logs run:
 ## Support
 Oracle HTTP Server in containers  is supported by Oracle.
 
-
 ## License
 To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
