@@ -179,7 +179,9 @@ fi;
 
 # Check whether database is up and running
 $ORACLE_BASE/$CHECK_DB_FILE
-if [ $? -eq 0 ]; then
+status=$?
+
+if [ $status -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
   echo "#########################"
@@ -195,6 +197,13 @@ else
   echo "########### E R R O R ###############" 
   echo "#####################################"
 fi;
+
+# Exiting the script without waiting on the tail logs
+if [ "$1" = "--nowait" ]; then
+   # Creating state-file for identifyig container of the prebuiltdb extended image
+   touch "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb"
+   exit $status;
+fi
 
 # Tail on alert log and wait (otherwise container will exit)
 echo "The following output is now a tail of the alert.log:"
