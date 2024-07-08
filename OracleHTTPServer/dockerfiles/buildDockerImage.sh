@@ -24,7 +24,7 @@ Parameters:
 
 LICENSE Universal Permissive License v1.0
 
-Copyright (c) 2016-2019: Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
 
 
 EOF
@@ -35,11 +35,13 @@ exit 0
 # Validate packages
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
-  md5sum -c *.download
-  if [ "$?" -ne 0 ]; then
+  # md5sum -c *.download
+  # if [ "$?" -ne 0 ]; then
+  MDSUM="md5sum -c *.download"
+  if ["$MDSUM" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder dockerfiles. See *.download files for more information"
-    exit $?
+    exit $MDSUM 
   fi
 }
 
@@ -68,7 +70,8 @@ done
 # OHS Image Name
 IMAGE_NAME="oracle/ohs:$VERSION"
 
-cd $VERSION
+# cd $VERSION
+cd $VERSION || exit
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
@@ -78,19 +81,21 @@ fi
 
 # Proxy settings
 PROXY_SETTINGS=""
-if [ "${http_proxy}" != "" ]; then
+#Default Proxy settings to no_proxy
+PROXY="no_proxy"
+if [ "$PROXY" != "http_proxy" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
 
-if [ "${https_proxy}" != "" ]; then
+if [ "$PROXY" != "https_proxy" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
-if [ "${ftp_proxy}" != "" ]; then
+if [ "$PROXY" != "ftp_proxy" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
-if [ "${no_proxy}" != "" ]; then
+if [ "$PROXY" != "no_proxy" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
 
@@ -106,7 +111,7 @@ echo "Proxy Settings '$PROXY_SETTINGS'"
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 docker build --force-rm=true --no-cache=true $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile . || {
-  echo "There was an error building the image."
+  echo "OHS Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
   exit 1
 }
 BUILD_END=$(date '+%s')
@@ -114,15 +119,9 @@ BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
 
-if [ $? -eq 0 ]; then
 cat << EOF
   OHS Standalone Docker Image for version: $VERSION is ready to be used.
 
     --> $IMAGE_NAME
 
   Build completed in $BUILD_ELAPSED seconds.
-
-EOF
-else
-  echo "OHS Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
-fi

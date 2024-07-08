@@ -41,7 +41,7 @@ export MW_HOME ORACLE_HOME DOMAIN_NAME OHS_COMPONENT_NAME
 
 
 #Set WL_HOME, WLST_HOME, DOMAIN_HOME, NODEMGR_HOME, and LOGS_DIR
-WL_HOME=${ORACLE_HOME}/wlserver
+#WL_HOME=${ORACLE_HOME}/wlserver
 WLST_HOME=${ORACLE_HOME}/oracle_common/common/bin
 echo "WLST_HOME=${WLST_HOME}"
 
@@ -73,8 +73,8 @@ PROPERTIES_FILE=/u01/oracle/bootdir/domain.properties
 export PROPERTIES_FILE
 
 #Declare and initializing NMSTATUS
-declare -a NMSTATUS
-NMSTATUS[0]="NOT RUNNING"
+#declare -a NMSTATUS
+#NMSTATUS[0]="NOT RUNNING"
 
 if [ ! -e "$PROPERTIES_FILE" ]; then
    echo "A properties file with the username and password needs to be supplied."
@@ -107,7 +107,7 @@ echo "password=$NM_PASSWORD" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.pr
 mv /u01/oracle/helloWorld.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs/helloWorld.html
 
 echo "Copying Configuration to OHS Instance"
-cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -name '.*' | xargs rm -rf
+cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -print0 -name '.*' | xargs rm -rf
 
 conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
 if [ $conf -gt 0 ]
@@ -126,16 +126,16 @@ fi
 if [ "$DEPLOY_WG" = "true" ]
 then
     echo "Deploying Webgate"
-    cd $ORACLE_HOME/webgate/ohs/tools/deployWebGate/
+    cd $ORACLE_HOME/webgate/ohs/tools/deployWebGate/ || exit
     ./deployWebGateInstance.sh -w ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME -oh $ORACLE_HOME
-    cd $ORACLE_HOME/webgate/ohs/tools/setup/InstallTools
+    cd $ORACLE_HOME/webgate/ohs/tools/setup/InstallTools || exit
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
     ./EditHttpConf -w ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME -oh $ORACLE_HOME
     echo "Adding OAP API exclusion to webgate.conf"
     echo "<LocationMatch \"/iam/access/binding/api/v10/oap\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate.conf
     echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate.conf
     echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate.conf
-    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate -name '.*' | xargs rm -rf
+    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/webgate -print0 -name '.*' | xargs rm -rf
 else
     echo "Dont Deploy WG"
 fi

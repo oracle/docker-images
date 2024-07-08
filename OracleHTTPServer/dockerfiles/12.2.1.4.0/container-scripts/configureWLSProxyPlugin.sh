@@ -41,7 +41,7 @@ echo "MODWLSCONFIGFILE IS ${modwlsconfigfile}"
 
 # Check and copy custom_mod_wl_ohs.conf to OHS Instance Home
 if [[ -n "${modwlsconfigfile/[ ]*\n/}" ]]; then
-cd ${INSTANCE_CONFIG_HOME}
+cd ${INSTANCE_CONFIG_HOME} || exit
 mv mod_wl_ohs.conf mod_wl_ohs.conf.ORIGINAL
 echo "Copying ${modwlsconfigfile} to ${INSTANCE_CONFIG_HOME} "
 cp ${modwlsconfigfile} ${INSTANCE_CONFIG_HOME}/mod_wl_ohs.conf

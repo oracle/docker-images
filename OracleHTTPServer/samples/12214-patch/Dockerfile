@@ -28,6 +28,7 @@ ENV PATCH_PKG="p36393221_122140_Linux-x86-64.zip"
 
 # Copy supplemental package and scripts
 # --------------------------------
+WORKDIR /u01
 COPY $PATCH_PKG /u01/
 
 # Installation of Supplemental Quick Installer
