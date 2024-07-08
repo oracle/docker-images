@@ -1,5 +1,5 @@
 # Applying patch on Oracle HTTP Server 
-# ===============
+===============
 This Dockerfile extends the Oracle HTTP Server image by applying a patch. This is a sample which shows how to patch an OHS image.
 The name of patch file will need to be modified accordingly in the Dockerfile before using it for actual cases.
 
@@ -10,8 +10,8 @@ First make sure you have built oracle/ohs:12.2.1.4.0.
 Then download the patch and place it next to this README.
 
 To build, run:
-      
-   "$ docker build  -t oracle/ohs:12214-patch ."
+
+        "$ docker build  -t oracle/ohs:12214-patch ."
 
 
 ### Providing the Node Manager password
@@ -32,12 +32,11 @@ To start the OHS container with the patched image, run the following command:
 ### Stopping the  OHS instance
 To stop the OHS instance, execute the following command:
 
-        "$ docker stop <Container name>"
-
+         "$ docker stop <Container name>"
 
 To look at the Container logs run:
 
-        "$ docker logs --details <Container-id>"
+         "$ docker logs --details <Container id>"
 
 
 ## Support

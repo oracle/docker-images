@@ -38,7 +38,7 @@ checksumPackages() {
   # md5sum -c *.download
   # if [ "$?" -ne 0 ]; then
   MDSUM="md5sum -c *.download"
-  if ["$MDSUM" -ne 0 ]; then
+  if [ "$MDSUM" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder dockerfiles. See *.download files for more information"
     exit $MDSUM 
@@ -118,10 +118,6 @@ BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
-
-cat << EOF
-  OHS Standalone Docker Image for version: $VERSION is ready to be used.
-
-    --> $IMAGE_NAME
-
-  Build completed in $BUILD_ELAPSED seconds.
+echo "OHS Standalone Docker Image for version: $VERSION is ready to be used."
+echo " --> $IMAGE_NAME"
+echo "Build completed in $BUILD_ELAPSED seconds."

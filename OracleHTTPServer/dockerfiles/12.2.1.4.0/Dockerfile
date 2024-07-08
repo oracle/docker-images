@@ -57,7 +57,6 @@ ENV WLST_HOME=/u01/oracle/ohssa/oracle_common/common/bin
 
 # Copy packages to the new drive
 # -------------------------------------------------------
-WORKDIR /u01
 COPY $OHS_PKG install.file oraInst.loc /u01/
 
 # Install OL7 required packages. Refer FMW 12.2.1.4 System requirements guide for complete list of packages
@@ -73,6 +72,7 @@ RUN yum install -y unzip libaio sysstat make psmisc gcc && \
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
 USER oracle
+WORKDIR /u01
 RUN cd /u01 && unzip -q /u01/$OHS_PKG && cd - && \
     /u01/$OHS_BIN -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=$ORACLE_HOME && \ 
     rm /u01/$OHS_BIN  /u01/oraInst.loc /u01/install.file && \

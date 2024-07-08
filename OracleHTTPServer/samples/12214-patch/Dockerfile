@@ -28,12 +28,12 @@ ENV PATCH_PKG="p36393221_122140_Linux-x86-64.zip"
 
 # Copy supplemental package and scripts
 # --------------------------------
-WORKDIR /u01
 COPY $PATCH_PKG /u01/
 
 # Installation of Supplemental Quick Installer
 # --------------------------------------------
 USER oracle
+WORKDIR /u01
 RUN  cd /u01 && $JAVA_HOME/bin/jar xf /u01/$PATCH_PKG  && cd - && \
      cd /u01/36393221 && $ORACLE_HOME/OPatch/opatch apply -silent && \
      rm /u01/$PATCH_PKG
