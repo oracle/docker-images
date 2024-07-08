@@ -73,7 +73,8 @@ RUN yum install -y unzip libaio sysstat make psmisc gcc && \
 #--------------------------------------------------------
 USER oracle
 WORKDIR /u01
-RUN unzip -q /u01/$OHS_PKG && cd - && \
+#RUN unzip -q /u01/$OHS_PKG && cd - && \
+RUN unzip -q /u01/$OHS_PKG && \
     /u01/$OHS_BIN -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=$ORACLE_HOME && \ 
     rm /u01/$OHS_BIN  /u01/oraInst.loc /u01/install.file && \
     mkdir /u01/oracle/container-scripts/ /u01/oracle/logs 

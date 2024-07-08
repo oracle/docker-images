@@ -1,4 +1,4 @@
-# Applying patch on Oracle HTTP Server 
+# Applying patch on Oracle HTTP Server
 ===============
 This Dockerfile extends the Oracle HTTP Server image by applying a patch. This is a sample which shows how to patch an OHS image.
 The name of patch file will need to be modified accordingly in the Dockerfile before using it for actual cases.
@@ -39,7 +39,7 @@ Oracle HTTP Server is supported in containers by Oracle.
 ## License
 To download and run Oracle HTTP Server 12c Distribution regardless of inside or outside a container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
-To download and run Oracle JDK regardless of inside or outside a container, you must download the binary from Oracle website and accept the license indicated at that pge.
+To download and run Oracle JDK regardless of inside or outside a container, you must download the binary from Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the images are, unless otherwise noted, released under the Universal Permissive License v1.0.
 
