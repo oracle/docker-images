@@ -45,7 +45,7 @@ This process will take approximately 30 minutes.
 Create a connection in SQL Developer using the following details:
 
 - **DB_PORT**: `1521`
-- **DB_HOST**: `<IPv4 Address under Ethernet adapter vEthernet (WSL (Hyper-V firewall))>`
+- **DB_HOST**: `localhost`
 - **DB_SERVICE**: `DEV`
 - **DB_USER**: `sys`
 - **DB_PASSWORD**: `SysPassw0rd`
