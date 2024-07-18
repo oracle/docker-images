@@ -52,6 +52,7 @@ Create a connection in SQL Developer using the following details:
 
 After logging in, run the following command and provide the Admin Username, Email Address, and Password:
 ```sql
+alter session set container = PDB1;
 @D:\Path\To\Oracle-Docker-Images\OracleApplicationExpress\dockerfiles\tmp\apex\apxchpwd.sql;
 ```
 
