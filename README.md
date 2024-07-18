@@ -23,16 +23,10 @@ Start the Docker engine if it's not already running.
 
 ## Step 2: Download Oracle Database 19.3.0 (Enterprise Edition)
 
-Clone this repository:
-```sh
-git clone <repository-url>
-cd <repository-directory>
-```
-
 Download Oracle Database 19c for Linux x86-64 from the following link:
 - [Oracle Database 19c for Linux x86-64 ZIP](https://www.oracle.com/au/database/technologies/oracle-database-software-downloads.html#db_ee)
 
-Copy the `.zip` file into the folder:
+Clone this repository and Copy the `.zip` file into the folder:
 ```
 Oracle-Docker-Images\OracleDatabase\SingleInstance\dockerfiles\19.3.0\
 ```
