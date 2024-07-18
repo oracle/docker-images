@@ -32,12 +32,11 @@ trap _term SIGTERM
 # Set SIGKILL handler
 #trap _kill SIGKILL
 
-echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
 echo "ORACLE_HOME=${ORACLE_HOME:?"Please set ORACLE_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
 echo "OHS_COMPONENT_NAME=${OHS_COMPONENT_NAME:?"Please set OHS_COMPONENT_NAME"}"
 
-export MW_HOME ORACLE_HOME DOMAIN_NAME OHS_COMPONENT_NAME
+export ORACLE_HOME DOMAIN_NAME OHS_COMPONENT_NAME
 
 
 #Set WL_HOME, WLST_HOME, DOMAIN_HOME, NODEMGR_HOME, and LOGS_DIR
@@ -45,15 +44,15 @@ export MW_HOME ORACLE_HOME DOMAIN_NAME OHS_COMPONENT_NAME
 WLST_HOME=${ORACLE_HOME}/oracle_common/common/bin
 echo "WLST_HOME=${WLST_HOME}"
 
-DOMAIN_HOME=${ORACLE_HOME}/ohssa/user_projects/domains/${DOMAIN_NAME}
+DOMAIN_HOME=${ORACLE_HOME}/user_projects/domains/${DOMAIN_NAME}
 export DOMAIN_HOME
 echo "DOMAIN_HOME=${DOMAIN_HOME}"
 
 NODEMGR_HOME=${DOMAIN_HOME}/nodemanager
 export NODEMGR_HOME
 
-echo "PATH=${PATH}"
-PATH=$PATH:/usr/java/default/bin:/u01/oracle/ohssa/oracle_common/common/bin
+#echo "PATH=${PATH}"
+PATH=$PATH:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin
 export PATH
 echo "PATH=${PATH}"
 
@@ -99,6 +98,8 @@ if [ -z "$NM_PASSWORD" ]; then
    echo "The Node Manager password is blank. It must be set in the properties file."
    exit
 fi
+#echo "NM_USERNAME=" ${NM_USER}
+#echo "NM_PASSWORD=" ${NM_PASSWORD}
     
 wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
@@ -110,14 +111,14 @@ echo "Copying Configuration to OHS Instance"
 cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -print0 -name '.*' | xargs rm -rf
 
 conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
-if [ $conf -gt 0 ]
+if [ $conf -gt 1 ]
 then
    echo "Copying root .conf files $OHS_COMPONENT_NAME"
    cp  -L /u01/oracle/config/httpd/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME
 fi
 
 htdocs=$(ls -l /u01/oracle/config/htdocs/*.html 2>/dev/null | wc -l)
-if [ $htdocs -gt 0 ]
+if [ $htdocs -gt 1 ]
 then
    echo "Copying htdocs to OHS Instance"
    cp  -L /u01/oracle/config/htdocs/*.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs

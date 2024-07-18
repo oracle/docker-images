@@ -48,16 +48,15 @@ ENV NM_PORT=5556
 ENV OHS_LISTEN_PORT=7777 
 ENV OHS_SSL_PORT=4443 
 ENV JAVA_HOME=/usr/java/default 
-ENV MW_HOME=/u01/oracle/ohssa 
 ENV DOMAIN_NAME=ohsDomain 
 ENV OHS_COMPONENT_NAME=ohs1 
-ENV PATH=$PATH:/usr/java/default/bin:$ORACLE_HOME/oracle_common/common/bin:$ORACLE_HOME/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts 
+ENV PATH=${PATH}:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin:${ORACLE_HOME}/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts 
 ENV WLST_HOME=/u01/oracle/ohssa/oracle_common/common/bin
 
 
 # Copy packages to the new drive
 # -------------------------------------------------------
-COPY $OHS_PKG install.file oraInst.loc /u01/
+COPY ${OHS_PKG} install.file oraInst.loc /u01/
 
 # Install OL7 required packages. Refer FMW 12.2.1.4 System requirements guide for complete list of packages
 # Setup filesystem and oracle user
@@ -73,20 +72,22 @@ RUN yum install -y unzip libaio sysstat make psmisc gcc && \
 #--------------------------------------------------------
 USER oracle
 WORKDIR /u01
-#RUN unzip -q /u01/$OHS_PKG && cd - && \
-RUN unzip -q /u01/$OHS_PKG && \
-    /u01/$OHS_BIN -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=$ORACLE_HOME && \ 
-    rm /u01/$OHS_BIN  /u01/oraInst.loc /u01/install.file && \
-    mkdir /u01/oracle/container-scripts/ /u01/oracle/logs 
+#RUN unzip -q /u01/${OHS_PKG} && cd - && \
+RUN unzip -q /u01/${OHS_PKG} && \
+    /u01/${OHS_BIN} -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=${ORACLE_HOME} && \ 
+    rm /u01/${OHS_BIN}  /u01/oraInst.loc /u01/install.file && \
+    mkdir /u01/oracle/container-scripts/ /u01/oracle/logs && \
+    chown oracle:oracle -R /u01/oracle/logs 
 
 # Copy required files to build this image
 # ------------------------------------------------------
 COPY container-scripts/* /u01/oracle/container-scripts/
 
 #Expose all Ports
-EXPOSE $OHS_SSL_PORT $OHS_LISTEN_PORT $NM_PORT
+EXPOSE ${OHS_SSL_PORT} ${OHS_LISTEN_PORT} ${NM_PORT}
 
 # Final setup
+USER oracle
 WORKDIR /u01/oracle/container-scripts
 
 # Provision OHS instance

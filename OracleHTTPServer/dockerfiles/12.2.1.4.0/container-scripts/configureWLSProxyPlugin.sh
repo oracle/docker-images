@@ -25,11 +25,11 @@
 #DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDOmain"
 #OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs1"
 #*************************************************************************
-echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
+echo "ORACLE_HOME=${ORACLE_HOME:?"Please set MW_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
 echo "OHS_COMPONENT_NAME=${OHS_COMPONENT_NAME:?"Please set OHS_COMPONENT_NAME"}"
 
-DOMAIN_HOME=${MW_HOME}/user_projects/domains/${DOMAIN_NAME}
+DOMAIN_HOME=${ORACLE_HOME}/user_projects/domains/${DOMAIN_NAME}
 INSTANCE_CONFIG_HOME=$DOMAIN_HOME/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}
 export INSTANCE_CONFIG_HOME
 echo "INSTANCE_CONFIG_DIR=${INSTANCE_CONFIG_HOME}"
