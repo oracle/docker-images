@@ -47,7 +47,7 @@ setOption('NodeManagerType','PerDomainNodeManager')
 setOption('OverwriteDomain', 'true')
 #Write Domain, close template and exit
 # ======================================================================
-#writeDomain(r'/u01/oracle/ohssa/user_projects/domains/ohsDomain')
+#writeDomain(r'/u01/oracle/user_projects/domains/ohsDomain')
 writeDomain(domain_path)
 dumpStack()
 closeTemplate()
