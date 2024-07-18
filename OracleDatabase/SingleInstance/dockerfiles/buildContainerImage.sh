@@ -91,6 +91,8 @@ checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
   DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
+  # Remove +dfsg* if present
+  DOCKER_VERSION=${DOCKER_VERSION%%+dfsg*}
   # Remove dot in Docker version
   DOCKER_VERSION=${DOCKER_VERSION//./}
 
