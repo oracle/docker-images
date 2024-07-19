@@ -13,7 +13,7 @@ cat <<EOL > "$OUTPUT_FILE"
 <properties>
 <comment>Saved on $(date)</comment>
 <entry key="db.connectionType">basic</entry>
-<entry key="db.hostname">192.168.4.48</entry>
+<entry key="db.hostname">host.docker.internal</entry>
 <entry key="db.port">1521</entry>
 <entry key="db.serviceNameSuffix"></entry>
 <entry key="db.servicename">DEV</entry>
