@@ -41,7 +41,7 @@ ENV ORDS_PASSWORD_APEX=$ORDS_PASSWORD_APEX
 # Copy the ORDS files into the container
 COPY tmp $ORDS_HOME
 COPY ords_params.properties $CONFIG_DIR/
-
+COPY gen_pool_xml.sh $CONFIG_DIR/
 
 USER root
 # Install Java 11 OpenJDK
@@ -87,8 +87,12 @@ SysPassw0rd
 ApexPassw0rd
 EOF
 
-RUN sed -i 's|<entry key="plsql.gateway.mode">disabled</entry>|<entry key="plsql.gateway.mode">proxied</entry>|g' /etc/ords/config/databases/default/pool.xml
+# Run the gen_pool_xml.sh script
+RUN cd $CONFIG_DIR && \
+    bash ./gen_pool_xml.sh
 
+# Clean up by removing the script if no longer needed
+RUN rm $CONFIG_DIR/gen_pool_xml.sh
 
 # Start ORDS using the new CLI
 CMD ["sh", "-c", "$ORDS_HOME/bin/ords --config $CONFIG_DIR serve"]
