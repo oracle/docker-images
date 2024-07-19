@@ -99,12 +99,12 @@ build_run_ords_container() {
 }
 
 # Main script execution
-# create_docker_network
-# build_oracle_image
-# run_oracle_container
-# download_apex
-# build_run_apex_container
-# download_ords
+create_docker_network
+build_oracle_image
+run_oracle_container
+download_apex
+build_run_apex_container
+download_ords
 build_run_ords_container
 
 echo "Setup completed successfully."
