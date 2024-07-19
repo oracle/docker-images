@@ -7,12 +7,6 @@ Follow the instructions on the Docker official documentation to install Docker D
 - [Docker Desktop Installation for Windows](https://docs.docker.com/desktop/install/windows-install/)
 
 **Important**: Download 'Docker Desktop for Windows - x86_64' and 
-               Do not run the `.exe` file by double-clicking. Instead, follow these steps:
-1. Navigate to the installer directory.
-2. Open a Command Prompt and run the following command:
-   ```sh
-   start /w "" "Docker Desktop Installer.exe" install -accept-license --installation-dir="D:\Docker\Docker" --wsl-default-data-root="D:\Docker\wsl" --windows-containers-default-data-root="D:\Docker"
-   ```
 
 Verify the Docker installation by running:
 ```sh
