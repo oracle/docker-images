@@ -1,25 +1,10 @@
 #!/bin/bash
 
-
-# Configuration
+# Source the properties file
+source ./config.properties
 SCRIPT_DIR=$(dirname "$0")
-NETWORK_NAME="my-net"
-ORACLE_IMAGE="oracle/database:19.3.0-ee"
-ORACLE_CONTAINER="oracledb19.3"
-ORDS_IMAGE="ords:24.2"
-APEX_IMAGE="apex:24.1"
-ORDS_CONTAINER="ords24.2"
-APEX_CONTAINER="apex24.1"
-TMP_DIR="$SCRIPT_DIR/tmp"
 
-# Database environment variables
-DB_PORT=1521
-DB_HOST=192.168.4.48
-DB_SERVICE="DEV"
-DB_USER="sys"
-DB_PASSWORD="SysPassw0rd"
-
-# Create Docker network if it doesn't exist
+# Function to create Docker network if it doesn't exist
 create_docker_network() {
     if ! docker network ls --format '{{.Name}}' | grep -w $NETWORK_NAME > /dev/null; then
         echo "Creating Docker network: $NETWORK_NAME"
@@ -29,26 +14,26 @@ create_docker_network() {
     fi || exit 1
 }
 
-# Remove TMP_DIR if it exists
+# Function to clean up the temporary directory
 cleanup_tmp_dir() {
-echo "Cleaning $TMP_DIR"
+    echo "Cleaning $TMP_DIR"
     if [ -d "$TMP_DIR" ]; then
         echo "Removing existing tmp directory: $TMP_DIR"
         rm -rf "$TMP_DIR"
     fi
 }
 
-# Build Oracle Database container image
+# Function to build Oracle Database container image
 build_oracle_image() {
     cd "$SCRIPT_DIR/OracleDatabase/SingleInstance/dockerfiles" || exit 1
     ./buildContainerImage.sh -v 19.3.0 -e || exit 1
     cd - || exit 1
 }
 
-# Run Oracle Database container
+# Function to run Oracle Database container
 run_oracle_container() {
     docker run -d --name $ORACLE_CONTAINER --network=$NETWORK_NAME \
-                 -p 1521:1521 \
+                 -p $DB_PORT:1521 \
                  -p 5500:5500 \
                  -p 2484:2484 \
                  --ulimit nofile=1024:65536 \
@@ -72,15 +57,15 @@ run_oracle_container() {
     sleep 1200
 }
 
-# Download and unzip APEX
+# Function to download and unzip APEX
 download_apex() {
     cd "$SCRIPT_DIR/OracleApplicationExpress/dockerfiles" || exit 1
-	cleanup_tmp_dir
-    ./download_apex.sh "https://download.oracle.com/otn_software/apex/apex_24.1.zip" "$TMP_DIR" || exit 1
+    cleanup_tmp_dir
+    ./download_apex.sh "$APEX_URL" "$TMP_DIR" || exit 1
     cd - || exit 1
 }
 
-# Build and run APEX container
+# Function to build and run APEX container
 build_run_apex_container() {
     cd "$SCRIPT_DIR/OracleApplicationExpress/dockerfiles" || exit 1
     docker build --no-cache --build-arg BASE_IMAGE=$ORACLE_IMAGE -t $APEX_IMAGE . || exit 1
@@ -94,31 +79,33 @@ build_run_apex_container() {
     cd - || exit 1
 }
 
-# Download and unzip ORDS
+# Function to download and unzip ORDS
 download_ords() {
     cd "$SCRIPT_DIR/OracleRestDataServices/dockerfiles" || exit 1
     cleanup_tmp_dir
-    ./download_ords.sh "https://download.oracle.com/otn_software/java/ords/ords-24.2.2.187.1943.zip" "$TMP_DIR" || exit 1
+    ./download_ords.sh "$ORDS_URL" "$TMP_DIR" || exit 1
     cd - || exit 1
 }
 
-# Build and run ORDS container
+# Function to build and run ORDS container
 build_run_ords_container() {
     cd "$SCRIPT_DIR/OracleRestDataServices/dockerfiles" || exit 1
-    docker build --no-cache --build-arg BASE_IMAGE=$ORACLE_IMAGE -t $ORDS_IMAGE . || exit 1
-	#./buildImage.sh || exit 1
-    docker run -d --name $ORDS_CONTAINER -p 8080:8080 $ORDS_IMAGE || exit 1
+	./buildImage.sh || exit 1
+    #docker build --no-cache --build-arg BASE_IMAGE=$ORACLE_IMAGE -t $ORDS_IMAGE . || exit 1
+    docker run -d --name $ORDS_CONTAINER --network $NETWORK_NAME -p $ORDS_PORT:8080 $ORDS_IMAGE || exit 1
 	
+
     cd - || exit 1
 }
 
 # Main script execution
-#create_docker_network
-#build_oracle_image
-#run_oracle_container
-#download_apex
-#build_run_apex_container
-#download_ords
+# create_docker_network
+# build_oracle_image
+# run_oracle_container
+# download_apex
+# build_run_apex_container
+# download_ords
 build_run_ords_container
 
 echo "Setup completed successfully."
+
