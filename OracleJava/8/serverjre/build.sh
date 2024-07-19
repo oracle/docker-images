@@ -7,7 +7,7 @@
 if test "$1" = "8"
 then
 	echo "Building Oracle Server JRE 8 on Oracle Linux 8"
-	docker build --file Dockerfile.8 --tag oracle/serverjre:8-ol8 .
+	docker build --file Dockerfile.ol8 --tag oracle/serverjre:8-ol8 .
 else
 	echo "Building Oracle Server JRE 8 on Oracle Linux 7 slim"
 	docker build --tag oracle/serverjre:8-ol7 .
