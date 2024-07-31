@@ -1,16 +1,11 @@
 # Copyright (c) 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-FROM ghcr.io/oracle/oraclelinux:8
+FROM ghcr.io/oracle/oraclelinux8-python:3.9
 
-RUN dnf -y module disable python36 && \
-    dnf -y module enable python39 && \
-    dnf -y install python39 python39-pip python39-setuptools python39-wheel && \
-    dnf -y install oraclelinux-developer-release-el8 && \
+RUN dnf -y install oraclelinux-developer-release-el8 && \
     dnf -y install python39-oracledb && \
     # Optionally install Oracle Instant Client to use python-oracledb Thick mode
     # dnf -y install oracle-instantclient-release-23ai-el8 && \
     # dnf -y install oracle-instantclient-basic && \
     rm -rf /var/cache/dnf
-
-CMD ["/bin/python3", "--version"]
