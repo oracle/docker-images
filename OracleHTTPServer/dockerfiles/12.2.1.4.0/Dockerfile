@@ -43,7 +43,7 @@ FROM oracle/serverjre:8
 # ----------------------------------------------
 ENV OHS_PKG=fmw_12.2.1.4.0_ohs_linux64_Disk1_1of1.zip 
 ENV OHS_BIN=fmw_12.2.1.4.0_ohs_linux64.bin 
-ENV ORACLE_HOME=/u01/oracle/ohssa 
+ENV ORACLE_HOME=/u01/oracle
 ENV NM_PORT=5556 
 ENV OHS_LISTEN_PORT=7777 
 ENV OHS_SSL_PORT=4443 
@@ -51,7 +51,7 @@ ENV JAVA_HOME=/usr/java/default
 ENV DOMAIN_NAME=ohsDomain 
 ENV OHS_COMPONENT_NAME=ohs1 
 ENV PATH=${PATH}:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin:${ORACLE_HOME}/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts 
-ENV WLST_HOME=/u01/oracle/ohssa/oracle_common/common/bin
+ENV WLST_HOME=/u01/oracle/oracle_common/common/bin
 
 
 # Copy packages to the new drive
