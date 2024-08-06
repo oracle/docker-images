@@ -81,7 +81,7 @@ RUN unzip -q /u01/${OHS_PKG} && \
 
 # Copy required files to build this image
 # ------------------------------------------------------
-COPY container-scripts/* /u01/oracle/container-scripts/
+COPY container-scripts/* /u01/oracle/
 
 #Expose all Ports
 EXPOSE ${OHS_SSL_PORT} ${OHS_LISTEN_PORT} ${NM_PORT}
