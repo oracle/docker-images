@@ -50,7 +50,7 @@ ENV OHS_SSL_PORT=4443
 ENV JAVA_HOME=/usr/java/default 
 ENV DOMAIN_NAME=ohsDomain 
 ENV OHS_COMPONENT_NAME=ohs1 
-ENV PATH=${PATH}:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin:${ORACLE_HOME}/user_projects/domains/ohsDomain/bin:/u01/oracle/container-scripts 
+ENV PATH=${PATH}:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin:${ORACLE_HOME}/user_projects/domains/ohsDomain/bin:${ORACLE_HOME}
 ENV WLST_HOME=/u01/oracle/oracle_common/common/bin
 
 
@@ -76,7 +76,7 @@ WORKDIR /u01
 RUN unzip -q /u01/${OHS_PKG} && \
     /u01/${OHS_BIN} -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=${ORACLE_HOME} && \ 
     rm /u01/${OHS_BIN}  /u01/oraInst.loc /u01/install.file && \
-    mkdir /u01/oracle/container-scripts/ /u01/oracle/logs && \
+    mkdir /u01/oracle/logs && \
     chown oracle:oracle -R /u01/oracle/logs 
 
 # Copy required files to build this image
@@ -88,7 +88,7 @@ EXPOSE ${OHS_SSL_PORT} ${OHS_LISTEN_PORT} ${NM_PORT}
 
 # Final setup
 USER oracle
-WORKDIR /u01/oracle/container-scripts
+WORKDIR ${ORACLE_HOME} 
 
 # Provision OHS instance
-CMD ["/u01/oracle/container-scripts/provisionOHS.sh"]
+CMD ["/u01/oracle/provisionOHS.sh"]
