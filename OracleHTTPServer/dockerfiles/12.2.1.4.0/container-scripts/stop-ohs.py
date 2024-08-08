@@ -1,4 +1,4 @@
-# Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -9,8 +9,8 @@ import os, sys
 java_home = os.environ.get("JAVA_HOME", "/usr/java/default")
 ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs1")
 domain_name  = os.environ.get("DOMAIN_NAME", "ohsDomain")
-domain_path  = '/u01/oracle/ohssa/user_projects/domains/' + domain_name
-oracle_home = os.environ.get("ORACLE_HOME", "/u01/oracle/ohssa")
+domain_path  = os.environ.get("DOMAIN_HOME", "/u01/oracle/user_projects/domains/ohsDomain")
+oracle_home = os.environ.get("ORACLE_HOME", "/u01/oracle")
 ######################################################
 try:
     JAVA_HOME = java_home

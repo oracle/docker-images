@@ -1,7 +1,7 @@
 #!/bin/bash
 # Author: hemastuti.baruah@oracle.com
 #
-# Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -25,11 +25,11 @@
 #DOMAIN_NAME - Env Value set by Dockerfile , default is "ohsDOmain"
 #OHS_COMPONENT_NAME - Env Value set by Dockerfile , default is "ohs1"
 #*************************************************************************
-echo "MW_HOME=${MW_HOME:?"Please set MW_HOME"}"
+echo "ORACLE_HOME=${ORACLE_HOME:?"Please set MW_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
 echo "OHS_COMPONENT_NAME=${OHS_COMPONENT_NAME:?"Please set OHS_COMPONENT_NAME"}"
 
-DOMAIN_HOME=${MW_HOME}/user_projects/domains/${DOMAIN_NAME}
+DOMAIN_HOME=${ORACLE_HOME}/user_projects/domains/${DOMAIN_NAME}
 INSTANCE_CONFIG_HOME=$DOMAIN_HOME/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}
 export INSTANCE_CONFIG_HOME
 echo "INSTANCE_CONFIG_DIR=${INSTANCE_CONFIG_HOME}"
@@ -41,7 +41,7 @@ echo "MODWLSCONFIGFILE IS ${modwlsconfigfile}"
 
 # Check and copy custom_mod_wl_ohs.conf to OHS Instance Home
 if [[ -n "${modwlsconfigfile/[ ]*\n/}" ]]; then
-cd ${INSTANCE_CONFIG_HOME}
+cd ${INSTANCE_CONFIG_HOME} || exit
 mv mod_wl_ohs.conf mod_wl_ohs.conf.ORIGINAL
 echo "Copying ${modwlsconfigfile} to ${INSTANCE_CONFIG_HOME} "
 cp ${modwlsconfigfile} ${INSTANCE_CONFIG_HOME}/mod_wl_ohs.conf
