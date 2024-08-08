@@ -342,7 +342,7 @@ fi;
 
 # Exiting the script without waiting on the tail logs
 if [ "$1" = "--nowait" ]; then
-   # Creating state-file for identifyig container of the prebuiltdb extended image
+   # Creating state-file for identifying container of the prebuiltdb extended image
    touch "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb"
    exit $status;
 fi
