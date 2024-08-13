@@ -18,6 +18,11 @@ ohs_ssl_port   = (os.environ.get("OHS_SSL_PORT", "3333"))
 ohs_comp_name   = os.environ.get("OHS_COMPONENT_NAME", "ohs1")
 domain_name  = os.environ.get("DOMAIN_NAME", "ohsDomain")
 domain_path  = os.environ.get("DOMAIN_HOME", "/u01/oracle/user_projects/domains/ohsDomain")
+
+print('domain_name : [%s]' % domain_name);
+print('domain_path : [%s]' % domain_path);
+print('ohs_comp_name : [%s]' % ohs_comp_name);
+
 # Select OHS standalone template
 # ==============================================
 setTopologyProfile('Compact')

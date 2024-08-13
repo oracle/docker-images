@@ -30,7 +30,7 @@ function _kill() {
 trap _term SIGTERM
 
 # Set SIGKILL handler
-#trap _kill SIGKILL
+trap _kill SIGKILL
 
 echo "ORACLE_HOME=${ORACLE_HOME:?"Please set ORACLE_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
@@ -51,8 +51,8 @@ echo "DOMAIN_HOME=${DOMAIN_HOME}"
 NODEMGR_HOME=${DOMAIN_HOME}/nodemanager
 export NODEMGR_HOME
 
-#echo "PATH=${PATH}"
-PATH=$PATH:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin
+
+PATH=$PATH:${ORACLE_HOME}:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin
 export PATH
 echo "PATH=${PATH}"
 
@@ -70,10 +70,6 @@ export JAVA_HOME
 mkdir -p $ORACLE_HOME/bootdir
 PROPERTIES_FILE=/u01/oracle/bootdir/domain.properties
 export PROPERTIES_FILE
-
-#Declare and initializing NMSTATUS
-#declare -a NMSTATUS
-#NMSTATUS[0]="NOT RUNNING"
 
 if [ ! -e "$PROPERTIES_FILE" ]; then
    echo "A properties file with the username and password needs to be supplied."
@@ -98,8 +94,6 @@ if [ -z "$NM_PASSWORD" ]; then
    echo "The Node Manager password is blank. It must be set in the properties file."
    exit
 fi
-#echo "NM_USERNAME=" ${NM_USER}
-#echo "NM_PASSWORD=" ${NM_PASSWORD}
     
 wlst.sh -skipWLSModuleScanning -loadProperties $PROPERTIES_FILE /u01/oracle/create-sa-ohs-domain.py
 # Set the NM username and password in the properties file
@@ -108,25 +102,43 @@ echo "password=$NM_PASSWORD" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.pr
 mv /u01/oracle/helloWorld.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/htdocs/helloWorld.html
 
 echo "Copying Configuration to OHS Instance"
-cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/moduleconf -print0 -name '.*' | xargs rm -rf
-
-conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
+conf=$(ls -l /u01/oracle/config/moduleconf/*.conf 2>/dev/null | wc -l)
 if [ $conf -gt 1 ]
 then
-   echo "Copying root .conf files ${OHS_COMPONENT_NAME}"
-   cp  -L /u01/oracle/config/httpd/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}
+  echo "  Copying moduleconf conf files to OHS Instance"
+  cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -name '.*' | xargs rm -rf
+fi
+
+conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
+if [ $conf -gt 0 ]
+then
+   echo "  Copying root .conf files $OHS_COMPONENT_NAME"
+   cp  -L /u01/oracle/config/httpd/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME
+fi
+
+conf=$(ls -l /u01/oracle/config/wallet/* 2>/dev/null | wc -l)
+if [ $conf -gt 0 ]
+then
+   echo "  Copying OHS Wallets to OHS Instance"
+   mkdir -p ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/keystores > /dev/null 2>&1
+   cp  -L /u01/oracle/config/wallet/* ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/keystores/
 fi
 
 htdocs=$(ls -l /u01/oracle/config/htdocs/*.html 2>/dev/null | wc -l)
-if [ $htdocs -gt 1 ]
+if [ $htdocs -gt 0 ]
 then
    echo "Copying htdocs to OHS Instance"
-   cp  -L /u01/oracle/config/htdocs/*.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/htdocs
+   cp  -L /u01/oracle/config/htdocs/*.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs
 fi
 
 if [ "$DEPLOY_WG" = "true" ]
 then
     echo "Deploying Webgate"
+    if ! [ -e /u01/oracle/config/webgate/config/ObAccessClient.xml ]
+    then
+       echo "Must provide WebGate Configutaion files when DEPLOY_WG is true."
+       exit 1
+    fi
     cd $ORACLE_HOME/webgate/ohs/tools/deployWebGate/ || exit
     ./deployWebGateInstance.sh -w ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} -oh $ORACLE_HOME
     cd $ORACLE_HOME/webgate/ohs/tools/setup/InstallTools || exit
@@ -136,9 +148,9 @@ then
     echo "<LocationMatch \"/iam/access/binding/api/v10/oap\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
-    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate -print0 -name '.*' | xargs rm -rf
+    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate -name '.*' | xargs rm -rf
 else
-    echo "Dont Deploy WG"
+    echo "WebGate not deployed"
 fi
 
 fi
@@ -172,14 +184,14 @@ rm "${statusfile}"
 
 #Check if configureWLSProxyPlugin.sh needs to be invoked
 if [ -f /config/custom_mod_wl_ohs.conf ]; then
-configureWLSProxyPlugin.sh
+   configureWLSProxyPlugin.sh
 fi
 
 #Start OHS component only if Node Manager is up
 if [ -f ${LOG_DIR}/Nodemanage$$.status ]; then
 echo "Node manager running, hence starting OHS server"
 ${WLST_HOME}/wlst.sh -loadProperties $PROPERTIES_FILE /u01/oracle/start-ohs.py
-echo "OHS server has been started "
+echo "OHS server has been started"
 fi
 
 #Tail all server logs

@@ -50,7 +50,7 @@ ENV OHS_SSL_PORT=4443
 ENV JAVA_HOME=/usr/java/default 
 ENV DOMAIN_NAME=ohsDomain 
 ENV OHS_COMPONENT_NAME=ohs1 
-ENV PATH=${PATH}:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin:${ORACLE_HOME}/user_projects/domains/ohsDomain/bin:${ORACLE_HOME}
+ENV PATH=${PATH}:${ORACLE_HOME}:/usr/java/default/bin:${ORACLE_HOME}/oracle_common/common/bin:${ORACLE_HOME}/user_projects/domains/ohsDomain/bin
 ENV WLST_HOME=/u01/oracle/oracle_common/common/bin
 
 
@@ -76,7 +76,7 @@ WORKDIR /u01
 RUN unzip -q /u01/${OHS_PKG} && \
     /u01/${OHS_BIN} -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=${ORACLE_HOME} && \ 
     rm /u01/${OHS_BIN}  /u01/oraInst.loc /u01/install.file && \
-    mkdir /u01/oracle/logs && \
+    mkdir -p /u01/oracle/logs  && \
     chown oracle:oracle -R /u01/oracle/logs 
 
 # Copy required files to build this image
