@@ -30,7 +30,7 @@ function _kill() {
 trap _term SIGTERM
 
 # Set SIGKILL handler
-trap _kill SIGKILL
+#trap _kill SIGKILL
 
 echo "ORACLE_HOME=${ORACLE_HOME:?"Please set ORACLE_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
@@ -106,13 +106,13 @@ conf=$(ls -l /u01/oracle/config/moduleconf/*.conf 2>/dev/null | wc -l)
 if [ $conf -gt 1 ]
 then
   echo "  Copying moduleconf conf files to OHS Instance"
-  cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -name '.*' | xargs rm -rf
+  cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -print0 -name '.*' | xargs rm -rf
 fi
 
 conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
 if [ $conf -gt 0 ]
 then
-   echo "  Copying root .conf files $OHS_COMPONENT_NAME"
+   echo "  Copying root conf files OHS Instance"
    cp  -L /u01/oracle/config/httpd/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME
 fi
 
@@ -148,7 +148,7 @@ then
     echo "<LocationMatch \"/iam/access/binding/api/v10/oap\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
-    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate -name '.*' | xargs rm -rf
+    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate -print0 -name '.*' | xargs rm -rf
 else
     echo "WebGate not deployed"
 fi
