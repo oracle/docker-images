@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2023 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2024 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: November, 2016
 # Author: gerald.venzl@oracle.com
@@ -17,10 +17,13 @@ fi
 
 ORACLE_PWD=$1
 ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
-ORACLE_PDB="$(find "$ORACLE_BASE"/oradata/"$ORACLE_SID"/*/ -type d  | grep -v -e pdbseed -e "${ARCHIVELOG_DIR_NAME:-archive_logs}" | cut -d/ -f6)"
+if [ "$ORACLE_SID" == "FREE" ]; then
+  ORACLE_PDB="FREEPDB1"
+fi
+ORACLE_PDB=${ORACLE_PDB:-ORCLPDB1}
+ORACLE_PDB=${ORACLE_PDB^^}
 # shellcheck disable=SC2034
 ORAENV_ASK=NO
-# shellcheck source=/dev/null
 source oraenv
 
 sqlplus / as sysdba << EOF

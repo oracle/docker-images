@@ -91,12 +91,7 @@ createDir(){
 
   if [ -d "$absoluteVolumePath"/data ]
   then
-    if [ "$(podman --version 2>/dev/null)" ]
-     then
-      chmod -R 777 "$absoluteVolumePath"/data >/dev/null 2>&1
-     else
       chmod -R 775 "$absoluteVolumePath"/data >/dev/null 2>&1
-    fi
   fi
 
 
@@ -264,7 +259,7 @@ runAgent(){
    then
       if [ ! "$(docker ps -a -f "name=$AI" --format '{{.Names}}')" ]
       then
-         echo "INFO: Starting new container"
+         echo "INFO: Starting new container."
           if [ -f "$CONFDIR"/config.properties ]; then
               docker run -d --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           else
@@ -306,17 +301,17 @@ runAgent(){
       if [ "$operation" = "postUpgrade" ]
        then
          echo "INFO: Removing older image ${installedImageName}"
-         docker image rmi "${installedImageName}" || true
+         docker image rm "${installedImageName}" || true
       fi
   elif [ "$containerRuntime" = "podman" ]
   then
       if [ ! "$(podman ps -a -f "name=$AI" --format '{{.Names}}')" ]
       then
-         echo "INFO: Starting new container"
+         echo "INFO: Starting new container."
           if [ -f "$CONFDIR"/config.properties ]; then
-            podman run -d --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+            podman run -d --user root --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           else
-            podman run -d -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+            podman run -d --user root -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           fi
 
          podman exec "$AI" /bin/bash -c 'agent ido validate --config /app/data/conf/config.json; if [[ "$?" != "0" ]] ; then echo VALIDATE_FAILED > /app/data/conf/status.txt; else echo VALIDATE_SUCCESS > /app/data/conf/status.txt; fi ;'
@@ -356,7 +351,7 @@ runAgent(){
       if [ "$operation" = "postUpgrade" ]
        then
          echo "INFO: Removing older image ${installedImageName} "
-         podman image rmi "${installedImageName}" || true
+         podman image rm "${installedImageName}" || true
       fi
   fi
 }
@@ -370,7 +365,9 @@ isWriteAccessOnVolume()
 {
   # shellcheck disable=SC2012
   permissions=$(ls -ld "$PV" | awk '{print $1}')
-  if [ "$permissions" != "drwxrwxr-x" ] && [ "$permissions" != "drwxrwxrwx" ] && [ "$permissions" != "drwxrwxr-x." ] && [ "$permissions" != "drwxrwxrwx." ]; then
+  # shellcheck disable=SC3057
+  perms="${permissions:0:10}"
+  if [ "$perms" != "drwxrwxr-x" ] && [ "$perms" != "drwxrwxrwx" ]; then
     echo "ERROR: Volume does not have required permissions. Make sure to have 775"
     errorFlag=true
   fi
@@ -745,7 +742,7 @@ kill()
   if [ "$containerRuntime" = "docker" ] && [ "$(docker ps -a -f "name=$AI" --format '{{.Names}}')" ]
   then
 
-      if [ ! "$operation" = "upgrade" ]
+      if [ ! "$operation" = "upgrade" ] && [ ! "$operation" = "postUpgrade" ]
       then
         docker exec "$AI" /bin/bash -c "agent --config /app/data/conf/config.json ido lcm -i graceful_shutdown;"
         echo "INFO: Waiting for running operations to complete. It may take some time"
@@ -754,7 +751,7 @@ kill()
       docker rm -f "$AI"
   elif [ "$containerRuntime" = "podman" ] && [ "$(podman ps -a -f "name=$AI" --format '{{.Names}}')" ]
   then
-      if [ ! "$operation" = "upgrade" ]
+      if [ ! "$operation" = "upgrade" ] && [ ! "$operation" = "postUpgrade" ]
       then
         podman exec "$AI" /bin/bash -c "agent --config /app/data/conf/config.json ido lcm -i graceful_shutdown;"
         echo "INFO: Waiting for running operations to complete. It may take some time"
@@ -820,12 +817,7 @@ upgrade()
 
   #createDir changes the current working directory
   mkdir -p "${PV}/upgrade"
-  if [ "$(podman --version 2>/dev/null)" ]
-     then
-      chmod -R 777 "${PV}/upgrade" >/dev/null 2>&1
-     else
-      chmod -R 775 "${PV}/upgrade" >/dev/null 2>&1
-  fi
+  chmod -R 775 "${PV}/upgrade" >/dev/null 2>&1
 
   createDir "${PV}/upgrade"
 # shellcheck disable=SC2129

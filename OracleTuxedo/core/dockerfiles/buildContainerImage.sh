@@ -116,7 +116,7 @@ fi
 
 echo "====================="
 
-docker build  ${PROXY_SETTINGS:+"$PROXY_SETTINGS"} -t oracle/tuxedo:latest -t oracle/tuxedo:"${VERSION}" "${VERSION}"/
+docker build $PROXY_SETTINGS -t oracle/tuxedo:latest -t oracle/tuxedo:"${VERSION}" "${VERSION}"/
 ret=$?
 if [ "$ret" = "0" ]
     then

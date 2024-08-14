@@ -25,10 +25,10 @@ create and run applications that connect to a remote (or local) Oracle Database.
 
 Oracle client-server version interoperability is detailed in [Doc ID
 207303.1](https://support.oracle.com/epmos/faces/DocumentDisplay?id=207303.1).
-In summary, applications using Oracle Call Interface (OCI) 21 can connect to
-Oracle Database 12.1 or later.  Applications using Oracle Call Interface (OCI)
-19, 18 or 12.2 can connect to Oracle Database 11.2 or later.  Some tools may
-have other restrictions.
+In summary, applications using Oracle Call Interface (OCI) 23 can connect to
+Oracle Database 19 or later.  Applications using OCI 21 can connect to Oracle
+Database 12.1 or later.  Applications using OCI 19, 18 or 12.2 can connect to
+Oracle Database 11.2 or later.  Some tools may have other restrictions.
 
 ## Prebuilt Images
 
@@ -51,6 +51,23 @@ docker pull ghcr.io/oracle/oraclelinux8-instantclient:21
 Prebuilt containers for some language images are also available in the
 registry.
 
+## Building Oracle Instant Client 23 Images
+
+Change directory to [`oraclelinux9/23`](oraclelinux9/23) or
+[`oraclelinux8/23`](oraclelinux8/23) and run:
+
+```bash
+docker build --pull -t oracle/instantclient:23 .
+```
+
+The build process automatically installs Instant Client using RPMs directly
+from the [Oracle Instant Client (OL9)
+repository](https://yum.oracle.com/repo/OracleLinux/OL9/oracle/instantclient23/x86_64/)
+or [Oracle Instant Client (OL8) repository](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient23/x86_64/).
+
+Applications using Oracle Call Interface (OCI) 23 can connect to Oracle Database
+19 or later.  Some tools may have other restrictions.
+
 ## Building Oracle Instant Client 21 Images
 
 Change directory to [`oraclelinux7/21`](oraclelinux7/21) or
@@ -61,10 +78,8 @@ docker build --pull -t oracle/instantclient:21 .
 ```
 
 The build process automatically installs Instant Client using RPMs directly from
-the [Oracle Instant Client repository
-(OL8)](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient21/x86_64/)
-or [Oracle Instant Client repository
-(OL7)](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient21/x86_64/).
+the [Oracle Instant Client (OL8) repository](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient21/x86_64/)
+or [Oracle Instant Client (OL7) repository](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient21/x86_64/).
 
 Applications using Oracle Call Interface (OCI) 21 can connect to Oracle Database
 12.1 or later.  Some tools may have other restrictions.
@@ -80,12 +95,9 @@ docker build --pull -t oracle/instantclient:19 .
 ```
 
 The build process automatically installs Instant Client using RPMs directly
-from the [Oracle Instant Client repository
-(OL9)](https://yum.oracle.com/repo/OracleLinux/OL9/oracle/instantclient/x86_64/index.html),
-[Oracle Instant Client repository
-(OL8)](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html),
-or [Oracle Instant Client repository
-(OL7)](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html).
+from the [Oracle Instant Client (OL9) repository](https://yum.oracle.com/repo/OracleLinux/OL9/oracle/instantclient/x86_64/index.html),
+[Oracle Instant Client (OL8) repository](https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient/x86_64/index.html),
+or [Oracle Instant Client (OL7) repository](https://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/index.html).
 
 Applications using Oracle Call Interface (OCI) 19 can connect to
 Oracle Database 11.2 or later.  Some tools may have other
