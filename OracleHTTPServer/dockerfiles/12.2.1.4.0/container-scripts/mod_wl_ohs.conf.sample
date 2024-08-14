@@ -1,4 +1,4 @@
-# Copyright (c) 2016-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -8,9 +8,9 @@
 #
 #
 #Refer to OHS documentation for more details and examples
-#Section 2.4 @ http://docs.oracle.com/middleware/12213/webtier/develop-plugin/oracle.htm#PLGWL553
+#Section 2.4 @ https://docs.oracle.com/en/middleware/fusion-middleware/web-tier/12.2.1.4/develop-plugin/oracle.html#GUID-A463B189-DF47-4932-8B96-FD4F5FEC8D56
 #*************************************************************************
-LoadModule weblogic_module   "/u01/oracle/ohssa/ohs/modules/mod_wl_ohs.so"
+LoadModule weblogic_module   "/u01/oracle/ohs/modules/mod_wl_ohs.so"
 
 <IfModule mod_weblogic.c>
 WebLogicHost WEBLOGIC_HOST
