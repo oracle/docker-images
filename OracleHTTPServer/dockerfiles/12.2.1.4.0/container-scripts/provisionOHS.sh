@@ -103,7 +103,7 @@ mv /u01/oracle/helloWorld.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${
 
 echo "Copying Configuration to OHS Instance"
 conf=$(ls -l /u01/oracle/config/moduleconf/*.conf 2>/dev/null | wc -l)
-if [ $conf -gt 1 ]
+if [ $conf -gt 0 ]
 then
   echo "  Copying moduleconf conf files to OHS Instance"
   cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -print0 -name '.*' | xargs rm -rf
