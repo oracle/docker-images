@@ -1,0 +1,145 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+#
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ohs-script-configmap
+  namespace: <NAMESPACE>
+data:
+  ohs-script.sh: |
+    #!/bin/bash
+    mkdir -p /u01/oracle/bootdir /u01/oracle/config /u01/oracle/config/moduleconf /u01/oracle/config/webgate/config
+    { echo -en "username=" && cat /ohs-config/username && echo -en "\npassword=" && cat /ohs-config/password; } > /u01/oracle/bootdir/domain.properties
+    /u01/oracle/provisionOHS.sh
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ohs-domain
+  namespace: <NAMESPACE>
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      oracle: ohs
+  template:
+    metadata:
+      labels:
+        oracle: ohs
+    spec:
+      containers:
+      - name: ohs
+        image: <IMAGE_NAME>
+        env:
+          - name: DEPLOY_WG
+            value: "false"
+        ports:
+        - name: clear
+          containerPort: 7777
+        - name: https
+          containerPort: 4443
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          runAsNonRoot: true
+          runAsUser: 1000
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - pgrep httpd
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            port: 7777
+            path: /helloWorld.html
+        volumeMounts:
+          - name: ohs-secret
+            mountPath: /ohs-config
+          - name: ohs-config
+            mountPath: /u01/oracle/config/moduleconf
+          - name: ohs-htdocs
+            mountPath: /u01/oracle/config/htdocs
+          - name: ohs-httpd
+            mountPath: /u01/oracle/config/httpd
+          - name: webgate-config
+            mountPath: /u01/oracle/config/webgate/config
+          - name: webgate-wallet
+            mountPath: /u01/oracle/config/webgate/config/wallet
+          - name: ohs-wallet
+            mountPath: /u01/oracle/config/wallet/<WALLET_NAME>
+          - name: script-volume
+            mountPath: /ohs-bin
+            readOnly: true
+        command: ["/ohs-bin/ohs-script.sh"]
+      imagePullSecrets:
+        - name: regcred
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: oracle
+                  operator: In
+                  values:
+                  - ohs
+              topologyKey: "kubernetes.io/hostname"
+      restartPolicy: Always
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: ohs-secret
+        secret:
+          defaultMode: 0444
+          secretName: ohs-secret
+      - name: script-volume
+        configMap:
+          defaultMode: 0555
+          name: ohs-script-configmap
+      - name: ohs-config
+        configMap:
+          defaultMode: 0555
+          name: ohs-config
+      - name: ohs-httpd
+        configMap:
+          defaultMode: 0555
+          name: ohs-httpd
+      - name: ohs-htdocs
+        configMap:
+          defaultMode: 0555
+          name: ohs-htdocs
+      - name: webgate-config
+        configMap:
+          defaultMode: 0555
+          name: webgate-config
+      - name: webgate-wallet
+        configMap:
+          defaultMode: 0555
+          name: webgate-wallet
+      - name: ohs-wallet
+        configMap:
+          defaultMode: 0555
+          name: ohs-wallet
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+
