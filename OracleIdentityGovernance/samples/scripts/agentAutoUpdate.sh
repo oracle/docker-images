@@ -23,7 +23,7 @@ mkdir -p newpackage || true
 
 cd newpackage || exit
 #Download upgrade cli
-wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/fFvMAmluNZpv4P5dCzH7VsyJUYra5AMxhLiBSOa3AZuul4KtycxDuJtyUyWaweU4/n/idjypktnxhrf/b/agcs_ido_agent_updater/o/idm-agcs-agent-cli-upgrade.jar
+wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/JcqrvD9KJiJKJd_2o6LoHhJU812gb-9rh2bOAYI_2t7nJP7eBxaLXDnWShQg0ds9/n/idjypktnxhrf/b/agcs_ido_agent_updater/o/idm-agcs-agent-cli-upgrade.jar
 
 #Get Agent Package
 agentVersion=$(unzip -q -c  "$1"/data/agent/agent-lcm/idm-agcs-agent-lcm.jar META-INF/MANIFEST.MF | grep "Agent-Version: " | awk '{print $2}' | tr -d '\n' | tr -d '\r')
