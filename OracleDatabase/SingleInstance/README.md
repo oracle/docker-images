@@ -148,9 +148,9 @@ To run your Oracle Database image use the `docker run` command as follows:
                       The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 2484 (TCPS Listener Port if TCPS is enabled).
        --ulimit:      Resource limits. Update according to Oracle Database documentation.
        -e ORACLE_SID: The Oracle Database SID that should be used (default for 23ai Free Edition: FREE; all others, ORCLCDB).
-                      **Note:** The ORACLE_SID for 11g/18c Express and 23ai Free Editions cannot be changed.
+                      Note: The ORACLE_SID for 11g/18c Express and 23ai Free Editions cannot be changed.
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default for 23ai Free Edition: FREEPDB1; all others, ORCLPDB1).
-                      **Note:** The ORACLE_PDB for 23ai Free Edition cannot be changed.
+                      Note: The ORACLE_PDB for 23ai Free Edition cannot be changed.
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDBADMIN password (default: auto generated).
        -e INIT_SGA_SIZE:
                       The total memory in MB that should be used for all SGA components (optional).
