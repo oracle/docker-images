@@ -88,7 +88,7 @@ fi
 # Get Password
 NM_PASSWORD=`awk '{print $1}' $PROPERTIES_FILE | grep password | cut -d "=" -f2`
 if [ -z "$NM_PASSWORD" ]; then
-   echo "  The Node Manager password is blank. It must be set in the properties file."
+   echo "The Node Manager password is blank. It must be set in the properties file."
    exit
 fi
     
@@ -98,7 +98,7 @@ echo "username=$NM_USER" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.proper
 echo "password=$NM_PASSWORD" >> ${DOMAIN_HOME}/config/nodemanager/nm_password.properties
 mv /u01/oracle/helloWorld.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/htdocs/helloWorld.html
 
-echo "  Copying Configuration to OHS Instance"
+echo "Copying Configuration to OHS Instance"
 conf=$(ls -l /u01/oracle/config/moduleconf/*.conf 2>/dev/null | wc -l)
 if [ $conf -gt 0 ]
 then
@@ -110,7 +110,7 @@ fi
 conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
 if [ $conf -gt 0 ]
 then
-   echo "  Copying root .conf files $OHS_COMPONENT_NAME"
+   echo "  Copying root conf files OHS Instance"
    cp  -L /u01/oracle/config/httpd/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME
    find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME -name '.*' -exec rm -rf {} \; > /dev/null 2>&1
 fi
@@ -147,6 +147,10 @@ then
     ./EditHttpConf -w ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} -oh $ORACLE_HOME
     echo "  Adding OAP API exclusion to webgate.conf"
     echo "<LocationMatch \"/iam/access/binding/api/v10/oap\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "<LocationMatch \"/helloWorld.html\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "  Copying WebGate Artifacts to Oracle Instance"
