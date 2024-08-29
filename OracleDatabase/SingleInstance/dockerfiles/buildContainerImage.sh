@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014,2023 Oracle and/or its affiliates.
+# Copyright (c) 2014,2024 Oracle and/or its affiliates.
 # 
 
 usage() {
@@ -32,7 +32,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2023 Oracle and/or its affiliates.
+Copyright (c) 2014,2024 Oracle and/or its affiliates.
 
 EOF
 
@@ -229,7 +229,7 @@ cd "${VERSION}" || {
 }
 
 # Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.4.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
+if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.5.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
   DOCKERFILE=$( if [[ -f "Containerfile.${EDITION}" ]]; then echo "Containerfile.${EDITION}"; else echo "${DOCKERFILE}.${EDITION}";fi )
 fi;
 

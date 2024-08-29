@@ -108,10 +108,10 @@ Refer to the [module documentation](https://python-oracledb.readthedocs.io/en/la
 
 This error occurs when the database cannot find a data file (used for tablespaces) that was previously present. This is most likely because the data file has been located outside the volume in a previous container and was hence not persisted. Ensure that when you add tablespaces and/or data files that they are located within the volume location, i.e. $ORACLE_BASE/oradata/$ORACLE_SID, (e.g. `/opt/oracle/oradata/XE`).
 
-## Running Oracle Database 23c Free on Apple Silicon (ARM) chip
+## Running Oracle Database 23ai Free on Apple Silicon (ARM) chip
 
 ### Setup Database
-Below are the steps to run Oracle Database 23c Free on Apple Silicon (ARM) machine
+Below are the steps to run Oracle Database 23ai Free on Apple Silicon (ARM) machine
 
 1. Install [Podman Lima](https://github.com/lima-vm/lima) on Mac
 
@@ -127,7 +127,7 @@ Below are the steps to run Oracle Database 23c Free on Apple Silicon (ARM) machi
 
     ```export CONTAINER_HOST=unix://Users/$USER/.lima/podman-amd64/sock/podman.sock```
 
-4. Pull the oracle database 23c free image
+4. Pull the oracle database 23ai free image
 
     ```podman pull container-registry.oracle.com/database/free:latest```
 
