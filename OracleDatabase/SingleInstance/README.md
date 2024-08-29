@@ -147,8 +147,10 @@ To run your Oracle Database image use the `docker run` command as follows:
        -p:            The port mapping of the host port to the container port.
                       The following ports are exposed: 1521 (Oracle Listener), 5500 (OEM Express), 2484 (TCPS Listener Port if TCPS is enabled).
        --ulimit:      Resource limits. Update according to Oracle Database documentation.
-       -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
-       -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
+       -e ORACLE_SID: The Oracle Database SID that should be used (default for 23ai Free Edition: FREE; all others, ORCLCDB).
+                      Note: The ORACLE_SID for 11g/18c Express and 23ai Free Editions cannot be changed.
+       -e ORACLE_PDB: The Oracle Database PDB name that should be used (default for 23ai Free Edition: FREEPDB1; all others, ORCLPDB1).
+                      Note: The ORACLE_PDB for 23ai Free Edition cannot be changed.
        -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDBADMIN password (default: auto generated).
        -e INIT_SGA_SIZE:
                       The total memory in MB that should be used for all SGA components (optional).
@@ -401,7 +403,7 @@ On the first startup of the container a random password will be generated for th
     podman exec <container name> /opt/oracle/setPassword.sh <your password>
 
 **Important Note:**
-The ORACLE_SID for Oracle Database 23ai Free is always `FREE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the Free build.
+The ORACLE_SID for Oracle Database 23ai Free is always `FREE` and the PDB_NAME is always `FREEPDB1`. They cannot be changed, hence there are no ORACLE_SID or PDB_NAME parameters provided for the Free build.
 
 #### Running Oracle Database 21c/18c Express Edition in a container
 
