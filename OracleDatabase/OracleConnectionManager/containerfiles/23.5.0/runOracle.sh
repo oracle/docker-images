@@ -1,20 +1,19 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
-# 
-# Since: January, 2018
+#############################
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-# Description: Runs the Oracle Database inside the container
+############################
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
 
-env > /tmp/envfile
+#env > /tmp/envfile
 
-chmod 755 /tmp/envfile 
-source /tmp/envfile
+#chmod 755 /tmp/envfile 
+#source /tmp/envfile
 source $SCRIPT_DIR/functions.sh
 
 ########### SIGINT handler ############
@@ -58,13 +57,14 @@ trap _int SIGINT
 trap _term SIGTERM
 
 # Set SIGKILL handler
+# shellcheck disable=SC2173
 trap _kill SIGKILL
 
 ############ Removing /tmp/orod.log #####
 print_message "Creating $logfile"
 chmod 666  $logfile
 
-sudo $SCRIPT_DIR/$CONFIG_CMAN_FILE
+$SCRIPT_DIR/$CONFIG_CMAN_FILE
 
 if [ $? -eq 0 ];then
  print_message "cman started sucessfully"

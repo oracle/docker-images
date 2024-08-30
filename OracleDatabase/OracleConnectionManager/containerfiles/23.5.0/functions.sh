@@ -1,16 +1,16 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
-#
-# Since: January, 2018
+#############################
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-# Description: Common functions for CMAN 
+############################
+# 
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-source /tmp/envfile
+#source /tmp/envfile
 
 export logfile=/tmp/orod.log
 export logdir=/tmp
@@ -19,6 +19,7 @@ export STD_ERR_FILE="/proc/self/fd/2"
 
 ###### Function Related to printing messages and exit the script if error occurred ##################
 error_exit() {
+# shellcheck disable=SC2155    
 local NOW=$(date +"%m-%d-%Y %T %Z")
         # Display error message and exit
 #       echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
@@ -28,6 +29,7 @@ local NOW=$(date +"%m-%d-%Y %T %Z")
 
 print_message ()
 {
+# shellcheck disable=SC2155    
         local NOW=$(date +"%m-%d-%Y %T %Z")
         # Display  message and return
         echo "${NOW} : ${PROGNAME} : ${1:-"Unknown Message"}" | tee -a $logfile  > $STD_OUT_FILE
@@ -44,6 +46,7 @@ resolveip(){
     then
         return 1
     else
+# shellcheck disable=SC2155    
         local ip=$( getent hosts "$host" | awk '{print $1}' )
         if [ -z "$ip" ] 
         then

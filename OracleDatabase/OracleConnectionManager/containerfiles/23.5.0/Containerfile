@@ -1,0 +1,152 @@
+#
+#############################
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Author: paramdeep.saini@oracle.com
+############################
+# 
+#
+# ORACLE CONTAINERFILES PROJECT
+# --------------------------
+# This is the Containerfile for Oracle Database 23ai Release 4 Oracle Connection Manager 
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Run:
+#      $ podman build -t oracle/cman:23ai .
+
+ARG BASE_OL_IMAGE=oraclelinux:9
+
+# Pull base image
+# ---------------
+# hadolint ignore=DL3006
+FROM $BASE_OL_IMAGE AS base
+
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "volume.setup.location1"="/opt/scripts"              \
+      "volume.startup.location1"="/opt/scripts/startup"
+
+# Argument to control removal of components not needed after db software installation
+ARG SLIMMING=false
+ARG INSTALL_FILE_1="LINUX.X64_235000_client.zip"
+ARG USER="root"
+ARG WORKDIR="/root"
+
+ENV INSTALL_DIR=/opt/scripts \
+    WORKDIR=$WORKDIR \
+    DB_BASE=/u01/app/oracle \
+    DB_USER=oracle \
+    CHECK_SPACE_FILE="checkSpace.sh" \
+    CMANORA="cman.ora" \
+    FUNCTIONS="functions.sh" \
+    INVENTORY=/u01/app/oraInventory \
+    DB_HOME=/u01/app/oracle/product/23ai/client_1 \
+    JAVA_HOME=/u01/app/oracle/product/23ai/client_1/jdk \
+    LD_LIBRARY_PATH=/u01/app/oracle/product/23ai/client_1/lib \
+    SQLPATH=/u01/app/oracle/product/23ai/client_1/lib \
+    INSTALL_SCRIPTS=/opt/scripts/install \
+    INSTALL_FILE_1=$INSTALL_FILE_1 \
+    CONFIG_CMAN_FILE="configCMAN.sh" \
+    RUN_FILE="runOracle.sh" \
+    DB_SETUP_FILE="setupDB.sh" \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH
+
+#####
+
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH \
+     SCRIPT_DIR=$INSTALL_DIR/startup \
+     INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:/usr/sbin:$PATH \
+     DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib \
+     ORACLE_HOME=$DB_HOME \
+     TNS_ADMIN=$DB_HOME/network/admin \
+     PATH=$DB_HOME/bin:$PATH
+
+######
+
+COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
+RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
+          dnf install -y oracle-database-preinstall-23ai && \
+          dnf clean all; \
+     else \
+          dnf -y install oraclelinux-developer-release-el8 && \
+          dnf -y oracle-database-preinstall-23ai && \
+          dnf clean all; \
+          :; \
+     fi && \
+     dnf install -y net-tools which zip unzip tar openssh-server vim-minimal passwd sudo hostname  && \
+     dnf clean all && \
+     rm -f /etc/sysctl.conf && \
+     rm -f /usr/lib/systemd/system/dnf-makecache.service
+
+RUN mkdir -p "$DB_BASE" && \
+    mkdir -p "$DB_HOME" && \
+    mkdir -p $INVENTORY  && \
+    chown -R "${DB_USER}":oinstall "$DB_BASE" && \
+    chown -R "${DB_USER}":oinstall "$DB_HOME" && \
+    chown -R "${DB_USER}":oinstall "$INVENTORY" && \
+    chmod 755 $INSTALL_DIR/startup/*.sh && \
+    mkdir -p $INSTALL_DIR/install && \
+    chmod 755 $INSTALL_DIR/install && \
+    chown -R "${DB_USER}":oinstall $INSTALL_DIR/install && \
+    chmod 666 /etc/sudoers  && \
+    echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers && \
+    chmod 440 /etc/sudoers && \
+    chmod 4711 /usr/bin/ping && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the  client and swingbench
+# -------------------------------------------
+#############################################
+
+from base AS builder
+
+USER oracle
+
+COPY $INSTALL_FILE_1 $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/install/
+
+WORKDIR /u01/app/
+# shellcheck disable=SC2086
+RUN  unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $DB_HOME && \
+     $DB_HOME/runInstaller -ignorePrereq -waitforcompletion  -silent \
+     UNIX_GROUP_NAME="oinstall" \
+     INVENTORY_LOCATION=$INVENTORY \
+     ORACLE_HOME=$DB_HOME \
+     ORACLE_BASE=$DB_BASE \
+     oracle.install.client.installType=Custom \
+     oracle.install.client.customComponents="oracle.sqlplus:23.0.0.0.0,oracle.network.client:23.0.0.0.0,oracle.network.cman:23.0.0.0.0,oracle.network.listener:23.0.0.0.0" || \
+     sync
+
+#############################################
+# -------------------------------------------
+# Start new layer for client
+# -------------------------------------------
+#############################################
+
+FROM base
+
+COPY  --from=builder /u01 /u01
+# shellcheck disable=SC2086
+RUN  sh /u01/app/oraInventory/orainstRoot.sh && \
+     sync && \
+     echo "export ORACLE_HOME=$DB_HOME" >> /home/oracle/.bashrc && \
+     echo "export JAVA_HOME=$JAVA_HOME" >> /home/oracle/.bashrc && \
+     echo "export PATH=$DB_HOME/bin:$JAVA_HOME/bin:$PATH" >> /home/oracle/.bashrc && \
+     echo "export TNS_ADMIN=$ORACLE_HOME/network/admin" && \
+     chown oracle:oinstall $INSTALL_DIR/startup/*.sh && \
+     chown oracle:oinstall $INSTALL_DIR/startup/cman.ora && \
+     sync
+
+USER oracle
+EXPOSE 1521 5500
+VOLUME ["/common_scripts"]
+WORKDIR /home/oracle
+
+# Define default command to start Oracle Grid and RAC Database setup.
+# hadolint ignore=DL3025
+CMD exec $SCRIPT_DIR/$RUN_FILE

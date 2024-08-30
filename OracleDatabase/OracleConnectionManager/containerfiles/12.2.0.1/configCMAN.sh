@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
@@ -15,9 +15,13 @@ source /tmp/envfile
 source $SCRIPT_DIR/functions.sh 
 
 ####################### Constants #################
+# shellcheck disable=SC2034
 declare -r FALSE=1
+# shellcheck disable=SC2034
 declare -r TRUE=0
+# shellcheck disable=SC2034
 declare -r ETCHOSTS="/etc/hosts"
+# shellcheck disable=SC2034
 progname="$(basename $0)"
 ###################### Constants ####################
 
@@ -77,7 +81,9 @@ fi
 
 SetupEtcHosts()
 {
+# shellcheck disable=SC2034
 local stat=3
+# shellcheck disable=SC2034
 local HOST_LINE
 
 echo -e "127.0.0.1\tlocalhost.localdomain\tlocalhost" > /etc/hosts
@@ -101,7 +107,7 @@ copycmanora ()
 {
 cp $logdir/$CMANORA $DB_HOME/network/admin/
 chown -R oracle:oinstall $DB_HOME/network/admin/
-#rm -f $logdir/$CMANORA
+rm -f $logdir/$CMANORA
 }
 
 start_cman ()

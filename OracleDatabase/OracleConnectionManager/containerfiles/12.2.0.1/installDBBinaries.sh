@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
@@ -20,6 +20,7 @@ if [ "$EDITION" == "" ]; then
 fi;
 
 # Check whether correct edition has been passed on
+# shellcheck disable=SC2166
 if [ "$EDITION" != "EE" -a "$EDITION" != "SE2" ]; then
    echo "ERROR: Wrong edition has been passed on!"
    echo "Edition $EDITION is no a valid edition!"
@@ -50,5 +51,5 @@ sed -i -e "s|###INVENTORY###|$INVENTORY|g" $INSTALL_SCRIPTS/$DB_INSTALL_RSP
 cd $INSTALL_SCRIPTS       && \
 unzip $INSTALL_FILE_1 && \
 rm -f $INSTALL_SCRIPTS/$INSTALL_FILE_1 && \
-$INSTALL_SCRIPTS/client/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_SCRIPTS/$DB_INSTALL_RSP -ignoreprereq || true && \
+$INSTALL_SCRIPTS/client/runInstaller -silent -force -waitforcompletion -responsefile $INSTALL_SCRIPTS/$DB_INSTALL_RSP -ignoresysprereqs -ignoreprereq || true && \
 rm -rf $INSTALL_SCRIPTS/client
