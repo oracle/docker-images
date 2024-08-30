@@ -9,6 +9,7 @@
 #
 
 usage() {
+# shellcheck disable=SC2045
   cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-i] [-t] [-o] [Docker build option]
@@ -26,6 +27,7 @@ LICENSE UPL 1.0
 Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 
 EOF
+# shellcheck disable=SC2320
   exit 0
 }
 
@@ -37,6 +39,7 @@ checksumPackages() {
     if [ "$?" -ne 0 ]; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
+# shellcheck disable=SC2320
       exit $?
     fi
   else
@@ -81,6 +84,7 @@ while getopts "hiv:o:t:" optname; do
 done
 [ -z "${IMAGE_NAME}" ] && IMAGE_NAME="oracle/client-cman:$VERSION"
 # Go into version folder
+# shellcheck disable=SC2164
 cd $VERSION
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
@@ -95,22 +99,23 @@ echo "=========================="
 
 # Proxy settings
 PROXY_SETTINGS=""
+# shellcheck disable=SC2154
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "$PROXY_SETTINGS" != "" ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
@@ -130,7 +135,7 @@ BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
-
+# shellcheck disable=SC2320
 if [ $? -eq 0 ]; then
 cat << EOF
   Oracle Connection Manager Docker Image version $VERSION is ready to be extended:

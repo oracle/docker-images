@@ -29,7 +29,7 @@ You also have to make sure to have internet connectivity for yum. Note that you 
 
 The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
-Before you build the image make sure that you have provided the installation binaries and put them into the right folder. 
+Before you build the image make sure that you have provided the installation binaries and put them into the right folder.
 
 #### Create Oracle Connection Manager Image in Podman Hosts
 Go into the **containerfiles** folder and run the **buildContainerImage.sh** script as root or with sudo privileges:

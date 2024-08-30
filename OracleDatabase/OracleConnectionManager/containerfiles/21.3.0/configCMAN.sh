@@ -15,9 +15,13 @@ source /tmp/envfile
 source $SCRIPT_DIR/functions.sh 
 
 ####################### Constants #################
+# shellcheck disable=SC2034
 declare -r FALSE=1
+# shellcheck disable=SC2034
 declare -r TRUE=0
+# shellcheck disable=SC2034
 declare -r ETCHOSTS="/etc/hosts"
+# shellcheck disable=SC2034
 progname="$(basename $0)"
 ###################### Constants ####################
 
@@ -118,13 +122,14 @@ fi
 if [ -z "${REGISTRATION_INVITED_NODES}" ]; then
    REGISTRATION_INVITED_NODES='*'
 else
+# shellcheck disable=SC2034
    REGINVITEDNODESET=1
 fi
-
+# shellcheck disable=SC2166
 if [ "${TRACE_LEVEL}" != "user" -a "${TRACE_LEVEL}" != "admin" -a "${TRACE_LEVEL}" != "support" ]; then
       print_message "Invalid trace-level [${TRACE_LEVEL}] specified."
 fi
-
+# shellcheck disable=SC2166
 if [ "${LOG_LEVEL}" != "user" -a "${LOG_LEVEL}" != "admin" -a "${LOG_LEVEL}" != "support" ]; then
       print_message "Invalid log-level [${LOG_LEVEL}] specified."
 fi
@@ -155,7 +160,7 @@ if [ $RULESRVSET -eq 1 ]; then
       print_message "Invalid input. SrvIP [${RULE_SRV}] not a valid subnet. "
    fi
 fi
-
+# shellcheck disable=SC2166
 if [ "${RULE_ACT}" != "accept" -a "${RULE_ACT}" != "reject" -a "${RULE_ACT}" != "drop" ]; then
       print_message "Invalid rule-action [${RULE_ACT}] specified."
 fi
@@ -166,7 +171,9 @@ fi
 
 SetupEtcHosts()
 {
-local stat=3
+# shellcheck disable=SC2034
+stat=3
+# shellcheck disable=SC2034
 local HOST_LINE
 
 echo -e "127.0.0.1\tlocalhost.localdomain\tlocalhost" > /etc/hosts

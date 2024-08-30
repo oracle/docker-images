@@ -146,5 +146,5 @@ VOLUME ["/common_scripts"]
 WORKDIR /home/oracle
 
 # Define default command to start Oracle Grid and RAC Database setup.
-
+# hadolint ignore=DL3025
 CMD exec $SCRIPT_DIR/$RUN_FILE

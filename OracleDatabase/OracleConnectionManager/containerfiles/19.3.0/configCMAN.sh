@@ -15,9 +15,13 @@ source /tmp/envfile
 source $SCRIPT_DIR/functions.sh 
 
 ####################### Constants #################
+# shellcheck disable=SC2034
 declare -r FALSE=1
+# shellcheck disable=SC2034
 declare -r TRUE=0
+# shellcheck disable=SC2034
 declare -r ETCHOSTS="/etc/hosts"
+# shellcheck disable=SC2034
 progname="$(basename $0)"
 ###################### Constants ####################
 
@@ -77,7 +81,9 @@ fi
 
 SetupEtcHosts()
 {
+# shellcheck disable=SC2034
 local stat=3
+# shellcheck disable=SC2034
 local HOST_LINE
 
 echo -e "127.0.0.1\tlocalhost.localdomain\tlocalhost" > /etc/hosts

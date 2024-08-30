@@ -12,14 +12,21 @@
 source $SCRIPT_DIR/functions.sh 
 
 ####################### Constants #################
+# shellcheck disable=SC2034
 declare -r FALSE=1
+# shellcheck disable=SC2034
 declare -r TRUE=0
+# shellcheck disable=SC2034
 declare -r ETCHOSTS="/etc/hosts"
+# shellcheck disable=SC2034
 declare -A dbhost_map
+# shellcheck disable=SC2034
 declare -A rule_map
+# shellcheck disable=SC2034
 declare hostip
+# shellcheck disable=SC2034
 declare action=""
-
+# shellcheck disable=SC2034
 progname="$(basename $0)"
 ###################### Constants ####################
 
@@ -94,11 +101,11 @@ fi
 if [ -z "${TRACE_LEVEL}" ]; then
    TRACE_LEVEL=user
 fi
-
+# shellcheck disable=SC2166
 if [ "${TRACE_LEVEL}" != "user" -a "${TRACE_LEVEL}" != "admin" -a "${TRACE_LEVEL}" != "support" ]; then
       print_message "Invalid trace-level [${TRACE_LEVEL}] specified."
 fi
-
+# shellcheck disable=SC2166
 if [ "${LOG_LEVEL}" != "user" -a "${LOG_LEVEL}" != "admin" -a "${LOG_LEVEL}" != "support" ]; then
       print_message "Invalid log-level [${LOG_LEVEL}] specified."
 fi
@@ -106,6 +113,7 @@ fi
 if [ -z "${REGISTRATION_INVITED_NODES}" ]; then
    REGISTRATION_INVITED_NODES='*'
 else
+# shellcheck disable=SC2034
    REGINVITEDNODESET=1
 fi
 
@@ -162,7 +170,7 @@ if [ $RULESRVSET -eq 1 ]; then
       print_message "Invalid input. SrvIP [${RULE_SRV}] not a valid subnet. "
    fi
 fi
-
+# shellcheck disable=SC2166
 if [ "${RULE_ACT}" != "accept" -a "${RULE_ACT}" != "reject" -a "${RULE_ACT}" != "drop" ]; then
       print_message "Invalid rule-action [${RULE_ACT}] specified."
 fi
@@ -181,6 +189,7 @@ do
     for rule_env_var in "${rule_env_vars[@]}"
     do
        echo "export ${rule_env_var}"
+# shellcheck disable=SC2163
        export ${rule_env_var}
     done
 
@@ -192,6 +201,7 @@ do
 
     dbhost_map[${HOST}]=${IP}
     rule_map[${HOST}]=${db_hostvalue}
+# shellcheck disable=SC2178
     rule_env_vars=""
 done
 
@@ -254,6 +264,7 @@ return 0
 
 setupEtcResolvConf()
 {
+# shellcheck disable=SC2034
 local stat=3
 
 if [ "$action" == "" ]; then
@@ -267,7 +278,9 @@ fi
 
 SetupEtcHosts()
 {
+# shellcheck disable=SC2034
 local stat=3
+# shellcheck disable=SC2034
 local HOST_LINE
 if [ "$action" == "" ]; then
  if [ ! -z "${HOSTFILE}" ]; then 
@@ -310,7 +323,9 @@ do
 
     for rule_env_var in "${rule_env_vars[@]}"
     do
+# shellcheck disable=SC2163
        echo "export ${rule_env_var}"
+# shellcheck disable=SC2163
        export ${rule_env_var}
     done
 
@@ -451,7 +466,9 @@ if [ "$action" == "delete" ]; then
      unsetrulevars
      for del_rule_var in "${del_rule_vars[@]}"
      do
+# shellcheck disable=SC2163
          echo "export ${del_rule_var}"
+# shellcheck disable=SC2163
          export ${del_rule_var}
      done
 
