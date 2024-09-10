@@ -11,4 +11,4 @@ RUN dnf install -y oracle-olcne-release-el8 && \
 
 ENTRYPOINT ["helm"]
 
-CMD ["version"]
+CMD ["--help"]
