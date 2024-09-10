@@ -11,4 +11,4 @@ RUN dnf install -y oracle-olcne-release-el9 && \
 
 ENTRYPOINT ["helm"]
 
-CMD ["version"]
+CMD ["--help"]
