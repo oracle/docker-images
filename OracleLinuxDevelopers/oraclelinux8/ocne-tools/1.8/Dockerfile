@@ -11,7 +11,7 @@ RUN dnf install -y oracle-olcne-release-el8 && \
     dnf install -y helm kubectl && \
     rm -rf /var/cache/dnf
 
-ADD help.sh /opt/help.sh
+COPY help.sh /opt/help.sh
 
 USER oracle
 
