@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -14,6 +14,7 @@ from distutils.log import debug
 import os
 import sys
 import traceback
+import datetime
 
 from oralogger import *
 from oraenv import *
@@ -24,6 +25,10 @@ from orasshsetup import *
 from oracvu import *
 from oragiprov import *
 from oraasmca import *
+
+dgname=""
+dbfiledest=""
+dbrdest=""
 
 class OraRacProv:
    """
@@ -82,27 +87,29 @@ class OraRacProv:
             hostname=self.ocommon.get_public_hostname()
             if status:
                msg='''Database instance {0} already exist on this machine {1}.'''.format(osid,hostname)
+               self.ocommon.update_statefile("completed")
                self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
+               
+            elif self.ocommon.check_key("CLONE_DB",self.ora_env_dict):
+               self.ocommon.log_info_message("Start clone_db()",self.file_name)
+               self.clone_db(crs_nodes)
             else:
                if not sshFlag:
                   self.perform_ssh_setup()
                self.ocommon.log_info_message("Start create_db()",self.file_name)
                self.create_db()
+               self.ocommon.log_info_message("Setting db listener",self.file_name)
+               self.ocommon.setup_db_lsnr()
+               self.ocommon.log_info_message("Setting local listener",self.file_name)
+               self.ocommon.set_local_listener()
+               self.ocommon.setup_db_service("create")
+               sname,osid,opdb,sparams=self.ocommon.get_service_name()
+               if sname is not None:
+                  self.ocommon.start_db_service(sname,osid)
+                  self.ocommon.check_db_service_status(sname,osid) 
                self.ocommon.log_info_message("End create_db()",self.file_name)
-               status,osid,host,mode=self.ocommon.check_dbinst()
-               if status:
-                 self.ocommon.rac_setup_complete()
-                 msg='''Oracle Database {0} is up and running on {1}.'''.format(osid,host)
-                 self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-                 self.ocommon.run_custom_scripts("CUSTOM_DB_SCRIPT_DIR","CUSTOM_DB_SCRIPT_FILE",dbuser)
-                 self.ocommon.set_remote_listener() 
-                 os.system("echo ORACLE RAC DATABASE IS READY TO USE > /dev/pts/0")
-                 msg='''ORACLE RAC DATABASE IS READY TO USE'''
-                 self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-               else:
-                 msg='''Oracle Database {0} is not up and running on {1}.'''.format(osid,host)
-                 self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-                 self.ocommon.prog_exit("127")
+               self.ocommon.perform_db_check("INSTALL")
+            self.ocommon.update_statefile("completed")
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -158,8 +165,8 @@ class OraRacProv:
        if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
          dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
          self.osetupssh.setupssh(dbuser,dbhome,"INSTALL")
-         if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            self.osetupssh.verifyssh(dbuser,"INSTALL")
+         #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
+            #self.osetupssh.verifyssh(dbuser,"INSTALL")
 
    def db_sw_install(self):
        """
@@ -179,6 +186,7 @@ class OraRacProv:
        hostname=self.ocommon.get_public_hostname()
        lang=self.ora_env_dict["LANGUAGE"] if self.ocommon.check_key("LANGUAGE",self.ora_env_dict) else "en"
        edition= self.ora_env_dict["DB_EDITION"] if self.ocommon.check_key("DB_EDITION",self.ora_env_dict) else "EE"
+       ignoreflag= " -ignorePrereq " if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict) else " "
 
        copyflag=" -noCopy "
        if not self.ocommon.check_key("COPY_DB_SOFTWARE",self.ora_env_dict):
@@ -193,7 +201,7 @@ class OraRacProv:
        mythreads=[]
        for node in pub_nodes.split(" "):
           self.ocommon.log_info_message("Running DB Sw install on node " + node,self.file_name)
-          thread=Process(target=self.db_sw_install_on_node,args=(dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node))
+          thread=Process(target=self.db_sw_install_on_node,args=(dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag))
           #thread.setDaemon(True)
           mythreads.append(thread)
           thread.start()
@@ -207,7 +215,7 @@ class OraRacProv:
 
        #self.manage_thread()
 
-   def db_sw_install_on_node(self,dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node):
+   def db_sw_install_on_node(self,dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag):
        """
        Perform the db_install
        """
@@ -223,7 +231,7 @@ class OraRacProv:
           dbgCmd='''{0} -debug '''.format(runCmd)
           runCmd=dbgCmd
           
-       rspdata='''su - {0} -c "ssh {17} {1}/{16} -ignorePrereq -waitforcompletion {15} -silent 
+       rspdata='''su - {0} -c "ssh {17} {1}/{16} {18} -waitforcompletion {15} -silent 
               oracle.install.option=INSTALL_DB_SWONLY
               ORACLE_HOSTNAME={2}
               UNIX_GROUP_NAME={3}
@@ -239,7 +247,7 @@ class OraRacProv:
               oracle.install.db.OSKMDBA_GROUP={13}
               oracle.install.db.OSRACDBA_GROUP={14}
               SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
-              DECLINE_SECURITY_UPDATES=true"'''.format(dbuser,dbhome,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,runCmd,node)
+              DECLINE_SECURITY_UPDATES=true"'''.format(dbuser,dbhome,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,runCmd,node,ignoreflag)
        cmd=rspdata.replace('\n'," ")  
        #dbswrsp="/tmp/dbswrsp.rsp" 
        #self.ocommon.write_file(dbswrsp,rspdata)
@@ -304,6 +312,75 @@ class OraRacProv:
           else:
              self.ocommon.log_info_message("ASM diskgroup exist!",self.file_name)
 
+   def set_clonedb_params(self):
+       """
+       Set clone database parameters
+       """
+       osuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
+       dgname=self.ocommon.setdgprefix(self.ocommon.getcrsdgname())
+       dbfiledest=self.ocommon.setdgprefix(self.ocommon.getdbdestdgname(dgname))
+       dbrdest=self.ocommon.setdgprefix(self.ocommon.getdbrdestdgname(dbfiledest))
+       osid=self.ora_env_dict["GOLD_SID_NAME"]
+       connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
+       sqlcmd='''
+          alter system set control_files='{1}' scope=spfile;
+          ALTER SYSTEM SET DB_CREATE_FILE_DEST='{0}' scope=spfile sid='*';
+          ALTER SYSTEM SET DB_RECOVERY_FILE_DEST='{1}' scope=spfile sid='*';
+       '''.format(dbfiledest,dbrdest) 
+       output=self.ocommon.run_sql_cmd(sqlcmd,connect_str)  
+ 
+   def clone_db(self,crs_nodes):
+      """
+      This function clone the DB
+      """
+      if self.ocommon.check_key("GOLD_DB_BACKUP_LOC",self.ora_env_dict) and self.ocommon.check_key("GOLD_DB_NAME",self.ora_env_dict) and self.ocommon.check_key("DB_NAME",self.ora_env_dict)  and  self.ocommon.check_key("GOLD_SID_NAME",self.ora_env_dict) and self.ocommon.check_key("GOLD_PDB_NAME",self.ora_env_dict):
+         self.ocommon.log_info_message("GOLD_DB_BACKUP_LOC set to " + self.ora_env_dict["GOLD_DB_BACKUP_LOC"] ,self.file_name)
+         self.ocommon.log_info_message("GOLD_DB_NAME set to " + self.ora_env_dict["GOLD_DB_NAME"] ,self.file_name)
+         self.ocommon.log_info_message("DB_NAME set to " + self.ora_env_dict["DB_NAME"] ,self.file_name)
+         pfile='''/tmp/pfile_{0}'''.format( datetime.datetime.now().strftime('%d%m%Y%H%M'))
+         self.ocommon.create_file(pfile,"local",None,None)
+         fdata='''db_name={0}'''.format(self.ora_env_dict["GOLD_DB_NAME"])
+         self.ocommon.append_file(pfile,fdata)
+         self.ocommon.start_db(self.ora_env_dict["GOLD_SID_NAME"],"nomount",pfile)
+       ## VV  self.ocommon.catalog_bkp()
+         self.ocommon.restore_spfile()
+         cmd='''rm -f {0}'''.format(pfile)
+         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+         self.ocommon.check_os_err(output,error,retcode,False)
+         self.ocommon.shutdown_db(self.ora_env_dict["GOLD_SID_NAME"])
+         self.ocommon.start_db(self.ora_env_dict["GOLD_SID_NAME"],"nomount")
+         self.set_clonedb_params()
+         self.ocommon.shutdown_db(self.ora_env_dict["GOLD_SID_NAME"])
+         self.ocommon.start_db(self.ora_env_dict["GOLD_SID_NAME"],"nomount")
+         self.ocommon.restore_bkp(self.ocommon.setdgprefix(self.ocommon.getcrsdgname()))
+
+         osuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
+         osid=self.ora_env_dict["GOLD_SID_NAME"]
+         pfile=dbhome + "/dbs/init" + osid + ".ora"
+         spfile=dbhome + "/dbs/spfile" + osid + ".ora"
+
+         self.ocommon.create_pfile(pfile,spfile)
+         self.ocommon.shutdown_db(self.ora_env_dict["GOLD_SID_NAME"])
+         self.ocommon.set_cluster_mode(pfile,False)
+         self.ocommon.start_db(self.ora_env_dict["GOLD_SID_NAME"],"mount",pfile)
+         self.ocommon.change_dbname(pfile,self.ora_env_dict["DB_NAME"])
+         
+         self.ocommon.start_db(self.ora_env_dict["DB_NAME"] + "1","mount",pfile)
+         spfile=self.ocommon.getdbdestdgname("+DATA") + "/" + self.ora_env_dict["DB_NAME"] + "/PARAMETERFILE/spfile" + self.ora_env_dict["DB_NAME"] + ".ora"
+         self.ocommon.create_spfile(spfile,pfile)
+         self.ocommon.resetlogs(self.ora_env_dict["DB_NAME"] + "1")
+         self.ocommon.shutdown_db(self.ora_env_dict["DB_NAME"] + "1")
+         self.ocommon.add_rac_db(osuser,dbhome,self.ora_env_dict["DB_NAME"],spfile)
+         instance_number=1
+         for node in crs_nodes.split(","):
+            self.ocommon.add_rac_instance(osuser,dbhome,self.ora_env_dict["DB_NAME"],str(instance_number),node)
+            instance_number +=1
+
+         self.ocommon.start_rac_db(osuser,dbhome,self.ora_env_dict["DB_NAME"])
+         self.ocommon.get_db_status(osuser,dbhome,self.ora_env_dict["DB_NAME"])
+         self.ocommon.get_db_config(osuser,dbhome,self.ora_env_dict["DB_NAME"])
+         self.ocommon.log_info_message("End clone_db()",self.file_name) 
+                  
    def check_responsefile(self):
       """
       This function returns the valid response file
@@ -318,7 +395,7 @@ class OraRacProv:
          
       if os.path.isfile(dbrsp):
 	      return dbrsp
-    
+   
    def create_db(self):
       """
       Perform the DB Creation
@@ -334,12 +411,15 @@ class OraRacProv:
       else:
          cmd=self.prepare_db_cmd() 
 
-      dbpasswd=self.ocommon.get_db_passwd() 
+      dbpasswd=self.ocommon.get_db_passwd()
+      tdepasswd=self.ocommon.get_tde_passwd() 
       self.ocommon.set_mask_str(dbpasswd) 
       output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
       self.ocommon.check_os_err(output,error,retcode,True)
       ### Unsetting the encrypt value to None
-      self.ocommon.unset_mask_str()       
+      self.ocommon.unset_mask_str()
+      if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
+        self.ocommon.reset_dbuser_passwd("sys",None,"all")       
 
    def prepare_db_cmd(self):
        """
@@ -349,6 +429,7 @@ class OraRacProv:
        if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict):
          prereq=" -ignorePreReqs "
 
+       tdewallet=""
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
        pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
        crs_nodes=pub_nodes.replace(" ",",")
@@ -364,6 +445,8 @@ class OraRacProv:
        arcmode=self.ora_env_dict["ENABLE_ARCHIVELOG"] if self.ocommon.check_key("ENABLE_ARCHIVELOG",self.ora_env_dict) else  "true" 
        pdbsettings=self.get_pdb_params()
        initparams=self.get_init_params()
+       if self.ocommon.check_key("SETUP_TDE_WALLET",self.ora_env_dict):
+          tdewallet='''-configureTDE true -tdeWalletPassword HIDDEN_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
        #memorypct=self.get_memorypct()
 
        rspdata='''su - {0} -c "{1}/bin/dbca -silent {15} -createDatabase  \
@@ -382,7 +465,8 @@ class OraRacProv:
        -useOMF true \
        {12} \
        {13} \
-       -enableArchive {14}"'''.format(dbuser,dbhome,dbname,cdbflag,dbfiledest,stype,charset,redosize,dbtype,dbctype,crs_nodes,dbname,pdbsettings,initparams,arcmode,prereq)
+       {16} \
+       -enableArchive {14}"'''.format(dbuser,dbhome,dbname,cdbflag,dbfiledest,stype,charset,redosize,dbtype,dbctype,crs_nodes,dbname,pdbsettings,initparams,arcmode,prereq,tdewallet)
        cmd='\n'.join(line.lstrip() for line in rspdata.splitlines())
 
        return cmd
@@ -443,27 +527,3 @@ class OraRacProv:
        initparams=""" -initparams '{0}'""".format(initprm)
 
        return initparams
-
-   def manage_thread(self):
-      """
-      This function manage the thread and exit the thread if the job is done
-      """
-      self.ocommon.log_info_message("going to run the loop",self.file_name)
-      checkthread=True
-      self.ocommon.log_info_message("mythread list has values" + str(len(self.mythread)),self.file_name)
-      while checkthread:
-       for key,value in self.mythread.items():
-         print(key, value)
-         swthread=value[0]
-         if swthread.is_alive():
-            self.ocommon.log_info_message("I am in status block1. Key is set to " + key + "Flag is set to :  " + value[1] ,self.file_name)
-            checkthread=True
-            sleep(10)
-         else:
-            checkthread=False
-            self.ocommon.log_info_message("I am not Alive",self.file_name)
-            sleep(10)
-
-         if value[1] == 'FALSE':
-            self.ocommon.log_info_message("I am in status block. Key is set to " + key + "Flag is set to :  " + value[1] ,self.file_name)
-            break # exit the main loop

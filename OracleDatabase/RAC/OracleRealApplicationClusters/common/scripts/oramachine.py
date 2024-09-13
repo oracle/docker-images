@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.

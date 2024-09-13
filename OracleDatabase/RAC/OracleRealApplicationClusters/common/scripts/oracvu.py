@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -212,9 +212,16 @@ class OraCvu:
        else:
           crs_nodes=" -n " + node
 
-       cmd='''su - {0} -c "{1}/bin/cluvfy comp software {2} -d {3} -verbose"'''.format(user,gihome,crs_nodes,home)
+       cvufile='''{0}/bin/cluvfy'''.format(gihome)
+       if not self.ocommon.check_file(cvufile,True,None,None):
+          return 1
+          
+       cmd='''su - {0} -c "{1}/bin/cluvfy comp software -d {3} -verbose"'''.format(user,gihome,node,home)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       return retcode
+       if not self.ocommon.check_substr_match(output,"FAILED"):
+         return 0
+       else:
+         return 1
 
    def check_db_homecfg(self,node):
        """

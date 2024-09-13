@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -160,7 +160,7 @@ class StdHandler(Handler):
           """
           request.stdout_ =  request.getStdOutValue()
           if request.stdout_ == LoggingType.STDOUT:
-            st = logging.FileHandler(request.stdoutfile_,'w')
+            st = logging.FileHandler(request.stdoutfile_)
             request.root.addHandler(st)
             st.setFormatter(request.formatter)
             self.print_message(request,st)

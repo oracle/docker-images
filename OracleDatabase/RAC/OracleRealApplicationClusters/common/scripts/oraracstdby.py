@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -71,7 +71,7 @@ class OraRacStdby:
           status=self.ocommon.check_rac_installed(retcode1)
           if not status:
             self.oraracprov.perform_ssh_setup()
-          sshFlag=True
+            sshFlag=True
           status=self.ocommon.check_home_inv(None,dbhome,dbuser)
           if not status:
             self.ocommon.log_info_message("Start oraracprov.db_sw_install()",self.file_name)
@@ -97,8 +97,8 @@ class OraRacStdby:
                self.ocommon.log_info_message("Start create_standbylogs()",self.file_name)
                self.create_standbylogs()
                self.ocommon.log_info_message("End create_standbylogs()",self.file_name)
-               self.populate_tnsfile()
-               self.copy_tnsfile(dbhome,dbuser)
+               #self.populate_tnsfile()
+               #self.copy_tnsfile(dbhome,dbuser)
                self.ocommon.log_info_message("Start create_db()",self.file_name)
                self.create_db()
                self.ocommon.log_info_message("End create_db()",self.file_name)
@@ -106,9 +106,10 @@ class OraRacStdby:
                self.configure_standby_db()
                self.ocommon.log_info_message("End configure_standby_db()",self.file_name)
                ### Calling populate TNS again as create_db reset the oldtnames.ora
-               self.populate_tnsfile()
-               self.copy_tnsfile(dbhome,dbuser)
+               #self.populate_tnsfile()
+               #self.copy_tnsfile(dbhome,dbuser)
                self.configure_dgsetup() 
+               self.restart_db()
 
           ct = datetime.datetime.now()
           ets = ct.timestamp()
@@ -157,11 +158,11 @@ class OraRacStdby:
        '''
        dgname=self.ora_env_dict["CRS_ASM_DISKGROUP"] if self.ocommon.check_key("CRS_ASM_DISKGROUP",self.ora_env_dict) else "+DATA"
        dbrdest=self.ora_env_dict["DB_RECOVERY_FILE_DEST"] if self.ocommon.check_key("DB_RECOVERY_FILE_DEST",self.ora_env_dict) else dgname
-       dbrdestsize=self.ora_env_dict["DB_RECOVERY_FILE_DEST_SIZE"] if self.ocommon.check_key("DB_RECOVERY_FILE_DEST_SIZE",self.ora_env_dict) else "10G"
+       dbrdestsize=self.ora_env_dict["DB_RECOVERY_FILE_DEST_SIZE"] if self.ocommon.check_key("DB_RECOVERY_FILE_DEST_SIZE",self.ora_env_dict) else "50G"
        dbdest=self.ora_env_dict["DB_CREATE_FILE_DEST"] if self.ocommon.check_key("DB_CREATE_FILE_DEST",self.ora_env_dict) else dbrdest
         
-       return dbrdest,dbrdestsize,dbdest,dgname
- 
+       return self.ocommon.setdgprefix(dbrdest),dbrdestsize,self.ocommon.setdgprefix(dbdest),self.ocommon.setdgprefix(dgname)
+
    def check_primary_db(self):
           """
           Checking primary DB before proceeding to STDBY Setup
@@ -199,12 +200,15 @@ class OraRacStdby:
          """
          stdbydbuname,prmydbuname,prmydbport,prmydbname,prmyscanname=self.get_stdby_variables()
          connect_str,osuser,dbhome,dbbase,oinv,osid=self.get_primary_connect_str()
-         
+         stdbyscanname=self.ora_env_dict["SCAN_NAME"] if self.ocommon.check_key("SCAN_NAME",self.ora_env_dict) else self.prog_exit("127")
+         stdbyscanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else  "1521"
+         prmytnssvc=self.ocommon.get_tnssvc_str(prmydbuname,prmydbport,prmyscanname)
+         stdbytnssvc=self.ocommon.get_tnssvc_str(stdbydbuname,stdbyscanport,stdbyscanname)
          msg='''Setting up Primary DB for standby'''
          self.ocommon.log_info_message(msg,self.file_name)
          stdbylgdg,dbrdestsize,stdbydbdg,dgname=self.get_stdby_dg_name() 
          lgdest1="""LOCATION=USE_DB_RECOVERY_FILE_DEST VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME={0}""".format(prmydbuname)
-         lgdest2="""SERVICE={0} ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLES) DB_UNIQUE_NAME={0}""".format(stdbydbuname)
+         lgdest2='''SERVICE="{0}" ASYNC VALID_FOR=(ONLINE_LOGFILE,PRIMARY_ROLE) DB_UNIQUE_NAME={1}'''.format(stdbytnssvc,stdbydbuname)
          dbconfig="""DG_CONFIG=({0},{1})""".format(prmydbuname,stdbydbuname)
          prmydbdg=self.ocommon.get_init_params("db_create_file_dest",connect_str)
          prmylsdg=self.ocommon.get_init_params("DB_RECOVERY_FILE_DEST",connect_str)
@@ -212,7 +216,8 @@ class OraRacStdby:
          lgconv="""'{0}','{1}'""".format(stdbylgdg,prmylsdg)
          prmy_dbname=self.ocommon.get_init_params("DB_NAME",connect_str)
          dgbroker=prmyscanname=self.ora_env_dict["DG_BROKER_START"] if self.ocommon.check_key("DG_BROKER_START",self.ora_env_dict) else "true"
- 
+         
+
          sqlcmd="""
           alter database force logging;
           alter database flashback on;
@@ -222,7 +227,7 @@ class OraRacStdby:
           alter system set LOG_ARCHIVE_DEST_STATE_1=ENABLE scope=both sid='*';
           alter system set LOG_ARCHIVE_DEST_STATE_2=ENABLE scope=both sid='*';
           alter system set LOG_ARCHIVE_CONFIG='{2}' scope=both sid='*';
-          alter system set FAL_SERVER={3} scope=both sid='*';
+          alter system set FAL_SERVER='{9}' scope=both sid='*';
           alter system set STANDBY_FILE_MANAGEMENT=AUTO scope=both sid='*';
           alter system set DB_FILE_NAME_CONVERT={4} scope=both sid='*';
           alter system set LOG_FILE_NAME_CONVERT={5} scope=both sid='*';
@@ -231,7 +236,7 @@ class OraRacStdby:
           alter system set DB_LOST_WRITE_PROTECT='TYPICAL' scope=both sid='*';
           alter system set DB_FLASHBACK_RETENTION_TARGET=120 scope=both sid='*';
           alter system set PARALLEL_THREADS_PER_CPU=1 scope=both sid='*'; 
-         """.format(lgdest1,lgdest2,dbconfig,stdbydbuname,dbconv,lgconv,dgbroker,prmylsdg,prmydbdg)
+         """.format(lgdest1,lgdest2,dbconfig,stdbydbuname,dbconv,lgconv,dgbroker,prmylsdg,prmydbdg,stdbytnssvc)
 
          output=self.ocommon.run_sql_cmd(sqlcmd,connect_str)
 
@@ -299,12 +304,11 @@ class OraRacStdby:
 
    def create_standbylogs(self):
          """
-           Setup standby logs on Primary
+         Setup standby logs on Primary
          """
          stdbydbuname,prmydbuname,prmydbport,prmydbname,prmyscanname=self.get_stdby_variables()
          connect_str,osuser,dbhome,dbbase,oinv,osid=self.get_primary_connect_str()
-         maxthread,maxgrpcount,maxgrpnum,mingrpnum,maxgrpmemnum,maxstdbygrpcount,maxstdbygrpnum,filesize,maxgrp=self.get_logfile_info(connect_str)
-         sqlsetcmd=self.ocommon.get_sqlsetcmd()         
+         maxthread,maxgrpcount,maxgrpnum,mingrpnum,maxgrpmemnum,maxstdbygrpcount,maxstdbygrpnum,filesize,maxgrp=self.get_logfile_info(connect_str)         
          threadcount=1
          mingrpmemnum=1
          stdbygrp=0
@@ -323,35 +327,68 @@ class OraRacStdby:
          '''.format(maxthread,maxgrpcount,maxgrpnum,mingrpnum,maxgrpmemnum,maxstdbygrpcount,maxstdbygrpnum,filesize,maxgrp)
 
          self.ocommon.log_info_message(msg,self.file_name)
-          
-         if maxstdbygrpcount != 0:
-            stdbygrp=int(maxstdbygrpnum)+1
-         else:
-            stdbygrp=maxgrp + 1
- 
-         while threadcount <= maxthread:
-            mingrpnum=1 
-            msg='''Logfile thread loop. threadcount={0},maxthread{1}'''.format(threadcount,maxthread)
-            self.ocommon.log_info_message(msg,self.file_name)
-            while mingrpnum <= maxgrpnum:
-               msg='''Logfile group loop. mingrpnum={0},maxgrpnum{1}'''.format(mingrpnum,maxgrpnum)
-               self.ocommon.log_info_message(msg,self.file_name)
-               mingrpmemnum=1
-               while mingrpmemnum <= maxgrpmemnum:
-                  if mingrpmemnum == 1:
-                     sqlcmd1='''
-                       {3}
-                       ALTER DATABASE ADD STANDBY LOGFILE THREAD {0} group {1} size {2};
-                     '''.format(threadcount,stdbygrp,filesize,sqlsetcmd)
-                  else:
-                     # This block is for future.
-                      pass
-                  output=self.ocommon.run_sql_cmd(sqlcmd1,connect_str)
-                  mingrpmemnum = mingrpmemnum + 1
-               mingrpnum = mingrpnum + 1
-               stdbygrp=stdbygrp + 1
-            threadcount = threadcount + 1
+         dbrdest=self.ocommon.get_init_params("DB_RECOVERY_FILE_DEST",connect_str)
 
+         if maxstdbygrpcount != 0:
+            if maxstdbygrpcount == ((maxgrp + 1) * maxthread):
+              msg1='''The required standby logs already exist. The current number of max primary group is {1} and max threads are {3}. The standby logs groups is to  "((maxgrp + 1) * maxthread)"= {0} '''.format(((maxgrp + 1) * maxthread),maxgrp,maxthread)
+              self.ocommon.log_info_message(msg1,self.file_name)
+         else:
+            stdbygrp=(maxgrp + 1) * maxthread
+            msg1='''The current number of max primary log group is {1} and max threads are {2}. The required standby logs groups "((maxgrp + 1) * maxthread)"= {0}'''.format(((maxgrp + 1) * maxthread),maxgrp,maxthread)
+            self.ocommon.log_info_message(msg1,self.file_name)
+
+            # Setting the standby logs to the value which will start after maxgrpcount
+            mingrpnum=(maxgrp+1)
+            newstdbygrp=stdbygrp
+            threadcount=1
+            group_per_thread=((stdbygrp - maxgrp )/maxthread)
+            group_per_thread_count=1
+
+            msg='''Logfile thread maxthread={1}, groups per thread={2}'''.format(threadcount,maxthread,group_per_thread)
+            self.ocommon.log_info_message(msg,self.file_name)
+            msg='''Standby logfiles minigroup set to={0} and maximum group set to={1}'''.format(mingrpnum,newstdbygrp)
+            self.ocommon.log_info_message(msg,self.file_name)
+            msg='''Logfile group loop. mingrpnum={0},maxgrpnum={1}'''.format(mingrpnum,newstdbygrp)
+            self.ocommon.log_info_message(msg,self.file_name)
+
+            while threadcount <= maxthread:
+              group_per_thread_count=1
+              while group_per_thread_count <= group_per_thread:
+                mingrpmemnum=1
+                while mingrpmemnum <= maxgrpmemnum:
+                  if mingrpmemnum == 1:
+                      self.add_stdby_log_grp(threadcount,mingrpnum,filesize,dbrdest,connect_str,None)
+                  else:
+                      self.add_stdby_log_grp(threadcount,mingrpnum,filesize,dbrdest,connect_str,'member')
+                  mingrpmemnum = mingrpmemnum + 1
+                group_per_thread_count=group_per_thread_count + 1
+                mingrpnum = mingrpnum + 1
+              threadcount = threadcount + 1
+              if mingrpnum >= newstdbygrp:
+                break
+                        
+   def add_stdby_log_grp(self,threadcount,stdbygrp,filesize,dbrdest,connect_str,type):
+     """
+     This function will add standby log group
+     """
+     sqlcmd1=None
+     sqlsetcmd=self.ocommon.get_sqlsetcmd()
+     if type is None:   
+        sqlcmd1='''
+          {3}
+          ALTER DATABASE ADD STANDBY LOGFILE THREAD {0} group {1} size {2};
+        '''.format(threadcount,stdbygrp,filesize,sqlsetcmd)
+     
+     if type == 'member':
+        sqlcmd1='''
+          {2}
+          ALTER DATABASE ADD STANDBY LOGFILE member '{0}' to group {1};
+        '''.format(dbrdest,stdbygrp,sqlsetcmd)
+    
+     output=self.ocommon.run_sql_cmd(sqlcmd1,connect_str)
+     
+     
    def populate_tnsfile(self):
      """
       Populate TNS file"
@@ -467,7 +504,7 @@ class OraRacStdby:
      -remoteDBConnString {7} \
      -initparams {8} \
      -dbUniqueName {3} \
-     -databaseConfigType {9}"'''.format(dbuser,dbhome,prmydbname,stdbydbuname,dbfiledest,stype,crs_nodes,prmydbstr,initparams,dbctype)
+     -databaseConfigType {9}"'''.format(dbuser,dbhome,prmydbname,stdbydbuname,self.ocommon.setdgprefix(dbfiledest),stype,crs_nodes,prmydbstr,initparams,dbctype)
      cmd='\n'.join(line.lstrip() for line in rspdata.splitlines())
 
      return cmd
@@ -485,8 +522,8 @@ class OraRacStdby:
       dbrdest=stdbylgdg
 
       dbconfig="""DG_CONFIG=({0},{1})""".format(prmydbuname,stdbydbuname)
-      lgdest1="""LOCATION=USE_DB_RECOVERY_FILE_DEST VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME={0}""".format(stdbydbuname)
-      lgdest2="""SERVICE={0} ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLES) DB_UNIQUE_NAME={0}""".format(prmydbuname)
+      lgdest1="""LOCATION=USE_DB_RECOVERY_FILE_DEST VALID_FOR=(ALL_LOGFILE,ALL_ROLE) DB_UNIQUE_NAME={0}""".format(stdbydbuname)
+      lgdest2="""SERVICE={0} ASYNC VALID_FOR=(ONLINE_LOGFILE,PRIMARY_ROLE) DB_UNIQUE_NAME={0}""".format(prmydbuname)
 		 
       sgasize=self.ora_env_dict["INIT_SGA_SIZE"] if self.ocommon.check_key("INIT_SGA_SIZE",self.ora_env_dict) else  None
       pgasize=self.ora_env_dict["INIT_PGA_SIZE"] if self.ocommon.check_key("INIT_PGA_SIZE",self.ora_env_dict) else  None
@@ -509,7 +546,7 @@ class OraRacStdby:
          initprm= initprm + ''',sga_target={0},sga_max_size={0}'''.format(sgasize)
 
       if pgasize:
-        initprm= initprm + ''',pga_aggregate_size={0)'''.format(pgasize)
+        initprm= initprm + ''',pga_aggregate_size={0}'''.format(pgasize)
 
       if processes:
         initprm= initprm + ''',processes={0}'''.format(processes)
@@ -527,17 +564,23 @@ class OraRacStdby:
          """
          stdbydbuname,prmydbuname,prmydbport,prmydbname,prmyscanname=self.get_stdby_variables()
          connect_str,osuser,dbhome,dbbase,oinv,osid=self.get_standby_connect_str()
+         stdbyscanname=self.ora_env_dict["SCAN_NAME"] if self.ocommon.check_key("SCAN_NAME",self.ora_env_dict) else self.prog_exit("127")
+         stdbyscanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else  "1521"
+         prmytnssvc=self.ocommon.get_tnssvc_str(prmydbuname,prmydbport,prmyscanname)
+         stdbytnssvc=self.ocommon.get_tnssvc_str(stdbydbuname,stdbyscanport,stdbyscanname)
 
          msg='''Setting parameters in standby DB'''
          self.ocommon.log_info_message(msg,self.file_name)
          stdbylgdg,dbrdestsize,stdbydbdg,dgname=self.get_stdby_dg_name()
          lgdest1="""LOCATION=USE_DB_RECOVERY_FILE_DEST VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME={0}""".format(stdbydbuname)
-         lgdest2="""SERVICE={0} ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLES) DB_UNIQUE_NAME={0}""".format(prmydbuname)
-
+         lgdest2='''SERVICE="{0}" ASYNC VALID_FOR=(ONLINE_LOGFILE,PRIMARY_ROLE) DB_UNIQUE_NAME={1}'''.format(prmytnssvc,prmydbuname)
+         
+ 
          sqlcmd="""
           alter system set LOG_ARCHIVE_CONFIG='DG_CONFIG=({2},{3})' scope=both sid='*';
-          alter system set dg_broker_config_file1={4} scope=spfile sid='*';
-          alter system set dg_broker_config_file2={4} scope=spfile sid='*';
+          alter system set dg_broker_config_file1='{4}' scope=spfile sid='*';
+          alter system set dg_broker_config_file2='{4}' scope=spfile sid='*';
+          alter system set FAL_SERVER='{5}' scope=both sid='*';
           alter system set  dg_broker_start=true scope=both sid='*';
           alter system set LOG_ARCHIVE_DEST_1='{0}' scope=both sid='*';
           alter system set LOG_ARCHIVE_DEST_2='{1}' scope=both sid='*';
@@ -549,7 +592,10 @@ class OraRacStdby:
           alter system set DB_LOST_WRITE_PROTECT='TYPICAL' scope=spfile sid='*';
           alter system set DB_FLASHBACK_RETENTION_TARGET=120 scope=spfile sid='*';
           alter system set PARALLEL_THREADS_PER_CPU=1 scope=spfile sid='*';
-         """.format(lgdest1,lgdest2,prmydbuname,stdbydbuname,stdbydbdg)
+          alter database recover managed standby database cancel;
+          alter database flashback on;
+          alter database recover managed standby database disconnect;
+         """.format(lgdest1,lgdest2,prmydbuname,stdbydbuname,stdbydbdg,prmytnssvc)
 
          output=self.ocommon.run_sql_cmd(sqlcmd,connect_str)
          hostname = self.ocommon.get_public_hostname()
@@ -565,15 +611,33 @@ class OraRacStdby:
          hostname = self.ocommon.get_public_hostname()
          inst_sid=self.ocommon.get_inst_sid(osuser,dbhome,stdbydbuname,hostname)
          connect_str=self.ocommon.get_dgmgr_str(dbhome,inst_sid,osuser,"sys","HIDDEN_STRING",prmyscanname,prmydbport,prmydbuname,None,"sysdba",None)
+         stdbyscanname=self.ora_env_dict["SCAN_NAME"] if self.ocommon.check_key("SCAN_NAME",self.ora_env_dict) else self.prog_exit("127")
+         stdbyscanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else  "1521"
+         prmytnssvc=self.ocommon.get_tnssvc_str(prmydbuname,prmydbport,prmyscanname)
+         stdbytnssvc=self.ocommon.get_tnssvc_str(stdbydbuname,stdbyscanport,stdbyscanname)
+
          dgcmd='''
-           create configuration '{0}' as primary database is {0} connect identifier is {0};
-           ADD DATABASE {1} AS CONNECT IDENTIFIER IS {1};
+           create configuration '{0}' as primary database is {0} connect identifier is "{2}";
+           ADD DATABASE {1} AS CONNECT IDENTIFIER IS "{3}";
            enable configuration;            
             exit;
-         '''.format(prmydbuname,stdbydbuname)
+         '''.format(prmydbuname,stdbydbuname,prmytnssvc,stdbytnssvc)
          dbpasswd=self.ocommon.get_db_passwd()
          self.ocommon.set_mask_str(dbpasswd)
          output,error,retcode=self.ocommon.run_sqlplus(connect_str,dgcmd,None)
          self.ocommon.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
          self.ocommon.check_dgmgrl_err(output,error,retcode,None)
          self.ocommon.unset_mask_str()
+
+
+   def restart_db(self):
+         """
+           restart DB
+         """
+         stdbydbuname,prmydbuname,prmydbport,prmydbname,prmyscanname=self.get_stdby_variables()
+         connect_str,osuser,dbhome,dbbase,oinv,osid=self.get_standby_connect_str()
+         hostname = self.ocommon.get_public_hostname()
+         self.ocommon.stop_rac_db(osuser,dbhome,stdbydbuname,hostname)
+         self.ocommon.start_rac_db(osuser,dbhome,stdbydbuname,hostname,None)
+         
+

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -99,6 +99,19 @@ class OraEnv:
       return OraEnv.__env_var_dict
 
    @staticmethod
+   def get_log_dir():
+      """ Static access method to return the logdir. """
+      return OraEnv.logdir__
+   
+   @staticmethod
+   def statelogfile_name():
+      """ Static access method to return the state logfile name. """
+      if "STATE_LOGFILE_NAME" not in OraEnv.__env_var_dict:
+         return OraEnv.logdir__ + "/.statefile"
+      else:
+         return OraEnv.__env_var_dict["STATE_LOGFILE_NAME"]
+      
+   @staticmethod
    def logfile_name(file_type):
       """ Static access method to return the logfile name. """
       if file_type == "NONE":
@@ -120,6 +133,28 @@ class OraEnv:
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_check_db_role.log"
       elif file_type == "CHECK_CONNECT_STR":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_check_conn_str_file.log"
+      elif file_type == "CHECK_PDB_CONNECT_STR":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_check_pdb_conn_str_file.log"
+      elif file_type == "SETUP_DB_LSNR":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/setup_db_lsnr.log"
+      elif file_type == "SETUP_LOCAL_LSNR":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/setup_local_lsnr.log"
+      elif file_type == "CHECK_DB_VERSION":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/check_db_version.log"
+      elif file_type == "CHECK_DB_SVC":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/check_db_svc.log"
+      elif file_type == "MODIFY_DB_SVC":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/modify_db_svc.log"
+      elif file_type == "CHECK_RAC_STATUS":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/check_racdb_status.log"
+      elif file_type == "MODIFY_SCAN":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_modify_scan_status.log"
+      elif file_type == "UPDATE_ASMCOUNT":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_asmcount_status.log"
+      elif file_type == "UPDATE_ASMDEVICES":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_asmdevices_status.log"
+      elif file_type == "UPDATE_LISTENERENDP":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_listenerendp_status.log"
       else:
         pass
 

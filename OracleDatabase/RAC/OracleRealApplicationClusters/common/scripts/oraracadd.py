@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -73,7 +73,8 @@ class OraRacAdd:
             status,osid,host,mode=self.ocommon.check_dbinst()
             hostname=self.ocommon.get_public_hostname()
             if status:
-               msg='''Database instance {0} already exist on this machine {1}.'''.format(osid,hostname) 
+               msg='''Database instance {0} already exist on this machine {1}.'''.format(osid,hostname)
+               self.ocommon.update_statefile("completed") 
                self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
             else:
                if not sshFlag:
@@ -81,14 +82,18 @@ class OraRacAdd:
                self.ocommon.log_info_message("Start add_dbinst()",self.file_name)
                self.add_dbinst()
                self.ocommon.log_info_message("End add_dbinst()",self.file_name)
-               status,osid,host,mode=self.ocommon.check_dbinst()
-               if status:
-                 msg='''Oracle Database {0} is up and running on {1}.'''.format(osid,host)
-                 self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-               else:
-                 msg='''Oracle Database {0} is not up and running on {1}.'''.format(osid,host)
-                 self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-                 self.ocommon.prog_exit("127")
+               self.ocommon.log_info_message("Setting db listener",self.file_name)
+               self.ocommon.setup_db_lsnr()
+               self.ocommon.log_info_message("Setting local listener",self.file_name)
+               self.ocommon.set_local_listener()
+               self.ocommon.setup_db_service("modify")
+               sname,osid,opdb,sparams=self.ocommon.get_service_name()
+               if sname is not None:
+                  self.ocommon.start_db_service(sname,osid)
+                  self.ocommon.check_db_service_status(sname,osid) 
+               self.ocommon.log_info_message("End create_db()",self.file_name)
+               self.ocommon.perform_db_check("ADDNODE")
+            self.ocommon.update_statefile("completed")
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -142,7 +147,8 @@ class OraRacAdd:
        if not self.ocommon.detect_k8s_env():
            dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
            self.osetupssh.setupssh(dbuser,dbhome,'ADDNODE')
-           self.osetupssh.verifyssh(dbuser,'ADDNODE')
+           #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
+            #self.osetupssh.verifyssh(dbuser,'ADDNODE')
        else:
          self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this k8s env.",self.file_name)
 
@@ -155,8 +161,11 @@ class OraRacAdd:
        crs_nodes=pub_nodes.replace(" ",",")
        hostname=self.ocommon.get_public_hostname()
        existing_crs_nodes=self.ocommon.get_existing_clu_nodes(True)
+       oraversion=self.ocommon.get_rsp_version("ADDNODE",hostname)
+       version=oraversion.split(".",1)[0].strip()
        node=""
        nodeflag=False
+       cmd=None
        for cnode in existing_crs_nodes.split(","):
            retcode3=self.ocvu.check_clu(cnode,True)
            if retcode3 == 0:
@@ -169,9 +178,14 @@ class OraRacAdd:
           copyflag=" -noCopy "
 
        if nodeflag:
-          cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+          #cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+          if int(version) < 23:
+              cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\"  -waitForCompletion  {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+          else:
+             cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\"  -waitForCompletion  {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+             #cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/runInstaller -setupDBHome -OSDBA <group> -OSBACKUPDBA <group> -OSDGDBA <group> -OSKMDBA <group> -OSRACDBA <group> -ORACLE_BASE <base> -clusterNodes <new nodes>'"'''
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,True)
+          self.ocommon.check_os_err(output,error,retcode,None)
        else:
           self.ocommon.log_error_message("Clusterware is not up on any node : " + existing_crs_nodes + ".Exiting...",self.file_name)
           self.prog_exit("127")
@@ -185,7 +199,7 @@ class OraRacAdd:
        for node in pub_nodes.split(" "):
            cmd='''su - {0}  -c "ssh {1}  sudo {2}/root.sh"'''.format(dbuser,node,dbhome)
            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-           self.ocommon.check_os_err(output,error,retcode,True)
+           self.ocommon.check_os_err(output,error,retcode,True) 
 
    def add_dbinst(self):
        """

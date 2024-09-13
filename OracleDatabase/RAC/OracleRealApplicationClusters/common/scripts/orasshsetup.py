@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -58,7 +58,7 @@ class OraSetupSSH:
               for sshi in SSH_USERS:
                 uohome=sshi.split(":")          
                 self.setupsshusekey(uohome[0],uohome[1],None)
-                self.verifyssh(uohome[0],None)
+                #self.verifyssh(uohome[0],None)
           else:
             for sshi in SSH_USERS:
                uohome=sshi.split(":")
@@ -68,7 +68,7 @@ class OraSetupSSH:
                else:
                   self.setupssh(uohome[0],uohome[1],"INSTALL")
 
-               self.verifyssh(uohome[0],None)
+               #self.verifyssh(uohome[0],None)
 
         ct = datetime.datetime.now()
         ets = ct.timestamp()
@@ -81,102 +81,75 @@ class OraSetupSSH:
         """
         self.ocommon.reset_os_password(user)
         password=self.ocommon.get_os_password()
+        giuser,gihome,gibase,oinv=self.ocommon.get_gi_params()
         expect=self.ora_env_dict["EXPECT"] if self.ocommon.check_key("EXPECT",self.ora_env_dict) else "/bin/expect"
         script_dir=self.ora_env_dict["SSHSCR_DIR"] if self.ocommon.check_key("SSHSCR_DIR",self.ora_env_dict) else "/opt/scripts/startup/scripts"
-        sshscr=self.ora_env_dict["SSHSCR"] if self.ocommon.check_key("SSHSCR",self.ora_env_dict) else "setupSSH.expect"
+        sshscr=self.ora_env_dict["SSHSCR"] if self.ocommon.check_key("SSHSCR",self.ora_env_dict) else "bin/cluvfy"
+        if user == 'grid':
+          sshscr="runcluvfy.sh"
+        else:
+          sshscr="bin/cluvfy"
+          file='''{0}/{1}'''.format(gihome,sshscr)
+          if not self.ocommon.check_file(file,"local",None,None):
+            sshscr="runcluvfy.sh"
+            
         cluster_nodes=""
         if ctype == 'INSTALL':
           cluster_nodes=self.ocommon.get_cluster_nodes()
-          self.ocommon.set_mask_str(password)
-          cmd='''su - {0} -c "{1} {2}/{3} {0} \"{4}/oui/prov/resources/scripts\"  '{5}' '{6}'"'''.format(user,expect,script_dir,sshscr,ohome,cluster_nodes,'HIDDEN_STRING')
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,True)
-          self.ocommon.unset_mask_str()
+          cluster_nodes = cluster_nodes.replace(" ",",")
+          i=0
+          while i < 5:
+            self.ocommon.set_mask_str(password.strip())
+            self.ocommon.log_info_message('''SSH setup in progress. Count set to {0}'''.format(i),self.file_name)
+            cmd='''su - {0} -c "echo \"{4}\" | {1}/{2} comp admprv -n {3} -o user_equiv -fixup"'''.format(user,gihome,sshscr,cluster_nodes,'HIDDEN_STRING')
+            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+            self.ocommon.check_os_err(output,error,retcode,None)
+            self.ocommon.unset_mask_str()
+            retcode=self.verifyssh(user,gihome,sshscr,cluster_nodes)
+            if retcode == 0:
+              break
+            else:
+              i = i + 1
+              self.ocommon.log_info_message('''SSH setup verification failed. Trying again..''',self.file_name)
+              
         elif ctype == 'ADDNODE':
-             x = datetime.datetime.now()
-             tmpdir=self.ora_env_dict["TMPDIR"] if self.ocommon.check_key("TMPDIR",self.ora_env_dict) else "/var/tmp"
-             expfile='''{1}/expfile_{0}'''.format(x.strftime("%f"),tmpdir)
-             expdata='''#!/usr/bin/expect
-             set cmd [lrange $argv 1 end]
-             set password [lindex $argv 0]
-             eval spawn "$cmd"
-             expect "*?assword:*"
-             send "$password\\r";
-             expect eof'''
-            
-             self.ocommon.write_file(expfile,expdata.strip())
- 
-             new_nodes=self.ocommon.get_cluster_nodes()
-             exiting_cls_node=self.ocommon.get_existing_clu_nodes(True).replace(","," ")
-             node=exiting_cls_node.split(" ")[0] 
-             password=self.ocommon.get_os_password().strip("\n")
-             ### Adding known Hosts
-             cmd='''su - {0} -c "mkdir -p ~/.ssh; touch ~/.ssh/known_hosts;chmod 700 ~/.ssh;ssh-keygen -R {1};ssh-keyscan -H {1}  >> ~/.ssh/known_hosts"'''.format(user,node)
-             output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-             self.ocommon.check_os_err(output,error,retcode,True)
- 
-             cluster_nodes= exiting_cls_node + " " +  new_nodes
-             cmd=''' #!/bin/bash
-             ssh -o StrictHostKeyChecking=no {0}@{7} /bin/sh -c \\"{1} {2}/{3} {0} '\\"{4}/oui/prov/resources/scripts\\"' '\\"{5}\\"' '\\"{6}\\"'\\"'''.format(user,expect,script_dir,sshscr,ohome,cluster_nodes,password,node,expfile)
-             cmdfile='''{1}/cmdfile_{0}.sh'''.format(x.strftime("%f"),tmpdir)
-             self.ocommon.write_file(cmdfile,cmd.strip())
-             ### CHanging file permission
-             cmd='''chmod 775 {0}'''.format(cmdfile)
-             output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-             self.ocommon.check_os_err(output,error,retcode,True)
-            
-             ## Execuing expect file 
-             self.ocommon.set_mask_str(password)
-             ## cmd='''su - {0} -c "{1} {8} '{6}' 'ssh -o StrictHostKeyChecking=no {0}@{7} /bin/sh -c \\"{1} {2}/{3} {0} '\\"{4}/oui/prov/resources/scripts\\"'  '\\"{5}\\"' '\\"{6}\\"'\\"\\"'"'''.format(user,expect,script_dir,sshscr,ohome,cluster_nodes,'HIDDEN_STRING',node,expfile,cmdfile)
-             cmd='''su - {0} -c "{1} {8} '{6}' '{9}'"'''.format(user,expect,script_dir,sshscr,ohome,cluster_nodes,'HIDDEN_STRING',node,expfile,cmdfile)
-             output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-             self.ocommon.check_os_err(output,error,retcode,True)
-             self.ocommon.unset_mask_str()
+          cluster_nodes=self.ocommon.get_cluster_nodes()
+          cluster_nodes = cluster_nodes.replace(" ",",")
+          exiting_cls_node=self.ocommon.get_existing_clu_nodes(True)
+          new_nodes=cluster_nodes + "," + exiting_cls_node
 
-             ###### Delete the files
-            # cmd='''rm -f {0};rm -f {1}'''.format(expfile,cmdfile)
-            # output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-            # self.ocommon.check_os_err(output,error,retcode,True)             
- 
+          cmd='''su - {0} -c "rm -rf ~/.ssh ; mkdir -p ~/.ssh ; chmod 700 ~/.ssh"'''.format(user)
+          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+          self.ocommon.check_os_err(output,error,retcode,False)
+
+          
+          i=0
+          while i < 5:
+            self.ocommon.set_mask_str(password.strip()) 
+            self.ocommon.log_info_message('''SSH setup in progress. Count set to {0}'''.format(i),self.file_name)         
+            cmd='''su - {0} -c "echo \"{4}\" | {1}/{2} comp admprv -n {3} -o user_equiv -fixup"'''.format(user,gihome,sshscr,new_nodes,'HIDDEN_STRING')
+            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+            self.ocommon.check_os_err(output,error,retcode,None)
+            self.ocommon.unset_mask_str()
+            retcode=self.verifyssh(user,gihome,sshscr,new_nodes)
+            if retcode == 0:
+              break
+            else:
+              i = i + 1
+              self.ocommon.log_info_message('''SSH setup verification failed. Trying again..''',self.file_name)            
         else:
-             cluster_nodes=self.ocommon.get_cluster_nodes()     
+            cluster_nodes=self.ocommon.get_cluster_nodes()  
   
-    def verifyssh(self,user,ctype):
+    def verifyssh(self,user,gihome,sshscr,cls_nodes):
            """
            This function setup the ssh between user as SKIP_SSH_SETUP flag is not set
            """
-           timeout=300
-           verifyFlag=False
-           timeout_start=time.time()
-           count=0
-           while time.time() < timeout_start + timeout:
-              count=count +1 
-              cluster_nodes=""
-              if ctype == 'INSTALL':
-                cluster_nodes=self.ocommon.get_cluster_nodes()
-              elif ctype == 'ADDNODE':
-                new_nodes=self.ocommon.get_cluster_nodes()
-                exiting_cls_node=self.ocommon.get_existing_clu_nodes(True).replace(","," ")
-                cluster_nodes= exiting_cls_node + " " +  new_nodes
-              else:
-                cluster_nodes=self.ocommon.get_cluster_nodes()
-                            
-              for node in cluster_nodes.split(" "):
-                  cmd='''su - {0} -c "ssh -o BatchMode=yes -o ConnectTimeout=5 {0}@{1} echo ok 2>&1"'''.format(user,node)
-                  output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                  self.ocommon.check_os_err(output,error,retcode,None)
-                  if output.strip() == 'ok':
-                      self.ocommon.log_info_message('''SSH setup passed for {0}@{1}'''.format(user,node),self.file_name)
-                      verifyFlag=True                   
-              if verifyFlag:
-                 break
-              else:
-                 self.ocommon.log_info_message('''Trying count number {2} - ssh verification failed for {0}@{1}. Sleeping for 30 seconds and will try ssh again'''.format(user,node,count),self.file_name)
-                 time.sleep(30)
-            
-           if not verifyFlag:
-                self.ocommon.log_error_message('''SSH setup failed for {0}@{1}'''.format(user,node),self.file_name)
-                self.ocommon.prog_exit("None")
+           self.ocommon.log_info_message("Verifying SSH between nodes " + cls_nodes, self.file_name)
+           cls_nodes = cls_nodes.replace(" ",",")
+           cmd='''su - {0} -c "{1}/{2} comp admprv -n {3} -o user_equiv -sshonly -verbose"'''.format(user,gihome,sshscr,cls_nodes)
+           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+           self.ocommon.check_os_err(output,error,retcode,None)
+           return retcode
 
     def setupsshusekey(self,user,ohome,ctype):
         """
@@ -189,6 +162,15 @@ class OraSetupSSH:
         cluster_nodes=""
         new_nodes=self.ocommon.get_cluster_nodes()
         existing_cls_node=self.ocommon.get_existing_clu_nodes(None)
+        giuser,gihome,gibase,oinv=self.ocommon.get_gi_params()
+        sshscr=self.ora_env_dict["SSHSCR"] if self.ocommon.check_key("SSHSCR",self.ora_env_dict) else "bin/cluvfy"
+        if user == 'grid':
+          sshscr="runcluvfy.sh"
+        else:
+          sshscr="bin/cluvfy"
+          file='''{0}/{1}'''.format(gihome,sshscr)
+          if not self.ocommon.check_file(file,"local",None,None):
+            sshscr="runcluvfy.sh"
         # node=exiting_cls_node.split(" ")[0]
         if existing_cls_node is not None:
           cluster_nodes= existing_cls_node.replace(","," ") + " " +  new_nodes
@@ -213,6 +195,8 @@ class OraSetupSSH:
                         time.sleep(5)
                         i=i+1
 
+        retcode=self.verifyssh(user,gihome,sshscr,new_nodes)
+        
     def setupsshdirs(self,user,ohome,ctype):
         """
         This function setup the ssh directories
