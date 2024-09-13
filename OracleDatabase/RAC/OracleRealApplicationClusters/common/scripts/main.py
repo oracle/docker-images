@@ -1,9 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2020 - 2024, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
+# Contributor: saurabh.ahuja@oracle.com
 ############################
 
 """
@@ -21,7 +22,7 @@ def main():
    # Checking Comand line Args
    opts=""
    try:
-      opts, args = getopt.getopt(sys.argv[1:], '', ['help','resetpassword=','delracnode=','addtns=', 'checkracinst=', 'checkgilocal=','checkdbrole=','checkracdb=','checkconnstr=','checkpdbconnstr=','setupdblsnr=','setuplocallsnr='])
+      opts, args = getopt.getopt(sys.argv[1:], '', ['help','resetpassword=','delracnode=','addtns=', 'checkracinst=', 'checkgilocal=','checkdbrole=','checkracdb=','checkracstatus','checkconnstr=','checkpdbconnstr=','setupdblsnr=','setuplocallsnr=','checkdbsvc=','modifydbsvc=','checkdbversion=','updatelsnrendp=','updateasmcount=','modifyscan=','updateasmdevices='])
    except getopt.GetoptError:
       pass
   
@@ -105,6 +106,16 @@ def main():
               oenv.update_key("OP_TYPE","miscops")
            else:
               oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--checkracstatus'):
+           file_name = oenv.logfile_name("CHECK_RAC_STATUS")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("CHECK_RAC_STATUS","true")
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
       elif opt in ('--checkdbrole'):
            file_name = oenv.logfile_name("CHECK_DB_ROLE")
            oralogger.filename_ =  file_name
@@ -148,6 +159,76 @@ def main():
            oralogger.filename_ =  file_name
            ocommon.log_info_message("=======================================================================",file_name)
            oenv.add_custom_variable("NEW_LOCAL_LISTENER",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--checkdbsvc'):
+           file_name = oenv.logfile_name("CHECK_DB_SVC")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("CHECK_DB_SVC",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--modifydbsvc'):
+           file_name = oenv.logfile_name("MODIFY_DB_SVC")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("MODIFY_DB_SVC",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--checkdbversion'):
+           file_name = oenv.logfile_name("CHECK_DB_VERSION")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("CHECK_DB_VERSION",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--modifyscan'):
+           file_name = oenv.logfile_name("MODIFY_SCAN")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("MODIFY_SCAN",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--updateasmcount'):
+           file_name = oenv.logfile_name("UPDATE_ASMCOUNT")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("UPDATE_ASMCOUNT",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--updateasmdevices'):
+           file_name = oenv.logfile_name("UPDATE_ASMDEVICES")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("UPDATE_ASMDEVICES",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--updatelsnrendp'):
+           file_name = oenv.logfile_name("UPDATE_LISTENERENDP")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("UPDATE_LISTENERENDP",arg)
            oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
            if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
               oenv.update_key("OP_TYPE","miscops")

@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -133,8 +133,17 @@ class OraCommon:
           """
           This function exit the program because of some error
           """
+          self.update_statefile("failed")
           sys.exit(127)
-
+            
+      def update_statefile(self,message):
+          """
+          This function update the state file
+          """
+          file=self.oenv.statelogfile_name()
+          if self.check_file(file,"local",None,None):
+             self.write_file(file,message)          
+                
       def log_info_message(self,lmessage,fname):
           """
           Print the INFO message in the logger
@@ -726,15 +735,15 @@ class OraCommon:
         """
         get the tde password
         """
-        dbpasswd=self.get_password("TDE_PASSWORD")
-        return dbpasswd
+        tdepasswd=self.get_password("TDE_PASSWORD")
+        return tdepasswd
 
       def get_sys_passwd(self):
          """
          get the sys user password
          """
-         dbpasswd=self.get_password(None)
-         return dbpasswd
+         syspasswd=self.get_password(None) 
+         return syspasswd
 
       def get_password(self,key):
             """
@@ -898,13 +907,14 @@ class OraCommon:
                fname='''{0}'''.format(password_file)
                fdata=self.read_file(fname)
                password=fdata
+               self.remove_file(password_file)
 
             if self.check_key("ORACLE_PWD",self.ora_env_dict):
                msg="ORACLE_PWD is passed as an env variable. Check Passed!"
                self.log_info_message(msg,self.file_name)
             else:
                #self.ora_env_dict=self.add_key("ORACLE_PWD",password,self.ora_env_dict)
-               #msg="ORACLE_PWD set to HIDDEN_STRING generated using encrypted password file"
+               msg="ORACLE_PWD set to HIDDEN_STRING generated using encrypted password file"
                self.log_info_message(msg,self.file_name)
 
             return password
@@ -1035,10 +1045,14 @@ class OraCommon:
           elif self.check_key("SINGLE_NETWORK",self.ora_env_dict):
             pubmask,pubsubnet,pubnwname=self.get_nwlist("public")
             nwlist='''{0}:{1}:1,{0}:{1}:5'''.format(pubnwname,pubsubnet) 
-          else: 
-            pubmask,pubsubnet,pubnwname=self.get_nwlist("public")
-            privnwlist,privnetmasklist=self.get_priv_nwlist()
-            nwlist='''{0}:{1}:1,{2}'''.format(pubnwname,pubsubnet,privnwlist)
+          else:
+            if self.check_key("CRS_GPC",self.ora_env_dict):
+              pubmask,pubsubnet,pubnwname=self.get_nwlist("public")
+              nwlist='''{0}:{1}:6'''.format(pubnwname,pubsubnet)
+            else:   
+              pubmask,pubsubnet,pubnwname=self.get_nwlist("public")
+              privnwlist,privnetmasklist=self.get_priv_nwlist()
+              nwlist='''{0}:{1}:1,{2}'''.format(pubnwname,pubsubnet,privnwlist)
 
 
           return nwlist,netmasklist
@@ -1055,11 +1069,11 @@ class OraCommon:
              privnwlist='''{0}:{1}:5'''.format(privnwname,privsubnet)
              netmasklist='''{0}:{1}'''.format(privnwname,privmask)
           else:
-             if self.check_key("PRIVATE_IP1_LIST",self.ora_env_dict):
+             if self.check_key("CRS_PRIVATE_IP1",self.ora_env_dict):
                privmask,privsubnet,privnwname=self.get_nwlist("privateip1")
                privnwlist='''{0}:{1}:5'''.format(privnwname,privsubnet)
                netmasklist='''{0}:{1}'''.format(privnwname,privmask)
-             if self.check_key("PRIVATE_IP2_LIST",self.ora_env_dict):
+             if self.check_key("CRS_PRIVATE_IP2",self.ora_env_dict):
                privmask,privsubnet,privnwname=self.get_nwlist("privateip2")
                privnwlist='''{0},{1}:{2}:5'''.format(privnwlist,privnwname,privsubnet)   
                netmasklist='''{0},{1}:{2}'''.format(netmasklist,privnwname,privmask)
@@ -1100,9 +1114,9 @@ class OraCommon:
              nodelist=priv_nodes.split(" ")
              domain=self.ora_env_dict["PRIVATE_HOSTS_DOMAIN"] if self.check_key("PRIVATE_HOSTS_DOMAIN",self.ora_env_dict) else self.get_host_domain()
           elif checktype=="privateip1":
-             nodelist=self.ora_env_dict["PRIVATE_IP1_LIST"].split(",")
+             nodelist=self.ora_env_dict["CRS_PRIVATE_IP1"].split(",")
           elif checktype=="privateip2":
-             nodelist=self.ora_env_dict["PRIVATE_IP2_LIST"].split(",")
+             nodelist=self.ora_env_dict["CRS_PRIVATE_IP2"].split(",")
           else:
              crs_nodes=pub_nodes.replace(" ",",")
              nodelist=pub_nodes.split(" ")
@@ -1143,10 +1157,13 @@ class OraCommon:
          """
          cluster_nodes=""
          pub_nodes,vip_nodes,priv_nodes=self.process_cluster_vars("CRS_NODES")
-         for (pubnode,vipnode) in zip(pub_nodes.split(" "),vip_nodes.split(" ")):
-             cluster_nodes += pubnode + ":" + vipnode + ":HUB" + ","
+         if not self.check_key("CRS_GPC",self.ora_env_dict):
+           for (pubnode,vipnode) in zip(pub_nodes.split(" "),vip_nodes.split(" ")):
+               cluster_nodes += pubnode + ":" + vipnode + ":HUB" + ","
+         else:
+             cluster_nodes=self.get_public_hostname()
 
-         return cluster_nodes.strip(',')    
+         return cluster_nodes.strip(',')
 
 ######## Process host variables ##############
       def process_cluster_vars(self,key):
@@ -1157,26 +1174,29 @@ class OraCommon:
           viphost=" "
           privhost=" " 
           self.log_info_message("Inside process_cluster_vars()",self.file_name)
-          cvar_str=self.ora_env_dict[key]
-          for item in cvar_str.split(";"):
-              self.log_info_message("Cluster Node Desc: " + item ,self.file_name) 
-              cvar_dict=dict(item1.split(":") for item1 in item.split(","))  
-              for ckey in cvar_dict.keys():
-                #  self.log_info_message("key:" + ckey ,self.file_name)
-                #  self.log_info_message("Value:" + cvar_dict[ckey] ,self.file_name)
-                  if ckey == 'pubhost':
-                     pubhost += cvar_dict[ckey] + " " 
-                  if ckey == 'viphost':
-                     viphost += cvar_dict[ckey] + " "
-                  if ckey == 'privhost':
-                     privhost += cvar_dict[ckey] + " "
-          self.log_info_message("Pubhosts:" + pubhost.strip() + " Pubhost count:" + str(len(pubhost.strip().split(" "))),self.file_name)
-          self.log_info_message("Viphosts:" + viphost.strip() + "Viphost count:" + str(len(viphost.strip().split(" "))),self.file_name)
-          if len(pubhost.strip().split(" ")) == len(viphost.strip().split(" ")):
-             return pubhost.strip(),viphost.strip(),privhost.strip()
+          if self.check_key("CRS_GPC",self.ora_env_dict):
+             return self.get_public_hostname(),None,None
           else:
-             self.log_error_message("Public hostname count is not matching with virtual hostname count.Exiting...",self.file_name)
-             self.prog_exit("127")
+            cvar_str=self.ora_env_dict[key]
+            for item in cvar_str.split(";"):
+               self.log_info_message("Cluster Node Desc: " + item ,self.file_name) 
+               cvar_dict=dict(item1.split(":") for item1 in item.split(","))  
+               for ckey in cvar_dict.keys():
+                  #  self.log_info_message("key:" + ckey ,self.file_name)
+                  #  self.log_info_message("Value:" + cvar_dict[ckey] ,self.file_name)
+                     if ckey.replace('"','') == 'pubhost':
+                        pubhost += cvar_dict[ckey].replace('"','') + " " 
+                     if ckey.replace('"','') == 'viphost':
+                        viphost += cvar_dict[ckey].replace('"','') + " "
+                     if ckey.replace('"','') == 'privhost':
+                        privhost += cvar_dict[ckey].replace('"','') + " "
+            self.log_info_message("Pubhosts:" + pubhost.strip() + " Pubhost count:" + str(len(pubhost.strip().split(" "))),self.file_name)
+            self.log_info_message("Viphosts:" + viphost.strip() + "Viphost count:" + str(len(viphost.strip().split(" "))),self.file_name)
+            if len(pubhost.strip().split(" ")) == len(viphost.strip().split(" ")):
+               return pubhost.strip(),viphost.strip(),privhost.strip()
+            else:
+               self.log_error_message("Public hostname count is not matching:/Public hostname count is not matching with virtual hostname count.Exiting...",self.file_name)
+               self.prog_exit("127")
 
       
 ######### Get the Public Hostname##############
@@ -1192,12 +1212,21 @@ class OraCommon:
          Return Public Hostname
          """
          domain=None
-         domain=socket.getfqdn().split('.',1)[1]
-         if domain is None:
-            domain="example.info"
-
+         domain=self.extract_domain()
          return domain
-      
+ ######### extract domain #################
+      def extract_domain(self):
+         domain=None
+         fqdn = subprocess.check_output(['hostname', '-f']).decode().strip()
+         self.log_info_message('''Fully Qualified Domain Name (FQDN): {0} '''.format(fqdn),self.file_name)
+         
+         parts = fqdn.split('.', 1)
+         if len(parts) < 2:
+            self.log_error_message("Error: FQDN does not contain a domain name.",self.file_name)
+         else:
+            domain = parts[1]
+            self.log_info_message('''Extracted Domain: {0} '''.format(domain),self.file_name)
+         return domain
  ######### get the public IP ##############
       def get_ip(self,hostname,domain):
          """
@@ -1205,7 +1234,6 @@ class OraCommon:
          """
          if not domain:
            domain=self.get_host_domain()
-
          return socket.gethostbyname(hostname + '.' + domain)
 
 ######### Get network card ##############
@@ -1317,7 +1345,7 @@ class OraCommon:
                 if self.disk_exists(device):
                     msg='''Changing device permission {0}'''.format(device)
                     self.log_info_message(msg,self.file_name)
-                    cmd='''chmod 660 {0};chown grid:asmdba {0}'''.format(device)
+                    cmd='''chmod 660 {0};chown grid:asmadmin {0}'''.format(device)
                     output,error,retcode=self.execute_cmd(cmd,None,None)
                     self.check_os_err(output,error,retcode,True)
                 else:
@@ -1378,6 +1406,8 @@ class OraCommon:
           """
           cmd=""
           copyflag=""
+          pwdparam='''oracle.install.asm.SYSASMPassword={0} oracle.install.asm.monitorPassword={0}'''.format("HIDDEN_STRING")
+          
           if self.check_key("COPY_GRID_SOFTWARE",self.ora_env_dict):
              copyflag=" -noCopy "
 
@@ -1409,12 +1439,12 @@ class OraCommon:
                 else:
                    param1='''oracle.install.crs.config.netmaskList=eth0:255.255.0.0,eth1:255.255.255.0,eth2:255.255.255.0'''.format(netmasklist)
 
-                cmd='''su - {0} -c "{1}/{6} -waitforcompletion {4} -silent {3} -responseFile {2} {5}"'''.format(giuser,gihome,rspfile,snic,copyflag,param1,runCmd)
+                cmd='''su - {0} -c "{1}/{6} -waitforcompletion {4} -silent {3} -responseFile {2} {5} {7}"'''.format(giuser,gihome,rspfile,snic,copyflag,param1,runCmd,pwdparam)
              else:
                 if self.check_key("APPLY_RU_LOCATION",self.ora_env_dict):
-                   cmd='''su - {0} -c "{1}/{5} -waitforcompletion {4} -silent {6} {3} -responseFile {2}"'''.format(giuser,gihome,rspfile,snic,copyflag,runCmd,prereq)
+                   cmd='''su - {0} -c "{1}/{5} -waitforcompletion {4} -silent {6} {3} -responseFile {2} {7}"'''.format(giuser,gihome,rspfile,snic,copyflag,runCmd,prereq,pwdparam)
                 else:
-                   cmd='''su - {0} -c "{1}/{5} -waitforcompletion {4} -silent {6} {3} -responseFile {2}"'''.format(giuser,gihome,rspfile,snic,copyflag,runCmd,prereq)
+                   cmd='''su - {0} -c "{1}/{5} -waitforcompletion {4} -silent {6} {3} -responseFile {2} {7}"'''.format(giuser,gihome,rspfile,snic,copyflag,runCmd,prereq,pwdparam)
           elif key == 'ADDNODE':
              status=self.check_home_inv(None,gihome,giuser)
              if status:
@@ -1438,14 +1468,13 @@ class OraCommon:
            prereq=" -ignorePreReq "
         if int(version) < 23:
           rspdata='''su - {0} -c "ssh {10} {1}/gridSetup.sh  {11} -waitforcompletion {2} -silent
-            installOption=CRS_SWONLY
-            clusterNodes={3}
+            oracle.install.option=CRS_SWONLY
             INVENTORY_LOCATION={4}
             ORACLE_HOME={5}
             ORACLE_BASE={6}
-            OSDBA={7}
-            OSOPER={8}
-            OSASM={9}"'''.format(giuser,gihome,copyflag,crs_nodes,oinv,gihome,gibase,osdba,osoper,osasm,node,prereq)
+            oracle.install.asm.OSDBA={7}
+            oracle.install.asm.OSOPER={8}
+            oracle.install.asm.OSASM={9}"'''.format(giuser,gihome,copyflag,crs_nodes,oinv,gihome,gibase,osdba,osoper,osasm,node,prereq)
 
           cmd=rspdata.replace('\n'," ")
         else:
@@ -1515,12 +1544,14 @@ class OraCommon:
              vdata = "21.0.0"
           elif output.strip() == "23":
              vdata = "23.0.0" 
+          elif output.strip() == "26":
+             vdata = "26.0.0" 
           elif output.strip() == "19":
              vdata = "19.0.0"
           elif output.strip() == "18":
              vdata = "18.0.0"
           else:
-             self.log_error_message("The SW major version is not matching {12.2|18.3|19.3|21.3}. Exiting....",self.file_name)
+             self.log_error_message("The SW major version is not matching {12.2|18.3|19.3|21.3|23|26}. Exiting....",self.file_name)
              self.prog_exit("None")              
          
           return vdata
@@ -1726,12 +1757,16 @@ class OraCommon:
          """
          get the host sid based on hostname
          """
+         if hname is None:
+            cmd='''select instance_name from gv$instance;'''
+         else:
+            cmd="""select instance_name from gv$instance where HOST_NAME='{0}';""".format(hname)
          sqlcmd='''
          set heading off;
          set pagesize 0; 
-         select instance_name from gv$instance where HOST_NAME='{0}';
+         {0}
          exit;
-         '''.format(hname)
+         '''.format(cmd)
          self.set_mask_str(self.get_sys_passwd())
          output,error,retcode=self.run_sqlplus(connect_str,sqlcmd,None)
          self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
@@ -1987,7 +2022,7 @@ class OraCommon:
                      db = cvar_dict[ckey]
                      sparam=sparam +" -db " + db
 
-              ### Check values must be set
+              ### Check values must be set    
           if uniformflag is not True:    
              if pdb is None:
                 pdb = self.ora_env_dict["ORACLE_PDB_NAME"] if self.check_key("ORACLE_PDB_NAME",self.ora_env_dict) else  "ORCLPDB"
@@ -1996,9 +2031,22 @@ class OraCommon:
                sparam=sparam +" -pdb " + pdb
           else:
              pdb = self.ora_env_dict["ORACLE_PDB_NAME"] if self.check_key("ORACLE_PDB_NAME",self.ora_env_dict) else  "ORCLPDB"
-                 
+          
+          if preferred is None:
+            osuser,dbhome,dbbase,oinv=self.get_db_params()
+            dbname,osid,dbuname=self.getdbnameinfo()
+            hostname = self.get_public_hostname()
+            inst_sid=self.get_inst_sid(osuser,dbhome,osid,hostname)
+            connect_str=self.get_sqlplus_str(dbhome,inst_sid,osuser,"sys",None,None,None,None,None,None,None)
+            dbsid=self.get_host_dbsid(None,connect_str)
+            preferred=",".join(dbsid.splitlines())
+            if type.lower() == 'modify':
+               sparam=sparam +" -modifyconfig -preferred " + preferred
+            else:
+               sparam=sparam +" -preferred " + preferred
+               
           if db is None:
-            db = self.ora_env_dict["DB_NAME"]
+            db=self.ora_env_dict["DB_NAME"] if self.check_key("DB_NAME",self.ora_env_dict) else  "ORCLCDB" 
             sparam=sparam +" -db " + db
              
           if service and db and pdb:
@@ -2012,10 +2060,10 @@ class OraCommon:
 ####  Process Service Regex  ####
       def service_regex(self):
           """
-            This function return the rgex to search the SERVICE[0-9]_PARAMS
+            This function return the rgex to search the DB_SERVICE
           """
           self.log_info_message("Inside service_regex()",self.file_name)
-          return re.compile('SERVICE[0-9]+_PARAMS')
+          return re.compile('DB_SERVICE')
                              
 ##### craete DB service ######
       def create_db_service(self,service_name,osid,opdb,sparams):
@@ -2071,9 +2119,9 @@ class OraCommon:
          self.check_os_err(output,error,retcode,None)
          msg='''Service {0} is running on'''.format(service_name)
          if self.check_substr_match(output.lower(),msg.lower()):
-            return True
+            return True,output.lower()
          else:
-            return False
+            return False,output.lower()
 
 ##### check service ######
       def start_db_service(self,service_name,osid):
@@ -2400,7 +2448,29 @@ class OraCommon:
                   self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
                   self.check_sql_err(output,error,retcode,None)
                   self.unset_mask_str()
-            
+    
+####### Perform DB Check
+      def perform_db_check(self,type): 
+         """
+         This function check the DB and print the message"
+         """
+         status,osid,host,mode=self.check_dbinst()
+         if status:
+            dbuser,dbhome,dbase,oinv=self.get_db_params()
+            if type == "INSTALL":
+               self.rac_setup_complete()
+               self.set_remote_listener()
+               self.run_custom_scripts("CUSTOM_DB_SCRIPT_DIR","CUSTOM_DB_SCRIPT_FILE",dbuser)
+            msg='''Oracle Database {0} is up and running on {1}.'''.format(osid,host)
+            self.log_info_message(self.print_banner(msg),self.file_name)
+            os.system("echo ORACLE RAC DATABASE IS READY TO USE > /dev/pts/0")
+            msg='''ORACLE RAC DATABASE IS READY TO USE'''
+            self.log_info_message(self.print_banner(msg),self.file_name)
+         else:
+            msg='''Oracle Database {0} is not up and running on {1}.'''.format(osid,host)
+            self.log_info_message(self.print_banner(msg),self.file_name)
+            self.prog_exit("127")
+                
 ######## Complete RAC Setup
       def rac_setup_complete(self):
          """
@@ -2425,6 +2495,65 @@ class OraCommon:
          self.check_sql_err(output,error,retcode,None)
          self.unset_mask_str()
 
+######## Complete RAC Setup
+      def get_dbversion(self):
+         """
+         This function returns the DB version
+         """
+         osuser,dbhome,dbbase,oinv=self.get_db_params()
+         dbname,osid,dbuname=self.getdbnameinfo()
+         hostname = self.get_public_hostname()
+         inst_sid=self.get_inst_sid(osuser,dbhome,osid,hostname)
+         connect_str=self.get_sqlplus_str(dbhome,inst_sid,osuser,"sys",None,None,None,None,None,None,None)
+         sqlcmd='''
+            set heading off
+            set feedback off
+            SELECT version_full FROM v$instance;
+            exit;
+         '''
+         self.set_mask_str(self.get_sys_passwd())
+         output,error,retcode=self.run_sqlplus(connect_str,sqlcmd,None)
+         self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
+         self.check_sql_err(output,error,retcode,None)
+         self.unset_mask_str()
+         if not error:
+           return output.strip("\r\n")
+         else:
+           return "NOTAVAILABLE"
+            
+######## Complete RAC Setup
+      def reset_dbuser_passwd(self,user,pdb,type):
+         """
+         This function reset the password
+         """
+         passwdcmd=None
+         osuser,dbhome,dbbase,oinv=self.get_db_params()
+         dbname,osid,dbuname=self.getdbnameinfo()
+         hostname = self.get_public_hostname()
+         inst_sid=self.get_inst_sid(osuser,dbhome,osid,hostname)
+         connect_str=self.get_sqlplus_str(dbhome,inst_sid,osuser,"sys",None,None,None,None,None,None,None)
+         if pdb:
+            passwdcmd='''alter session set container={0};alter user {1} identified by HIDDEN_STRING;'''.format(pdb,user)
+         else:
+            if type == 'all':
+               passwdcmd='''alter user {0} identified by HIDDEN_STRING container=all;'''.format(user) 
+            else:
+               passwdcmd='''alter user {0} identified by HIDDEN_STRING;'''.format(user)
+         sqlcmd='''
+            set heading off
+            set feedback off
+            {0}
+            exit;
+         '''.format(passwdcmd)
+         self.set_mask_str(self.get_sys_passwd())
+         output,error,retcode=self.run_sqlplus(connect_str,sqlcmd,None)
+         self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
+         self.check_sql_err(output,error,retcode,None)
+         self.unset_mask_str()
+         if not error:
+           return output.strip("\r\n")
+
+                 
 ####### Setup Primary for standby
       def set_primary_for_standby(self):
          """
@@ -2594,15 +2723,20 @@ class OraCommon:
                              else:
                                self.ora_env_dict=self.add_key("SCAN_NAME",value,self.ora_env_dict)
                          elif (key == "diskString"):
-                             if self.check_key("CRS_ASM_DISCOVERY_DIR",self.ora_env_dict):
-                                self.ora_env_dict=self.update_key("CRS_ASM_DISCOVERY_DIR",value,self.ora_env_dict)
+                             if self.check_key("CRS_ASM_DISCOVERY_STRING",self.ora_env_dict):
+                                self.ora_env_dict=self.update_key("CRS_ASM_DISCOVERY_STRING",value,self.ora_env_dict)
                              else:
-                                self.ora_env_dict=self.add_key("CRS_ASM_DISCOVERY_DIR",value,self.ora_env_dict)
+                                self.ora_env_dict=self.add_key("CRS_ASM_DISCOVERY_STRING",value,self.ora_env_dict)
                          elif (key == "diskList"):
                              if self.check_key("CRS_ASM_DEVICE_LIST",self.ora_env_dict):
                                 self.ora_env_dict=self.update_key("CRS_ASM_DEVICE_LIST",value,self.ora_env_dict)
                              else:
                                 self.ora_env_dict=self.add_key("CRS_ASM_DEVICE_LIST",value,self.ora_env_dict)
+                         elif (key == "diskGroupName"):
+                             if self.check_key("CRS_ASM_DISKGROUP",self.ora_env_dict):
+                               self.ora_env_dict=self.update_key("CRS_ASM_DISKGROUP",value,self.ora_env_dict)
+                             else:
+                               self.ora_env_dict=self.add_key("CRS_ASM_DISKGROUP",value,self.ora_env_dict)                              
                          elif (key == "clusterNodes"):
                              install_node_flag=False
                              for crs_node in value.split(","):
@@ -2681,10 +2815,10 @@ class OraCommon:
                              else:
                                self.ora_env_dict=self.add_key("SCAN_NAME",value,self.ora_env_dict)
                          elif (key == "oracle.install.asm.diskGroup.diskDiscoveryString"):
-                             if self.check_key("CRS_ASM_DISCOVERY_DIR",self.ora_env_dict):
-                                self.ora_env_dict=self.update_key("CRS_ASM_DISCOVERY_DIR",value,self.ora_env_dict)
+                             if self.check_key("CRS_ASM_DISCOVERY_STRING",self.ora_env_dict):
+                                self.ora_env_dict=self.update_key("CRS_ASM_DISCOVERY_STRING",value,self.ora_env_dict)
                              else:
-                                self.ora_env_dict=self.add_key("CRS_ASM_DISCOVERY_DIR",value,self.ora_env_dict)
+                                self.ora_env_dict=self.add_key("CRS_ASM_DISCOVERY_STRING",value,self.ora_env_dict)
                          elif (key == "oracle.install.asm.diskGroup.disks"):
                              if self.check_key("CRS_ASM_DEVICE_LIST",self.ora_env_dict):
                                 self.ora_env_dict=self.update_key("CRS_ASM_DEVICE_LIST",value,self.ora_env_dict)
@@ -2815,7 +2949,7 @@ class OraCommon:
             if str:
               dns_server=str.group(1)
               if self.check_key("DNS_SERVERS",self.ora_env_dict):
-                 self.ora_env_dict=self.update_key("DNS_SERVERS",dns_server,self.ora_env_dict)
+                self.ora_env_dict=self.update_key("DNS_SERVERS",dns_server,self.ora_env_dict)
               else:
                 self.ora_env_dict=self.add_key("DNS_SERVERS",dns_server,self.ora_env_dict)
 
@@ -2985,3 +3119,67 @@ class OraCommon:
        cmd='''sed -i "s/{0}\(.*\).instance_number=\(.*\)/{1}\\1.instance_number=\\2/g" {2}'''.format(olddbname,newdbname,pfile)
        output,error,retcode=self.execute_cmd(cmd,None,None)
        self.check_os_err(output,error,retcode,False)
+
+#### Change the dbname in the parameter file to the new dbname
+      def rotate_log_files(self):
+       """
+       remove old logfiles
+       """
+       currentfile='''{0}'''.format(self.ologger.filename_)
+       newfile='''{0}.old'''.format(self.ologger.filename_)
+       if self.check_file(currentfile,"local",None,None):
+          os.rename(currentfile,newfile)
+          
+      def modify_scan(self,giuser,gihome,scanname):
+        """
+        Modify Scan Details 
+        """
+        cmd='''{1}/bin/srvctl modify scan -scanname {2}'''.format(giuser,gihome, scanname)
+        output,error,retcode=self.execute_cmd(cmd,None,None)
+        self.check_os_err(output,error,retcode,None)
+        if retcode == 0:
+         return True
+        else:
+         return False
+      
+      def updateasmcount(self,giuser,gihome,asmcount):
+        """
+        Update ASM disk counts
+        """
+        cmd='''su - {0} -c "{1}/bin/srvctl modify asm -count {2}"'''.format(giuser,gihome, asmcount)
+        output,error,retcode=self.execute_cmd(cmd,None,None)
+        self.check_os_err(output,error,retcode,None)
+        if retcode == 0:
+         return True
+        else:
+         return False
+
+      def updateasmdevices(self,giuser,gihome,diskname,diskgroup,processtype):
+         """
+         Update ASM devices, handle addition or deletion
+         """
+         retcode=1
+         if processtype == "addition":
+            cmd = '''su - {0} -c "{1}/bin/asmcmd add disk -g {2} -d {3}"'''.format(giuser, gihome, diskgroup, diskname)
+            output, error, retcode = self.execute_cmd(cmd, None, None)
+            self.check_os_err(output, error, retcode, None)
+         elif processtype == "deletion":
+            cmd = '''su - {0} -c "{1}/bin/asmcmd drop disk -g {2} -d {3}"'''.format(giuser, gihome, diskgroup, diskname)
+            output, error, retcode = self.execute_cmd(cmd, None, None)
+            self.check_os_err(output, error, retcode, None)
+         if retcode == 0:
+            return True
+         else:
+            return False
+
+      def updatelistenerendp(self,giuser,gihome,listenername,portlist):
+        """
+        Update ListenerEndpoints
+        """
+        cmd='''su - {0} -c "{1}/bin/srvctl modify listener -listener {2} -endpoints 'TCP:{3}'"'''.format(giuser,gihome,listenername,portlist)
+        output,error,retcode=self.execute_cmd(cmd,None,None)
+        self.check_os_err(output,error,retcode,None)
+        if retcode == 0:
+         return True
+        else:
+         return False
