@@ -2,7 +2,10 @@
 #
 # Copyright (c) 2021, 2024, Oracle and/or its affiliates. All rights reserved.
 #
-# Container image template for Oracle Instant Client
+# Container image template for Oracle Instant Client 23
+#
+# This file is found at:
+# https://github.com/oracle/docker-images/blob/main/OracleInstantClient/oraclelinux8/23/Dockerfile
 #
 # HOW TO BUILD THIS IMAGE AND RUN A CONTAINER
 # --------------------------------------------
