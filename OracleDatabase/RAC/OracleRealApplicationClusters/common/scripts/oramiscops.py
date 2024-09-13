@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
-# Author: paramdeep.saini@oracle.com
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
+# Author: sanjay.singh@oracle.com,paramdeep.saini@oracle.com
 ############################
 
 """
@@ -92,21 +92,6 @@ class OraMiscOps:
        else:
           pass
 
-       if self.ocommon.check_key("CHECK_PDB_CONNECT_STR",self.ora_env_dict):
-          self.checkpdbconnstr()
-       else:
-          pass
-
-       if self.ocommon.check_key("NEW_DB_LSNR_ENDPOINTS",self.ora_env_dict):
-          self.setupdblsnr()
-       else:
-          pass
-
-       if self.ocommon.check_key("NEW_LOCAL_LISTENER",self.ora_env_dict):
-          self.setuplocallsnr()
-       else:
-          pass
-              
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -207,30 +192,6 @@ class OraMiscOps:
        self.ocommon.log_info_message(msg,self.file_name)
        print(status)
 
-   def checkpdbconnstr(self):
-       """
-       Check the PDB connect str
-       """
-       status=""
-       mode=""
-       dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-       retcode1=self.ocvu.check_home(None,dbhome,dbuser)
-       retcode1=0
-       if retcode1 != 0:
-          status="RAC_NOT_INSTALLED_OR_CONFIGURED"
-       else:
-          state=self.checkracsvc()
-          if state == 'OPEN':
-             mode=self.getpdbconnectstr()
-          else:
-             mode="NOTAVAILABLE"
-
-          status=mode
-
-       msg='''PDB connect str is {0}'''.format(status)
-       self.ocommon.log_info_message(msg,self.file_name)
-       print(status)
-
    def checkdbrole(self):
        """
         This will verify RAC DB Role
@@ -270,20 +231,8 @@ class OraMiscOps:
        connect_str='''{0}:{1}/{2}'''.format(scanname,scanport,osid)
        
        return connect_str
-
-   def getpdbconnectstr(self):
-       """
-       get the PDB connect str
-       """
-       osuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
-       osid=self.ora_env_dict["PDB_NAME"] if self.ocommon.check_key("PDB_NAME",self.ora_env_dict) else "ORCLPDB"
-       scanname=self.ora_env_dict["SCAN_NAME"]
-       scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
-       ##connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",'HIDDEN_STRING',scanname,scanport,osid,None,None,None)
-       connect_str='''{0}:{1}/{2}'''.format(scanname,scanport,osid)
-   
-       return connect_str
-  
+    
+     
   # def checkracsvc(self):
    #    """
    ##    Check the RAC SVC
@@ -313,7 +262,7 @@ class OraMiscOps:
        scanname=self.ora_env_dict["SCAN_NAME"]
        scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
        connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",'HIDDEN_STRING',scanname,scanport,osid,None,None,None)
-       status=self.ocommon.get_dbinst_status(osuser,dbhome,osid,connect_str)
+       status=self.ocommon.get_db_status(osuser,dbhome,osid,connect_str)
        if self.ocommon.check_substr_match(status,"OPEN"):
          mode="OPEN"
        elif self.ocommon.check_substr_match(status,"MOUNT"):
@@ -398,29 +347,3 @@ class OraMiscOps:
       pubhostname = self.ocommon.get_public_hostname()
       retcode1=self.ocvu.check_home(pubhostname,gihome,giuser)
       return retcode1
-
-   def setupdblsnr(self):
-      """
-       update db lsnr
-      """
-      value=self.ora_env_dict["NEW_DB_LSNR_ENDPOINTS"]
-      self.ocommon.log_info_message("lsnr new end Points are set to :" + value,self.file_name )
-      if self.check_key("DB_LISTENER_ENDPOINTS",self.ora_env_dict):
-         self.ocommon.log_info_message("lsnr old end points were set to :" + self.ora_env_dict["DB_LISTENER_ENDPOINTS"],self.file_name )
-         self.ora_env_dict=self.update_key("DB_LISTENER_ENDPOINTS",value,self.ora_env_dict)
-      else:
-         self.ora_env_dict=self.add_key("DB_LISTENER_ENDPOINTS",value,self.ora_env_dict) 
-      self.ocommon.setup_db_lsnr()
-
-   def setuplocallsnr(self):
-      """
-       update db lsnr
-      """
-      value=self.ora_env_dict["NEW_LOCAL_LISTENER"]
-      self.ocommon.log_info_message("local lsnr new end Points are set to :" + value,self.file_name )
-      if self.check_key("LOCAL_LISTENER",self.ora_env_dict):
-         self.ocommon.log_info_message("lsnr old end points were set to :" + self.ora_env_dict["LOCAL_LISTENER"],self.file_name )
-         self.ora_env_dict=self.update_key("LOCAL_LISTENER",value,self.ora_env_dict)
-      else:
-         self.ora_env_dict=self.add_key("LOCAL_LISTENER",value,self.ora_env_dict) 
-      self.ocommon.set_local_listener()

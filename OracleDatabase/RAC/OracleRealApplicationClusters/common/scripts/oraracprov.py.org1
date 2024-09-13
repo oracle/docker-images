@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
 # Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -49,33 +49,26 @@ class OraRacProv:
        """
        This function setup the RAC home on this machine
        """
-       self.ocommon.log_info_message("Start setup()",self.file_name)
-       ct = datetime.datetime.now()
-       bts = ct.timestamp()
        sshFlag=False
        self.ogiprov.setup() 
        self.env_param_checks()
        pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
        crs_nodes=pub_nodes.replace(" ",",")
-       if not self.ocommon.check_key("CLUSTER_SETUP_FLAG",self.ora_env_dict):
-          for node in crs_nodes.split(","):
-              self.clu_checks(node)
+       for node in crs_nodes.split(","):
+         self.clu_checks(node)
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
        retcode1=self.ocvu.check_home(None,dbhome,dbuser)
        status=self.ocommon.check_rac_installed(retcode1)
        if not status:
-         self.ocommon.log_info_message("Start perform_ssh_setup()",self.file_name)
          self.perform_ssh_setup()
-         self.ocommon.log_info_message("End perform_ssh_setup()",self.file_name)
          sshFlag=True
          status=self.ocommon.check_home_inv(None,dbhome,dbuser)
          if not status:
-            self.ocommon.log_info_message("Start db_sw_install()",self.file_name)
             self.db_sw_install()
-            self.ocommon.log_info_message("End db_sw_install()",self.file_name)
-            self.ocommon.log_info_message("Start run_rootsh()",self.file_name)
             self.run_rootsh()
-            self.ocommon.log_info_message("End run_rootsh()",self.file_name)
+  #       else:
+  #          self.ocommon.log_info_message("DB Home " + dbhome + " is already registered with the inventory",self.file_name)
+       self.ocommon.rac_setup_complete()
        if not self.ocommon.check_key("SKIP_DBCA",self.ora_env_dict):
             self.create_asmdg()
             status,osid,host,mode=self.ocommon.check_dbinst()
@@ -86,11 +79,10 @@ class OraRacProv:
             else:
                if not sshFlag:
                   self.perform_ssh_setup()
-               self.ocommon.log_info_message("Start create_db()",self.file_name)
                self.create_db()
-               self.ocommon.log_info_message("End create_db()",self.file_name)
                status,osid,host,mode=self.ocommon.check_dbinst()
                if status:
+                # self.ocommon.set_primary_for_standby()
                  self.ocommon.rac_setup_complete()
                  msg='''Oracle Database {0} is up and running on {1}.'''.format(osid,host)
                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
@@ -103,10 +95,6 @@ class OraRacProv:
                  msg='''Oracle Database {0} is not up and running on {1}.'''.format(osid,host)
                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
                  self.ocommon.prog_exit("127")
-       ct = datetime.datetime.now()
-       ets = ct.timestamp()
-       totaltime=ets - bts
-       self.ocommon.log_info_message("Total time for setup() = [ " + str(round(totaltime,3)) + " ] seconds",self.file_name)
 
    def env_param_checks(self):
        """
@@ -154,12 +142,10 @@ class OraRacProv:
        """
        Perform ssh setup
        """
-       #if not self.ocommon.detect_k8s_env():
-       if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
+       if not self.ocommon.detect_k8s_env():
          dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
          self.osetupssh.setupssh(dbuser,dbhome,"INSTALL")
-         if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            self.osetupssh.verifyssh(dbuser,"INSTALL")
+         self.osetupssh.verifyssh(dbuser,"INSTALL")
 
    def db_sw_install(self):
        """
@@ -190,22 +176,14 @@ class OraRacProv:
        version=oraversion.split(".",1)[0].strip()
 
        self.mythread.clear()
-       mythreads=[]
        for node in pub_nodes.split(" "):
+          val1=Thread(target=self.db_sw_install_on_node,args=(dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node))
+          mythread_list=[val1,'TRUE']
+          self.mythread[node]=mythread_list
           self.ocommon.log_info_message("Running DB Sw install on node " + node,self.file_name)
-          thread=Process(target=self.db_sw_install_on_node,args=(dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node))
-          #thread.setDaemon(True)
-          mythreads.append(thread)
-          thread.start()
-  
-#       for thread in mythreads:
-#          self.ocommon.log_info_message("Starting Thread",self.file_name)
-#          thread.start()
+          val1.start()
 
-       for thread in mythreads:  # iterates over the threads
-          thread.join()       # waits until the thread has finished wor
-
-       #self.manage_thread()
+       self.manage_thread()
 
    def db_sw_install_on_node(self,dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node):
        """
@@ -324,13 +302,10 @@ class OraRacProv:
       Perform the DB Creation
       """
       cmd=""
-      prereq=" "
-      if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict):
-         prereq=" -ignorePreReqs " 
       dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
       if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
          dbrsp=self.check_responsefile()
-         cmd='''su - {0} -c "{1}/bin/dbca  -silent {3} -createDatabase -responseFile {2}"'''.format(dbuser,dbhome,dbrsp,prereq)
+         cmd='''su - {0} -c "{1}/bin/dbca  -silent -ignorePreReqs -createDatabase -responseFile {2}"'''.format(dbuser,dbhome,dbrsp)
       else:
          cmd=self.prepare_db_cmd() 
 
@@ -345,10 +320,6 @@ class OraRacProv:
        """
        Perform the asm disk group creation
        """
-       prereq=" "
-       if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict):
-         prereq=" -ignorePreReqs "
-
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
        pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
        crs_nodes=pub_nodes.replace(" ",",")
@@ -366,7 +337,7 @@ class OraRacProv:
        initparams=self.get_init_params()
        #memorypct=self.get_memorypct()
 
-       rspdata='''su - {0} -c "{1}/bin/dbca -silent {15} -createDatabase  \
+       rspdata='''su - {0} -c "{1}/bin/dbca -silent -ignorePrereqFailure -createDatabase  \
        -templateName General_Purpose.dbc \
        -gdbname {2} \
        -createAsContainerDatabase {3} \
@@ -382,7 +353,7 @@ class OraRacProv:
        -useOMF true \
        {12} \
        {13} \
-       -enableArchive {14}"'''.format(dbuser,dbhome,dbname,cdbflag,dbfiledest,stype,charset,redosize,dbtype,dbctype,crs_nodes,dbname,pdbsettings,initparams,arcmode,prereq)
+       -enableArchive {14}"'''.format(dbuser,dbhome,dbname,cdbflag,dbfiledest,stype,charset,redosize,dbtype,dbctype,crs_nodes,dbname,pdbsettings,initparams,arcmode)
        cmd='\n'.join(line.lstrip() for line in rspdata.splitlines())
 
        return cmd

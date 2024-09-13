@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -120,12 +120,6 @@ class OraEnv:
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_check_db_role.log"
       elif file_type == "CHECK_CONNECT_STR":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_check_conn_str_file.log"
-      elif file_type == "CHECK_PDB_CONNECT_STR":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_check_pdb_conn_str_file.log"
-      elif file_type == "SETUP_DB_LSNR":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/setup_db_lsnr.log"
-      elif file_type == "SETUP_LOCAL_LSNR":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/setup_local_lsnr.log"
       else:
         pass
 

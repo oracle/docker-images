@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
-# Author: paramdeep.saini@oracle.com
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
+# Author: sanjay.singh@oracle.com,paramdeep.saini@oracle.com
 ############################
 
 """
@@ -49,25 +49,18 @@ class OraRacDel:
        ct = datetime.datetime.now()
        bts = ct.timestamp()
        self.env_param_checks()
-       giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
        self.ocommon.populate_existing_cls_nodes() 
-       #self.clu_checks()
+       self.clu_checks()
        hostname=self.ocommon.get_public_hostname()
-       if self.ocommon.check_key("EXISTING_CLS_NODE",self.ora_env_dict):
-          if len(self.ora_env_dict["EXISTING_CLS_NODE"].split(",")) == 0:
+       if self.ocommon.check_key("EXISTING_CLS_NODES",self.ora_env_dict):
+          if len(self.ora_env_dict["EXISTING_CLS_NODES"].split(",")) == 0:
              self.ora_env_dict=self.add_key("LAST_CRS_NODE","true",self.ora_env_dict)
  
        self.del_dbinst_main(hostname)
        self.del_dbhome_main(hostname)
        self.del_gihome_main(hostname)
        self.del_ginode(hostname)
-       if self.ocommon.detect_k8s_env():
-          if self.ocommon.check_key("EXISTING_CLS_NODE",self.ora_env_dict):
-            node=self.ora_env_dict["EXISTING_CLS_NODE"].split(",")[0]
-            self.ocommon.update_scan(giuser,gihome,None,node)
-            self.ocommon.start_scan(giuser,gihome,node)
-            self.ocommon.update_scan_lsnr(giuser,gihome,node)
-       
+
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -196,7 +189,7 @@ class OraRacDel:
        if os.path.isfile(dbrspfile):    
           cmd='''su - {0} -c "{1}/deinstall/deinstall -silent -local -paramfile {2} "'''.format(dbuser,dbhome,dbrspfile)
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,False) 
+          self.ocommon.check_os_err(output,error,retcode,True) 
        else:
           self.ocommon.log_error_message("No responsefile exist under " + dbrspdir,self.file_name)
           self.ocommon.prog_exit("127")
@@ -218,7 +211,7 @@ class OraRacDel:
        self.ocommon.log_info_message("gi params " + gihome ,self.file_name)
        if self.ocommon.check_key("DEL_GIHOME",self.ora_env_dict):
           retcode1=self.ocvu.check_home(hostname,gihome,giuser)
-          status=self.ocommon.check_gi_installed(retcode1,gihome,giuser)
+          status=self.ocommon.check_gi_installed(0,gihome,giuser)
           if status:
              self.del_gihome()
           else:
@@ -235,10 +228,10 @@ class OraRacDel:
        self.generate_delrspfile(girspdir,giuser,gihome)
        girspfile=self.ocommon.latest_file(girspdir)
        if os.path.isfile(girspfile):
-          cmd='''su - {0} -c "export TEMP={3};{1}/deinstall/deinstall -silent -local -paramfile {2} "'''.format(giuser,gihome,girspfile,"/var/tmp")
+          cmd='''su - {0} -c "{1}/deinstall/deinstall -silent -local -paramfile {2} "'''.format(giuser,gihome,girspfile)
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,True)
-          deinstallDir=self.ocommon.latest_dir(tmpdir,'deins*/')
+          deinstallDir=self.ocommon.latest_dir("/tmp/deinstall*")
           cmd='''{0}/rootdeinstall.sh'''.format(deinstallDir)
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,False)

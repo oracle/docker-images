@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -81,17 +81,6 @@ class OraRacAdd:
                self.ocommon.log_info_message("Start add_dbinst()",self.file_name)
                self.add_dbinst()
                self.ocommon.log_info_message("End add_dbinst()",self.file_name)
-               self.ocommon.log_info_message("Setting db listener",self.file_name)
-               self.ocommon.setup_db_lsnr()
-               self.ocommon.log_info_message("Setting local listener",self.file_name)
-               self.ocommon.set_local_listener()
-               self.ocommon.setup_db_service("modify")
-               sname,osid,opdb,sparams=self.ocommon.get_service_name()
-               if sname is not None:
-                  self.ocommon.start_db_service(sname,osid)
-                  self.ocommon.check_db_service_status(sname,osid) 
-               self.ocommon.log_info_message("End create_db()",self.file_name)
-               self.perform_db_check()
                status,osid,host,mode=self.ocommon.check_dbinst()
                if status:
                  msg='''Oracle Database {0} is up and running on {1}.'''.format(osid,host)
@@ -153,8 +142,7 @@ class OraRacAdd:
        if not self.ocommon.detect_k8s_env():
            dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
            self.osetupssh.setupssh(dbuser,dbhome,'ADDNODE')
-           #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            #self.osetupssh.verifyssh(dbuser,'ADDNODE')
+           self.osetupssh.verifyssh(dbuser,'ADDNODE')
        else:
          self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this k8s env.",self.file_name)
 

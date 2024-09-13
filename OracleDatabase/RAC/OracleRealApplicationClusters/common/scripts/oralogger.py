@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -160,7 +160,7 @@ class StdHandler(Handler):
           """
           request.stdout_ =  request.getStdOutValue()
           if request.stdout_ == LoggingType.STDOUT:
-            st = logging.FileHandler(request.stdoutfile_)
+            st = logging.FileHandler(request.stdoutfile_,'w')
             request.root.addHandler(st)
             st.setFormatter(request.formatter)
             self.print_message(request,st)

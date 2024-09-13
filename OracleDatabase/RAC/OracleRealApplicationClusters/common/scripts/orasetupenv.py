@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -349,11 +349,10 @@ class OraSetupEnv:
         """
         setting ping permission
         """
-        pass
-        #self.ocommon.log_info_message("Setting ping utility permissions so that it works correctly inside container",self.file_name)
-        #cmd='''chmod 6755 /usr/bin/ping;chmod 6755 /bin/ping'''
-        #output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-        #self.ocommon.check_os_err(output,error,retcode,None)
+        self.ocommon.log_info_message("Setting ping utility permissions so that it works correctly inside container",self.file_name)
+        cmd='''chmod 6755 /usr/bin/ping;chmod 6755 /bin/ping'''
+        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+        self.ocommon.check_os_err(output,error,retcode,None)
         
     def set_common_script(self):
         """
@@ -548,6 +547,22 @@ class OraSetupEnv:
                 self.ocommon.log_info_message("Resetting OS Password for OS user : " + user,self.file_name)
                 self.ocommon.reset_os_password(user)
                
+#        if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
+#           if self.ora_env_dict["OP_TYPE"] == 'nosetup':
+#              giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
+#              pubhostname = self.ocommon.get_public_hostname()
+#              retcode1=self.ocvu.check_home(pubhostname,gihome,giuser)
+#              status=self.ocommon.check_gi_installed(0,gihome,giuser)
+#              if not status and not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
+#                  user=self.ora_env_dict["GRID_USER"]
+#                  self.ocommon.log_info_message("Resetting OS Password for OS user : " + user,self.file_name)
+#                  self.ocommon.reset_os_password(user)
+#                  msg="Since OP_TYPE is setup to default value(nosetup),grid setup will be initated by other nodes based on the value OP_TYPES"
+#                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
+             
+#              if status:    
+#                self.ora_env_dict=self.ocommon.add_key("GI_HOME_INSTALLED_FLAG","true",self.ora_env_dict)
+
 ###### Checking RAC Home #######
     def reset_db_user_passwd(self):
         """
@@ -560,6 +575,22 @@ class OraSetupEnv:
                self.ocommon.log_info_message("Resetting OS Password for OS user : " + user,self.file_name)
                self.ocommon.reset_os_password(user)
               
+#        if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
+#           if self.ora_env_dict["OP_TYPE"] == 'nosetup':
+#              dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
+#              pubhostname = self.ocommon.get_public_hostname()
+#              retcode1=self.ocvu.check_home(pubhostname,dbhome,dbuser)
+#              status=self.ocommon.check_rac_installed(retcode1)
+#              if not status and not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
+#                  user=self.ora_env_dict["DB_USER"]
+#                  self.ocommon.log_info_message("Resetting OS Password for OS user : " + user,self.file_name)
+#                  self.ocommon.reset_os_password(user)
+#                  msg="Since OP_TYPE is setup to default value(nosetup), RAC setup will be initated by other nodes based on the value OP_TYPE"
+#                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
+
+#              if status:
+#                self.ora_env_dict=self.ocommon.add_key("RAC_HOME_INSTALLED_FLAG","true",self.ora_env_dict)
+
 ###### Setting up parallel Oracle and Grid User setup using Keys ####
     def setup_ssh_using_keys(self,sshi):
         """ 
@@ -570,7 +601,7 @@ class OraSetupEnv:
         self.ocommon.log_info_message("I am in setup_ssh_using_keys + uhome[0] and uhome[1]",self.file_name)
         self.osetupssh.setupsshdirs(uohome[0],uohome[1],None)
         self.osetupssh.setupsshusekey(uohome[0],uohome[1],None)
-        #self.osetupssh.verifyssh(uohome[0],None)
+        self.osetupssh.verifyssh(uohome[0],None)
   
 ###### Setting up ssh for K8s #######
     def setup_ssh_for_k8s(self):
@@ -644,9 +675,7 @@ class OraSetupEnv:
  
         tmpdir=self.ocommon.get_tmpdir()
         self.ocommon.set_user_profile(giuser,"TMPDIR",tmpdir,"export")
-        self.ocommon.set_user_profile(giuser,"TEMP",tmpdir,"export")
         self.ocommon.set_user_profile(dbuser,"TMPDIR",tmpdir,"export")
-        self.ocommon.set_user_profile(dbuser,"TEMP",tmpdir,"export")
         if self.ocommon.check_key("PROFILE_FLAG",self.ora_env_dict):
            self.ocommon.set_user_profile(giuser,"ORACLE_HOME",gihome,"export")
            self.ocommon.set_user_profile(giuser,"GRID_HOME",gihome,"export")
@@ -684,7 +713,7 @@ class OraSetupEnv:
               retcode1=self.ocvu.check_home(pubhostname,gihome,giuser)
               if retcode1 == 0:
                  self.ora_env_dict=self.ocommon.add_key("GI_HOME_INSTALLED_FLAG","true",self.ora_env_dict)
-              status=self.ocommon.check_gi_installed(retcode1,gihome,giuser)
+              status=self.ocommon.check_gi_installed(0,gihome,giuser)
               if status:
                  msg="Grid is already installed on this machine"
                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)

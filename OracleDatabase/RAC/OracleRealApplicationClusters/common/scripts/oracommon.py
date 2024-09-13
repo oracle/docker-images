@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -26,7 +26,6 @@ import itertools
 import string
 import random
 import glob
-import pathlib
 
 class OraCommon:
       def __init__(self,oralogger,orahandler,oraenv):
@@ -117,7 +116,7 @@ class OraCommon:
              self.oenv.encrypt_str__ = True
              self.oenv.original_str__ = mstr
           else:
-             message = "Masked String is empty so no change required in encrypted string flag and original string in singleton class"
+             message = "Masked String is empty so no change required in encrypted String Flag and original string in singleton class"
              self.log_info_message(message,self.file_name)
 
       def unset_mask_str(self):
@@ -365,6 +364,7 @@ class OraCommon:
                remote (boolean): dir to be created remotely
                node (string): remote node name on which dir to be created
                user (string): remote user to be connected
+               group(string): remote user group to be connected
           """
           self.log_info_message("Inside create_dir()",self.file_name)
           if local:
@@ -399,56 +399,6 @@ class OraCommon:
                  output,error,retcode=self.execute_cmd(cmd,None,None)
                  self.check_os_err(output,error,retcode,True)
                  
-      def create_pfile(self,pfile,spfile):
-          """
-            Create pfile from spfile locally
-          """
-          self.log_info_message("Inside create_pfile()",self.file_name)
-          osuser,dbhome,dbbase,oinv=self.get_db_params()
-          osid=self.ora_env_dict["GOLD_SID_NAME"]
-
-          sqlpluslogincmd=self.get_sqlplus_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
-          sqlcmd="""
-               create pfile='{0}' from spfile='{1}';
-          """.format(pfile,spfile)
-          self.log_info_message("Running the sqlplus command to create pfile from spfile: " + sqlcmd,self.file_name)
-          output,error,retcode=self.run_sqlplus(sqlpluslogincmd,sqlcmd,None)
-          self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
-          self.check_sql_err(output,error,retcode,True)
-
-      def create_spfile(self,spfile,pfile):
-          """
-            Create spfile from pfile locally
-          """
-          self.log_info_message("Inside create_spfile()",self.file_name)
-          osuser,dbhome,dbbase,oinv=self.get_db_params()
-          osid=self.ora_env_dict["DB_NAME"] + "1"
-
-          sqlpluslogincmd=self.get_sqlplus_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
-          sqlcmd="""
-               create spfile='{0}' from pfile='{1}';
-          """.format(spfile,pfile)
-          self.log_info_message("Running the sqlplus command to create spfile from pfile: " + sqlcmd,self.file_name)
-          output,error,retcode=self.run_sqlplus(sqlpluslogincmd,sqlcmd,None)
-          self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
-          self.check_sql_err(output,error,retcode,True)
-
-      def resetlogs(self,osid):
-          """
-            Reset the database logs
-          """
-          self.log_info_message("Inside resetlogs()",self.file_name)
-          osuser,dbhome,dbbase,oinv=self.get_db_params()
-
-          sqlpluslogincmd=self.get_sqlplus_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
-          sqlcmd='''
-               alter database open resetlogs;
-          '''
-          self.log_info_message("Running the sqlplus command to resetlogs" + sqlcmd,self.file_name)
-          output,error,retcode=self.run_sqlplus(sqlpluslogincmd,sqlcmd,None)
-          self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
-          self.check_sql_err(output,error,retcode,True)
-
       def check_file(self,file,local,remote,user):
           """
             check locally or remotely
@@ -467,7 +417,7 @@ class OraCommon:
                   return False
                                  
 
-      def latest_file(self,dir,):
+      def latest_file(self,dir):
           """
           List the latest file in a directory
           """
@@ -475,51 +425,65 @@ class OraCommon:
           paths = [os.path.join(dir, basename) for basename in files]
           return max(paths, key=os.path.getctime)
 
-      def latest_dir(self,dir,subdir):
+      def latest_dir(self,dir):
           """
           Get the latest dir matching a regexp
           """
-          self.log_info_message(" Received Params : basedir=" + dir + " subdir=" + subdir,self.file_name)
-          if subdir is  None:
-            subdir = '*/'
-          dir1=sorted(pathlib.Path(dir).glob(subdir), key=os.path.getmtime)[-1]
-          return dir1
+          dirlist = glob.glob(dir)
+          paths = [os.path.join(dir, basename) for basename in dirlist]
+          return max(paths, key=os.path.getctime)
 
-      def shutdown_db(self,osid):
+      def shutdown_db(self,env_dict):
            """
            Shutdown the database
            """
-           osuser,dbhome,dbbase,oinv=self.get_db_params()
            self.log_info_message("Inside shutdown_db()",self.file_name)
-           sqlpluslogincmd=self.get_sqlplus_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
-
+           sqlpluslogincmd='''{0}/bin/sqlplus "/as sysdba"'''.format(env_dict["ORACLE_HOME"])
            sqlcmd='''
                   shutdown immediate;
            '''
            self.log_info_message("Running the sqlplus command to shutdown the database: " + sqlcmd,self.file_name)
            output,error,retcode=self.run_sqlplus(sqlpluslogincmd,sqlcmd,None)
            self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
-           self.check_sql_err(output,error,retcode,False)
+           self.check_sql_err(output,error,retcode,True)
 
-      def start_db(self,osid,mode,pfile=None):
+      def mount_db(self,env_dict):
            """
-           start  the database
+           Mount the database
            """
-           osuser,dbhome,dbbase,oinv=self.get_db_params()
-           self.log_info_message("Inside start_db()",self.file_name)
-           cmd=""
-           if mode is None:
-              mode=" "
-
-           if pfile is not None:
-             cmd='''startup {1} pfile={0}'''.format(pfile,mode)
-           else:
-             cmd='''startup {0}'''.format(mode)
-
-           sqlpluslogincmd=self.get_sqlplus_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
+           self.log_info_message("Inside mount_db()",self.file_name)
+           sqlpluslogincmd='''{0}/bin/sqlplus "/as sysdba"'''.format(env_dict["ORACLE_HOME"])
            sqlcmd='''
-                {0};
-           '''.format(cmd)
+                  startup mount;
+           '''
+           self.log_info_message("Running the sqlplus command to mount the database: " + sqlcmd,self.file_name)
+           output,error,retcode=self.run_sqlplus(sqlpluslogincmd,sqlcmd,None)
+           self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
+           self.check_sql_err(output,error,retcode,True)
+
+      def start_db(self,env_dict):
+           """
+           startup the database
+           """
+           self.log_info_message("Inside start_db()",self.file_name)
+           sqlpluslogincmd='''{0}/bin/sqlplus "/as sysdba"'''.format(env_dict["ORACLE_HOME"])
+           sqlcmd='''
+                  startup;
+           '''
+           self.log_info_message("Running the sqlplus command to start the database: " + sqlcmd,self.file_name)
+           output,error,retcode=self.run_sqlplus(sqlpluslogincmd,sqlcmd,None)
+           self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
+           self.check_sql_err(output,error,retcode,True)
+
+      def nomount_db(self,env_dict):
+           """
+           No mount  the database
+           """
+           self.log_info_message("Inside start_db()",self.file_name)
+           sqlpluslogincmd='''{0}/bin/sqlplus "/as sysdba"'''.format(env_dict["ORACLE_HOME"])
+           sqlcmd='''
+                 startup nomount;
+           '''
            self.log_info_message("Running the sqlplus command to start the database: " + sqlcmd,self.file_name)
            output,error,retcode=self.run_sqlplus(sqlpluslogincmd,sqlcmd,None)
            self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
@@ -663,15 +627,6 @@ class OraCommon:
          else:
             self.check_os_err(output,error,retcode,None)
  
-##########  Ping the IP ###############
-      def ping_host(self,host):
-         """
-         Check if IP is pingable or not
-         """
-         cmd='''ping -c 3 {0}'''.format(host)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         return retcode
-            
 ###########  IP Validations ############
       def validate_ip(self,ip):
            """
@@ -721,13 +676,6 @@ class OraCommon:
          """
          dbpasswd=self.get_password(None)
          return dbpasswd
-      
-      def get_tde_passwd(self):
-        """
-        get the tde password
-        """
-        dbpasswd=self.get_password("TDE_PASSWORD")
-        return dbpasswd
 
       def get_sys_passwd(self):
          """
@@ -740,154 +688,69 @@ class OraCommon:
             """
             get the password
             """
-            svolume=None
-            pwdfile=None
-            pwdkey=None
-            passwdfile=None
-            keyvolume=None
             
-            if key is not None:
-               if key == 'TDE_PASSWORD':
-                  svolume,pwdfile,pwdkey,passwdfile,keyvolume=self.get_tde_passwd_details()
-            else:
-               svolume,pwdfile,pwdkey,passwdfile,keyvolume=self.get_db_passwd_details()   
-                  
-            if self.check_key("PWD_VOLUME",self.ora_env_dict):
-               pwd_volume=self.ora_env_dict["PWD_VOLUME"]
-            else:
-               pwd_volume="/var/tmp"
-                           
-            password=self.set_password(svolume,pwdfile,pwdkey,passwdfile,keyvolume,pwd_volume)
-            return password
-            
-      def get_tde_passwd_details(self):
-         """
-         This function return the TDE parameters
-         """      
-         if self.check_key("TDE_SECRET_VOLUME",self.ora_env_dict):
-            self.log_info_message("TDE_SECRET_VOLUME set to : ",self.ora_env_dict["TDE_SECRET_VOLUME"])
-            msg='''TDE_SECRET_VOLUME passed as an env variable and set to {0}'''.format(self.ora_env_dict["TDE_SECRET_VOLUME"])
-         else:
-            self.ora_env_dict=self.add_key("TDE_SECRET_VOLUME","/run/.tdesecret",self.ora_env_dict)
-            msg='''TDE_SECRET_VOLUME not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["TDE_SECRET_VOLUME"])
-            self.log_warn_message(msg,self.file_name)
-
-         if self.check_key("TDE_KEY_SECRET_VOLUME",self.ora_env_dict):
-            self.log_info_message("Tde Secret_Volume set to : ",self.ora_env_dict["TDE_KEY_SECRET_VOLUME"])
-            msg='''TDE_KEY_SECRET_VOLUME passed as an env variable and set to {0}'''.format(self.ora_env_dict["TDE_KEY_SECRET_VOLUME"])
-         else:
-               if self.check_key("TDE_SECRET_VOLUME",self.ora_env_dict):
-                  self.ora_env_dict=self.add_key("TDE_KEY_SECRET_VOLUME",self.ora_env_dict["TDE_SECRET_VOLUME"],self.ora_env_dict)
-                  msg='''TDE_KEY_SECRET_VOLUME not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["TDE_KEY_SECRET_VOLUME"])
-                  self.log_warn_message(msg,self.file_name)
-                  
-         if self.check_key("TDE_PWD_FILE",self.ora_env_dict):
-            msg='''TDE_PWD_FILE passed as an env variable and set to {0}'''.format(self.ora_env_dict["TDE_PWD_FILE"])
-         else:
-            self.ora_env_dict=self.add_key("TDE_PWD_FILE","tde_pwdfile.enc",self.ora_env_dict)
-            msg='''TDE_PWD_FILE not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["TDE_PWD_FILE"])
-            self.log_warn_message(msg,self.file_name)
-
-         if self.check_key("TDE_PWD_KEY",self.ora_env_dict):
-            msg='''TDE_PWD_KEY passed as an env variable and set to {0}'''.format(self.ora_env_dict["TDE_PWD_KEY"])
-         else:
-            self.ora_env_dict=self.add_key("TDE_PWD_KEY","tdepwd.key",self.ora_env_dict)
-            msg='''TDE_PWD_KEY not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["TDE_PWD_KEY"])
-            self.log_warn_message(msg,self.file_name)
-               
-         return self.ora_env_dict["TDE_SECRET_VOLUME"],self.ora_env_dict["TDE_PWD_FILE"],self.ora_env_dict["TDE_PWD_KEY"],"tdepwdfile",self.ora_env_dict["TDE_KEY_SECRET_VOLUME"]     
-
-      def get_db_passwd_details(self):
-         """
-         This function return the db passwd paameters
-         """      
-         if self.check_key("SECRET_VOLUME",self.ora_env_dict):
-            self.log_info_message("Secret_Volume set to : ",self.ora_env_dict["SECRET_VOLUME"])
-            msg='''SECRET_VOLUME passed as an env variable and set to {0}'''.format(self.ora_env_dict["SECRET_VOLUME"])
-         else:
-            self.ora_env_dict=self.add_key("SECRET_VOLUME","/run/secrets",self.ora_env_dict)
-            msg='''SECRET_VOLUME not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["SECRET_VOLUME"])
-            self.log_warn_message(msg,self.file_name)
-
-         if self.check_key("KEY_SECRET_VOLUME",self.ora_env_dict):
-            self.log_info_message("Secret_Volume set to : ",self.ora_env_dict["KEY_SECRET_VOLUME"])
-            msg='''KEY_SECRET_VOLUME passed as an env variable and set to {0}'''.format(self.ora_env_dict["KEY_SECRET_VOLUME"])
-         else:
-               if self.check_key("SECRET_VOLUME",self.ora_env_dict):
-                  self.ora_env_dict=self.add_key("KEY_SECRET_VOLUME",self.ora_env_dict["SECRET_VOLUME"],self.ora_env_dict)
-                  msg='''KEY_SECRET_VOLUME not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["KEY_SECRET_VOLUME"])
-                  self.log_warn_message(msg,self.file_name)
-               
-         if self.check_key("DB_PWD_FILE",self.ora_env_dict):
-            msg='''DB_PWD_FILE passed as an env variable and set to {0}'''.format(self.ora_env_dict["DB_PWD_FILE"])
-         else:
-            self.ora_env_dict=self.add_key("DB_PWD_FILE","common_os_pwdfile.enc",self.ora_env_dict)
-            msg='''DB_PWD_FILE not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["DB_PWD_FILE"])
-            self.log_warn_message(msg,self.file_name)
-
-         if self.check_key("PWD_KEY",self.ora_env_dict):
-            msg='''PWD_KEY passed as an env variable and set to {0}'''.format(self.ora_env_dict["PWD_KEY"])
-         else:
-            self.ora_env_dict=self.add_key("PWD_KEY","pwd.key",self.ora_env_dict)
-            msg='''PWD_KEY not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["PWD_KEY"])
-            self.log_warn_message(msg,self.file_name)
-         
-         if self.check_key("PASSWORD_FILE",self.ora_env_dict):
-            msg='''PASSWORD_FILE passed as an env variable and set to {0}'''.format(self.ora_env_dict["PASSWORD_FILE"])
-         else:
-            self.ora_env_dict=self.add_key("PASSWORD_FILE","dbpasswd.file",self.ora_env_dict)
-            msg='''PASSWORD_FILE not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["PASSWORD_FILE"])
-            self.log_warn_message(msg,self.file_name) 
-               
-         return self.ora_env_dict["SECRET_VOLUME"],self.ora_env_dict["DB_PWD_FILE"],self.ora_env_dict["PWD_KEY"],self.ora_env_dict["PASSWORD_FILE"],self.ora_env_dict["KEY_SECRET_VOLUME"]
-                           
-      def set_password(self,secret_volume,passwd_file,key_file,dbpasswd_file,key_secret_volume,pwd_volume):
             passwd_file_flag=False
             password=None
             password_file=None
-            passwordfile1='''{0}/{1}'''.format(secret_volume,passwd_file)
-            passwordkeyfile='''{0}/{1}'''.format(secret_volume,key_file)
-            passwordfile2='''{0}/{1}'''.format(secret_volume,dbpasswd_file)
-            self.log_info_message("Secret volume file set to : " + secret_volume,self.file_name)
+            if self.check_key("SECRET_VOLUME",self.ora_env_dict):
+               self.log_info_message("Secret_Volume set to : ",self.ora_env_dict["SECRET_VOLUME"])
+               msg='''SECRET_VOLUME passed as an env variable and set to {0}'''.format(self.ora_env_dict["SECRET_VOLUME"])
+            else:
+               self.ora_env_dict=self.add_key("SECRET_VOLUME","/run/secrets",self.ora_env_dict)
+               msg='''SECRET_VOLUME not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["SECRET_VOLUME"])
+               self.log_warn_message(msg,self.file_name)
+
+            if self.check_key("COMMON_OS_PWD_FILE",self.ora_env_dict):
+               msg='''COMMON_OS_PWD_FILE passed as an env variable and set to {0}'''.format(self.ora_env_dict["COMMON_OS_PWD_FILE"])
+            else:
+               self.ora_env_dict=self.add_key("COMMON_OS_PWD_FILE","common_os_pwdfile.enc",self.ora_env_dict)
+               msg='''COMMON_OS_PWD_FILE not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["COMMON_OS_PWD_FILE"])
+               self.log_warn_message(msg,self.file_name)
+
+            if self.check_key("PWD_KEY",self.ora_env_dict):
+               msg='''PWD_KEY passed as an env variable and set to {0}'''.format(self.ora_env_dict["PWD_KEY"])
+            else:
+               self.ora_env_dict=self.add_key("PWD_KEY","pwd.key",self.ora_env_dict)
+               msg='''PWD_KEY not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["PWD_KEY"])
+               self.log_warn_message(msg,self.file_name)
+
+            if self.check_key("PASSWORD_FILE",self.ora_env_dict):
+               msg='''PASSWORD_FILE passed as an env variable and set to {0}'''.format(self.ora_env_dict["PASSWORD_FILE"])
+            else:
+               self.ora_env_dict=self.add_key("PASSWORD_FILE","pwdfile",self.ora_env_dict)
+               msg='''PASSWORD_FILE not passed as an env variable. Setting default to {0}'''.format(self.ora_env_dict["PASSWORD_FILE"])
+               self.log_warn_message(msg,self.file_name)          
+                    
+            secret_volume = self.ora_env_dict["SECRET_VOLUME"]
+            common_os_pwd_file = self.ora_env_dict["COMMON_OS_PWD_FILE"]
+            pwd_key = self.ora_env_dict["PWD_KEY"]
+            passwd_file='''{0}/{1}'''.format(secret_volume,self.ora_env_dict["COMMON_OS_PWD_FILE"])
+            dbpasswd_file='''{0}/{1}'''.format(secret_volume,self.ora_env_dict["PASSWORD_FILE"])
             self.log_info_message("Password file set to : " + passwd_file,self.file_name)
-            self.log_info_message("key file set to : " + key_file,self.file_name)
-            self.log_info_message("dbpasswd file set to : " + dbpasswd_file,self.file_name)
-            self.log_info_message("key secret volume set to : " + key_secret_volume,self.file_name)
-            self.log_info_message("pwd volume set : " + pwd_volume,self.file_name)
-            self.log_info_message("passwordfile1 set to : " + passwordfile1,self.file_name)
-            self.log_info_message("passwordkeyfile set to : " + passwordkeyfile,self.file_name)
-            self.log_info_message("passwordfile2 set to : " + passwordfile2,self.file_name)           
-            if (os.path.isfile(passwordfile1)) and (os.path.isfile(passwordkeyfile)):
-               msg='''Passwd file {0} and key file {1} exist. Password file Check passed!'''.format(passwordfile1,passwordkeyfile)
+            p1='''{0}/{1}'''.format(secret_volume,common_os_pwd_file)
+            self.log_info_message("Secret Volume Location: " + p1,self.file_name)
+            #print(passwd_file)
+            if os.path.isfile(passwd_file):
+               msg='''Passwd file {0} exist. Password file Check passed!'''.format(passwd_file)
                self.log_info_message(msg,self.file_name)
-               msg='''Reading encrypted passwd from file {0}.'''.format(passwordfile1)
+               msg='''Reading encrypted passwd from file {0}.'''.format(passwd_file)
                self.log_info_message(msg,self.file_name)
-               cmd=None
-               if self.check_key("ENCRYPTION_TYPE",self.ora_env_dict):
-                  if self.ora_env_dict["ENCRYPTION_TYPE"].lower() == "aes256":
-                     cmd='''openssl enc -d -aes-256-cbc -in \"{0}/{1}\" -out {2}/{1} -pass file:\"{3}/{4}\"'''.format(secret_volume,passwd_file,pwd_volume,key_secret_volume,key_file)
-                  elif self.ora_env_dict["ENCRYPTION_TYPE"].lower() == "rsautl":
-                     cmd ='''openssl rsautl -decrypt -in \"{0}/{1}\" -out {2}/{1} -inkey \"{3}/{4}\"'''.format(secret_volume,passwd_file,pwd_volume,key_secret_volume,key_file)
-                  else:
-                     pass
-               else:
-                  cmd ='''openssl pkeyutl -decrypt -in \"{0}/{1}\" -out {2}/{1} -inkey \"{3}/{4}\"'''.format(secret_volume,passwd_file,pwd_volume,key_secret_volume,key_file)
-      
+               cmd='''openssl enc -d -aes-256-cbc -in \"{0}/{1}\" -out /tmp/{1} -pass file:\"{0}/{2}\"'''.format(secret_volume,common_os_pwd_file,pwd_key)
                output,error,retcode=self.execute_cmd(cmd,None,None)
                self.check_os_err(output,error,retcode,True)
                passwd_file_flag = True
-               password_file='''{0}/{1}'''.format(pwd_volume,passwd_file)
-            elif os.path.isfile(passwordfile2):
+               password_file='''/tmp/{0}'''.format(self.ora_env_dict["COMMON_OS_PWD_FILE"])
+            elif os.path.isfile(dbpasswd_file):
                msg='''Passwd file {0} exist. Password file Check passed!'''.format(dbpasswd_file)
                self.log_info_message(msg,self.file_name)
                msg='''Reading encrypted passwd from file {0}.'''.format(dbpasswd_file)
                self.log_info_message(msg,self.file_name)
-               cmd='''openssl base64 -d -in \"{0}\" -out \"{2}/{1}\"'''.format(passwordfile2,dbpasswd_file,pwd_volume)
+               cmd='''openssl base64 -d -in \"{0}\" -out \"/tmp/{1}\"'''.format(dbpasswd_file,self.ora_env_dict["PASSWORD_FILE"])
                output,error,retcode=self.execute_cmd(cmd,None,None)
                self.check_os_err(output,error,retcode,True)
                passwd_file_flag = True
-               password_file='''{1}/{0}'''.format(dbpasswd_file,pwd_volume)
-       
+               password_file='''/tmp/{0}'''.format(self.ora_env_dict["PASSWORD_FILE"])         
+
             if not passwd_file_flag:
                # get random password pf length 8 with letters, digits, and symbols
                characters1 = string.ascii_letters +  string.digits + "_-%#"
@@ -903,11 +766,11 @@ class OraCommon:
                msg="ORACLE_PWD is passed as an env variable. Check Passed!"
                self.log_info_message(msg,self.file_name)
             else:
-               #self.ora_env_dict=self.add_key("ORACLE_PWD",password,self.ora_env_dict)
-               #msg="ORACLE_PWD set to HIDDEN_STRING generated using encrypted password file"
+               self.ora_env_dict=self.add_key("ORACLE_PWD",password,self.ora_env_dict)
+               msg="ORACLE_PWD set to HIDDEN_STRING generated using encrypted password file"
                self.log_info_message(msg,self.file_name)
 
-            return password
+            return self.ora_env_dict["ORACLE_PWD"]
 
 ######### Get OS Password ##############
       def reset_os_password(self,user):
@@ -1075,9 +938,6 @@ class OraCommon:
           f = open("/proc/self/cgroup",  "r")
           if "/kubepods" in f.read():
               k8s_flag=True
-          else:
-             if self.check_file("/run/secrets/kubernetes.io/serviceaccount/token","local",None,None):
-                k8s_flag=True
 
           return k8s_flag
 ######## Process the nwlist and return netmask,net subnet and ne card name ####### 
@@ -1293,15 +1153,9 @@ class OraCommon:
          """
          Build the ASM device list
          """
-         asm_disk=None
          asmdisk=self.ora_env_dict[key].split(",")[0]
          asm_disk_dir=asmdisk.rsplit("/",1)[0]
-         asm_disk1=asmdisk.rsplit("/",1)[1]
-         if len(asm_disk1) <= 3:
-            asm_disk=asmdisk.rsplit("/",1)[1][:(len(asm_disk1)-1)]
-         else:
-            asm_disk=asmdisk.rsplit("/",1)[1][:(len(asm_disk1)-2)]
-            
+         asm_disk=asmdisk.rsplit("/",1)[1][:3]
          disc_str=asm_disk_dir + '/' + asm_disk + '*'
          return disc_str
          
@@ -1317,7 +1171,7 @@ class OraCommon:
                 if self.disk_exists(device):
                     msg='''Changing device permission {0}'''.format(device)
                     self.log_info_message(msg,self.file_name)
-                    cmd='''chmod 660 {0};chown grid:asmdba {0}'''.format(device)
+                    cmd='''chmod 660 {0};chown grid:asmadmin {0}'''.format(device)
                     output,error,retcode=self.execute_cmd(cmd,None,None)
                     self.check_os_err(output,error,retcode,True)
                 else:
@@ -1383,7 +1237,7 @@ class OraCommon:
 
           prereq=" "
           if self.check_key("IGNORE_CRS_PREREQS",self.ora_env_dict):
-           prereq=" -ignorePreReq "
+           prereq=" -ignorePreReqs "
 
           giuser,gihome,gbase,oinv=self.get_gi_params()
           snic="-J-Doracle.install.crs.allowSingleNIC=true" if self.check_key("SINGLENIC",self.ora_env_dict) else ""         
@@ -1435,7 +1289,7 @@ class OraCommon:
         cmd=None
         prereq=" "
         if self.check_key("IGNORE_CRS_PREREQS",self.ora_env_dict):
-           prereq=" -ignorePreReq "
+           prereq=" -ignorePreReqs "
         if int(version) < 23:
           rspdata='''su - {0} -c "ssh {10} {1}/gridSetup.sh  {11} -waitforcompletion {2} -silent
             installOption=CRS_SWONLY
@@ -1636,29 +1490,6 @@ class OraCommon:
             self.log_info_message("Atleast specify db user and password for db connectivity. Exiting...",self.file_name)
             self.prog_exit("127")
 
-######### RMAN connect string  ###########
-      def get_rman_str(self,home,osid,osuser,dbuser,password,hostname,port,svc,osep,role,wallet):
-         """
-         return the rman connect string
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(home)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(home)
-         export_cmd='''export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2};export ORACLE_SID={3}'''.format(home,path,ldpath,osid)
-         if dbuser == 'sys' and password and hostname and port and svc:
-            return '''su - {7} -c "{5};{6}/bin/rman {0}/{1}@//{2}:{3}/{4}"'''.format(dbuser,password,hostname,port,svc,export_cmd,home,osuser)
-         elif dbuser != 'sys' and password and hostname and svc:
-            return '''su - {7} -c "{5};{6}/bin/rman {0}/{1}@//{2}:{3}/{4}"'''.format(dbuser,password,hostname,"1521",svc,export_cmd,home
-,osuser)
-         elif dbuser == 'sys' and not password:
-            return '''su - {2} -c "{1};{0}/bin/rman target /"'''.format(home,export_cmd,osuser)
-         elif dbuser == 'sys' and  password:
-            return '''su - {4} -c "{1};{0}/bin/rman target {2}/{3}"'''.format(home,export_cmd,dbuser,password,osuser)
-         elif dbuser != 'sys' and password:
-            return '''su - {4} -c "{1};{0}/bin/rman target {2}/{3}"'''.format(home,export_cmd,dbuser,password,osuser)
-         else:
-            self.log_info_message("Atleast specify db user and password for db connectivity. Exiting...",self.file_name)
-            self.prog_exit("127")
-
 ######### dgmgrl connect string  ###########
       def get_dgmgr_str(self,home,osid,osuser,dbuser,password,hostname,port,svc,osep,role,wallet):
          """
@@ -1685,14 +1516,6 @@ class OraCommon:
          else:
             self.log_info_message("Atleast specify db user and password for db connectivity. Exiting...",self.file_name)
             self.prog_exit("127")
-
-######## function to get tnssvc str ######
-      def get_tnssvc_str(self,dbsvc,dbport,dbscan):
-          """
-          return tnssvc
-          """
-          tnssvc='''(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = {0})(PORT = {1})) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = {2})))'''.format(dbscan,dbport,dbsvc)
-          return tnssvc
 
 ######### Sqlplus   ###########
       def get_inst_sid(self,dbuser,dbhome,osid,hostname):
@@ -1722,75 +1545,27 @@ class OraCommon:
          self.check_os_err(output,error,retcode,True)
 
 ######### Stop RAC DB ########
-      def get_host_dbsid(self,hname,connect_str):
+      def start_rac_db(self,dbuser,dbhome,osid,hostname,startoption):
          """
-         get the host sid based on hostname
-         """
-         sqlcmd='''
-         set heading off;
-         set pagesize 0; 
-         select instance_name from gv$instance where HOST_NAME='{0}';
-         exit;
-         '''.format(hname)
-         self.set_mask_str(self.get_sys_passwd())
-         output,error,retcode=self.run_sqlplus(connect_str,sqlcmd,None)
-         self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
-         self.check_sql_err(output,error,retcode,None)
-         self.unset_mask_str()
-         return output.strip()
-         
-                  
-######### Get SVC Domain ########
-      def get_svc_domain(self,hname):
-         """
-         get the host domain baded on service name
-         """
-         svc_dom=None
-         cmd='''nslookup {0}'''.format(hname)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-         for line in output.split('\n'):
-            if "Name:" in line:
-                 svc_dom=line.split(':')[1].strip()
-         return svc_dom
-               
-######### Stop RAC DB ########
-      def start_rac_db(self,dbuser,dbhome,osid,node=None,startoption=None):
-         """
-         Start the Database
+         stop the Database
          """
          path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
          ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-
-         if node is None:
-            nodename=""
-         else:
-            nodename=node
+         startflag=None
 
          if startoption is None:
             startflag=""
          else:
             startflag=''' -o {0}'''.format(startoption)
 
-         cmd='''su - {5} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl start database -d {3} {6}"'''.format(dbhome,path,ldpath,osid,nodename,dbuser,startflag)
+         cmd='''su - {5} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl start database -d {3} {6}"'''.format(dbhome,path,ldpath,osid,hostname,dbuser,startflag)
          output,error,retcode=self.execute_cmd(cmd,None,None)
          self.check_os_err(output,error,retcode,True)
            
-######### DB-Status ###########
-      def get_db_status(self,dbuser,dbhome,osid):
+######### Sqlplus   ###########
+      def get_db_status(self,dbuser,dbhome,inst_sid,sqlpluslogincmd):
          """
-         return the status of the database
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-
-         cmd='''su - {4} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl status database -d {3}"'''.format(dbhome,path,ldpath,osid,dbuser)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,True)
-           
-      def get_dbinst_status(self,dbuser,dbhome,inst_sid,sqlpluslogincmd):
-         """
-         return the status of the local dbinstance
+         return the  
          """
          sqlcmd='''
           set heading off;
@@ -1805,416 +1580,6 @@ class OraCommon:
          self.unset_mask_str()             
          return output
 
-##### DB-Config ######
-      def get_db_config(self,dbuser,dbhome,osid):
-         """
-         return the db-config
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-
-         cmd='''su - {4} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl config database -d {3}"'''.format(dbhome,path,ldpath,osid,dbuser)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,True)
-
-##### Get service name #####
-      def get_service_name(self):
-         """
-         This function get the service_name.
-         """
-         self.log_info_message("Inside get_service_name()",self.file_name)
-         service_name=None
-         osid=None
-         opdb=None
-         sparams=None
-         
-         reg_exp= self.service_regex()
-         for key in self.ora_env_dict.keys():
-            if(reg_exp.match(key)):
-               rac_service_exist=None
-               service_name,osid,opdb,uniformflag,sparams=self.process_service_vars(key,None)
-               
-         return service_name,osid,opdb,sparams      
-               
-##### Setup DB Service ######
-      def setup_db_service(self,type):
-         """
-         This function setup the Oracle RAC database service.
-         """
-         self.log_info_message("Inside setup_db_service()",self.file_name)
-         status=False
-         service_name=None
-         reg_exp= self.service_regex()
-         for key in self.ora_env_dict.keys():
-            if(reg_exp.match(key)):
-               rac_service_exist=None
-               service_name,osid,opdb,uniformflag,sparams=self.process_service_vars(key,type)
-               rac_service_exist=self.check_db_service_exist(service_name,osid)
-               if not rac_service_exist:
-                  if type.lower() == "create":
-                    self.create_db_service(service_name,osid,opdb,sparams)
-               else:
-                  if type.lower() == "modify" and uniformflag is not True:
-                     self.modify_db_service(service_name,osid,opdb,sparams)
-                  else:
-                     pass
-               rac_service_exist=self.check_db_service_exist(service_name,osid)
-               if rac_service_exist:
-                  msg='''RAC db service exist'''
-               else:
-                  msg='''RAC db service does not exist or creation failed'''
-
-##### Process DB Service ######
-      def process_service_vars(self,key,type):
-          """
-          This function process the service parameters for RAC service creation
-          """
-          service=None
-          preferred=None
-          available=None
-          cardinality=None
-          tafpolicy=None
-          role=None
-          policy=None
-          resetstate=None
-          failovertype=None
-          failoverdelay=None
-          failoverretry=None
-          failover_restore=None
-          failback=None
-          pdb=None
-          clbgoal=None
-          rlbgoal=None
-          dtp=None
-          notification=None
-          commit_outcome=None
-          commit_outcome_fastpath=None
-          replay_init_time=None
-          session_state=None
-          drain_timeout=None
-          db=None
-          sparam=""
-          uniformflag=None
-          
-          if type is None:
-             type="create"
-             
-          self.log_info_message("Inside process_service_vars()",self.file_name)
-          cvar_str=self.ora_env_dict[key]
-          cvar_dict=dict(item.split(":") for item in cvar_str.split(";"))
-          for ckey in cvar_dict.keys():
-               if type.lower() == 'modify':
-                  if ckey == 'service':
-                     service = cvar_dict[ckey]
-                     sparam=sparam + " -service " + service 
-                  if ckey == 'preferred':
-                     preferred = cvar_dict[ckey]
-                     sparam=sparam +" -modifyconfig -preferred " + preferred
-                  if ckey == 'available':
-                     available = cvar_dict[ckey]
-                     sparam=sparam +" -available " + available 
-               else: 
-                  if ckey == 'service':
-                     service = cvar_dict[ckey]
-                     sparam=sparam + " -service " + service 
-                  if ckey == 'role':
-                     role = cvar_dict[ckey]
-                     sparam=sparam +" -role " + role 
-                  if ckey == 'preferred':
-                     preferred = cvar_dict[ckey]
-                     sparam=sparam +" -preferred " + preferred
-                  if ckey == 'available':
-                     available = cvar_dict[ckey]
-                     sparam=sparam +" -available " + available 
-                  if ckey == 'cardinality':
-                     cardinality = cvar_dict[ckey]
-                     sparam=sparam +" -cardinality " + cardinality
-                     uniformflag=True 
-                  if ckey == 'policy':
-                     policy = cvar_dict[ckey]
-                     sparam=sparam +" -policy " + policy 
-                  if ckey == 'tafpolicy':
-                     tafpolicy = cvar_dict[ckey]
-                     sparam=sparam +" -tafpolicy " + tafpolicy 
-                  if ckey == 'resetstate':
-                     resetstate = cvar_dict[ckey]
-                     sparam=sparam +" -resetstate " + resetstate 
-                  if ckey == 'failovertype':
-                     failovertype = cvar_dict[ckey]
-                     sparam=sparam +" -failovertype " + failovertype 
-                  if ckey == 'failoverdelay':
-                     failoverdelay = cvar_dict[ckey]
-                     sparam=sparam +" -failoverdelay " + failoverdelay 
-                  if ckey == 'failoverretry':
-                     failoverretry = cvar_dict[ckey]
-                     sparam=sparam +" -failoverretry " + failoverretry 
-                  if ckey == 'failback':
-                     failback = cvar_dict[ckey]
-                     sparam=sparam +" -failback " + failback               
-                  if ckey == 'failover_restore':
-                     failover_restore = cvar_dict[ckey]
-                     sparam=sparam +" -failover_restore " + failover_restore
-                  if ckey == 'pdb':
-                     pdb = cvar_dict[ckey]
-                  if ckey == 'clbgoal':
-                     clbgoal = cvar_dict[ckey]
-                     sparam=sparam +" -clbgoal " + clbgoal
-                  if ckey == 'rlbgoal':
-                     rlbgoal = cvar_dict[ckey]
-                     sparam=sparam +" -rlbgoal " + rlbgoal
-                  if ckey == 'dtp':
-                     dtp = cvar_dict[ckey]
-                     sparam=sparam +" -dtp " + dtp
-                  if ckey == 'notification':
-                     notification = cvar_dict[ckey]
-                     sparam=sparam +" -notification " + notification
-                  if ckey == 'commit_outcome':
-                     commit_outcome = cvar_dict[ckey]
-                     sparam=sparam +" -commit_outcome " +commit_outcome
-                  if ckey == 'commit_outcome_fastpath':
-                     commit_outcome_fastpath = cvar_dict[ckey]
-                     sparam=sparam +" -commit_outcome_fastpath " + commit_outcome_fastpath
-                  if ckey == 'replay_init_time':
-                     replay_init_time = cvar_dict[ckey]
-                     sparam=sparam +" -replay_init_time " + replay_init_time
-                  if ckey == 'session_state':
-                     session_state = cvar_dict[ckey]
-                     sparam=sparam +" -session_state " + session_state
-                  if ckey == 'drain_timeout':
-                     drain_timeout = cvar_dict[ckey]
-                     sparam=sparam +" -drain_timeout " + drain_timeout
-                  if ckey == 'db':
-                     db = cvar_dict[ckey]
-                     sparam=sparam +" -db " + db
-
-              ### Check values must be set
-          if uniformflag is not True:    
-             if pdb is None:
-                pdb = self.ora_env_dict["ORACLE_PDB_NAME"] if self.check_key("ORACLE_PDB_NAME",self.ora_env_dict) else  "ORCLPDB"
-                sparam=sparam +" -pdb " + pdb
-             else:
-               sparam=sparam +" -pdb " + pdb
-          else:
-             pdb = self.ora_env_dict["ORACLE_PDB_NAME"] if self.check_key("ORACLE_PDB_NAME",self.ora_env_dict) else  "ORCLPDB"
-                 
-          if db is None:
-            db = self.ora_env_dict["DB_NAME"]
-            sparam=sparam +" -db " + db
-             
-          if service and db and pdb:
-             return service,db,pdb,uniformflag,sparam
-          else:
-             msg1='''service={0},pdb={1},db={2}'''.format((service or "Missing Value"),(pdb or "Missing Value"),(db or "Missing Value"))
-             msg='''RAC service params {0} is not set correctly. One or more value is missing {1}'''.format(key,msg1)
-             self.log_error_message(msg,self.file_name)
-             self.prog_exit("Error occurred")
-
-####  Process Service Regex  ####
-      def service_regex(self):
-          """
-            This function return the rgex to search the SERVICE[0-9]_PARAMS
-          """
-          self.log_info_message("Inside service_regex()",self.file_name)
-          return re.compile('SERVICE[0-9]+_PARAMS')
-                             
-##### craete DB service ######
-      def create_db_service(self,service_name,osid,opdb,sparams):
-         """
-         create database service
-         """
-         dbuser,dbhome,dbase,oinv=self.get_db_params()
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {4} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl add service {5}"'''.format(dbhome,path,ldpath,osid,dbuser,sparams,opdb,service_name)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-
-##### craete DB service ######
-      def modify_db_service(self,service_name,osid,opdb,sparams):
-         """
-         modify database service
-         """
-         dbuser,dbhome,dbase,oinv=self.get_db_params()
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {4} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl modify service {5}"'''.format(dbhome,path,ldpath,osid,dbuser,sparams,opdb,service_name)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-                  
-##### check Db service ######
-      def check_db_service_exist(self,service_name,osid):
-         """
-         check if db service exist
-         """
-         dbuser,dbhome,dbase,oinv=self.get_db_params()
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {4} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl status service -db {3} -s {5}"'''.format(dbhome,path,ldpath,osid,dbuser,service_name)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-         msg='''PRKO-2017'''.format(service_name,osid)
-         if self.check_substr_match(output.lower(),msg.lower()):
-            return False
-         else:
-            return True
-
-##### check service ######
-      def check_db_service_status(self,service_name,osid):
-         """
-         check if db service is running
-         """
-         dbuser,dbhome,dbase,oinv=self.get_db_params()
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {4} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl status service -db {3} -s {5}"'''.format(dbhome,path,ldpath,osid,dbuser,service_name)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-         msg='''Service {0} is running on'''.format(service_name)
-         if self.check_substr_match(output.lower(),msg.lower()):
-            return True
-         else:
-            return False
-
-##### check service ######
-      def start_db_service(self,service_name,osid):
-         """
-         start the DB service
-         """
-         dbuser,dbhome,dbase,oinv=self.get_db_params()
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {4} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl start service -db {3} -s {5}"'''.format(dbhome,path,ldpath,osid,dbuser,service_name)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-                           
-######### Add RAC DB ########
-      def add_rac_db(self,dbuser,dbhome,osid,spfile):
-         """
-         add the Database 
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {5} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl add database -d {3} -oraclehome {0} -dbtype RAC -spfile '{4}'"'''.format(dbhome,path,ldpath,osid,spfile,dbuser)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,True)
-         
-######### Add RAC DB ########
-      def add_rac_db_lsnr(self,dbuser,dbhome,osid,endpoints,lsnrname):
-         """
-         add the Database 
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {3} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl add listener -listener {4} -endpoints {5}; {0}/bin/srvctl start listener -listener {4}"'''.format(dbhome,path,ldpath,dbuser,lsnrname,endpoints)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,True)
-
-######### Add RAC DB ########
-      def modify_rac_db_lsnr(self,dbuser,dbhome,osid,endpoints,lsnrname):
-         """
-         add the Database 
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {3} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl modify listener -listener {4} -endpoints {5}"'''.format(dbhome,path,ldpath,dbuser,lsnrname,endpoints)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,True)
-         
-######### Add RAC DB ########
-      def check_rac_db_lsnr(self,dbuser,dbhome,osid,endpoints,lsnrname):
-         """
-         add the Database 
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {3} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl status listener -listener {6}"'''.format(dbhome,path,ldpath,dbuser,lsnrname,endpoints,lsnrname)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-         msg='''Listener {0} is enabled'''.format(lsnrname)
-         if self.check_substr_match(output.lower(),msg.lower()):
-            return True
-         else:
-            return False 
-  
-######### Add RAC DB ########
-      def update_scan(self,user,home,endpoints,node):
-         """
-         Update Scan 
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(home)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(home)
-         scanname=self.ora_env_dict["SCAN_NAME"]
-         cmd='''su - {3} -c "ssh {6} 'export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; sudo {0}/bin/srvctl modify scan -scanname {4}'"'''.format(home,path,ldpath,user,scanname,endpoints,node)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-
-######### Add RAC DB ########
-      def start_scan(self,user,home,node):
-         """
-         Update Scan 
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(home)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(home)
-         scanname=self.ora_env_dict["SCAN_NAME"]
-         cmd='''su - {3} -c "ssh {5} 'export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2};sudo {0}/bin/srvctl start scan'"'''.format(home,path,ldpath,user,scanname,node)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-         
-######### Add RAC DB ########
-      def update_scan_lsnr(self,user,home,node):
-         """
-         Update Scan 
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(home)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(home)
-         scanname=self.ora_env_dict["SCAN_NAME"]
-         cmd='''su - {3} -c "ssh {4} 'export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2};{0}/bin/srvctl modify scan_listener -update'"'''.format(home,path,ldpath,user,node)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-######### Add RAC DB ########
-      def start_scan_lsnr(self,user,home,node):
-         """
-         start Scan listener
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(home)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(home)
-         scanname=self.ora_env_dict["SCAN_NAME"]
-         cmd='''su - {3} -c "ssh {4} 'export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2};{0}/bin/srvctl start scan_listener'"'''.format(home,path,ldpath,user,node)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,None)
-                                    
-######### Set DB Lsnr ########
-      def setup_db_lsnr(self):
-         """
-         Create and Setup DB lsnr
-         """
-         giuser,gihome,gibase,oinv =self.get_gi_params()
-         status,osid,host,mode=self.check_dbinst()
-         endpoints=self.ora_env_dict["DB_LISTENER_ENDPOINTS"] if self.check_key("DB_LISTENER_ENDPOINTS",self.ora_env_dict) else  None
-         lsnrname=self.ora_env_dict["DB_LISTENER_NAME"] if self.check_key("DB_LISTENER_NAME",self.ora_env_dict) else  "dblsnr"
-         
-         if status:
-            if endpoints is not None and lsnrname is not None:
-               status1=self.check_rac_db_lsnr(giuser,gihome,osid,endpoints,lsnrname)
-               if not status1:
-                  self.add_rac_db_lsnr(giuser,gihome,osid,endpoints,lsnrname)
-               else:
-                  self.modify_rac_db_lsnr(giuser,gihome,osid,endpoints,lsnrname)
-         else:
-            self.log_info_message("DB Instance is not up",self.file_name)
-               
-######### Add RACDB Instance ########
-      def add_rac_instance(self,dbuser,dbhome,osid,instance_number,nodename):
-         """
-         add the RAC Database Instance
-         """
-         path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
-         ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
-         cmd='''su - {5} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl add instance -d {3} -i {4}  -node {6}"'''.format(dbhome,path,ldpath,osid,osid+instance_number,dbuser,nodename)
-         output,error,retcode=self.execute_cmd(cmd,None,None)
-         self.check_os_err(output,error,retcode,True)
-
-######### get DB Role ########
       def get_db_role(self,dbuser,dbhome,inst_sid,sqlpluslogincmd):
          """
          return the  
@@ -2328,7 +1693,7 @@ class OraCommon:
          inst_sid=self.get_inst_sid(osuser,dbhome,osid,hostname)
          connect_str=self.get_sqlplus_str(dbhome,inst_sid,osuser,"sys",None,None,None,None,None,None,None)
          if inst_sid:
-            status=self.get_dbinst_status(osuser,dbhome,inst_sid,connect_str)
+            status=self.get_db_status(osuser,dbhome,inst_sid,connect_str)
             if not self.check_substr_match(status,"OPEN"):
                return False,inst_sid,hostname,status
             else:
@@ -2365,42 +1730,6 @@ class OraCommon:
             self.check_sql_err(output,error,retcode,None)
             self.unset_mask_str()
 
-######## Set Remote Listener ######
-      def set_local_listener(self):
-         """
-         This function set the remote listener 
-         """
-         if self.check_key("LOCAL_LISTENER",self.ora_env_dict):
-            lsnrstr=self.ora_env_dict["LOCAL_LISTENER"].split(";")
-            for str1 in lsnrstr:
-               if len(str1.split(":")) == 2:
-                  hname=(str1.split(":")[0]).strip()
-                  lport=(str1.split(":")[1]).strip()
-                  osuser,dbhome,dbbase,oinv=self.get_db_params()
-                  dbname,osid,dbuname=self.getdbnameinfo()
-                  hostname = self.get_public_hostname()
-                  inst_sid=self.get_inst_sid(osuser,dbhome,osid,hostname)
-                  connect_str=self.get_sqlplus_str(dbhome,inst_sid,osuser,"sys",None,None,None,None,None,None,None)
-                  dbsid=self.get_host_dbsid(hname,connect_str)
-                  svcdom=self.get_svc_domain(hname)
-                  hname1=svcdom
-                  lstr='''(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={0})(PORT={1}))))'''.format(hname1,lport)
-                  dbsid1 = re.sub(r"[\n\t\s]*", "", dbsid)
-                  self.log_info_message("the local_listener string set to : " + lstr, self.file_name)
-                  sqlcmd='''
-                  set heading off;
-                  set pagesize 0;
-                  alter system set local_listener='{0}'  scope=both sid='{1}';
-                  alter system register;
-                  alter system register;
-                  exit;
-                  '''.format(lstr,dbsid1)
-                  self.set_mask_str(self.get_sys_passwd())
-                  output,error,retcode=self.run_sqlplus(connect_str,sqlcmd,None)
-                  self.log_info_message("Calling check_sql_err() to validate the sql command return status",self.file_name)
-                  self.check_sql_err(output,error,retcode,None)
-                  self.unset_mask_str()
-            
 ######## Complete RAC Setup
       def rac_setup_complete(self):
          """
@@ -2812,12 +2141,12 @@ class OraCommon:
          if os.path.isfile("/etc/resolv.conf"):
             fdata=self.read_file("/etc/resolv.conf")
             str=re.search("nameserver\s+(.+?)\s+",fdata)
-            if str:
-              dns_server=str.group(1)
-              if self.check_key("DNS_SERVERS",self.ora_env_dict):
-                 self.ora_env_dict=self.update_key("DNS_SERVERS",dns_server,self.ora_env_dict)
-              else:
-                self.ora_env_dict=self.add_key("DNS_SERVERS",dns_server,self.ora_env_dict)
+            # if str:
+            #   dns_server=str.group(1)
+            #   if self.check_key("DNS_SERVERS",self.ora_env_dict):
+            #      self.ora_env_dict=self.update_key("DNS_SERVERS",dns_server,self.ora_env_dict)
+            #   else:
+            #     self.ora_env_dict=self.add_key("DNS_SERVERS",dns_server,self.ora_env_dict)
 
             domains=(re.search("search\s+(.*)",fdata)).group(1)
             cmd="echo " + domains + " | cut -d' ' -f1"
@@ -2887,101 +2216,3 @@ class OraCommon:
         return RECO DG NAME
         """
         return self.ora_env_dict["DB_RECOVERY_FILE_DEST"] if self.check_key("DB_RECOVERY_FILE_DEST",self.ora_env_dict) else dgname
-
-##### Function to catalog the backup
-      def catalog_bkp(self):
-        """
-        catalog the backup
-        """
-        osuser,dbhome,dbbase,oinv=self.get_db_params()
-        osid=self.ora_env_dict["GOLD_SID_NAME"]
-        rmanlogincmd=self.get_rman_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
-        rmancmd='''
-           catalog start with '{0}' noprompt;   
-        '''.format(self.ora_env_dict["GOLD_DB_BACKUP_LOC"])
-        self.log_info_message("Running the rman command to catalog the backup: " + rmancmd,self.file_name)
-        output,error,retcode=self.run_sqlplus(rmanlogincmd,rmancmd,None)
-        self.log_info_message("Calling check_sql_err() to validate the rman command return status",self.file_name)
-        self.check_sql_err(output,error,retcode,True)
-
-#### Function to validate the backup
-      def check_bkp(self):
-       """
-       Check the backup
-       """
-       pass
-
-#### Function to validate the backup
-      def restore_bkp(self,dgname):
-       """
-       restore the backup
-       """
-       osuser,dbhome,dbbase,oinv=self.get_db_params()
-       osid=self.ora_env_dict["GOLD_SID_NAME"]
-       dbname=self.ora_env_dict["GOLD_DB_NAME"]
-       self.log_info_message("In restore_bkp() : dgname=[" + dgname + "]", self.file_name)
-       rmanlogincmd=self.get_rman_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
-       rmancmd='''
-       run {{
-         restore controlfile from '{2}';
-         alter database mount;
-         set newname for database to '{0}';
-         restore database;
-         switch datafile all;
-         alter database open resetlogs;
-         alter pluggable database {1} open read write;
-       }}
-       '''.format(dgname,self.ora_env_dict["GOLD_PDB_NAME"],"/oradata/orclcdb_bkp/spfile" + dbname + ".ora")
-       self.log_info_message("Running the rman command to restore the controlfile and datafiles from the backup: " + rmancmd,self.file_name)
-       output,error,retcode=self.run_sqlplus(rmanlogincmd,rmancmd,None)
-       self.log_info_message("Calling check_sql_err() to validate the rman command return status",self.file_name)
-       self.check_sql_err(output,error,retcode,True)
-       
-#### Function restore the spfile 
-      def restore_spfile(self):
-       """ 
-       Restore the spfile
-       """
-       osuser,dbhome,dbbase,oinv=self.get_db_params()
-       osid=self.ora_env_dict["GOLD_SID_NAME"]
-       dbname=self.ora_env_dict["GOLD_DB_NAME"]
-       rmanlogincmd=self.get_rman_str(dbhome,osid,osuser,"sys",None,None,None,osid,None,None,None)
-       rmancmd='''
-         restore spfile from '{0}'; 
-       '''.format(self.ora_env_dict["GOLD_DB_BACKUP_LOC"] + "/spfile" + dbname + ".ora")
-       self.log_info_message("Running the rman command to restore the spfile from the backup: " + rmancmd,self.file_name)
-       output,error,retcode=self.run_sqlplus(rmanlogincmd,rmancmd,None)
-       self.log_info_message("Calling check_sql_err() to validate the rman command return status",self.file_name)
-       self.check_sql_err(output,error,retcode,True)
-
-#### Set cluster mode to true or false
-      def set_cluster_mode(self,pfile,cflag):
-       """
-       This function sets the cluster mode to true or false in the pfile
-       """ 
-       cmd='''sed -i "s/*.cluster_database=.*/*.cluster_database={0}/g" {1}'''.format(cflag,pfile)
-       output,error,retcode=self.execute_cmd(cmd,None,None)
-       self.check_os_err(output,error,retcode,False)
-
-#### Change the dbname in the parameter file to the new dbname
-      def change_dbname(self,pfile,newdbname):
-       """
-       This function sets the resets the dbname to newdbname in the pfile
-       """ 
-       osuser,dbhome,dbbase,oinv=self.get_db_params()
-       olddbname=self.ora_env_dict["GOLD_DB_NAME"]
-       osid=self.ora_env_dict["GOLD_SID_NAME"]
-       cmd='''su - {3} -c "export ORACLE_SID={2};export ORACLE_HOME={1};echo Y | {1}/bin/nid target=/ dbname={0}"'''.format(newdbname,dbhome,osid,osuser)
-       output,error,retcode=self.execute_cmd(cmd,None,None)
-       self.check_os_err(output,error,retcode,False)
- 
-       self.set_cluster_mode(pfile,True)
-       cmd='''sed -i "s/*.db_name=.*/*.db_name={0}/g" {1}'''.format(newdbname,pfile)
-       output,error,retcode=self.execute_cmd(cmd,None,None)
-       self.check_os_err(output,error,retcode,False)
-       cmd='''sed -i "s/*.db_unique_name=.*/*.db_unique_name={0}/g" {1}'''.format(newdbname,pfile)
-       output,error,retcode=self.execute_cmd(cmd,None,None)
-       self.check_os_err(output,error,retcode,False)
-       cmd='''sed -i "s/{0}\(.*\).instance_number=\(.*\)/{1}\\1.instance_number=\\2/g" {2}'''.format(olddbname,newdbname,pfile)
-       output,error,retcode=self.execute_cmd(cmd,None,None)
-       self.check_os_err(output,error,retcode,False)

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -21,7 +21,7 @@ def main():
    # Checking Comand line Args
    opts=""
    try:
-      opts, args = getopt.getopt(sys.argv[1:], '', ['help','resetpassword=','delracnode=','addtns=', 'checkracinst=', 'checkgilocal=','checkdbrole=','checkracdb=','checkconnstr=','checkpdbconnstr=','setupdblsnr=','setuplocallsnr='])
+      opts, args = getopt.getopt(sys.argv[1:], '', ['help','resetpassword=','delracnode=','addtns=', 'checkracinst=', 'checkgilocal=','checkdbrole=','checkracdb=','checkconnstr='])
    except getopt.GetoptError:
       pass
   
@@ -120,34 +120,6 @@ def main():
            oralogger.filename_ =  file_name
            ocommon.log_info_message("=======================================================================",file_name)
            oenv.add_custom_variable("CHECK_CONNECT_STR",arg)
-           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
-           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
-              oenv.update_key("OP_TYPE","miscops")
-           else:
-              oenv.add_custom_variable("OP_TYPE","miscops")
-      elif opt in ('--checkpdbconnstr'):
-           file_name = oenv.logfile_name("CHECK_PDB_CONNECT_STR")
-           oralogger.filename_ =  file_name
-           ocommon.log_info_message("=======================================================================",file_name)
-           oenv.add_custom_variable("CHECK_PDB_CONNECT_STR",arg)
-           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
-           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
-              oenv.update_key("OP_TYPE","miscops")
-           else:
-              oenv.add_custom_variable("OP_TYPE","miscops")
-      elif opt in ('--setupdblsnr'):
-           file_name = oenv.logfile_name("SETUP_DB_LSNR")
-           oralogger.filename_ =  file_name
-           ocommon.log_info_message("=======================================================================",file_name)
-           oenv.add_custom_variable("NEW_DB_LSNR_ENDPOINTS",arg)
-           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
-           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
-              oenv.update_key("OP_TYPE","miscops")
-      elif opt in ('--setuplocallsnr'):
-           file_name = oenv.logfile_name("SETUP_LOCAL_LSNR")
-           oralogger.filename_ =  file_name
-           ocommon.log_info_message("=======================================================================",file_name)
-           oenv.add_custom_variable("NEW_LOCAL_LISTENER",arg)
            oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
            if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
               oenv.update_key("OP_TYPE","miscops")

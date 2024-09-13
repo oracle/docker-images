@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -212,16 +212,9 @@ class OraCvu:
        else:
           crs_nodes=" -n " + node
 
-       cvufile='''{0}/bin/cluvfy'''.format(gihome)
-       if not self.ocommon.check_file(cvufile,True,None,None):
-          return 1
-          
-       cmd='''su - {0} -c "{1}/bin/cluvfy comp software -d {3} -verbose"'''.format(user,gihome,node,home)
+       cmd='''su - {0} -c "{1}/bin/cluvfy comp software {2} -d {3} -verbose"'''.format(user,gihome,crs_nodes,home)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       if not self.ocommon.check_substr_match(output,"FAILED"):
-         return 0
-       else:
-         return 1
+       return retcode
 
    def check_db_homecfg(self,node):
        """

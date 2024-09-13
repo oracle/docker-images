@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -21,8 +21,6 @@ import time
 
 import os
 import sys
-import subprocess
-import datetime
 
 class OraGIProv:
    """
@@ -71,13 +69,9 @@ class OraGIProv:
            self.ocommon.log_info_message(self.ocommon.print_banner(bstr),self.file_name)             
          else:
            self.env_param_checks()
-           self.ocommon.reset_os_password(giuser)
            self.ocommon.log_info_message("Start perform_ssh_setup()",self.file_name)
            self.perform_ssh_setup()
            self.ocommon.log_info_message("End perform_ssh_setup()",self.file_name)
-           if self.ocommon.check_key("RESET_FAILED_SYSTEMD",self.ora_env_dict):
-              self.ocommon.log_info_message("Start reset_failed_units()",self.file_name)
-              self.reset_failed_units_on_all_nodes()
            if self.ocommon.check_key("PERFORM_CVU_CHECKS",self.ora_env_dict):
               self.ocommon.log_info_message("Start ocvu.node_reachability_checks()",self.file_name)
               self.ocvu.node_reachability_checks("public",self.ora_env_dict["GRID_USER"],"INSTALL")
@@ -93,8 +87,7 @@ class OraGIProv:
               self.run_orainstsh()
               self.run_rootsh()
               self.ocommon.log_info_message("End run_rootsh() and run_orainstsh()",self.file_name)
-           self.ocommon.log_info_message("Start install_cvuqdisk_on_all_nodes()",self.file_name)
-           self.install_cvuqdisk_on_all_nodes()
+
            self.ocommon.log_info_message("Start crs_config_install()",self.file_name)
            gridrsp=self.crs_config_install()
            self.ocommon.log_info_message("End crs_config_install()",self.file_name)
@@ -154,24 +147,14 @@ class OraGIProv:
        Perform ssh setup
        """
        #if not self.ocommon.detect_k8s_env():
-       pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-       crs_nodes=pub_nodes.replace(" ",",")
-       crs_nodes_list=crs_nodes.split(",")
-       if len(crs_nodes_list) == 1:
-          self.ocommon.log_info_message("Cluster size=1. Node=" + crs_nodes_list[0],self.file_name)
-          user=self.ora_env_dict["GRID_USER"]
-          cmd='''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user,crs_nodes_list[0])
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,None)
+       if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
+         user=self.ora_env_dict["GRID_USER"]
+         ohome=self.ora_env_dict["GRID_HOME"]
+         self.osetupssh.setupssh(user,ohome,"INSTALL")
+         if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
+            self.osetupssh.verifyssh(user,"INSTALL")
        else:
-          if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
-            user=self.ora_env_dict["GRID_USER"]
-            ohome=self.ora_env_dict["GRID_HOME"]
-            self.osetupssh.setupssh(user,ohome,"INSTALL")
-            #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            # self.osetupssh.verifyssh(user,"INSTALL")
-          else:
-            self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this env variables SSH_PRIVATE_KEY and SSH_PUBLIC_KEY are set.",self.file_name)
+         self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this env variables SSH_PRIVATE_KEY and SSH_PUBLIC_KEY are set.",self.file_name)
 
    def crs_sw_install(self):
        """
@@ -283,11 +266,11 @@ class OraGIProv:
        nwiface,netmasklist=self.ocommon.get_nwifaces()
        gimrflag=self.ora_env_dict["GIMR_FLAG"] if self.ocommon.check_key("GIMR",self.ora_env_dict)  else "false" 
        passwd=self.ocommon.get_asm_passwd().replace('\n', ' ').replace('\r', '')
-       dgname=self.ocommon.rmdgprefix(self.ora_env_dict["CRS_ASM_DISKGROUP"]) if self.ocommon.check_key("CRS_ASM_DISKGROUP",self.ora_env_dict) else "DATA" 
+       dgname=self.ora_env_dict["CRS_ASM_DISKGROUP"] if self.ocommon.check_key("CRS_ASM_DISKGROUP",self.ora_env_dict) else "DATA"
        fgname=asmfg_disk
        asmdisk=asm_disk
        discovery_str=self.ocommon.build_asm_discovery_str("CRS_ASM_DEVICE_LIST")
-       asmstr=self.ora_env_dict["CRS_ASM_DISCOVERY_DIR"] if self.ocommon.check_key("CRS_ASM_DISCOVERY_DIR",self.ora_env_dict) else discovery_str
+       asmstr=self.ora_env_dict["CRS_ASM_DISK_DISCOVERY_STR"] if self.ocommon.check_key("CRS_ASM_DISK_DISCOVERY_STR",self.ora_env_dict) else discovery_str
        oraversion=self.ocommon.get_rsp_version("INSTALL",None)
        self.ocommon.log_info_message("oraversion" + oraversion, self.file_name)
        disksWithFGNames=asmdisk.replace(',',',,') + ','
@@ -441,15 +424,17 @@ class OraGIProv:
          #thread.setDaemon(True)
          mythreads.append(thread)
          thread.start()
+         thread.join() 
+         self.ocommon.log_info_message("Joining the root.sh thread inside for loop in serial order",self.file_name)
 
 #       for thread in mythreads:
 #          thread.start()
 #          sleep(10)
 #          self.ocommon.log_info_message("Starting root.sh thread ",self.file_name)
 
-       for thread in mythreads:  # iterates over the threads
-          thread.join()       # waits until the thread has finished wor
-          self.ocommon.log_info_message("Joining the root.sh thread ",self.file_name)
+      #  for thread in mythreads:  # iterates over the threads
+         #  thread.join()       # waits until the thread has finished wor
+         #  self.ocommon.log_info_message("Joining the root.sh thread ",self.file_name)
 
    def run_rootsh_on_node(self,node,giuser,gihome):
        """
@@ -475,87 +460,19 @@ class OraGIProv:
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,None) 
 
-   def reset_systemd(self):
+   def reset_systemd(self,giuser,node):
       """
-      This function reset the systemd
-      This function reset the systemd
+      This function reset the systmd
       """
       pass
       while True:
          self.ocommon.log_info_message("Root.sh is running. Resetting systemd to avoid failure.",self.file_name)
-         cmd='''systemctl reset-failed'''.format()
-         cmd='''systemctl reset-failed'''.format()
+         cmd='''su - {0}  -c "ssh {1} sudo systemctl reset-failed"'''.format(giuser,node)
          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
          self.ocommon.check_os_err(output,error,retcode,None)
-         cmd = '''systemctl is-system-running'''.format()
-         cmd = '''systemctl is-system-running'''.format()
+         cmd='''su - {0}  -c "ssh {1} sudo systemctl is-system-running"'''.format(giuser,node)
          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
          self.ocommon.check_os_err(output,error,retcode,None)
          sleep(3)
          if self.stopThreaFlag:
             break
-   def reset_failed_units_on_all_nodes(self):
-      pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-      for node in pub_nodes.split(" "):
-         self.ocommon.log_info_message("Running reset_failed_units() on node " + node,self.file_name)
-         self.reset_failed_units(node)
-
-   def reset_failed_units(self,node):
-      RESET_FAILED_SYSTEMD = 'true'
-      SERVICE_NAME = "rhnsd"
-      SCRIPT_DIR = "/opt/scripts/startup"
-      RESET_FAILED_UNITS = "resetFailedUnits.sh"
-      GRID_USER = "grid"
-      CRON_JOB_FREQUENCY = "* * * * *"
-
-      def error_exit(message):
-         raise Exception(message)
-      
-      giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
-
-      if RESET_FAILED_SYSTEMD != 'false':
-         if subprocess.run(["pgrep", "-x", SERVICE_NAME], stdout=subprocess.DEVNULL).returncode == 0:
-               self.ocommon.log_info_message(SERVICE_NAME + " is running.",self.file_name)
-               # Check if the service is responding
-               if subprocess.run(["systemctl", "is-active", "--quiet", SERVICE_NAME]).returncode != 0:
-                  self.ocommon.log_info_message(SERVICE_NAME + " is not responding. Stopping the service.",self.file_name)
-                  cmd='''su - {0} -c "ssh {1}  sudo systemctl stop {2}"'''.format(giuser,node,SERVICE_NAME)
-                  output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                  self.ocommon.check_os_err(output,error,retcode,None)
-                  cmd='''su - {0} -c "ssh {1}  sudo systemctl disable {2}"'''.format(giuser,node,SERVICE_NAME)
-                  output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                  self.ocommon.check_os_err(output,error,retcode,None)
-                  self.ocommon.log_info_message(SERVICE_NAME + "stopped.",self.file_name)
-               else:
-                  self.ocommon.log_info_message(SERVICE_NAME + " is responsive. No action needed.",self.file_name)
-         else:
-               self.ocommon.log_info_message(SERVICE_NAME + " is not running.",self.file_name)
-
-         self.ocommon.log_info_message("Setting Crontab",self.file_name)         
-         cmd = '''su - {0} -c "ssh {1} 'sudo crontab -l | {{ cat; echo \\"{2} {3}/{4}\\"; }} | sudo crontab -'"'''.format(giuser, node, CRON_JOB_FREQUENCY, SCRIPT_DIR, RESET_FAILED_UNITS)
-         try:
-               output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-               self.ocommon.check_os_err(output,error,retcode,None)             
-               self.ocommon.log_info_message("Successfully installed " + SCRIPT_DIR + "/" + RESET_FAILED_UNITS + " using crontab",self.file_name)
-         except subprocess.CalledProcessError:
-               error_exit("Error occurred in crontab setup")
-
-   def install_cvuqdisk_on_all_nodes(self):
-      pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-      for node in pub_nodes.split(" "):
-         self.ocommon.log_info_message("Running install_cvuqdisk() on node " + node,self.file_name)
-         self.install_cvuqdisk(node)
-
-   def install_cvuqdisk(self,node):
-      rpm_directory = "/u01/app/23c/grid/cv/rpm"
-      giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
-      try:
-         # Construct the rpm command using wildcard for version
-         cmd = '''su - {0} -c "ssh {1} 'sudo rpm -Uvh {2}/cvuqdisk-*.rpm'"'''.format(giuser, node, rpm_directory)
-         # Run the rpm command using subprocess
-         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-         self.ocommon.check_os_err(output,error,retcode,None)             
-         self.ocommon.log_info_message("Successfully installed cvuqdisk file.",self.file_name)
-         
-      except subprocess.CalledProcessError as e:
-         self.ocommon.log_error_message("Error installing cvuqdisk. Exiting..." + e,self.file_name)

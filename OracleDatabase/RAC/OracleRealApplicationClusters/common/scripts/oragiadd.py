@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -63,14 +63,13 @@ class OraGIAdd:
            self.ocommon.log_info_message("Start perform_ssh_setup()",self.file_name)
            self.perform_ssh_setup()
            self.ocommon.log_info_message("End perform_ssh_setup()",self.file_name)
-           if self.ocommon.check_key("COPY_GRID_SOFTWARE",self.ora_env_dict):
-            self.ocommon.log_info_message("Start crs_sw_install()",self.file_name)
-            self.ogiprov.crs_sw_install()
-            self.ocommon.log_info_message("End crs_sw_install()",self.file_name)
-            self.ogiprov.run_orainstsh()
-            self.ocommon.log_info_message("Start ogiprov.run_rootsh()",self.file_name)
-            self.ogiprov.run_rootsh()
-            self.ocommon.log_info_message("End ogiprov.run_rootsh()",self.file_name)
+           self.ocommon.log_info_message("Start crs_sw_install()",self.file_name)
+           self.ogiprov.crs_sw_install()
+           self.ocommon.log_info_message("End crs_sw_install()",self.file_name)
+           self.ogiprov.run_orainstsh()
+           self.ocommon.log_info_message("Start ogiprov.run_rootsh()",self.file_name)
+           self.ogiprov.run_rootsh()
+           self.ocommon.log_info_message("End ogiprov.run_rootsh()",self.file_name)
            self.ocvu.check_addnode()
            self.ocommon.log_info_message("Start crs_sw_configure()",self.file_name)
            gridrsp=self.crs_sw_configure()
@@ -83,12 +82,8 @@ class OraGIAdd:
            crs_nodes=pub_nodes.replace(" ",",")
            for node in crs_nodes.split(","):
              self.clu_checks(node)
-           if self.ocommon.detect_k8s_env():
-               self.ocommon.run_custom_scripts("CUSTOM_GRID_SCRIPT_DIR","CUSTOM_GRID_SCRIPT_FILE",giuser)
-               self.ocommon.update_scan(giuser,gihome,None,pubhostname)
-               self.ocommon.start_scan(giuser,gihome,pubhostname)
-               self.ocommon.update_scan_lsnr(giuser,gihome,pubhostname)
-               self.ocommon.start_scan_lsnr(giuser,gihome,pubhostname)
+           self.ocommon.run_custom_scripts("CUSTOM_GRID_SCRIPT_DIR","CUSTOM_GRID_SCRIPT_FILE",giuser)
+
          ct = datetime.datetime.now()
          ets = ct.timestamp()
          totaltime=ets - bts
@@ -165,8 +160,7 @@ class OraGIAdd:
            user=self.ora_env_dict["GRID_USER"]
            ohome=self.ora_env_dict["GRID_HOME"]
            self.osetupssh.setupssh(user,ohome,'ADDNODE')
-           #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-              #self.osetupssh.verifyssh(user,'ADDNODE')
+           self.osetupssh.verifyssh(user,'ADDNODE')
        else:
          self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this k8s env.",self.file_name)
 
