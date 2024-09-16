@@ -1,15 +1,18 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2021, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2021, 2024, Oracle and/or its affiliates. All rights reserved.
 #
-# Container image template for Oracle Instant Client
+# Container image template for Oracle Instant Client 21
+#
+# This file is found at:
+# https://github.com/oracle/docker-images/blob/main/OracleInstantClient/oraclelinux8/21/Dockerfile
 #
 # HOW TO BUILD THIS IMAGE AND RUN A CONTAINER
 # --------------------------------------------
 #
 # Execute:
-#      $ docker build --pull -t oraclelinux8-instantclient:21 .
-#      $ docker run -ti --rm oraclelinux8-instantclient:21 sqlplus /nolog
+#      $ podman build --pull -t oraclelinux8-instantclient:21 .
+#      $ podman run -ti --rm oraclelinux8-instantclient:21 sqlplus /nolog
 #
 # NOTES
 # -----
@@ -30,7 +33,7 @@
 # cwallet.sso.  You can use a Docker volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   docker run -v /my/host/wallet_dir:/usr/lib/oracle/21/client64/lib/network/admin:Z,ro . . .
+#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/21/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -67,7 +70,7 @@
 # A prebuilt container from this Dockerfile is available from
 #   https://github.com/orgs/oracle/packages/container/package/oraclelinux8-instantclient
 # and can be pulled with:
-#   docker pull ghcr.io/oracle/oraclelinux8-instantclient:21
+#   podman pull ghcr.io/oracle/oraclelinux8-instantclient:21
 
 FROM oraclelinux:8
 
