@@ -4,29 +4,29 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle OpenJDK 22 on Oracle Linux 8
+# This is the Dockerfile for Oracle OpenJDK 23 on Oracle Linux 9
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) openjdk-22.xx_linux-x64_bin.tar.gz
-#     Downloaded from https://jdk.java.net/22/
+# (1) openjdk-23.xx_linux-x64_bin.tar.gz
+#     Downloaded from https://jdk.java.net/23/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/openjdk:22 .
+#      $ docker build -t oracle/openjdk:23 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
 
-FROM oraclelinux:8 
+FROM oraclelinux:9 
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk22.0.2/c9ecb94cd31b495da20a27d4581645e8/9/GPL \
-	JAVA_HOME=/usr/java/jdk-22 \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk23/3c5b90190c68498b986a97f276efd28a/37/GPL \
+	JAVA_HOME=/usr/java/jdk-23 \
 	LANG=en_US.UTF-8
 	
 
@@ -35,7 +35,7 @@ ENV JAVA_URL=https://download.java.net/java/GA/jdk22.0.2/c9ecb94cd31b495da20a27d
 	
 ENV	PATH $JAVA_HOME/bin:$PATH
 	
-# Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
+# Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:9
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
 	dnf -y update; \
@@ -50,7 +50,7 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL"/openjdk-22.0.2_linux-"${ARCH}"_bin.tar.gz ; \
+    JAVA_PKG="$JAVA_URL"/openjdk-23_linux-"${ARCH}"_bin.tar.gz ; \
 	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c -; \
@@ -67,10 +67,3 @@ RUN ln -sfT "$JAVA_HOME" /usr/java/default; \
 	done; 
 
 CMD ["jshell"]
-
-
-
-	
-
-
-
