@@ -4,5 +4,5 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-echo "Building OpenJDK 22 on Oracle Linux 8"
-docker build --file Dockerfile --tag oracle/openjdk:22-ol8 .
+echo "Building OpenJDK 23 on Oracle Linux 9"
+docker build --file Dockerfile --tag oracle/openjdk:23-ol9 .

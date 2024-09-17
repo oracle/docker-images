@@ -6,11 +6,11 @@ This repository contains sample container configurations to facilitate installat
 
 Navigate to the folder containing the `Dockerfile` and run `docker build`, tagging the image with the version number:
 
-e.g. for OpenJDK 22 run
+e.g. for OpenJDK 23 run
 
 ```bash
-cd ../OracleOpenJDK/22
-docker build -t oracle/openjdk:22 .
+cd ../OracleOpenJDK/23
+docker build -t oracle/openjdk:23 .
 ```
 
 This command is already scripted in `build.sh` so you can alternatively run:
@@ -21,7 +21,7 @@ bash build.sh
 
 ### Parent image OS version
 
-The Oracle Java images for OpenJDK 22 uses `oraclelinux:8` as the default parent image.
+The Oracle Java images for OpenJDK 23 uses `oraclelinux:9` as the default parent image.
 
 ## License
 

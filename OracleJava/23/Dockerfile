@@ -4,30 +4,30 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle JDK 22 on Oracle Linux 8
+# This is the Dockerfile for Oracle JDK 23 on Oracle Linux 9
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# This dockerfile will download a copy of JDK 22 from
-#	https://download.oracle.com/java/22/latest/jdk-22_linux-<ARCH>_bin.tar.gz  
+# This dockerfile will download a copy of JDK 23 from
+#	https://download.oracle.com/java/23/latest/jdk-23_linux-<ARCH>_bin.tar.gz  
 # 
 # It will use either x64 or aarch64 depending on the target platform
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/jdk:22 .
+#      $ docker build -t oracle/jdk:23 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:8 as builder
+FROM oraclelinux:9 as builder
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-# Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:8
+# Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:9
 RUN set -eux; \
 	dnf install -y tar; 
 	
@@ -37,8 +37,8 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 	
-ENV JAVA_URL=https://download.oracle.com/java/22/latest \
-	JAVA_HOME=/usr/java/jdk-22
+ENV JAVA_URL=https://download.oracle.com/java/23/latest \
+	JAVA_HOME=/usr/java/jdk-23
 
 ##
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -48,7 +48,7 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL"/jdk-22_linux-"${ARCH}"_bin.tar.gz ; \
+    JAVA_PKG="$JAVA_URL"/jdk-23_linux-"${ARCH}"_bin.tar.gz ; \
 	JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \ 
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c; \
@@ -56,11 +56,11 @@ RUN set -eux; \
 	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 	
 ## Get a fresh version of OL8 for the final image	
-FROM oraclelinux:8
+FROM oraclelinux:9
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
-ENV	JAVA_HOME=/usr/java/jdk-22
+ENV	JAVA_HOME=/usr/java/jdk-23
 ENV	PATH $JAVA_HOME/bin:$PATH	
 
 # If you need the Java Version you can read it from the release file with 
