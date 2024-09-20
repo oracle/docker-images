@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -112,6 +112,21 @@ class OraFactory:
                oracdb = OraRacProv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
                self.ocommon.log_info_message(msg,self.file_name)
                ofactory_obj.append(oracdb)
+            elif self.ora_env_dict["OP_TYPE"] == 'catalog':
+               msg="Creating and calling instance to prov RAC DB for catalog setup"
+               oracdb = OraRacProv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
+               self.ocommon.log_info_message(msg,self.file_name)
+               ofactory_obj.append(oracdb)
+            elif self.ora_env_dict["OP_TYPE"] == 'primaryshard':
+               msg="Creating and calling instance to prov RAC DB for primary shard"
+               oracdb = OraRacProv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
+               self.ocommon.log_info_message(msg,self.file_name)
+               ofactory_obj.append(oracdb)
+            elif self.ora_env_dict["OP_TYPE"] == 'standbyshard':
+               msg="Creating and calling instance to prov RAC DB for standby shard setup"
+               oracdb = OraRacProv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
+               self.ocommon.log_info_message(msg,self.file_name)
+               ofactory_obj.append(oracdb)
             elif self.ora_env_dict["OP_TYPE"] == 'setupssh':
                msg="Creating and calling instance to setup ssh between computes"
                ossh = self.osetupssh 
@@ -145,6 +160,7 @@ class OraFactory:
             elif self.ora_env_dict["OP_TYPE"] == 'miscops':
                msg="Creating and calling instance to perform the miscellenous operations"
                oramops = OraMiscOps(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
+               self.ocommon.rotate_log_files()
                self.ocommon.log_info_message(msg,self.file_name)
                ofactory_obj.append(oramops)
             else:
@@ -154,6 +170,7 @@ class OraFactory:
             if self.ora_env_dict["OP_TYPE"] == 'miscops':
                msg="Creating and calling instance to perform the miscellenous operations"
                oramops = OraMiscOps(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
+               self.ocommon.rotate_log_files()
                self.ocommon.log_info_message(msg,self.file_name)
                ofactory_obj.append(oramops)
         else:
