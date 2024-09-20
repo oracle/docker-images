@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 # OCNE 1.8 - Helm 3.12
 
+# hadolint ignore=DL3007
 FROM ghcr.io/oracle/oci-cli:latest
 
 USER root
