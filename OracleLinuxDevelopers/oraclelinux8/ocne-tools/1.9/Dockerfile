@@ -7,7 +7,7 @@ FROM ghcr.io/oracle/oci-cli:latest
 USER root
 
 RUN dnf install -y oracle-olcne-release-el8 && \
-    dnf config-manager --enable ol8_olcne18 ol8_addons ol8_baseos_latest ol8_appstream && \
+    dnf config-manager --enable ol8_olcne19 ol8_addons ol8_baseos_latest ol8_appstream && \
     dnf install -y helm kubectl && \
     rm -rf /var/cache/dnf
 
