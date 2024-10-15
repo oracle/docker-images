@@ -67,7 +67,7 @@ The script `build.sh` will tag the images it creates with the JDK version, and w
 
 JDK 23 and 21 are downloaded, as part of the build process, from the [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
 
-For building JDK17, JDK 11, JDK 8, and Server JRE 8 you must first download the corresponding Java Runtime from the [Oracle Website](https://www.oracle.com/javadownload) and accept the license indicated on that page.
+For building JDK 17, JDK 11, JDK 8, and Server JRE 8 you must first download the corresponding Java Runtime from the [Oracle Website](https://www.oracle.com/javadownload) and accept the license indicated on that page.
 
 All scripts and files hosted in this project and GitHub [`docker/OracleJava`](./) repository, required to build the container images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
