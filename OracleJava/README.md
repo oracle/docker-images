@@ -6,11 +6,11 @@ Oracle Java Server JRE provides the features from Oracle Java JDK commonly requi
 
 ## Building the Oracle Java base image
 
-For JDK 23, 21, and 17 the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
+For JDK 23 and 21 the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
 
-For JDK 11 and JDK 8 you must first download the linux x64 or linux aarch64 compressed archive (tar.gz), for Server JRE 8 you must download the linux x64 compressed archive, from [https://oracle.com/javadownload](https://www.oracle.com/javadownload) and place it in the same directory as the corresponding Dockerfile.
+For JDK 17, JDK 11, and JDK 8 you must first download the linux x64 or linux aarch64 compressed archive (tar.gz), for Server JRE 8 you must download the linux x64 compressed archive, from [https://oracle.com/javadownload](https://www.oracle.com/javadownload) and place it in the same directory as the corresponding Dockerfile.
 
-e.g. for JDK 11 download jdk-11[X]_linux-x64_bin.tar.gz into OracleJava/11, for Server JRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8/serverjre
+e.g. for JDK 17 download jdk-17[X]_linux-x64_bin.tar.gz into OracleJava/17, for Server JRE 8 download server-jre-8uXXX-linux-x64.tar.gz into OracleJava/8/serverjre
 
 To build the container image run `docker build`. Tag it with the correct version number.
 
@@ -65,9 +65,9 @@ The script `build.sh` will tag the images it creates with the JDK version, and w
 
 ## Licenses
 
-JDK 23, 21, and 17 are downloaded, as part of the build process, from the [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
+JDK 23 and 21 are downloaded, as part of the build process, from the [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
 
-For building JDK 11, JDK 8, and Server JRE 8 you must first download the corresponding Java Runtime from the [Oracle Website](https://www.oracle.com/javadownload) and accept the license indicated on that page.
+For building JDK17, JDK 11, JDK 8, and Server JRE 8 you must first download the corresponding Java Runtime from the [Oracle Website](https://www.oracle.com/javadownload) and accept the license indicated on that page.
 
 All scripts and files hosted in this project and GitHub [`docker/OracleJava`](./) repository, required to build the container images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 

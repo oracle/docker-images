@@ -35,17 +35,16 @@ ENV LANG en_US.UTF-8
 
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
-
 	
 ENV JAVA_HOME=/usr/java/jdk-8
 
 COPY server-jre-8u*-linux-x64.tar.gz /tmp/jdk.tgz
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	JAVA_SHA256=f6ad55ddd04f3a3a920312092e29be872b76104aded2cd5df51edb50c14136f2 ; \
+	JAVA_SHA256=7c9a3a87045c226647c09bc1eb1fc832f99a9105dbc924cfeab3bf16b3504d24 ; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; 
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1;
 
 ## Get a fresh version of SLIM for the final image
 
@@ -54,7 +53,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_HOME=/usr/java/jdk-8 
+ENV JAVA_HOME=/usr/java/jdk-8
 
 ENV	PATH $JAVA_HOME/bin:$PATH
 
@@ -71,8 +70,7 @@ RUN	yum -y update; \
 		[ ! -e "/usr/bin/$base" ]; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
-# -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
+# -Xshare:dump will create a CDS archive to improve startup in subsequent runs
 # the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
 	java -Xshare:dump;
-	
