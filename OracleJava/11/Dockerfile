@@ -19,7 +19,7 @@
 #      $ docker build -t oracle/jdk:11 .
 #
 # This command is already scripted in build.sh so you can alternatively run
-#		$ bash build.sh
+#      $ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
@@ -28,8 +28,8 @@ FROM oraclelinux:7-slim as builder
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
 RUN yum install -y gzip tar
-		
-	
+        
+    
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
@@ -43,20 +43,20 @@ ENV JAVA_HOME=/usr/java/jdk-11
 COPY *.tar.gz /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH="$(uname -m)" && \
+    ARCH="$(uname -m)" && \
     if [ "$ARCH" = "x86_64" ]; \
     then \
-	mv "$(ls /tmp/jdk-11*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+    mv "$(ls /tmp/jdk-11*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
         JAVA_SHA256=d22d0fcca761861a1eb2f5f6eb116c933354e8b1f76b3cda189c722cc0177c98 ; \
     else \
-	mv "$(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=3fc0d93f6363d32723c293ba5a9016e8ab27410351ed804020cfe71e87d3bc0a ; \    	
+    mv "$(ls /tmp/jdk-11*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+        JAVA_SHA256=3fc0d93f6363d32723c293ba5a9016e8ab27410351ed804020cfe71e87d3bc0a ; \        
     fi && \
-	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
-	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
-	
-## Get a fresh version of SLIM for the final image	
+    echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
+    mkdir -p "$JAVA_HOME"; \
+    tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
+    
+## Get a fresh version of SLIM for the final image    
 FROM oraclelinux:7-slim
 
 # Default to UTF-8 file.encoding
@@ -64,27 +64,27 @@ ENV LANG en_US.UTF-8
 
 ENV JAVA_HOME=/usr/java/jdk-11
 
-ENV	PATH $JAVA_HOME/bin:$PATH	
+ENV PATH $JAVA_HOME/bin:$PATH    
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
 # Update the base image
-	yum -y update; \
-	yum install -y \
-# JDK assumes freetype is available		
-		freetype fontconfig \
-	; \
-	rm -rf /var/cache/yum; \
-	ln -sfT "$JAVA_HOME" /usr/java/default; \
-	ln -sfT "$JAVA_HOME" /usr/java/latest; \
-	for bin in "$JAVA_HOME/bin/"*; do \
-		base="$(basename "$bin")"; \
-		[ ! -e "/usr/bin/$base" ]; \
-		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done; \
-# -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
-	java -Xshare:dump; 
+    yum -y update; \
+    yum install -y \
+# JDK assumes freetype is available        
+        freetype fontconfig \
+    ; \
+    rm -rf /var/cache/yum; \
+    ln -sfT "$JAVA_HOME" /usr/java/default; \
+    ln -sfT "$JAVA_HOME" /usr/java/latest; \
+    for bin in "$JAVA_HOME/bin/"*; do \
+        base="$(basename "$bin")"; \
+        [ ! -e "/usr/bin/$base" ]; \
+        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+    done; \
+# -Xshare:dump will create a CDS archive to improve startup in subsequent runs    
+    java -Xshare:dump; 
 
 CMD ["jshell"]
