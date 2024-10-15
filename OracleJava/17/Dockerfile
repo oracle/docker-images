@@ -18,7 +18,7 @@
 #      $ docker build -t oracle/jdk:17 .
 #
 # This command is already scripted in build.sh so you can alternatively run
-#		$ bash build.sh
+#      $ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
@@ -41,26 +41,26 @@ ENV JAVA_HOME=/usr/java/jdk-17
 COPY *.tar.gz /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH="$(uname -m)" && \
+    ARCH="$(uname -m)" && \
     if [ "$ARCH" = "x86_64" ]; \
     then \
-	mv "$(ls /tmp/jdk-17*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+    mv "$(ls /tmp/jdk-17*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
         JAVA_SHA256=f7a6fdebeb11840e1f5314bc330feb75b67e52491cf39073dbf3e51e3889ff08 ; \
     else \
-	mv "$(ls /tmp/jdk-17*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=277e0010e7b17583e63827f9537a153ea79cb4b6ca28d523cd8a82f14a24a769 ; \
+    mv "$(ls /tmp/jdk-17*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+        JAVA_SHA256=277e0010e7b17583e63827f9537a153ea79cb4b6ca28d523cd8a82f14a24a769 ; \
     fi && \
-	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
-	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
-	
-## Get a fresh version of OL8 for the final image	
+    echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
+    mkdir -p "$JAVA_HOME"; \
+    tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
+    
+## Get a fresh version of OL8 for the final image    
 FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
-ENV	JAVA_HOME=/usr/java/jdk-17
-ENV	PATH $JAVA_HOME/bin:$PATH	
+ENV JAVA_HOME=/usr/java/jdk-17
+ENV PATH $JAVA_HOME/bin:$PATH    
 
 # If you need the Java Version you can read it from the release file with 
 # JAVA_VERSION=$(sed -n '/^JAVA_VERSION="/{s///;s/"//;p;}' "$JAVA_HOME"/release);
@@ -70,18 +70,18 @@ COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
 # Ensure we get the latest OL 8 updates available at build time
-	dnf -y update; \
-# JDK assumes freetype is available	
-	dnf install -y \
-		freetype fontconfig \
-	; \
-	rm -rf /var/cache/dnf; \
-	ln -sfT "$JAVA_HOME" /usr/java/default; \
-	ln -sfT "$JAVA_HOME" /usr/java/latest; \
-	for bin in "$JAVA_HOME/bin/"*; do \
-		base="$(basename "$bin")"; \
-		[ ! -e "/usr/bin/$base" ]; \
-		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done;
-	
+    dnf -y update; \
+# JDK assumes freetype is available    
+    dnf install -y \
+        freetype fontconfig \
+    ; \
+    rm -rf /var/cache/dnf; \
+    ln -sfT "$JAVA_HOME" /usr/java/default; \
+    ln -sfT "$JAVA_HOME" /usr/java/latest; \
+    for bin in "$JAVA_HOME/bin/"*; do \
+        base="$(basename "$bin")"; \
+        [ ! -e "/usr/bin/$base" ]; \
+        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+    done;
+    
 CMD ["jshell"]

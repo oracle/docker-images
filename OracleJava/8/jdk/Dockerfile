@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Oracle and/or its affiliates. 
+# Copyright (c) 2024 Oracle and/or its affiliates. 
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -19,7 +19,7 @@
 #      $ docker build -t oracle/jdk:8 .
 #
 # This command is already scripted in build.sh so you can alternatively run
-#		$ bash build.sh
+#        $ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
@@ -41,19 +41,18 @@ ENV JAVA_HOME=/usr/java/jdk-8
 COPY jdk-8u*.tar.gz /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-	ARCH="$(uname -m)" && \
+    ARCH="$(uname -m)" && \
     if [ "$ARCH" = "x86_64" ]; \
     then \
-		mv "$(ls /tmp/jdk-8*-linux-x64.tar.gz)" /tmp/jdk.tar.gz ; \
+        mv "$(ls /tmp/jdk-8*-linux-x64.tar.gz)" /tmp/jdk.tar.gz ; \
         JAVA_SHA256=b396978a716b7d23ccccabfe5c47c3b75d2434d7f8f7af690bc648172382720d ; \
     else \
-	    mv "$(ls /tmp/jdk-8*-linux-aarch64.tar.gz)" /tmp/jdk.tar.gz ; \
-    	JAVA_SHA256=e68d3e31ffcf7f05a4de65d04974843073bdff238bb6524adb272de9e616be7c ; \    	
+        mv "$(ls /tmp/jdk-8*-linux-aarch64.tar.gz)" /tmp/jdk.tar.gz ; \
+        JAVA_SHA256=e68d3e31ffcf7f05a4de65d04974843073bdff238bb6524adb272de9e616be7c ; \        
     fi && \
-	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
-	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
-
+    echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
+    mkdir -p "$JAVA_HOME"; \
+    tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
 
 ## Get a fresh version of SLIM for the final image
 FROM oraclelinux:7-slim
@@ -62,24 +61,24 @@ FROM oraclelinux:7-slim
 ENV LANG en_US.UTF-8
 
 ENV JAVA_HOME=/usr/java/jdk-8 
-	
-ENV	PATH $JAVA_HOME/bin:$PATH
+    
+ENV PATH $JAVA_HOME/bin:$PATH
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 ##
-RUN	yum -y update; \
-	rm -rf /var/cache/yum; \
-	ln -sfT "$JAVA_HOME" /usr/java/default; \
-	ln -sfT "$JAVA_HOME" /usr/java/latest; \
-	for bin in "$JAVA_HOME/bin/"*; do \
-		base="$(basename "$bin")"; \
-		[ ! -e "/usr/bin/$base" ]; \
-		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done; \
-# -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
+RUN yum -y update; \
+    rm -rf /var/cache/yum; \
+    ln -sfT "$JAVA_HOME" /usr/java/default; \
+    ln -sfT "$JAVA_HOME" /usr/java/latest; \
+    for bin in "$JAVA_HOME/bin/"*; do \
+        base="$(basename "$bin")"; \
+        [ ! -e "/usr/bin/$base" ]; \
+        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+    done; \
+# -Xshare:dump will create a CDS archive to improve startup in subsequent runs    
 # the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
-	java -Xshare:dump;
-	
+    java -Xshare:dump;
+    

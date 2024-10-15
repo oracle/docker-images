@@ -6,10 +6,10 @@
 
 if test "$1" = "8"
 then
-	echo "Building Oracle JDK 8 on Oracle Linux 8"
-	docker build --file Dockerfile.ol8 --tag oracle/jdk:8-ol8 .
+    echo "Building Oracle JDK 8 on Oracle Linux 8"
+    docker build --file Dockerfile.ol8 --tag oracle/jdk:8-ol8 .
 else
-	echo "Building Oracle JDK 8 on Oracle Linux 7 slim"
-	docker build --tag oracle/jdk:8-ol7 .
+    echo "Building Oracle JDK 8 on Oracle Linux 7 slim"
+    docker build --tag oracle/jdk:8-ol7 .
 fi
 
