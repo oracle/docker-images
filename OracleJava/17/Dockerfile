@@ -1,4 +1,4 @@
-# Copyright (c) 2020, 2022 Oracle and/or its affiliates.
+# Copyright (c) 2020, 2024 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -44,10 +44,10 @@ RUN set -eux; \
 	ARCH="$(uname -m)" && \
     if [ "$ARCH" = "x86_64" ]; \
     then \
-		mv "$(ls /tmp/jdk-17*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+	mv "$(ls /tmp/jdk-17*_linux-x64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
         JAVA_SHA256=f7a6fdebeb11840e1f5314bc330feb75b67e52491cf39073dbf3e51e3889ff08 ; \
     else \
-	    mv "$(ls /tmp/jdk-17*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
+	mv "$(ls /tmp/jdk-17*_linux-aarch64_bin.tar.gz)" /tmp/jdk.tar.gz ; \
     	JAVA_SHA256=277e0010e7b17583e63827f9537a153ea79cb4b6ca28d523cd8a82f14a24a769 ; \
     fi && \
 	echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
