@@ -55,7 +55,7 @@ RUN set -eux; \
     mkdir -p "$JAVA_HOME"; \
     tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
 
-## Get a fresh version of OL8 for the final image
+## Get a fresh version of Oracle Linux 8 for the final image
 FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding

@@ -53,16 +53,16 @@ RUN set -eux; \
     echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
     mkdir -p "$JAVA_HOME"; \
     tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
-    
-## Get a fresh version of OL8 for the final image    
+
+## Get a fresh version of Oracle Linux 8 for the final image
 FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 ENV JAVA_HOME=/usr/java/jdk-17
-ENV PATH $JAVA_HOME/bin:$PATH    
+ENV PATH $JAVA_HOME/bin:$PATH
 
-# If you need the Java Version you can read it from the release file with 
+# If you need the Java Version you can read it from the release file with
 # JAVA_VERSION=$(sed -n '/^JAVA_VERSION="/{s///;s/"//;p;}' "$JAVA_HOME"/release);
 
 # Copy the uncompressed Java Runtime from the builder image
@@ -71,7 +71,7 @@ COPY --from=builder $JAVA_HOME $JAVA_HOME
 RUN set -eux; \
 # Ensure we get the latest OL 8 updates available at build time
     dnf -y update; \
-# JDK assumes freetype is available    
+# JDK assumes freetype is available
     dnf install -y \
         freetype fontconfig \
     ; \
@@ -83,5 +83,5 @@ RUN set -eux; \
         [ ! -e "/usr/bin/$base" ]; \
         alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
     done;
-    
+
 CMD ["jshell"]
