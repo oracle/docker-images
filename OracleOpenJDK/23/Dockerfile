@@ -21,7 +21,7 @@
 #		$ bash build.sh
 #
 
-FROM oraclelinux:9 
+FROM oraclelinux:9
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
@@ -29,18 +29,18 @@ ENV JAVA_URL=https://download.java.net/java/GA/jdk23.0.1/c28985cbf10d4e648e40040
 	JAVA_HOME=/usr/java/jdk-23 \
 	LANG=en_US.UTF-8
 
-# If you need the Java Version you can read it from the release file with 
+# If you need the Java Version you can read it from the release file with
 #JAVA_VERSION=$(sed -n '/^JAVA_VERSION="/{s///;s/"//;p;}' "$JAVA_HOME"/release);
-	
+
 ENV	PATH $JAVA_HOME/bin:$PATH
-	
+
 # Since the files are compressed as tar.gz first dnf install tar. gzip is already in oraclelinux:9
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
 	dnf -y update; \
 	dnf install -y \
 		tar \
-		# JDK assumes freetype is available		
+		# JDK assumes freetype is available
 		freetype fontconfig \
 	; \
 	rm -rf /var/cache/dnf; \
@@ -50,7 +50,7 @@ RUN set -eux; \
         then ARCH="x64"; \
     fi && \
     JAVA_PKG="$JAVA_URL"/openjdk-23.0.1_linux-"${ARCH}"_bin.tar.gz ; \
-	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \ 
+	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
@@ -63,6 +63,6 @@ RUN ln -sfT "$JAVA_HOME" /usr/java/default; \
 		base="$(basename "$bin")"; \
 		[ ! -e "/usr/bin/$base" ]; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done; 
+	done;
 
 CMD ["jshell"]

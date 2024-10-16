@@ -1,4 +1,4 @@
-# Copyright (c) 2019, 2024 Oracle and/or its affiliates. 
+# Copyright (c) 2019, 2024 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -35,7 +35,7 @@ ENV LANG en_US.UTF-8
 
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
-    
+
 ENV JAVA_HOME=/usr/java/jdk-8
 
 COPY server-jre-8u*-linux-x64.tar.gz /tmp/jdk.tgz
@@ -71,6 +71,6 @@ RUN yum -y update; \
         alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
     done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs
-# the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
+# the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
     java -Xshare:dump;
