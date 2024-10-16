@@ -46,7 +46,7 @@ RUN set -eux; \
     mkdir -p "$JAVA_HOME"; \
     tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1;
 
-## Get a fresh version of SLIM for the final image
+## Get a fresh version of Oracle Linux 7-slim for the final image
 
 FROM oraclelinux:7-slim
 
