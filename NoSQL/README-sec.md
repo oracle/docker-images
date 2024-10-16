@@ -14,7 +14,7 @@ This container image uses a simplified version of the Oracle NoSQL Database call
 
 This container image configures an Oracle NoSQL Database secure configuration
 1. Create a KVlite secured configuration with the
-[password complexity policy](https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/security/password-complexity-policies.html)
+[password complexity policy](https://docs.oracle.com/en/database/other-databases/nosql-database/24.3/security/password-complexity-policies.html)
 enabled
 2. Create the `root` user and the file `user.security` that contain property settings for the login as admin
 3. Generate the `certificate.pem` file allowing to establish a HTTP secure communication between the proxy and the driver
@@ -202,7 +202,7 @@ $ openssl x509 -text -noout -in /mylocalpath/certificate.pem | grep CN
 
 ````
 Note: the certicate can be customized in the script setup-http-proxy-sec.sh
-(e.g adding [SAN](https://docs.oracle.com/en/database/other-databases/nosql-database/23.1/security/ssl-using-openssl.html))
+(e.g adding [SAN](https://docs.oracle.com/en/database/other-databases/nosql-database/24.3/security/ssl-using-openssl.html))
 
 ## Advanced Scenario: connecting to Oracle NoSQL CE from another host
 
@@ -289,7 +289,7 @@ the KVLite container are both set to the hostname of the host on which they are
 running by using the `$HOSTNAME` environment variable for both. For example:
 
 ```shell
-docker run -d -v secfiles:/shared_conf --name=$HOSTNAME --hostname=$HOSTNAME 
+docker run -d -v secfiles:/shared_conf --name=$HOSTNAME --hostname=$HOSTNAME
 ```
 
 As all container names must be unique on a host, this restriction means only one
@@ -427,5 +427,5 @@ Copyright (c) 2017, 2024 Oracle and/or its affiliates.
 
 [NOSQL]: http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html
 [DOCS]: https://docs.oracle.com/en/database/other-databases/nosql-database/index.html
-[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/23.3/license/index.html#GUID-006E432E-1965-45A2-AEDE-204BD05E1560
+[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/24.3/license/index.html#GUID-006E432E-1965-45A2-AEDE-204BD05E1560
 [GraalVM-License]: https://github.com/graalvm/container/blob/master/LICENSE.md
