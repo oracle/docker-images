@@ -280,7 +280,7 @@ else
   "$ORACLE_BASE"/"$CREATE_DB_FILE" $ORACLE_SID "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
 
   # Check whether database is successfully created
-  if "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
+  if IGNORE_DB_STARTED_MARKER=true "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
     # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
     echo "$(date -Iseconds)" > "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
@@ -303,7 +303,7 @@ else
 fi;
 
 # Check whether database is up and running
-"$ORACLE_BASE"/"$CHECK_DB_FILE"
+IGNORE_DB_STARTED_MARKER=true "$ORACLE_BASE"/"$CHECK_DB_FILE"
 status=$?
 
 # Check whether database is up and running
@@ -317,7 +317,9 @@ if [ $status -eq 0 ]; then
 
   # Execute custom provided startup scripts
   "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/startup
-  
+
+  # Create marker file for the health check
+  touch "$DB_STARTED_MARKER_FILE"
 else
   echo "#####################################"
   echo "########### E R R O R ###############"
