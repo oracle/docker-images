@@ -113,6 +113,9 @@ EOF
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
 ###################################
 
+# Marker file for the healthcheck
+rm -f /tmp/.oracle_database_started
+
 # Check whether container has enough memory
 if [[ -f /sys/fs/cgroup/cgroup.controllers ]]; then
   memory=$(cat /sys/fs/cgroup/memory.max)
@@ -317,7 +320,9 @@ if [ $status -eq 0 ]; then
 
   # Execute custom provided startup scripts
   "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/startup
-  
+
+  # Marker file for the healthcheck
+  touch /tmp/.oracle_database_started
 else
   echo "#####################################"
   echo "########### E R R O R ###############"
