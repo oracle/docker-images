@@ -73,6 +73,11 @@ EOF
 ################ MAIN #######################
 #############################################
 
+if [ "$IGNORE_DB_STARTED_MARKER" != true ] && [ ! -f "$DB_STARTED_MARKER_FILE" ]; then
+   echo "Database was not started yet." >&2
+   exit 1
+fi
+
 # Setting up ORACLE_PWD if podman secret is passed on
  if [ -e '/run/secrets/oracle_pwd' ]; then
     export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"

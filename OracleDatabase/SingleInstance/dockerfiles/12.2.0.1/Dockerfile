@@ -46,6 +46,7 @@ ENV ORACLE_BASE=/opt/oracle \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
     CREATE_DB_FILE="createDB.sh" \
+    DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \

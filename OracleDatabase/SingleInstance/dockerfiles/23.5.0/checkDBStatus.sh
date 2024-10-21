@@ -77,6 +77,11 @@ EOF
 ################ MAIN #######################
 #############################################
 
+if [ "$IGNORE_DB_STARTED_MARKER" != true ] && [ ! -f "$DB_STARTED_MARKER_FILE" ]; then
+   echo "Database was not started yet." >&2
+   exit 1
+fi
+
 ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
 export ORACLE_PWD
 

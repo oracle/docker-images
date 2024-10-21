@@ -50,7 +50,8 @@ ENV ORACLE_BASE=/u01/app/oracle \
     CONFIG_RSP="xe.rsp" \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
-    CHECK_DB_FILE="checkDBStatus.sh"
+    CHECK_DB_FILE="checkDBStatus.sh" \
+    DB_STARTED_MARKER_FILE="/dev/shm/.db_started"
 
 # Use second ENV so that variable get substituted
 ENV PATH=$ORACLE_HOME/bin:$PATH

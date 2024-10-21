@@ -273,7 +273,7 @@ else
   "$ORACLE_BASE"/"$CREATE_DB_FILE" $ORACLE_SID "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
 
    for i in 1 2 4 8; do
-      "$ORACLE_BASE"/"$CHECK_DB_FILE";
+      IGNORE_DB_STARTED_MARKER=true "$ORACLE_BASE"/"$CHECK_DB_FILE";
       ret=$?
       # Check whether database is successfully created
       if [ $ret -eq 0 ]; then
@@ -308,7 +308,7 @@ fi;
 
 for i in 1 2 4 8; do
    # Check whether database is up and running
-   "$ORACLE_BASE"/"$CHECK_DB_FILE"
+   IGNORE_DB_STARTED_MARKER=true "$ORACLE_BASE"/"$CHECK_DB_FILE"
    status=$?
    if [ $status -eq 5 ]; then
       # PDB is in mounted state
@@ -331,6 +331,8 @@ if [ $status -eq 0 ]; then
   # Execute custom provided startup scripts
   "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/startup
   
+  # Create marker file for the health check
+  touch "$DB_STARTED_MARKER_FILE"
 else
   echo "#####################################"
   echo "########### E R R O R ###############"
