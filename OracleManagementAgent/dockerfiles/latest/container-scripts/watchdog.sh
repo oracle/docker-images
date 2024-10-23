@@ -13,6 +13,7 @@ BASE_DIR=/opt/oracle
 BOOTSTRAP_HOME="$BASE_DIR/bootstrap"
 SCRIPTS=$BOOTSTRAP_HOME/scripts
 PACKAGES=$BOOTSTRAP_HOME/packages
+INSTALL_BASEDIR=$PACKAGES/mgmt_agent
 # shellcheck disable=SC2034
 UPGRADE_STAGE=$BOOTSTRAP_HOME/upgrade
 CONFIG_FILE="$BASE_DIR/mgmtagent_secret/input.rsp"
