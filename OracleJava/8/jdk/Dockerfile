@@ -19,65 +19,64 @@
 #      $ docker build -t oracle/jdk:8 .
 #
 # This command is already scripted in build.sh so you can alternatively run
-#        $ bash build.sh
+#      $ bash build.sh
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:7-slim as builder
+FROM oraclelinux:7-slim AS builder
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-# Since the files is compressed as tar.gz first yum install gzip and tar
+# Since the file is compressed as tar.gz, first install gzip and tar
 RUN yum install -y gzip tar
 
 # Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
-
 ENV JAVA_HOME=/usr/java/jdk-8
 
+# Copy the JDK tar.gz file
 COPY jdk-8u*.tar.gz /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 RUN set -eux; \
-    ARCH="$(uname -m)" && \
-    if [ "$ARCH" = "x86_64" ]; \
-    then \
-        mv "$(ls /tmp/jdk-8*-linux-x64.tar.gz)" /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=b396978a716b7d23ccccabfe5c47c3b75d2434d7f8f7af690bc648172382720d ; \
+    ARCH="$(uname -m)"; \
+    if [ "$ARCH" = "x86_64" ]; then \
+        mv "$(ls /tmp/jdk-8*-linux-x64.tar.gz)" /tmp/jdk.tar.gz; \
+        JAVA_SHA256=b396978a716b7d23ccccabfe5c47c3b75d2434d7f8f7af690bc648172382720d; \
     else \
-        mv "$(ls /tmp/jdk-8*-linux-aarch64.tar.gz)" /tmp/jdk.tar.gz ; \
-        JAVA_SHA256=e68d3e31ffcf7f05a4de65d04974843073bdff238bb6524adb272de9e616be7c ; \
-    fi && \
+        mv "$(ls /tmp/jdk-8*-linux-aarch64.tar.gz)" /tmp/jdk.tar.gz; \
+        JAVA_SHA256=e68d3e31ffcf7f05a4de65d04974843073bdff238bb6524adb272de9e616be7c; \
+    fi; \
     echo "$JAVA_SHA256 */tmp/jdk.tar.gz" | sha256sum -c -; \
     mkdir -p "$JAVA_HOME"; \
-    tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1
+    tar --extract --file /tmp/jdk.tar.gz --directory "$JAVA_HOME" --strip-components 1;
 
 ## Get a fresh version of Oracle Linux 7-slim for the final image
 FROM oraclelinux:7-slim
 
 # Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
+# Set environment variables for Java
 ENV JAVA_HOME=/usr/java/jdk-8
-
-ENV PATH $JAVA_HOME/bin:$PATH
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
-##
+# Perform system updates and set up Java alternatives
 RUN yum -y update; \
     rm -rf /var/cache/yum; \
     ln -sfT "$JAVA_HOME" /usr/java/default; \
     ln -sfT "$JAVA_HOME" /usr/java/latest; \
     for bin in "$JAVA_HOME/bin/"*; do \
         base="$(basename "$bin")"; \
-        [ ! -e "/usr/bin/$base" ]; \
-        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+        [ ! -e "/usr/bin/$base" ] && alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
     done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs
-# the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa
+# The file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
     java -Xshare:dump;
