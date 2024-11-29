@@ -18,11 +18,11 @@
 #
 # hadolint global ignore=DL3006,DL3025
 ARG BASE_RAC_IMAGE=oracle/database-rac:21.3.0
+ARG RAC_SLIM_IMAGE=oracle/database-rac:21.3.0-slim
 
 # Pull base image
 # ---------------
 FROM $BASE_RAC_IMAGE as builder
-ARG RAC_SLIM_IMAGE
 
 # Labels
 # ------
