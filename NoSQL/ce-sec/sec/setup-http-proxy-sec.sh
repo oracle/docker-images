@@ -3,6 +3,8 @@
 # Copyright (c) 2022, 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
+set -e
+
 if [ -d /kvroot/proxy/ ] ; then
   echo "Reusing existing configuration"
   exit 0;
