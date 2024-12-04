@@ -49,6 +49,7 @@ ENV ORACLE_BASE=/opt/oracle \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
+    DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh"
 

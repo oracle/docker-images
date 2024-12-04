@@ -12,6 +12,11 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
+if [ "$IGNORE_DB_STARTED_MARKER" != true ] && [ ! -f "$DB_STARTED_MARKER_FILE" ]; then
+   echo "Database was not started yet." >&2
+   exit 1
+fi
+
 ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
 OPEN_MODE="READ WRITE"
 ORAENV_ASK=NO
