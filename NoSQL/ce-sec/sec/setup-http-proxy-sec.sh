@@ -1,7 +1,9 @@
 #! /bin/bash
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2022, 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+
+set -e
 
 if [ -d /kvroot/proxy/ ] ; then
   echo "Reusing existing configuration"
@@ -11,7 +13,7 @@ fi
 mkdir -p /kvroot/proxy/
 
 echo "Creating password"
-TMPPWD="$(gpg --gen-random --armor 2 8)$(gpg --gen-random --armor 2 8)"
+TMPPWD="$(gpg --gen-random --armor 2 8)12$(gpg --gen-random --armor 2 8)"
 
 echo "Creating USER proxy_user"
 
@@ -40,7 +42,7 @@ openssl req -x509 -days 365 -newkey rsa:4096 -keyout /kvroot/proxy/key.pem -out 
  <(echo "[req]";
     echo distinguished_name=req;
     echo "[san]";
-    echo "subjectAltName=DNS:${HOSTNAME},DNS:localhost,DNS:proxy-nosql,DNS:kvlite-nosql-container-host"
+    echo "subjectAltName=DNS:${HOSTNAME},DNS:localhost${KV_ADDITIONAL_SAN}"
  )
 openssl pkcs8 -topk8 -inform PEM -outform PEM -in /kvroot/proxy/key.pem -out /kvroot/proxy/key-pkcs8.pem -passin file:/kvroot/proxy/pwdin -passout file:/kvroot/proxy/pwdout  -v1 PBE-SHA1-3DES
 keytool -import -alias example -keystore /kvroot/proxy/driver.trust -file /kvroot/proxy/certificate.pem  -storepass "$(cat /kvroot/proxy/pwdin)" -noprompt
