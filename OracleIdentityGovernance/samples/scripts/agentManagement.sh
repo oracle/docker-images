@@ -707,6 +707,7 @@ if [ -n "${CONTAINER_ID}" ]; then
 
    # Kill any processes containing the process ID.
    # This kills the child processes too.
+   # shellcheck disable=SC2046
    kill -9 `ps -ef | grep -v grep | grep ${CONTAINER_PROCESS_ID} | awk '{print $2}'`
 
    # Stop the container, as Podman doesn't notice the processes are dead until you interact with the container.
