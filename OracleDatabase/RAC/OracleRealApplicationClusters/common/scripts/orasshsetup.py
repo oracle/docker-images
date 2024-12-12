@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -89,7 +89,10 @@ class OraSetupSSH:
           sshscr="runcluvfy.sh"
         else:
           sshscr="bin/cluvfy"
-
+          file='''{0}/{1}'''.format(gihome,sshscr)
+          if not self.ocommon.check_file(file,"local",None,None):
+            sshscr="runcluvfy.sh"
+            
         cluster_nodes=""
         if ctype == 'INSTALL':
           cluster_nodes=self.ocommon.get_cluster_nodes()
@@ -119,10 +122,11 @@ class OraSetupSSH:
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,False)
 
-          self.ocommon.set_mask_str(password.strip())
+          
           i=0
           while i < 5:
-            self.ocommon.log_info_message('''SSH setup in progress. Count set to {0}'''.format(i),self.file_name)          
+            self.ocommon.set_mask_str(password.strip()) 
+            self.ocommon.log_info_message('''SSH setup in progress. Count set to {0}'''.format(i),self.file_name)         
             cmd='''su - {0} -c "echo \"{4}\" | {1}/{2} comp admprv -n {3} -o user_equiv -fixup"'''.format(user,gihome,sshscr,new_nodes,'HIDDEN_STRING')
             output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
             self.ocommon.check_os_err(output,error,retcode,None)
@@ -164,6 +168,9 @@ class OraSetupSSH:
           sshscr="runcluvfy.sh"
         else:
           sshscr="bin/cluvfy"
+          file='''{0}/{1}'''.format(gihome,sshscr)
+          if not self.ocommon.check_file(file,"local",None,None):
+            sshscr="runcluvfy.sh"
         # node=exiting_cls_node.split(" ")[0]
         if existing_cls_node is not None:
           cluster_nodes= existing_cls_node.replace(","," ") + " " +  new_nodes

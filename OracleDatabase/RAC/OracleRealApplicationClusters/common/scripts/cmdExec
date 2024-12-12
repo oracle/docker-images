@@ -9,8 +9,8 @@
 TIMESTAMP=$(date "+%Y-%m-%d")
 LOGFILE="/tmp/oracle_rac_cmd_${TIMESTAMP}.log"
 # shellcheck disable=SC2145
-echo "$(date -u) : $@" >> "$LOGFILE" 
-
+echo "$(date -u) : $@" >> "$LOGFILE"
+# shellcheck disable=SC2124
 cmd=("$@")
 # shellcheck disable=SC2128
 $cmd

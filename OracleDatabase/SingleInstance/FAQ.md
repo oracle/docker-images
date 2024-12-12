@@ -14,7 +14,7 @@ An example would be: `docker run ... -e TZ="Europe/Vienna" oracle/database:12.2.
 
 ## Can I run Oracle Database containers on Apple M1 (Arm) devices?
 
-Oracle Database 19c Enterprise Edition is now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder before running the buildContainerImage.sh script.
+Oracle Database 19c Enterprise Edition and 23ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder before running the buildContainerImage.sh script.
 
 ## checkSpace.sh: ERROR - There is not enough space available in the container
 
@@ -107,83 +107,3 @@ Refer to the [module documentation](https://python-oracledb.readthedocs.io/en/la
 ## ORA-01157: cannot identify/lock data file
 
 This error occurs when the database cannot find a data file (used for tablespaces) that was previously present. This is most likely because the data file has been located outside the volume in a previous container and was hence not persisted. Ensure that when you add tablespaces and/or data files that they are located within the volume location, i.e. $ORACLE_BASE/oradata/$ORACLE_SID, (e.g. `/opt/oracle/oradata/XE`).
-
-## Running Oracle Database 23c Free on Apple Silicon (ARM) chip
-
-### Setup Database
-Below are the steps to run Oracle Database 23c Free on Apple Silicon (ARM) machine
-
-1. Install [Podman Lima](https://github.com/lima-vm/lima) on Mac
-
-    ```brew install podman lima```
-
-2. Start a lima instance (vm)
-
-    ```limactl start --name podman-amd64  --set='.arch = "x86_64" | .memory = "10GiB"'  template://podman```
-
-    Wait for the VM to boot up. Above command may error out if the VM takes a while to boot up. Ultimately it comes up fine.
-
-3. Set the address or hostname of the lima container runtime
-
-    ```export CONTAINER_HOST=unix://Users/$USER/.lima/podman-amd64/sock/podman.sock```
-
-4. Pull the oracle database 23c free image
-
-    ```podman pull container-registry.oracle.com/database/free:latest```
-
-5. Run the container with the pulled image
-
-    ```podman run -e ORACLE_PWD=<password> -d -P container-registry.oracle.com/database/free:latest```
-
-6. Check whether the database came up healthy.
-
-```shell
-    $ podman ps -a
-        CONTAINER ID  IMAGE                                               COMMAND               CREATED        STATUS                  PORTS                    NAMES 
-        825dcbd3e822  container-registry.oracle.com/database/free:latest  /bin/sh -c exec $...  4 minutes ago  Up 4 minutes (healthy)  0.0.0.0:42439->1521/tcp  hopeful_yalow
-```
-
-### Connect
-1. Install sqlplus
-
-   ```cd $HOME/Downloads```
-
-   ```curl -O https://download.oracle.com/otn_software/mac/instantclient/198000/instantclient-basic-macos.x64-19.8.0.0.0dbru.dmg```
-
-   ```curl -O https://download.oracle.com/otn_software/mac/instantclient/198000/instantclient-sqlplus-macos.x64-19.8.0.0.0dbru.dmg```
-
-   ```hdiutil mount instantclient-basic-macos.x64-19.8.0.0.0dbru.dmg```
-
-   ```hdiutil mount instantclient-sqlplus-macos.x64-19.8.0.0.0dbru.dmg```
-
-   ```/Volumes/instantclient-basic-macos.x64-19.8.0.0.0dbru/install_ic.sh```
-
-   ```hdiutil unmount /Volumes/instantclient-basic-macos.x64-19.8.0.0.0dbru```
-
-   ```hdiutil unmount /Volumes/instantclient-sqlplus-macos.x64-19.8.0.0.0dbru```
-
-2. Test the connection:
-
-   ```$HOME/Downloads/instantclient_19_8/sqlplus sys@localhost:<PORT>/FREE as sysdba```
-
-   ```$HOME/Downloads/instantclient_19_8/sqlplus system@localhost:<PORT>/FREE```
-
-   ```$HOME/Downloads/instantclient_19_8/sqlplus pdbadmin@localhost:<PORT>/FREEPDB1```
-
-    PORT is 42439 in above e.g. (Step 6 output of "podman ps -a").
-
-Alternative (Using SQLcl):
-
-1. Install [Java](https://download.oracle.com/java/20/latest/jdk-20_macos-aarch64_bin.dmg)
-
-2. Install [SQLcl](https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip)
-
-3. Test the connection:
-
-   ```sqlcl/bin/sql sys@localhost:<PORT>/FREE as sysdba```
-
-   ```sqlcl/bin/sql system@localhost:<PORT>/FREE```
-
-   ```sqlcl/bin/sql pdbadmin@localhost:<PORT>/FREEPDB1```
-
-   PORT is 42439 in above e.g. (Step 6 output of "podman ps -a").

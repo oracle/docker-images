@@ -2,7 +2,10 @@
 #
 # Copyright (c) 2014, 2024, Oracle and/or its affiliates.
 #
-# Container image template for Oracle Instant Client
+# Container image template for Oracle Instant Client 19
+#
+# This file is found at:
+# https://github.com/oracle/docker-images/blob/main/OracleInstantClient/oraclelinux9/19/Dockerfile
 #
 # HOW TO BUILD THIS IMAGE AND RUN A CONTAINER
 # --------------------------------------------

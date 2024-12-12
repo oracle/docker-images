@@ -28,13 +28,13 @@ on:
         required: false
       lang:
         description: List of languages to build
-        default: 'gcc-toolset, golang, nginx, nodejs, php, python, redis, ruby, haproxy'
+        default: 'gcc-toolset, golang, nginx, nodejs, php, python, redis, ruby, haproxy, kubectl, helm, ocne-tools'
         required: false
 
 # Default values for the builds triggered by the push event
 env:
   ol: 'oraclelinux7, oraclelinux8, oraclelinux9'
-  lang: 'gcc-toolset, golang, nodejs, nginx, php, python, redis, ruby, haproxy'
+  lang: 'gcc-toolset, golang, nodejs, nginx, php, python, redis, ruby, haproxy, kubectl, helm, ocne-tools'
 
 jobs:
   prepare:

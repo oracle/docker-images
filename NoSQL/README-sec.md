@@ -14,7 +14,7 @@ This container image uses a simplified version of the Oracle NoSQL Database call
 
 This container image configures an Oracle NoSQL Database secure configuration
 1. Create a KVlite secured configuration with the
-[password complexity policy](https://docs.oracle.com/en/database/other-databases/nosql-database/22.1/security/password-complexity-policies.html)
+[password complexity policy](https://docs.oracle.com/en/database/other-databases/nosql-database/24.3/security/password-complexity-policies.html)
 enabled
 2. Create the `root` user and the file `user.security` that contain property settings for the login as admin
 3. Generate the `certificate.pem` file allowing to establish a HTTP secure communication between the proxy and the driver
@@ -86,7 +86,7 @@ For example, to check the version of KVLite, use the `version` command:
 
 ```shell
 $ docker run --rm -ti --link kvlite:store oracle/nosql:ce-sec  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
-23.3.32 2024-03-06 18:21:38 UTC  Build id: 69f48431fc69 Edition: Community
+24.3.9 2024-09-26 18:01:32 UTC  Build id: 0d82533c492e Edition: Community
 ```
 
 To check the size of the storage shard:
@@ -113,13 +113,13 @@ $ docker run --rm -ti -v secfiles:/shared_conf:ro --link kvlite:store oracle/nos
 
 Pinging components of store kvstore based upon topology sequence #14
 10 partitions and 1 storage nodes
-Time: 2024-04-25 08:13:14 UTC   Version: 23.3.32
+Time: 2024-12-04 12:14:44 UTC   Version: 24.3.9
 Shard Status: healthy: 1 writable-degraded: 0 read-only: 0 offline: 0 total: 1
 Admin Status: healthy
 Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]   RN Status: online: 1 read-only: 0 offline: 0
-Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 23.3.32 2024-03-06 18:21:38 UTC  Build id: 69f48431fc69 Edition: Community    isMasterBalanced: true        serviceStartTime: 2024-04-25 08:10:10 UTC
-        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2024-04-25 08:10:13 UTC       stateChangeTime: 2024-04-25 08:10:13 UTC        availableStorageSize: 2 GB
-        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 86 haPort: 5011 availableStorageSize: 9 GB storageType: HD       serviceStartTime: 2024-04-25 08:10:14 UTC       stateChangeTime: 2024-04-25 08:10:15 UTC
+Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 24.3.9 2024-09-26 18:01:32 UTC  Build id: 0d82533c492e Edition: Community    isMasterBalanced: true     serviceStartTime: 2024-12-04 12:06:43 UTC
+        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2024-12-04 12:06:47 UTC       stateChangeTime: 2024-12-04 12:06:47 UTC        availableStorageSize: 2 GB
+        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 131 haPort: 5011 availableStorageSize: 9 GB storageType: HD      serviceStartTime: 2024-12-04 12:06:49 UTC       stateChangeTime: 2024-12-04 12:06:50 UTC
 
 
   kv-> put kv -key /SomeKey -value SomeValue
@@ -140,13 +140,17 @@ $ docker run --rm -ti -v secfiles:/shared_conf:ro --link kvlite:store oracle/nos
   tables
     SYS$IndexStatsLease
     SYS$MRTableAgentStat
+    SYS$MRTableInfo
     SYS$MRTableInitCheckpoint
     SYS$PartitionStatsLease
     SYS$SGAttributesTable
     SYS$StreamRequest
     SYS$StreamResponse
+    SYS$TableMetadata
     SYS$TableStatsIndex
     SYS$TableStatsPartition
+    SYS$TopologyHistory
+
   sql-> exit
 ```
 
@@ -202,7 +206,7 @@ $ openssl x509 -text -noout -in /mylocalpath/certificate.pem | grep CN
 
 ````
 Note: the certicate can be customized in the script setup-http-proxy-sec.sh
-(e.g adding [SAN](https://docs.oracle.com/en/database/other-databases/nosql-database/23.1/security/ssl-using-openssl.html))
+(e.g adding [SAN](https://docs.oracle.com/en/database/other-databases/nosql-database/24.3/security/ssl-using-openssl.html))
 
 ## Advanced Scenario: connecting to Oracle NoSQL CE from another host
 
@@ -217,10 +221,10 @@ be made via the Oracle NoSQL Database Proxy on the `KV_PROXY_PORT`.
 First, install the latest version of Oracle NoSQL on your remote host:
 
 ```shell
-KV_VERSION=23.3.32
+KV_VERSION=24.3.9
 rm -rf kv-$KV_VERSION
 DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
-DOWNLOAD_FILE="community-edition-${KV_VERSION}.zip"
+DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
 DOWNLOAD_LINK="${DOWNLOAD_ROOT}/${DOWNLOAD_FILE}"
 curl -OLs $DOWNLOAD_LINK
 jar tf $DOWNLOAD_FILE | grep "kv-$KV_VERSION/lib" > extract.libs
@@ -400,7 +404,7 @@ number used for the image tag:
 
 
 ```shell
-KV_VERSION=23.3.32 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce-sec:$KV_VERSION" .
+KV_VERSION=24.3.9 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce-sec:$KV_VERSION" .
 ```
 
 ## More information
@@ -427,5 +431,5 @@ Copyright (c) 2017, 2024 Oracle and/or its affiliates.
 
 [NOSQL]: http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html
 [DOCS]: https://docs.oracle.com/en/database/other-databases/nosql-database/index.html
-[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/23.3/license/index.html#GUID-006E432E-1965-45A2-AEDE-204BD05E1560
+[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/24.3/license/apache-license.html
 [GraalVM-License]: https://github.com/graalvm/container/blob/master/LICENSE.md

@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
 
@@ -53,6 +53,7 @@ class OraSetupEnv:
         """
         This function setup the grid on this machine
         """
+        
         self.ocommon.log_info_message("Start setup()",self.file_name)
         ct = datetime.datetime.now()
         bts = ct.timestamp()
@@ -70,8 +71,9 @@ class OraSetupEnv:
             if install_node.lower() == pubhost.lower():
                if not self.ocommon.check_key("GRID_RESPONSE_FILE",self.ora_env_dict):
                   self.validate_private_nodes()
-         self.ocommon.update_domainfrom_resolvconf_file()
-         self.populate_env_vars() 
+         #self.ocommon.update_domainfrom_resolvconf_file()
+         self.populate_env_vars()
+         self.check_statefile()
          self.env_var_checks()
          self.stdby_env_var_checks()
          self.set_gateway()
@@ -90,6 +92,7 @@ class OraSetupEnv:
          self.setup_gi_sw()
          self.reset_grid_user_passwd()        
          self.setup_db_sw()
+         self.adjustMemlockLimits()
          self.reset_db_user_passwd()
         # self.ocommon.log_info_message("Start crs_sw_install()",self.file_name)
         # self.crs_sw_install()
@@ -110,11 +113,36 @@ class OraSetupEnv:
         Populate the env vars if not set
         """
         self.ocommon.populate_rac_env_vars()
-        if not self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
-           msg="CRS_NODES is not passed as an env variable. If CRS_NODES is not passed as env variable then user must pass PUBLIC_HOSTS,VIRTUAL_HOSTS and PRIVATE_HOST as en env variable so that CRS_NODES can be populated."
-           self.ocommon.log_error_message(msg,self.file_name)
-           self.populate_crs_nodes()
+        if self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
+           pubnode=self.ocommon.get_public_hostname()
+           crs_nodes="pubhost="+pubnode
+           if not self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
+              self.ora_env_dict=self.ocommon.add_key("CRS_NODES",crs_nodes,self.ora_env_dict)
+           else:
+              self.ora_env_dict=self.ocommon.update_key("CRS_NODES",crs_nodes,self.ora_env_dict)
+        else:
+         if not self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
+            msg="CRS_NODES is not passed as an env variable. If CRS_NODES is not passed as env variable then user must pass PUBLIC_HOSTS,VIRTUAL_HOSTS and PRIVATE_HOST as en env variable so that CRS_NODES can be populated."
+            self.ocommon.log_error_message(msg,self.file_name)
+            self.populate_crs_nodes()
 
+    def check_statefile(self):
+       """
+       populate the state file
+       """
+       file=self.oenv.statelogfile_name()
+       if not self.ocommon.check_file(file,"local",None,None):
+          self.ocommon.create_file(file,"local",None,None)
+       if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
+         if self.ora_env_dict["OP_TYPE"] == 'setuprac':
+           self.ocommon.update_statefile("provisioning")
+         elif self.ora_env_dict["OP_TYPE"] == 'nosetup':
+           self.ocommon.update_statefile("provisioning")
+         elif self.ora_env_dict["OP_TYPE"] == 'addnode':
+            self.ocommon.update_statefile("addnode")
+         else:
+            pass
+          
     def populate_crs_nodes(self):
         """
         Populate CRS_NODES variable using PUBLIC_HOSTS,VIRTUAL_HOSTS and PRIVATE_HOSTS
@@ -136,7 +164,7 @@ class OraSetupEnv:
         else:
            virt_node_list=self.ora_env_dict["VIRTUAL_HOSTS"].split(",")
 
-        if not self.ocommon.check_key("PRIVATE_IP1_LIST",self.ora_env_dict) and not self.ocommon.check_key("PRIVATE_IP2_LIST",self.ora_env_dict):
+        if not self.ocommon.check_key("CRS_PRIVATE_IP1",self.ora_env_dict) and not self.ocommon.check_key("CRS_PRIVATE_IP2",self.ora_env_dict):
           if self.ocommon.check_key("PRIVATE_HOSTS",self.ora_env_dict):
               priv_node_list=self.ora_env_dict["PRIVATE_HOSTS"].split(",")
 
@@ -172,24 +200,36 @@ class OraSetupEnv:
         else:
            self.ocommon.log_info_message("PRIVATE_HOSTS is not set.",self.file_name)
 
-        if self.ocommon.check_key("PRIVATE_IP1_LIST",self.ora_env_dict):
+        if self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
+           pubnode=self.ocommon.get_public_hostname()
+           domain=self.ora_env_dict["PUBLIC_HOSTS_DOMAIN"] if self.ocommon.check_key("PUBLIC_HOSTS_DOMAIN",self.ora_env_dict) else self.ocommon.get_host_domain()
+           if domain is None:
+               self.ocommon.log_error_message("PUBLIC_HOSTS_DOMAIN is not set.",self.file_name)
+           value=self.ocommon.get_ip(pubnode,domain)
+           if not self.ocommon.check_key("CRS_PRIVATE_IP1",self.ora_env_dict):
+            self.ora_env_dict=self.ocommon.add_key("CRS_PRIVATE_IP1",value,self.ora_env_dict)
+           else:   
+            self.ora_env_dict=self.ocommon.update_key("CRS_PRIVATE_IP1",value,self.ora_env_dict)
            priv_node_status=True
-           priv_ip1_list=self.ora_env_dict["PRIVATE_IP1_LIST"].split(",")
-           for ip in priv_ip1_list:
-               self.ocommon.ping_ip(ip,True)
         else:
-           self.ocommon.log_info_message("PRIVATE_IP1_LIST is not set.",self.file_name)
+         if self.ocommon.check_key("CRS_PRIVATE_IP1",self.ora_env_dict):
+            priv_node_status=True
+            priv_ip1_list=self.ora_env_dict["CRS_PRIVATE_IP1"].split(",")
+            for ip in priv_ip1_list:
+                  self.ocommon.ping_ip(ip,True)
+         else:
+            self.ocommon.log_info_message("CRS_PRIVATE_IP1 is not set.",self.file_name)
 
-        if self.ocommon.check_key("PRIVATE_IP2_LIST",self.ora_env_dict):
-           priv_node_status=True
-           priv_ip2_list=self.ora_env_dict["PRIVATE_IP2_LIST"].split(",")
-           for ip in priv_ip2_list:
-               self.ocommon.ping_ip(ip,True)
-        else:
-           self.ocommon.log_info_message("PRIVATE_IP2_LIST is not set.",self.file_name)
+         if self.ocommon.check_key("CRS_PRIVATE_IP2",self.ora_env_dict):
+            priv_node_status=True
+            priv_ip2_list=self.ora_env_dict["CRS_PRIVATE_IP2"].split(",")
+            for ip in priv_ip2_list:
+                  self.ocommon.ping_ip(ip,True)
+         else:
+            self.ocommon.log_info_message("CRS_PRIVATE_IP2 is not set.",self.file_name)
 
         if not priv_node_status:
-           self.ocommon.log_error_message("PRIVATE_HOSTS or PRIVATE_IP1_LIST or PRIVATE_IP2_LIST list is not found in env variable list.Exiting...",self.file_name)
+           self.ocommon.log_error_message("PRIVATE_HOSTS or CRS_PRIVATE_IP1 or CRS_PRIVATE_IP2 list is not found in env variable list.Exiting...",self.file_name)
            self.ocommon.prog_exit("127")
 
     def env_var_checks(self):
@@ -222,7 +262,8 @@ class OraSetupEnv:
         if self.ocommon.check_key("DEFAULT_GATEWAY",self.ora_env_dict):
             self.ocommon.log_info_message("DEFAULT_GATEWAY variable is set. Validating the gateway gw",self.file_name)
             if self.ocommon.validate_ip(self.ora_env_dict["DEFAULT_GATEWAY"]):
-                cmd='''ip route; ip route del default'''
+                #cmd='''ip route; ip route del default'''
+                cmd='''ip route; ip route flush 0/0;ip route'''
                 output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
                 self.ocommon.check_os_err(output,error,retcode,None)
                 ### Set the Default gw
@@ -233,8 +274,6 @@ class OraSetupEnv:
             else:
                 self.ocommon.log_error_message("DEFAULT_GATEWAY IP is not correct. Exiting..",self.file_name)
                 self.ocommon.prog_exit("NONE")
-        else:
-            self.ocommon.log_info_message("DEFAULT_GATEWAY variable is not set.",self.file_name)
 
     def add_ntp_conf(self):
         """
@@ -266,25 +305,35 @@ class OraSetupEnv:
                lentry='''127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 \n::1   localhost localhost.localdomain localhost6 localhost6.localdomain6'''
                
                self.write_etchost("localhost.localdomain",etchostfile,"write",lentry)
-               if self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
-                  pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-                  pub_nodes1=pub_nodes.replace(" ",",")
-                  vip_nodes1=vip_nodes.replace(" ",",")
-                  for node in pub_nodes1.split(","):
-                        self.ocommon.log_info_message("The node set to :" +  node + "-" + pub_nodes1,self.file_name)
-                        self.write_etchost(node,etchostfile,"append",None)
-                  for node in vip_nodes1.split(","):
-                        self.write_etchost(node,etchostfile,"append",None)
+               if not self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
+                  if self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
+                     pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
+                     pub_nodes1=pub_nodes.replace(" ",",")
+                     vip_nodes1=vip_nodes.replace(" ",",")
+                     for node in pub_nodes1.split(","):
+                           self.ocommon.log_info_message("The node set to :" +  node + "-" + pub_nodes1,self.file_name)
+                           self.write_etchost(node,etchostfile,"append",None)
+                     for node in vip_nodes1.split(","):
+                           self.write_etchost(node,etchostfile,"append",None)
                                                     
     def write_etchost(self,node,file,mode,lentry):
        """
        This funtion write an entry to /etc/host if the entry doesn't exit
        """
+       if node == "":
+          self.ocommon.log_info_message("write_etchost(): Node is : [NULL]. PASS",self.file_name)
+          return
        if mode == 'append':
           #fdata=self.ocommon.read_file(file)
           #match=re.search(node,fdata,re.MULTILINE)
           #if not match:
-           domain=self.ora_env_dict["PUBLIC_HOSTS_DOMAIN"]
+           domain=self.ora_env_dict["PUBLIC_HOSTS_DOMAIN"] if self.ocommon.check_key("PUBLIC_HOSTS_DOMAIN",self.ora_env_dict) else self.ocommon.get_host_domain()
+           if domain is None:
+               self.ocommon.log_error_message("PUBLIC_HOSTS_DOMAIN is not set.",self.file_name)
+           if self.ocommon.check_key("PUBLIC_HOSTS_DOMAIN",self.ora_env_dict):
+             self.ora_env_dict=self.ocommon.update_key("PUBLIC_HOSTS_DOMAIN",domain,self.ora_env_dict)
+           else:
+             self.ora_env_dict=self.ocommon.add_key("PUBLIC_HOSTS_DOMAIN",domain,self.ora_env_dict)
            self.ocommon.log_info_message("Domain is :" + self.ora_env_dict["PUBLIC_HOSTS_DOMAIN"],self.file_name)
            self.ocommon.log_info_message("The hostname :" + node + "." + domain,self.file_name)
            ip=self.ocommon.get_ip(node,domain)
@@ -354,6 +403,56 @@ class OraSetupEnv:
         #cmd='''chmod 6755 /usr/bin/ping;chmod 6755 /bin/ping'''
         #output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
         #self.ocommon.check_os_err(output,error,retcode,None)
+        
+    def adjustMemlockLimits(self):
+      """
+      Adjust the soft and hard memory limits for the oracle db
+      """
+      oracleDBConfigFile=None
+      gridDBConfigFile=None
+      memoryFile=None
+      
+      cmd='''mount | grep -i cgroup | awk \'{ print $1 }\''''
+      output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+      oraversion=self.ocommon.get_rsp_version("INSTALL",None)
+      version=oraversion.split(".",1)[0].strip()
+      if int(version) < 23:
+         oracleDBConfigFile="/etc/security/limits.d/oracle-database-preinstall-23c.conf"
+         gridDBConfigFile="/etc/security/limits.d/grid-database-preinstall-23c.conf"
+      else:
+         oracleDBConfigFile="/etc/security/limits.d/oracle-database-preinstall-23ai.conf"
+         gridDBConfigFile="/etc/security/limits.d/grid-database-preinstall-23ai.conf"
+         
+      cgroupVersion=output.strip()
+      if cgroupVersion == 'cgroup2':
+         memoryFile="/sys/fs/cgroup/memory.max"
+      else:
+         memoryFile="/sys/fs/cgroup/memory/memory.limit_in_bytes"
+         
+      if self.ocommon.check_file(memoryFile,"local",None,None):
+         self.ocommon.log_info_message("memoryFile=[" + memoryFile + "]",self.file_name)
+
+         cmd='''expr `cat {0}` / 1024'''.format(memoryFile)
+         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+         containerMemory=output.strip()
+         cmd='''expr {0} \* 9 / 10'''.format(containerMemory)
+         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+         containerMemory=output.strip()
+         self.ocommon.log_info_message("containerMemory=[" + containerMemory + "]",self.file_name)
+
+         cmd='''grep " memlock " {0} | grep -v "^#" | grep hard | awk \'{{ print $4 }}\''''.format(oracleDBConfigFile)
+         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+         fileMemlockVal=output.strip()
+
+         cmd='''sed -i -e \'s,{0},{1},g\' {2}'''.format(fileMemlockVal,containerMemory,oracleDBConfigFile)
+         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+
+         cmd='''grep " memlock " {0} | grep -v "^#" | grep hard | awk \'{{ print $4 }}\''''.format(gridDBConfigFile)
+         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+         fileMemlockVal=output.strip()
+
+         cmd='''sed -i -e \'s,{0},{1},g\' {2}'''.format(fileMemlockVal,containerMemory,gridDBConfigFile)
+         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
         
     def set_common_script(self):
         """
@@ -430,94 +529,92 @@ class OraSetupEnv:
 
     ## Function to perfom oracle sw installation ######
     def setup_gi_sw(self):
-        """
-         This function unzip the Grid and Oracle Software
-        """
-        gihome=""
-        oinv=""
-        gibase=""
-        giuser=""
-        gigrp=""
-        giswfie=""
-
-        if self.ocommon.check_key("COPY_GRID_SOFTWARE",self.ora_env_dict):
-           giuser,gihome,gibase,oinv=self.ocommon.get_gi_params()
-           gigrp=self.ora_env_dict["OINSTALL"]
-
-           self.ocommon.log_info_message("Copy Software flag is set",self.file_name)
-           self.ocommon.log_info_message("Setting up a oracle invetnory directory!",self.file_name) 
-           self.setup_sw_dirs(oinv,giuser,gigrp)
-           self.ocommon.log_info_message("Setting up Grid_BASE directory!",self.file_name)
-           self.setup_sw_dirs(gibase,giuser,gigrp)
-           self.ocommon.log_info_message("Setting up Grid_HOME directory!",self.file_name)
-           self.setup_sw_dirs(gihome,giuser,gigrp)
-           ### Unzipping Gi Software
-           if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
-            #if self.ocommon.check_key("OP_TYPE",self.ora_env_dict) and any(optype == self.ora_env_dict["OP_TYPE"] for optype not in ("racaddnode")):
-              if self.ocommon.check_env_variable("STAGING_SOFTWARE_LOC",True) and self.ocommon.check_env_variable("GRID_SW_ZIP_FILE",True):  
-                 giswfile=self.ora_env_dict["STAGING_SOFTWARE_LOC"] + "/" + self.ora_env_dict["GRID_SW_ZIP_FILE"]
-              if os.path.isfile(giswfile):
-                 dir = os.listdir(gihome)
-                 if len(dir) == 0:
-                    self.ocommon.log_info_message("Grid software file is set : " + giswfile ,self.file_name)
-                    self.ocommon.log_info_message("Starting grid software unzipping file",self.file_name) 
-                    cmd='''su - {0} -c \" unzip -q {1} -d {2}\"'''.format(giuser,giswfile,gihome)
-                    output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                    self.ocommon.check_os_err(output,error,retcode,True)
-                    self.ora_env_dict=self.ocommon.add_key("GI_SW_UNZIPPED_FLAG","true",self.ora_env_dict)
-                 else:
-                    self.ocommon.log_error_message("Oracle GI home directory is not empty. Skipping software Unzipping...",self.file_name)                                 
-              else:
-                install_node,pubhost=self.ocommon.get_installnode()
-                if install_node.lower() == pubhost.lower():
-                   self.ocommon.log_error_message("Grid software file " + giswfile + " doesn't exist. Exiting...",self.file_name)
-                   self.ocommon.prog_exit("127")
-                else:
-                   self.ocommon.log_info_message("DB software file " + giswfile + " doesn't exist. Software will be copied from install node..." + install_node.lower(),self.file_name)
+      """
+      This function unzip the Grid and Oracle Software
+      """
+      gihome=""
+      oinv=""
+      gibase=""
+      giuser=""
+      gigrp=""
+      giswfie=""
+         ### Unzipping Gi Software
+      if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
+      #if self.ocommon.check_key("OP_TYPE",self.ora_env_dict) and any(optype == self.ora_env_dict["OP_TYPE"] for optype not in ("racaddnode")):
+         if self.ocommon.check_key("STAGING_SOFTWARE_LOC",self.ora_env_dict) and self.ocommon.check_key("GRID_SW_ZIP_FILE",self.ora_env_dict):  
+            giswfile=self.ora_env_dict["STAGING_SOFTWARE_LOC"] + "/" + self.ora_env_dict["GRID_SW_ZIP_FILE"]
+            if os.path.isfile(giswfile):
+                  if not self.ocommon.check_key("COPY_GRID_SOFTWARE",self.ora_env_dict):
+                     self.ora_env_dict=self.ocommon.add_key("COPY_GRID_SOFTWARE","True",self.ora_env_dict) 
+                  giuser,gihome,gibase,oinv=self.ocommon.get_gi_params()
+                  gigrp=self.ora_env_dict["OINSTALL"]
+                  self.ocommon.log_info_message("copy Software flag is set",self.file_name)
+                  self.ocommon.log_info_message("Setting up oracle invetnory directory!",self.file_name) 
+                  self.setup_sw_dirs(oinv,giuser,gigrp)
+                  self.ocommon.log_info_message("Setting up Grid_BASE directory!",self.file_name)
+                  self.setup_sw_dirs(gibase,giuser,gigrp)
+                  self.ocommon.log_info_message("Setting up Grid_HOME directory!",self.file_name)
+                  self.setup_sw_dirs(gihome,giuser,gigrp)
+                  dir = os.listdir(gihome)
+                  if len(dir) == 0:
+                     self.ocommon.log_info_message("Grid software file is set : " + giswfile ,self.file_name)
+                     self.ocommon.log_info_message("Starting grid software unzipping file",self.file_name) 
+                     cmd='''su - {0} -c \" unzip -q {1} -d {2}\"'''.format(giuser,giswfile,gihome)
+                     output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+                     self.ocommon.check_os_err(output,error,retcode,True)
+                     self.ora_env_dict=self.ocommon.add_key("GI_SW_UNZIPPED_FLAG","true",self.ora_env_dict)
+                  else:
+                     self.ocommon.log_error_message("oracle gi home directory is not empty. skipping software unzipping...",self.file_name)                                 
+            else:
+               install_node,pubhost=self.ocommon.get_installnode()
+               if install_node.lower() == pubhost.lower():
+                  self.ocommon.log_error_message("grid software file " + giswfile + " doesn't exist. Exiting...",self.file_name)
+                  self.ocommon.prog_exit("127")
+               else:
+                  self.ocommon.log_info_message("grid software file " + giswfile + " doesn't exist. software will be copied from install node..." + install_node.lower(),self.file_name)
 
     ## Function to unzip the software 
     def setup_db_sw(self):
-        """
-        unzip the software
-        """ 
-        dbhome=""
-        dbbase=""
-        dbuser=""
-        gigrp=""
-        dbswfile=""
- 
-        if self.ocommon.check_key("COPY_DB_SOFTWARE",self.ora_env_dict):  
-           dbuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
-           gigrp=self.ora_env_dict["OINSTALL"]
-
-           self.ocommon.log_info_message("Copy Software flag is set",self.file_name)
-           self.ocommon.log_info_message("Setting up ORACLE_BASE directory!",self.file_name)
-           self.setup_sw_dirs(dbbase,dbuser,gigrp)
-           self.ocommon.log_info_message("Setting up DB_HOME directory!",self.file_name)
-           self.setup_sw_dirs(dbhome,dbuser,gigrp)                                                                              
-           ### Unzipping Gi Software
-           if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
-            #if self.ocommon.check_key("OP_TYPE",self.ora_env_dict) and any(optype == self.ora_env_dict["OP_TYPE"] for optype not in ("racaddnode")):
-              if self.ocommon.check_env_variable("STAGING_SOFTWARE_LOC",True) and self.ocommon.check_env_variable("DB_SW_ZIP_FILE",True):
-                 dbswfile=self.ora_env_dict["STAGING_SOFTWARE_LOC"] + "/" + self.ora_env_dict["DB_SW_ZIP_FILE"]  
-              if os.path.isfile(dbswfile):
-                 dir = os.listdir(dbhome)
-                 if len(dir) == 0:  
-                    self.ocommon.log_info_message("DB software file is set : " + dbswfile , self.file_name)
-                    self.ocommon.log_info_message("Starting db software unzipping file",self.file_name)
-                    cmd='''su - {0} -c \" unzip -q {1} -d {2}\"'''.format(dbuser,dbswfile,dbhome)
-                    output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                    self.ocommon.check_os_err(output,error,retcode,True)
-                    self.ora_env_dict=self.ocommon.add_key("RAC_SW_UNZIPPED_FLAG","true",self.ora_env_dict)
-                 else:
-                    self.ocommon.log_error_message("Oracle DB home directory is not empty. Skipping software Unzipping...",self.file_name) 
-              else:
-                install_node,pubhost=self.ocommon.get_installnode()
-                if install_node.lower() == pubhost.lower():
-                   self.ocommon.log_error_message("DB software file " + dbswfile + " doesn't exist. Exiting...",self.file_name)
-                   self.ocommon.prog_exit("127")
-                else:
-                   self.ocommon.log_info_message("DB software file " + dbswfile + " doesn't exist. Software will be copied from install node..." + install_node.lower(),self.file_name)
+      """
+      unzip the software
+      """ 
+      dbhome=""
+      dbbase=""
+      dbuser=""
+      gigrp=""
+      dbswfile=""                                                                    
+      ### Unzipping Gi Software
+      if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
+      #if self.ocommon.check_key("OP_TYPE",self.ora_env_dict) and any(optype == self.ora_env_dict["OP_TYPE"] for optype not in ("racaddnode")):
+         if self.ocommon.check_key("STAGING_SOFTWARE_LOC",self.ora_env_dict) and self.ocommon.check_key("DB_SW_ZIP_FILE",self.ora_env_dict):
+            dbswfile=self.ora_env_dict["STAGING_SOFTWARE_LOC"] + "/" + self.ora_env_dict["DB_SW_ZIP_FILE"]  
+            if os.path.isfile(dbswfile):
+               if not self.ocommon.check_key("COPY_DB_SOFTWARE",self.ora_env_dict):
+                     self.ora_env_dict=self.ocommon.add_key("COPY_DB_SOFTWARE","True",self.ora_env_dict) 
+               dbuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
+               gigrp=self.ora_env_dict["OINSTALL"]
+               self.ocommon.log_info_message("Copy Software flag is set",self.file_name)
+               self.ocommon.log_info_message("Setting up ORACLE_BASE directory!",self.file_name)
+               self.setup_sw_dirs(dbbase,dbuser,gigrp)
+               self.ocommon.log_info_message("Setting up DB_HOME directory!",self.file_name)
+               self.setup_sw_dirs(dbhome,dbuser,gigrp) 
+               dir = os.listdir(dbhome)
+               if len(dir) == 0:  
+                  self.ocommon.log_info_message("DB software file is set : " + dbswfile , self.file_name)
+                  self.ocommon.log_info_message("Starting db software unzipping file",self.file_name)
+                  cmd='''su - {0} -c \" unzip -q {1} -d {2}\"'''.format(dbuser,dbswfile,dbhome)
+                  output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+                  self.ocommon.check_os_err(output,error,retcode,True)
+                  self.ora_env_dict=self.ocommon.add_key("RAC_SW_UNZIPPED_FLAG","true",self.ora_env_dict)
+               else:
+                  self.ocommon.log_error_message("oracle db home directory is not empty. skipping software unzipping...",self.file_name) 
+            else:
+               install_node,pubhost=self.ocommon.get_installnode()
+               if install_node.lower() == pubhost.lower():
+                  self.ocommon.log_error_message("db software file " + dbswfile + " doesn't exist. exiting...",self.file_name)
+                  self.ocommon.prog_exit("127")
+               else:
+                  self.ocommon.log_info_message("db software file " + dbswfile + " doesn't exist. software will be copied from install node..." + install_node.lower(),self.file_name)
  
     def setup_sw_dirs(self,dir,user,group):
         """
@@ -582,6 +679,7 @@ class OraSetupEnv:
               self.ocommon.log_info_message("Begin SSH Setup using SSH_PRIVATE_KEY and SSH_PUBLIC_KEY",self.file_name)
               giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
               dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
+              self.ocvu.cluvfy_updcvucfg(gihome,giuser)
               SSH_USERS=giuser + ":" + gihome,dbuser + ":" + dbhome
               for sshi in SSH_USERS:
                  self.setup_ssh_using_keys(sshi)

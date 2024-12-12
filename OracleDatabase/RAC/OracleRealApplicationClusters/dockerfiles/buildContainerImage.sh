@@ -92,7 +92,11 @@ while getopts "hiv:o:pn:" optname; do
       ;;
   esac
 done
-
+# Automatically set SKIPMD5=1 if SLIMMING=true is passed in DOCKEROPS
+if [[ "$DOCKEROPS" == *"--build-arg SLIMMING=true"* ]]; then
+  SKIPMD5=1
+  echo "SLIMMING=true detected, SKIPMD5 is automatically set to 1."
+fi
 # Oracle Database Image Name
 if [ "${IMAGE_NAME}"x = "x" ] && [ "${SLIM}" == "true" ]; then
    IMAGE_NAME="oracle/database-rac:${VERSION}-slim"

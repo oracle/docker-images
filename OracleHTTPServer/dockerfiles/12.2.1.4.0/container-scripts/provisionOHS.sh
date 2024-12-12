@@ -29,9 +29,6 @@ function _kill() {
 # Set SIGTERM handler
 trap _term SIGTERM
 
-# Set SIGKILL handler
-#trap _kill SIGKILL
-
 echo "ORACLE_HOME=${ORACLE_HOME:?"Please set ORACLE_HOME"}"
 echo "DOMAIN_NAME=${DOMAIN_NAME:?"Please set DOMAIN_NAME"}"
 echo "OHS_COMPONENT_NAME=${OHS_COMPONENT_NAME:?"Please set OHS_COMPONENT_NAME"}"
@@ -106,7 +103,8 @@ conf=$(ls -l /u01/oracle/config/moduleconf/*.conf 2>/dev/null | wc -l)
 if [ $conf -gt 0 ]
 then
   echo "  Copying moduleconf conf files to OHS Instance"
-  cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -print0 -name '.*' | xargs rm -rf
+  cp  -L /u01/oracle/config/moduleconf/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf 
+  find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/moduleconf -name '.*' -exec rm -rf {} \; > /dev/null 2>&1
 fi
 
 conf=$(ls -l /u01/oracle/config/httpd/*.conf 2>/dev/null | wc -l)
@@ -114,6 +112,7 @@ if [ $conf -gt 0 ]
 then
    echo "  Copying root conf files OHS Instance"
    cp  -L /u01/oracle/config/httpd/*.conf ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME
+   find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME -name '.*' -exec rm -rf {} \; > /dev/null 2>&1
 fi
 
 conf=$(ls -l /u01/oracle/config/wallet/* 2>/dev/null | wc -l)
@@ -121,14 +120,16 @@ if [ $conf -gt 0 ]
 then
    echo "  Copying OHS Wallets to OHS Instance"
    mkdir -p ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/keystores > /dev/null 2>&1
-   cp  -L /u01/oracle/config/wallet/* ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/keystores/
+   cp  -Lr /u01/oracle/config/wallet/* ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/keystores/ 
+   find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/keystores -name '.*' -exec rm -rf {} \; > /dev/null 2>&1
 fi
 
-htdocs=$(ls -l /u01/oracle/config/htdocs/*.html 2>/dev/null | wc -l)
+htdocs=$(ls -l /u01/oracle/config/htdocs/* 2>/dev/null | wc -l)
 if [ $htdocs -gt 0 ]
 then
-   echo "Copying htdocs to OHS Instance"
-   cp  -L /u01/oracle/config/htdocs/*.html ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs
+   echo "  Copying htdocs to OHS Instance"
+   cp  -Lr /u01/oracle/config/htdocs/* ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs 
+   find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/$OHS_COMPONENT_NAME/htdocs -name '.*' -exec rm -rf {} \; > /dev/null 2>&1
 fi
 
 if [ "$DEPLOY_WG" = "true" ]
@@ -144,11 +145,17 @@ then
     cd $ORACLE_HOME/webgate/ohs/tools/setup/InstallTools || exit
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
     ./EditHttpConf -w ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} -oh $ORACLE_HOME
-    echo "Adding OAP API exclusion to webgate.conf"
+    echo "  Adding OAP API exclusion to webgate.conf"
     echo "<LocationMatch \"/iam/access/binding/api/v10/oap\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
     echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
-    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} && find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate -print0 -name '.*' | xargs rm -rf
+    echo "" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "<LocationMatch \"/helloWorld.html\">" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "    require all granted" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "</LocationMatch>" >> ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate.conf
+    echo "  Copying WebGate Artifacts to Oracle Instance"
+    cp  -rL /u01/oracle/config/webgate ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME} 
+    find ${DOMAIN_HOME}/config/fmwconfig/components/OHS/${OHS_COMPONENT_NAME}/webgate -name '.*' -exec rm -rf {} \; > /dev/null 2>&1
 else
     echo "WebGate not deployed"
 fi

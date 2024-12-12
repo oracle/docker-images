@@ -1,9 +1,9 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
-# Author: paramdeep.saini@oracle.com
+# Copyright 2021, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
+# Author: sanjay.singh@oracle.com,paramdeep.saini@oracle.com
 ############################
 
 """
@@ -87,7 +87,9 @@ class OraRacProv:
             hostname=self.ocommon.get_public_hostname()
             if status:
                msg='''Database instance {0} already exist on this machine {1}.'''.format(osid,hostname)
+               self.ocommon.update_statefile("completed")
                self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
+               
             elif self.ocommon.check_key("CLONE_DB",self.ora_env_dict):
                self.ocommon.log_info_message("Start clone_db()",self.file_name)
                self.clone_db(crs_nodes)
@@ -106,7 +108,8 @@ class OraRacProv:
                   self.ocommon.start_db_service(sname,osid)
                   self.ocommon.check_db_service_status(sname,osid) 
                self.ocommon.log_info_message("End create_db()",self.file_name)
-               self.perform_db_check()
+               self.ocommon.perform_db_check("INSTALL")
+            self.ocommon.update_statefile("completed")
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -414,7 +417,9 @@ class OraRacProv:
       output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
       self.ocommon.check_os_err(output,error,retcode,True)
       ### Unsetting the encrypt value to None
-      self.ocommon.unset_mask_str()       
+      self.ocommon.unset_mask_str()
+      if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
+        self.ocommon.reset_dbuser_passwd("sys",None,"all")       
 
    def prepare_db_cmd(self):
        """
@@ -522,23 +527,3 @@ class OraRacProv:
        initparams=""" -initparams '{0}'""".format(initprm)
 
        return initparams
-     
-   def perform_db_check(self): 
-     """
-     This function check the DB and print the message"
-     """
-     status,osid,host,mode=self.ocommon.check_dbinst()
-     if status:
-        self.ocommon.rac_setup_complete()
-        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-        msg='''Oracle Database {0} is up and running on {1}.'''.format(osid,host)
-        self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-        self.ocommon.run_custom_scripts("CUSTOM_DB_SCRIPT_DIR","CUSTOM_DB_SCRIPT_FILE",dbuser)
-        self.ocommon.set_remote_listener()
-        os.system("echo ORACLE RAC DATABASE IS READY TO USE > /dev/pts/0")
-        msg='''ORACLE RAC DATABASE IS READY TO USE'''
-        self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-     else:
-        msg='''Oracle Database {0} is not up and running on {1}.'''.format(osid,host)
-        self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
-        self.ocommon.prog_exit("127")

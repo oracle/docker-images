@@ -54,7 +54,7 @@ function install_agent()
 {
   export SYSTEM_MANAGER_OVERRIDE=true
   _unpack_install_bundle "$1"
-  execute_cmd "/bin/bash ${PACKAGES}/installer.sh $CONFIG_FILE" "install"
+  execute_cmd "/bin/bash ${INSTALL_BASEDIR}/installer.sh $CONFIG_FILE" "install"
   return $?
 }
 
@@ -65,7 +65,7 @@ function upgrade_with_install_bundle()
 {
   export SYSTEM_MANAGER_OVERRIDE=true
   _unpack_install_bundle "$1"
-  execute_cmd "/bin/bash ${PACKAGES}/installer.sh -u" "upgrade"
+  execute_cmd "/bin/bash ${INSTALL_BASEDIR}/installer.sh -u" "upgrade"
   return $?
 }
 
