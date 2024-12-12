@@ -421,7 +421,6 @@ status(){
            echo "Agent is not installed."
            exit 1
   fi
-  agentVersion=$(grep agentVersion "$CONFDIR"/config.json | awk '{ print $2 }' | sed 's/,//g')
   info
   if [ "$containerRuntime" = "docker" ]
    then
@@ -691,11 +690,32 @@ start()
   fi
   runAgent
   echo ""
-  agentVersion=$(grep agentVersion "$CONFDIR"/config.json | awk '{ print $2 }' | sed 's/,//g')
   info
   echo ""
   echo "INFO: Logs directory: ${PV}/data/logs"
   echo "INFO: You can monitor the agent ${AI} from the Access Governance Console."
+}
+
+forceStopPodman()
+{
+# Get the main process for the container.
+CONTAINER_ID=$(podman ps | grep "$AI" | awk '{print $1}')
+if [ -n "${CONTAINER_ID}" ]; then
+   echo Container ID : "$CONTAINER_ID"
+   CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
+   echo Container Process ID: ${CONTAINER_PROCESS_ID}
+
+   # Kill any processes containing the process ID.
+   # This kills the child processes too.
+   # shellcheck disable=SC2046
+   kill -9 `ps -ef | grep -v grep | grep ${CONTAINER_PROCESS_ID} | awk '{print $2}'`
+
+   # Stop the container, as Podman doesn't notice the processes are dead until you interact with the container.
+   echo "Stop container. Ignore errors."
+   podman stop "$AI"
+else
+   echo "Container Already Stopped" 
+fi
 }
 
 # shellcheck source=/dev/null
@@ -723,6 +743,7 @@ stop()
       echo "INFO: Waiting for running operations to complete. It may take some time"
       podman exec "$AI" /bin/bash -c 'agent --config /app/data/conf/config.json ido lcm -i status_check; while [[ "$?" != "2" && "$?" != "255" ]]; do sleep 5s;agent --config /app/data/conf/config.json ido lcm -i status_check; done' >/dev/null
       podman stop "$AI"
+      forceStopPodman
   fi
   echo "INFO: Agent Stopped"
 }
