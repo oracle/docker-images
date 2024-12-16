@@ -20,7 +20,7 @@ Parameters:
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
-   -j: choose '8' to create a 14.1.1.0 image with JDK 8 or '11' to create a 14.1.1.0 image with JDK 11. 
+   -j: choose '8' to create a 14.1.1.0 image with JDK(or JRE) 8 or '11' to create a 14.1.1.0 image with JDK(or JRE) 11. 
    -m: creates image based on 'slim' distribution
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
@@ -37,7 +37,7 @@ exit 0
 
 # Validate packages
 validateJDK() {
-   if [ "$VERSION" == "14.1.1.0" ]; then
+   if [ "$VERSION" = "14.1.1.0" ]; then
       if [ "$JDKVER" != 8 -a "$JDKVER" != 11 ]; then
          echo "WebLogic Server 14.1.1.0 supports JDK 8 and 11.  JDK version $JDKVER is not supported."
          exit 1
@@ -84,19 +84,19 @@ while getopts "hsdgmc:j:v:" optname; do
       ;;
     "j")
       JDKVER="$OPTARG"
-      echo "Set- JDK Version $JDKVER"
+      echo "Set -> JDK Version $JDKVER"
       ;;
     "m")
       SLIM=1
-      echo "Set- Distribution:Slim"
+      echo "Set -> Distribution:Slim"
       ;;
     "v")
       VERSION="$OPTARG"
-      echo "Set- WebLogic's Version $VERSION"
+      echo "Set -> WebLogic's Version $VERSION"
       ;;
     "c")
       NOCACHE=false
-      echo "Set- NOCACHE to false"
+      echo "Set -> NOCACHE to false"
       ;;
     *)
     # Should not occur
@@ -122,18 +122,11 @@ fi
 # For WLS 14.1.1.0 Validate JDK is 8 or 11
 validateJDK
 
-# Which JDK FOR VERSION 14.1.1.0
-if [ "$VERSION" == "14.1.1.0" ]; then
-   DIST="$DISTRIBUTION-$JDKVER"
-   echo "Version= $VERSION Distribution= $DIST"
-else
-   DIST="$DISTRIBUTION"
-   echo "Version= $VERSION Distribution= $DIST"
-fi
-
+DIST="$DISTRIBUTION"
+echo "Version -> $VERSION, Distribution -> $DIST"
 
 # WebLogic Image Name
-IMAGE_NAME="oracle/weblogic:$VERSION-$DIST"
+IMAGE_NAME="oracle/weblogic:$VERSION"
 
 # Go into version folder
 cd $VERSION
@@ -172,7 +165,7 @@ fi
 # BUILDING THE IMAGE #
 # ################## #
 echo "Building image '$IMAGE_NAME' ..."
-echo "Building image using Dockerfile.'$DIST'"
+echo "Building image using Dockerfile.$DIST"
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
