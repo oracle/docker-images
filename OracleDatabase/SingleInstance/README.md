@@ -36,7 +36,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
-* Oracle Database 23ai (23.5.0) Free
+* Oracle Database 23ai (23.6.0) Free
 * Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
@@ -67,7 +67,7 @@ Before you build the image make sure that you have provided the installation bin
     
     Parameters:
        -v: version to build
-           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.5.0
+           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.6.0
        -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
@@ -247,7 +247,7 @@ Users can generate public-private key pair and pass database password (encrypted
 
 * Run the Oracle Database 23ai Free image with the secrets
 
-        podman run -td --name=<container_name> --secret=oracle_pwd --secret=oracle_pwd_privkey oracle/database:23.5.0-free
+        podman run -td --name=<container_name> --secret=oracle_pwd --secret=oracle_pwd_privkey oracle/database:23.6.0-free
 
 #### Selecting the Edition (Supported from 19.3.0 release)
 
@@ -368,7 +368,7 @@ To run your Oracle Database 23ai Free container image use the `podman run` comma
     -e ENABLE_ARCHIVELOG=true \
     -e ENABLE_FORCE_LOGGING=true \
     -v [<host mount point>:]/opt/oracle/oradata \
-    oracle/database:23.5.0-free
+    oracle/database:23.6.0-free
     
     Parameters:
        --name:        The name of the container (default: auto generated)
@@ -533,7 +533,7 @@ Set up a podman network for inter-container communication using the following co
         -e ENABLE_ARCHIVELOG=true \
         -e ENABLE_FORCE_LOGGING=true \
         -v [<host mount point>:]/opt/oracle/oradata \
-        oracle/database:23.5.0-free
+        oracle/database:23.6.0-free
 
     Ensure that your Primary Database container is up and running and in a healthy state.
 
@@ -552,7 +552,7 @@ You need to run the preceding podman run command with the host mount point (empt
         -e PRIMARY_DB_PWD_FILE=/var/tmp/orapwFREE \
         -e PRIMARY_DB_CONN_STR=<PRI_DB_FREE_IP>:1521/FREE \
         -v [<host mount point>:]/opt/oracle/oradata \
-        oracle/database:23.5.0-free
+        oracle/database:23.6.0-free
 
     **Note:**  If a common host mount point is used for both pri-db-free and tru-cc-free containers, then you may skip the podman cp step by specifying the location of pri-db-free password file directly using \
     -e PRIMARY_DB_PWD_FILE=/opt/oracle/product/23ai/dbhomeFree/dbs/orapwFREE
