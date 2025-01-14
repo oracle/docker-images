@@ -18,59 +18,55 @@
 # Run:
 #      $ docker build -t oracle/serverjre:8 .
 #
-# This command is already scripted in build.sh so you can alternatively run
+# This command is already scripted in build.sh, so you can alternatively run:
 #      $ bash build.sh 8
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:8 as builder
+FROM oraclelinux:8 AS builder
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-# Since the files is compressed as tar.gz first yum install tar. gzip is already in oraclelinux:8
+# Since the file is compressed as tar.gz, install tar. gzip is already included in oraclelinux:8.
 RUN dnf install -y tar
 
 # Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 # Environment variables for the builder image.
-# Required to validate that you are using the correct file
-
+# Required to validate that you are using the correct file.
 ENV JAVA_HOME=/usr/java/jdk-8
 
 COPY server-jre-8u*-linux-x64.tar.gz /tmp/jdk.tgz
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-    JAVA_SHA256=7c9a3a87045c226647c09bc1eb1fc832f99a9105dbc924cfeab3bf16b3504d24 ; \
+    JAVA_SHA256=7c9a3a87045c226647c09bc1eb1fc832f99a9105dbc924cfeab3bf16b3504d24; \
     echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
     mkdir -p "$JAVA_HOME"; \
     tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1;
 
 ## Get a fresh version of Oracle Linux 8 for the final image
-
 FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 ENV JAVA_HOME=/usr/java/jdk-8
-
-ENV PATH $JAVA_HOME/bin:$PATH
+ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
-##
+# Update system and clean cache
 RUN dnf -y update; \
     rm -rf /var/cache/dnf; \
     ln -sfT "$JAVA_HOME" /usr/java/default; \
     ln -sfT "$JAVA_HOME" /usr/java/latest; \
     for bin in "$JAVA_HOME/bin/"*; do \
         base="$(basename "$bin")"; \
-        [ ! -e "/usr/bin/$base" ]; \
-        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+        [ ! -e "/usr/bin/$base" ] && alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
     done; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs
-# the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa
+# The file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
     java -Xshare:dump;
