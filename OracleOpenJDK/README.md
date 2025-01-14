@@ -10,7 +10,7 @@ e.g. for OpenJDK 23 run
 
 ```bash
 cd ../OracleOpenJDK/23
-docker build -t oracle/openjdk:23 .
+docker build --file Dockerfile.ol9 --tag oracle/openjdk:23 .
 ```
 
 This command is already scripted in `build.sh` so you can alternatively run:
