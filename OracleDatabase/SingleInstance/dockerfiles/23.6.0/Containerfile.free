@@ -13,7 +13,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run: 
-#      $ podman build -t oracle/database:23.5.0-free -f Containerfile.free .
+#      $ podman build -t oracle/database:23.6.0-free -f Containerfile.free .
 #
 #
 # Pull base image

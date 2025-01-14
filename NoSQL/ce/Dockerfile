@@ -1,13 +1,13 @@
 # Copyright (c) 2022, 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
-FROM ghcr.io/graalvm/jdk:ol8-java17
+FROM ghcr.io/graalvm/jdk:ol9-java17
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
-ARG KV_VERSION=23.3.32
+ARG KV_VERSION=24.3.9
 ARG DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
-ARG DOWNLOAD_FILE="community-edition-${KV_VERSION}.zip"
+ARG DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
 ARG DOWNLOAD_LINK="${DOWNLOAD_ROOT}/${DOWNLOAD_FILE}"
 
 ENV KV_PROXY_PORT 8080
