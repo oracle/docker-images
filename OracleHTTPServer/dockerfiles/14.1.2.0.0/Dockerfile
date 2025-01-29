@@ -39,7 +39,7 @@
 #
 # Pull serverjre:8 base image
 # -----------------------------------
-FROM oracle/jdk:17-ol8
+FROM oracle/jdk:17.0.14
 
 # Environment variables required for this build (do NOT change)
 # ----------------------------------------------
@@ -63,15 +63,12 @@ COPY ${OHS_PKG} install.file oraInst.loc /u01/
 # Install OL 8 or OL 9 required packages. Refer FMW 14.1.2.0.0 System requirements guide for complete list of packages
 # Setup filesystem and oracle user
 #---------------------------------------------------------------------------------------------------------
-RUN microdnf update \
-    && microdnf install gzip tar unzip libaio libnsl jq findutils diffutils binutils make glibc-devel binutils make glibc-devel procps \
-    && microdnf clean all \
-#RUN yum install -y unzip libaio sysstat make psmisc gcc libxcrypt-compat && \
-#    yum clean all && \
-    && chmod a+xr /u01 \
-    && useradd -b /u01 -m -s /bin/bash oracle  \
-    && mkdir /u01/oracle/.inventory /u01/oracle/bootdir  \
-    && chown oracle:oracle -R /u01 
+RUN yum install -y unzip libaio sysstat make psmisc gcc && \
+    yum clean all && \
+    chmod a+xr /u01 && \
+    useradd -b /u01 -m -s /bin/bash oracle  && \
+    mkdir /u01/oracle/.inventory /u01/oracle/bootdir &&  \
+    chown oracle:oracle -R /u01
 
 # Go to /u01 as user 'oracle' to proceed with OHS installation
 #--------------------------------------------------------
@@ -79,7 +76,7 @@ USER oracle
 WORKDIR /u01
 #RUN unzip -q /u01/${OHS_PKG} && cd - && \
 RUN unzip -q /u01/${OHS_PKG} && \
-    /u01/${OHS_BIN} -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=${ORACLE_HOME} && \ 
+    /u01/${OHS_BIN} -silent -novalidation -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc ORACLE_HOME=${ORACLE_HOME} && \ 
     rm /u01/${OHS_BIN}  /u01/oraInst.loc /u01/install.file && \
     mkdir -p /u01/oracle/logs  && \
     chown oracle:oracle -R /u01/oracle/logs 
