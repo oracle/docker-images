@@ -37,9 +37,9 @@
 # 
 #     $ docker build --force-rm=true --no-cache=true --rm=true -t oracle/ohs:14.1.2.0.0 .
 #
-# Pull serverjre:8 base image
-# -----------------------------------
-FROM oracle/jdk:17.0.14
+# Pull JDK 17 image from OCR as  base image
+# -----------------------------------------
+FROM container-registry.oracle.com/java/jdk:17.0.14
 
 # Environment variables required for this build (do NOT change)
 # ----------------------------------------------
