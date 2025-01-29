@@ -37,7 +37,7 @@ checksumPackages() {
   echo "Checking if required packages are present and valid..."
 #  md5sum -c *.download
 #
-  if [ "$?" -ne 0 ]; then
+#  if [ "$?" -ne 0 ]; then
   MDSUM="md5sum -c *.download"
   if [ "$MDSUM" -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
