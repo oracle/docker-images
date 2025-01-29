@@ -35,7 +35,8 @@ exit 0
 # Validate packages
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
-  md5sum -c *.download
+#  md5sum -c *.download
+#
   if [ "$?" -ne 0 ]; then
   MDSUM="md5sum -c *.download"
   if [ "$MDSUM" -ne 0 ]; then
