@@ -1,6 +1,6 @@
 # Oracle HTTP Server in containers
 ===================================
-This project includes quick start dockerfiles and samples for standalone Oracle HTTP Server 12.2.1.4.0 and JDK 8 and 14.1.2.0.0 bnd JDK 17 and 21 based on Oracle Linux 8 and 9.
+This project includes quick start dockerfiles and samples for standalone Oracle HTTP Server 12.2.1.4.0 and JDK 8 and 14.1.2.0.0 JDK 17 and 21 based on Oracle Linux 8 and 9.
 The certification of OHS in containers does not require the use of any file presented in this repository.
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
