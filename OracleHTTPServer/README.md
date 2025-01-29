@@ -4,6 +4,8 @@ This project includes quick start dockerfiles and samples for standalone Oracle 
 The certification of OHS in containers does not require the use of any file presented in this repository.
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
 
+The samples in this repository are for trial use cases only. For alternative methods, we suggest obtaining base Oracle HTTP Server images from the [Oracle Container Registry](https://container-registry.oracle.com/), using the open source [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool) to create custom images.
+
 ## How to Build and Run
 This project offers Dockerfile for Oracle HTTP Server in standalone mode. To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage
 
