@@ -1,0 +1,177 @@
+$TTL 86400
+@       IN SOA  ###DOMAIN_NAME###.   root (
+        2014090401    ; serial
+        3600    ; refresh
+        1800    ; retry
+        604800    ; expire
+        86400 )  ; minimum
+; Name server's
+                IN NS      ###DOMAIN_NAME###.
+                IN A       ###RAC_DNS_SERVER_IP###
+; Name server hostname to IP resolve.
+;@ORIGIN  eot.us.oracle.com.
+;@               IN      NS      gns.eot.us.oracle.com.            
+; Hosts in this Domain
+###HOSTNAME###                       IN A    ###RAC_DNS_SERVER_IP###
+###RAC_NODE_NAME_PREFIXD###1         IN A    ###RAC_PUBLIC_SUBNET###.100
+###RAC_NODE_NAME_PREFIXD###2         IN A    ###RAC_PUBLIC_SUBNET###.101
+###RAC_NODE_NAME_PREFIXD###3         IN A    ###RAC_PUBLIC_SUBNET###.102
+###RAC_NODE_NAME_PREFIXD###4         IN A    ###RAC_PUBLIC_SUBNET###.103
+###RAC_NODE_NAME_PREFIXD###5         IN A    ###RAC_PUBLIC_SUBNET###.104
+###RAC_NODE_NAME_PREFIXD###6         IN A    ###RAC_PUBLIC_SUBNET###.105
+###RAC_NODE_NAME_PREFIXD###7         IN A    ###RAC_PUBLIC_SUBNET###.106
+###RAC_NODE_NAME_PREFIXD###8         IN A    ###RAC_PUBLIC_SUBNET###.107
+###RAC_NODE_NAME_PREFIXD###9         IN A    ###RAC_PUBLIC_SUBNET###.108
+###RAC_NODE_NAME_PREFIXD###10        IN A    ###RAC_PUBLIC_SUBNET###.109
+###RAC_NODE_NAME_PREFIXD###11        IN A    ###RAC_PUBLIC_SUBNET###.110
+###RAC_NODE_NAME_PREFIXD###12        IN A    ###RAC_PUBLIC_SUBNET###.111
+###RAC_NODE_NAME_PREFIXD###13        IN A    ###RAC_PUBLIC_SUBNET###.112
+###RAC_NODE_NAME_PREFIXD###14        IN A    ###RAC_PUBLIC_SUBNET###.113
+###RAC_NODE_NAME_PREFIXD###15        IN A    ###RAC_PUBLIC_SUBNET###.114
+###RAC_NODE_NAME_PREFIXD###16        IN A    ###RAC_PUBLIC_SUBNET###.115
+###RAC_NODE_NAME_PREFIXD###17        IN A    ###RAC_PUBLIC_SUBNET###.116
+###RAC_NODE_NAME_PREFIXD###18        IN A    ###RAC_PUBLIC_SUBNET###.117
+###RAC_NODE_NAME_PREFIXD###19        IN A    ###RAC_PUBLIC_SUBNET###.118
+###RAC_NODE_NAME_PREFIXD###20        IN A    ###RAC_PUBLIC_SUBNET###.119
+###RAC_NODE_NAME_PREFIXD###21        IN A    ###RAC_PUBLIC_SUBNET###.120
+###RAC_NODE_NAME_PREFIXD###22        IN A    ###RAC_PUBLIC_SUBNET###.121
+###RAC_NODE_NAME_PREFIXD###23        IN A    ###RAC_PUBLIC_SUBNET###.122
+###RAC_NODE_NAME_PREFIXD###24        IN A    ###RAC_PUBLIC_SUBNET###.123
+###RAC_NODE_NAME_PREFIXD###25        IN A    ###RAC_PUBLIC_SUBNET###.124
+appmc1                               IN A    ###RAC_PUBLIC_SUBNET###.125
+appmc2                               IN A    ###RAC_PUBLIC_SUBNET###.126
+appmc3                               IN A    ###RAC_PUBLIC_SUBNET###.127
+appmc4                               IN A    ###RAC_PUBLIC_SUBNET###.128
+appmc5                               IN A    ###RAC_PUBLIC_SUBNET###.129
+
+; Podman hosts
+###RAC_NODE_NAME_PREFIXP###1         IN A    ###RAC_PUBLIC_SUBNET###.170
+###RAC_NODE_NAME_PREFIXP###2         IN A    ###RAC_PUBLIC_SUBNET###.171
+###RAC_NODE_NAME_PREFIXP###3         IN A    ###RAC_PUBLIC_SUBNET###.172
+###RAC_NODE_NAME_PREFIXP###4         IN A    ###RAC_PUBLIC_SUBNET###.173
+###RAC_NODE_NAME_PREFIXP###5         IN A    ###RAC_PUBLIC_SUBNET###.174
+###RAC_NODE_NAME_PREFIXP###6         IN A    ###RAC_PUBLIC_SUBNET###.175
+###RAC_NODE_NAME_PREFIXP###7         IN A    ###RAC_PUBLIC_SUBNET###.176
+###RAC_NODE_NAME_PREFIXP###8         IN A    ###RAC_PUBLIC_SUBNET###.177
+###RAC_NODE_NAME_PREFIXP###9         IN A    ###RAC_PUBLIC_SUBNET###.178
+###RAC_NODE_NAME_PREFIXP###10        IN A    ###RAC_PUBLIC_SUBNET###.179
+###RAC_NODE_NAME_PREFIXP###11        IN A    ###RAC_PUBLIC_SUBNET###.180
+###RAC_NODE_NAME_PREFIXP###12        IN A    ###RAC_PUBLIC_SUBNET###.181
+###RAC_NODE_NAME_PREFIXP###13        IN A    ###RAC_PUBLIC_SUBNET###.182
+###RAC_NODE_NAME_PREFIXP###14        IN A    ###RAC_PUBLIC_SUBNET###.183
+###RAC_NODE_NAME_PREFIXP###15        IN A    ###RAC_PUBLIC_SUBNET###.184
+###RAC_NODE_NAME_PREFIXP###16        IN A    ###RAC_PUBLIC_SUBNET###.185
+###RAC_NODE_NAME_PREFIXP###17        IN A    ###RAC_PUBLIC_SUBNET###.186
+###RAC_NODE_NAME_PREFIXP###18        IN A    ###RAC_PUBLIC_SUBNET###.187
+###RAC_NODE_NAME_PREFIXP###19        IN A    ###RAC_PUBLIC_SUBNET###.188
+###RAC_NODE_NAME_PREFIXP###20        IN A    ###RAC_PUBLIC_SUBNET###.189
+###RAC_NODE_NAME_PREFIXP###21        IN A    ###RAC_PUBLIC_SUBNET###.190
+###RAC_NODE_NAME_PREFIXP###22        IN A    ###RAC_PUBLIC_SUBNET###.191
+###RAC_NODE_NAME_PREFIXP###23        IN A    ###RAC_PUBLIC_SUBNET###.192
+###RAC_NODE_NAME_PREFIXP###24        IN A    ###RAC_PUBLIC_SUBNET###.193
+###RAC_NODE_NAME_PREFIXP###25        IN A    ###RAC_PUBLIC_SUBNET###.194
+dbmc1                                IN A    ###RAC_PUBLIC_SUBNET###.195
+dbmc2                                IN A    ###RAC_PUBLIC_SUBNET###.196
+dbmc3                                IN A    ###RAC_PUBLIC_SUBNET###.197
+dbmc4                                IN A    ###RAC_PUBLIC_SUBNET###.198
+dbmc5                                IN A    ###RAC_PUBLIC_SUBNET###.199
+
+; Docker VIPs
+###RAC_NODE_NAME_PREFIXD###1-vip     IN A    ###RAC_PUBLIC_SUBNET###.130
+###RAC_NODE_NAME_PREFIXD###2-vip     IN A    ###RAC_PUBLIC_SUBNET###.131
+###RAC_NODE_NAME_PREFIXD###3-vip     IN A    ###RAC_PUBLIC_SUBNET###.132
+###RAC_NODE_NAME_PREFIXD###4-vip     IN A    ###RAC_PUBLIC_SUBNET###.133
+###RAC_NODE_NAME_PREFIXD###5-vip     IN A    ###RAC_PUBLIC_SUBNET###.134
+###RAC_NODE_NAME_PREFIXD###6-vip     IN A    ###RAC_PUBLIC_SUBNET###.135
+###RAC_NODE_NAME_PREFIXD###7-vip     IN A    ###RAC_PUBLIC_SUBNET###.136
+###RAC_NODE_NAME_PREFIXD###8-vip     IN A    ###RAC_PUBLIC_SUBNET###.137
+###RAC_NODE_NAME_PREFIXD###9-vip     IN A    ###RAC_PUBLIC_SUBNET###.138
+###RAC_NODE_NAME_PREFIXD###10-vip    IN A    ###RAC_PUBLIC_SUBNET###.139
+###RAC_NODE_NAME_PREFIXD###11-vip    IN A    ###RAC_PUBLIC_SUBNET###.140
+###RAC_NODE_NAME_PREFIXD###12-vip    IN A    ###RAC_PUBLIC_SUBNET###.141
+###RAC_NODE_NAME_PREFIXD###13-vip    IN A    ###RAC_PUBLIC_SUBNET###.142
+###RAC_NODE_NAME_PREFIXD###14-vip    IN A    ###RAC_PUBLIC_SUBNET###.143
+###RAC_NODE_NAME_PREFIXD###15-vip    IN A    ###RAC_PUBLIC_SUBNET###.144
+###RAC_NODE_NAME_PREFIXD###16-vip    IN A    ###RAC_PUBLIC_SUBNET###.145
+###RAC_NODE_NAME_PREFIXD###17-vip    IN A    ###RAC_PUBLIC_SUBNET###.146
+###RAC_NODE_NAME_PREFIXD###18-vip    IN A    ###RAC_PUBLIC_SUBNET###.147
+###RAC_NODE_NAME_PREFIXD###19-vip    IN A    ###RAC_PUBLIC_SUBNET###.148
+###RAC_NODE_NAME_PREFIXD###20-vip    IN A    ###RAC_PUBLIC_SUBNET###.149
+###RAC_NODE_NAME_PREFIXD###21-vip    IN A    ###RAC_PUBLIC_SUBNET###.150
+###RAC_NODE_NAME_PREFIXD###22-vip    IN A    ###RAC_PUBLIC_SUBNET###.151
+###RAC_NODE_NAME_PREFIXD###23-vip    IN A    ###RAC_PUBLIC_SUBNET###.152
+###RAC_NODE_NAME_PREFIXD###24-vip    IN A    ###RAC_PUBLIC_SUBNET###.153
+###RAC_NODE_NAME_PREFIXD###25-vip    IN A    ###RAC_PUBLIC_SUBNET###.154
+tcmc1                                IN A    ###RAC_PUBLIC_SUBNET###.155
+tcmc2                                IN A    ###RAC_PUBLIC_SUBNET###.156
+tcmc3                                IN A    ###RAC_PUBLIC_SUBNET###.157
+tcmc4                                IN A    ###RAC_PUBLIC_SUBNET###.158
+tcmc5                                IN A    ###RAC_PUBLIC_SUBNET###.159
+
+; Podman VIPs
+###RAC_NODE_NAME_PREFIXP###1-vip     IN A    ###RAC_PUBLIC_SUBNET###.200
+###RAC_NODE_NAME_PREFIXP###2-vip     IN A    ###RAC_PUBLIC_SUBNET###.201
+###RAC_NODE_NAME_PREFIXP###3-vip     IN A    ###RAC_PUBLIC_SUBNET###.202
+###RAC_NODE_NAME_PREFIXP###4-vip     IN A    ###RAC_PUBLIC_SUBNET###.203
+###RAC_NODE_NAME_PREFIXP###5-vip     IN A    ###RAC_PUBLIC_SUBNET###.204
+###RAC_NODE_NAME_PREFIXP###6-vip     IN A    ###RAC_PUBLIC_SUBNET###.205
+###RAC_NODE_NAME_PREFIXP###7-vip     IN A    ###RAC_PUBLIC_SUBNET###.206
+###RAC_NODE_NAME_PREFIXP###8-vip     IN A    ###RAC_PUBLIC_SUBNET###.207
+###RAC_NODE_NAME_PREFIXP###9-vip     IN A    ###RAC_PUBLIC_SUBNET###.208
+###RAC_NODE_NAME_PREFIXP###10-vip    IN A    ###RAC_PUBLIC_SUBNET###.209
+###RAC_NODE_NAME_PREFIXP###11-vip    IN A    ###RAC_PUBLIC_SUBNET###.210
+###RAC_NODE_NAME_PREFIXP###12-vip    IN A    ###RAC_PUBLIC_SUBNET###.211
+###RAC_NODE_NAME_PREFIXP###13-vip    IN A    ###RAC_PUBLIC_SUBNET###.212
+###RAC_NODE_NAME_PREFIXP###14-vip    IN A    ###RAC_PUBLIC_SUBNET###.213
+###RAC_NODE_NAME_PREFIXP###15-vip    IN A    ###RAC_PUBLIC_SUBNET###.214
+###RAC_NODE_NAME_PREFIXP###16-vip    IN A    ###RAC_PUBLIC_SUBNET###.215
+###RAC_NODE_NAME_PREFIXP###17-vip    IN A    ###RAC_PUBLIC_SUBNET###.216
+###RAC_NODE_NAME_PREFIXP###18-vip    IN A    ###RAC_PUBLIC_SUBNET###.217
+###RAC_NODE_NAME_PREFIXP###19-vip    IN A    ###RAC_PUBLIC_SUBNET###.218
+###RAC_NODE_NAME_PREFIXP###20-vip    IN A    ###RAC_PUBLIC_SUBNET###.219
+###RAC_NODE_NAME_PREFIXP###21-vip    IN A    ###RAC_PUBLIC_SUBNET###.220
+###RAC_NODE_NAME_PREFIXP###22-vip    IN A    ###RAC_PUBLIC_SUBNET###.221
+###RAC_NODE_NAME_PREFIXP###23-vip    IN A    ###RAC_PUBLIC_SUBNET###.222
+###RAC_NODE_NAME_PREFIXP###24-vip    IN A    ###RAC_PUBLIC_SUBNET###.223
+###RAC_NODE_NAME_PREFIXP###25-vip    IN A    ###RAC_PUBLIC_SUBNET###.224
+client1                              IN A    ###RAC_PUBLIC_SUBNET###.225
+client2                              IN A    ###RAC_PUBLIC_SUBNET###.226
+client3                              IN A    ###RAC_PUBLIC_SUBNET###.227
+client4                              IN A    ###RAC_PUBLIC_SUBNET###.228
+client5                              IN A    ###RAC_PUBLIC_SUBNET###.229
+
+; SCAN IPs
+###RAC_NODE_NAME_PREFIXD###c1-scan   IN A    ###RAC_PUBLIC_SUBNET###.230
+###RAC_NODE_NAME_PREFIXD###c1-scan   IN A    ###RAC_PUBLIC_SUBNET###.231
+###RAC_NODE_NAME_PREFIXD###c1-scan   IN A    ###RAC_PUBLIC_SUBNET###.232
+###RAC_NODE_NAME_PREFIXD###c2-scan   IN A    ###RAC_PUBLIC_SUBNET###.233
+###RAC_NODE_NAME_PREFIXD###c2-scan   IN A    ###RAC_PUBLIC_SUBNET###.234
+###RAC_NODE_NAME_PREFIXD###c2-scan   IN A    ###RAC_PUBLIC_SUBNET###.235
+###RAC_NODE_NAME_PREFIXP###c1-scan   IN A    ###RAC_PUBLIC_SUBNET###.236
+###RAC_NODE_NAME_PREFIXP###c1-scan   IN A    ###RAC_PUBLIC_SUBNET###.237
+###RAC_NODE_NAME_PREFIXP###c1-scan   IN A    ###RAC_PUBLIC_SUBNET###.238
+###RAC_NODE_NAME_PREFIXP###c2-scan   IN A    ###RAC_PUBLIC_SUBNET###.239
+###RAC_NODE_NAME_PREFIXP###c2-scan   IN A    ###RAC_PUBLIC_SUBNET###.240
+###RAC_NODE_NAME_PREFIXP###c2-scan   IN A    ###RAC_PUBLIC_SUBNET###.241
+###RAC_NODE_NAME_PREFIXP###c3-scan   IN A    ###RAC_PUBLIC_SUBNET###.242
+###RAC_NODE_NAME_PREFIXP###c3-scan   IN A    ###RAC_PUBLIC_SUBNET###.243
+###RAC_NODE_NAME_PREFIXP###c3-scan   IN A    ###RAC_PUBLIC_SUBNET###.244
+###RAC_NODE_NAME_PREFIXP###c4-scan   IN A    ###RAC_PUBLIC_SUBNET###.245
+###RAC_NODE_NAME_PREFIXP###c4-scan   IN A    ###RAC_PUBLIC_SUBNET###.246
+###RAC_NODE_NAME_PREFIXP###c4-scan   IN A    ###RAC_PUBLIC_SUBNET###.247
+###RAC_NODE_NAME_PREFIXP###c5-scan   IN A    ###RAC_PUBLIC_SUBNET###.248
+###RAC_NODE_NAME_PREFIXP###c5-scan   IN A    ###RAC_PUBLIC_SUBNET###.249
+###RAC_NODE_NAME_PREFIXP###c5-scan   IN A    ###RAC_PUBLIC_SUBNET###.250
+
+; GNS
+###RAC_NODE_NAME_PREFIXD###c1-gns    IN A    ###RAC_PUBLIC_SUBNET###.160
+###RAC_NODE_NAME_PREFIXD###c2-gns    IN A    ###RAC_PUBLIC_SUBNET###.161
+###RAC_NODE_NAME_PREFIXP###c1-gns    IN A    ###RAC_PUBLIC_SUBNET###.162
+###RAC_NODE_NAME_PREFIXP###c2-gns    IN A    ###RAC_PUBLIC_SUBNET###.163
+
+; CMAN Server Entry
+###RAC_NODE_NAME_PREFIXD###c1-cman         IN A    ###RAC_PUBLIC_SUBNET###.164
+###RAC_NODE_NAME_PREFIXD###c2-cman         IN A    ###RAC_PUBLIC_SUBNET###.165
+###RAC_NODE_NAME_PREFIXP###c1-cman         IN A    ###RAC_PUBLIC_SUBNET###.166
+###RAC_NODE_NAME_PREFIXP###c2-cman         IN A    ###RAC_PUBLIC_SUBNET###.167
+;gns.eot.us.oracle.com.     IN A 192.168.1.500

@@ -1,0 +1,62 @@
+$TTL 86400
+@       IN SOA  us.oracle.com. root.us.oracle.com. (
+        2014090402      ; serial
+        3600      ; refresh
+        1800      ; retry
+        604800      ; expire
+        86400 )    ; minimum
+; Name server's
+       IN      NS     us.oracle.com.
+; Name server hostname to IP resolve.
+2       IN PTR  racserver-dns.us.oracle.com.
+; Second RAC Cluster on Same Subnet on Docker
+150     IN PTR  racnode1.us.oracle.com.
+151     IN PTR  racnode2.us.oracle.com.
+152     IN PTR  racnode3.us.oracle.com.
+153     IN PTR  racnode4.us.oracle.com.
+160     IN PTR  racnode1-vip.us.oracle.com.
+161     IN PTR  racnode2-vip.us.oracle.com.
+162     IN PTR  racnode3-vip.us.oracle.com.
+163     IN PTR  racnode4-vip.us.oracle.com.
+170     IN PTR  racnode-scan.us.oracle.com.
+171     IN PTR  racnode-scan.us.oracle.com.
+172     IN PTR  racnode-scan.us.oracle.com.
+175     IN PTR  racnode-gns1.us.oracle.com.
+176     IN PTR  racnode-gns2.us.oracle.com.
+
+; Second RAC Cluster on Same Subnet on Docker
+50     IN PTR  racnode11.us.oracle.com.
+51     IN PTR  racnode12.us.oracle.com.
+52     IN PTR  racnode13.us.oracle.com.
+53     IN PTR  racnode14.us.oracle.com.
+60     IN PTR  racnode11-vip.us.oracle.com.
+61     IN PTR  racnode12-vip.us.oracle.com.
+62     IN PTR  racnode13-vip.us.oracle.com.
+63     IN PTR  racnode14-vip.us.oracle.com.
+70     IN PTR  racnode1-scan.us.oracle.com.
+71     IN PTR  racnode1-scan.us.oracle.com.
+72     IN PTR  racnode1-scan.us.oracle.com.
+75     IN PTR  racnode1-gns1.us.oracle.com.
+76     IN PTR  racnode1-gns2.us.oracle.com.
+
+; Second RAC Cluster on Same Subnet on Docker
+100     IN PTR  racnode21.us.oracle.com.
+101     IN PTR  racnode22.us.oracle.com.
+102     IN PTR  racnode23.us.oracle.com.
+103     IN PTR  racnode24.us.oracle.com.
+104     IN PTR  racnode21-vip.us.oracle.com.
+105     IN PTR  racnode22-vip.us.oracle.com.
+106     IN PTR  racnode23-vip.us.oracle.com.
+107     IN PTR  racnode24-vip.us.oracle.com.
+108     IN PTR  racnode2-scan.us.oracle.com.
+109     IN PTR  racnode2-scan.us.oracle.com.
+110     IN PTR  racnode2-scan.us.oracle.com.
+111     IN PTR  racnode2-gns1.us.oracle.com.
+112     IN PTR  racnode2-gns2.us.oracle.com.
+
+
+; CMAN Server Entry
+;#2       IN PTR  racnode-cman1.us.oracle.com.
+3       IN PTR  racnode-cman2.us.oracle.com.
+4       IN PTR  racnode-cman3.us.oracle.com.
+5       IN PTR  racnode-cman4.us.oracle.com.

@@ -1,0 +1,22 @@
+${SUDO} /usr/bin/podman run -d --hostname racdns --dns-search=us.oracle.com \
+--network=rac_eth3ext1_nw --ip=172.16.1.25 \
+-e DOMAIN_NAME="$DOMAIN_NAME" \
+-e PRIVATE_DOMAIN_NAME="internal-priv.us.oracle.com" \
+-e WEBMIN_ENABLED=false \
+-e RAC_NODE_NAME_PREFIX="ipv6racnode" \
+-e SETUP_DNS_CONFIG_FILES="setup_true" \
+-e CORP_DNS_DOMAIN_1="us.oracle.com" \
+-e CORP_DNS_DOMAIN_2="dbdevtestphx.oraclevcn.com" \
+-e CORP_DNS_SERVERS="$CORP_DNS_SERVERS" \
+-e RAC_PRIVATE_SUBNET="192.168.150" \
+-e RAC_PUBLIC_SUBNET="192.168.17" \
+-e IPV6="true" \
+--privileged=false \
+-e RAC_PUBLIC_SUBNET_IPV6="2000:aabb:ccdd:a::0" \
+-e RAC_PRIVATE_SUBNET_IPV6="2002:aabb:ccdd:a::0" \
+-e RAC_PRIVATE2_SUBNET_IPV6="2003:aabb:ccdd:a::0" \
+-e RAC_NODE_NAME_PREFIX_IPV6="ipv6racnode" \
+--name rac-dnsserver phx.ocir.io/databasedev/test/rac-dnsserver:21.3.0-LIPV6-2
+
+## DOMAIN_NAME=internal.oracle.com
+## Farms ipv6 repo : phx.ocir.io/databasedev/test/rac-dnsserver:21.3.0-LIPV6-2
