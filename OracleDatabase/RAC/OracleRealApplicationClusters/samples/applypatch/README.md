@@ -1,6 +1,6 @@
-Example of how to create a patched database image
+# Example of how to create a patched database image
 =============================================
-# Pre-requisites
+## Pre-requisites
 After you build your base Oracle RAC image following the [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-image), it is mandatory to create **Oracle RAC Slim image** following [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-slim-image), then  you can create a patched version of it. To build a patched image, you must provide the patch zip file.
 
 **Notes:**
@@ -9,7 +9,7 @@ After you build your base Oracle RAC image following the [README.md](../../../Or
 * You can only patch releases 19.3.0 or later using this script.
 * The scripts automatically install a newer OPatch version, if provided.
 
-# The patch structure
+## The patch structure
 
 The scripts used in this example rely on following directory structure:
 
@@ -38,7 +38,7 @@ The scripts used in this example rely on following directory structure:
 These directories are useful if you want to install multiple patches at once. The script will go into each of these directories in the numbered order and apply the patches.
 **Important**: It is up to you to guarantee the patch order, if any order is required.
 
-# Installing the patch
+## Installing the patch
 
 * If you have multiple patches that you want to apply at once, then add more subdirectories following the numbering scheme of 002, 003, 004, 005, 00_N_.
 * If you have a new version of OPatch, then put the OPatch zip file directly into the patches directory. **Do not change the name of the OPatch zip file**.
@@ -65,6 +65,6 @@ These directories are useful if you want to install multiple patches at once. Th
 
 **Notes**: If you are trying to patch the image on Oracle Linux 8 (OL8) on the PODMAN host, then you must have the  `podman-docker` package installed on your PODMAN host.
 
-# Copyright
+## Copyright
 
 Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.

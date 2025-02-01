@@ -200,9 +200,8 @@ CONNECTION MANAGER IS READY TO USE!
 ################################################
 ```
 #### Section 2.1.2: Setup Using User Defined Response files
-* On the shared folder between both RAC nodes, create file name `grid_setup_new_21c.rsp` similar as below inside directory named `/scratch/common_scripts/podman/rac/`. Same is also saved in this [grid_setup_new_21c.rsp](withresponsefiles/blockdevices/grid_setup_new_21c.rsp) file. 
-* Also, prepare database response file similar to this [dbca_21c.rsp](./dbca_21c.rsp). 
-
+* On the shared folder between both RAC nodes, create file name `grid_setup_new_21c.rsp` similar as below inside directory named `/scratch/common_scripts/podman/rac/`. Same is also saved in this [grid_setup_new_21c.rsp](withresponsefiles/blockdevices/grid_setup_new_21c.rsp) file.
+* Also, prepare database response file similar to this [dbca_21c.rsp](./dbca_21c.rsp).
 * If SELinux host is enable on machine then execute the following as well -
   ```bash
   semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
@@ -487,7 +486,7 @@ podman-compose logs -f ${CMAN_CONTAINER_NAME}
   rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
   ```
 * On the shared folder e.g `scratch/common_scripts/podman/rac` between both RAC nodes, copy file named [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp) 
-* Also copy, [dbca_21c.rsp](./dbca_21c.rsp) in `scratch/common_scripts/podman/rac`. 
+* Also copy, [dbca_21c.rsp](./dbca_21c.rsp) in `scratch/common_scripts/podman/rac`.
 * If SELinux host is enable on machine then execute the following as well -
   ```bash
   semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp

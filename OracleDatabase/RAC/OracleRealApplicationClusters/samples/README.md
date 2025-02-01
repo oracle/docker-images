@@ -17,7 +17,7 @@ racpodmancompose
 ----------------
 Example of how to create 2 node Oracle RAC Setup on **Podman Compose** using Oracle RAC image or RAC slim image, with or without User Defined Response files. You can also create multinode rac using responsefiles based on your environment.
 
-Refer [Podman Compose using Oracle RAC container image](./rac-compose/racimage/README.md) for details in order to setup 2 node Oracle RAC Setup on Podman Compose using Oracle RAC Container Image. 
+Refer [Podman Compose using Oracle RAC container image](./rac-compose/racimage/README.md) for details in order to setup 2 node Oracle RAC Setup on Podman Compose using Oracle RAC Container Image.
 Refer [Podman Compose using Oracle RAC slim image](./rac-compose/racslimimage/README.md) for details in order to setup 2 node Oracle RAC Setup on Podman Compose using Oracle RAC Slim Image.
 
 Copyright

@@ -98,7 +98,7 @@ Example: Building Oracle RAC image for v 21.3.0-
  ./buildContainerImage.sh -v 21.3.0
 ```
 
- ### Building Oracle RAC Database Container Slim Image
+### Building Oracle RAC Database Container Slim Image
  In this document, an `Oracle RAC container slim image` refers to a container image that does not include installing Oracle Grid Infrastructure and Oracle Database during the Oracle RAC image creation. To build an Oracle RAC slim image that doesn't contain the Oracle RAC Database and Grid infrastructure software, run the following command:
 ```bash
   ./buildContainerImage.sh -v <Software Version> -i -o '--build-arg SLIMMING=true'
@@ -119,7 +119,7 @@ Example: Building Oracle RAC image for v 21.3.0-
    -t: user-defined image name and tag (e.g., image_name:tag). Default is set to `oracle/database-rac:<VERSION>` for  RAC Image and `oracle/database-rac:<VERSION>-slim` for RAC slim image.
    -o: passes on container build option (e.g., --build-arg SLIMMIMG=true for slim,--build-arg  BASE_OL_IMAGE=oraclelinux:8 to change base image). The default is "--build-arg SLIMMING=false"
    ```
- - After the `21.3.0` Oracle RAC container image is built, to apply the 21c RU and build the 21c patched image, refer to [Example of how to create a patched database image](./samples/applypatch/README.md).
+- After the `21.3.0` Oracle RAC container image is built, to apply the 21c RU and build the 21c patched image, refer to [Example of how to create a patched database image](./samples/applypatch/README.md).
 - If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.
 - In the slim image case, the resulting images will not contain the Oracle Grid Infrastructure binaries and Oracle RAC Database binaries.
 
@@ -198,7 +198,7 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
     rm -rf /opt/.secrets/pwdfile.txt
     ```
 - Oracle recommends using Podman secrets inside the containers. To create Podman secrets, run the following command:
- 
+
     ```bash
     podman secret create pwdsecret /opt/.secrets/pwdfile.enc
     podman secret create keysecret /opt/.secrets/key.pem
@@ -217,8 +217,8 @@ Notes:
 Oracle RAC can be deployed with various scenarios, such as using  NFS vs Block Devices, Oracle RAC Container Image vs Slim Image, with User Defined Response files, and so on. All are covered in detail in the instructions below.
 
 ### Oracle RAC Containers on Podman
-####  [1. Setup Using Oracle RAC Container Image](docs/rac-container/racimage/README.md)
-####  [2. Setup Using Oracle RAC Container Slim Image](docs/rac-container/racslimimage/README.md)
+#### [1. Setup Using Oracle RAC Container Image](docs/rac-container/racimage/README.md)
+#### [2. Setup Using Oracle RAC Container Slim Image](docs/rac-container/racslimimage/README.md)
 
 ## Connecting to an Oracle RAC Database
 

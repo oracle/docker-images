@@ -1,4 +1,4 @@
-Oracle RAC on Podman using Slim Image
+# Oracle RAC on Podman using Slim Image
 ===============================================================
 
 Refer below instructions for the setup of Oracle RAC on Podman using Slim Image for various scenarios.
@@ -6,15 +6,15 @@ Refer below instructions for the setup of Oracle RAC on Podman using Slim Image 
 - [Oracle RAC on Podman using Slim Image](#oracle-rac-on-podman-using-slim-image)
   - [Section 1: Prerequisites for Setting up Oracle RAC on Container Using Slim Image](#section-1-prerequisites-for-setting-up-oracle-rac-on-container-using-slim-image)
   - [Section 2: Deploying 2 Node Oracle RAC Setup on Podman Using Slim Image](#section-2-deploying-2-node-oracle-rac-setup-on-podman-using-slim-image)
-      - [Section 2.1: Deploying 2 Node Oracle RAC Setup on Podman Using Slim Image Without using response files](#section-21-deploying-2-node-oracle-rac-setup-on-podman-using-slim-image-without-using-response-files)
-        - [Section 2.1.1: Deploying With BlockDevices](#section-211-deploying-with-blockdevices)
-        - [Section 2.1.2: Deploying with NFS Storage Devices](#section-212-deploying-with-nfs-storage-devices)
-      - [Section 2.2: Deploying 2 Node Oracle RAC Setup on Podman Using Slim Image Using User Defined response files](#section-22-deploying-2-node-oracle-rac-setup-on-podman-using-slim-image-using-user-defined-response-files)
-        - [Section 2.2.1: Deploying with BlockDevices](#section-221-deploying-with-blockdevices)
-        - [Section 2.2.2: Deploying with NFS Storage Devices](#section-222-deploying-with-nfs-storage-devices)
+    - [Section 2.1: Deploying 2 Node Oracle RAC Setup on Podman Using Slim Image Without using response files](#section-21-deploying-2-node-oracle-rac-setup-on-podman-using-slim-image-without-using-response-files)
+      - [Section 2.1.1: Deploying With BlockDevices](#section-211-deploying-with-blockdevices)
+      - [Section 2.1.2: Deploying with NFS Storage Devices](#section-212-deploying-with-nfs-storage-devices)
+    - [Section 2.2: Deploying 2 Node Oracle RAC Setup on Podman Using Slim Image Using User Defined response files](#section-22-deploying-2-node-oracle-rac-setup-on-podman-using-slim-image-using-user-defined-response-files)
+      - [Section 2.2.1: Deploying with BlockDevices](#section-221-deploying-with-blockdevices)
+      - [Section 2.2.2: Deploying with NFS Storage Devices](#section-222-deploying-with-nfs-storage-devices)
   - [Section 3: Attach the Network to Containers](#section-3-attach-the-network-to-containers)
-      - [Attach the Network to racnodep1](#attach-the-network-to-racnodep1)
-      - [Attach the Network to racnodep2](#attach-the-network-to-racnodep2)
+    - [Attach the Network to racnodep1](#attach-the-network-to-racnodep1)
+    - [Attach the Network to racnodep2](#attach-the-network-to-racnodep2)
   - [Section 4: Start the Containers](#section-4-start-the-containers)
   - [Section 5: Validation Oracle RAC Environment](#section-5-validating-oracle-rac-environment)
   - [Section 6: Connecting to Oracle RAC Environment](#section-6-connecting-to-oracle-rac-environment)
@@ -33,7 +33,6 @@ Refer below instructions for the setup of Oracle RAC on Podman using Slim Image 
 Users can deploy multi-node Oracle RAC Setup using Slim Image either on Block Devices or NFS storage Devices by using User Defined Response Files or without using same. All these scenarios are discussed in detail as you proceed further below.
 ## Section 1: Prerequisites for Setting up Oracle RAC on Container using Slim Image
 **IMPORTANT:** Execute all the steps specified in this section (customized for your environment) before you proceed to the next section. Completing prerequisite steps is a requirement for successful configuration.
-
 
 * Execute the [Preparation Steps for running Oracle RAC Database in containers](../../../README.md#preparation-steps-for-running-oracle-rac-database-in-containers)
 * Create Oracle Connection Manager on the Container image and container if the IPs are not available on the user network. Please refer to [RAC Oracle Connection Manager README.MD](../../../../OracleConnectionManager/README.md)
@@ -100,7 +99,7 @@ Follow the below instructions to setup Oracle RAC on Podman using Slim Image wit
   ```
 
 ###### Section 2.1.1.2: Create Oracle RAC Containers
-Now create the Oracle RAC containers using the image. For the details of environment variables, refer to [Environment Variables Explained](#section-8-environment-variables-for-oracle-rac-on-containers).
+Now create the Oracle RAC containers using the image. For the details of environment variables, refer to [Environment Variables Explained](#section-9-environment-variables-for-oracle-rac-on-containers)
 
 **Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your enviornment.
 
@@ -195,8 +194,8 @@ podman create -t -i \
   restorecon -v /scratch/common_scripts/podman/rac/envfile_racnodep2
   ```
 ###### Section 2.1.2.2: Create Oracle RAC Containers
-Now create the Oracle RAC containers using the image. For the details of environment variables, refer to [Environment Variables Explained](#section-8-environment-variables-for-oracle-rac-on-containers).
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your enviornment.
+Now create the Oracle RAC containers using the image. For the details of environment variables, refer to [Environment Variables Explained](#section-9-environment-variables-for-oracle-rac-on-containers)
+**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your environment.
 
 You can use the following example to create the first Oracle RAC container:
 ```bash
@@ -385,7 +384,7 @@ podman create -t -i \
 
 - Make sure the ASM NFS Storage devices do not have any existing file system.
 - On the shared folder between both RAC nodes, create file name [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp) similar as below inside directory named `/scratch/common_scripts/podman/rac/`.
- - Also, prepare a database response file similar to this [dbca_21c.rsp](withresponsefiles/dbca_21c.rsp) inside directory named `/scratch/common_scripts/podman/rac/`.
+- Also, prepare a database response file similar to this [dbca_21c.rsp](withresponsefiles/dbca_21c.rsp) inside directory named `/scratch/common_scripts/podman/rac/`.
 - In the below example, we have captured all environment variables passed to the container in a separate envfile and mounted the same to both RAC nodes.
 
   Create envfile [envfile_racnodep1](withresponsefiles/nfsdevices/envfile_racnodep1) and [envfile_racnode2](withresponsefiles/nfsdevices/envfile_racnodep2) for both nodes in directory `/scratch/common_scripts/podman/rac/`.
@@ -485,9 +484,9 @@ podman create -t -i \
  localhost/oracle/database-rac:21.3.0-slim
   ```
 **Note:**
-- Change environment variables based on your environment. Refer [Section 8: Environment Variables for Oracle RAC on Containers](#section-8-environment-variables-for-oracle-rac-on-containers) for more details.
+- Change environment variables based on your environment. Refer [Section 8: Environment Variables for Oracle RAC on Containers](#section-9-environment-variables-for-oracle-rac-on-containers) for more details.
 - Below example uses, a podman bridge network with one public and two private networks, hence`--sysctl 'net.ipv4.conf.eth1.rp_filter=2' --sysctl 'net.ipv4.conf.eth2.rp_filter=2` is required when we use two private networks, else these can be ignored.
-- If you are planning to place database files such as datafiles and archivelogs on different diskgroups, you need to pass these parameters- `DB_ASM_DEVICE_LIST`,`RECO_ASM_DEVICE_LIST`,` DB_DATA_FILE_DEST`, `DB_RECOVERY_FILE_DEST`. Refer [Section 8: Environment Variables for Oracle RAC on Containers](#section-8-environment-variables-for-oracle-rac-on-containers) for more details.
+- If you are planning to place database files such as datafiles and archivelogs on different diskgroups, you need to pass these parameters- `DB_ASM_DEVICE_LIST`,`RECO_ASM_DEVICE_LIST`,`DB_DATA_FILE_DEST`, `DB_RECOVERY_FILE_DEST`. Refer [Section 8: Environment Variables for Oracle RAC on Containers](#section-9-environment-variables-for-oracle-rac-on-containers) for more details.
 
 ## Section 3: Attach the network to containers
 

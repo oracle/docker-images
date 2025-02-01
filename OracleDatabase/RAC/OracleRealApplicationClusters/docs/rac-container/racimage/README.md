@@ -1,4 +1,4 @@
-Oracle RAC on Podman using Oracle RAC Image
+# Oracle RAC on Podman using Oracle RAC Image
 ===============================================================
 
 Refer to the following instructions to set up Oracle RAC on Podman using an Oracle RAC Image for various scenarios.
@@ -6,15 +6,15 @@ Refer to the following instructions to set up Oracle RAC on Podman using an Orac
 - [Oracle RAC on Podman using Oracle RAC Image](#oracle-rac-on-podman-using-oracle-rac-image)
   - [Section 1: Prerequisites for Setting up Oracle RAC on Container using Oracle RAC Image](#section-1-prerequisites-for-setting-up-oracle-rac-on-containers-using-oracle-rac-image)
   - [Section 2: Deploying Two-node Oracle RAC on Podman using Oracle RAC Image](#section-2-deploying-two-node-oracle-rac-on-podman-using-oracle-rac-image)
-      - [Section 2.1: Deploying Two-Node Oracle RAC on Podman Using Oracle RAC image Without Using Response Files](#section-21-deploying-two-node-oracle-rac-on-podman-using-an-oracle-rac-image-without-using-response-files)
-        - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
-        - [Section 2.1.2: Deploying with NFS Storage Devices](#section-212-deploying-with-nfs-storage-devices)
-      - [Section 2.2: Deploying Two-node Oracle RAC on Podman Using Oracle RAC Image with User-defined response files](#section-22-deploying-two-node-oracle-rac-setup-on-podman-using-oracle-rac-image-using-user-defined-response-files)
-        - [Section 2.2.1: Deploying With block devices](#section-221-deploying-with-blockdevices)
-        - [Section 2.2.2: Deploying with NFS storage devices](#section-222-deploying-with-nfs-storage-devices)
+    - [Section 2.1: Deploying Two-Node Oracle RAC on Podman Using Oracle RAC image Without Using Response Files](#section-21-deploying-two-node-oracle-rac-on-podman-using-an-oracle-rac-image-without-using-response-files)
+      - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
+      - [Section 2.1.2: Deploying with NFS Storage Devices](#section-212-deploying-with-nfs-storage-devices)
+    - [Section 2.2: Deploying Two-node Oracle RAC on Podman Using Oracle RAC Image with User-defined response files](#section-22-deploying-two-node-oracle-rac-setup-on-podman-using-oracle-rac-image-using-user-defined-response-files)
+      - [Section 2.2.1: Deploying With block devices](#section-221-deploying-with-blockdevices)
+      - [Section 2.2.2: Deploying with NFS storage devices](#section-222-deploying-with-nfs-storage-devices)
   - [Section 3: Attach the Network to Containers](#section-3-attach-the-network-to-containers)
-      - [Attach the network to racnodep1](#attach-the-network-to-racnodep1)
-      - [Attach the network to racnodep2](#attach-the-network-to-racnodep2)
+    - [Attach the network to racnodep1](#attach-the-network-to-racnodep1)
+    - [Attach the network to racnodep2](#attach-the-network-to-racnodep2)
   - [Section 4: Start the Containers](#section-4-start-the-containers)
   - [Section 5: Validate the Oracle RAC Environment](#section-5-validating-oracle-rac-environment)
   - [Section 6: Connecting to Oracle RAC environment](#section-6-connecting-to-oracle-rac-environment)
@@ -45,7 +45,6 @@ localhost/oracle/database-rac        21.3.0          41239091d2ac  16 minutes ag
 ```
 * Configure the [Network](../../../README.md#network-management).
 * Configure the [Password Management](../../../README.md#password-management).
- 
 
 ## Section 2: Deploying Two-node Oracle RAC on Podman Using Oracle RAC Image
 
@@ -513,10 +512,10 @@ podman create -t -i \
   --name racnodep2 \
  localhost/oracle/database-rac:21.3.0
 ```
-**Note:** 
+**Note:**
 - To use this example, change the environment variables based on your environment. See [Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers) for more details.
 - In the example that follows, we use a podman bridge network with one public and two private networks. For this reason,`--sysctl 'net.ipv4.conf.eth1.rp_filter=2' --sysctl 'net.ipv4.conf.eth2.rp_filter=2` is required when we use two private networks. If your use case is different, then this syctl configuration for the Podman Bridge can be ignored.
-- If you are planning to place database files such as datafiles and archivelogs on different diskgroups, then you must pass these parameters: `DB_ASM_DEVICE_LIST`, `RECO_ASM_DEVICE_LIST`,` DB_DATA_FILE_DEST`, `DB_RECOVERY_FILE_DEST`. For more information, see [Section 8: Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers).
+- If you are planning to place database files such as datafiles and archivelogs on different diskgroups, then you must pass these parameters: `DB_ASM_DEVICE_LIST`, `RECO_ASM_DEVICE_LIST`,`DB_DATA_FILE_DEST`, `DB_RECOVERY_FILE_DEST`. For more information, see [Section 8: Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers).
 
 ## Section 3: Attach the Network to Containers
 

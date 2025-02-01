@@ -3,19 +3,18 @@
 
 Refer below instructions for setup of Oracle RAC on Podman using Oracle RAC Image for various scenarios.
 
-
 - [Oracle RAC on Podman Compose using Oracle RAC Image](#oracle-rac-on-podman-compose-using-oracle-rac-image)
   - [Section 1 : Prerequisites for Setting up Oracle RAC on Container using Oracle RAC Image](#section-1-prerequisites-for-setting-up-oracle-rac-on-container-using-oracle-rac-image)
-  - [Section 2: Setup Oracle RAC Containers with Oracle RAC Image using Podman Compose Files](#section-6-setup-oracle-rac-containers-with-oracle-rac-image-using-podman-compose-files)
+  - [Section 2: Setup Oracle RAC Containers with Oracle RAC Image using Podman Compose Files](#section-2-setup-oracle-rac-containers-with-oracle-rac-image-using-podman-compose-files)
     - [Section 2.1: Deploying With BlockDevices](#section-21-deploying-with-blockdevices)
       - [Section 2.1.1: Setup Without Using User Defined Response files](#section-211-setup-without-using-user-defined-response-files)
       - [Section 2.1.2: Setup Using User Defined Response files](#section-212-setup-using-user-defined-response-files)
     - [Section 2.2: Deploying With NFS Storage Devices](#section-22-deploying-with-nfs-storage-devices)
       - [Section 2.2.1: Setup Without Using User Defined Response files](#section-221-setup-without-using-user-defined-response-files)
       - [Section 2.2.2: Setup Using User Defined Response files](#section-222-setup-using-user-defined-response-files)
-    - [Section 3: Sample of Addition of Nodes to Oracle RAC Containers based on Oracle RAC Image](#section-3-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-oracle-rac-image)
-      - [Section 3.1: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Image with BlockDevices](#section-31-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-image-with-blockdevices)
-      - [Section 3.2: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Image with NFS Storage Devices](#section-32-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-image-with-nfs-storage-devices)
+  - [Section 3: Sample of Addition of Nodes to Oracle RAC Containers based on Oracle RAC Image](#section-3-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-oracle-rac-image)
+    - [Section 3.1: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Image with BlockDevices](#section-31-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-image-with-blockdevices)
+    - [Section 3.2: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Image with NFS Storage Devices](#section-32-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-image-with-nfs-storage-devices)
   - [Section 4: Environment Variables for Oracle RAC on Podman Compose](#section-4-environment-variables-for-oracle-rac-on-podman-compose)
   - [Section 5: Validating Oracle RAC Environment](#section-5-validating-oracle-rac-environment)
   - [Section 6: Connecting to Oracle RAC Environment](#section-6-connecting-to-oracle-rac-environment)
