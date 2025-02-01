@@ -6,8 +6,8 @@ Learn about container deployment options for Oracle Real Application Clusters (O
 
 Oracle Real Application Clusters (Oracle RAC) is an option for the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications.
 
-Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package.
-For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms.
+Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
 This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images v21c, and setup Oracle RAC on Single or Multiple Host machines with Oracle ASM.
 In this installation guide, we use [Podman](https://docs.podman.io/en/v3.0/) to create Oracle RAC Containers and manage them.
@@ -130,7 +130,8 @@ Example: Building Oracle RAC image for v 21.3.0-
 
 ## Network Management
 
-Before you start the installation, you must plan your private and public podman networks. Refer to section `Podman Host Preparation` in the publication [Oracle Real Application Clusters Installation Guide](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for Podman Oracle Linux x86-64. You can create a [podman network](https://docs.podman.io/en/latest/markdown/podman-network-create.1.html) on every container host so that the containers running within that host can communicate with each other. For example:  create `rac_pub1_nw` for the public network (`10.0.20.0/24`), `rac_priv1_nw` (`192.168.17.0/24`) and `rac_priv2_nw`(`192.168.18.0/24`) for private networks. You can use any network subnet based on your environment.
+Before you start the installation, you must plan your private and public podman networks. Refer to section `Podman Host Preparation` in the publication [Oracle Real Application Clusters Installation Guide](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for Podman Oracle Linux x86-64.
+You can create a [podman network](https://docs.podman.io/en/latest/markdown/podman-network-create.1.html) on every container host so that the containers running within that host can communicate with each other. For example:  create `rac_pub1_nw` for the public network (`10.0.20.0/24`), `rac_priv1_nw` (`192.168.17.0/24`) and `rac_priv2_nw`(`192.168.18.0/24`) for private networks. You can use any network subnet based on your environment.
 
 ### Standard Frames MTU Networks Configuration
 ```bash

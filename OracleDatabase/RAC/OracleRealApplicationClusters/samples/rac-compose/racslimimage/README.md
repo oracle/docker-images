@@ -57,7 +57,7 @@ You can deploy multi node Oracle RAC Setup using Slim Image either on Block Devi
   ls /scratch/software/21c/goldimages
   LINUX.X64_213000_db_home.zip  LINUX.X64_213000_grid_home.zip
   ```
-*  If SELinux is enabled on the host machine then execute the following as well -
+* If SELinux is enabled on the host machine then execute the following as well -
   ```bash
   semanage fcontext -a -t container_file_t /scratch/rac/cluster01/node1
   restorecon -v /scratch/rac/cluster01/node1
