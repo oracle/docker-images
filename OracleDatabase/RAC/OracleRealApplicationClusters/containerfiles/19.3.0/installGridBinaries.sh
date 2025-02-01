@@ -11,6 +11,7 @@
 # 
 
 EDITION=$1
+# shellcheck disable=SC2034
 PATCH_NUMBER=$2
 
 # Check whether edition has been passed on

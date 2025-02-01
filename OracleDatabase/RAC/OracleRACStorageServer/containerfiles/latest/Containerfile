@@ -60,4 +60,5 @@ VOLUME ["/oradata"]
 WORKDIR /workdir
 
 # Define default command to start Oracle Database.
+# hadolint ignore=DL3025
 ENTRYPOINT /usr/bin/$INITSH

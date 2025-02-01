@@ -33,7 +33,7 @@ fi
 if [ -z ${EXECUTOR} ]; then
     EXECUTOR="python3"
 fi
-
+# shellcheck disable=SC2164
 cd $BASE_DIR
 $EXECUTOR $SCRIPT_NAME
 

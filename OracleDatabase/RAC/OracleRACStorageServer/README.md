@@ -9,9 +9,9 @@ Refer to the following instructions for setup of NFS Container for Oracle RAC:
 - [How to build NFS Storage Container Image on Container host](#how-to-build-nfs-storage-container-image-on-container-host)
 - [Create Bridge Network](#create-bridge-network)
 - [NFS Server installation on Podman Host](#nfs-server-installation-on-podman-host)
-- [Running RACStorageServer Podman container](#running-racstorageserver-podman-container)
-  - [Oracle RAC Storage Container for Podman Host](#rac-storage-container-for-podman-host)
-  - [Oracle RAC Storage container for Docker Host](#rac-storage-container-for-docker-host)
+- [SELinux Configuration on Podman Host](#selinux-configuration-on-podman-host)
+- [Oracle RAC Storage Container for Podman Host](#oracle-rac-storage-container-for-podman-host)
+- [Oracle RAC Storage container for Docker Host](#oracle-rac-storage-container-for-docker-host)
 - [Create NFS Volume](#create-nfs-volume)
 - [Copyright](#copyright)
 
@@ -57,7 +57,7 @@ Parameters:
 ### Create Bridge Network
 Before creating the container, create the bridge public network for the NFS storage container.
 
-The following are examples of creating `bridge`, `macvlan` or `ipvlan` [networks](#https://docs.podman.io/en/latest/markdown/podman-network-create.1.html).
+The following are examples of creating `bridge`, `macvlan` or `ipvlan` [networks](https://docs.podman.io/en/latest/markdown/podman-network-create.1.html).
 
 Example of creating bridge networks:
 ```bash
@@ -77,7 +77,6 @@ podman network create -d ipvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 
 ### NFS Server installation on Podman Host
 To use NFS volumes in containers, you must install NFS server rpms on the Podman host. For example:
-
 ```bash
 dnf install -y nfs-utils
 ```
@@ -85,7 +84,7 @@ dnf install -y nfs-utils
 ### SELinux Configuration on Podman Host
 If SELinux is enabled on the Podman host then you must install another SELINUX module, specifically allowing permissions to write to the Podman host. To check if your SELinux is enabled or not, run the `getenforce` command.
 
-Copy [rac-storage.te](./rac-storage.te) to `/var/opt` folder in your host and then execute below- 
+Copy [rac-storage.te](./rac-storage.te) to `/var/opt` folder in your host and then execute below-
 
 ```bash
 cd /var/opt
@@ -98,13 +97,13 @@ Run the following command to create the container:
 
 #### Prerequisites for RAC Storage Container for Podman Host
 
-Create a placeholder for NFS storage and ensure that it is empty:  
+Create a placeholder for NFS storage and ensure that it is empty:
 ```bash
 export ORACLE_DBNAME=ORCLCDB
 mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/$ORACLE_DBNAME/asm_disk0*
 ```
-If SELinux host is enabled on the machine, then run the following command: 
+If SELinux host is enabled on the machine, then run the following command:
 ```bash
 semanage fcontext -a -t container_file_t /scratch/stage/rac-storage/$ORACLE_DBNAME
 restorecon -v /scratch/stage/rac-storage/$ORACLE_DBNAME
@@ -199,7 +198,7 @@ You should see following in the Docker logs output:
 **IMPORTANT:** The NFS volume must be `/oradata`, which you will export to Oracle RAC containers for ASM storage. It will take approximately 10 minutes to set up the NFS server.
 
 ### Create NFS Volume
-#### Create NFS volume using the following command on the Podman Host:
+#### Create NFS volume using the following command on the Podman Host
 
 ```bash
 podman volume create --driver local \
@@ -209,7 +208,7 @@ podman volume create --driver local \
 racstorage
 ```
 
-#### Create NFS volume using following command on Docker Host:
+#### Create NFS volume using following command on Docker Host
 
 ```bash
 docker volume create --driver local \
@@ -220,7 +219,7 @@ racstorage
 ```
 **IMPORTANT:** If you are not using the 192.168.17.0/24 subnet then you must change **addr=192.168.17.80** based on your environment.
 
-# Environment variables explained
+## Environment variables explained
 
 | Environment Variable | Description           |
 |----------------------|-----------------|
