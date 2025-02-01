@@ -85,24 +85,20 @@ Complete each of the following prerequisites:
 6. Block storage: If you are planning to use block devices for shared storage, then allocate block devices for OCR, voting and database files.
 7. NFS storage: If you are planning to use NFS storage for OCR, Voting Disk and Database files, then configure NFS storage and export at least one NFS mount. You can also use `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRACStorageServer` container for shared file system on NFS.
 8. Set`/etc/sysctl.conf`parameters: For Oracle RAC, you must set following parameters at host level in `/etc/sysctl.conf`:
-
-    ```INI
-    fs.aio-max-nr = 1048576
-    fs.file-max = 6815744
-    net.core.rmem_max = 4194304
-    net.core.rmem_default = 262144
-    net.core.wmem_max = 1048576
-    net.core.wmem_default = 262144
-    net.core.rmem_default = 262144
-    ```
-
+  ```INI
+  fs.aio-max-nr = 1048576
+  fs.file-max = 6815744
+  net.core.rmem_max = 4194304
+  net.core.rmem_default = 262144
+  net.core.wmem_max = 1048576
+  net.core.wmem_default = 262144
+  net.core.rmem_default = 262144
+  ```
 9. List and reload parameters:  After the `/etc/sysctl.conf` file is modified, run the following commands:
-
-    ```bash
-    sysctl -a
-    sysctl -p
-    ```
-
+  ```bash
+  sysctl -a
+  sysctl -p
+  ```
 10. To resolve VIPs and SCAN IPs, we are using a DNS container in this guide. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md).
 **Note**  If you have a pre-configured DNS server in your environment, then you can replace `-e DNS_SERVERS=172.16.1.25`, `--dns=172.16.1.25`, `-e DOMAIN=example.com`  and `--dns-search=example.com` parameters in **Section 2: Building Oracle RAC Database Podman Install Images** with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment.
 11. If you are running RAC on Podman, make sure that you have installed the `podman-docker` rpm package so that podman commands can be run using `docker` utility.
@@ -142,23 +138,23 @@ To assist in building the images, you can use the [`buildContainerImage.sh`](htt
 
 If you are planing to deploy Oracle RAC container image on Podman, skip to the section [Oracle RAC Container Image for Podman](#oracle-rac-container-image-for-podman).
 
-  ```bash
-  cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles
-  ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=true|false'
+```bash
+cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles
+./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=true|false'
 
- #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=false'
-  ```
+#  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:7 --build-arg SLIMMING=false'
+```
 
 ### Oracle RAC Container Image for Podman
 
 If you are planing to deploy Oracle RAC container image on Docker, skip to the section [Oracle RAC Container Image for Docker](#oracle-rac-container-image-for-docker).
 
- ```bash
- cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles
- ./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true|false'
+```bash
+cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles
+./buildContainerImage.sh -v <Software Version> -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true|false'
 
- #  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=false'
- ```
+#  for example ./buildContainerImage.sh -v 21.3.0 -o '--build-arg  BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=false'
+```
 
 - After the `21.3.0` Oracle RAC container image is built, start building a patched image with the download 21.7 RU and one-offs. To build the patch image, refer [Example of how to create a patched database image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleRealApplicationClusters/samples/applypatch).
 
