@@ -29,7 +29,7 @@ To create an Oracle RAC environment, complete these steps in order:
       - [Deploying Oracle RAC on Container With Oracle RAC Storage Container](#deploying-oracle-rac-on-container-with-oracle-rac-storage-container)
       - [Assign networks to Oracle RAC docker containers](#assign-networks-to-oracle-rac-docker-containers)
       - [Start the first docker container](#start-the-first-docker-container)
-      - [Connect to the Oracle RAC container](#connect-to-the-oracle-rac-container)
+      - [Connect to the Oracle RAC docker container](#connect-to-the-oracle-rac-docker-container)
     - [Section 4.3: Adding an Oracle RAC Node using a Docker Container](#section-43-adding-an-oracle-rac-node-using-a-docker-container)
       - [Deploying Oracle RAC Additional Node on Container with Block Devices on Docker](#deploying-oracle-rac-additional-node-on-container-with-block-devices-on-docker)
       - [Deploying Oracle RAC Additional Node on Container with Oracle RAC Storage Container on Docker](#deploying-oracle-rac-additional-node-on-container-with-oracle-rac-storage-container-on-docker)
