@@ -16,7 +16,7 @@ Refer to the following instructions to set up Oracle RAC on Podman using an Orac
     - [Attach the network to racnodep1](#attach-the-network-to-racnodep1)
     - [Attach the network to racnodep2](#attach-the-network-to-racnodep2)
   - [Section 4: Start the Containers](#section-4-start-the-containers)
-  - [Section 5: Validate the Oracle RAC Environment](#section-5-validating-oracle-rac-environment)
+  - [Section 5: Validate the Oracle RAC Environment](#section-5-validate-the-oracle-rac-environment)
   - [Section 6: Connecting to Oracle RAC environment](#section-6-connecting-to-oracle-rac-environment)
   - [Section 7: Example of Node Addition to Oracle RAC Containers Based on Oracle RAC Image with block devices](#section-7-example-of-node-addition-to-oracle-rac-containers-based-on-oracle-rac-image-with-block-devices)
     - [Section 7.1: Example of node addition to Oracle RAC containers based on Oracle RAC image without Response File](#section-71-example-of-node-addition-to-oracle-rac-containers-based-on-oracle-rac-image-without-response-file)
@@ -57,7 +57,8 @@ To set up Oracle RAC on Podman using an Oracle RAC Image without providing respo
 #### Section 2.1.1: Deploying With Block Devices
 ##### Section 2.1.1.1: Prerequisites for setting up Oracle RAC with block devices
 
-Ensure that you have created at least one Block Device with at least 50 Gb of storage space that can be accessed by two Oracle RAC Nodes, and can be shared between them. You can create more block devices in accordance with your requirements and pass those environment variables and devices to the `podman create` command as well as in the Oracle Grid Infrastructure (grid) response files. **Note:** if you use response files. You can skip this step if you are planning to use NFS storage devices.
+Ensure that you have created at least one Block Device with at least 50 Gb of storage space that can be accessed by two Oracle RAC Nodes, and can be shared between them. You can create more block devices in accordance with your requirements and pass those environment variables and devices to the `podman create` command as well as in the Oracle Grid Infrastructure (grid) response files.
+**Note:** if you use response files. You can skip this step if you are planning to use NFS storage devices.
 
 Ensure that the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
@@ -272,7 +273,7 @@ localhost/oracle/database-rac:21.3.0
 ```
 ### Section 2.2: Deploying Two-Node Oracle RAC Setup on Podman using Oracle RAC Image Using User Defined Response files
 
-Follow the below instructions to setup Oracle RAC on Podman using Oracle RAC Image for using user-defined response files. 
+Follow the below instructions to setup Oracle RAC on Podman using Oracle RAC Image for using user-defined response files.
 
 #### Section 2.2.1: Deploying With BlockDevices
 
@@ -521,7 +522,7 @@ podman create -t -i \
 
 You must assign the podman networks created based on the preceding examples. Complete the following tasks:
 
-#### Attach the network to racnodep1
+### Attach the network to racnodep1
 
 ```bash
 podman network disconnect podman racnodep1
@@ -530,7 +531,7 @@ podman network connect rac_priv1_nw --ip 192.168.17.170  racnodep1
 podman network connect rac_priv2_nw --ip 192.168.18.170  racnodep1
 ```
 
-#### Attach the network to racnodep2
+### Attach the network to racnodep2
 
 ```bash
 podman network disconnect podman racnodep2
@@ -649,7 +650,7 @@ Oracle Database ORCLCDB3 is up and running on racnodep3.
 ## Section 8: Example of Node Addition to Oracle RAC Containers Based on Oracle RAC Image with NFS Storage Devices
 
 ### Section 8.1: Example of node addition to Oracle RAC Containers based on Oracle RAC Image without Response File
-In the following example, we add an additional node to the existing Oracle RAC two-node cluster using the Oracle RAC image without user-defined files. 
+In the following example, we add an additional node to the existing Oracle RAC two-node cluster using the Oracle RAC image without user-defined files.
 
 Create additional Oracle RAC Container. In this example, the hostname is `racnodep3`
 

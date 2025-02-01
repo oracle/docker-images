@@ -1,7 +1,8 @@
 # Example of how to create a patched database image
 =============================================
 ## Pre-requisites
-After you build your base Oracle RAC image following the [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-image), it is mandatory to create **Oracle RAC Slim image** following [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-slim-image), then  you can create a patched version of it. To build a patched image, you must provide the patch zip file.
+After you build your base Oracle RAC image following the [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-image), it is mandatory to create **Oracle RAC Slim image** following [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-slim-image), then  you can create a patched version of it.
+To build a patched image, you must provide the patch zip file.
 
 **Notes:**
 

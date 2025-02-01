@@ -13,8 +13,8 @@ Refer below instructions for setup of Oracle RAC on Podman Compose using Slim Im
       - [Section 2.2.1: Setup Without Using User Defined Response files](#section-221-setup-without-using-user-defined-response-files)
       - [Section 2.2.2: Setup Using User Defined Response files](#section-222-setup-using-user-defined-response-files)
   - [Section 3: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image](#section-3-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-slim-image)
-      - [Section 3.1: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Slim Image with BlockDevices](#section-31-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-slim-image-with-blockdevices)
-      - [Section 3.2: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Slim Image with NFS Storage Devices](#section-32-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-slim-image-with-nfs-storage-devices)
+    - [Section 3.1: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Slim Image with BlockDevices](#section-31-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-slim-image-with-blockdevices)
+    - [Section 3.2: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Slim Image with NFS Storage Devices](#section-32-sample-of-addition-of-nodes-to-oracle-rac-containers-using-podman-compose-based-on-oracle-rac-slim-image-with-nfs-storage-devices)
   - [Section 4: Environment Variables for Oracle RAC on Podman Compose](#section-4-environment-variables-for-oracle-rac-on-podman-compose)
   - [Section 5: Validating Oracle RAC Environment](#section-5-validating-oracle-rac-environment)
   - [Section 6: Connecting to Oracle RAC Environment](#section-6-connecting-to-oracle-rac-environment)
@@ -42,7 +42,7 @@ You can deploy multi node Oracle RAC Setup using Slim Image either on Block Devi
   ```bash
   dnf config-manager --enable ol8_developer_EPEL
   dnf install -y podman-compose
-  ``` 
+  ```
 * Prepare Hosts with empty paths for 2 nodes similar to below, these are going to be mounted to Oracle RAC nodes for installing Oracle RAC Software binaries later during container creation -
   ```bash
   mkdir -p /scratch/rac/cluster01/node1
@@ -58,16 +58,16 @@ You can deploy multi node Oracle RAC Setup using Slim Image either on Block Devi
   LINUX.X64_213000_db_home.zip  LINUX.X64_213000_grid_home.zip
   ```
 *  If SELinux is enabled on the host machine then execute the following as well -
-    ```bash
-    semanage fcontext -a -t container_file_t /scratch/rac/cluster01/node1
-    restorecon -v /scratch/rac/cluster01/node1
-    semanage fcontext -a -t container_file_t /scratch/rac/cluster01/node2
-    restorecon -v /scratch/rac/cluster01/node2
-    semanage fcontext -a -t container_file_t /scratch/software/21c/goldimages/LINUX.X64_213000_grid_home.zip
-    restorecon -v /scratch/software/21c/goldimages/LINUX.X64_213000_grid_home.zip
-    semanage fcontext -a -t container_file_t /scratch/software/21c/goldimages/LINUX.X64_213000_db_home.zip
-    restorecon -v /scratch/software/21c/goldimages/LINUX.X64_213000_db_home.zip
-    ```
+  ```bash
+  semanage fcontext -a -t container_file_t /scratch/rac/cluster01/node1
+  restorecon -v /scratch/rac/cluster01/node1
+  semanage fcontext -a -t container_file_t /scratch/rac/cluster01/node2
+  restorecon -v /scratch/rac/cluster01/node2
+  semanage fcontext -a -t container_file_t /scratch/software/21c/goldimages/LINUX.X64_213000_grid_home.zip
+  restorecon -v /scratch/software/21c/goldimages/LINUX.X64_213000_grid_home.zip
+  semanage fcontext -a -t container_file_t /scratch/software/21c/goldimages/LINUX.X64_213000_db_home.zip
+  restorecon -v /scratch/software/21c/goldimages/LINUX.X64_213000_db_home.zip
+  ```
 In order to setup 2 Node RAC containers using Podman compose, please make sure pre-requisites are completed before proceeding further -
 
 ## Section 2: Setup Oracle RAC Containers with Slim Image using Podman Compose Files
@@ -485,7 +485,7 @@ podman-compose logs -f ${CMAN_CONTAINER_NAME}
   mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
   rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
   ```
-* On the shared folder e.g `scratch/common_scripts/podman/rac` between both RAC nodes, copy file named [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp) 
+* On the shared folder e.g `scratch/common_scripts/podman/rac` between both RAC nodes, copy file named [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp)
 * Also copy, [dbca_21c.rsp](./dbca_21c.rsp) in `scratch/common_scripts/podman/rac`.
 * If SELinux host is enable on machine then execute the following as well -
   ```bash

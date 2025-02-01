@@ -139,7 +139,8 @@ In this document, an Oracle RAC container slim image refers to a container image
 ## Network Management
 
 Before you start the installation, you must plan your private and public network. Refer to section `Podman Host Preparation` in the publication [Oracle Real Application Clusters Installation Guide](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for Podman Oracle Linux x86-64.
-You can create a `network bridge` on every container host so containers running within that host can communicate with each other. For example:  create `rac_pub1_nw` for the public network (`10.0.20.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network. You can use any network subnet for testing. In this document we define the public network on `10.0.20.0/24` and the private network on `192.168.17.0/24`.
+You can create a `network bridge` on every container host so containers running within that host can communicate with each other. For example:  create `rac_pub1_nw` for the public network (`10.0.20.0/24`) and `rac_priv1_nw` (`192.168.17.0/24`) for a private network.
+You can use any network subnet for testing. In this document we define the public network on `10.0.20.0/24` and the private network on `192.168.17.0/24`.
 
 ```bash
   podman network create --driver=bridge --subnet=10.0.20.0/24 rac_pub1_nw

@@ -88,7 +88,8 @@ Follow the below instructions to setup Oracle RAC on Podman using Slim Image wit
   dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000
   ```
   Repeat the cleanup disk for each shared block device. In the preceding example, `/dev/oracleoci/oraclevdd` is a shared Kvm virtual block device.  
-- In this example, we are going to use environment variables passed in a file called [envfile_racnodep1](withoutresponsefiles/blockdevices/envfile_racnodep1) & [envfile_racnodep2](withoutresponsefiles/blockdevices/envfile_racnodep2) and mounted to rac node containers. In this example, we are creating files `envfile_racnodep1` and `envfile_racnodep2` are placed under `/scratch/common_scripts/podman/rac` on container host.
+- In this example, we are going to use environment variables passed in a file called [envfile_racnodep1](withoutresponsefiles/blockdevices/envfile_racnodep1) & [envfile_racnodep2](withoutresponsefiles/blockdevices/envfile_racnodep2) and mounted to rac node containers.
+In this example, we are creating files `envfile_racnodep1` and `envfile_racnodep2` are placed under `/scratch/common_scripts/podman/rac` on container host.
 
 - If SELinux is enabled on machine then execute the following as well-
   ```bash
@@ -554,7 +555,7 @@ Note:
 
 ## Section 6: Connecting to Oracle RAC Environment
 
-**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections. 
+**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections.
 Refer to [README](./docs/CONNECTING.md) for instructions on how to connect to Oracle RAC Database.
 
 ## Section 7: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image
@@ -564,7 +565,7 @@ Below is the example of adding 1 more node to the existing Oracle RAC 2 node clu
 
 **Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep3` and set the variables based on your enviornment.
 
-- Prepare Folder for additional node- 
+- Prepare Folder for additional node-
   ```bash
   mkdir -p /scratch/rac/cluster01/node3
   rm -rf /scratch/rac/cluster01/node3/*
