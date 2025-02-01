@@ -39,17 +39,17 @@ Before you proceed to the next section, you must complete each of the steps list
 
 * Refer to the following sections in the publication [Oracle Real Application Clusters Installation Guide](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for Podman Oracle Linux x86-64 to complete the preparation steps for Oracle RAC on Container deployment:
 
-   * Overview of Oracle RAC on Podman
-   * Host Preparation for Oracle RAC on Podman
-   * Podman Host Server Configuration
-      * **Note**: As we are following command line installation for Oracle RAC on containers, we don't need X Window System to be configured.
-   * Podman Containers and Oracle RAC Nodes
-   * Provisioning the Podman Host Server
-   * Podman Host Preparation
-      * Preparing for Podman Container Installation
-      * Installing Podman Engine
-      * Allocate Linux Resources for Oracle Grid Infrastructure Deployment
-      * How to Configure Podman for SELinux Mode 
+  * Overview of Oracle RAC on Podman
+  * Host Preparation for Oracle RAC on Podman
+  * Podman Host Server Configuration
+    * **Note**: As we are following command line installation for Oracle RAC on containers, we don't need X Window System to be configured.
+  * Podman Containers and Oracle RAC Nodes
+  * Provisioning the Podman Host Server
+  * Podman Host Preparation
+    * Preparing for Podman Container Installation
+    * Installing Podman Engine
+    * Allocate Linux Resources for Oracle Grid Infrastructure Deployment
+    * How to Configure Podman for SELinux Mode 
 *  Install `git` from dnf or yum repository and clone the git repo. We clone this repo on a path called  `<GITHUB_REPO_CLONED_PATH>` and refer here.
 * Create a NFS Volume if you are planning to use NFS Storage for ASM Devices. See [Configuring NFS for Storage for Oracle RAC on Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details. **Note:** You can skip this step if you are planning to use block devices for storage.
 * If SELinux is enabled on the Podman host, then ensure to create an SELinux policy for Oracle RAC on Podman. For details about this procedure, see `How to Configure Podman for SELinux Mode` in the publication [Oracle Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racpd/target-configuration-oracle-rac-podman.html#GUID-59138DF8-3781-4033-A38F-E0466884D008). Also, When you are performing the installation using any files from podman host machine where SELinux is enabled, you need to make sure they are labeled correctly with `container_file_t` context. You can use `ls -lZ <file_name/<Directory_name>` to see the security context set on files.
