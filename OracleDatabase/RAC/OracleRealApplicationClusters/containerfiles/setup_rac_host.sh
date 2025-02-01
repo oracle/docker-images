@@ -5,6 +5,7 @@ SLIMENV=0
 IGNOREOSVERSION=0
 validate_environment_variables() {
     local podman_compose_file="$1"
+    # shellcheck disable=SC2207,SC2016
     local env_variables=($(grep -oP '\${\K[^}]*' "$podman_compose_file" | sort -u))
     local missing_variables=()
 
@@ -460,18 +461,20 @@ allow container_init_t textrel_shlib_t:file setattr;
 allow container_init_t kernel_t:system syslog_read;
 allow container_init_t unlabeled_t:file read;
 EOF
-
+# shellcheck disable=SC2164
     cd /var/opt
     make -f /usr/share/selinux/devel/Makefile rac-podman.pp
     semodule -i rac-podman.pp
     semodule -l | grep rac-pod
     sleep 3
-
+# shellcheck disable=SC2145
     echo "INFO: Setting SEContext for ${nodeHomeValues[@]}"
     for nodeHome in "${nodeHomeValues[@]}"
     do
         echo "INFO: Setting context for $nodeHome"
+        # shellcheck disable=SC2086
         semanage fcontext -a -t container_file_t $nodeHome
+        # shellcheck disable=SC2086
         restorecon -vF $nodeHome
     done
     return 0
@@ -483,13 +486,16 @@ delete_and_create_secret() {
     local file_path=$2
 
     # Check if the secret exists
+    # shellcheck disable=SC2086
     if podman secret inspect $secret_name &> /dev/null; then
         echo "INFO: Deleting existing secret $secret_name..."
+        # shellcheck disable=SC2086
         podman secret rm $secret_name
     fi
 
     # Create the new secret
     echo "INFO: Creating new secret $secret_name..."
+    # shellcheck disable=SC2086
     podman secret create $secret_name $file_path
 }
 
@@ -500,7 +506,9 @@ create_secrets() {
         return 1
     fi
     mkdir -p /opt/.secrets/
+    # shellcheck disable=SC2086
     echo $RAC_SECRET > /opt/.secrets/pwdfile.txt
+    # shellcheck disable=SC2164
     cd /opt/.secrets
     openssl genrsa -out key.pem
     openssl rsa -in key.pem -out key.pub -pubout
@@ -510,6 +518,7 @@ create_secrets() {
     delete_and_create_secret "pwdsecret" "/opt/.secrets/pwdfile.enc"
     delete_and_create_secret "keysecret" "/opt/.secrets/key.pem"
     echo "INFO: Secrets created."
+    # shellcheck disable=SC2164
     cd -
     return 0
 }
@@ -550,25 +559,26 @@ setup_host_prepreq(){
     fi
 
     echo "INFO: Setting Podman env on OS [${OSVersion}]"
-    # shellcheck disable=SC2006
+    # shellcheck disable=SC2006,SC2086
     kernelVersion=`uname -r | cut -d. -f1,2`
-    # shellcheck disable=SC2006
+    # shellcheck disable=SC2006,SC2086
     majorKernelVersion=`echo ${kernelVersion} | cut -d. -f1`
-    # shellcheck disable=SC2006
+    # shellcheck disable=SC2006,SC2086
     minorKernelVersion=`echo ${kernelVersion} | cut -d. -f2`
 
     echo "Running on Kernel [${kernelVersion}]"
-
+# shellcheck disable=SC2006,SC2086
     if [ ${majorKernelVersion} -lt 5 ]; then
     kernelVersionSupported=0
     fi
-
+# shellcheck disable=SC2086
     if [ $majorKernelVersion -eq 5 ]; then
+    # shellcheck disable=SC2086
     if [ ${minorKernelVersion} -lt 14 ]; then
         kernelVersionSupported=0
     fi
     fi
-
+# shellcheck disable=SC2166
     if [ $OSVersionSupported -eq 0 -o $kernelVersionSupported -eq 0 ]; then
     if [ ${IGNOREOSVERSION} == "0" ]; then 
         echo "ERROR: OSVersion=${OSVersion}.. KernelVersion=${kernelVersion}. Exiting."
@@ -594,12 +604,14 @@ setup_host_prepreq(){
         DisplayUsage
         return 1
     fi
-    # shellcheck disable=SC2006
+    # shellcheck disable=SC2006,SC2001,SC2086
     nodeHomeDirs=`echo ${node_dirs} | sed -e 's/.*?=\(.*\)/\1/g'`
+    # shellcheck disable=SC2162
     IFS=',' read  -a nodeHomeValues <<< "${nodeHomeDirs}"
     for nodeHome in "${nodeHomeValues[@]}"
     do
         echo "INFO: Creating directory $nodeHome"
+        # shellcheck disable=SC2086
         mkdir -p $nodeHome
     done
     fi
@@ -608,8 +620,9 @@ setup_host_prepreq(){
     echo "INFO: Starting chronyd service"
     systemctl start chronyd
     fi
-
+# shellcheck disable=SC2002
     cat /sys/devices/system/clocksource/clocksource0/available_clocksource | grep tsc
+    # shellcheck disable=SC2181
     if [ $? -eq 0 ]; then
     echo "INFO: Setting current clocksource"
     echo "tsc">/sys/devices/system/clocksource/clocksource0/current_clocksource
@@ -625,8 +638,9 @@ setup_host_prepreq(){
     # shellcheck disable=SC2006
     freeSHM=`df -h /dev/shm | tail -n +2 | awk '{ print $4 }'`
     echo "INFO: Available shm = [${freeSHM}]"
-    # shellcheck disable=SC2006
+    # shellcheck disable=SC2086,SC2060,SC2006
     freeSHM=`echo ${freeSHM} | tr -d [:alpha:]`
+    # shellcheck disable=SC2129,SC2086
     if [ ${freeSHM} -lt 4 ]; then
     echo "ERROR: Low free space [${freeSHM}] in /dev/shm. Need at least 4GB space. Exiting."
     DisplayUsage
