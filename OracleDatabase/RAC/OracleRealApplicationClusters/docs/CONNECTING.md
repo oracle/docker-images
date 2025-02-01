@@ -5,7 +5,7 @@ Follow this document to validate and connect to Oracle RAC Container Database.
 - [Connecting to an Oracle RAC Database](#connecting-to-an-oracle-rac-database)
   - [Using this documentation](#using-this-documentation)
   - [Validating Oracle RAC Containers](#validating-oracle-rac-containers)
-  - [Validating Oracle Grid  Infrastructure](#validating-oracle-grid-infrastructure)
+  - [Validating Oracle Grid Infrastructure](#validating-oracle-grid-infrastructure)
   - [Validating Oracle RAC Database](#validating-oracle-rac-database)
   - [Debugging Oracle RAC Containers](#debugging-oracle-rac-containers)
   - [Client Connection](#client-connection)
@@ -31,7 +31,7 @@ To connect to the container execute following command:
 ```bash
 podman exec -i -t racnodep1 /bin/bash
 ```
-## Validating Oracle Grid  Infrastructure
+## Validating Oracle Grid Infrastructure
 Validate if Oracle Grid is up and running from within Container-
 ```bash
 su - grid
