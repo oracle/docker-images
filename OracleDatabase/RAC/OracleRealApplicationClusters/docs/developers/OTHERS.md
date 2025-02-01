@@ -1,12 +1,12 @@
 # Oracle Real Application Clusters in Linux Containers for Developers
 
-Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 21c (v21.3)
+Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 21c (v21.3).
 
 ## Overview of Running Oracle RAC in Containers
 
-Oracle Real Application Clusters (Oracle RAC) is an option for the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+Oracle Real Application Clusters (Oracle RAC) is an option for the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications. Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system, and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms. Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 21c, refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
-This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images v21.3, and setup Oracle RAC on Single or Multiple Host machines with Oracle ASM. In this installation guide, we use [Podman](https://docs.podman.io/en/v3.0/) to create Oracle RAC Containers and manage them. 
+This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images v21.3, and set up Oracle RAC on Single or Multiple Host machines with Oracle ASM. In this installation guide, we use [Podman](https://docs.podman.io/en/v3.0/) to create Oracle RAC Containers and manage them. 
 
 ## Using this Documentation
 To create an Oracle RAC environment, follow these steps:
@@ -14,7 +14,7 @@ To create an Oracle RAC environment, follow these steps:
 - [Oracle Real Application Clusters in Linux Containers](#oracle-real-application-clusters-in-linux-containers)
   - [Overview of Running Oracle RAC in Containers](#overview-of-running-oracle-rac-in-containers)
   - [Using this Documentation](#using-this-documentation)
-  - [Preparation Steps for running Oracle RAC in containers](#preparation-steps-for-running-oracle-rac-database-in-containers)
+  - [Preparation Steps for Running Oracle RAC in Containers](#preparation-steps-for-running-oracle-rac-database-in-containers)
   - [Getting Oracle RAC Database Container Images](#getting-oracle-rac-database-container-images)
     - [Building Oracle RAC Database Container Image](#building-oracle-rac-database-container-image)
     - [Building Oracle RAC Database Container Slim Image](#building-oracle-rac-database-container-slim-image)
@@ -33,11 +33,11 @@ To create an Oracle RAC environment, follow these steps:
   - [License](#license)
   - [Copyright](#copyright)
 
-## Preparation Steps for running Oracle RAC Database in containers
+## Preparation Steps for Running Oracle RAC Database in Containers
 
 Before you proceed to the next section, you must complete each of the steps listed in this section and complete the following prerequisites. 
 
-* Refer to the following sections in the publication [Oracle Real Application Clusters Installation Guide](#https://review.us.oracle.com/review2/Review.html#reviewId=467473;scope=document;status=open,fixed;documentId=4229197) for Podman Oracle Linux x86-64 to complete the preparation steps for Oracle RAC on Container deployment:
+* Refer to the following sections in the publication [Oracle Real Application Clusters Installation Guide](https://review.us.oracle.com/review2/Review.html#reviewId=467473;scope=document;status=open,fixed;documentId=4229197) for Podman Oracle Linux x86-64 to complete the preparation steps for Oracle RAC on Container deployment:
 
    * Overview of Oracle RAC on Podman
    * Host Preparation for Oracle RAC on Podman
@@ -47,47 +47,47 @@ Before you proceed to the next section, you must complete each of the steps list
    * Podman Host Preparation
       * Preparing for Podman Container Installation
       * Installing Podman Engine
-      * Allocate Linux Resources for Oracle Grid Infrastructure Deployment
+      * Allocating Linux Resources for Oracle Grid Infrastructure Deployment
       * How to Configure Podman for SELinux Mode
-*  Install `git` from dnf or yum repository and clone the git repo. We clone this repo on a path called  `<GITHUB_REPO_CLONED_PATH>` and refer here.
+* Install `git` from dnf or yum repository and clone the git repo. We clone this repo on a path called `<GITHUB_REPO_CLONED_PATH>` and refer here.
 * If you are planning to use NFS storage for OCR, Voting Disk, and Database files, then configure NFS storage and export at least one NFS mount. You can also use the `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRACStorageServer` container for the shared file system on NFS. Refer [OracleRACStorageServer](../OracleRACStorageServer/README.md).
-* If SELinux is enabled on the Podman host, then you must create an SELinux policy for Oracle RAC on Podman. For details about this procedure, see `How to Configure Podman for SELinux Mode` in the publication [Oracle Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racpd/target-configuration-oracle-rac-podman.html#GUID-59138DF8-3781-4033-A38F-E0466884D008). Also, When you are performing the installation using any files from podman host machine where SELinux is enabled, you need to make sure they are labeled correctly with `container_file_t` context. You can use `ls -lZ <file_name/<Directory_name>` to see the security context set on files.
+* If SELinux is enabled on the Podman host, you must create an SELinux policy for Oracle RAC on Podman. For details about this procedure, see `How to Configure Podman for SELinux Mode` in the publication [Oracle Real Application Clusters Installation Guide for Podman Oracle Linux x86-64](https://docs.oracle.com/en/database/oracle/oracle-database/21/racpd/target-configuration-oracle-rac-podman.html#GUID-59138DF8-3781-4033-A38F-E0466884D008). Also, when you are performing the installation using any files from a Podman host machine where SELinux is enabled, make sure they are labeled correctly with `container_file_t` context. You can use `ls -lZ <file_name/<Directory_name>` to see the security context set on files.
 
 * To resolve VIPs and SCAN IPs, in this guide we use a DNS container. Before proceeding to the next step, create a [DNS server container](../OracleDNSServer/README.md). 
-If you have a preconfigured DNS server in your environment, then you can replace `-e DNS_SERVERS=10.0.20.25`, `--dns=10.0.20.25`, `-e DOMAIN=example.info`  and `--dns-search=example.info` parameters in the examples in this guide with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment. 
+If you have a preconfigured DNS server in your environment, then you can replace `-e DNS_SERVERS=10.0.20.25`, `--dns=10.0.20.25`, `-e DOMAIN=example.info`, and `--dns-search=example.info` parameters in the examples in this guide with the `DOMAIN_NAME` and `DNS_SERVER` based on your environment. 
 
-* The Oracle RAC `Containerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), if you are planning to build Oracle RAC Container Images from next section. However, if you are using pre-built RAC images from the Oracle Container Registry, then you can skip this step.
+* The Oracle RAC `Containerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), if you are planning to build Oracle RAC Container Images from the next section. However, if you are using pre-built RAC images from the Oracle Container Registry, you can skip this step.
 
     - Oracle Grid Infrastructure 21c (21.3) for Linux x86-64
     - Oracle Database 21c (21.3) for Linux x86-64
 
 **Notes**
 
-- **For testing purposes only**, use the Oracle `DNSServer` Image to deploy a container providing DNS resolutions. Refer [OracleDNSServer](../OracleDNSServer/README.md) for details.
+- **For testing purposes only**, use the Oracle `DNSServer` Image to deploy a container providing DNS resolution. Refer [OracleDNSServer](../OracleDNSServer/README.md) for details.
 - `OracleRACStorageServer` container image can be used **only for testing purposes**. Refer [OracleRACStorageServer](../OracleRACStorageServer/README.md) for details.
 - If the Podman bridge network is not available outside your host, you can use the Oracle Connection Manager [CMAN image](https://github.com/oracle/docker-images/tree/main/OracleDatabase/RAC/OracleConnectionManager) to access the Oracle RAC Database from outside the host.
 
 ## Getting Oracle RAC Database Container Images
 
-Oracle RAC is supported for production use on Podman starting with Oracle Database 19c (19.16), and Oracle Database 21c (21.7). You can also deploy Oracle RAC on Podman using the pre-built images available on the Oracle Container Registry. Refer [this documentation](#https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using Oracle Container Registry. 
+Oracle RAC is supported for production use on Podman starting with Oracle Database 19c (19.16), and Oracle Database 21c (21.7). You can also deploy Oracle RAC on Podman using the pre-built images available on the Oracle Container Registry. Refer to [this documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using the Oracle Container Registry. 
 
 Example of pulling an Oracle RAC Image from the Oracle Container Registry: 
 ```bash
-# For Oracle RAC Container Image-
+# For Oracle RAC Container Image
 podman pull phx.ocir.io/intsanjaysingh/oracle/database-rac:21.3.0
 podman tag phx.ocir.io/intsanjaysingh/oracle/database-rac:21.3.0 localhost/oracle/database-rac:21.3.0
-#For Oracle RAC Container Slim Image-
+# For Oracle RAC Container Slim Image
 podman pull phx.ocir.io/intsanjaysingh/oracle/database-rac:21.3.0-slim
 podman tag phx.ocir.io/intsanjaysingh/oracle/database-rac:21.3.0-slim localhost/oracle/database-rac:21.3.0-slim
 ```
 
 If you are using pre-built Oracle RAC images from the Oracle Container Registry, then you can skip the section that follows where we build the container images.
 
-If you want to build the latest Oracle RAC Image from this Github repository, instead of a pre-built image, then then follow these instructions.  
+If you want to build the latest Oracle RAC Image from this Github repository, instead of a pre-built image, then then follow these instructions.
 
 **IMPORTANT :** This section assumes that you have completed all of the prerequisites in [Preparation Steps for running Oracle RAC Database in containers](#preparation-steps-for-running-oracle-rac-database-in-containers) and completed all the steps, based on your environment. Ensure that you do not uncompress the binaries and patches manually before building the Oracle RAC Image.
 
-To assist in building the images, you can use the [`buildContainerImage.sh`](./containerfiles/buildContainerImage.sh) script. See the following for instructions and usage. 
+To assist in building the images, you can use the [`buildContainerImage.sh`](./containerfiles/buildContainerImage.sh) script. See the following for instructions and usage.
 
 ### Building Oracle RAC Database Container Image
 
@@ -137,7 +137,7 @@ Before you start the installation, you must plan your private and public network
 
 ```
 
-- To run Oracle RAC using Oracle Container Runtime for Docker on multiple hosts, you must create one of the following: 
+- To run Oracle RAC using Oracle Container Runtime for Docker on multiple hosts, you must create one of the following:
 
 a. [Podman macvlan network](https://docs.podman.io/en/latest/markdown/podman-network-create.1.html) using the following commands:
 
@@ -189,7 +189,7 @@ Notes:
 ## Oracle RAC on Containers Deployment Scenarios
 Oracle RAC can be deployed with various scenarios, such as using podman vs podman-compose, NFS vs Block Devices, Oracle RAC Container Image vs Slim Image, with User Defined Response files, and so on. All are covered in detail in the instructions that follow. 
 
-### Oracle RAC Containers on Podman 
+### Oracle RAC Containers on Podman
 ####  [1. Setup Using Oracle RAC Container Image](./rac-container/racimage/README.md)
 ####  [2. Setup Using Oracle RAC Container Slim Image](./rac-container/racslimimage/README.md)
 
@@ -222,7 +222,7 @@ This project offers example container files for Oracle Grid Infrastructure and O
 * Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
 * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
 
-To install older releases of Oracle RAC on Podman or Oracle RAC on Docker, refer to the [README.md](./README_1.md )
+To install older releases of Oracle RAC on Podman or Oracle RAC on Docker, refer to the [README.md](./README_1.md)
 
 ## Cleanup
 Refer to [README](./CLEANUP.md) for instructions on how to connect to an Oracle RAC Database Container Environment.
