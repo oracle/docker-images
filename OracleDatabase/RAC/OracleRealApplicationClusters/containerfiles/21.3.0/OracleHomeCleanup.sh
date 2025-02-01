@@ -11,7 +11,7 @@
 #
 
 # Image Cleanup Script
-
+# shellcheck disable=SC1090
 source /home/"${DB_USER}"/.bashrc
 ORACLE_HOME=${DB_HOME}
 

@@ -11,9 +11,9 @@
 #
 
 # Image Cleanup Script
-
+# shellcheck disable=SC1090
 source /home/"${GRID_USER}"/.bashrc
-
+# shellcheck disable=SC2034
 ORACLE_HOME=${GRID_HOME}
 
 rm -rf /u01/app/grid/*

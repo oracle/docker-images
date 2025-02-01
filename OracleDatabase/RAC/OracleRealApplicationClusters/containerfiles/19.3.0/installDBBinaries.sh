@@ -20,6 +20,7 @@ if [ "$EDITION" == "" ]; then
 fi;
 
 # Check whether correct edition has been passed on
+# shellcheck disable=SC2166
 if [ "$EDITION" != "EE" -a "$EDITION" != "SE2" ]; then
    echo "ERROR: Wrong edition has been passed on!"
    echo "Edition $EDITION is no a valid edition!"
@@ -59,5 +60,6 @@ fi
 
 
 # Install Oracle binaries
+# shellcheck disable=SC2015
 unzip -q "$INSTALL_SCRIPTS"/"$INSTALL_FILE_2" -d "$DB_HOME" && \
 "$DB_HOME"/runInstaller -silent -force -waitforcompletion -responsefile "$INSTALL_SCRIPTS"/"$DB_INSTALL_RSP"  -ignorePrereqFailure || true

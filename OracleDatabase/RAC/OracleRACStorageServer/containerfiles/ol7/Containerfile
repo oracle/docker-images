@@ -16,10 +16,6 @@
 # ---------------
 FROM oraclelinux:7-slim
 
-# Maintainer
-# ----------
-MAINTAINER Paramdeep saini <paramdeep.saini@oracle.com>, Sanjay Singh <sanjay.singh@oracle.com>
-
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 # Linux Env Variable
@@ -58,4 +54,4 @@ WORKDIR /home/oracle
 
 # Define default command to start Oracle Database.
 
-CMD exec $SCRIPT_DIR/$RUN_FILE
+CMD ["exec", "$SCRIPT_DIR/$RUN_FILE"]
