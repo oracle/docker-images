@@ -21,6 +21,7 @@ ARG RAC_SLIM_IMAGE=localhost/oracle/database-rac:19.3.0-slim
 
 # Pull base image
 # ---------------
+# hadolint ignore=DL3006
 FROM $BASE_RAC_IMAGE as builder
 
 # Argument to control removal of components not needed after db software installation
@@ -64,7 +65,7 @@ RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \
 USER oracle
 
 RUN $PATCH_INSTALL_DIR/$DB_PATCH_FILE $PATCH_INSTALL_DIR
-
+# hadolint ignore=DL3002
 USER root
 
 RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
@@ -72,6 +73,7 @@ RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
     rm -rf $PATCH_INSTALL_DIR
 
 #####################
+# hadolint ignore=DL3006
 FROM $RAC_SLIM_IMAGE AS final
 
 RUN if [ -d "/u01" ]; then \
@@ -89,5 +91,5 @@ HEALTHCHECK --interval=2m --start-period=30m \
    CMD "$SCRIPT_DIR/scripts/main.py --checkracinst=true" >/dev/null || exit 1
 
 # Define default command to start Oracle Grid and RAC Database setup.
-
+# hadolint ignore=DL3025
 ENTRYPOINT /usr/bin/$INITSH
