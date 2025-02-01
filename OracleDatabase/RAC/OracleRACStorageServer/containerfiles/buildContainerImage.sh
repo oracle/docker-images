@@ -13,7 +13,6 @@ Builds a Docker Image for Oracle Database.
   
 Parameters:
    -v: version to build
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
        Choose "latest" version for podman host machines
        Choose "ol7" version for docker host machines
    -o: passes on Docker build option
@@ -34,7 +33,7 @@ EOF
 
 # Parameters
 VERSION="latest"
-SKIPMD5=0
+export SKIPMD5=0
 DOCKEROPS=""
 
 while getopts "hiv:o:" optname; do
@@ -70,7 +69,7 @@ else
     exit 1
 fi
 # Go into version folder
-cd $VERSION
+cd "$VERSION" || exit
 
 echo "=========================="
 echo "DOCKER info:"
@@ -79,22 +78,23 @@ echo "=========================="
 
 # Proxy settings
 PROXY_SETTINGS=""
+# shellcheck disable=SC2154
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
-
+# shellcheck disable=SC2154
 if [ "$PROXY_SETTINGS" != "" ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
@@ -106,15 +106,17 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
+# shellcheck disable=SC2086
 $CONTAINER_BUILD_TOOL build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
   echo "There was an error building the image."
   exit 1
 }
 BUILD_END=$(date '+%s')
-BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
+# shellcheck disable=SC2154,SC2003
+BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 
 echo ""
-
+# shellcheck disable=SC2181,SC2320
 if [ $? -eq 0 ]; then
 cat << EOF
   Oracle RAC Storage Server Container Image version $VERSION is ready to be extended: 
@@ -128,4 +130,3 @@ EOF
 else
   echo "Oracle RAC Storage Server Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
-
