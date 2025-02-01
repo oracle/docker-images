@@ -1,4 +1,4 @@
-Oracle RAC on Podman Compose using Slim Image
+# Oracle RAC on Podman Compose using Slim Image
 ===============================================================
 
 Refer below instructions for setup of Oracle RAC on Podman Compose using Slim Image for various scenarios.
@@ -29,7 +29,6 @@ You can deploy multi node Oracle RAC Setup using Slim Image either on Block Devi
 ## Section 1: Prerequisites for Setting up Oracle RAC on Container using Slim Image
 **IMPORTANT :** Execute all the steps specified in this section before you proceed to the next section. Completing prerequisite steps is a requirement for successful configuration.
 
-
 * Execute the [Preparation Steps for running Oracle RAC Database in Containers](../../../README.md#preparation-steps-for-running-oracle-rac-database-in-containers)
 * Create Oracle Connection Manager on Container image and container if the IPs are not available on user network.Please refer [RAC Oracle Connection Manager README.MD](../../../../OracleConnectionManager/README.md).
 * Make sure Oracle RAC Slim Image is present as shown below.  If you have not created the Oracle RAC Container image, execute the [Section 2.1: Building Oracle RAC Database Slim Image](../../../README.md).
@@ -53,7 +52,7 @@ You can deploy multi node Oracle RAC Setup using Slim Image either on Block Devi
   rm -rf /scratch/rac/cluster01/node2/*
   ```
 
-* Make sure downloaded Oracle RAC software location is staged, & available for both RAC nodes. In below example, we have staged Oracle RAC software at location ```/scratch/software/21c/goldimages```
+* Make sure downloaded Oracle RAC software location is staged, & available for both RAC nodes. In below example, we have staged Oracle RAC software at location `/scratch/software/21c/goldimages`
   ```bash
   ls /scratch/software/21c/goldimages
   LINUX.X64_213000_db_home.zip  LINUX.X64_213000_grid_home.zip
@@ -69,7 +68,7 @@ You can deploy multi node Oracle RAC Setup using Slim Image either on Block Devi
     semanage fcontext -a -t container_file_t /scratch/software/21c/goldimages/LINUX.X64_213000_db_home.zip
     restorecon -v /scratch/software/21c/goldimages/LINUX.X64_213000_db_home.zip
     ```
-In order to setup 2 Node RAC containers using Podman compose, please make sure pre-requisites are completed before proceeding further - 
+In order to setup 2 Node RAC containers using Podman compose, please make sure pre-requisites are completed before proceeding further -
 
 ## Section 2: Setup Oracle RAC Containers with Slim Image using Podman Compose Files
 
@@ -639,7 +638,6 @@ ORACLE RAC DATABASE IS READY TO USE
 (Optionally) Bring up CMAN Container-
 ```bash
 podman-compose up -d ${CMAN_CONTAINER_NAME}
-
 podman-compose logs -f ${CMAN_CONTAINER_NAME}
 ################################################
   CONNECTION MANAGER IS READY TO USE!            
@@ -722,7 +720,7 @@ Oracle Database ORCLCDB3 is up and running on racnodep3.
 ```
 ## Section 3.2: Sample of Addition of Nodes to Oracle RAC Containers using Podman Compose based on Oracle RAC Slim Image with NFS Storage Devices
 
-Below is example to add one more node to existing Oracle RAC 2 node cluster using Oracle RAC Image and with user defined files using podman compose file -
+Below is example to add one more node to existing Oracle RAC 2 node cluster using Oracle RAC Image and with user defined files using podman compose file-
 
 Create compose file named [podman-compose.yml](./withoutresponsefiles/nfsdevices/addition/podman-compose.yml) in your working directory.
 
@@ -792,7 +790,7 @@ Oracle Database ORCLCDB3 is up and running on racnodep3.
 
 ## Section 4: Environment Variables for Oracle RAC on Podman Compose
 
-Refer [Environment Variables Explained for Oracle RAC on Podman Compose](../../../docs/ENVVARIABLESCOMPOSE.md) for explanation of all the environment variables related to Oracle RAC on Podman Compose. Change or Set these environment variables as per your environment.                              |
+Refer [Environment Variables Explained for Oracle RAC on Podman Compose](../../../docs/ENVVARIABLESCOMPOSE.md) for explanation of all the environment variables related to Oracle RAC on Podman Compose. Change or Set these environment variables as per your environment.
 
 ## Section 5: Validating Oracle RAC Environment
 You can validate if environment is healthy by running below command-
@@ -809,7 +807,7 @@ Note:
 
 ## Section 6: Connecting to Oracle RAC Environment
 
-**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections.  
+**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections.
 Refer [README](../../../docs/CONNECTING.md) for instructions on how to connect to Oracle RAC Database.
 
 ## Cleanup

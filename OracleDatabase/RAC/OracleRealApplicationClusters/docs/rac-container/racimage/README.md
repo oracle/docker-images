@@ -1,4 +1,4 @@
-Oracle RAC on Podman using Oracle RAC Image 
+Oracle RAC on Podman using Oracle RAC Image
 ===============================================================
 
 Refer to the following instructions to set up Oracle RAC on Podman using an Oracle RAC Image for various scenarios.
@@ -30,15 +30,15 @@ Refer to the following instructions to set up Oracle RAC on Podman using an Orac
 
 ## Oracle RAC Setup on Podman using Oracle RAC Image
 
-You can deploy multi-node Oracle RAC using Oracle RAC images either on block devices or on NFS storage devices. You can also choose to deploy the images either by using Response Files that you define, or without using response files. All of these demonstrated in detail in this document. 
+You can deploy multi-node Oracle RAC using Oracle RAC images either on block devices or on NFS storage devices. You can also choose to deploy the images either by using Response Files that you define, or without using response files. All of these demonstrated in detail in this document.
 
 ## Section 1: Prerequisites for Setting up Oracle RAC on containers using Oracle RAC image
 **IMPORTANT:** Complete all of the steps specified in this section (customized for your environment) before you proceed to the next section. Completing prerequisite steps is a requirement for successful configuration.
 
 
 * Complete the [Preparation Steps for running Oracle RAC Database in containers](../../../README.md#preparation-steps-for-running-oracle-rac-database-in-containers)
-* If you are planning to use Oracle Connection Manager, then create an Oracle Connection Manager container image. See the [Oracle RAC Oracle Connection Manager README.MD](../../../../OracleConnectionManager/README.md).
-* Ensure the Oracle RAC Image is present. You can either pull and use the Oracle RAC Image from the Oracle Container Registry, or you can create the Oracle RAC Container image by following [Building Oracle RAC Database Container Images](../../../README.md).
+* If you are planning to use Oracle Connection Manager, then create an Oracle Connection Manager container image. See the [Oracle RAC Oracle Connection Manager README.MD](../../../../OracleConnectionManager/README.md)
+* Ensure the Oracle RAC Image is present. You can either pull and use the Oracle RAC Image from the Oracle Container Registry, or you can create the Oracle RAC Container image by following [Building Oracle RAC Database Container Images](../../../README.md)
 ```bash
 # podman images|grep database-rac
 localhost/oracle/database-rac        21.3.0          41239091d2ac  16 minutes ago  9.27 GB
@@ -49,7 +49,7 @@ localhost/oracle/database-rac        21.3.0          41239091d2ac  16 minutes ag
 
 ## Section 2: Deploying Two-node Oracle RAC on Podman Using Oracle RAC Image
 
-Use the instructions that follow to set up Oracle RAC on Podman using an Oracle RAC image for various scenarios, such as deploying with user-defined files or deploying without user-defined files. Oracle RAC setup can also be done either on block devices or on NFS storage devices. 
+Use the instructions that follow to set up Oracle RAC on Podman using an Oracle RAC image for various scenarios, such as deploying with user-defined files or deploying without user-defined files. Oracle RAC setup can also be done either on block devices or on NFS storage devices.
 
 ### Section 2.1: Deploying Two-node Oracle RAC on Podman using an Oracle RAC image without using response files
 
@@ -58,7 +58,7 @@ To set up Oracle RAC on Podman using an Oracle RAC Image without providing respo
 #### Section 2.1.1: Deploying With Block Devices
 ##### Section 2.1.1.1: Prerequisites for setting up Oracle RAC with block devices
 
-Ensure that you have created at least one Block Device with at least 50 Gb of storage space that can be accessed by two Oracle RAC Nodes, and can be shared between them. You can create more block devices in accordance with your requirements and pass those environment variables and devices to the `podman create` command as well as in the Oracle Grid Infrastructure (grid) response files. **Note:** if you use response files. You can skip this step if you are planning to use NFS storage devices. 
+Ensure that you have created at least one Block Device with at least 50 Gb of storage space that can be accessed by two Oracle RAC Nodes, and can be shared between them. You can create more block devices in accordance with your requirements and pass those environment variables and devices to the `podman create` command as well as in the Oracle Grid Infrastructure (grid) response files. **Note:** if you use response files. You can skip this step if you are planning to use NFS storage devices.
 
 Ensure that the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
 
@@ -172,7 +172,7 @@ localhost/oracle/database-rac:21.3.0
 
 * Create a NFS Volume to be used for ASM Devices for Oracle RAC. See [Configuring NFS for Storage for Oracle RAC on Podman](https://review.us.oracle.com/review2/Review.html#reviewId=467473;scope=document;status=open,fixed;documentId=4229197) for more details. **Note:** You can skip this step if you are planning to use block devices for storage.
 
-* Make sure the ASM NFS Storage devices do not have any existing file system. 
+* Make sure the ASM NFS Storage devices do not have any existing file system.
 
 ##### Section 2.1.2.2: Create Oracle RAC Containers
 Create the Oracle RAC containers using the image. For details about environment variables, see [Environment Variables Explained](#environment-variables-for-oracle-rac-on-containers). You can use the following example to create a container on host `racnodep1`:
@@ -342,7 +342,7 @@ podman create -t -i \
 localhost/oracle/database-rac:21.3.0
 ```
 
-Create another Oracle RAC container 
+Create another Oracle RAC container
 ```bash
 podman create -t -i \
 --hostname racnodep2 \
@@ -397,10 +397,10 @@ localhost/oracle/database-rac:21.3.0
 ##### Prerequisites for setting up Oracle RAC with User-Defined Files
 - Create a NFS Volume to be used for ASM Devices for Oracle RAC. See [Configuring NFS for Storage for Oracle RAC on Podman](https://review.us.oracle.com/review2/Review.html#reviewId=467473;scope=document;status=open,fixed;documentId=4229197) for more details. **Note:** You can skip this step if you are planning to use block devices for storage.
 
-- Make sure the ASM NFS Storage devices do not have any existing file system. 
+- Make sure the ASM NFS Storage devices do not have any existing file system.
 - On the shared folder between both Oracle RAC nodes, create the file name [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp`.
-- Also, prepare a database response file similar to this [dbca_21c.rsp](withresponsefiles/dbca_21c.rsp). 
-- If the SELinux is enabled on the machine then also run the following the following as well -
+- Also, prepare a database response file similar to this [dbca_21c.rsp](withresponsefiles/dbca_21c.rsp).
+- If the SELinux is enabled on the machine then also run the following the following as well-
   ```bash
   semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
   restorecon -v /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
@@ -514,13 +514,13 @@ podman create -t -i \
  localhost/oracle/database-rac:21.3.0
 ```
 **Note:** 
-- To use this example, change the environment variables based on your environment. See [Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers) for more details. 
+- To use this example, change the environment variables based on your environment. See [Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers) for more details.
 - In the example that follows, we use a podman bridge network with one public and two private networks. For this reason,`--sysctl 'net.ipv4.conf.eth1.rp_filter=2' --sysctl 'net.ipv4.conf.eth2.rp_filter=2` is required when we use two private networks. If your use case is different, then this syctl configuration for the Podman Bridge can be ignored.
 - If you are planning to place database files such as datafiles and archivelogs on different diskgroups, then you must pass these parameters: `DB_ASM_DEVICE_LIST`, `RECO_ASM_DEVICE_LIST`,` DB_DATA_FILE_DEST`, `DB_RECOVERY_FILE_DEST`. For more information, see [Section 8: Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers).
 
 ## Section 3: Attach the Network to Containers
 
-You must assign the podman networks created based on the preceding examples. Complete the following tasks: 
+You must assign the podman networks created based on the preceding examples. Complete the following tasks:
 
 #### Attach the network to racnodep1
 
@@ -555,7 +555,7 @@ It can take approximately 20 minutes or longer to create and set up a two-node O
 podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
 ```
 
-When the database configuration is complete, you should see a message similar to the following: 
+When the database configuration is complete, you should see a message similar to the following:
 
 ```bash
 ####################################
@@ -584,7 +584,7 @@ See [README](../../CONNECTING.md) for instructions on how to connect to the Orac
 ## Section 7: Example of Node Addition to Oracle RAC Containers Based on Oracle RAC Image with Block Devices
 
 ### Section 7.1: Example of node addition to Oracle RAC Containers based on Oracle RAC Image without Response File
-The following is an example of how to add an additional node to the existing Oracle RAC two-node cluster using the Oracle RAC image and without user-defined files. 
+The following is an example of how to add an additional node to the existing Oracle RAC two-node cluster using the Oracle RAC image and without user-defined files.
 
 Create additional Oracle RAC Container. In this example, we create the container on host `racnodep3`:
 ```bash
@@ -640,7 +640,7 @@ podman network connect rac_priv2_nw --ip 192.168.18.172  racnodep3
 podman start racnodep3
 podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
 ```
-When the Oracle RAC container has completed being set up, you should see a message similar to the following: 
+When the Oracle RAC container has completed being set up, you should see a message similar to the following:
 ```bash
 ========================================================
 Oracle Database ORCLCDB3 is up and running on racnodep3.

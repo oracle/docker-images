@@ -1,4 +1,4 @@
-Oracle RAC on Podman Compose using Oracle RAC Image 
+# Oracle RAC on Podman Compose using Oracle RAC Image
 ===============================================================
 
 Refer below instructions for setup of Oracle RAC on Podman using Oracle RAC Image for various scenarios.
@@ -46,7 +46,7 @@ You can deploy multi node Oracle RAC Setup using Oracle RAC Image either on Bloc
   sudo dnf config-manager --enable ol8_developer_EPEL
   sudo dnf install -y podman-compose
   ```
-In order to setup 2 Node RAC containers using Podman compose, please make sure pre-requisites are completed before proceeding further - 
+In order to setup 2 Node RAC containers using Podman compose, please make sure pre-requisites are completed before proceeding further -
 
 ## Section 2: Setup Oracle RAC Containers with Oracle RAC Image using Podman Compose Files
 ### Section 2.1: Deploying With BlockDevices
@@ -239,7 +239,6 @@ podman network create --driver=bridge --subnet=${PRIVATE2_NETWORK_SUBNET} ${PRIV
 ```
 
 Create compose file named [podman-compose.yml](./withresponsefiles/blockdevices/podman-compose.yml) in your working directory.
-
 
 Bring up DNS Containers-
 ```bash
@@ -476,7 +475,7 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
 ```
 
-On the shared folder between both RAC nodes, copy file name [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp) to shared location e.g `/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp`. You can skip this step if you are planing to not to use **User Defined Response Files for RAC**.  
+On the shared folder between both RAC nodes, copy file name [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp) to shared location e.g `/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp`. You can skip this step if you are planing to not to use **User Defined Response Files for RAC**.
 If SELinux host is enable on machine then execute the following as well -
 ```bash
 semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
@@ -552,10 +551,7 @@ Bring up DNS Containers-
 podman-compose up -d ${DNS_CONTAINER_NAME}
 podman-compose stop ${DNS_CONTAINER_NAME}
 podman network disconnect ${PUBLIC_NETWORK_NAME} ${DNS_CONTAINER_NAME}
-
-
 podman network connect ${PUBLIC_NETWORK_NAME} --ip ${DNS_PUBLIC_IP} ${DNS_CONTAINER_NAME}
-
 podman-compose start ${DNS_CONTAINER_NAME}
 ```
 
@@ -626,7 +622,6 @@ ORACLE RAC DATABASE IS READY TO USE
 (Optionally) Bring up CMAN Container-
 ```bash
 podman-compose up -d ${CMAN_CONTAINER_NAME}
-
 podman-compose logs -f ${CMAN_CONTAINER_NAME}
 ################################################
   CONNECTION MANAGER IS READY TO USE!            
@@ -639,7 +634,6 @@ podman-compose logs -f ${CMAN_CONTAINER_NAME}
 Below is an example to add one more node to existing Oracle RAC 2 node cluster using Oracle RAC Image and with user defined files using podman compose file -
 
 Create compose file named [podman-compose.yml](./withoutresponsefiles/blockdevices/addition/podman-compose.yml) in your working directory.
-
 
 Export the required environment variables required by `podman-compose.yml` file -
 ```bash
@@ -787,7 +781,7 @@ Note:
 
 ## Section 6: Connecting to Oracle RAC Environment
 
-**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections.  
+**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections.
 Refer [README](../../../docs/CONNECTING.md) for instructions on how to connect to Oracle RAC Database.
 
 ## Cleanup
