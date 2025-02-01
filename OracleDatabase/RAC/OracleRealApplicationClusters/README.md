@@ -63,7 +63,8 @@ Also, When you are performing the installation using any files from podman host 
 * To resolve VIPs and SCAN IPs in this guide, we use a preconfigured DNS server in our environment.
 Replace environment variables `-e DNS_SERVERS=10.0.20.25`,`--dns=10.0.20.25`,`-e DOMAIN=example.info` and `--dns-search=example.info` parameters in the examples in this guide based on your environment.
 
-* The Oracle RAC `Containerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), if you are planning to build Oracle RAC Container Images from next section. However, if you are using pre-built RAC images from the Oracle Container Registry, then you can skip this step.
+* The Oracle RAC `Containerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), if you are planning to build Oracle RAC Container Images from next section.
+However, if you are using pre-built RAC images from the Oracle Container Registry, then you can skip this step.
   - Oracle Grid Infrastructure 21c (21) for Linux x86-64
   - Oracle Database 21c (21) for Linux x86-64
 
