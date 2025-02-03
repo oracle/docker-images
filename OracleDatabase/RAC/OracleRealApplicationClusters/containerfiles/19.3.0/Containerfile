@@ -116,9 +116,9 @@ ARG VERSION
 # -------------------------------------------------------------
 # Linux Env Variable
 ENV GRID_BASE=/u01/app/grid \
-    GRID_HOME=/u01/app/19.3.0/grid \
+    GRID_HOME=/u01/app/19c/grid \
     DB_BASE=/u01/app/oracle \
-    DB_HOME=/u01/app/oracle/product/19.3.0/dbhome_1
+    DB_HOME=/u01/app/oracle/product/19c/dbhome_1
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \

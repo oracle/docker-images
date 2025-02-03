@@ -60,7 +60,7 @@ services:
       SCAN_NAME: ${SCAN_NAME}
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_HOME: /u01/app/21.3.0/grid
+      GRID_HOME: /u01/app/21c/grid
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
       GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
       DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip
@@ -124,7 +124,7 @@ services:
       SCAN_NAME: ${SCAN_NAME}
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_HOME: /u01/app/21.3.0/grid
+      GRID_HOME: /u01/app/21c/grid
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
       GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
       DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip

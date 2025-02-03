@@ -49,7 +49,7 @@ services:
       CRS_ASM_DISCOVERY_DIR: ${CRS_ASM_DISCOVERY_DIR}
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_HOME: /u01/app/21.3.0/grid
+      GRID_HOME: /u01/app/21c/grid
       GRID_BASE: /u01/app/grid
       DB_HOME: /u01/app/oracle/product/21c/dbhome_1
       DB_BASE: /u01/app/oracle

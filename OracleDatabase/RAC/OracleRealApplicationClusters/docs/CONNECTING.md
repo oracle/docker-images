@@ -138,7 +138,7 @@ ora.scan3.vip
       1        ONLINE  ONLINE       racnodep2                STABLE
 --------------------------------------------------------------------------------
 
-/u01/app/21.3.0/grid/bin/olsnodes -n
+/u01/app/21c/grid/bin/olsnodes -n
 racnodep1       1
 racnodep2       2
 ```
