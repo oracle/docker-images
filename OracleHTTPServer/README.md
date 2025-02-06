@@ -1,8 +1,10 @@
 # Oracle HTTP Server in containers
 ===================================
-This project includes quick start dockerfiles and samples for standalone Oracle HTTP Server based on Oracle Linux and Oracle JDK 8 (Server).
+This project includes quick start dockerfiles and samples for standalone Oracle HTTP Server 12.2.1.4.0 and JDK 8 and 14.1.2.0.0 JDK 17 and 21 based on Oracle Linux 8 and 9.
 The certification of OHS in containers does not require the use of any file presented in this repository.
 Customers and users are welcome to use them as starters, and customize/tweak, or create from scratch new scripts and Dockerfiles.
+
+The samples in this repository are for trial use cases only. For alternative methods, we suggest obtaining base Oracle HTTP Server images from the [Oracle Container Registry](https://container-registry.oracle.com/), using the open source [WebLogic Image Tool](https://oracle.github.io/weblogic-image-tool) to create custom images.
 
 ## How to Build and Run
 This project offers Dockerfile for Oracle HTTP Server in standalone mode. To assist in building the images, you can use the buildDockerImage.sh script. See below for instructions and usage
@@ -68,4 +70,4 @@ To download and run Oracle JDK regardless of inside or outside a container, you 
 All scripts and files hosted in this project and GitHub [docker/OracleHTTPServer](./) repository required to build the images are, unless otherwise noted, released under the Universal Permissive License v1.0.
 
 ## Copyright
-Copyright (c) 2019, 2024, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2019, 2025, Oracle and/or its affiliates. All rights reserved.

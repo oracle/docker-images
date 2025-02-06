@@ -185,7 +185,7 @@ if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   PLATFORM=".arm64"
   if { [ "${VERSION}" == "19.3.0" ] && [ "${ENTERPRISE}" -eq 1 ]; }; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=LINUX.ARM64_1919000_db_home.zip" "${BUILD_OPTS[@]}")
-  elif { [ "${VERSION}" == "23.5.0" ] && [ "${FREE}" -eq 1 ]; }; then
+  elif { [ "${VERSION}" == "23.6.0" ] && [ "${FREE}" -eq 1 ]; }; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23ai-1.0-1.el8.aarch64.rpm" "${BUILD_OPTS[@]}")
   else
     echo "Currently only 19c enterprise edition is supported on ARM64 platform.";
@@ -231,7 +231,7 @@ cd "${VERSION}" || {
 }
 
 # Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.5.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
+if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.6.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
   DOCKERFILE=$( if [[ -f "Containerfile.${EDITION}" ]]; then echo "Containerfile.${EDITION}"; else echo "${DOCKERFILE}.${EDITION}";fi )
 fi;
 
