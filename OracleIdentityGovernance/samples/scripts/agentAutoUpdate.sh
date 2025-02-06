@@ -30,6 +30,7 @@ agentVersion=$(unzip -q -c  "$1"/data/agent/agent-lcm/idm-agcs-agent-lcm.jar MET
 
 # shellcheck disable=SC3028,SC3007
 r=$[ $RANDOM % 121 ]
+# shellcheck disable=SC3007
 sleep $[r]
 
 if [ -f "$1"/cacerts ]
