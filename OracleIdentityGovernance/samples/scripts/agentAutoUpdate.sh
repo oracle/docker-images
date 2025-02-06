@@ -28,6 +28,7 @@ wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/JcqrvD9KJiJKJd_2o6LoHh
 #Get Agent Package
 agentVersion=$(unzip -q -c  "$1"/data/agent/agent-lcm/idm-agcs-agent-lcm.jar META-INF/MANIFEST.MF | grep "Agent-Version: " | awk '{print $2}' | tr -d '\n' | tr -d '\r')
 
+# shellcheck disable=SC3028,SC3007
 r=$[ $RANDOM % 121 ]
 sleep $[r]
 
