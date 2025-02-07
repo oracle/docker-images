@@ -1,0 +1,9 @@
+# Stage 1: Base Stage with Environment Variables
+ARG BASE_RAC_IMAGE=localhost/oracle/database-rac:19.3.0
+FROM $BASE_RAC_IMAGE
+
+# Write the environment variables to a .env file
+RUN echo "GRID_HOME=$GRID_HOME" >> /tmp/.env && \
+    echo "DB_HOME=$DB_HOME" >> /tmp/.env
+
+ENTRYPOINT ["/bin/bash"]

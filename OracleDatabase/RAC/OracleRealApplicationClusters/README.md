@@ -248,15 +248,16 @@ Refer to [README](./docs/CLEANUP.md) for instructions on how to connect to an Or
 
 ## Sample Container Files for Older Releases
 
-This project offers example container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
+This project offers example container (Podman) files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
 
-* Oracle Database 18c Oracle Grid Infrastructure (18.3) for Linux x86-64
-* Oracle Database 18c (18.3) for Linux x86-64
-* Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
-* Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
+* Oracle Database 21c Oracle Grid Infrastructure (21.3) for Linux x86-64
+* Oracle Database 21c (21.3) for Linux x86-64
+* Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
+* Oracle Database 19c (19.3) for Linux x86-64
 
-To install older releases of Oracle RAC on Podman or Oracle RAC on Docker, refer to the [README.md](./docs/README_1.md)
+To install older releases of Oracle RAC on Docker, refer to the [README.md](./docs/README_1.md#section-4-oracle-rac-on-docker)
 
+**Note** For RAC on Podman, do not refer older release details. Refer this project instructions for latest on RAC on Podman.
 ## Support
 
 At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.10 or later. To see the current Linux support certifications, refer to [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)

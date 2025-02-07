@@ -21,7 +21,6 @@ ARG RAC_SLIM_IMAGE=localhost/oracle/database-rac:19.3.0-slim
 
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006
 FROM $BASE_RAC_IMAGE as builder
 
 # Argument to control removal of components not needed after db software installation
@@ -65,7 +64,7 @@ RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \
 USER oracle
 
 RUN $PATCH_INSTALL_DIR/$DB_PATCH_FILE $PATCH_INSTALL_DIR
-# hadolint ignore=DL3002
+
 USER root
 
 RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
@@ -73,8 +72,31 @@ RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
     rm -rf $PATCH_INSTALL_DIR
 
 #####################
-# hadolint ignore=DL3006
 FROM $RAC_SLIM_IMAGE AS final
+
+# Define build-time arguments
+ARG GRID_HOME
+ARG DB_HOME
+
+#Set environment variables using build arguments
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=$GRID_HOME \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=$DB_HOME \
+    INSTALL_SCRIPTS=/opt/scripts/install \
+    SCRIPT_DIR=/opt/scripts/startup \
+    RAC_SCRIPTS_DIR="scripts"
+
+ENV GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin \
+    DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
+    GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
+    DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
+
+# Run some basic command to verify the environment variables (optional)
+RUN echo "GRID_BASE=$GRID_BASE" && \
+    echo "GRID_HOME=$GRID_HOME" && \
+    echo "DB_BASE=$DB_BASE" && \
+    echo "DB_HOME=$DB_HOME"
 
 RUN if [ -d "/u01" ]; then \
   rm -rf /u01 && \
@@ -89,7 +111,9 @@ WORKDIR $WORKDIR
 
 HEALTHCHECK --interval=2m --start-period=30m \
    CMD "$SCRIPT_DIR/scripts/main.py --checkracinst=true" >/dev/null || exit 1
-
+#Fix SID detection
+RUN $INVENTORY/orainstRoot.sh && \
+    $GRID_HOME/root.sh && \
+    $DB_HOME/root.sh
 # Define default command to start Oracle Grid and RAC Database setup.
-# hadolint ignore=DL3025
 ENTRYPOINT /usr/bin/$INITSH

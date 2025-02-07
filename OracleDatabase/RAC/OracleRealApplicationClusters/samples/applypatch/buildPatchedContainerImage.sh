@@ -99,10 +99,18 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile . || {
+docker build --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t env -f ContainerfileEnv .
+
+docker cp $(docker create --name env --rm env):/tmp/.env ./ 
+
+docker build --no-cache=true $DOCKEROPS \
+             --build-arg GRID_HOME=$(grep GRID_HOME .env | cut -d '=' -f2) \
+             --build-arg DB_HOME=$(grep DB_HOME .env | cut -d '=' -f2) $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
   echo "There was an error building the image."
   exit 1
 }
+docker rmi -f env
+
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
