@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2025 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
@@ -24,7 +24,7 @@ try:
         sys.exit("Error: Please set the environment variable ORACLE_HOME")
 except (KeyError), why:
     sys.exit("Error: Missing Environment Variables " + str(why))
-nmConnect(username,password,domainName=domain_name)
+nmConnect(username,password,domainName=domain_name,domainDir=domain_path,host='localhost',port=5556, nmType='ssl')
 nmServerStatus(serverName=ohs_comp_name,serverType='OHS')
 nmKill(serverName=ohs_comp_name,serverType='OHS')
 nmServerStatus(serverName=ohs_comp_name,serverType='OHS')
