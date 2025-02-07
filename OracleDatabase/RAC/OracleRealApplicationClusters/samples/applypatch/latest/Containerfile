@@ -112,6 +112,7 @@ WORKDIR $WORKDIR
 HEALTHCHECK --interval=2m --start-period=30m \
    CMD "$SCRIPT_DIR/scripts/main.py --checkracinst=true" >/dev/null || exit 1
 #Fix SID detection
+# hadolint ignore=SC2086
 RUN $INVENTORY/orainstRoot.sh && \
     $GRID_HOME/root.sh && \
     $DB_HOME/root.sh
