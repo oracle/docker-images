@@ -36,7 +36,7 @@ You can deploy multi node Oracle RAC Setup using Oracle RAC Image either on Bloc
 * Ensure the Oracle RAC Image is present. You can either pull ru image from the Oracle Container Registry by following [Building Oracle RAC Database Container Images](../../../README.md#getting-oracle-rac-database-container-images), or you can create the Oracle RAC Container Patched image by following [Building Oracle RAC Database Container Images](../../../README.md#building-a-patched-oracle-rac-container-image)
 ```bash
 # podman images|grep database-rac
-localhost/oracle/database-rac        21c          41239091d2ac  16 minutes ago  9.27 GB
+localhost/oracle/database-rac        21c          41239091d2ac  16 minutes ago  20.2 GB
 ```
 * Execute the [Network](../../../README.md#network-management).
 * Execute the [Password Management](../../../README.md#password-management).
