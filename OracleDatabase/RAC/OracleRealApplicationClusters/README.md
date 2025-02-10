@@ -78,8 +78,8 @@ Refer [this documentation](https://docs.oracle.com/en/operating-systems/oracle-l
 
 Example of pulling an Oracle RAC Image from the Oracle Container Registry:
 ```bash
-podman pull container-registry.oracle.com/database/rac:21.16
-podman tag container-registry.oracle.com/database/rac:21.16 localhost/oracle/database-rac:21.3.0
+podman pull container-registry.oracle.com/database/rac_ru:21.16
+podman tag container-registry.oracle.com/database/rac_ru:21.16 localhost/oracle/database-rac:21c
 ```
 
 If you are using pre-built Oracle RAC images from [the Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Building Oracle RAC Database Container Image](#building-oracle-rac-database-container-image) to build the Oracle RAC Container Images.

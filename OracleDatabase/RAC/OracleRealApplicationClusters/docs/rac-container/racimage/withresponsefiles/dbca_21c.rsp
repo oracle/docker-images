@@ -49,7 +49,7 @@ dirServicePassword=
 walletPassword=
 listeners=LISTENER
 variablesFile=
-variables=DB_UNIQUE_NAME=ORCLCDB,ORACLE_BASE=/u01/app/oracle,PDB_NAME=ORCLPDB,DB_NAME=ORCLCDB,ORACLE_HOME=/u01/app/oracle/product/21.3.0/dbhome_1,SID=ORCLCDB
+variables=DB_UNIQUE_NAME=ORCLCDB,ORACLE_BASE=/u01/app/oracle,PDB_NAME=ORCLPDB,DB_NAME=ORCLCDB,ORACLE_HOME=/u01/app/oracle/product/21c/dbhome_1,SID=ORCLCDB
 initParams=audit_trail=none,audit_sys_operations=false,remote_login_passwordfile=exclusive
 sampleSchema=false
 memoryPercentage=40

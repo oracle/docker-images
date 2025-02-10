@@ -20,8 +20,8 @@ podman ps -a
 CONTAINER ID  IMAGE                                        COMMAND                                       CREATED         STATUS                     PORTS                    NAMES
 598385416fd7  localhost/oracle/rac-dnsserver:latest        /bin/sh -c exec $...                          55 minutes ago  Up 55 minutes (healthy)                            rac-dnsserver
 835e3d113898  localhost/oracle/rac-storage-server:latest                                                55 minutes ago  Up 55 minutes (healthy)                            racnode-storage
-9ba7bbee9095  localhost/oracle/database-rac:21.3.0                                                      52 minutes ago  Up 52 minutes (healthy)                            racnodep1
-ebbf520b0c95  localhost/oracle/database-rac:21.3.0                                                      52 minutes ago  Up 52 minutes (healthy)                            racnodep2
+9ba7bbee9095  localhost/oracle/database-rac:21c                                                      52 minutes ago  Up 52 minutes (healthy)                            racnodep1
+ebbf520b0c95  localhost/oracle/database-rac:21c                                                      52 minutes ago  Up 52 minutes (healthy)                            racnodep2
 36df843594d9  localhost/oracle/client-cman:21.3.0          /bin/sh -c exec $...                          12 minutes ago  Up 12 minutes (healthy)  0.0.0.0:1521->1521/tcp  racnodepc1-cman
 ```
 

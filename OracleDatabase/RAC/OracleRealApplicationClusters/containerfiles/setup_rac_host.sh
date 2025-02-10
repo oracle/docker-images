@@ -35,7 +35,7 @@ setup_nfs_variables() {
     export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
     export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
     export INSTALL_NODE=racnodep1
-    export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+    export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
     export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
     export SCAN_NAME=racnodepc1-scan
     export CRS_ASM_DISCOVERY_STRING="/oradata"
@@ -154,7 +154,7 @@ setup_blockdevices_variables(){
     export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
     export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
     export INSTALL_NODE=racnodep1
-    export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+    export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
     export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
     export SCAN_NAME=racnodepc1-scan
     export ASM_DEVICE1="/dev/asm-disk1"

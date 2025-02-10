@@ -38,10 +38,10 @@ You can deploy multi-node Oracle RAC using Oracle RAC images either on block dev
 
 * Complete the [Preparation Steps for running Oracle RAC Database in containers](../../../README.md#preparation-steps-for-running-oracle-rac-database-in-containers)
 * If you are planning to use Oracle Connection Manager, then create an Oracle Connection Manager container image. See the [Oracle RAC Oracle Connection Manager README.MD](../../../../OracleConnectionManager/README.md)
-* Ensure the Oracle RAC Image is present. You can either pull and use the Oracle RAC Image from the Oracle Container Registry, or you can create the Oracle RAC Container image by following [Building Oracle RAC Database Container Images](../../../README.md)
+* Ensure the Oracle RAC Image is present. You can either pull ru image from the Oracle Container Registry by following [Building Oracle RAC Database Container Images](../../../README.md#getting-oracle-rac-database-container-images), or you can create the Oracle RAC Container Patched image by following [Building Oracle RAC Database Container Images](../../../README.md#building-a-patched-oracle-rac-container-image)
 ```bash
 # podman images|grep database-rac
-localhost/oracle/database-rac        21.3.0          41239091d2ac  16 minutes ago  9.27 GB
+localhost/oracle/database-rac        21c          41239091d2ac  16 minutes ago  9.27 GB
 ```
 * Configure the [Network](../../../README.md#network-management).
 * Configure the [Password Management](../../../README.md#password-management).
@@ -117,7 +117,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 ```
 To create another container on host `racnodep2`:, use the following command:
 
@@ -164,7 +164,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 ```
 #### Section 2.1.2: Deploying with NFS Storage Devices
 
@@ -221,7 +221,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 ```
 To create another container on host `racnodep2`, use the following command:
 
@@ -269,7 +269,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 ```
 ### Section 2.2: Deploying Two-Node Oracle RAC Setup on Podman using Oracle RAC Image Using User Defined Response files
 
@@ -339,7 +339,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 ```
 
 Create another Oracle RAC container
@@ -390,7 +390,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 ```
 #### Section 2.2.2: Deploying with NFS storage devices
 
@@ -459,7 +459,7 @@ Create the first Oracle RAC Container. In this example, the hostname is `racnode
   --ulimit rtprio=99  \
   --systemd=always \
   --name racnodep1 \
- localhost/oracle/database-rac:21.3.0
+ localhost/oracle/database-rac:21c
 ```
 
 Create another Oracle RAC container. In this example, the hostname is `racnodep2`
@@ -511,7 +511,7 @@ podman create -t -i \
   --ulimit rtprio=99  \
   --systemd=always \
   --name racnodep2 \
- localhost/oracle/database-rac:21.3.0
+ localhost/oracle/database-rac:21c
 ```
 **Note:**
 - To use this example, change the environment variables based on your environment. See [Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers) for more details.
@@ -570,8 +570,8 @@ podman ps -a
 
 CONTAINER ID  IMAGE                                  COMMAND               CREATED         STATUS                   PORTS       NAMES
 f1345fd4047b  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...  8 hours ago     Up 8 hours (healthy)                 rac-dnsserver
-2f42e49758d1  localhost/oracle/database-rac:21.3.0                         46 minutes ago  Up 37 minutes (healthy)              racnodep1
-a27fceea9fe6  localhost/oracle/database-rac:21.3.0                         46 minutes ago  Up 37 minutes (healthy)              racnodep2
+2f42e49758d1  localhost/oracle/database-rac:21c                         46 minutes ago  Up 37 minutes (healthy)              racnodep1
+a27fceea9fe6  localhost/oracle/database-rac:21c                         46 minutes ago  Up 37 minutes (healthy)              racnodep2
 ```
 **Note:**
 - Look for `(healthy)` next to container names under the `STATUS` section.
@@ -631,7 +631,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep3 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 
 podman network disconnect podman racnodep3
 podman network connect rac_pub1_nw --ip 10.0.20.172 racnodep3
@@ -702,7 +702,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep3 \
-localhost/oracle/database-rac:21.3.0
+localhost/oracle/database-rac:21c
 
 podman network disconnect podman racnodep3
 podman network connect rac_pub1_nw --ip 10.0.20.172 racnodep3

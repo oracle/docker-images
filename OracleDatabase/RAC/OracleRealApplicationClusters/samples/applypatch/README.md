@@ -62,6 +62,19 @@ These directories are useful if you want to install multiple patches at once. Th
  # ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.16.0  -o '--build-arg BASE_RAC_IMAGE=localhost/oracle/database-rac:21.3.0 --build-arg RAC_SLIM_IMAGE=localhost/oracle/database-rac:21.3.0-slim'
  ```
 
+Logs-
+```bash
+ Oracle Database container image for Real Application Clusters (RAC) version 21.3.0 is ready to be extended:
+ 
+    --> oracle/database-rac:21.3.0-21.16.0
+ 
+  Build completed in 1419 seconds.
+```
+Once Oracle RAC Patch image is built, lets retag it and it is referenced as 21c in this [README](../../README.md) documenation.
+```bash
+podman tag localhost/oracle/database-rac:21.3.0-21.16.0 localhost/oracle/database-rac:21c
+```
+
 **Important:** It is not supported to apply patches on already existing databases. You must create a new, patched database container image. You can use the PDB unplug/plug functionality to carry over your PDB into the patched container database.
 
 **Notes**: If you are trying to patch the image on Oracle Linux 8 (OL8) on the PODMAN host, then you must have the  `podman-docker` package installed on your PODMAN host.

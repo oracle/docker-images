@@ -41,6 +41,11 @@ Users can deploy multi-node Oracle RAC Setup using Slim Image either on Block De
 # podman images|grep database-rac
 localhost/oracle/database-rac                         21.3.0-slim  bf6ae21ccd5a  8 hours ago    517 MB
 ```
+Retag it as below as we are going to refer image as `localhost/oracle/database-rac:21c-slim` everywhere-
+```bash
+podman tag localhost/oracle/database-rac:21.3.0-slim localhost/oracle/database-rac:21c-slim
+```
+
 * Execute the [Network](../../../README.md#network-management).
 * Execute the [Password Management](../../../README.md#password-management).
 
@@ -138,7 +143,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
- localhost/oracle/database-rac:21.3.0-slim
+ localhost/oracle/database-rac:21c-slim
  ```
  **Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep2` and set the variables based on your enviornment.
 
@@ -176,7 +181,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
- localhost/oracle/database-rac:21.3.0-slim
+ localhost/oracle/database-rac:21c-slim
  ```
 
 #### Section 2.1.2: Deploying with NFS Storage Devices
@@ -231,7 +236,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
- localhost/oracle/database-rac:21.3.0-slim
+ localhost/oracle/database-rac:21c-slim
  ```
 
 **Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep2` and set the variables based on your enviornment.
@@ -270,7 +275,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
- localhost/oracle/database-rac:21.3.0-slim
+ localhost/oracle/database-rac:21c-slim
  ```
 
 ### Section 2.2: Deploying 2 Node Oracle RAC Setup on Podman using Slim Image Using User Defined response files
@@ -335,7 +340,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21.3.0-slim
+localhost/oracle/database-rac:21c-slim
   ```
 
 **Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep2` and set the variables based on your enviornment.
@@ -377,7 +382,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
- localhost/oracle/database-rac:21.3.0-slim
+ localhost/oracle/database-rac:21c-slim
   ```
 #### Section 2.2.2: Deploying with NFS Storage Devices
 ##### Section 2.2.2.1: Prerequisites for setup Oracle RAC using User Defined Files with NFS Devices
@@ -441,7 +446,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21.3.0-slim
+localhost/oracle/database-rac:21c-slim
   ```
 
 **Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your enviornment.
@@ -482,7 +487,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
- localhost/oracle/database-rac:21.3.0-slim
+ localhost/oracle/database-rac:21c-slim
   ```
 **Note:**
 - Change environment variables based on your environment. Refer [Section 8: Environment Variables for Oracle RAC on Containers](#section-9-environment-variables-for-oracle-rac-on-containers) for more details.
@@ -547,8 +552,8 @@ podman ps -a
 
 CONTAINER ID  IMAGE                                  COMMAND               CREATED         STATUS                   PORTS       NAMES
 f1345fd4047b  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...  8 hours ago     Up 8 hours (healthy)                 rac-dnsserver
-2f42e49758d1  localhost/oracle/database-rac:21.3.0                         46 minutes ago  Up 37 minutes (healthy)              racnodep1
-a27fceea9fe6  localhost/oracle/database-rac:21.3.0                         46 minutes ago  Up 37 minutes (healthy)              racnodep2
+2f42e49758d1  localhost/oracle/database-rac:21c-slim                         46 minutes ago  Up 37 minutes (healthy)              racnodep1
+a27fceea9fe6  localhost/oracle/database-rac:21c-slim                         46 minutes ago  Up 37 minutes (healthy)              racnodep2
 ```
 Note:
 - Look for `(healthy)` next to container names under the `STATUS` section.
@@ -604,7 +609,7 @@ Below is the example of adding 1 more node to the existing Oracle RAC 2 node clu
   --ulimit rtprio=99  \
   --systemd=always \
   --name racnodep3 \
-  localhost/oracle/database-rac:21.3.0-slim
+  localhost/oracle/database-rac:21c-slim
 
   podman network disconnect podman racnodep3
   podman network connect rac_pub1_nw --ip 10.0.20.172 racnodep3
@@ -664,7 +669,7 @@ Below is an example of adding one more node to the existing Oracle RAC 2 node cl
   --ulimit rtprio=99  \
   --systemd=always \
   --name racnodep3 \
-  localhost/oracle/database-rac:21.3.0-slim
+  localhost/oracle/database-rac:21c-slim
 
   podman network disconnect podman racnodep3
   podman network connect rac_pub1_nw --ip 10.0.20.172 racnodep3

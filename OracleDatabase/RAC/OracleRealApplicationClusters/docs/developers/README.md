@@ -70,8 +70,8 @@ Refer [this documentation](https://docs.oracle.com/en/operating-systems/oracle-l
 Example of pulling an Oracle RAC Image from the Oracle Container Registry:
 ```bash
 # For Oracle RAC Container Image-
-podman pull phx.ocir.io/intsanjaysingh/oracle/database-rac:21.3.0
-podman tag phx.ocir.io/intsanjaysingh/oracle/database-rac:21.3.0 localhost/oracle/database-rac:21.3.0
+podman pull container-registry.oracle.com/database/rac_ru:21.16
+podman tag container-registry.oracle.com/database/rac_ru:21.16 localhost/oracle/database-rac:21c
 ```
 
 **Notes**
@@ -83,7 +83,7 @@ podman tag phx.ocir.io/intsanjaysingh/oracle/database-rac:21.3.0 localhost/oracl
   ```bash
   podman images
   localhost/oracle/client-cman                    21.3.0      7b095637d7b6  About a minute ago  2.08 GB
-  localhost/oracle/database-rac                   21.3.0      dcda5cf71b23  12 hours ago        9.33 GB
+  localhost/oracle/database-rac                   21c      dcda5cf71b23  12 hours ago        9.33 GB
   localhost/oracle/rac-storage-server             latest      d233b08a8aed  12 hours ago        443 MB
   localhost/oracle/rac-dnsserver                  latest      7d2301d7ea53  13 hours ago        279 MB
   ```
@@ -268,8 +268,8 @@ You can validate if the environment is healthy by running the below command-
 podman ps -a
 
 58642afb20eb  localhost/oracle/rac-dnsserver:latest       /bin/sh -c exec $...  23 hours ago  Up 23 hours (healthy)              rac-dnsserver
-a192f4e9092a  localhost/oracle/database-rac:21.3.0                              10 hours ago  Up 10 hours (healthy)              racnodep1
-745679457df5  localhost/oracle/database-rac:21.3.0                              10 hours ago  Up 10 hours (healthy)              racnodep2
+a192f4e9092a  localhost/oracle/database-rac:21c                              10 hours ago  Up 10 hours (healthy)              racnodep1
+745679457df5  localhost/oracle/database-rac:21c                              10 hours ago  Up 10 hours (healthy)              racnodep2
 ```
 Note:
 - Look for `(healthy)` next to container names under the `STATUS` section.

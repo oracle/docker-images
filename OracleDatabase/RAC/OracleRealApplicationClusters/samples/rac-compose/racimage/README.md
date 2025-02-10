@@ -33,11 +33,11 @@ You can deploy multi node Oracle RAC Setup using Oracle RAC Image either on Bloc
 
 * Execute the [Preparation Steps for running Oracle RAC database in containers](../../../README.md#preparation-steps-for-running-oracle-rac-database-in-containers)
 * Create Oracle Connection Manager on Container image and container if the IPs are not available on user network.Please refer [RAC Oracle Connection Manager README.MD](../../../../OracleConnectionManager/README.md).
-* Make sure Oracle RAC Oracle RAC Image is present.  Either you can pull and use Oracle RAC Image from Oracle Container Registry or you can create the Oracle RAC Container imageby following [Building Oracle RAC Database Container Images](../../../README.md#getting-oracle-rac-database-container-images)
-  ```bash
-  # podman images|grep database-rac
-  localhost/oracle/database-rac                 21.3.0      52a490e77887  4 days ago   9.52 GB
-  ```
+* Ensure the Oracle RAC Image is present. You can either pull ru image from the Oracle Container Registry by following [Building Oracle RAC Database Container Images](../../../README.md#getting-oracle-rac-database-container-images), or you can create the Oracle RAC Container Patched image by following [Building Oracle RAC Database Container Images](../../../README.md#building-a-patched-oracle-rac-container-image)
+```bash
+# podman images|grep database-rac
+localhost/oracle/database-rac        21c          41239091d2ac  16 minutes ago  9.27 GB
+```
 * Execute the [Network](../../../README.md#network-management).
 * Execute the [Password Management](../../../README.md#password-management).
 * `podman-compose` is part of [ol8_developer_EPEL](https://yum.oracle.com/repo/OracleLinux/ol8/developer/EPEL/x86_64/index.html). Enable `ol8_developer_EPEL` repository and install `podman-compose` as below-
@@ -61,7 +61,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
 export SCAN_NAME=racnodepc1-scan
@@ -191,7 +191,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
 export SCAN_NAME=racnodepc1-scan
@@ -326,7 +326,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
 export SCAN_NAME=racnodepc1-scan
@@ -493,7 +493,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
 export SCAN_NAME=racnodepc1-scan
@@ -645,7 +645,7 @@ export RACNODE3_PUBLIC_IP=10.0.20.172
 export RACNODE3_CRS_PRIVATE_IP1=192.168.17.172
 export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
 export INSTALL_NODE=racnodep3
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\""
 export EXISTING_CLS_NODE="racnodep1,racnodep2"
@@ -713,7 +713,7 @@ export RACNODE3_PUBLIC_IP=10.0.20.172
 export RACNODE3_CRS_PRIVATE_IP1=192.168.17.172
 export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
 export INSTALL_NODE=racnodep3
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\""
 export EXISTING_CLS_NODE="racnodep1,racnodep2"
@@ -772,8 +772,8 @@ You can validate if Oracle Container environment is healthy by running below com
 podman ps -a
 CONTAINER ID  IMAGE                                  COMMAND               CREATED         STATUS                   PORTS       NAMES
 f1345fd4047b  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...  8 hours ago     Up 8 hours (healthy)                 rac-dnsserver
-2f42e49758d1  localhost/oracle/database-rac:21.3.0                        46 minutes ago  Up 37 minutes (healthy)              racnodep1
-a27fceea9fe6  localhost/oracle/database-rac:21.3.0                        46 minutes ago  Up 37 minutes (healthy)              racnodep2
+2f42e49758d1  localhost/oracle/database-rac:21c                        46 minutes ago  Up 37 minutes (healthy)              racnodep1
+a27fceea9fe6  localhost/oracle/database-rac:21c                        46 minutes ago  Up 37 minutes (healthy)              racnodep2
 ```
 Note:
 - Look for `(healthy)` next to container names under `STATUS` section.

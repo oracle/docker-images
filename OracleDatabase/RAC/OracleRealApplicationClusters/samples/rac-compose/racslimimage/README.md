@@ -36,6 +36,11 @@ You can deploy multi node Oracle RAC Setup using Slim Image either on Block Devi
   # podman images|grep database-rac
   localhost/oracle/database-rac                         21.3.0-slim  bf6ae21ccd5a  8 hours ago    517 MB
   ```
+Retag it as below as we are going to refer image as `localhost/oracle/database-rac:21c-slim` everywhere-
+```bash
+podman tag localhost/oracle/database-rac:21.3.0-slim localhost/oracle/database-rac:21c-slim
+```
+
 * Execute the [Network](../../../README.md#network-management).
 * Execute the [Password Management](../../../README.md#password-management).
 * `podman-compose` is part of [ol8_developer_EPEL](https://yum.oracle.com/repo/OracleLinux/ol8/developer/EPEL/x86_64/index.html). Enable `ol8_developer_EPEL` repository and install `podman-compose` as below-
@@ -88,7 +93,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0-slim
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c-slim
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
 export SCAN_NAME=racnodepc1-scan
@@ -222,7 +227,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0-slim
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c-slim
 export STAGING_SOFTWARE_LOC="/scratch/software/21c/goldimages/"
 export DEFAULT_GATEWAY="10.0.20.1"
 export ASM_DEVICE1="/dev/asm-disk1"
@@ -349,7 +354,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0-slim
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c-slim
 export STAGING_SOFTWARE_LOC="/scratch/software/21c/goldimages/"
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
@@ -508,7 +513,7 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0-slim
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c-slim
 export STAGING_SOFTWARE_LOC="/scratch/software/21c/goldimages/"
 export DEFAULT_GATEWAY="10.0.20.1"
 export SCAN_NAME=racnodepc1-scan
@@ -671,7 +676,7 @@ export RACNODE3_HOST_NAME=racnodep3
 export RACNODE3_PUBLIC_IP=10.0.20.172
 export RACNODE3_CRS_PRIVATE_IP1=192.168.17.172
 export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0-slim
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c-slim
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES=pubhost:racnodep3,viphost:racnodep3-vip
 export SCAN_NAME=racnodepc1-scan
@@ -735,7 +740,7 @@ export RACNODE3_PUBLIC_IP=10.0.20.172
 export RACNODE3_CRS_PRIVATE_IP1=192.168.17.172
 export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
 export INSTALL_NODE=racnodep3
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21.3.0
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c-slim
 export DEFAULT_GATEWAY="10.0.20.1"
 export CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\""
 export EXISTING_CLS_NODE="racnodep1,racnodep2"
@@ -798,8 +803,8 @@ podman ps -a
 
 CONTAINER ID  IMAGE                                  COMMAND               CREATED         STATUS                   PORTS       NAMES
 f1345fd4047b  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...  8 hours ago     Up 8 hours (healthy)                 rac-dnsserver
-2f42e49758d1  localhost/oracle/database-rac:21.3.0-slim                    46 minutes ago  Up 37 minutes (healthy)              racnodep1
-a27fceea9fe6  localhost/oracle/database-rac:21.3.0-slim                    46 minutes ago  Up 37 minutes (healthy)              racnodep2
+2f42e49758d1  localhost/oracle/database-rac:21c-slim                    46 minutes ago  Up 37 minutes (healthy)              racnodep1
+a27fceea9fe6  localhost/oracle/database-rac:21c-slim                    46 minutes ago  Up 37 minutes (healthy)              racnodep2
 ```
 Note:
 - Look for `(healthy)` next to container names under `STATUS` section.
