@@ -38,8 +38,15 @@ function _expandVar()
 # Returns: 0 if first version gte second, otherwise 1
 function version_greater_than()
 {
-  local date1=${1%%.*} time1=${1##*.}
-  local date2=${2%%.*} time2=${2##*.}
+  local first="" second=""
+  first=$(trim "$1")
+  if [[ -z "$first" ]]; then
+    return 1
+  fi
+  second=$(trim "$2")
+
+  local date1=${first%%.*} time1=${first##*.}
+  local date2=${second%%.*} time2=${second##*.}
 
   if [ "$date1" -gt "$date2" ]; then
     return 0
@@ -70,7 +77,7 @@ function version_parse()
 {
   local var=$1
   if [ "${var}" == "${CONTAINER_INSTALL_BUNDLE}" ]; then
-    var=$(unzip -l "${var}" | grep -Po 'oracle.mgmt_agent-\d{6}.\d{4}.linux.zip')
+    var=$(unzip -l "${var}" | grep -Po 'oracle.mgmt_agent-\d{6}.\d{4}.linux.*.zip')
   fi
   var=${var##*/}
   var=${var#"${var%%[[:digit:]]*}"}
@@ -86,17 +93,15 @@ function version_parse()
 # Returns: 0 if execution is successful, 1 otherwise
 function execute_cmd()
 {
-  local cmd="$1"
-  local operation="$2"
+  local cmd="$1" operation="$2" output="" status=-1
   log "Executing ($operation): $cmd"
-  eval "$cmd"
-  
-  local cmd_exit_code=$?
-  if [ $cmd_exit_code -eq 0 ]; then
-    log "$APPNAME $operation successful [status: $cmd_exit_code]"
+  output="$(eval "$cmd" 2>&1)"
+  status=$?
+  if [ $status -eq 0 ]; then
+    log "$APPNAME $operation successful [status: $status, output: $output]"
     return 0
   else
-    log "$APPNAME $operation failed [status: $cmd_exit_code]"
+    log "$APPNAME $operation failed [status: $status, output: $output]"
     return 1
   fi
 }
