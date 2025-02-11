@@ -1,11 +1,12 @@
-## Oracle Database on Oracle Restart
+# Oracle Database on Oracle Restart
 
-After you build your Oracle RAC Container image, you can create an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts. You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document. Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md#getting-oracle-rac-database-container-images) for getting Oracle RAC Container Images.
+After you build your Oracle RAC Container image, you can create an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts.
+You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document. Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md#getting-oracle-rac-database-container-images) for getting Oracle RAC Container Images.
 
 - [Oracle database on Oracle Restart](#oracle-database-on-oracle-restart)
   - [Section 1: Prerequisites for Setting up Oracle Restart using Oracle RAC Container Image](#section-1-prerequisites-for-setting-up-oracle-restart-using-oracle-rac-continer-image)
   - [Section 2: Deploying Oracle Restart using Oracle RAC Image](#section-2-deploying-oracle-restart-using-oracle-rac-image)  
-      - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
+    - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
   - [Section 3: Attach the network to the container](#section-3-attach-the-network-to-the-container)
   - [Section 4: Start the container](#section-4-start-the-container)
   - [Section 5: Validate the Oracle Restart Environment](#section-5-validate-the-oracle-restart-environment)
@@ -16,7 +17,7 @@ After you build your Oracle RAC Container image, you can create an Oracle databa
   - [Copyright](#copyright)
 
 
-### Section 1: Prerequisites for Setting up Oracle Cluster using Oracle RAC Container Image
+## Section 1: Prerequisites for Setting up Oracle Cluster using Oracle RAC Container Image
 
 Refer [Preparation Steps for running Oracle RAC Database in containers](../../../OracleRealApplicationClusters/README.md#preparation-steps-for-running-oracle-rac-database-in-containers) in order to prepare Podman Host machine. Once these pre-requisites are complete, you can proceed further.
 
@@ -32,7 +33,7 @@ For Oracle Restart you do not need SCANs and VIPs in comparison to Oracle RAC Cl
 
 **NOTE:** In this example, the Oracle Restart is deployed with DNS server running in a podman container. Please refer [here](../../../OracleDNSServer/README.md) for the documentation.
 
-#### Export Environment Variables for Oracle Database Restart 
+### Export Environment Variables for Oracle Database Restart
 
 ```bash
 #######COMMON VARIABLE######
@@ -116,7 +117,7 @@ It can take approximately 20 minutes or longer to create and set up a Oracle Res
 podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
 ```
 
-When the database configuration is complete, you should see a message similar to the following: 
+When the database configuration is complete, you should see a message similar to the following:
 
 ```bash
 ####################################
@@ -215,7 +216,7 @@ Instance ORCLCDB is running on node dbmc1
 ```
 
 
-## Environment Variables Explained for Oracle Database Restart 
+## Environment Variables Explained for Oracle Database Restart
 | Variable               | Default Value               | Description                                              |
 |------------------------|-----------------------------|----------------------------------------------------------|
 | CRS_ASM_DEVICE_LIST    | /dev/asm-disk1              | Path to the ASM device for CRS                           |
