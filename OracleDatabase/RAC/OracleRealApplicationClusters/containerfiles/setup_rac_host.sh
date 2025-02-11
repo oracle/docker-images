@@ -1,5 +1,9 @@
 #!/bin/bash
-
+#############################
+# Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
+# Author: paramdeep.saini@oracle.com
+############################
 NODEDIRS=0
 SLIMENV=0
 IGNOREOSVERSION=0

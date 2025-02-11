@@ -1,6 +1,11 @@
 #!/bin/bash
-# Copyright (c) 2022, Oracle and/or its affiliates
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+#############################
+
+# Copyright 2025, Oracle Corporation and/or affiliates.  All rights reserved.
+
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
+
+# Author: paramdeep.saini@oracle.com
 
 echo "Creating env variables file /etc/rac_env_vars"
 /bin/bash -c "cat /proc/1/environ | tr '\0' '\n' > /etc/rac_env_vars"

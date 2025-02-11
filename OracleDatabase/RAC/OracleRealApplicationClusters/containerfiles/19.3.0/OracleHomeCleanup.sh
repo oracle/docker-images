@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2019,2021 Oracle and/or its affiliates.
+# Copyright (c) 2019,2025 Oracle and/or its affiliates.
 #
 # Since: January, 2019
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
