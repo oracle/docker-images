@@ -4,7 +4,7 @@ After you build your Oracle RAC Container image, you can create an Oracle databa
 You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document. Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md#getting-oracle-rac-database-container-images) for getting Oracle RAC Container Images.
 
 - [Oracle database on Oracle Restart](#oracle-database-on-oracle-restart)
-  - [Section 1: Prerequisites for Setting up Oracle Restart using Oracle RAC Container Image](#section-1-prerequisites-for-setting-up-oracle-restart-using-oracle-rac-continer-image)
+  - [Section 1: Prerequisites for Setting up Oracle Restart using Oracle RAC Container Image](#section-1-prerequisites-for-setting-up-oracle-cluster-using-oracle-rac-container-image)
   - [Section 2: Deploying Oracle Restart using Oracle RAC Image](#section-2-deploying-oracle-restart-using-oracle-rac-image)  
     - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
   - [Section 3: Attach the network to the container](#section-3-attach-the-network-to-the-container)
@@ -29,7 +29,7 @@ dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000
 ```
 Repeat this command on each shared block device. In this example command, `/dev/oracleoci/oraclevdd` is a shared KVM virtual block device.
 
-For Oracle Restart you do not need SCANs and VIPs in comparison to Oracle RAC Cluster. Environment variables that is needed to setup Oracle Restart as explained in [Export Environment Variables for Oracle Database Restart](#environment-variables-explained-for-oracle-restart)
+For Oracle Restart you do not need SCANs and VIPs in comparison to Oracle RAC Cluster. Environment variables that is needed to setup Oracle Restart as explained in [Export Environment Variables for Oracle Database Restart](#environment-variables-explained-for-oracle-database-restart)
 
 **NOTE:** In this example, the Oracle Restart is deployed with DNS server running in a podman container. Please refer [here](../../../OracleDNSServer/README.md) for the documentation.
 
@@ -95,7 +95,7 @@ podman create -t -i \
     --name ${GPCNODE} \
     ${IMAGE_NAME}
 ```
- 
+
 ## Section 3: Attach the network to the container
 
 ```bash
