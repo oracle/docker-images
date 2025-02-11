@@ -121,7 +121,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-if docker build --force-rm=true --no-cache=true "${DOCKEROPS[@]}" "${PROXY_SETTINGS[@]}"  -t "$IMAGE_NAME" -f Dockerfile .; then
+if docker build --force-rm=true --no-cache=true "${DOCKEROPS[@]}" "${PROXY_SETTINGS[@]}"  -t "$IMAGE_NAME" -f Containerfile .; then
   BUILD_END=$(date '+%s')
   BUILD_ELAPSED=$((BUILD_END - BUILD_START))
   
