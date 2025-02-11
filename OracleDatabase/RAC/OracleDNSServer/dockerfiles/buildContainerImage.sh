@@ -6,7 +6,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2018-2024 Oracle and/or its affiliates.
+# Copyright (c) 2018-2025 Oracle and/or its affiliates.
 #
 # shellcheck disable=SC2154
 usage() {
