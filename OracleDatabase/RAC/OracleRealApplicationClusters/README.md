@@ -106,6 +106,10 @@ Example: Building Oracle RAC image for v 21.3.0-
 ```bash
  ./buildContainerImage.sh -v 21.3.0
 ```
+Retag it as below as we are going to refer image as `localhost/oracle/database-rac:21c` everywhere-
+```bash
+podman tag localhost/oracle/database-rac:21.3.0 localhost/oracle/database-rac:21c
+```
 
 ### Building Oracle RAC Database Container Slim Image
  In this document, an `Oracle RAC container slim image` refers to a container image that does not include installing Oracle Grid Infrastructure and Oracle Database during the Oracle RAC image creation. To build an Oracle RAC slim image that doesn't contain the Oracle RAC Database and Grid infrastructure software, run the following command:
@@ -119,6 +123,11 @@ Example: Building Oracle RAC image for v 21.3.0-
  ```
  To build an Oracle RAC slim image, you must use `--build-arg SLIMMING=true`.
  To change the base image for building Oracle RAC images, you must use `--build-arg  BASE_OL_IMAGE=oraclelinux:8`.
+
+Retag it as below as we are going to refer image as `localhost/oracle/database-rac:21c-slim` everywhere-
+```bash
+podman tag localhost/oracle/database-rac:21.3.0-slim localhost/oracle/database-rac:21c-slim
+```
 
 **Notes**
 - Usage of `./buildContainerImage.sh`-

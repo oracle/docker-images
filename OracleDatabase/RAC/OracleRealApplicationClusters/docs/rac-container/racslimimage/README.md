@@ -39,11 +39,7 @@ Users can deploy multi-node Oracle RAC Setup using Slim Image either on Block De
 * Make sure the Oracle RAC Slim Image is present as shown below.  If you have not created the Oracle RAC Container image, execute the [Section 2.1: Building Oracle RAC Database Slim Image](../../../README.md)
 ```bash
 # podman images|grep database-rac
-localhost/oracle/database-rac                         21.3.0-slim  bf6ae21ccd5a  8 hours ago    517 MB
-```
-Retag it as below as we are going to refer image as `localhost/oracle/database-rac:21c-slim` everywhere-
-```bash
-podman tag localhost/oracle/database-rac:21.3.0-slim localhost/oracle/database-rac:21c-slim
+localhost/oracle/database-rac                         21c-slim  bf6ae21ccd5a  8 hours ago    517 MB
 ```
 
 * Execute the [Network](../../../README.md#network-management).
