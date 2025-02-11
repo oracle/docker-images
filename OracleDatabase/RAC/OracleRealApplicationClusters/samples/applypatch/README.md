@@ -81,4 +81,4 @@ podman tag localhost/oracle/database-rac:21.3.0-21.16.0 localhost/oracle/databas
 
 ## Copyright
 
-Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2025 Oracle and/or its affiliates. All rights reserved.

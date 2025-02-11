@@ -1,5 +1,6 @@
 # Cleanup Oracle RAC Container  Environment
-Execute below commands to cleanup Oracle RAC Container Environment-
+To clean up the Oracle Real Application Clusters (Oracle RAC) environment, complete the following commands. 
+
 ```bash
 podman inspect rac-dnsserver &> /dev/null && podman rm -f rac-dnsserver
 podman inspect racnode-storage &> /dev/null && podman rm -f racnode-storage
@@ -12,26 +13,26 @@ podman network inspect rac_priv2_nw &> /dev/null && podman network rm rac_priv2_
 podman volume inspect racstorage &> /dev/null && podman volume rm racstorage
 ```
 
-If you have setup using Block Devices, then cleanup ASM Disks-
+If you have set up the container environment to use block devices, then clean up the ASM Disks:
 ```bash
 dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000 
 dd if=/dev/zero of=/dev/oracleoci/oraclevde  bs=8k count=10000
 ```
-If you have setup using Oracle Slim Image, then cleanup data folders-
+If you have set up the container environment using an Oracle Slim Image, then clean up the data folders: 
 ```bash
 rm -rf /scratch/rac/cluster01/node1/*
 rm -rf /scratch/rac/cluster01/node2/*
 ```
 
-If you have setup using User Defined Response files, then cleanup response files-
+If you have set up the container environment with User Defined Response files, then clean up the response files: 
 ```bash
 rm -rf /scratch/common_scripts/podman/rac/*
 ```
 
 ## License
 
-All scripts and files hosted in this repository which are required to build the container  images are, unless otherwise noted, released under UPL 1.0 license.
+All scripts and files hosted in this repository that are required to build the container images are, unless otherwise noted, released under UPL 1.0 license.
 
 ## Copyright
 
-Copyright (c) 2014-2024 Oracle and/or its affiliates.
+Copyright (c) 2014-2025 Oracle and/or its affiliates.

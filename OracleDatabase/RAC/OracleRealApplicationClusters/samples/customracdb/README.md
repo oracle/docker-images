@@ -654,4 +654,4 @@ ORACLE RAC DATABASE IS READY TO USE!
 
 ## Copyright
 
-Copyright (c) 2014-2019 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2025 Oracle and/or its affiliates. All rights reserved.

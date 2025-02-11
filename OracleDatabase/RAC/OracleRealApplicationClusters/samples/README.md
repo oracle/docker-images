@@ -22,4 +22,4 @@ Refer [Podman Compose using Oracle RAC slim image](./rac-compose/racslimimage/RE
 
 Copyright
 ---------
-Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2025 Oracle and/or its affiliates. All rights reserved.

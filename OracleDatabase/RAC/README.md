@@ -23,14 +23,6 @@ Please review README of following sections in a given order. After reviewing the
 
 Provides Docker build files to create an Oracle Connection Manager container image. If you are planing to run RAC containers on single host and RAC containers IPs are not accessible on your network, you can use connection manager image to access RAC database on your network. For more details, see [OracleConnectionManager/README.md](./OracleConnectionManager/README.md).
 
-## OracleRACStorageServer
-
-Provides Podman build files to create an NFS based Storage Server for Oracle RAC. If you do not have block storage or NAS device for Oracle RAC to store OCR/Voting files and Datafiles, you can use OracleRACStorageServer container image to provide shared storage. For more details, see [OracleRACStorageServer/README.md](./OracleRACStorageServer/README.md).
-
-## OracleRACDNSServer
-
-Provides Podman build files to create a local DNS Server container for Oracle RAC On Podman. This container based DNS server provides IP addresses and the hostname resolution for the containers on the host. For more details, see [OracleRACDNSServer/README.md](./OracleDNSServer/README.md).
-
 ## Oracle Restart
 Provides Details to create Oracle database on Oracle Restart. For more details, see [OracleRealApplicationClusters/docs/orestart/README.md](./OracleRealApplicationClusters/docs/orestart/README.md)
 
@@ -38,13 +30,19 @@ Provides Details to create Oracle database on Oracle Restart. For more details, 
 
 Provides Podman build files to create an Oracle RAC Database container image. For more details, see [OracleRealApplicationClusters/README.md](./OracleRealApplicationClusters/README.md)
 
-**Note:** Please make sure that you have reviewed the README of `OracleConnectionManager` and `OracleRACStorageServer` sections and created the images/container based on your env before you review the README of `OracleRealApplicationClusters`.
 
 ## Oracle Real Application Clusters for Developers
 
 Provides Details to create an Oracle RAC Database for a rapid deployment to build CI/CD pipeline.
 
 You need to review `OracleRACDNSServer` and `OracleRACStorageServer` sections, create the images and containers based on your environment configuration before you proceed to `Oracle Real Application Clusters For Developers` section.
+* **OracleRACDNSServer Container**
+
+  Provides Podman build files to create a local DNS Server container for Oracle RAC on Podman. This container-based DNS server provides IP addresses and the hostname resolution for the containers on the host. For more details, see [OracleRACDNSServer/README.md](./OracleDNSServer/README.md).
+
+* **OracleRACStorageServer Container**
+
+  Provides Podman build files to create an NFS-based storage server for Oracle RAC. If you do not have a block storage or NAS device for Oracle RAC to store OCR, Voting files and Datafiles, then you can use the Oracle RAC Storage Server container image to provide shared storage. For more details, see [OracleRACStorageServer/README.md](./OracleRACStorageServer/README.md).
 
 * **Oracle Real Application Clusters for Developers**  
   Provides Details to create an Oracle RAC Database container image for developers. For more details, see [OracleRealApplicationClusters/docs/developers/README.md](./OracleRealApplicationClusters/docs/developers/README.md)

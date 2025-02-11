@@ -1740,6 +1740,9 @@ class OraCommon:
          """
          return the sid
          """
+         if self.check_key("CRS_GPC",self.ora_env_dict):
+            return osid
+
          path='''/usr/bin:/bin:/sbin:/usr/local/sbin:{0}/bin'''.format(dbhome)
          ldpath='''{0}/lib:/lib:/usr/lib'''.format(dbhome)
          cmd='''su - {5} -c "export ORACLE_HOME={0};export PATH={1};export LD_LIBRARY_PATH={2}; {0}/bin/srvctl status database -d {3} | grep {4}"'''.format(dbhome,path,ldpath,osid,hostname,dbuser)
@@ -2384,6 +2387,7 @@ class OraCommon:
          dbname,osid,dbuname=self.getdbnameinfo()
          hostname = self.get_public_hostname()
          inst_sid=self.get_inst_sid(osuser,dbhome,osid,hostname)
+
          connect_str=self.get_sqlplus_str(dbhome,inst_sid,osuser,"sys",None,None,None,None,None,None,None)
          if inst_sid:
             status=self.get_dbinst_status(osuser,dbhome,inst_sid,connect_str)
