@@ -23,7 +23,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2024 Oracle and/or its affiliates.
+Copyright (c) 2014,2025 Oracle and/or its affiliates.
 
 EOF
   exit 0
