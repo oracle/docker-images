@@ -1,0 +1,64 @@
+#############################
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Author: paramdeep.saini@oracle.com
+############################
+#
+# ORACLE CONTAINERFILES PROJECT
+# --------------------------
+# This is the Containerfile for Oracle Database RAC Storage Server. This file create NFS server for ASM storage. 
+# 
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put all downloaded files in the same directory as this Containerfile
+# Run: 
+#      $ podman build -t oracle/rac-storage-server:latest. 
+#
+# Pull base image
+# ---------------
+FROM oraclelinux:8
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
+    INSTALL_DIR=/opt/scripts \
+    EXPORTFILE=exportfile \
+    RUN_FILE="runOracle.sh" \
+    SUDO_SETUP_FILE="setupSudo.sh" \
+    INITSH="initsh" \
+    BIN="/usr/sbin" \
+    ORADATA="/oradata" \
+    container="true" 
+# Use second ENV so that variable get substituted
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install  \
+     SCRIPT_DIR=$INSTALL_DIR/startup
+
+# Copy binaries
+# -------------
+# Copy Linux setup Files
+COPY $SETUP_LINUX_FILE $SUDO_SETUP_FILE $INSTALL_SCRIPTS/
+
+# Setup Scripts
+COPY $RUN_FILE $EXPORTFILE $INITSH $SCRIPT_DIR/
+
+RUN  chmod 755 $INSTALL_DIR/install/*.sh && \
+     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+     $INSTALL_DIR/install/$SUDO_SETUP_FILE && \
+     sync 
+   
+RUN  rm -rf $INSTALL_DIR/install && \
+    chmod 755 $SCRIPT_DIR/*.sh && \
+    echo "nohup $SCRIPT_DIR/runOracle.sh &" >> /etc/rc.local && \
+    chmod +x /etc/rc.d/rc.local  && \
+    cp $SCRIPT_DIR/$INITSH /usr/bin/$INITSH && \
+    chmod 755 /usr/bin/$INITSH && \ 
+    chmod 666 $SCRIPT_DIR/$EXPORTFILE
+
+USER root 
+VOLUME ["/oradata"]
+WORKDIR /workdir
+
+# Define default command to start Oracle Database.
+# hadolint ignore=DL3025
+ENTRYPOINT /usr/bin/$INITSH

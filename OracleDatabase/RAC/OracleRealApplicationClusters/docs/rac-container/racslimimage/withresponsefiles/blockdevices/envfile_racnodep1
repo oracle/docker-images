@@ -1,0 +1,15 @@
+DNS_SERVERS=10.0.20.25
+CRS_PRIVATE_IP1=192.168.17.170
+CRS_PRIVATE_IP2=192.168.18.170
+GRID_HOME=/u01/app/21c/grid
+STAGING_SOFTWARE_LOC=/scratch/software/21c/goldimages
+GRID_SW_ZIP_FILE=LINUX.X64_213000_grid_home.zip
+DB_SW_ZIP_FILE=LINUX.X64_213000_db_home.zip
+OP_TYPE=setuprac
+SCAN_NAME=racnodepc1-scan
+INSTALL_NODE=racnodep1
+GRID_RESPONSE_FILE=/tmp/grid_21c.rsp
+DBCA_RESPONSE_FILE=/tmp/dbca_21c.rsp
+DB_PWD_FILE=pwdsecret
+PWD_KEY=keysecret
+DB_SERVICE=service:soepdb
