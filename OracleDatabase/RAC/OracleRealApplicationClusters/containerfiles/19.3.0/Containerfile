@@ -117,7 +117,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
      GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
      DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
-
+ENV CV_ASSUME_DISTID=OEL7.8
 # Copy binaries
 # -------------
 # COPY Binaries
