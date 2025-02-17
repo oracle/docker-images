@@ -1,9 +1,10 @@
 # Oracle Database on Oracle Restart
 
-After you build your Oracle RAC Container image, you can create an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts.
-You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document. Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md#getting-oracle-rac-database-container-images) for getting Oracle RAC Container Images.
+After you build your Oracle RAC Database Container Image, you can create use this image to deploy an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle Database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts. You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document. 
 
-- [Oracle database on Oracle Restart](#oracle-database-on-oracle-restart)
+Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md#getting-oracle-rac-database-container-images) for getting Oracle RAC Container Images.
+
+- [Oracle Database on Oracle Restart](#oracle-database-on-oracle-restart)
   - [Section 1: Prerequisites for Setting up Oracle Restart using Oracle RAC Container Image](#section-1-prerequisites-for-setting-up-oracle-cluster-using-oracle-rac-container-image)
   - [Section 2: Deploying Oracle Restart using Oracle RAC Image](#section-2-deploying-oracle-restart-using-oracle-rac-image)  
     - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
@@ -11,6 +12,7 @@ You can choose to deploy Oracle Database on Oracle Restart on block devices as d
   - [Section 4: Start the container](#section-4-start-the-container)
   - [Section 5: Validate the Oracle Restart Environment](#section-5-validate-the-oracle-restart-environment)
   - [Section 6: Connecting to Oracle Restart Environment](#section-6-connecting-to-oracle-restart-environment)
+  - [Section 7: Environment Variables Explained for Oracle Database Restart](#section-7-environment-variables-explained-for-oracle-database-restart)
   - [Cleanup](#cleanup)
   - [Support](#support)
   - [License](#license)
@@ -23,13 +25,13 @@ Refer [Preparation Steps for running Oracle RAC Database in containers](../../..
 
 Ensure that you have created at least one block device with at least 50 Gb of storage space that can be accessed by Oracle Restart. You can create more block devices in accordance with your requirements and pass those environment variables and devices to the podman create command.
 
-Ensure that the ASM devices do not have any existing file system. To clear any other file system from the devices, use the following command:
+Ensure that the ASM devices do not have any existing file system. To clear any existing file system from the devices, use the following command:
 ```bash
 dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000
 ```
 Repeat this command on each shared block device. In this example command, `/dev/oracleoci/oraclevdd` is a shared KVM virtual block device.
 
-For Oracle Restart you do not need SCANs and VIPs in comparison to Oracle RAC Cluster. Environment variables that is needed to setup Oracle Restart as explained in [Export Environment Variables for Oracle Database Restart](#environment-variables-explained-for-oracle-database-restart)
+For Oracle Restart you do not need SCANs and VIPs in comparison to Oracle RAC Cluster. Environment variables that are needed to setup Oracle Restart areas explained in [Section 7: Environment Variables Explained for Oracle Database Restart](#section-7-environment-variables-explained-for-oracle-database-restart)
 
 **NOTE:** In this example, the Oracle Restart is deployed with DNS server running in a podman container. Please refer [here](../../../OracleDNSServer/README.md) for the documentation.
 
@@ -56,44 +58,45 @@ export GPCNODE_PUB_IP=10.0.20.195
 
 ```bash
 podman create -t -i \
-    --hostname ${GPCNODE} \
-    --dns-search ${DOMAIN} \
-    --dns ${DNS_SERVER_IP} \
-    --shm-size 4G \
-    --cpuset-cpus 0-1 \
-    --memory 16G \
-    --memory-swap 32G \
-    --sysctl kernel.shmall=2097152  \
-    --sysctl "kernel.sem=250 32000 100 128" \
-    --sysctl kernel.shmmax=8589934592  \
-    --sysctl kernel.shmmni=4096 \
-    --cap-add=SYS_RESOURCE \
-    --cap-add=NET_ADMIN \
-    --cap-add=SYS_NICE \
-    --cap-add=AUDIT_WRITE \
-    --cap-add=AUDIT_CONTROL \
-    --cap-add=NET_RAW \
-    --secret pwdsecret \
-    --secret keysecret \
-    -e DNS_SERVERS=${DNS_SERVER_IP} \
-    -e DB_NAME=ORCLCDB \
-    -e ORACLE_PDB_NAME=ORCLPDB \
-    -e INIT_SGA_SIZE=3G \
-    -e INIT_PGA_SIZE=2G \
-    -e INSTALL_NODE=${GPCNODE} \
-    -e OP_TYPE=setuprac \
-    -e DB_PWD_FILE=pwdsecret \
-    -e PWD_KEY=keysecret \
-    -e CRS_ASM_DEVICE_LIST=${CRS_ASM_DEVICE_LIST} \
-    -e DB_SERVICE="service:soepdb" \
-    -e CRS_GPC="true" \
-    ${DEVICE} \
-    --health-cmd "/bin/python3 /opt/scripts/startup/scripts/main.py --checkracstatus" \
-    --restart=always \
-    --ulimit rtprio=99  \
-    --systemd=always \
-    --name ${GPCNODE} \
-    ${IMAGE_NAME}
+--hostname ${GPCNODE} \
+--dns-search ${DOMAIN} \
+--dns ${DNS_SERVER_IP} \
+--shm-size 4G \
+--cpuset-cpus 0-1 \
+--memory 16G \
+--memory-swap 32G \
+--sysctl kernel.shmall=2097152  \
+--sysctl "kernel.sem=250 32000 100 128" \
+--sysctl kernel.shmmax=8589934592  \
+--sysctl kernel.shmmni=4096 \
+--cap-add=SYS_RESOURCE \
+--cap-add=NET_ADMIN \
+--cap-add=SYS_NICE \
+--cap-add=AUDIT_WRITE \
+--cap-add=AUDIT_CONTROL \
+--cap-add=NET_RAW \
+--secret pwdsecret \
+--secret keysecret \
+--health-cmd "/bin/python3 /opt/scripts/startup/scripts/main.py --checkracstatus" \
+-e DNS_SERVERS=${DNS_SERVER_IP} \
+-e DB_SERVICE="service:soepdb" \
+-e PUBLIC_HOSTS_DOMAIN=${DOMAIN} \
+-e DB_NAME=ORCLCDB \
+-e ORACLE_PDB_NAME=ORCLPDB \
+-e INIT_SGA_SIZE=3G \
+-e INIT_PGA_SIZE=2G \
+-e INSTALL_NODE=${GPCNODE} \
+-e DB_PWD_FILE=pwdsecret \
+-e PWD_KEY=keysecret \
+${DEVICE} \
+-e CRS_ASM_DEVICE_LIST=${CRS_ASM_DEVICE_LIST} \
+-e OP_TYPE=setuprac \
+-e CRS_GPC="true" \
+--restart=always \
+--ulimit rtprio=99  \
+--systemd=always \
+--name ${GPCNODE} \
+${IMAGE_NAME}
 ```
 
 ## Section 3: Attach the network to the container
@@ -108,10 +111,10 @@ podman network connect ${PUB_BRIDGE} --ip ${GPCNODE_PUB_IP} ${GPCNODE}
 Run the following commands to start the container:
 
 ```bash
- podman start ${GPCNODE}
+podman start ${GPCNODE}
 ```
 
-It can take approximately 20 minutes or longer to create and set up a Oracle Restart . To check the logs, use the following command from another terminal session:
+It can take approximately 20 minutes or longer to create and start the Oracle Restart setup . To check the logs, use the following command from another terminal session:
 
 ```bash
 podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
@@ -120,9 +123,9 @@ podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
 When the database configuration is complete, you should see a message similar to the following:
 
 ```bash
-####################################
-ORACLE RAC DATABASE IS READY TO USE!
-####################################
+###################################
+ORACLE RAC DATABASE IS READY TO USE
+###################################
 ```
 
 ## Section 5: Validate the Oracle Restart Environment
@@ -130,8 +133,8 @@ To validate if the environment is healthy, run the following command:
 ```bash
 podman ps -a
 
-CONTAINER ID  IMAGE                                  COMMAND               CREATED      STATUS                PORTS       NAMES
-131b86004040  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...  3 days ago   Up 3 days (healthy)               rac-dnsserver
+CONTAINER ID  IMAGE                                  COMMAND                CREATED      STATUS                PORTS       NAMES
+131b86004040  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...   3 days ago   Up 3 days (healthy)               rac-dnsserver
 e010e1122e99  localhost/oracle/database-rac:21.16.0   podman network di...  3 hours ago  Up 3 hours (healthy)              dbmc1
 ```
 **Note:**
@@ -139,14 +142,16 @@ e010e1122e99  localhost/oracle/database-rac:21.16.0   podman network di...  3 ho
 
 ## Section 6: Connecting to Oracle Restart Environment
 
-**IMPORTANT:** Before you connnect to the environment, you must first successfully create an Oracle Restart Environment as described in the preceding sections.  
+**IMPORTANT:** Before you connnect to the environment, you must first successfully create an Oracle Restart Environment as described in the preceding sections.
+
 To connect to the container execute following command:
 ```bash
 podman exec -i -t  ${GPCNODE} /bin/bash
 ```
-### Validating Oracle Grid  Infrastructure
-Validate if Oracle Grid is up and running from within Container-
+### Validating Oracle Grid Infrastructure
+Validate if Oracle Grid Infrastructure Stack is up and running from within container:
 ```bash
+# Verify the status of Oracle Restart stack:
 su - grid
 #Verify the status of Oracle Clusterware stack:
 [grid@dbmc1 ~]$ crsctl check cluster -all
@@ -216,7 +221,7 @@ Instance ORCLCDB is running on node dbmc1
 ```
 
 
-## Environment Variables Explained for Oracle Database Restart
+## Section 7: Environment Variables Explained for Oracle Database Restart 
 | Variable               | Default Value               | Description                                              |
 |------------------------|-----------------------------|----------------------------------------------------------|
 | CRS_ASM_DEVICE_LIST    | /dev/asm-disk1              | Path to the ASM device for CRS                           |
@@ -227,7 +232,7 @@ Instance ORCLCDB is running on node dbmc1
 | DNS_SERVER_IP          | 10.0.20.25                  | IP address of the DNS server                             |
 | IMAGE_NAME             | oracle/database-rac:21.16.0  | Name of the Docker image for Oracle RAC                  |
 | PUB_BRIDGE             | rac_pub1_nw                 | Name of the public bridge network interface              |
-| GPCNODE                | dbmc1                       | Hostname of RAC node 1                                   |
+| GPCNODE                | dbmc1                       | Hostname of GPC Host                                  |
 | GPCNODE_PUB_IP         | 10.0.20.195                 | Public IP address of RAC node 1                          |
 
 ## Cleanup
@@ -237,7 +242,7 @@ podman rm -f ${GPCNODE}
 podman network inspect rac_pub1_nw &> /dev/null && podman network rm rac_pub1_nw 
 ```
 
-Cleanup ASM Disks-
+Cleanup ASM Disks:
 ```bash
 dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000 
 ```

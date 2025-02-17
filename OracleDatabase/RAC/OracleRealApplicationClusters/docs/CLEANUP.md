@@ -1,4 +1,4 @@
-# Cleanup Oracle RAC Container  Environment
+# Cleanup Oracle RAC Database Container Environment
 To clean up the Oracle Real Application Clusters (Oracle RAC) environment, complete the following commands.
 
 ```bash

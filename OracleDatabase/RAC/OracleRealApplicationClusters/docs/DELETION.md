@@ -1,4 +1,4 @@
-# Deleting a Node from Existing RAC on Container Cluster
+# Deleting a Node from Existing Oracle RAC on Container Cluster
 First identify the node you want to remove from RAC Container Cluster, then login to container and execute below-
 ```bash
 cd /opt/scripts/startup/scripts/
