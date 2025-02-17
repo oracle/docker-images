@@ -221,9 +221,9 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
    ```
 - Generate a password file
 
-  Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users. 
+  Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users.
 
-  For this deployment scenario, it will be a common password for the grid, oracle, and database users. 
+  For this deployment scenario, it will be a common password for the grid, oracle, and database users.
   
   Run the below commands:
     ```bash
