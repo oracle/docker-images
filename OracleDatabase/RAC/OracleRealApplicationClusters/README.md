@@ -91,7 +91,7 @@ If you are using pre-built Oracle RAC images from the [Oracle Container Registry
 
 * If you want to build the latest Oracle RAC Image from this Github repository, instead of using a pre-built image, then follow below instructions to build `Oracle RAC Container Image` and `Oracle RAC Container Slim Image`.
 
-* Below section assumes that you have completed all of the prerequisites in [Preparation Steps for running Oracle RAC Database in containers](#preparation-steps-for-running-oracle-rac-database-in-containers) and completed all the steps, based on your environment. 
+* Below section assumes that you have completed all of the prerequisites in [Preparation Steps for running Oracle RAC Database in containers](#preparation-steps-for-running-oracle-rac-database-in-containers) and completed all the steps, based on your environment.
 
   **Note:** Ensure that you do not uncompress the binaries and patches manually before building the Oracle RAC Image.
 
@@ -100,7 +100,7 @@ If you are using pre-built Oracle RAC images from the [Oracle Container Registry
 * Ensure that you have enough space in `/var/lib/containers` while building the Oracle RAC Image. Also, if required use `export TMPDIR=</path/to/tmpdir>` for Podman to use another folder as the temporary podman cache location instead of the default `/tmp` location.
 
 ### Building Oracle RAC Database Container Image
-In  this document,an `Oracle RAC Database Container Image` refers to an Oracle RAC Database Container Image with Oracle Grid Infrastructure and Oracle Database Software Binaries installed during Oracle RAC Podman Image creation. The resulting images will contain the Oracle Grid Infrastructure and Oracle RAC Database Software Binaries. 
+In  this document,an `Oracle RAC Database Container Image` refers to an Oracle RAC Database Container Image with Oracle Grid Infrastructure and Oracle Database Software Binaries installed during Oracle RAC Podman Image creation. The resulting images will contain the Oracle Grid Infrastructure and Oracle RAC Database Software Binaries.
 
 Before you begin, you must download Oracle Grid Infrastructure and Oracle RDBMS Binaries and stage them under `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationCluster/containerfiles/<VERSION>`.
 
@@ -119,7 +119,8 @@ podman tag localhost/oracle/database-rac:21.3.0 localhost/oracle/database-rac:21
 ```
 
 ### Building Oracle RAC Database Container Slim Image
-In this document, an `Oracle RAC Database Container Slim Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation. To build an Oracle RAC Database Container Slim Image that doesn't contain the Oracle Grid infrastructure and Oracle RAC Database software, run the following command:
+In this document, an `Oracle RAC Database Container Slim Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation.
+To build an Oracle RAC Database Container Slim Image that doesn't contain the Oracle Grid infrastructure and Oracle RAC Database software, run the following command:
 ```bash
 ./buildContainerImage.sh -v <Software Version> -i -o '--build-arg SLIMMING=true'
 ```
@@ -219,9 +220,9 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
    mkdir /opt/.secrets/
    ```
 - Generate a password file
-  
+
   Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users. 
-  
+
   For this deployment scenario, it will be a common password for the grid, oracle, and database users. 
   
   Run the below commands:

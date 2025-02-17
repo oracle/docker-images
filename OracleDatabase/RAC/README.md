@@ -4,7 +4,7 @@ This guide contains details of build files to facilitate installation, configura
 
 ## How to build an Oracle RAC container image and access in your environment
 
-Review the README of the following sections in the order given. After reviewing the README of each section, use the build files, and skip the image or container creation steps that do not match your requirements. 
+Review the README of the following sections in the order given. After reviewing the README of each section, use the build files, and skip the image or container creation steps that do not match your requirements.
 
 * Review the following points before you proceed to the next sections:
   * Review the [Oracle Container Runtime for Podman documentation](https://docs.oracle.com/en/learn/run-containers-podman/index.html#introduction)
@@ -14,7 +14,7 @@ Review the README of the following sections in the order given. After reviewing 
     * Public IP address for each OracleRealApplicationClusters container.
     * Private IP address for each OracleRealApplicationClusters container.
     * Virtual IP address for each OracleRealApplicationClusters container.
-    * If you have DNS then collect three single client access name (SCAN) addresses for the cluster. For details, see [Installing Oracle Grid Infrastructure Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html). 
+    * If you have DNS then collect three single client access name (SCAN) addresses for the cluster. For details, see [Installing Oracle Grid Infrastructure Guide](https://docs.oracle.com/en/database/oracle/oracle-database/21/cwlin/index.html).
     * (Optional) Public IP for OracleConnectionManager container.
   * Ensure to have internet connectivity for DNF Package Manager.
 

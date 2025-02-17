@@ -1,6 +1,7 @@
 # Oracle Database on Oracle Restart
 
-After you build your Oracle RAC Database Container Image, you can create use this image to deploy an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle Database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts. You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document. 
+After you build your Oracle RAC Database Container Image, you can create use this image to deploy an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle Database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts.
+You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document.
 
 Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md#getting-oracle-rac-database-container-images) for getting Oracle RAC Container Images.
 
@@ -221,7 +222,7 @@ Instance ORCLCDB is running on node dbmc1
 ```
 
 
-## Section 7: Environment Variables Explained for Oracle Database Restart 
+## Section 7: Environment Variables Explained for Oracle Database Restart
 | Variable               | Default Value               | Description                                              |
 |------------------------|-----------------------------|----------------------------------------------------------|
 | CRS_ASM_DEVICE_LIST    | /dev/asm-disk1              | Path to the ASM device for CRS                           |
