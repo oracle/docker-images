@@ -1,0 +1,31 @@
+module rac-storage 1.0;
+
+require {
+    type container_init_t;
+    type hugetlbfs_t;
+    type nfsd_fs_t;
+    type rpc_pipefs_t;
+    type default_t;
+    type kernel_t;
+    class filesystem mount;
+    class filesystem unmount;
+    class file { read write open };
+    class dir { read watch };
+    class bpf { map_create map_read map_write };
+    class system module_request;
+    class fifo_file { open read write };
+}
+
+#============= container_init_t ==============
+allow container_init_t hugetlbfs_t:filesystem mount;
+allow container_init_t nfsd_fs_t:filesystem mount;
+allow container_init_t rpc_pipefs_t:filesystem mount;
+allow container_init_t nfsd_fs_t:file { read write open };
+allow container_init_t nfsd_fs_t:dir { read watch };
+allow container_init_t rpc_pipefs_t:dir { read watch };
+allow container_init_t rpc_pipefs_t:fifo_file { open read write };
+allow container_init_t rpc_pipefs_t:filesystem unmount;
+allow container_init_t self:bpf map_create;
+allow container_init_t self:bpf { map_read map_write };
+allow container_init_t default_t:dir read;
+allow container_init_t kernel_t:system module_request;
