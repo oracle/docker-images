@@ -1,35 +1,14 @@
-# Example of how to create a patched database image
-
+# Example of how to create an Oracle RAC Database Container Patched Image
 =============================================
-
-- [Example of how to create a patched database image](#example-of-how-to-create-a-patched-database-image)
-  - [Build Oracle RAC Slim and Base Image](#build-oracle-rac-slim-and-base-image)
-  - [The patch structure](#the-patch-structure)
-    - [Installing the patch](#installing-the-patch)
-  - [Copyright](#copyright)
-
-## Build Oracle RAC Slim and Base Image
-
-- Create RAC slim image based on the version you want build the patched images. This image will be used during multi-stage build to minimize the size requirements.
-  - Change directory to `<GIT_CLONE_REPO>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles`
-  - Build the RAC slim image
-
-    ```bash
-     ./buildContainerImage.sh -v <VERSION> -i -p -o '--build-arg BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true'
-
-     Example:
-     ./buildContainerImage.sh -v 21.3.0 -i -p -o '--build-arg BASE_OL_IMAGE=oraclelinux:8 --build-arg SLIMMING=true'
-    ```
-
-**Note**: For Docker, you need to change `BASE_OL_IMAGE` to `oraclelinux:7-slim`.
-
-- If you have not already built the base Oracle RAC image, you need to build it by following the [README.md](../../../OracleRealApplicationClusters/README.md). Once you have built the  base Oracle RAC image, you can create a patched version of it. In order to build such an image you will have to provide the patch zip file.
+## Pre-requisites
+After you build your base Oracle RAC image following the [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-image), it is mandatory to create **Oracle RAC Slim image** following [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-slim-image), then  you can create a patched version of it.
+To build a patched image, you must provide the patch zip file.
 
 **Notes:**
 
-- Some patches require a newer version of `OPatch`, the Oracle Interim Patch Installer utility. It is highly recommended, you always update opatch with the new version.
-- You can only patch 19.3.0 and above using this script.
-- The scripts will automatically install a newer OPatch version, if provided.
+* Some patches require a newer version of `OPatch`, the Oracle Interim Patch Installer utility. Oracle highly recommends that you always update opatch with the new version.
+* You can only patch releases 19.3.0 or later using this script.
+* The scripts automatically install a newer OPatch version, if provided.
 
 ## The patch structure
 
@@ -52,19 +31,19 @@ The scripts used in this example rely on following directory structure:
            p6880880*.zip (optional, OPatch zip file)
 ```
 
-**patches:** The working directory for patch installation.  
-**grid:**: The directory containing patches(Release Update) for Oracle Grid Infrastructure.  
-**oracle**: The directory containing patches(Release Update) for Oracle RAC Home and Database  
-**001**: The directory containing the patch(Release Update) zip file.  
+**patches:** The working directory for patch installation.
+**grid:**: The directory containing patches (Release Update) for Oracle Grid Infrastructure.
+**oracle**: The directory containing patches (Release Update) for Oracle Real Application Clusters (Oracle RAC) and Oracle Database
+**001**: The directory containing the patch (Release Update) zip file.
 **00N**: The second, third, ... directory containing the second, third, ... patch zip file.
-This is useful if you want to install multiple patches at once. The script will go into each of these directories in the numbered order and apply the patches.  
-**Important**: It is up to the user to guarantee the patch order, if any.
+These directories are useful if you want to install multiple patches at once. The script will go into each of these directories in the numbered order and apply the patches.
+**Important**: It is up to you to guarantee the patch order, if any order is required.
 
-### Installing the patch
+## Installing the patch
 
-- If you have multiple patches to be applied at once, add more sub directories following the numbering scheme of 002, 003, 004, 005, 00N.
-- If you have a new version of OPatch, put the OPatch zip file directly into the patches directory. Do not change the name of the zip file!
-- A utility script named `buildPatchedContainerImage.sh` has been provided to assist with building the patched image:
+* If you have multiple patches that you want to apply at once, then add more subdirectories following the numbering scheme of 002, 003, 004, 005, 00_N_.
+* If you have a new version of OPatch, then put the OPatch zip file directly into the patches directory. **Do not change the name of the OPatch zip file**.
+* A utility script named `buildPatchedContainerImage.sh` is provided to assist with building the patched image:
 
    ```bash
      [oracle@localhost applypatch]# ./buildPatchedContainerImage.sh -h
@@ -77,17 +56,29 @@ This is useful if you want to install multiple patches at once. The script will 
        -o: passes on container build option
        -p: patch label to be used for the tag
    ```
-
-  - Following is an example of building patched image using 21.3.0. Note that `BASE_RAC_IMAGE=oracle/database-rac:21.3.0` set to 21.3.0. You need to set BASE_RAC_IMAGE based on your environment.
+* The following is an example of building a patched image using 21.3.0. Note that `BASE_RAC_IMAGE=oracle/database-rac:21.3.0` is set to 21.3.0. You must set BASE_RAC_IMAGE and RAC_SLIM_IMAGE based on your enviornment.
 
  ```bash
- ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.7.0  -o '--build-arg BASE_RAC_IMAGE=localhost/oracle/database-rac:21.3.0 --build-arg RAC_SLIM_IMAGE=localhost/oracle/database-rac:21.3.0-slim'
+ # ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.16.0  -o '--build-arg BASE_RAC_IMAGE=localhost/oracle/database-rac:21.3.0 --build-arg RAC_SLIM_IMAGE=localhost/oracle/database-rac:21.3.0-slim'
  ```
 
-**Important:** It is not supported to apply patches on already existing databases. You will have to create a new, patched database container image. You can use the PDB unplug/plug functionality to carry over your PDB into the patched container database!
+Logs-
+```bash
+ Oracle Database container image for Real Application Clusters (RAC) version 21.3.0 is ready to be extended:
+ 
+    --> oracle/database-rac:21.3.0-21.16.0
+ 
+  Build completed in 1419 seconds.
+```
+Once Oracle RAC Patch image is built, lets retag it and it is referenced as 21c in this [README](../../README.md) documenation.
+```bash
+podman tag localhost/oracle/database-rac:21.3.0-21.16.0 localhost/oracle/database-rac:21c
+```
 
-**Notes**: If you are trying to patch the image on OL8 on PODMAN host, you must have `podman-docker` package installed on your PODMAN host.
+**Important:** It is not supported to apply patches on already existing databases. You must create a new, patched database container image. You can use the PDB unplug/plug functionality to carry over your PDB into the patched container database.
+
+**Notes**: If you are trying to patch the image on Oracle Linux 8 (OL8) on the PODMAN host, then you must have the  `podman-docker` package installed on your PODMAN host.
 
 ## Copyright
 
-Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2025 Oracle and/or its affiliates. All rights reserved.

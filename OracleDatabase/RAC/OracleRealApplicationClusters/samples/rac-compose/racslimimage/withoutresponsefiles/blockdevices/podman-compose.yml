@@ -1,0 +1,196 @@
+---
+version: "3"
+networks:
+  rac_pub1_nw:
+    external: true
+  rac_priv1_nw:
+    external: true
+  rac_priv2_nw:
+    external: true
+secrets:
+  pwdsecret:
+    file: ${PWD_SECRET_FILE}
+  keysecret:
+    file: ${KEY_SECRET_FILE}
+services:
+  rac-dnsserver:
+    container_name: ${DNS_CONTAINER_NAME}
+    hostname: ${DNS_HOST_NAME}
+    image: ${DNS_IMAGE_NAME}
+    dns_search: ${DNS_DOMAIN}
+    environment:
+      SETUP_DNS_CONFIG_FILES: "setup_true"
+      DOMAIN_NAME: ${DNS_DOMAIN}
+      RAC_NODE_NAME_PREFIXP: ${RAC_NODE_NAME_PREFIXP}
+      WEBMIN_ENABLED: false
+      SETUP_DNS_CONFIG_FILES: "setup_true"
+    cap_add:
+      - AUDIT_WRITE
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep named"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+    privileged: false
+    networks:
+      rac_pub1_nw:
+        ipv4_address: ${DNS_PUBLIC_IP}
+  racnodep1:
+    container_name: ${RACNODE1_CONTAINER_NAME}
+    hostname: ${RACNODE1_HOST_NAME}
+    image: ${RAC_IMAGE_NAME}
+    restart: always
+    dns: ${DNS_PUBLIC_IP}
+    dns_search: ${DNS_DOMAIN}
+    shm_size: 4G
+    secrets:
+      - pwdsecret
+      - keysecret
+    volumes:
+      - /scratch/rac/cluster01/node1:/u01
+      - /scratch:/scratch
+    environment:
+      DNS_SERVERS: ${DNS_PUBLIC_IP}
+      CRS_PRIVATE_IP1: ${RACNODE1_CRS_PRIVATE_IP1}
+      CRS_PRIVATE_IP2: ${RACNODE1_CRS_PRIVATE_IP2}
+      OP_TYPE: setuprac
+      INSTALL_NODE: ${INSTALL_NODE}
+      CRS_NODES: ${CRS_NODES}
+      SCAN_NAME: ${SCAN_NAME}
+      CRS_ASM_DEVICE_LIST: ${CRS_ASM_DEVICE_LIST}
+      INIT_SGA_SIZE: 3G
+      INIT_PGA_SIZE: 2G
+      GRID_HOME: /u01/app/21c/grid
+      GRID_BASE: /u01/app/grid
+      DB_HOME: /u01/app/oracle/product/21c/dbhome_1
+      DB_BASE: /u01/app/oracle
+      INVENTORY: /u01/app/oraInventory
+      STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
+      GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip
+      DB_NAME: ORCLCDB
+      DB_PWD_FILE: pwdsecret
+      PWD_KEY: keysecret
+      CMAN_HOST: ${CMAN_HOST_NAME}
+      CMAN_PORT: 1521
+      DB_SERVICE: ${DB_SERVICE}
+    sysctls:
+        - kernel.shmall=2097152
+        - kernel.shmmax=8589934592
+        - kernel.shmmni=4096
+        - 'kernel.sem=250 32000 100 128'
+        - 'net.ipv4.conf.eth1.rp_filter=2'
+        - 'net.ipv4.conf.eth2.rp_filter=2'
+    ulimits:
+      rtprio: 99
+    cap_add:
+      - SYS_RESOURCE
+      - NET_ADMIN
+      - SYS_NICE
+      - AUDIT_WRITE
+      - AUDIT_CONTROL
+      - NET_RAW
+    devices:
+      - "${ASM_DISK1}:${ASM_DEVICE1}"
+      - "${ASM_DISK2}:${ASM_DEVICE2}"
+    networks:
+      - rac_pub1_nw
+      - rac_priv1_nw
+      - rac_priv2_nw
+    healthcheck:
+      test: ["CMD", "/bin/python3", "/opt/scripts/startup/scripts/main.py", "--checkracstatus"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+  racnodep2:
+    container_name: ${RACNODE2_CONTAINER_NAME}
+    hostname: ${RACNODE2_HOST_NAME}
+    image: ${RAC_IMAGE_NAME}
+    restart: always
+    dns: ${DNS_PUBLIC_IP}
+    dns_search: ${DNS_DOMAIN}
+    shm_size: 4G
+    secrets:
+      - pwdsecret
+      - keysecret
+    volumes:
+      - /scratch/rac/cluster01/node2:/u01
+      - /scratch:/scratch
+    environment:
+      DNS_SERVERS: ${DNS_PUBLIC_IP}
+      CRS_PRIVATE_IP1: ${RACNODE2_CRS_PRIVATE_IP1}
+      CRS_PRIVATE_IP2: ${RACNODE2_CRS_PRIVATE_IP2}
+      OP_TYPE: setuprac
+      INSTALL_NODE: ${INSTALL_NODE}
+      CRS_NODES: ${CRS_NODES}
+      SCAN_NAME: ${SCAN_NAME}
+      CRS_ASM_DEVICE_LIST: ${CRS_ASM_DEVICE_LIST}
+      INIT_SGA_SIZE: 3G
+      INIT_PGA_SIZE: 2G
+      GRID_HOME: /u01/app/21c/grid
+      GRID_BASE: /u01/app/grid
+      DB_HOME: /u01/app/oracle/product/21c/dbhome_1
+      DB_BASE: /u01/app/oracle
+      INVENTORY: /u01/app/oraInventory
+      STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
+      GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip
+      DB_NAME: ORCLCDB
+      DB_PWD_FILE: pwdsecret
+      PWD_KEY: keysecret
+      CMAN_HOST: ${CMAN_HOST_NAME}
+      CMAN_PORT: 1521
+      DB_SERVICE: ${DB_SERVICE}
+    sysctls:
+        - kernel.shmall=2097152
+        - kernel.shmmax=8589934592
+        - kernel.shmmni=4096
+        - 'kernel.sem=250 32000 100 128'
+        - 'net.ipv4.conf.eth1.rp_filter=2'
+        - 'net.ipv4.conf.eth2.rp_filter=2'
+    ulimits:
+      rtprio: 99
+    cap_add:
+      - SYS_RESOURCE
+      - NET_ADMIN
+      - SYS_NICE
+      - AUDIT_WRITE
+      - AUDIT_CONTROL
+      - NET_RAW
+    devices:
+      - "${ASM_DISK1}:${ASM_DEVICE1}"
+      - "${ASM_DISK2}:${ASM_DEVICE2}"
+    networks:
+      - rac_pub1_nw
+      - rac_priv1_nw
+      - rac_priv2_nw
+    healthcheck:
+      test: ["CMD", "/bin/python3", "/opt/scripts/startup/scripts/main.py", "--checkracstatus"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+  racnodepc1-cman:
+    container_name: ${CMAN_CONTAINER_NAME}
+    hostname: ${CMAN_HOST_NAME}
+    image: ${CMAN_IMAGE_NAME}
+    dns_search: ${DNS_DOMAIN}
+    dns: ${DNS_PUBLIC_IP}
+    environment:
+      DOMAIN_NAME: ${DNS_DOMAIN}
+      PUBLIC_IP: ${CMAN_PUBLIC_IP}
+      PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
+      DB_HOSTDETAILS: ${DB_HOSTDETAILS}
+    privileged: false
+    ports:
+      - 1521:1521
+    networks:
+      rac_pub1_nw:
+        ipv4_address: ${CMAN_PUBLIC_IP}
+    cap_add:
+      - AUDIT_WRITE
+      - NET_RAW
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'cmadmin'"]      
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
