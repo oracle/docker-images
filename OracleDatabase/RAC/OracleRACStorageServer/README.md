@@ -48,7 +48,7 @@ Builds a Docker Image for Oracle Database.
   
 Parameters:
    -v: version to build
-       Choose one of: latest  ol7  
+       Choose one of: latest or ol7  
        Choose "latest" version for podman host machines
        Choose "ol7" for docker host machines
    -o: passes on Docker build option
@@ -190,7 +190,7 @@ docker logs -f racnode-storage
 
 **NOTE**: Place the directory in a container that has at least 60 GB. In the preceding example, we are using `/scratch/stage/rac-storage/$ORACLE_DBNAME`. Change these values according to your environment. Inside the container, the directory will be `/oradata`. Do not change this value.
 
-In the preceding example, we use **192.168.17.0/24** as the subnet for the NFS server. You can change the subnet values according to your environment.
+In the following example, we use **192.168.17.0/24** as the subnet for the NFS server. You can change the subnet values according to your environment.
 
 You should see following in the Docker logs output:
 
