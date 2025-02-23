@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2025 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -16,13 +16,11 @@
 # Run: 
 #      $ docker build -f Dockerfile -t oracle/rac-database:21.3.0-<patch level> . 
 #
-ARG BASE_RAC_IMAGE=localhost/oracle/database-rac:19.3.0
-ARG RAC_SLIM_IMAGE=localhost/oracle/database-rac:19.3.0-slim
+ARG VERSION=19.3.0
 
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006
-FROM $BASE_RAC_IMAGE as builder
+FROM localhost/oracle/database-rac:$VERSION as builder
 
 # Argument to control removal of components not needed after db software installation
 ARG SLIMMING=false
@@ -71,35 +69,11 @@ USER root
 
 RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
     rm -rf /etc/oracle && \
-    rm -rf $PATCH_INSTALL_DIR
+    rm -rf $PATCH_INSTALL_DIR && \
+    rm -rf $PATCH_DIR/* $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage
 
 #####################
-# hadolint ignore=DL3006
-FROM $RAC_SLIM_IMAGE AS final
-
-# Define build-time arguments
-ARG GRID_HOME
-ARG DB_HOME
-
-#Set environment variables using build arguments
-ENV GRID_BASE=/u01/app/grid \
-    GRID_HOME=$GRID_HOME \
-    DB_BASE=/u01/app/oracle \
-    DB_HOME=$DB_HOME \
-    INSTALL_SCRIPTS=/opt/scripts/install \
-    SCRIPT_DIR=/opt/scripts/startup \
-    RAC_SCRIPTS_DIR="scripts"
-
-ENV GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin \
-    DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
-    GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
-    DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
-
-# Run some basic command to verify the environment variables (optional)
-RUN echo "GRID_BASE=$GRID_BASE" && \
-    echo "GRID_HOME=$GRID_HOME" && \
-    echo "DB_BASE=$DB_BASE" && \
-    echo "DB_HOME=$DB_HOME"
+FROM localhost/oracle/database-rac:$VERSION-base AS final
 
 RUN if [ -d "/u01" ]; then \
   rm -rf /u01 && \
@@ -107,6 +81,12 @@ RUN if [ -d "/u01" ]; then \
 fi
 
 COPY --from=builder /u01 /u01
+#Fix SID detection
+# hadolint ignore=SC2086
+RUN $INVENTORY/orainstRoot.sh && \
+    $GRID_HOME/root.sh && \
+    $DB_HOME/root.sh && \
+    sync
 
 USER ${USER}
 VOLUME ["/common_scripts"]
@@ -114,11 +94,6 @@ WORKDIR $WORKDIR
 
 HEALTHCHECK --interval=2m --start-period=30m \
    CMD "$SCRIPT_DIR/scripts/main.py --checkracinst=true" >/dev/null || exit 1
-#Fix SID detection
-# hadolint ignore=SC2086
-RUN $INVENTORY/orainstRoot.sh && \
-    $GRID_HOME/root.sh && \
-    $DB_HOME/root.sh
 # Define default command to start Oracle Grid and RAC Database setup.
 # hadolint ignore=DL3025
 ENTRYPOINT /usr/bin/$INITSH
