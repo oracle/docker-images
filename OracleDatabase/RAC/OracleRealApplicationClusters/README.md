@@ -22,6 +22,7 @@ To create an Oracle RAC environment, follow these steps:
   - [Getting Oracle RAC Database Container Images](#getting-oracle-rac-database-container-images)
     - [Building Oracle RAC Database Container Image](#building-oracle-rac-database-container-image)
     - [Building Oracle RAC Database Container Slim Image](#building-oracle-rac-database-container-slim-image)
+    - [Building Oracle RAC Database Container Base Image](#building-oracle-rac-database-container-base-image)
   - [Network Management](#network-management)
   - [Password Management](#password-management)
   - [Oracle RAC on Containers Deployment Scenarios](#oracle-rac-on-containers-deployment-scenarios)
@@ -136,6 +137,19 @@ Retag it as below as we are going to refer this image as `localhost/oracle/datab
 ```bash
 podman tag localhost/oracle/database-rac:21.3.0-slim localhost/oracle/database-rac:21c-slim
 ```
+
+### Building Oracle RAC Database Container Base Image
+In this document, an `Oracle RAC Database Container Base Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation. This image is extended to build patched image or extensions. To build an Oracle RAC Database Container Base Image run the following command:
+```bash
+./buildContainerImage.sh -v <Software Version> -i -b
+```
+Example: To build Oracle RAC Database Container Base Image for version 21.3.0, use the below command:
+```bash
+./buildContainerImage.sh -v 21.3.0 -i -b
+```
+To build an Oracle RAC Database Container Base Image, you need to use `-b`.
+
+To change the Base Image during building Oracle RAC Database Container Images, you must use `--build-arg  BASE_OL_IMAGE=oraclelinux:8`.
 
 **Notes**
 - Usage of `./buildContainerImage.sh`:

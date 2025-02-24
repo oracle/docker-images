@@ -25,7 +25,7 @@ ARG SLIMMING=false
 # Pull base image
 # ---------------
 # hadolint ignore=DL3006,DL3025
-FROM $BASE_OL_IMAGE AS base
+FROM $BASE_OL_IMAGE AS racbase
 ARG SLIMMING=false
 ARG VERSION
 # Labels
@@ -97,7 +97,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
 # -------------------------------------------
 #############################################
 
-FROM base AS rac-image-slim-false
+FROM racbase AS rac-image-slim-false
 ARG SLIMMING
 ARG VERSION
 # Environment variables required for this build (do NOT change)
@@ -124,7 +124,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
 # Setup Scripts
-COPY $VERSION/$RUN_FILE $VERSION/$ADDNODE_RSP $VERSION/$SETUPSSH $VERSION/$GRID_INSTALL_RSP $VERSION/$DBCA_RSP $VERSION/$INITSH  $SCRIPT_DIR/
+COPY $VERSION/$RUN_FILE $VERSION/$ADDNODE_RSP $VERSION/$SETUPSSH $VERSION/$GRID_INSTALL_RSP $VERSION/$DBCA_RSP $VERSION/$INITSH $SCRIPT_DIR/
 
 COPY $RAC_SCRIPTS_DIR $SCRIPT_DIR/scripts
 # hadolint ignore=SC2086
@@ -141,7 +141,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 # Start new stage for slim image
 # -------------------------------------------
 #############################################
-FROM base AS rac-image-slim-true
+FROM racbase AS rac-image-slim-true
 ARG SLIMMING
 ARG VERSION
 # Environment variables required for this build (do NOT change)
@@ -254,3 +254,28 @@ HEALTHCHECK --interval=2m --start-period=30m \
 # Define default command to start Oracle Grid and RAC Database setup.
 # hadolint ignore=DL3025
 ENTRYPOINT /usr/bin/$INITSH
+################################################################
+# --------------------------------------------------------------
+# Start new stage for base image required by patching/extensions
+# --------------------------------------------------------------
+################################################################
+FROM final AS base
+ARG SLIMMING
+ARG VERSION
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=/u01/app/21c/grid \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=/u01/app/oracle/product/21c/dbhome_1
+# Use second ENV so that variable get substituted
+# hadolint ignore=DL3044
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     SCRIPT_DIR=$INSTALL_DIR/startup \
+     RAC_SCRIPTS_DIR="scripts" \
+     GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \
+     DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
+     GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
+     DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib

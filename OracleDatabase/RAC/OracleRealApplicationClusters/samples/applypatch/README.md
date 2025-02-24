@@ -1,7 +1,7 @@
 # Example of how to create an Oracle RAC Database Container Patched Image
 =============================================
 ## Pre-requisites
-After you build your base Oracle RAC image following the [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-image), it is mandatory to create **Oracle RAC Slim image** following [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-slim-image), then  you can create a patched version of it.
+After you build your base Oracle RAC image following the [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-image), it is mandatory to create **Oracle RAC Base image** following [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-base-image), then  you can create a patched version of it.
 To build a patched image, you must provide the patch zip file.
 
 **Notes:**
@@ -56,10 +56,10 @@ These directories are useful if you want to install multiple patches at once. Th
        -o: passes on container build option
        -p: patch label to be used for the tag
    ```
-* The following is an example of building a patched image using 21.3.0. Note that `BASE_RAC_IMAGE=oracle/database-rac:21.3.0` is set to 21.3.0. You must set BASE_RAC_IMAGE and RAC_SLIM_IMAGE based on your enviornment.
+* The following is an example of building a patched image using 21.3.0. Note that `localhost/oracle/database-rac:21.3.0-base` is created before using [README.md](../../../OracleRealApplicationClusters/README.md#building-oracle-rac-database-container-base-image).
 
  ```bash
- # ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.16.0  -o '--build-arg BASE_RAC_IMAGE=localhost/oracle/database-rac:21.3.0 --build-arg RAC_SLIM_IMAGE=localhost/oracle/database-rac:21.3.0-slim'
+ ./buildPatchedContainerImage.sh -v 21.3.0 -p 21.16.0
  ```
 
 Logs-
@@ -70,7 +70,7 @@ Logs-
  
   Build completed in 1419 seconds.
 ```
-Once Oracle RAC Patch image is built, lets retag it and it is referenced as 21c in this [README](../../README.md) documenation.
+Once Oracle RAC Patch image is built, lets retag it and it is referenced as 21c in this [README](../../docs/rac-container/racimage/README.md) documentation.
 ```bash
 podman tag localhost/oracle/database-rac:21.3.0-21.16.0 localhost/oracle/database-rac:21c
 ```
