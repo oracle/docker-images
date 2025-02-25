@@ -18,10 +18,6 @@ Review the README of the following sections in the order given. After reviewing 
     * (Optional) Public IP for OracleConnectionManager container.
   * Ensure to have internet connectivity for DNF Package Manager.
 
-## OracleConnectionManager
-
-Provides Docker build files to create an Oracle Connection Manager container image. If you are planing to run RAC containers on single host and RAC containers IPs are not accessible on your network, you can use connection manager image to access RAC database on your network. For more details, see [OracleConnectionManager/README.md](./OracleConnectionManager/README.md).
-
 ## Oracle Restart
 Provides Details to create Oracle Database on Oracle Restart. For more details, see [OracleRealApplicationClusters/docs/orestart/README.md](./OracleRealApplicationClusters/docs/orestart/README.md)
 
@@ -38,11 +34,11 @@ You need to review `OracleRACDNSServer` and `OracleRACStorageServer` sections, c
 
 * **OracleRACDNSServer Container**
 
-  Provides Podman build files to create a local DNS Server container for Oracle RAC on Podman. This container-based DNS server provides IP addresses and the hostname resolution for the containers on the host. For more details, see [OracleRACDNSServer/README.md](./OracleDNSServer/README.md).
+  Provides Podman build files to create a local DNS Server container for Oracle RAC on Podman. This container-based DNS server provides IP addresses and the hostname resolution for the containers on the host. For more details, see [OracleRACDNSServer/README.md](./OracleDNSServer/README.md)
 
 * **OracleRACStorageServer Container**
 
-  Provides Podman build files to create an NFS-based storage server for Oracle RAC. If you do not have a block storage or NAS device for Oracle RAC to store OCR, Voting files and Datafiles, then you can use the Oracle RAC Storage Server Container Image to provide shared storage. For more details, see [OracleRACStorageServer/README.md](./OracleRACStorageServer/README.md).
+  Provides Podman build files to create an NFS-based storage server for Oracle RAC. If you do not have a block storage or NAS device for Oracle RAC to store OCR, Voting files and Datafiles, then you can use the Oracle RAC Storage Server Container Image to provide shared storage. For more details, see [OracleRACStorageServer/README.md](./OracleRACStorageServer/README.md)
 
 * **Oracle Real Application Clusters for Developers**  
   Provides Details to create an Oracle RAC Database Container Image for developers. For more details, see [OracleRealApplicationClusters/docs/developers/README.md](./OracleRealApplicationClusters/docs/developers/README.md)

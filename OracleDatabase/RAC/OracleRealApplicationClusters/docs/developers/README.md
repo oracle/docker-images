@@ -267,7 +267,7 @@ You can validate if the environment is healthy by running the below command-
 ```bash
 podman ps -a
 
-58642afb20eb  localhost/oracle/rac-dnsserver:latest       /bin/sh -c exec $...  23 hours ago  Up 23 hours (healthy)              rac-dnsserver
+58642afb20eb  localhost/oracle/rac-dnsserver:latest       /bin/sh -c exec $...  23 hours ago  Up 23 hours (healthy)           rac-dnsserver
 a192f4e9092a  localhost/oracle/database-rac:21c                              10 hours ago  Up 10 hours (healthy)              racnodep1
 745679457df5  localhost/oracle/database-rac:21c                              10 hours ago  Up 10 hours (healthy)              racnodep2
 ```
@@ -287,7 +287,7 @@ Refer to [README](../CLEANUP.md) for instructions on how to cleanup an Oracle RA
 
 ## Support
 
-At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 9.3 later. To see current Linux support certifications, refer [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
+At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.10 later. To see current Linux support certifications, refer [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
 
 ## License
 

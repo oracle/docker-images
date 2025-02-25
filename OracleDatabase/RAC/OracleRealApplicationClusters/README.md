@@ -79,11 +79,13 @@ However, if you are using pre-built RAC Images from the Oracle Container Registr
 Oracle RAC is supported for production use on Podman starting with Oracle Database 19c (19.16) and Oracle Database 21c (21.7). You can also deploy Oracle RAC on Podman using the pre-built images available on the Oracle Container Registry.
 Refer to this [documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using Oracle Container Registry.
 
-Example of pulling an Oracle RAC Database Image from the Oracle Container Registry:
+Example of pulling an Oracle RAC Image from the Oracle Container Registry:
 ```bash
-podman pull container-registry.oracle.com/database/rac_ru:21.16
-podman tag container-registry.oracle.com/database/rac_ru:21.16 localhost/oracle/database-rac:21c
+# For Oracle RAC Container Image
+podman pull container-registry.oracle.com/database/rac_ru:latest
+podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
 ```
+**NOTE** Currently, latest tag in Oracle Container registry represents `21.16.0` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.
 
 If you are using pre-built Oracle RAC images from the [Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Building Oracle RAC Database Container Image](#building-oracle-rac-database-container-image).
 

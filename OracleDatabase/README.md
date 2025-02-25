@@ -9,3 +9,7 @@ Provides terraform scripts to deploy Oracle Sharding in Oracle Cloud with Oracle
 
 ## RAC
 Provides Podman build files to create an Oracle RAC Database podman image. For more details, see [RAC/README.md](./RAC/README.md).
+
+## OracleConnectionManager
+
+Provides container build files to create an Oracle Connection Manager container image. If you are planing to run RAC containers on single host and RAC containers IPs are not accessible on your network, you can use connection manager image to access RAC database on your network. For more details, see [OracleConnectionManager/README.md](./OracleConnectionManager/README.md)
