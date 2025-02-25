@@ -29,7 +29,7 @@ For detailed usage instructions, please execute the following command:
 ./buildContainerImage.sh -h
 ```
 
-## Create bridge
+## Create bridge network
 Before you create the DNS server container, ensure you have created the required network bridges so you can attach the DNS server to the correct bridge.
 
 ```bash
@@ -100,3 +100,12 @@ you should see the following in docker logs output:
 DNS Server IS READY TO USE!
 #################################################
 ```
+## Sample Container Files for Older Releases
+To setup an Oracle RAC storage Container for the Docker host on Oracle Linux 7, refer older [README](./README1.md#how-to-build-nfs-storage-container-image-on-docker-host)
+instructions.
+
+## License
+Unless otherwise noted, all scripts and files hosted in this repository that are required to build the container images are under UPL 1.0 license.
+
+## Copyright
+Copyright (c) 2014-2025 Oracle and/or its affiliates.
