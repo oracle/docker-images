@@ -7,5 +7,5 @@ Provides Docker build files to create an Oracle Database Single Instance Docker 
 ## Oracle Sharding
 Provides terraform scripts to deploy Oracle Sharding in Oracle Cloud with Oracle Database Cloud Service, Docker build files and Sharding on OKE. For more details, see [oracle/db-sharding](https://github.com/oracle/db-sharding).
 
-## RAC 
-Provides Docker build files to create an Oracle RAC Database docker image. For more details, see [RAC/README.md](./RAC/README.md).
+## RAC
+Provides Podman build files to create an Oracle RAC Database podman image. For more details, see [RAC/README.md](./RAC/README.md).
