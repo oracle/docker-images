@@ -36,7 +36,7 @@ ENV ORACLE_PDB=${ORACLE_PDB}
 ENV ORACLE_PWD=${ORACLE_PWD}
 ENV AUTO_MEM_CALCULATION=${AUTO_MEM_CALCULATION:-false}
 
-COPY --chown=oracle:dba setup/* "$ORACLE_BASE"/scripts/extensions/setup
+COPY --chown=oracle:dba setup/* "$ORACLE_BASE"/scripts/extensions/setup/
 
 # Creating the database
 RUN "$ORACLE_BASE/$RUN_FILE" --nowait

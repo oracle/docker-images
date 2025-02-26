@@ -487,4 +487,4 @@ docker rmi -f oracle/rac-dnsserver:latest oracle/rac-storage-server:19.3.0 oracl
 
 ## Copyright
 
-Copyright (c) 2014-2024 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2025 Oracle and/or its affiliates. All rights reserved.
