@@ -32,6 +32,7 @@ RUN yum -y install gzip tar && \
     tar -xvf master.tar.gz
 
 # Creating another stage for sharding extension creation
+# hadolint ignore=DL3006
 FROM ${BASE_IMAGE}
 # Extn name
 ARG EXTENSION_NAME=sharding
