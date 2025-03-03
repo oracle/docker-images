@@ -37,7 +37,7 @@ ENTERPRISE=0
 STANDARD=0
 # shellcheck disable=SC2034
 LATEST="latest"
-VERSION='x'
+VERSION='19.3.0'
 PATCHLABEL="patch"
 DOCKEROPS=""
 
@@ -103,17 +103,13 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t env -f ContainerfileEnv .
-# shellcheck disable=SC2046
-docker cp $(docker create --name env-070125 --rm env):/tmp/.env ./ 
 # shellcheck disable=SC2046
 docker build --no-cache=true $DOCKEROPS \
-             --build-arg GRID_HOME=$(grep GRID_HOME .env | cut -d '=' -f2) \
-             --build-arg DB_HOME=$(grep DB_HOME .env | cut -d '=' -f2) $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
+             --build-arg VERSION=$VERSION \
+             $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
   echo "There was an error building the image."
   exit 1
 }
-docker rmi -f env-070125
 
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
