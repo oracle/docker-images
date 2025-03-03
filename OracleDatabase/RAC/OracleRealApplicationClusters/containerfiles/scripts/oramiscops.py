@@ -171,6 +171,10 @@ class OraMiscOps:
           self.updateasmdevices()
        else:
           pass
+       if self.ocommon.check_key("RUN_DATAPATCH",self.ora_env_dict):
+          self.run_datapatch()
+       else:
+          pass
 
 
        ct = datetime.datetime.now()
@@ -786,3 +790,84 @@ class OraMiscOps:
          print(sid)
       else:
          print("NOT READY")
+
+   def run_datapatch(self):
+      """
+      Function to check and apply Oracle database patches using OPatch and Datapatch.
+      """
+      self.ocommon.log_info_message("Starting run_datapatch()", self.file_name)
+      rundatapatch = self.ora_env_dict.get("RUN_DATAPATCH", "").strip().lower() in ["true", "1", "yes"]
+
+      self.ocommon.log_info_message(f"Running datapatch with passed argument: {rundatapatch}", self.file_name)
+
+      if not rundatapatch:
+         self.ocommon.log_info_message("RUN_DATAPATCH is not set to true. Skipping datapatch execution.", self.file_name)
+         return
+      dbuser, dbhome, dbbase, oinv = self.ocommon.get_db_params()
+      self.ocommon.log_info_message("ORACLE_HOME set to " + dbhome, self.file_name)
+      self.ocommon.log_info_message("ORACLE_USER set to " + dbuser, self.file_name)
+      self.ocommon.log_info_message("ORACLE_BASE set to " + dbbase, self.file_name)
+
+      dbname, osid, dbuname = self.ocommon.getdbnameinfo()
+      hostname = self.ocommon.get_public_hostname()
+      inst_sid = self.ocommon.get_inst_sid(dbuser, dbhome, osid, hostname)
+      self.ocommon.log_info_message("ORACLE_SID set to " + inst_sid, self.file_name)
+
+      if not all([inst_sid, dbbase, dbhome, dbuser]):
+         self.ocommon.log_info_message("Missing required Oracle environment variables.", self.file_name)
+         return
+
+      # Export required environment variables
+      env_setup_cmd = "export ORACLE_SID={0}; export ORACLE_HOME={1}; export ORACLE_BASE={2}; ".format(inst_sid, dbhome, dbbase)
+
+      # Fetch patches from OPatch
+      cmd_lspatches = '''su - {0} -c "{1} {2}/OPatch/opatch lspatches"'''.format(dbuser, env_setup_cmd, dbhome)
+      output, error, retcode = self.ocommon.execute_cmd(cmd_lspatches, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
+
+      if retcode != 0:
+         self.ocommon.log_info_message("Failed to fetch OPatch patches.", self.file_name)
+         return
+
+      opatch_patches = {line.split(";")[0].strip() for line in output.splitlines() if ";" in line}
+      self.ocommon.log_info_message("OPatch Patches: " + str(opatch_patches), self.file_name)
+
+      # Fetch patches from DBA_REGISTRY_SQLPATCH with proper ORACLE_SID export
+      sql_query = "SELECT PATCH_ID FROM DBA_REGISTRY_SQLPATCH;"
+      cmd_sqlpatch = '''su - {0} -c "{1} echo \\"{2}\\" | sqlplus -S / as sysdba"'''.format(dbuser, env_setup_cmd, sql_query)
+      output, error, retcode = self.ocommon.execute_cmd(cmd_sqlpatch, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
+
+      if retcode != 0:
+         self.ocommon.log_info_message("Failed to fetch DBA_REGISTRY_SQLPATCH patches.", self.file_name)
+         return
+
+      sqlpatch_patches = {line.strip() for line in output.splitlines() if line.strip().isdigit()}
+
+      # Compare patch lists
+      missing_patches = opatch_patches - sqlpatch_patches
+      extra_patches = sqlpatch_patches - opatch_patches
+
+      self.ocommon.log_info_message("OPatch Patches: " + str(opatch_patches), self.file_name)
+      self.ocommon.log_info_message("SQL Patch Patches: " + str(sqlpatch_patches), self.file_name)
+
+      if not missing_patches and not extra_patches:
+         self.ocommon.log_info_message("All patches are correctly applied.", self.file_name)
+      else:
+         if missing_patches:
+            self.ocommon.log_info_message("These patches are missing in DBA_REGISTRY_SQLPATCH: " + str(missing_patches), self.file_name)
+            self.ocommon.log_info_message("Running datapatch...", self.file_name)
+            
+            cmd_datapatch = '''su - {0} -c "{1} {2}/OPatch/datapatch -skip_upgrade_check"'''.format(dbuser, env_setup_cmd, dbhome)
+            output, error, retcode = self.ocommon.execute_cmd(cmd_datapatch, None, None)
+            self.ocommon.check_os_err(output, error, retcode, None)
+
+            if retcode == 0:
+                  self.ocommon.log_info_message("Datapatch execution completed successfully.", self.file_name)
+            else:
+                  self.ocommon.log_info_message("Datapatch execution failed.", self.file_name)
+
+         if extra_patches:
+            self.ocommon.log_info_message("These patches appear in DBA_REGISTRY_SQLPATCH but not in OPatch: " + str(extra_patches), self.file_name)
+
+      self.ocommon.log_info_message("End run_datapatch()", self.file_name)

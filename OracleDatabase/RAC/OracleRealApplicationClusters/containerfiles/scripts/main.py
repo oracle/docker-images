@@ -22,7 +22,7 @@ def main():
    # Checking Comand line Args
    opts=""
    try:
-      opts, args = getopt.getopt(sys.argv[1:], '', ['help','resetpassword=','delracnode=','addtns=', 'checkracinst=', 'checkgilocal=','checkdbrole=','checkracdb=','checkracstatus','checkconnstr=','checkpdbconnstr=','setupdblsnr=','setuplocallsnr=','checkdbsvc=','modifydbsvc=','checkdbversion=','updatelsnrendp=','updateasmcount=','modifyscan=','updateasmdevices=','getasmdiskgroup=','getasmdisks=','getdgredundancy=','getasminstname=','getasminststatus='])
+      opts, args = getopt.getopt(sys.argv[1:], '', ['help','resetpassword=','delracnode=','addtns=', 'checkracinst=', 'checkgilocal=','checkdbrole=','checkracdb=','checkracstatus','checkconnstr=','checkpdbconnstr=','setupdblsnr=','setuplocallsnr=','checkdbsvc=','modifydbsvc=','checkdbversion=','updatelsnrendp=','updateasmcount=','modifyscan=','updateasmdevices=','getasmdiskgroup=','getasmdisks=','getdgredundancy=','getasminstname=','getasminststatus=','rundatapatch='])
    except getopt.GetoptError:
       pass
   
@@ -279,6 +279,16 @@ def main():
            oralogger.filename_ =  file_name
            ocommon.log_info_message("=======================================================================",file_name)
            oenv.add_custom_variable("UPDATE_LISTENERENDP",arg)
+           oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
+           if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
+              oenv.update_key("OP_TYPE","miscops")
+           else:
+              oenv.add_custom_variable("OP_TYPE","miscops")
+      elif opt in ('--rundatapatch'):
+           file_name = oenv.logfile_name("RUN_DATAPATCH")
+           oralogger.filename_ =  file_name
+           ocommon.log_info_message("=======================================================================",file_name)
+           oenv.add_custom_variable("RUN_DATAPATCH",arg)
            oenv.add_custom_variable("CUSTOM_RUN_FLAG","true")
            if ocommon.check_key("OP_TYPE",oenv.get_env_dict()):
               oenv.update_key("OP_TYPE","miscops")

@@ -40,7 +40,7 @@ This section provides information about the environment variables that can be us
 | DB_HOME                  | Mandatory           | Setup using Slim Image | Path to Oracle Database home directory. Default value is `/u01/app/oracle/product/21c/dbhome_1`. |
 | DB_BASE                  | Mandatory           | Setup using Slim Image | Path to the base directory of Oracle Database. Default value is `/u01/app/oracle`. |
 | INVENTORY                | Mandatory           | Setup using Slim Image | Path to the Oracle Inventory directory. Default value is `/u01/app/oraInventory`. |
-| STAGING_SOFTWARE_LOC     | Mandatory           | Setup using Slim Image | Location where the Oracle software zip files are staged. Default value is `/scratch/software/21c/goldimages/240308`. |
+| STAGING_SOFTWARE_LOC     | Mandatory           | Setup using Slim Image | Location where the Oracle software zip files are staged. Default value is `/scratch/software/21c/goldimages/`. |
 | GRID_SW_ZIP_FILE         | Mandatory           | Setup using Slim Image | Name of the Oracle Grid Infrastructure software zip file. Default value is `LINUX.X64_213000_grid_home.zip`. |
 | DB_SW_ZIP_FILE           | Mandatory           | Setup using Slim Image | Name of the Oracle Database software zip file. Default value is `LINUX.X64_213000_db_home.zip`. |
 | GRID_RESPONSE_FILE       | Mandatory           | Setup using User Defined Response Files | Path to the Oracle Grid Infrastructure response file. Default value is `/tmp/grid_21c.rsp`. |
