@@ -1,4 +1,4 @@
-# Copyright (c) 2019, 2024 Oracle and/or its affiliates.
+# Copyright (c) 2019, 2025 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -6,24 +6,28 @@
 # --------------------------
 # This is the Dockerfile for Oracle Server JRE 8 on Oracle Linux 8
 #
+# ARGS
+# ----
+# This docker file requires two arguments:
+# 1) JDK8_TOKEN is a valid dowload token for Server JRE 8 (Create the token for JDK 8).  It can be created in cloud.oracle.com/jms under Java Download
+# Token generation is documented on https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html
+# 2) OCI_REGION is the Oracle Cloud Infrastucture (OCI) region where the token is generated.
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-#
-# (1) server-jre-8uXX-linux-x64.tar.gz
-#     Download from https://www.oracle.com/java/technologies/downloads/
+# This dockerfile will download a copy of latest version of JDK 8 from
+#	https://javamanagementservice-download.<OCI_REGION>.oci.oraclecloud.com/java/8/latest/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put the downloaded file in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/serverjre:8 .
-#
-# This command is already scripted in build.sh so you can alternatively run
-#      $ bash build.sh 8
+#      $ docker build --file Dockerfile.ol8 --tag oracle/serverjre:8 --build-arg JDK8_TOKEN=<token> --build-arg OCI_REGION=<region> .
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
 FROM oraclelinux:8 as builder
+ARG JDK8_TOKEN
+ARG OCI_REGION
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
@@ -36,15 +40,17 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
-ENV JAVA_HOME=/usr/java/jdk-8
+ENV JAVA_URL=https://javamanagementservice-download."${OCI_REGION}".oci.oraclecloud.com/java/8/latest/ \
+    JAVA_HOME=/usr/java/jdk-8
 
-COPY server-jre-8u*-linux-x64.tar.gz /tmp/jdk.tgz
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN set -eux; \
-    JAVA_SHA256=7c9a3a87045c226647c09bc1eb1fc832f99a9105dbc924cfeab3bf16b3504d24 ; \
-    echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
+    JAVA_PKG="$JAVA_URL"server-jre-8_linux-x64_bin.tar.gz; \
+    JAVA_SHA256="$(curl -L "$JAVA_PKG".sha256)" ; \
+    curl -L --header token:${JDK8_TOKEN} --output /tmp/jdk.tgz "$JAVA_PKG" && \
+    echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c; \
     mkdir -p "$JAVA_HOME"; \
-    tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1;
+    tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
 
 ## Get a fresh version of Oracle Linux 8 for the final image
 
@@ -52,9 +58,7 @@ FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
-
 ENV JAVA_HOME=/usr/java/jdk-8
-
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # Copy the uncompressed Java Runtime from the builder image
@@ -66,11 +70,11 @@ RUN dnf -y update; \
     ln -sfT "$JAVA_HOME" /usr/java/default; \
     ln -sfT "$JAVA_HOME" /usr/java/latest; \
     for bin in "$JAVA_HOME/bin/"*; do \
-        base="$(basename "$bin")"; \
-        [ ! -e "/usr/bin/$base" ]; \
-        alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+    base="$(basename "$bin")"; \
+    [ ! -e "/usr/bin/$base" ]; \
+    alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
     done; \
-# -Xshare:dump will create a CDS archive to improve startup in subsequent runs
-# the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa
-# See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
+    # -Xshare:dump will create a CDS archive to improve startup in subsequent runs
+    # the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa
+    # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
     java -Xshare:dump;
