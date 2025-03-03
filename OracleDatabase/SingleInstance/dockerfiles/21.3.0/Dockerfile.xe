@@ -91,4 +91,4 @@ WORKDIR /home/oracle
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
-CMD [ "/bin/bash", "-c", "$ORACLE_BASE/$RUN_FILE" ]
+CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]

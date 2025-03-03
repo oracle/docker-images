@@ -97,7 +97,7 @@ else
    DB_ROLE=""
    # shellcheck disable=SC2034
    ORAENV_ASK=NO
-   # shellcheck source=/dev/null
+   # shellcheck disable=SC1090
    source oraenv
    checkDatabaseRole
    checkPDBOpen

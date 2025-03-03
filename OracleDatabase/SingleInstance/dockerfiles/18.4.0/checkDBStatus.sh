@@ -17,9 +17,12 @@ if [ "$IGNORE_DB_STARTED_MARKER" != true ] && [ ! -f "$DB_STARTED_MARKER_FILE" ]
    exit 1
 fi
 
+# shellcheck disable=SC2034
 ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
 OPEN_MODE="READ WRITE"
+# shellcheck disable=SC2034
 ORAENV_ASK=NO
+# shellcheck disable=SC1090
 source oraenv
 
 [ -f "$ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab" ] || exit 1;

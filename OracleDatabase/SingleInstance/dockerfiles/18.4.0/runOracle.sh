@@ -19,7 +19,11 @@ function runUserScripts {
   
     for f in $SCRIPTS_ROOT/*; do
         case "$f" in
-            *.sh)     echo "$0: running $f"; . "$f" ;;
+            *.sh)
+              echo "$0: running $f"
+              # shellcheck disable=SC1090
+              . "$f"
+              ;;
             *.sql)    echo "$0: running $f"; echo "exit" | su -p oracle -c "$ORACLE_HOME/bin/sqlplus / as sysdba @$f"; echo ;;
             *)        echo "$0: ignoring $f" ;;
         esac

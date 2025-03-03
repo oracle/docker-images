@@ -222,7 +222,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
 # Call relinkOracleBinary.sh before the database is created or started
 if [ "${ORACLE_SID}" != "FREE" ]; then
-   # shellcheck source=/dev/null
+   # shellcheck disable=SC1090
    source "$ORACLE_BASE/$RELINK_BINARY_FILE"
 fi;
 

@@ -80,15 +80,19 @@ fi
 
 # Setting up ORACLE_PWD if podman secret is passed on
  if [ -e '/run/secrets/oracle_pwd' ]; then
-    export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+    ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+    export ORACLE_PWD
  fi
 
 if [ "$DG_OBSERVER_ONLY" = "true" ]; then
    checkObserver
 else
+   # shellcheck disable=SC2034
    ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
    DB_ROLE=""
+   # shellcheck disable=SC2034
    ORAENV_ASK=NO
+   # shellcheck disable=SC1090
    source oraenv
    checkDatabaseRole
    checkPDBOpen

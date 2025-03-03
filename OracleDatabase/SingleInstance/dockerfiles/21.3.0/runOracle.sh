@@ -22,7 +22,7 @@ function moveFiles {
    mv "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   if [ -a "$ORACLE_HOME"/install/.docker_* ]; then
+   if [ -n "$(shopt -s nullglob; echo "$ORACLE_HOME"/install/.docker_*)" ]; then
       mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    fi;
 
@@ -170,7 +170,8 @@ fi;
 
 # Setting up ORACLE_PWD if podman secret is passed on
 if [ -e '/run/secrets/oracle_pwd' ]; then
-   export ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+   ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
+   export ORACLE_PWD
 fi
 
 # Sanitizing env for XE
@@ -230,6 +231,7 @@ export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
 # Call relinkOracleBinary.sh before the database is created or started
 if [ "${ORACLE_SID}" != "XE" ]; then
+   # shellcheck disable=SC1090
    source "$ORACLE_BASE/$RELINK_BINARY_FILE"
 fi;
 
