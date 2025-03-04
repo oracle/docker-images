@@ -116,6 +116,7 @@ fi
 if [ -z "${REGISTRATION_INVITED_NODES}" ]; then
    REGISTRATION_INVITED_NODES='*'
 else
+# shellcheck disable=SC2034
    REGINVITEDNODESET=1
 fi
 
@@ -172,7 +173,7 @@ if [ $RULESRVSET -eq 1 ]; then
       print_message "Invalid input. SrvIP [${RULE_SRV}] not a valid subnet. "
    fi
 fi
-
+# shellcheck disable=SC2166
 if [ "${RULE_ACT}" != "accept" -a "${RULE_ACT}" != "reject" -a "${RULE_ACT}" != "drop" ]; then
       print_message "Invalid rule-action [${RULE_ACT}] specified."
 fi
