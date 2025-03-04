@@ -104,11 +104,11 @@ fi
 if [ -z "${TRACE_LEVEL}" ]; then
    TRACE_LEVEL=user
 fi
-
+# shellcheck disable=SC2166
 if [ "${TRACE_LEVEL}" != "user" -a "${TRACE_LEVEL}" != "admin" -a "${TRACE_LEVEL}" != "support" ]; then
       print_message "Invalid trace-level [${TRACE_LEVEL}] specified."
 fi
-
+# shellcheck disable=SC2166
 if [ "${LOG_LEVEL}" != "user" -a "${LOG_LEVEL}" != "admin" -a "${LOG_LEVEL}" != "support" ]; then
       print_message "Invalid log-level [${LOG_LEVEL}] specified."
 fi
@@ -191,6 +191,7 @@ do
     for rule_env_var in "${rule_env_vars[@]}"
     do
        echo "export ${rule_env_var}"
+       # shellcheck disable=SC2163
        export ${rule_env_var}
     done
 
@@ -202,6 +203,7 @@ do
 
     dbhost_map[${HOST}]=${IP}
     rule_map[${HOST}]=${db_hostvalue}
+    # shellcheck disable=SC2178
     rule_env_vars=""
 done
 
@@ -327,6 +329,7 @@ do
     for rule_env_var in "${rule_env_vars[@]}"
     do
        echo "export ${rule_env_var}"
+       # shellcheck disable=SC2163
        export ${rule_env_var}
     done
 
@@ -471,6 +474,7 @@ if [ "$action" == "delete" ]; then
      for del_rule_var in "${del_rule_vars[@]}"
      do
          echo "export ${del_rule_var}"
+         # shellcheck disable=SC2163
          export ${del_rule_var}
      done
 
