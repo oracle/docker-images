@@ -167,6 +167,8 @@ class OraEnv:
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_list_amsinst_status.log"         
       elif file_type == "UPDATE_LISTENERENDP":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_listenerendp_status.log"
+      elif file_type == "RUN_DATAPATCH":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_rundatapatch_status.log"
       else:
         pass
 
