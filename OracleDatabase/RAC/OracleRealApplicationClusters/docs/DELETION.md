@@ -13,7 +13,7 @@ python3 main.py --delracnode="del_rachome=true;del_gridnode=true"
 Validate racnodep3 is deleted successfully from Oracle RAC on Container Cluster -
 ```bash
 podman exec -it racnodep1 bash
-[root@racnodep1 bin]# /u01/app/23.3.0/grid/bin/olsnodes -n
+[root@racnodep1 bin]# /u01/app/21c/grid/bin/olsnodes -n
 racnodep1       1
 racnodep2       2
 ```

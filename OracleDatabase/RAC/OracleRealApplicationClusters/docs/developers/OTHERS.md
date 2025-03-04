@@ -83,9 +83,10 @@ Refer to [this documentation](https://docs.oracle.com/en/operating-systems/oracl
 Example of pulling an Oracle RAC Image from the Oracle Container Registry:
 ```bash
 # For Oracle RAC Container Image
-podman pull container-registry.oracle.com/database/rac_ru:21.16
-podman tag container-registry.oracle.com/database/rac_ru:21.16 localhost/oracle/database-rac:21.3.0
+podman pull container-registry.oracle.com/database/rac_ru:latest
+podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
 ```
+**NOTE** Currently, latest tag in Oracle Container registry represents `21.16.0` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.
 
 If you are using pre-built Oracle RAC images from the Oracle Container Registry, then you can skip the section that follows where we build the container images.
 

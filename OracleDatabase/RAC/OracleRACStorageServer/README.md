@@ -11,8 +11,8 @@ Refer to the following instructions for setup of NFS Container for Oracle RAC:
 - [NFS Server installation on Podman Host](#nfs-server-installation-on-podman-host)
 - [SELinux Configuration on Podman Host](#selinux-configuration-on-podman-host)
 - [Oracle RAC Storage Container for Podman Host](#oracle-rac-storage-container-for-podman-host)
-- [Oracle RAC Storage container for Docker Host](#oracle-rac-storage-container-for-docker-host)
 - [Create NFS Volume](#create-nfs-volume)
+- [Sample Container Files for Older Releases](#sample-container-files-for-older-releases)
 - [Copyright](#copyright)
 
 ## How to build NFS Storage Container Image on Container host
@@ -22,7 +22,7 @@ To create the files for Oracle RAC storage, ensure that you have at least 60 GB 
 
 To assist in building the images, you can use the [`buildContainerImage.sh`](containerfiles/buildContainerImage.sh) script. See below for instructions and usage.
 
-In this guide, we refer to Oracle Linux 8 onwards as the Podman Host, and Oracle Linux 7 as the Docker Host machines.
+In this guide, we refer to Oracle Linux 8 onwards as the Podman Host.
 
 The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks. It provides an easy way for beginners to get started. Expert users are welcome to directly call `podman build` with their preferred set of parameters. Go into the **containerfiles** folder and run the **buildContainerImage.sh** script on your Podman host:
 
@@ -38,20 +38,15 @@ In a successful build, you should see build messages similar to the following:
     --> oracle/rac-storage-server:latest
 ```
 
-**NOTE**: To build an Oracle RAC storage Image for the Docker host, pass the version `ol7` to buildContainerImage.sh
-
 For detailed usage notes for this script, run the following command:
 ```bash
 ./buildContainerImage.sh -h
-Usage: buildContainerImage.sh -v [version] [-o] [Docker build option]
-Builds a Docker Image for Oracle Database.
+Usage: buildContainerImage.sh -v [version] [-o] [Podman build option]
+Builds a Podman Image for Oracle Database.
   
 Parameters:
-   -v: version to build
-       Choose one of: latest  ol7  
-       Choose "latest" version for podman host machines
-       Choose "ol7" for docker host machines
-   -o: passes on Docker build option
+   -v: version to build e.g latest
+   -o: passes on Podman build option
 ```
 
 ### Create Bridge Network
@@ -130,7 +125,7 @@ podman run -d -t \
  localhost/oracle/rac-storage-server:latest
 ```
 
-To check the Oracle RAC storage container and services creation logs, you can run a `tail` command on the Docker logs. It should take approximately 10 minutes to create the racnode-storage container service.
+To check the Oracle RAC storage container and services creation logs, you can run a `tail` command on the Podman logs. It should take approximately 10 minutes to create the racnode-storage container service.
 
 ```bash
 podman exec racnode-storage tail -f /tmp/storage_setup.log
@@ -144,61 +139,15 @@ Export list for racnode-storage:
 #################################################
 ```
 
-
-### Oracle RAC Storage container for Docker Host
-
-To use NFS volumes in containers, you must install NFS server RPMs on the Podman host:
-
-```bash
-yum install -y nfs-utils
-```
-#### Prerequisites for an Oracle RAC Storage Container for Docker Host
-
-Create a placeholder for NFS storage, and ensure that it is empty:
-```bash
-export ORACLE_DBNAME=ORCLCDB
-mkdir -p /scratch/docker_volumes/asm_vol/$ORACLE_DBNAME
-rm -rf /scratch/docker_volumes/asm_vol/$ORACLE_DBNAME/asm_disk0*
-```
-
-#### Deploying Oracle RAC Storage Container for Docker Host
-
-If you are building an Oracle RAC storage container on Docker host machines, then run the following commands:
-
-```bash
-export ORACLE_DBNAME=ORCLCDB
-docker run -d -t \
---hostname racnode-storage \
---dns-search=example.info  \
---cap-add SYS_ADMIN \
---cap-add AUDIT_WRITE \
---volume /scratch/docker_volumes/asm_vol/$ORACLE_DBNAME:/oradata --init \
---network=rac_pub1_nw --ip=10.0.20.80 \
---tmpfs=/run  \
---volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
---name racnode-storage \
-oracle/rac-storage-server:ol7
-```
-
-To check the Oracle RAC storage container and services creation logs, you can run a `tail` command on the Docker logs. It should take 10 minutes to create the racnode-storage container service.
-
-```bash
-docker logs -f racnode-storage
-```
-
 **IMPORTANT:** During the container startup, five files with the name  `asm_disk0[1-5].img` will be created under `/oradata`. If the files are already present, then they will not be recreated. These files can be used for ASM storage in Oracle RAC containers.
 
 **NOTE**: Place the directory in a container that has at least 60 GB. In the preceding example, we are using `/scratch/stage/rac-storage/$ORACLE_DBNAME`. Change these values according to your environment. Inside the container, the directory will be `/oradata`. Do not change this value.
 
-In the preceding example, we use **192.168.17.0/24** as the subnet for the NFS server. You can change the subnet values according to your environment.
-
-You should see following in the Docker logs output:
-
+In the following example, we use **192.168.17.0/24** as the subnet for the NFS server. You can change the subnet values according to your environment.
 
 **IMPORTANT:** The NFS volume must be `/oradata`, which you will export to Oracle RAC containers for ASM storage. It will take approximately 10 minutes to set up the NFS server.
 
 ### Create NFS Volume
-#### Create NFS volume using the following command on the Podman Host
 
 ```bash
 podman volume create --driver local \
@@ -208,15 +157,7 @@ podman volume create --driver local \
 racstorage
 ```
 
-#### Create NFS volume using following command on Docker Host
 
-```bash
-docker volume create --driver local \
---opt type=nfs \
---opt   o=addr=192.168.17.80,rw,bg,hard,tcp,vers=3,timeo=600,rsize=32768,wsize=32768,actimeo=0 \
---opt device=192.168.17.80:/oradata \
-racstorage
-```
 **IMPORTANT:** If you are not using the `192.168.17.0/24` subnet then you must change **addr=192.168.17.80** based on your environment.
 
 ## Environment variables explained
@@ -225,6 +166,10 @@ racstorage
 |----------------------|-----------------|
 | DNS_SERVER           | Default set to `10.0.20.25`. Specify the comma-separated list of DNS server IP addresses where both Oracle RAC nodes are resolved.      |
 | DOMAIN               | Default set to `example.info`. Specify the domain details for the Oracle RAC Container Environment.    |
+
+## Sample Container Files for Older Releases
+To setup an Oracle RAC storage Container for the Docker host on Oracle Linux 7, refer older [README](./README1.md#how-to-build-nfs-storage-container-image-on-docker-host)
+instructions.
 
 ## License
 Unless otherwise noted, all scripts and files hosted in this repository that are required to build the container images are under UPL 1.0 license.
