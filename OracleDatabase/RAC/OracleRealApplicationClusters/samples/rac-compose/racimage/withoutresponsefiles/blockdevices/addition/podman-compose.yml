@@ -9,9 +9,9 @@ networks:
     external: true
 secrets:
   pwdsecret:
-    file: ${PWD_SECRET_FILE}
+    external: pwdsecret
   keysecret:
-    file: ${KEY_SECRET_FILE}
+    external: keysecret
 services:
   racnodep3:
     container_name: ${RACNODE3_CONTAINER_NAME}
