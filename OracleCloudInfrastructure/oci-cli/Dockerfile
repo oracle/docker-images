@@ -15,7 +15,7 @@ ENV IMAGE_BUILDTIME=${BUILDTIME} \
 
 RUN dnf -y install jq && rm -rf /var/cache/dnf/* \
     && python3 -m pip install --no-cache-dir --upgrade pip \
-    && python3 -m pip install --no-cache-dir oci-cli \
+    && python3 -m pip install --no-cache-dir oci-cli==${VERSION} \
     && cp /usr/local/lib/python3.9/site-packages/oci_cli/bin/oci_autocomplete.sh /usr/local/bin/oci_autocomplete.sh \
     && chmod +x /usr/local/bin/oci_autocomplete.sh \
     && useradd -m -d /oracle oracle \
