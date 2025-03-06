@@ -1,6 +1,6 @@
 # Oracle Real Application Clusters in Linux Containers for Developers
 
-Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 21c (v26.0)
+Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 21c (v21.3 or later)
 
 ## Overview of Running Oracle RAC in Containers
 
@@ -8,7 +8,7 @@ Oracle Real Application Clusters (Oracle RAC) is an option for the award-winning
 Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms.
 Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
-This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images v26.0, and setup Oracle RAC on Single or Multiple Host machines with Oracle ASM.
+This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images v21.0, and setup Oracle RAC on Single or Multiple Host machines with Oracle ASM.
 In this installation guide, we use [Podman](https://docs.podman.io/en/v3.0/) to create Oracle RAC Containers and manage them.
 
 ## Using this Documentation
@@ -34,7 +34,7 @@ To create an Oracle RAC environment, follow these steps:
 ## Before you begin
 - Before proceeding further, the below prerequisites related to the Oracle RAC (Real Application Cluster) Podman host Environment need to be setup as a preparation steps for the Podman host machine for Oracle RAC Containers. For more details related to the preparation of the host machine, refer to [Preparation Steps for running Oracle RAC Database in containers](../../README.md#preparation-steps-for-running-oracle-rac-database-in-containers).
 We have pre-created script `setup_rac_host.sh` which will prepare the podman host with the following pre-requisites-
-  - Validate Host machine for supported Os version(OL >9.3), Kernel(>UEKR7), Memory(>32GB), Swap(>32GB), shm(>4GB) etc.
+  - Validate Host machine for supported Os version(OL >8.5 or later), Kernel(>UEKR7), Memory(>32GB), Swap(>32GB), shm(>4GB) etc.
   - Update /etc/sysctl.conf
   - Setup node directories for Slim Image
   - Setup chronyd service
@@ -53,7 +53,7 @@ We have pre-created script `setup_rac_host.sh` which will prepare the podman hos
   ```
 
 - To prepare podman host machine using a pre-created script, copy the file `setup_rac_host.sh` from [<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/
-OracleRealApplicationClusters/containerfiles/setup_rac_host.sh](../containerfiles/setup_rac_host.sh) and execute below -
+OracleRealApplicationClusters/containerfiles/setup_rac_host.sh](../../containerfiles/setup_rac_host.sh) and execute below -
   ```bash
   ./setup_rac_host.sh -prepare-rac-env
   ```
@@ -70,8 +70,8 @@ Refer [this documentation](https://docs.oracle.com/en/operating-systems/oracle-l
 Example of pulling an Oracle RAC Image from the Oracle Container Registry:
 ```bash
 # For Oracle RAC Container Image-
-podman pull container-registry.oracle.com/database/rac_ru:21.16
-podman tag container-registry.oracle.com/database/rac_ru:21.16 localhost/oracle/database-rac:21c
+podman pull container-registry.oracle.com/database/rac_ru:latest
+podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
 ```
 
 **Notes**
@@ -83,7 +83,7 @@ podman tag container-registry.oracle.com/database/rac_ru:21.16 localhost/oracle/
   ```bash
   podman images
   localhost/oracle/client-cman                    21.3.0      7b095637d7b6  About a minute ago  2.08 GB
-  localhost/oracle/database-rac                   21c      dcda5cf71b23  12 hours ago        9.33 GB
+  localhost/oracle/database-rac                   21c         dcda5cf71b23  12 hours ago        9.33 GB
   localhost/oracle/rac-storage-server             latest      d233b08a8aed  12 hours ago        443 MB
   localhost/oracle/rac-dnsserver                  latest      7d2301d7ea53  13 hours ago        279 MB
   ```
@@ -108,7 +108,7 @@ If you have a preconfigured DNS server in your environment, then you can replace
 
 ## Deploy Oracle RAC 2 Node Environment with NFS Storage Container
 - Copy `podman-compose.yml` file from this [<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/
-OracleRealApplicationClusters/samples/rac-compose/racimage/withoutresponsefiles/nfsdevices/podman-compose.yml](../samples/rac-compose/racimage/withoutresponsefiles/nfsdevices/podman-compose.yml) in your working directory.
+OracleRealApplicationClusters/samples/rac-compose/racimage/withoutresponsefiles/nfsdevices/podman-compose.yml](../../samples/rac-compose/racimage/withoutresponsefiles/nfsdevices/podman-compose.yml) in your working directory.
 - Execute the below command from your working directory to export the required environment variables required by the compose file in this quickstart-
   ```bash
   source ./setup_rac_host.sh -nfs-env
@@ -197,7 +197,7 @@ OracleRealApplicationClusters/samples/rac-compose/racimage/withoutresponsefiles/
 ## Deploy Oracle RAC 2 Node Environment with BlockDevices
 
 - Copy `podman-compose.yml` file from [<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/
-OracleRealApplicationClusters/samples/rac-compose/racimage/withoutresponsefiles/blockdevices/podman-compose.yml](../samples/rac-compose/racimage/withoutresponsefiles/blockdevices/podman-compose.yml) in your working directory.
+OracleRealApplicationClusters/samples/rac-compose/racimage/withoutresponsefiles/blockdevices/podman-compose.yml](../../samples/rac-compose/racimage/withoutresponsefiles/blockdevices/podman-compose.yml) in your working directory.
 - Execute the below command to export the required environment variables required by the compose file in this quickstart-
   ```bash
   source ./setup_rac_host.sh -blockdevices-env
