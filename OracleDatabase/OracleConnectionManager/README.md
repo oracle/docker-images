@@ -19,11 +19,11 @@ This guide provides information about example container build files that you can
 
 ## How to build and run Oracle Connection Manager in Containers
 This project offers example container images for the following:
-  * Oracle Database 23ai Client (23.5) for Linux x86-64
-  * Oracle Database 21c Client (21.3) for Linux x86-64
-  * Oracle Database 19c Client (19.3) for Linux x86-64
-  * Oracle Database 18c Client (18.3) for Linux x86-64
-  * Oracle Database 12c Release 2 Client (12.2.0.1.0) for Linux x86-64
+* Oracle Database 23ai Client (23.5) for Linux x86-64
+* Oracle Database 21c Client (21.3) for Linux x86-64
+* Oracle Database 19c Client (19.3) for Linux x86-64
+* Oracle Database 18c Client (18.3) for Linux x86-64
+* Oracle Database 12c Release 2 Client (12.2.0.1.0) for Linux x86-64
 
 To assist in building the container images, you can use the [buildContainerImage.sh](containerfiles/buildContainerImage.sh) script. See section **Create Oracle Connection Manager Image** for instructions and usage.
 
@@ -32,9 +32,9 @@ To assist in building the container images, you can use the [buildContainerImage
 For complete Oracle Connection Manager setup, please go though following steps and execute them as per your environment:
 
 ## Getting Oracle Connection Manager Image
-You can also deploy Oracle Connection Manager on Podman using the pre-built images available on the Oracle Container Registry. Refer [this documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using Oracle Container Registry. 
+You can also deploy Oracle Connection Manager on Podman using the pre-built images available on the Oracle Container Registry. Refer [this documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using Oracle Container Registry.
 
-Example of pulling an Oracle Connection Manager Image from the Oracle Container Registry: 
+Example of pulling an Oracle Connection Manager Image from the Oracle Container Registry:
 ```bash
 podman pull container-registry.oracle.com/database/cman:23.5.0.0
 podman tag container-registry.oracle.com/database/cman:23.5.0.0 localhost/oracle/client-cman:23.5.0
@@ -72,7 +72,7 @@ Before creating the container, create the podman network. If you are using the s
 ```bash
 podman network create --driver=bridge --subnet=10.0.20.0/24 rac_pub1_nw
 ```
-Example of creating macvlan networks- 
+Example of creating macvlan networks-
 ```bash
 podman network create -d macvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 ```
@@ -84,11 +84,12 @@ podman network create -d ipvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 If you want to use Jumbo Frames MTU Network Configuration as similar as with Oracle RAC containers networks, then refer [Jumbo Frames MTU Network Configuration](../OracleRealApplicationClusters/README.md#jumbo-frames-mtu-network-configuration) section
 
 ## How to deploy Oracle Connection Manager Container
-The Oracle Connection manager container (CMAN) can be used with either an Oracle Real Application Clusters (Oracle RAC) database or with an Oracle Database Single instance database. However, you must ensure that the the SCAN Name or the Single host instance database Hostname is resolvable from the connection manager container. Oracle highly recommends that you use a DNS Server so that name resolution can happen successfully.
+The Oracle Connection manager container (CMAN) can be used with either an Oracle Real Application Clusters (Oracle RAC) database or with an Oracle Database Single instance database. However, you must ensure that the the SCAN Name or the Single host instance database Hostname is resolvable from the connection manager container.
+Oracle highly recommends that you use a DNS Server so that name resolution can happen successfully.
 
 ### Create Oracle Connection Manager Container
-Before creating Oracle Connection Manager, we advise to review the **[Environment Variables Explained](#environment-variables-explained) section**. If you are planning to `cman.ora` file skip to [section](#create-oracle-connection-manager-container-using-cmanora) 
-To create the connection manager container, run the following command as the root user: 
+Before creating Oracle Connection Manager, we advise to review the **[Environment Variables Explained](#environment-variables-explained) section**. If you are planning to `cman.ora` file skip to [section](#create-oracle-connection-manager-container-using-cmanora)
+To create the connection manager container, run the following command as the root user:
 
  ```bash
  podman run -d \
@@ -146,18 +147,18 @@ CONNECTION MANAGER IS READY TO USE!
 ###################################
 ```
 
-### Adding rules to the Oracle Connection Manager.
+### Adding rules to the Oracle Connection Manager
 
 You can add rules to the OracleConnectionManager using the following command line syntax.
 Run this command inside the OracleConnectionManager container.
   ```bash
-  podman exec -i -t racnodepc1-cman /bin/bash
+podman exec -i -t racnodepc1-cman /bin/bash
 
-  /opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=<HOST-DETAILS>
-  For example :
-  /opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=HOST=racnodep9:IP=10.0.20.178:RULE_SRC=racnodepc2-cman
+/opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=<HOST-DETAILS>
+For example :
+/opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=HOST=racnodep9:IP=10.0.20.178:RULE_SRC=racnodepc2-cman
 ```
-### Deleting rules from the Oracle Connection Manager.
+### Deleting rules from the Oracle Connection Manager
 
 You can delete the rules from the OracleConnectionManager using the following command line syntax.
 Run this command inside the OracleConnectionManager container.
@@ -171,11 +172,11 @@ Run this command inside the OracleConnectionManager container.
 ## Environment Variables Explained
 | Environment Variable | Description                                                                                                                                                      |
 |----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DOMAIN               | The domain name associated with the container environment.                                                |
-| PUBLIC_IP            | The public IP address assigned to the Oracle Connection Manager Container.                                                                                                              |
+| DOMAIN               | The domain name associated with the container environment.                                               |
+| PUBLIC_IP            | The public IP address assigned to the Oracle Connection ManagerContainer.                                                                                                  |
 | PUBLIC_HOSTNAME      | The public hostname assigned to the Oracle Connection Manager container.
-| DB_HOSTDETAILS       | Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`. |
-| DNS_SERVER | Default set to 10.0.20.25 which is DNS container resolving connection manager and Oracle Database containers. Replacing with your DNS server IP where connection manager and Oracle Database containers are resolved.|
+| DB_HOSTDETAILS       | Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`|
+| DNS_SERVER | Default set to 10.0.20.25 which is DNS container resolving connection manager and Oracle Database containers. Replacing with your DNS server IP where connection manager and Oracle Database containers are resolved|
 |USER_CMAN_FILE| (Optional) If you want to provide your own pre-created `cman.ora` file, you can provide with  environment variable and also add attach same file as podman volume to podman run command|
 
 ## License
