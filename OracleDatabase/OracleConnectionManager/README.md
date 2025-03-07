@@ -43,9 +43,11 @@ podman tag container-registry.oracle.com/database/cman:23.5.0.0 localhost/oracle
 If you are using pre-built Oracle Connection Manager from [the Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Create Oracle Connection Manager Image](#create-oracle-connection-manager-image) to build the Oracle Connection Manager Image.
 
 ### Create Oracle Connection Manager Image
-**IMPORTANT:** You must provide the installation binaries of the Oracle ADMIN Client Oracle Database 23ai Client for Linux x86-64 (client_cman_home.zip) and put them into the `containerfiles/<version>` folder. You  only need to provide the binaries for the edition that you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html). You also have to ensure you have internet connectivity for yum. You ou must not uncompress the binaries.
+**IMPORTANT:** You must provide the installation binaries of the Oracle ADMIN Client Oracle Database 23ai Client for Linux x86-64 (client_cman_home.zip) and put them into the `containerfiles/<version>` folder. You  only need to provide the binaries for the edition that you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html).
+You also have to ensure you have internet connectivity for yum. You must not uncompress the binaries.
 
-The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks. It provides an easy way for beginners to get started. Expert users are welcome to directly call `podman build` with their prefered set of parameters. Before you build the image, ensure that you have provided the installation binaries and put them into the right folder. Go into the **containerfiles** folder and run the **buildContainerImage.sh** script as root or with sudo privileges:
+The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks. It provides an easy way for beginners to get started. Expert users are welcome to directly call `podman build` with their prefered set of parameters.
+Before you build the image, ensure that you have provided the installation binaries and put them into the right folder. Go into the **containerfiles** folder and run the **buildContainerImage.sh** script as root or with sudo privileges:
 
 ```bash
 ./buildContainerImage.sh -v (Software Version)
@@ -77,7 +79,7 @@ Example of creating macvlan networks-
 podman network create -d macvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 ```
 
-Example of creating ipvlan networks- 
+Example of creating ipvlan networks-
 ```bash
 podman network create -d ipvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 ```
@@ -170,14 +172,13 @@ Run this command inside the OracleConnectionManager container.
    /opt/scripts/startup/configCMAN.sh -delrule -e RULEDETAILS=RULE_DST=racnodep8
 ```
 ## Environment Variables Explained
-| Environment Variable | Description                                                                                                                                                      |
+| Environment Variable  | Description  |
 |----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DOMAIN               | The domain name associated with the container environment.                                               |
-| PUBLIC_IP            | The public IP address assigned to the Oracle Connection ManagerContainer.                                                                                                  |
-| PUBLIC_HOSTNAME      | The public hostname assigned to the Oracle Connection Manager container.
-| DB_HOSTDETAILS       | Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`|
-| DNS_SERVER | Default set to 10.0.20.25 which is DNS container resolving connection manager and Oracle Database containers. Replacing with your DNS server IP where connection manager and Oracle Database containers are resolved|
-|USER_CMAN_FILE| (Optional) If you want to provide your own pre-created `cman.ora` file, you can provide with  environment variable and also add attach same file as podman volume to podman run command|
+| DOMAIN              | The domain name associated with the container environment.  |
+| PUBLIC_IP          | The public IP address assigned to the Oracle Connection Manager container.  |
+| PUBLIC_HOSTNAME    | The public hostname assigned to the Oracle Connection Manager container.  |
+| DNS_SERVER        | The default is set to `10.0.20.25`, which is the DNS container resolving the Connection Manager and Oracle Database containers. Replace this with your DNS server IP if needed.  |
+| USER_CMAN_FILE    | (Optional) If you want to provide your own pre-created `cman.ora` file, set this environment variable and attach the file as a Podman volume in the `podman run` command.  |
 
 ## License
 
