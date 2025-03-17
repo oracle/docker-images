@@ -163,7 +163,7 @@ Version 23.4 ...
 
 ### Running Scripts Before Setup and on Startup
 
-The container images can be configured to run scripts before setup and on startup. Currently, `.sh` extensions are supported. For setup scripts just mount the volume `/u01/ogg/scripts/setup` or extend the image to include scripts in this directory. For startup scripts just mount the volume `/u01/ogg/scripts/startup` or extend the image to include scripts in this directory. Both of those locations
+The container images can be configured to run scripts before setup and on startup. Currently, `.sh` and `.py` extensions are supported. For setup scripts just mount the volume `/u01/ogg/scripts/setup` or extend the image to include scripts in this directory. For startup scripts just mount the volume `/u01/ogg/scripts/startup` or extend the image to include scripts in this directory. Both of those locations
 are static and the content is controlled by the volume mount.
 
 The example below mounts the local directory `${PWD}/myScripts` to `/u01/ogg/scripts` which is then searched for custom startup scripts:
