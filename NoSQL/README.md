@@ -120,19 +120,19 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/sql.jar -helper-hosts store:5000 -store kvstore
 
   sql-> show tables
-Tables in all namespaces:
-        SYS$IndexStatsLease -- 1
-        SYS$MRTableAgentStat -- 1
-        SYS$MRTableInfo -- 1
-        SYS$MRTableInitCheckpoint -- 1
-        SYS$PartitionStatsLease -- 1
-        SYS$SGAttributesTable -- 1
-        SYS$StreamRequest -- 1
-        SYS$StreamResponse -- 1
-        SYS$TableMetadata -- 1
-        SYS$TableStatsIndex -- 2
-        SYS$TableStatsPartition -- 3
-        SYS$TopologyHistory -- 1
+tables
+  SYS$IndexStatsLease
+  SYS$MRTableAgentStat
+  SYS$MRTableInfo
+  SYS$MRTableInitCheckpoint
+  SYS$PartitionStatsLease
+  SYS$SGAttributesTable
+  SYS$StreamRequest
+  SYS$StreamResponse
+  SYS$TableMetadata
+  SYS$TableStatsIndex
+  SYS$TableStatsPartition
+  SYS$TopologyHistory
 
   sql-> exit
 ```
