@@ -143,11 +143,11 @@ podman tag localhost/oracle/database-rac:21.3.0-slim localhost/oracle/database-r
 ### Building Oracle RAC Database Container Base Image
 In this document, an `Oracle RAC Database Container Base Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation. This image is extended to build patched image or extensions. To build an Oracle RAC Database Container Base Image run the following command:
 ```bash
-./buildContainerImage.sh -v <Software Version> -i -b
+./buildContainerImage.sh -v <Software Version> -b
 ```
 Example: To build Oracle RAC Database Container Base Image for version 21.3.0, use the below command:
 ```bash
-./buildContainerImage.sh -v 21.3.0 -i -b
+./buildContainerImage.sh -v 21.3.0 -b
 ```
 To build an Oracle RAC Database Container Base Image, you need to use `-b`.
 
