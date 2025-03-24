@@ -1,8 +1,24 @@
-# Oracle Connection Manager Container Image
-Sample container build files to facilitate installation, configuration, and environment setup for DevOps users. For more information about Oracle Database please see the [Oracle Connection Manager online Documentation](http://docs.oracle.com/en/database/).
+# Oracle Connection Manager in Linux Containers
+Oracle Connection Manager is a proxy server that forwards connection requests to databases or other proxy servers. It operates at the session level, and usually resides on a computer separate from the database server and client computers.
 
-## How to build and run
-This project offers sample container images for:
+This guide provides information about example container build files that you can use to facilitate installation, configuration, and environment setup of Oracle Connection Manager for DevOps users. For more information about Oracle Database, please see the [Oracle Connection Manager online Documentation](http://docs.oracle.com/en/database/).
+
+## Using this documentation
+- [Oracle Connection Manager in Linux Containers](#oracle-connection-manager-in-linux-containers)
+  - [Using this documentation](#using-this-documentation)
+  - [How to build and run Oracle Connection Manager in Containers](#how-to-build-and-run-oracle-connection-manager-in-containers)
+  - [Getting Oracle Connection Manager Image](#getting-oracle-connection-manager-image)
+    - [Create Oracle Connection Manager Image](#create-oracle-connection-manager-image)
+  - [Create Network Bridge](#create-network-bridge)
+  - [How to deploy Oracle Connection Manager Container](#how-to-deploy-oracle-connection-manager-container)
+    - [Create Oracle Connection Manager Container](#create-oracle-connection-manager-container)
+    - [Create Oracle Connection Manager Container using `cman.ora`](#create-oracle-connection-manager-container-using-cmanora)
+  - [Environment Variables Explained](#environment-variables-explained)
+  - [License](#license)
+  - [Copyright](#copyright)
+
+## How to build and run Oracle Connection Manager in Containers
+This project offers example container images for the following:
 * Oracle Database 23ai Client (23.5) for Linux x86-64
 * Oracle Database 21c Client (21.3) for Linux x86-64
 * Oracle Database 19c Client (19.3) for Linux x86-64
@@ -11,117 +27,165 @@ This project offers sample container images for:
 
 To assist in building the container images, you can use the [buildContainerImage.sh](containerfiles/buildContainerImage.sh) script. See section **Create Oracle Connection Manager Image** for instructions and usage.
 
-**IMPORTANT:** Oracle Connection Manager binds to a single port on your host and proxies incoming connections to multiple running containers. It can also proxy connections for users to Oracle RAC Databases running on internal container networks.
+**IMPORTANT:** Oracle Connection Manager binds to a single port on your host, and proxies incoming connections to multiple running containers. It can also proxy connections for users to Oracle Databases running on internal container networks.
 
-If you are on Podman Host, please ensure that you have the `podman-docker` package installed on your OL8 Podman host to run the command using the docker utility.
+For complete Oracle Connection Manager setup, please go though following steps and execute them as per your environment:
+
+## Getting Oracle Connection Manager Image
+You can also deploy Oracle Connection Manager on Podman using the pre-built images available on the Oracle Container Registry. Refer [this documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using Oracle Container Registry.
+
+Example of pulling an Oracle Connection Manager Image from the Oracle Container Registry:
 ```bash
-dnf install podman-docker -y
+podman pull container-registry.oracle.com/database/cman:23.5.0.0
+podman tag container-registry.oracle.com/database/cman:23.5.0.0 localhost/oracle/client-cman:23.5.0
 ```
 
-For complete Oracle Connection Manager setup, please go though following steps and execute them as per your enviornment:
+If you are using pre-built Oracle Connection Manager from [the Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Create Oracle Connection Manager Image](#create-oracle-connection-manager-image) to build the Oracle Connection Manager Image.
 
 ### Create Oracle Connection Manager Image
-**IMPORTANT:** You will have to provide the installation binaries of Oracle ADMIN Client Oracle Database 23ai Client (23.5) for Linux x86-64 and put them into the `containerfiles/<version>` folder. You  only need to provide the binaries for the edition you are going to install.
+**IMPORTANT:** You must provide the installation binaries of the Oracle ADMIN Client Oracle Database 23ai Client for Linux x86-64 (client_cman_home.zip) and put them into the `containerfiles/<version>` folder. You  only need to provide the binaries for the edition that you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html).
+You also have to ensure you have internet connectivity for yum. You must not uncompress the binaries.
 
-The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html).
-
-You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries.
-
-The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
-
-Before you build the image make sure that you have provided the installation binaries and put them into the right folder.
-
-#### Create Oracle Connection Manager Image in Podman Hosts
-Go into the **containerfiles** folder and run the **buildContainerImage.sh** script as root or with sudo privileges:
+The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks. It provides an easy way for beginners to get started. Expert users are welcome to directly call `podman build` with their prefered set of parameters.
+Before you build the image, ensure that you have provided the installation binaries and put them into the right folder. Go into the **containerfiles** folder and run the **buildContainerImage.sh** script as root or with sudo privileges:
 
 ```bash
-cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleConnectionManager/containerfiles
 ./buildContainerImage.sh -v (Software Version)
 ./buildContainerImage.sh -v 23.5.0
 ```
 For detailed usage of command, please execute following command:
 ```bash
-cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleConnectionManager/containerfiles
 ./buildContainerImage.sh -h
 ```
-
-#### Create Oracle Connection Manager Image in Docker Hosts
-Go into the **dockerfiles** folder and run the **buildContainerImage.sh** script as root or with sudo privileges:
-
-```bash
-cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleConnectionManager/dockerfiles
-./buildContainerImage.sh -v (Software Version)
-./buildContainerImage.sh -v 21.3.0
-```
-For detailed usage of command, please execute following command:
-```bash
-cd <git-cloned-path>/docker-images/OracleDatabase/RAC/OracleConnectionManager/dockerfiles
-./buildContainerImage.sh -h
-```
-
-### Create Network Bridge
-Before creating container, create the bridge. If you are using same bridge with same network then you can use same IPs mentioned in **Create Containers** section.
-
-```bash
-docker network create --driver=bridge --subnet=172.16.1.0/24 rac_pub1_nw
-```
-
+Note:
+- Usage of `./buildContainerImage.sh`-
+   ```text
+   -v: version to build
+   -i: ignores the MD5 checksums
+   -t: user defined image name and tag (e.g., image_name:tag). Default is set to oracle/client-cman:<VERSION>.
+   -o: passes on container build option (e.g., --build-arg ARGUMENT=value).
+   ```
+- If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.
+## Create Network Bridge
 **Note:** You can change subnet according to your environment.
-### Create Containers
 
-Execute following command as root user to create connection manager container on `Docker Host`-
-
-```bash
-docker run -d --hostname racnodedc1-cman --dns-search=example.com \
---network=rac_pub1_nw --ip=172.16.1.164 \
--e DOMAIN=example.com -e PUBLIC_IP=172.16.1.164 \
--e PUBLIC_HOSTNAME=racnodedc1-cman -e SCAN_NAME=racnodedc1-scan \
--e SCAN_IP=172.16.1.230 --privileged=false \
--p 1521:1521 --name racnodedc1-cman oracle/client-cman:21.3.0
-```
-
-Execute following command as root user to create connection manager container on `Podman Host`-
+Before creating the container, create the podman network. If you are using the same network which the Oracle RAC containers are created [using the documentation](../OracleRealApplicationClusters/README.md), then you can use the same IPs mentioned in the [Create Oracle Connection Manager Container](#create-oracle-connection-manager-container) section.
 
 ```bash
-podman run -d \
- --hostname racnodepc1-cman \
- --dns-search=example.com \
- --dns 172.16.1.25 \
- --network=rac_pub1_nw \
- --ip=172.16.1.164 \
- --cap-add=AUDIT_WRITE \
- --cap-add=NET_RAW \
- -e DOMAIN=example.com \
- -e PUBLIC_IP=172.16.1.164 \
- -e DNS_SERVER=172.16.1.25 \
- -e PUBLIC_HOSTNAME=racnodepc1-cman \
- -e DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=172.16.1.170" \
- --privileged=false \
- -p 1521:1521 \
- --name racnodepc1-cman \
- oracle/client-cman:23.5.0
+podman network create --driver=bridge --subnet=10.0.20.0/24 rac_pub1_nw
 ```
-
-In the above container, you can see that we are passing env variables using "-e". You need to change `PUBLIC_IP`, `PUBLIC_HOSTNAME`, `SCAN_NAME`, `SCAN_IP`, `DB_HOSTDETAILS` according to your environment. Also, container will be binding to port 1521 on your docker host.
-
-**Note:** SCAN_NAME and SCAN_IP will be your Oracle RAC SCAN details. These will be registered in connection manager but will be accessible when you create Oracle RAC container.
-
-To check the Cman container/services creation logs , please tail docker logs. It will take 2 minutes to create the Cman container service.
-
-Check logs in `Docker Host` -
+Example of creating macvlan networks-
 ```bash
-docker logs racnodedc1-cman
+podman network create -d macvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 ```
 
-Check logs in `Podman Host` -
+Example of creating ipvlan networks-
+```bash
+podman network create -d ipvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
+```
+If you want to use Jumbo Frames MTU Network Configuration as similar as with Oracle RAC containers networks, then refer [Jumbo Frames MTU Network Configuration](../OracleRealApplicationClusters/README.md#jumbo-frames-mtu-network-configuration) section
+
+## How to deploy Oracle Connection Manager Container
+The Oracle Connection manager container (CMAN) can be used with either an Oracle Real Application Clusters (Oracle RAC) database or with an Oracle Database Single instance database. However, you must ensure that the the SCAN Name or the Single host instance database Hostname is resolvable from the connection manager container.
+Oracle highly recommends that you use a DNS Server so that name resolution can happen successfully.
+
+### Create Oracle Connection Manager Container
+Before creating Oracle Connection Manager, we advise to review the **[Environment Variables Explained](#environment-variables-explained) section**. If you are planning to `cman.ora` file skip to [section](#create-oracle-connection-manager-container-using-cmanora)
+To create the connection manager container, run the following command as the root user:
+
+ ```bash
+ podman run -d \
+  --hostname racnodepc1-cman \
+  --dns-search=example.info \
+  --dns 10.0.20.25 \
+  --network=rac_pub1_nw \
+  --ip=10.0.20.15 \
+  --cap-add=AUDIT_WRITE \
+  --cap-add=NET_RAW \
+  -e DOMAIN=example.info \
+  -e PUBLIC_IP=10.0.20.15 \
+  -e DNS_SERVER=10.0.20.25 \
+  -e PUBLIC_HOSTNAME=racnodepc1-cman \
+  --privileged=false \
+  -p 1521:1521 \
+  --name racnodepc1-cman \
+  oracle/client-cman:23.5.0
+```
+
+### Create Oracle Connection Manager Container using `cman.ora`
+If you want to provide your own pre-created `cman.ora` file, you can provide with `-e USER_CMAN_FILE=<cman-file-name>` and also add attach <cman-file-name> as podman volume to podman run command. Refer sample of [cman.ora](./containerfiles/cman.ora) and execute below command to create Oracle Connection Manager Container -
+```bash
+  podman run -d \
+    --hostname racnodepc1-cman \
+    --dns-search=example.info \
+    --dns 10.0.20.25 \
+    --network=rac_pub1_nw \
+    --ip=10.0.20.15 \
+    --cap-add=AUDIT_WRITE \
+    --cap-add=NET_RAW \
+    -v /opt/containers/cman.ora:/var/tmp/cman.ora \
+    -e USER_CMAN_FILE=/var/tmp/cman.ora \
+    -e DOMAIN=example.info \
+    -e PUBLIC_IP=10.0.20.15 \
+    -e DNS_SERVER=10.0.20.25 \
+    -e PUBLIC_HOSTNAME=racnodepc1-cman \
+    --privileged=false \
+    -p 1521:1521 \
+    --name racnodepc1-cman \
+    oracle/client-cman:23.5.0
+```
+
+To check the Cman container/services creation logs, you can run a tail command on the podman logs. It should take two minutes to create the Cman container service.
+
 ```bash
 podman logs racnodepc1-cman
 ```
 
-You should see following when cman container setup is done:
+You should see the following when the cman container setup is done:
 
 ```bash
 ###################################
 CONNECTION MANAGER IS READY TO USE!
 ###################################
 ```
+
+### Adding rules to the Oracle Connection Manager
+
+You can add rules to the OracleConnectionManager using the following command line syntax.
+Run this command inside the OracleConnectionManager container.
+  ```bash
+podman exec -i -t racnodepc1-cman /bin/bash
+
+/opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=<HOST-DETAILS>
+For example :
+/opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=HOST=racnodep9:IP=10.0.20.178:RULE_SRC=racnodepc2-cman
+```
+### Deleting rules from the Oracle Connection Manager
+
+You can delete the rules from the OracleConnectionManager using the following command line syntax.
+Run this command inside the OracleConnectionManager container.
+  ```bash
+   podman exec -i -t racnodepc1-cman /bin/bash
+  
+   /opt/scripts/startup/configCMAN.sh -delrule -e RULEDETAILS=<RULE-DETAILS>
+   For example :
+   /opt/scripts/startup/configCMAN.sh -delrule -e RULEDETAILS=RULE_DST=racnodep8
+```
+## Environment Variables Explained
+| Environment Variable  | Description  |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DOMAIN              | The domain name associated with the container environment.  |
+| PUBLIC_IP          | The public IP address assigned to the Oracle Connection Manager container.  |
+| PUBLIC_HOSTNAME    | The public hostname assigned to the Oracle Connection Manager container.  |
+| DNS_SERVER        | The default is set to `10.0.20.25`, which is the DNS container resolving the Connection Manager and Oracle Database containers. Replace this with your DNS server IP if needed.  |
+| USER_CMAN_FILE    | (Optional) If you want to provide your own pre-created `cman.ora` file, set this environment variable and attach the file as a Podman volume in the `podman run` command.  |
+
+## License
+
+To download and run the Oracle ADMIN Client Oracle Database 23ai Client, regardless of whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated on that page.
+
+All scripts and files hosted in this repository which are required to build the container  images are, unless otherwise noted, released under UPL 1.0 license.
+
+## Copyright
+
+Copyright (c) 2014-2025 Oracle and/or its affiliates.

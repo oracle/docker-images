@@ -10,10 +10,10 @@
 # 
 
 
-#env > /tmp/envfile
+env > /tmp/envfile
 
-#chmod 755 /tmp/envfile 
-#source /tmp/envfile
+chmod 755 /tmp/envfile 
+source /tmp/envfile
 source $SCRIPT_DIR/functions.sh
 
 ########### SIGINT handler ############

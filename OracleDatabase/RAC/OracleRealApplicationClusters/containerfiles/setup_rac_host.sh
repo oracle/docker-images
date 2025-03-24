@@ -61,8 +61,6 @@ setup_nfs_variables() {
     export PRIVATE1_NETWORK_SUBNET="192.168.17.0/24"
     export PRIVATE2_NETWORK_NAME="rac_priv2_nw"
     export PRIVATE2_NETWORK_SUBNET="192.168.18.0/24"
-    export PWD_SECRET_FILE=/opt/.secrets/pwdfile.enc
-    export KEY_SECRET_FILE=/opt/.secrets/key.pem
     export DNS_PUBLIC_IP=10.0.20.25
     export DNS_PRIVATE1_IP=192.168.17.25
     export DNS_PRIVATE2_IP=192.168.18.25
@@ -172,8 +170,6 @@ setup_blockdevices_variables(){
     export RACNODE2_PUBLIC_IP=10.0.20.171
     export RACNODE2_CRS_PRIVATE_IP1=192.168.17.171
     export RACNODE2_CRS_PRIVATE_IP2=192.168.18.171
-    export PWD_SECRET_FILE=/opt/.secrets/pwdfile.enc
-    export KEY_SECRET_FILE=/opt/.secrets/key.pem
     export DNS_CONTAINER_NAME=rac-dnsserver
     export DNS_HOST_NAME=racdns
     export DNS_IMAGE_NAME="oracle/rac-dnsserver:latest"

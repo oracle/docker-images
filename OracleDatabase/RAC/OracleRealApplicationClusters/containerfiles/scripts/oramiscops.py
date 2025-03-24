@@ -53,7 +53,35 @@ class OraMiscOps:
        self.ocommon.log_info_message("Start setup()",self.file_name)
        ct = datetime.datetime.now()
        bts = ct.timestamp()
-       self.ocommon.update_gi_env_vars_from_rspfile()
+       #default version as 0 integer, will read from rsp file
+       version=0
+       if self.ocommon.check_key("GRID_RESPONSE_FILE",self.ora_env_dict):
+               gridrsp=self.ora_env_dict["GRID_RESPONSE_FILE"]
+               self.ocommon.log_info_message("GRID_RESPONSE_FILE parameter is set and file location is:" + gridrsp ,self.file_name)
+
+               if os.path.isfile(gridrsp):
+                 with open(gridrsp) as fp:
+                   for line in fp:
+                      if len(line.split("=")) == 2:
+                         key=(line.split("=")[0]).strip()
+                         value=(line.split("=")[1]).strip()
+                         self.ocommon.log_info_message("KEY and Value pair set to: " + key + ":" + value ,self.file_name)
+                         if key == "oracle.install.responseFileVersion":
+                            match = re.search(r'v(\d{2})', value)
+                            if match:
+                              version=int(match.group(1))
+                            else:
+                                 # Default to version 23 if no match is found
+                              version=23
+               #print version in logs
+               msg="Version detected in response file is {0}".format(version)
+               self.ocommon.log_info_message(msg,self.file_name)                    
+         ## Calling this function from here to make sure INSTALL_NODE is set
+       if version == int(19) or version == int(21):
+            self.ocommon.update_pre_23c_gi_env_vars_from_rspfile()
+       else:
+            # default to read when its either set as 23 in response file or if response file is not present
+            self.ocommon.update_gi_env_vars_from_rspfile()
        if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
           self.ocommon.update_rac_env_vars_from_rspfile(self.ora_env_dict["DBCA_RESPONSE_FILE"])
        if self.ocommon.check_key("DEL_RACHOME",self.ora_env_dict):
@@ -169,6 +197,10 @@ class OraMiscOps:
           pass
        if self.ocommon.check_key("UPDATE_ASMDEVICES",self.ora_env_dict):
           self.updateasmdevices()
+       else:
+          pass
+       if self.ocommon.check_key("RUN_DATAPATCH",self.ora_env_dict):
+          self.run_datapatch()
        else:
           pass
 
@@ -786,3 +818,84 @@ class OraMiscOps:
          print(sid)
       else:
          print("NOT READY")
+
+   def run_datapatch(self):
+      """
+      Function to check and apply Oracle database patches using OPatch and Datapatch.
+      """
+      self.ocommon.log_info_message("Starting run_datapatch()", self.file_name)
+      rundatapatch = self.ora_env_dict.get("RUN_DATAPATCH", "").strip().lower() in ["true", "1", "yes"]
+
+      self.ocommon.log_info_message(f"Running datapatch with passed argument: {rundatapatch}", self.file_name)
+
+      if not rundatapatch:
+         self.ocommon.log_info_message("RUN_DATAPATCH is not set to true. Skipping datapatch execution.", self.file_name)
+         return
+      dbuser, dbhome, dbbase, oinv = self.ocommon.get_db_params()
+      self.ocommon.log_info_message("ORACLE_HOME set to " + dbhome, self.file_name)
+      self.ocommon.log_info_message("ORACLE_USER set to " + dbuser, self.file_name)
+      self.ocommon.log_info_message("ORACLE_BASE set to " + dbbase, self.file_name)
+
+      dbname, osid, dbuname = self.ocommon.getdbnameinfo()
+      hostname = self.ocommon.get_public_hostname()
+      inst_sid = self.ocommon.get_inst_sid(dbuser, dbhome, osid, hostname)
+      self.ocommon.log_info_message("ORACLE_SID set to " + inst_sid, self.file_name)
+
+      if not all([inst_sid, dbbase, dbhome, dbuser]):
+         self.ocommon.log_info_message("Missing required Oracle environment variables.", self.file_name)
+         return
+
+      # Export required environment variables
+      env_setup_cmd = "export ORACLE_SID={0}; export ORACLE_HOME={1}; export ORACLE_BASE={2}; ".format(inst_sid, dbhome, dbbase)
+
+      # Fetch patches from OPatch
+      cmd_lspatches = '''su - {0} -c "{1} {2}/OPatch/opatch lspatches"'''.format(dbuser, env_setup_cmd, dbhome)
+      output, error, retcode = self.ocommon.execute_cmd(cmd_lspatches, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
+
+      if retcode != 0:
+         self.ocommon.log_info_message("Failed to fetch OPatch patches.", self.file_name)
+         return
+
+      opatch_patches = {line.split(";")[0].strip() for line in output.splitlines() if ";" in line}
+      self.ocommon.log_info_message("OPatch Patches: " + str(opatch_patches), self.file_name)
+
+      # Fetch patches from DBA_REGISTRY_SQLPATCH with proper ORACLE_SID export
+      sql_query = "SELECT PATCH_ID FROM DBA_REGISTRY_SQLPATCH;"
+      cmd_sqlpatch = '''su - {0} -c "{1} echo \\"{2}\\" | sqlplus -S / as sysdba"'''.format(dbuser, env_setup_cmd, sql_query)
+      output, error, retcode = self.ocommon.execute_cmd(cmd_sqlpatch, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
+
+      if retcode != 0:
+         self.ocommon.log_info_message("Failed to fetch DBA_REGISTRY_SQLPATCH patches.", self.file_name)
+         return
+
+      sqlpatch_patches = {line.strip() for line in output.splitlines() if line.strip().isdigit()}
+
+      # Compare patch lists
+      missing_patches = opatch_patches - sqlpatch_patches
+      extra_patches = sqlpatch_patches - opatch_patches
+
+      self.ocommon.log_info_message("OPatch Patches: " + str(opatch_patches), self.file_name)
+      self.ocommon.log_info_message("SQL Patch Patches: " + str(sqlpatch_patches), self.file_name)
+
+      if not missing_patches and not extra_patches:
+         self.ocommon.log_info_message("All patches are correctly applied.", self.file_name)
+      else:
+         if missing_patches:
+            self.ocommon.log_info_message("These patches are missing in DBA_REGISTRY_SQLPATCH: " + str(missing_patches), self.file_name)
+            self.ocommon.log_info_message("Running datapatch...", self.file_name)
+            
+            cmd_datapatch = '''su - {0} -c "{1} {2}/OPatch/datapatch -skip_upgrade_check"'''.format(dbuser, env_setup_cmd, dbhome)
+            output, error, retcode = self.ocommon.execute_cmd(cmd_datapatch, None, None)
+            self.ocommon.check_os_err(output, error, retcode, None)
+
+            if retcode == 0:
+                  self.ocommon.log_info_message("Datapatch execution completed successfully.", self.file_name)
+            else:
+                  self.ocommon.log_info_message("Datapatch execution failed.", self.file_name)
+
+         if extra_patches:
+            self.ocommon.log_info_message("These patches appear in DBA_REGISTRY_SQLPATCH but not in OPatch: " + str(extra_patches), self.file_name)
+
+      self.ocommon.log_info_message("End run_datapatch()", self.file_name)

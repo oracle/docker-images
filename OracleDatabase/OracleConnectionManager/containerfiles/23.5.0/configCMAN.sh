@@ -49,15 +49,17 @@ export TRULESTR="    (rule=
        (action_list=(aut=off)(moct=0)(mct=0)(mit=0)(conn_stats=on))
     )"
 
+export LOCAL_CMCTL_CONN_STR="    (rule=(src=###CMAN_HOSTNAME###.###DOMAIN###)(dst=127.0.0.1)(srv=cmon)(act=accept))"
+
 all_check()
 {
 if [ -z ${DB_HOSTDETAILS} ]; then
-   error_exit "DB_HOSTDETAILS not set. Exiting"
+   print_message "DB_HOSTDETAILS not set. Setting to default"
 else
    print_message "DB_HOSTDETAILS name is ${DB_HOSTDETAILS}"
+   get_dbhost_details
 fi
 
-get_dbhost_details
 check_cman_env_vars
 }
 
@@ -305,7 +307,11 @@ if [ -f $DB_HOME/network/admin/$CMANORA ]; then
    cp $DB_HOME/network/admin/$CMANORA $logdir/$CMANORA
 else
    cat $SCRIPT_DIR/$CMANORA >> $logdir/$CMANORA
-   sh -c "echo $'/(rule=\n\Emk%d\'k\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+   if [ ! -z ${DB_HOSTDETAILS} ]; then
+      sh -c "echo $'/(rule=\n\Emk%d\'k\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+      # Add the local CMCTL connection 
+      sh -c "echo $'/(rule_list=\n\Eo${LOCAL_CMCTL_CONN_STR}\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+   fi
 fi
 
 sed -i -e "s|###CMAN_HOSTNAME###|$PUBLIC_HOSTNAME|g" $logdir/$CMANORA
@@ -391,6 +397,7 @@ eval $cmd
 start_cman ()
 {
 local cmd
+export ORACLE_HOME=$DB_HOME
 cmd="$DB_HOME/bin/cmctl startup -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN"
 eval $cmd
 }
@@ -399,6 +406,7 @@ stop_cman ()
 {
 local cmd
 cmaninst=$1
+export ORACLE_HOME=$DB_HOME
 cmd="$DB_HOME/bin/cmctl shutdown -c $cmaninst"
 eval $cmd
 }
@@ -406,6 +414,7 @@ eval $cmd
 status_cman ()
 {
 local cmd
+export ORACLE_HOME=$DB_HOME
 cmd="$DB_HOME/bin/cmctl show service -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN"
 eval $cmd
 
