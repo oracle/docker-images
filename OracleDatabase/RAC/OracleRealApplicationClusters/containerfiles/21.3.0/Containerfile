@@ -81,7 +81,6 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     DB_USER="oracle" \
     GRID_USER="grid" \
     SLIMMING=$SLIMMING \
-    container="true" \
     COMMON_SCRIPTS="/common_scripts" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     RESET_FAILED_UNITS="resetFailedUnits.sh" \
