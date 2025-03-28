@@ -45,7 +45,7 @@ sqlplus -s $DB_USER/$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_SERVICE as sysdba <<EOF
 
        apex_instance_admin.set_parameter(
             p_parameter => 'IMAGE_PREFIX',
-            p_value     => 'https://static.oracle.com/cdn/apex/24.1.0/' );
+            p_value     => 'https://static.oracle.com/cdn/apex/24.2.0/' );
 			
      else
        dbms_output.put_line('APEX_PUBLIC_USER not found. Installation may not have completed successfully.');
