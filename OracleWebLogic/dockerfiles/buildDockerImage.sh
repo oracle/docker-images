@@ -17,7 +17,7 @@ Builds a Docker Image for Oracle WebLogic.
 
 Parameters:
    -v: version to build. Required.
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+       Choose one of: 12.2.1.4, 14.1.1.0, 14.1.2.0
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
    -j: choose the JDK to create a 12.2.1.4 (JDK '8'), 14.1.1.0 (JDK '8' or '11'), or 14.1.2.0 (JDK '17' or '21') image
@@ -38,13 +38,13 @@ exit 0
 # Validate packages
 validateJDK() {
    if [ "$VERSION" == "14.1.1.0" ]; then
-      if [ "$JDKVER" != 8 -a "$JDKVER" != 11 ]; then
+      if [[ "$JDKVER" != 8 && "$JDKVER" != 11 ]]; then
          echo "WebLogic Server 14.1.1.0 supports JDK 8 and 11.  JDK version $JDKVER is not supported."
          exit 1
       fi
    elif [ "$VERSION" == "14.1.2.0" ]; then
-      if [ "$JDKVER" != 17 -a "$JDKVER" != 21 ]; then
-         echo "WebLogic Server 14.1.2.0 supports JDK 17 and 21.  JDK version $JDKVER is not supported."
+      if [[ "$JDKVER" != 17 && "$JDKVER" != 21 ]]; then
+         echo "WebLogic Server 14.1.1.0 supports JDK 17 and 21.  JDK version $JDKVER is not supported."
          exit 1
       fi
    fi
@@ -53,10 +53,11 @@ validateJDK() {
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
   md5sum -c Checksum.$DISTRIBUTION
-  if [ "$?" -ne 0 ]; then
+  md5_req="$?"
+  if [ "$md5_req"  -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"
-    exit $?
+    exit $md5_req
   fi
 }
 
@@ -146,7 +147,7 @@ fi
 IMAGE_NAME="oracle/weblogic:$VERSION-$DIST"
 
 # Go into version folder
-cd $VERSION
+cd $VERSION || return
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
@@ -158,6 +159,10 @@ echo "====================="
 
 # Proxy settings
 PROXY_SETTINGS=""
+http_proxy=""
+https_proxy=""
+ftp_proxy=""
+no_proxy=""
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
@@ -195,7 +200,8 @@ BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
 
-if [ $? -eq 0 ]; then
+status=$?
+if [ "$status" -eq 0 ]; then
 cat << EOF
   WebLogic Docker Image for '$DIST' version $VERSION is ready to be extended:
 
