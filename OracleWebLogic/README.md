@@ -1,6 +1,6 @@
 WebLogic on Docker
 ===============
-This repository contains sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [Dockerfiles](dockerfiles/) and [samples](samples/) for WebLogic Server 12.2.1.4, 14.1.1.0, and 14.1.2.0 based on Oracle Linux and Oracle JDK 8 and 17 (Server).
+This repository contains sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [Dockerfiles](dockerfiles/) and [samples](samples/) for WebLogic Server 12.2.1.4, 14.1.1.0, and 14.1.2.0 based on Oracle Linux and Oracle JDK 8, 11, 17, and 21.
 
 **IMPORTANT**: We provide Dockerfiles as samples to build WebLogic images but this is _NOT_ a recommended practice. We recommend obtaining patched WebLogic Server images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html#GUID-4FB15429-C985-472F-BDC6-669CA1B678E8).
 
@@ -8,12 +8,10 @@ The samples in this repository are for development purposes only. We recommend f
 
 The certification of WebLogic on Docker does not require the use of any file presented in this repository. Customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Dockerfiles.
 
-For more information on the certification, please see the [WebLogic on Docker certification whitepaper](http://www.oracle.com/technetwork/middleware/weblogic/overview/weblogic-server-docker-containers-2491959.pdf) and [The WebLogic Server Blog](https://blogs.oracle.com/WebLogicServer/) for updates.
-
 For pre-built images containing Oracle software, please check the [Oracle Container Registry](https://container-registry.oracle.com).
 
 ## How to build and run
-This project offers sample Dockerfiles for WebLogic Server 12c and 14c, it also provides at least one Dockerfile for the 'developer' distribution and a second Dockerfile for the 'generic' distribution. To assist in building the images, you can use the [`buildDockerImage.sh`](https://github.com/oracle/docker-images/blob/master/OracleWebLogic/dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
+This project offers sample Dockerfiles for WebLogic Server 12c and 14c, it also provides at least one Dockerfile for the 'developer' distribution, a second for slim distribution, and third Dockerfile for the 'generic' distribution. In WebLogic Server 14.1.2 there is a single distribution.  To assist in building the images, you can use the [`buildDockerImage.sh`](https://github.com/oracle/docker-images/blob/master/OracleWebLogic/dockerfiles/buildDockerImage.sh) script. See below for instructions and usage.
 
 The `buildDockerImage.sh` script is a utility shell script that performs MD5 checks and is an easy way for beginners to get started. Expert users are welcome to directly call `docker build` with their prefered set of parameters.
 
@@ -51,12 +49,6 @@ To start a second Managed Server (MS2), run:
 	$ docker run -d --name MS2 --link wlsadmin:wlsadmin -p 8002:8001 --env-file ./container-scripts/domain.properties -e ADMIN_PASSWORD=<admin_password> -e MS_NAME=MS2 --volumes-from wlsadmin 12214-domain createServer.sh
 
 The above scenario from this sample will give you a WebLogic domain with a cluster set up on a single host environment.
-
-### Clustering WebLogic on Docker containers across multiple hosts
-By using the sample, [`samples/1221-multihost`](samples/1221-multihost), which contains a set of scripts that leverage the [Docker Machine](https://docs.docker.com/machine/) and [Docker Swarm](https://docs.docker.com/swarm/), and by digging through the scripts that create the containers across multiple hosts, combined with the scripts inside [`1221-domain/container-scripts`](samples/1221-domain/container-scripts), you can learn the necessary steps to deploy this with different Docker setups.
-
-The basic idea behind this setup is that you must have all the containers across different hosts assigned to a specific [Docker Overlay Network](https://docs.docker.com/engine/userguide/networking/dockernetworks/#an-overlay-network), a feature of Docker 1.9 and later, that allows containers to join the same network even though they are running in different host environments.
-
 
 ## Choose your WebLogic distribution
 This project hosts two configurations (depending on the WebLogic version) for building Docker images with WebLogic 12c.

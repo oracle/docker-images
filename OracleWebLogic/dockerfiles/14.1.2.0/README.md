@@ -118,4 +118,4 @@ You will need the ip.address of the Admin server container to later use to conne
 7. Click OK to establish the connection.
 
 ## Copyright
-Copyright (c) 2014, 2025, Oracle and/or its affiliates.
+Copyright (c) 2025, Oracle and/or its affiliates.
