@@ -8,4 +8,8 @@ Directory Oracle_EBS_HRMS contains script files for creating a service account i
 
 Directory Oracle_EBS_UM contains script files for creating a service account in EBS target For UM
 
-Copyright (c) 2019, 2023 Oracle and/or its affiliates.
+## PEOPLESOFT
+
+Directory PEOPLESOFT contains views definitions for peoplesoft target
+
+Copyright (c) 2025 Oracle and/or its affiliates.
