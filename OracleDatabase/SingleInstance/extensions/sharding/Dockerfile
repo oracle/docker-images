@@ -62,7 +62,7 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='o
     mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN"
 
 # Copy updated scripts for sharding support
-COPY  --chown=oracle:dba --from=downloader /tmp/db-sharding-master/container-based-sharding-deployment/containerfiles/${BASE_IMAGE_VERSION}/scripts/* $ORACLE_BASE/scripts/sharding/
+COPY  --chown=oracle:dba --from=downloader /tmp/db-sharding-master/container-based-sharding-deployment/containerfiles/scripts/* $ORACLE_BASE/scripts/sharding/
 RUN mv "$ORACLE_BASE/scripts/sharding/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
 
 # Set perms and append a call to main runOracle
