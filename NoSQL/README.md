@@ -73,7 +73,7 @@ For example, to check the version of KVLite, use the `version` command:
 
 ```shell
 $ docker run --rm -ti --link kvlite:store oracle/nosql:ce  java -Xmx64m -Xms64m -jar lib/kvstore.jar version
-24.3.9 2024-09-26 18:01:32 UTC  Build id: 0d82533c492e Edition: Community
+24.4.9 2024-11-21 17:06:06 UTC  Build id: 95fa28ea4441 Edition: Community
 ```
 
 To check the size of the storage shard:
@@ -98,13 +98,13 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   
 Pinging components of store kvstore based upon topology sequence #14
 10 partitions and 1 storage nodes
-Time: 2024-12-04 11:50:35 UTC   Version: 24.3.9
+Time: 2025-03-17 09:05:10 UTC   Version: 24.4.9
 Shard Status: healthy: 1 writable-degraded: 0 read-only: 0 offline: 0 total: 1
 Admin Status: healthy
 Zone [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]   RN Status: online: 1 read-only: 0 offline: 0
-Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 24.3.9 2024-09-26 18:01:32 UTC  Build id: 0d82533c492e Edition: Community    isMasterBalanced: true     serviceStartTime: 2024-12-04 11:47:05 UTC
-        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2024-12-04 11:47:08 UTC       stateChangeTime: 2024-12-04 11:47:08 UTC        availableStorageSize: 2 GB
-        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 470 haPort: 5011 availableStorageSize: 9 GB storageType: HD      serviceStartTime: 2024-12-04 11:47:09 UTC       stateChangeTime: 2024-12-04 11:47:09 UTC
+Storage Node [sn1] on kvlite: 5000    Zone: [name=KVLite id=zn1 type=PRIMARY allowArbiters=false masterAffinity=false]    Status: RUNNING   Ver: 24.4.9 2024-11-21 17:06:06 UTC  Build id: 95fa28ea4441 Edition: Community    isMasterBalanced: true     serviceStartTime: 2025-03-17 09:04:40 UTC
+        Admin [admin1]          Status: RUNNING,MASTER  serviceStartTime: 2025-03-17 09:04:43 UTC       stateChangeTime: 2025-03-17 09:04:43 UTC        availableStorageSize: 2 GB
+        Rep Node [rg1-rn1]      Status: RUNNING,MASTER sequenceNumber: 86 haPort: 5011 availableStorageSize: 9 GB storageType: HD       serviceStartTime: 2025-03-17 09:04:44 UTC       stateChangeTime: 2025-03-17 09:04:45 UTC
   
   kv-> put kv -key /SomeKey -value SomeValue
   Operation successful, record inserted.
@@ -120,19 +120,19 @@ $ docker run --rm -ti --link kvlite:store oracle/nosql:ce \
   java -jar lib/sql.jar -helper-hosts store:5000 -store kvstore
 
   sql-> show tables
-  tables
-    SYS$IndexStatsLease
-    SYS$MRTableAgentStat
-    SYS$MRTableInfo
-    SYS$MRTableInitCheckpoint
-    SYS$PartitionStatsLease
-    SYS$SGAttributesTable
-    SYS$StreamRequest
-    SYS$StreamResponse
-    SYS$TableMetadata
-    SYS$TableStatsIndex
-    SYS$TableStatsPartition
-    SYS$TopologyHistory
+tables
+  SYS$IndexStatsLease
+  SYS$MRTableAgentStat
+  SYS$MRTableInfo
+  SYS$MRTableInitCheckpoint
+  SYS$PartitionStatsLease
+  SYS$SGAttributesTable
+  SYS$StreamRequest
+  SYS$StreamResponse
+  SYS$TableMetadata
+  SYS$TableStatsIndex
+  SYS$TableStatsPartition
+  SYS$TopologyHistory
 
   sql-> exit
 ```
@@ -176,7 +176,7 @@ be made via the Oracle NoSQL Database Proxy on the `KV_PROXY_PORT`.
 First, install the latest version of Oracle NoSQL on your remote host:
 
 ```shell
-KV_VERSION=24.3.9
+KV_VERSION=24.4.9
 rm -rf kv-$KV_VERSION
 DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
 DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
@@ -336,7 +336,7 @@ number used for the image tag:
 
 
 ```shell
-KV_VERSION=24.3.9 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce:$KV_VERSION" .
+KV_VERSION=24.4.9 docker build --build-arg "$KV_VERSION" --tag "oracle/nosql-ce:$KV_VERSION" .
 ```
 
 ## More information
@@ -359,9 +359,9 @@ Oracle provides no commercial support for the Oracle NoSQL Community Edition.
 
 ## Copyright
 
-Copyright (c) 2017, 2024 Oracle and/or its affiliates.
+Copyright (c) 2017, 2025 Oracle and/or its affiliates.
 
 [NOSQL]: http://www.oracle.com/technetwork/database/database-technologies/nosqldb/overview/index.html
 [DOCS]: https://docs.oracle.com/en/database/other-databases/nosql-database/index.html
-[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/24.3/license/apache-license.html
+[Apache-2.0]: https://docs.oracle.com/en/database/other-databases/nosql-database/24.4/license/apache-license.html
 [GraalVM-License]: https://github.com/graalvm/container/blob/master/LICENSE.md
