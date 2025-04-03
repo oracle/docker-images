@@ -86,7 +86,7 @@ podman network create -d ipvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 If you want to use Jumbo Frames MTU Network Configuration as similar as with Oracle RAC containers networks, then refer [Jumbo Frames MTU Network Configuration](../OracleRealApplicationClusters/README.md#jumbo-frames-mtu-network-configuration) section
 
 ## How to deploy Oracle Connection Manager Container
-The Oracle Connection manager container (CMAN) can be used with either an Oracle Real Application Clusters (Oracle RAC) database or with an Oracle Database Single instance database. However, you must ensure that the the SCAN Name or the Single host instance database Hostname is resolvable from the connection manager container.
+The Oracle Connection manager container (CMAN) can be used with either an Oracle Real Application Clusters (Oracle RAC) database or with an Oracle Database Single instance database. However, you must ensure that the SCAN Name or the Single host instance database Hostname is resolvable from the connection manager container.
 Oracle highly recommends that you use a DNS Server so that name resolution can happen successfully.
 
 ### Create Oracle Connection Manager Container
