@@ -198,7 +198,7 @@ podman create -t -i \
   ```
 ###### Section 2.1.2.2: Create Oracle RAC Containers
 Now create the Oracle RAC containers using the image. For the details of environment variables, refer to [Environment Variables Explained](#section-9-environment-variables-for-oracle-rac-on-containers)
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your environment.
+**Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your environment.
 
 You can use the following example to create the first Oracle RAC container:
 ```bash
@@ -236,7 +236,7 @@ podman create -t -i \
  localhost/oracle/database-rac:21c-slim
  ```
 
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep2` and set the variables based on your enviornment.
+**Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep2` and set the variables based on your enviornment.
 
 Create another Oracle RAC Container -
 
@@ -340,7 +340,7 @@ podman create -t -i \
 localhost/oracle/database-rac:21c-slim
   ```
 
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep2` and set the variables based on your enviornment.
+**Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep2` and set the variables based on your enviornment.
 
 To create another container, use the following command:
 
@@ -406,7 +406,7 @@ You can skip this step if you are planning not to use **User Defined Response Fi
 
 Follow the below instructions to setup Oracle RAC on Podman using Slim Image for using user-defined response files.
 
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your enviornment.
+**Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your enviornment.
 
 You can use the following example to create the first Oracle RAC container:
 ```bash
@@ -446,7 +446,7 @@ podman create -t -i \
 localhost/oracle/database-rac:21c-slim
   ```
 
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your enviornment.
+**Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep1` and set the variables based on your enviornment.
 
 To create another container, use the following command:
 
@@ -565,7 +565,7 @@ Refer to [README](./docs/CONNECTING.md) for instructions on how to connect to Or
 Below is the example of adding 1 more node to the existing Oracle RAC 2 node cluster using Slim image and without user-defined files -
 - Create envfile [envfile_racnodep3](withoutresponsefiles/blockdevices/envfile_racnodep3) for additional node and keep it here `/scratch/common_scripts/podman/rac/envfile_racnodep3`
 
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep3` and set the variables based on your enviornment.
+**Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep3` and set the variables based on your enviornment.
 
 - Prepare Folder for additional node-
   ```bash
@@ -626,7 +626,7 @@ Below is the example of adding 1 more node to the existing Oracle RAC 2 node clu
 
 ### Section 8.1: Sample of Addition of Nodes to Oracle RAC Containers based on Oracle RAC Image Without Response File
 Below is an example of adding one more node to the existing Oracle RAC 2 node cluster using the Oracle RAC image and without user-defined files.
-**Note**: Before creating the containers, you need to make sure you have edited teh file `/scratch/common_scripts/podman/rac/envfile_racnodep3` and set the variables based on your enviornment.
+**Note**: Before creating the containers, you need to make sure you have edited the file `/scratch/common_scripts/podman/rac/envfile_racnodep3` and set the variables based on your enviornment.
 
 - Prepare directory for additional node-
     ```bash
