@@ -1,5 +1,5 @@
 # Oracle WebLogic Server on Docker
-# =================================
+=================================
 These Docker configurations have been used to create the Oracle WebLogic Server (WLS) image. Providing this WLS image facilitates the configuration and environment setup for DevOps users. This project includes the installation and creation of an empty WebLogic Server domain (an Administration Server only). These WLS 14.1.2.0 images are based on Oracle Linux and Oracle JDK 17 or Oracle JDK 21.
 
 **IMPORTANT**: We provide Dockerfiles as samples to build WebLogic images but this is _NOT_ a recommended practice. We recommend obtaining patched WebLogic Server images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches] (<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
@@ -59,7 +59,6 @@ Before you build, select the version and distribution for which you want to buil
 
      If the WebLogic image is built extending Oracle JDK 17, then the built image will be called oracle/weblogic:14.1.2.0-17
      If the WebLogic image is built extending Oracle JDK 21, then the built image will be called oracle/weblogic:14.1.2.0-21
- 
 
 ### Running a single server domain from the image
 The WebLogic Server install image (built above) allows you to run a container with a single WebLogic Server domain.  This makes it extremely simple to deploy applications and any resource the application might need.
@@ -85,10 +84,10 @@ You can override the default values of the following parameters during runtime w
       * `ADMINISTRATION_PORT_ENABLED` (default: `false`)
       * `ADMINISTRATION_PORT`         (default: `9002`)
 
-**NOTE**: For security, you want to set the domain mode to `production mode`. In WebLogic Server 14.1.2.0 a new `production mode` domain becomes by default a `secured production` mode domain. Secured production mode domains have more secure default configuration settings, for example the Administration port is enabled, all non-ssl listen ports are disabled, and all ssl ports are enabled. 
+**NOTE**: For security, you want to set the domain mode to `production mode`. In WebLogic Server 14.1.2.0 a new `production mode` domain becomes by default a `secured production` mode domain. Secured production mode domains have more secure default configuration settings, for example the Administration port is enabled, all non-ssl listen ports are disabled, and all ssl ports are enabled.
 
-In this image we create a Development Mode domain by default, you can create a Production Mode domain (with Secured Production Mode disabled) by setting in the `docker run` command `PRODUCTION_MODE` to `prod` and set `ADMINISTRATION_PORT_ENABLED` to true. If you intend to run these images in production, then you should change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.  
-Please see the documentation [Administering Security for Oracle WebLogic Server](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/14.1.2/secmg/using-secured-production-mode.html#GUID-9ED2EF38-F763-4999-80ED-27A3FBCB9D7Di>) to learn about `Secured Production Mode` domains.
+In this image we create a Development Mode domain by default, you can create a Production Mode domain (with Secured Production Mode disabled) by setting in the `docker run` command `PRODUCTION_MODE` to `prod` and set `ADMINISTRATION_PORT_ENABLED` to true. If you intend to run these images in production, then you should change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`.
+Please see the documentation [Administering Security for Oracle WebLogic Server](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/14.1.2/secmg/using-secured-production-mode.html#GUID-9ED2EF38-F763-4999-80ED-27A3FBCB9D7D>).
 
 
 Run a Development Mode domain:
