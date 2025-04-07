@@ -35,7 +35,7 @@ Before you build, select the version and distribution for which you want to buil
         Builds a Docker Image for Oracle WebLogic.
 
 ## Clustering WebLogic on Docker containers
-WebLogic has a [Machine](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/tasks/machines.html>) concept, which is an operational system with an agent, the Node Manager. 
+WebLogic has a [Machine](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/tasks/machines.html>) concept, which is an operational system with an agent, the Node Manager.
 This resource allows the WebLogic Administration Server to create and assign [Managed Servers](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/tutorial-create-configure-managed-servers/>) of an underlying domain.
 
 In order to expand an environment of servers for different applications and resources, and also to define a [cluster](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/12.2.1.4/tasks/clusters.html>). With some WLST magic, your cluster can scale in and out.
