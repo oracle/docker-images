@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2014, 2024, Oracle and/or its affiliates.
+# Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 # Container image template for Oracle Instant Client 19
 #
@@ -33,7 +33,7 @@
 # cwallet.sso.  You can use a container volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.19/client64/lib/network/admin:Z,ro . . .
+#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.26/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
@@ -75,7 +75,7 @@
 FROM oraclelinux:9
 
 ARG release=19
-ARG update=19
+ARG update=26
 
 RUN  dnf -y install oracle-instantclient-release-el9 && \
      dnf -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \

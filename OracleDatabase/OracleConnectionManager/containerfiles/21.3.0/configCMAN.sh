@@ -1,16 +1,14 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2022  Oracle and/or its affiliates.
-#
-# Since: January, 2018
+#############################
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-# Description: Configure and setup CMAN 
-#
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-#
+############################
+# 
 
-source /tmp/envfile
+#source /tmp/envfile
 
 source $SCRIPT_DIR/functions.sh 
 
@@ -21,6 +19,14 @@ declare -r FALSE=1
 declare -r TRUE=0
 # shellcheck disable=SC2034
 declare -r ETCHOSTS="/etc/hosts"
+# shellcheck disable=SC2034
+declare -A dbhost_map
+# shellcheck disable=SC2034
+declare -A rule_map
+# shellcheck disable=SC2034
+declare hostip
+# shellcheck disable=SC2034
+declare action=""
 # shellcheck disable=SC2034
 progname="$(basename $0)"
 ###################### Constants ####################
@@ -39,12 +45,26 @@ RULEDSTSET=0
 RULESRVSET=0
 CP="/bin/cp"
 
+export TRULESTR="    (rule=
+       (src=*)(dst=*)(srv=*)(act=accept)
+       (action_list=(aut=off)(moct=0)(mct=0)(mit=0)(conn_stats=on))
+    )"
+
+export LOCAL_CMCTL_CONN_STR="    (rule=(src=###CMAN_HOSTNAME###.###DOMAIN###)(dst=127.0.0.1)(srv=cmon)(act=accept))"
+
 all_check()
 {
-check_env_vars
+if [ -z ${DB_HOSTDETAILS} ]; then
+   print_message "DB_HOSTDETAILS not set. Setting to default"
+else
+   print_message "DB_HOSTDETAILS name is ${DB_HOSTDETAILS}"
+   get_dbhost_details
+fi
+
+check_cman_env_vars
 }
 
-check_env_vars ()
+check_cman_env_vars()
 {
 ## Checking Grid Reponsfile or vip,scan ip and private ip
 ### if user has passed the Grid ResponseFile name, below checks will be skipped
@@ -77,18 +97,6 @@ else
   print_message "RAC Node PUBLIC Hostname is set to ${PUBLIC_HOSTNAME}"
 fi
 
-if [ -z ${SCAN_NAME} ]; then
-  print_message "SCAN_NAME set to the empty string"
-else
-  print_message "SCAN_NAME name is ${SCAN_NAME}"
-fi
-
-if [ -z ${SCAN_IP} ]; then
-   print_message "SCAN_IP set to the empty string"
-else
-  print_message "SCAN_IP name is ${SCAN_IP}"
-fi
-
 if [ -z "${LOG_LEVEL}" ]; then
    LOG_LEVEL=user
 fi
@@ -96,6 +104,26 @@ fi
 if [ -z "${TRACE_LEVEL}" ]; then
    TRACE_LEVEL=user
 fi
+# shellcheck disable=SC2166
+if [ "${TRACE_LEVEL}" != "user" -a "${TRACE_LEVEL}" != "admin" -a "${TRACE_LEVEL}" != "support" ]; then
+      print_message "Invalid trace-level [${TRACE_LEVEL}] specified."
+fi
+# shellcheck disable=SC2166
+if [ "${LOG_LEVEL}" != "user" -a "${LOG_LEVEL}" != "admin" -a "${LOG_LEVEL}" != "support" ]; then
+      print_message "Invalid log-level [${LOG_LEVEL}] specified."
+fi
+
+if [ -z "${REGISTRATION_INVITED_NODES}" ]; then
+   REGISTRATION_INVITED_NODES='*'
+else
+# shellcheck disable=SC2034
+   REGINVITEDNODESET=1
+fi
+
+}
+
+check_rule_env_vars ()
+{
 
 if [ -z "${RULE_SRC}" ]; then
    RULE_SRC='*'
@@ -117,21 +145,6 @@ fi
 
 if [ -z "${RULE_ACT}" ]; then
    RULE_ACT='accept'
-fi
-
-if [ -z "${REGISTRATION_INVITED_NODES}" ]; then
-   REGISTRATION_INVITED_NODES='*'
-else
-# shellcheck disable=SC2034
-   REGINVITEDNODESET=1
-fi
-# shellcheck disable=SC2166
-if [ "${TRACE_LEVEL}" != "user" -a "${TRACE_LEVEL}" != "admin" -a "${TRACE_LEVEL}" != "support" ]; then
-      print_message "Invalid trace-level [${TRACE_LEVEL}] specified."
-fi
-# shellcheck disable=SC2166
-if [ "${LOG_LEVEL}" != "user" -a "${LOG_LEVEL}" != "admin" -a "${LOG_LEVEL}" != "support" ]; then
-      print_message "Invalid log-level [${LOG_LEVEL}] specified."
 fi
 
 contSubNetIP=`/sbin/ifconfig eth0 | grep 'inet ' | awk '{ print $2 }' | awk -F. '{ print $1 "." $2 "." $3 }'`
@@ -167,40 +180,201 @@ fi
 
 }
 
+get_dbhost_details()
+{
+
+db_hostdetail_values=`echo ${DB_HOSTDETAILS} | sed -e 's/.*?=\(.*\)/\1/g'`
+IFS=',' read  -a db_hostvalues <<< "${db_hostdetail_values}"
+
+for db_hostvalue in "${db_hostvalues[@]}"
+do
+    IFS=':' read -a rule_env_vars <<< "${db_hostvalue}"
+    for rule_env_var in "${rule_env_vars[@]}"
+    do
+       echo "export ${rule_env_var}"
+       # shellcheck disable=SC2163
+       export ${rule_env_var}
+    done
+
+    if [ -z ${HOST} ]; then
+       error_exit "DB HOST not set. Exiting"
+    else
+       print_message "DB_HOST name is ${HOST}"
+    fi
+
+    dbhost_map[${HOST}]=${IP}
+    rule_map[${HOST}]=${db_hostvalue}
+    # shellcheck disable=SC2178
+    rule_env_vars=""
+done
+
+check_dbhost_connections
+if [ $? -ne 0 ]; then
+   error_exit "check_dbhost_connections failed"
+fi
+
+}
+
+get_host_ip() {
+
+    nslookup $1 > /dev/null
+    if [ $? -ne 0 ]; then
+       hostip=""
+       echo "$0() : nslookup on $1 failed"
+       return 1
+    fi
+
+    hostip=`nslookup $1 | tail  -n -3 | grep -v '^$' | grep 'Address:' | awk '{ print $2 }'`
+
+    return 0
+}
+
+check_dbhost_connections() {
+
+for key in "${!dbhost_map[@]}";
+do
+  print_message " -- : $key --> ${dbhost_map[$key]}"
+  ping $key -c 1 > /dev/null
+  if [ $? -eq 0 ]; then
+     print_message "host $key is pingable by name."
+     continue
+  fi
+  if ( [ "${dbhost_map[$key]}" != "" ] ); then
+      print_message "$key:${dbhost_map[$key]} is not reachable. Exiting."
+      return 1
+  fi
+  get_host_ip $key
+  if [ $? -eq 0 ]; then
+     print_message "resolved host ip : $key --> ${hostip}. Check if pinagble by IP"
+     ping ${hostip} -c 1 > /dev/null
+     if [ $? -ne 0 ]; then
+        print_message "host $key not pingable by IP. "
+        print_message "host $key:${hostip} not reachable by Name/IP. Exiting"
+        return 2
+     fi
+     dbhost_map[$key]=${hostip}
+     continue
+  else
+     print_message "IP not found for host $key"
+     return 3
+  fi
+done
+
+return 0
+}
+
 ####################################### ETC Host Function #############################################################
+
+setupEtcResolvConf()
+{
+local stat=3
+
+if [ "$action" == "" ]; then
+   if [ ! -z "${DNS_SERVER}" ] ; then
+     sudo sh -c "echo \"search  ${DOMAIN}\"  > /etc/resolv.conf"	   
+     sudo sh -c "echo \"nameserver ${DNS_SERVER}\"  >> /etc/resolv.conf"
+  fi
+fi
+
+}
 
 SetupEtcHosts()
 {
 # shellcheck disable=SC2034
-stat=3
+local stat=3
 # shellcheck disable=SC2034
 local HOST_LINE
+if [ "$action" == "" ]; then
+ if [ ! -z "${HOSTFILE}" ]; then 
+   if [ -f "${HOSTFILE}" ]; then
+     sudo sh -c "cat \"${HOSTFILE}\" > /etc/hosts"
+   fi
+ else	 
+  sudo sh -c "echo -e \"127.0.0.1\tlocalhost.localdomain\tlocalhost\" > /etc/hosts"
+  sudo sh -c "echo -e \"$PUBLIC_IP\t$PUBLIC_HOSTNAME.$DOMAIN\t$PUBLIC_HOSTNAME\" >> /etc/hosts"
+ fi
+fi
 
-echo -e "127.0.0.1\tlocalhost.localdomain\tlocalhost" > /etc/hosts
-echo -e "$PUBLIC_IP\t$PUBLIC_HOSTNAME.$DOMAIN\t$PUBLIC_HOSTNAME" >> /etc/hosts
-echo -e "$SCAN_IP\t$SCAN_NAME.$DOMAIN\t$SCAN_NAME" >> /etc/hosts
 }
 
 ######### Grid setup Function###########################
 cman_file ()
 {
-
-cp $SCRIPT_DIR/$CMANORA $logdir/$CMANORA
+rm -f $logdir/$CMANORA
+touch $logdir/$CMANORA
+chown -R oracle:oinstall $logdir/$CMANORA
+if [ -f $DB_HOME/network/admin/$CMANORA ]; then
+   cp $DB_HOME/network/admin/$CMANORA $logdir/$CMANORA
+else
+   cat $SCRIPT_DIR/$CMANORA >> $logdir/$CMANORA
+   if [ ! -z ${DB_HOSTDETAILS} ]; then
+      sh -c "echo $'/(rule=\n\Emk%d\'k\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+      # Add the local CMCTL connection 
+      sh -c "echo $'/(rule_list=\n\Eo${LOCAL_CMCTL_CONN_STR}\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+   fi
+fi
 
 sed -i -e "s|###CMAN_HOSTNAME###|$PUBLIC_HOSTNAME|g" $logdir/$CMANORA
+## sed -i -e "s|###DB_HOSTNAME###|$key|g" $logdir/$CMANORA
 sed -i -e "s|###DOMAIN###|$DOMAIN|g" $logdir/$CMANORA
 sed -i -e "s|###DB_HOME###|$DB_HOME|g" $logdir/$CMANORA
 sed -i -e "s|###PORT###|$PORT|g" $logdir/$CMANORA
 sed -i -e "s|###LOG_LEVEL###|$LOG_LEVEL|g" $logdir/$CMANORA
 sed -i -e "s|###TRACE_LEVEL###|$TRACE_LEVEL|g" $logdir/$CMANORA
 sed -i -e "s|(registration_invited_nodes=.*)|(registration_invited_nodes=${REGISTRATION_INVITED_NODES})|g"  $logdir/$CMANORA
-sed -i -e "s|(src=.*)|(src=${RULE_SRC})(dst=${RULE_DST})(srv=${RULE_SRV})(act=${RULE_ACT})|g"  $logdir/$CMANORA
+for key in "${!dbhost_map[@]}";
+do
+    unsetrulevars
+    IFS=':' read  -a rule_env_vars <<< "${rule_map[$key]}"
+
+    for rule_env_var in "${rule_env_vars[@]}"
+    do
+       echo "export ${rule_env_var}"
+       # shellcheck disable=SC2163
+       export ${rule_env_var}
+    done
+
+    check_rule_env_vars
+    sh -c "echo $'/(rule_list=\n\Eo${TRULESTR}\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+    sh -c "echo $'/(src=\n\Ec\$(src=${RULE_SRC})(dst=$key)(srv=${RULE_SRV})(act=${RULE_ACT})\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+
+done
 
 if [ ! -z "${WALLET_LOCATION}" ]; then
    echo "$WALLET_TMPL_STR" >> $logdir/$CMANORA
    sed -i -e "s|###WALLET_LOCATION###|${WALLET_LOCATION}|g" $logdir/$CMANORA
 fi
 
+}
+
+unsetrulevars()
+{
+unset RULE_SRC
+unset RULE_DST
+unset RULE_SRV
+unset RULE_ACT
+}
+
+deleterule()
+{
+
+export CMANRULE="(src=${RULE_SRC})(dst=${RULE_DST})(srv=${RULE_SRV})(act=${RULE_ACT})"
+CMANRULE=`echo $CMANRULE | sed -e 's/\*/\\\*/g'`
+
+print_message "CMAN Rule to delete=[$CMANRULE]"
+cp $DB_HOME/network/admin/$CMANORA $logdir/$CMANORA
+grep "$CMANRULE" $logdir/$CMANORA > /dev/null
+if [ $? -ne 0 ]; then
+     error_exit "cman rule ${CMANRULE} not found in cman config file $logdir/$CMANORA. Exiting."
+fi
+
+sh -c "echo $'/${CMANRULE}\n\Ek0\Emk%d\'k\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+
+cp -f $logdir/$CMANORA $DB_HOME/network/admin/
+
+reload_cman
+
+return 0
 }
 
 copycmanora ()
@@ -212,38 +386,47 @@ chown -R oracle:oinstall $DB_HOME/network/admin/
 #rm -f $logdir/$CMANORA
 }
 
+reload_cman ()
+{
+local cmd
+cmd="$DB_HOME/bin/cmctl reload -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN"
+eval $cmd
+}
+
 start_cman ()
 {
 local cmd
-cmd="su - oracle -c \"$DB_HOME/bin/cmctl startup -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN\""
+export ORACLE_HOME=$DB_HOME
+cmd="$DB_HOME/bin/cmctl startup -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN"
 eval $cmd
 }
 
 stop_cman ()
 {
 local cmd
-cmd="su - oracle -c \"$DB_HOME/bin/cmctl shutdown -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN\""
+cmaninst=$1
+export ORACLE_HOME=$DB_HOME
+cmd="$DB_HOME/bin/cmctl shutdown -c $cmaninst"
 eval $cmd
 }
 
 status_cman ()
 {
 local cmd
-cmd="su - oracle -c \"$DB_HOME/bin/cmctl show service -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN\""
+export ORACLE_HOME=$DB_HOME
+cmd="$DB_HOME/bin/cmctl show service -c CMAN_$PUBLIC_HOSTNAME.$DOMAIN"
 eval $cmd
 
 if [ $? -eq 0 ];then
-print_message "cman started sucessfully"
+print_message "cman [CMAN_$PUBLIC_HOSTNAME.$DOMAIN] started sucessfully"
 else
    if [ -z "${CMAN_DEBUG}" ]; then
-      error_exit "Cman startup failed. Exiting"
+      error_exit "Cman [CMAN_$PUBLIC_HOSTNAME.$DOMAIN] startup failed. Exiting"
    else
-      print_message "Cman startup failed. Debug mode"
+      print_message "Cman [CMAN_$PUBLIC_HOSTNAME.$DOMAIN] startup failed. Debug mode"
       tail -f /tmp/orod.log
-
    fi
 fi
-
 }
 
 
@@ -255,7 +438,54 @@ fi
 
 ########
 #clear_files
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+       -addrule)
+            action="add"
+            ;;
+       -delrule)
+            action="delete"
+            ;;
+       -e)
+             # envdetail="${1#*=}"
+             shift
+             envdetail="$1"
+             envname=$(echo $envdetail | cut -d"=" -f 1)
+             envval=$(echo $envdetail | cut -d"=" -f 2-)
+             echo "name=[$envname]. val=[$envval]"
+             export $envname=$envval
+             ;;
+       *)
+            error_exit "* Error: Invalid argument [$1] specified.*\n"
+    esac
+    shift
+done
+
+####### Populating resolv.conf and /etc/hosts ###
+setupEtcResolvConf
 SetupEtcHosts
+####################
+
+
+if [ "$action" == "delete" ]; then
+     del_rule_details=`echo ${RULEDETAILS} | sed -e 's/.*?=\(.*\)/\1/g'`
+     IFS=':' read  -a del_rule_vars <<< "${del_rule_details}"
+     unsetrulevars
+     for del_rule_var in "${del_rule_vars[@]}"
+     do
+         echo "export ${del_rule_var}"
+         # shellcheck disable=SC2163
+         export ${del_rule_var}
+     done
+
+     check_rule_env_vars
+     deleterule
+
+     exit 0
+
+fi
+
 if [ ! -z "${USER_CMAN_FILE}" ]; then
    if [ ! -f "${USER_CMAN_FILE}" ]; then
         error_exit "User supplied cman.ora file [${USER_CMAN_FILE}] not found. Exiting CMAN-Setup."
@@ -273,6 +503,8 @@ print_message "Copying CMAN file to $DB_HOME/network/admin"
 copycmanora
 print_message "Starting CMAN"
 start_cman
+print_message "Reloading CMAN"
+reload_cman
 print_message "Checking CMAN Status"
 status_cman
 print_message "################################################"
