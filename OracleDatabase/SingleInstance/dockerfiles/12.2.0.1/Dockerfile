@@ -46,6 +46,7 @@ ENV ORACLE_BASE=/opt/oracle \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
     CREATE_DB_FILE="createDB.sh" \
+    DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
@@ -116,4 +117,4 @@ HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
-CMD exec $ORACLE_BASE/$RUN_FILE
+CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
