@@ -198,9 +198,9 @@ docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $PROXY_SETTINGS -t $IMAGE_N
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
-echo ""
+#echo ""
 
-status=$?
+status="$?"
 if [ "$status" -eq 0 ]; then
 cat << EOF
   WebLogic Docker Image for '$DIST' version $VERSION is ready to be extended:

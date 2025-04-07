@@ -25,7 +25,7 @@ function _kill() {
 trap _term SIGTERM
 
 # Set SIGKILL handler
-trap _kill SIGKILL
+#trap _kill SIGKILL
 
 #Define DOMAIN_HOME
 export DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME
