@@ -86,7 +86,7 @@ You can override the default values of the following parameters during runtime w
 
 **NOTE**: For security, you want to set the domain mode to `production mode`. In WebLogic Server 14.1.2.0 a new `production mode` domain becomes by default a `secured production` mode domain. Secured production mode domains have more secure default configuration settings, for example the Administration port is enabled, all non-ssl listen ports are disabled, and all ssl ports are enabled.
 
-In this image we create a Development Mode domain by default, you can create a Production Mode domain (with Secured Production Mode disabled) by setting in the `docker run` command `PRODUCTION_MODE` to `prod` and set `ADMINISTRATION_PORT_ENABLED` to true. 
+In this image we create a Development Mode domain by default, you can create a Production Mode domain (with Secured Production Mode disabled) by setting in the `docker run` command `PRODUCTION_MODE` to `prod` and set `ADMINISTRATION_PORT_ENABLED` to true.
 If you intend to run these images in production, then you should change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`. Please see the documentation [Administering Security for Oracle WebLogic Server](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/14.1.2/secmg/using-secured-production-mode.html#GUID-9ED2EF38-F763-4999-80ED-27A3FBCB9D7D>).
 
 
