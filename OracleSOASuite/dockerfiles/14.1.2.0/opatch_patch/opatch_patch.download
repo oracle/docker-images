@@ -1,0 +1,5 @@
+#
+# Oracle patch installer (OPatch) 
+# Download patches from : https://support.oracle.com
+#
+# To build the image by including the OPatch patch, download and drop the OPatch patch zip file (for e.g. `p28186730_139424_Generic.zip`) into the `opatch_patch/` directory.
