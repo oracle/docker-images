@@ -27,12 +27,6 @@ function _term() {
    exit;
 }
 
-#=================================================================
-function _kill() {
-   echo "INFO: SIGKILL received, shutting down Managed Server!"
-   $DOMAIN_HOME/bin/stopManagedWebLogic.sh ${MANAGED_SERVER} "http://"${ADMIN_HOST}:${ADMIN_PORT}
-   exit;
-}
 
 #calling soa extension function script
 /u01/oracle/container-scripts/soaExtFun.sh
@@ -43,7 +37,6 @@ function _kill() {
 #=================================================================
 trap _int SIGINT
 trap _term SIGTERM
-trap _kill SIGKILL
 
 export vol_name=u01
 
