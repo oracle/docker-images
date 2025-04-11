@@ -26,12 +26,6 @@ function _term() {
   exit;
 }
 
-#==================================================
-function _kill() {
-  echo "INFO: SIGKILL received, shutting down Admin Server!"
-  /u01/oracle/user_projects/domains/base_domain/bin/stopWebLogic.sh
-  exit;
-}
 
 #==================================================
 function rand_pwd(){
@@ -57,7 +51,7 @@ setupRCU() {
     cp ${scrName} ${scrName}.orig
   fi
 
-  if [ "${dbType}" = "XE" -o "${dbType}" = "xe" ]; then
+  if [ "${dbType}" = "XE" ] || [ "${dbType}" = "xe" ]; then
     echo "INFO: Setting RCU for XE"
     sed -e "s/^@@prepareAuditView.sql/-- @@prepareAuditView.sql/g" ${scrName}.orig > ${scrName}
   else
@@ -70,7 +64,8 @@ setupRCU() {
 updateListenAddress() {
   mkdir -p ${DOMAIN_HOME}/logs
 
-  export thehost=`hostname -I`
+  thehost=`hostname -I`
+  export thehost
   echo "INFO: Updating the listen address - ${thehost}"
   cmd="/u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/updListenAddress.py $vol_name ${thehost} AdminServer"
   echo ${cmd}
@@ -82,7 +77,6 @@ updateListenAddress() {
 #==================================================
 trap _int SIGINT
 trap _term SIGTERM
-trap _kill SIGKILL
 
 echo "INFO: CONNECTION_STRING = ${CONNECTION_STRING:?"Please set CONNECTION_STRING"}"
 echo "INFO: RCUPREFIX         = ${RCUPREFIX:?"Please set RCUPREFIX"}"
@@ -109,7 +103,7 @@ then
   # Auto generate Oracle Database Schema password
   temp_pwd=$(rand_pwd)
   #Password should not start with a number for database
-  f_str=`echo $temp_pwd|cut -c1|tr [0-9] [A-Z]`
+  f_str=$(echo "$temp_pwd" | cut -c1 | tr '0-9' 'A-Z')
   s_str=`echo $temp_pwd|cut -c2-`
   DB_SCHEMA_PASSWORD=${f_str}${s_str}
   echo ""

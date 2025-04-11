@@ -127,7 +127,7 @@ fi
 
 
 # Go into version folder
-cd ${THEDIR}
+cd "${THEDIR}" || exit 1
 
 checkFilePackages
 checksumPackages

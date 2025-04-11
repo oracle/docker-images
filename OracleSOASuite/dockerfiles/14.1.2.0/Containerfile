@@ -29,7 +29,7 @@ ENV FMW_JAR1=fmw_14.1.2.0.0_soa.jar \
 #
 # Copy installers and patches for install
 # -------------------------------------------
-ADD  $FMW_JAR1 $FMW_JAR2 $FMW_JAR3 /u01/
+COPY  $FMW_JAR1 $FMW_JAR2 $FMW_JAR3 /u01/
 RUN mkdir /u01/patches  ${OPATCH_PATCH_DIR} && \
     chown oracle:root -R /u01
 COPY patches/* /u01/patches/
@@ -120,7 +120,7 @@ LABEL "provider"="Oracle"
 # -----------------------------
 USER root
 ENV PATH=$PATH:/u01/oracle/container-scripts:/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/apache-ant/bin
-RUN microdnf install hostname && \
+RUN microdnf install -y hostname && \
     microdnf clean all
 
 COPY --from=builder --chown=oracle:root /u01 /u01

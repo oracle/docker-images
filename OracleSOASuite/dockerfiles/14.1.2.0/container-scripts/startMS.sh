@@ -62,7 +62,8 @@ LOGDIR=${DOMAIN_HOME}/logs/${MANAGED_SERVER}
 LOGFILE=${LOGDIR}/ms.log
 mkdir -p ${LOGDIR}
 
-export thehost=`hostname -I`
+thehost=`hostname -I`
+export thehost
 echo "INFO: Updating the listen address - ${thehost}"
 /u01/oracle/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/container-scripts/updListenAddress.py $vol_name $thehost ${MANAGED_SERVER} > ${LOGDIR}/mslisten.log 2>&1
 
