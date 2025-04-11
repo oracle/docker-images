@@ -1,0 +1,12 @@
+#
+# Oracle SOA Suite for Oracle Middleware (SOA, OSB, B2B)
+# OTN      : http://www.oracle.com/technetwork/middleware/soasuite/overview
+# Download : http://edelivery.oracle.com
+#
+#  Oracle Fusion Middleware 14c (14.1.2.0.0) SOA Suite
+#                     and Business Process Management
+#  Oracle Fusion Middleware 14c (14.1.2.0.0) Service Bus
+#  Oracle Fusion Middleware 14c (14.1.2.0.0) B2B and Healthcare
+7c9fabb0752d91de4893aeb7a148c81b  fmw_14.1.2.0.0_soa.jar
+7e485dbab1c1f097c8826a652aad9da1  fmw_14.1.2.0.0_osb.jar
+cac9d91e5b292359ecd08e37d2516805  fmw_14.1.2.0.0_b2bhealthcare.jar
