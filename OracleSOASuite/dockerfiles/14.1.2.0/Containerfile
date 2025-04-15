@@ -44,9 +44,9 @@ RUN  cd /u01 && chmod 755 ./*.jar && \
 USER oracle
 COPY install/* /u01/
 RUN cd /u01 && \
-  $JAVA_HOME/bin/java -jar $FMW_JAR1 -silent -responseFile /u01/soasuite.response -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME && \
-  $JAVA_HOME/bin/java -jar $FMW_JAR2 -silent -responseFile /u01/osb.response -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="Service Bus" && \
-  $JAVA_HOME/bin/java -jar $FMW_JAR3 -silent -responseFile /u01/b2b.response -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="B2B" && \
+  "$JAVA_HOME/bin/java" -jar "$FMW_JAR1" -silent -responseFile /u01/soasuite.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" && \
+  "$JAVA_HOME/bin/java" -jar "$FMW_JAR2" -silent -responseFile /u01/osb.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="Service Bus" && \
+  "$JAVA_HOME/bin/java" -jar "$FMW_JAR3" -silent -responseFile /u01/b2b.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="B2B" && \
   rm -fr /u01/*.jar /u01/*.response
 
 #
@@ -61,8 +61,7 @@ RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
       echo -e ""; \
       echo "Extracting patch: ${opatchzip}"; \
       $JAVA_HOME/bin/jar xf ${opatchzip} ; \
-      $JAVA_HOME/bin/java -jar ${OPATCH_PATCH_DIR}/6880880/opatch_generic.jar -silent oracle_home=$ORACLE_HOME; \
-      if [ $? -ne 0 ]; then \
+      if ! $JAVA_HOME/bin/java -jar ${OPATCH_PATCH_DIR}/6880880/opatch_generic.jar -silent oracle_home=$ORACLE_HOME; then \
         echo "Applying patch to opatch Failed" ; \
         exit 1 ; \
       fi; \
@@ -82,18 +81,18 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
       echo -e ""; \
       for filename in `ls p*.zip`; do echo "Extracting patch: ${filename}"; $JAVA_HOME/bin/jar xf ${filename}; done; \
       rm -f /u01/patches/p*.zip; \
-      $ORACLE_HOME/OPatch/opatch napply -silent -oh $ORACLE_HOME -jre $JAVA_HOME -invPtrLoc /u01/oraInst.loc -phBaseDir /u01/patches; \
-      $ORACLE_HOME/OPatch/opatch util cleanup -silent; \
+      "$ORACLE_HOME/OPatch/opatch" napply -silent -oh "$ORACLE_HOME" -jre "$JAVA_HOME" -invPtrLoc /u01/oraInst.loc -phBaseDir /u01/patches; \
+      "$ORACLE_HOME/OPatch/opatch" util cleanup -silent; \
       rm -rf /u01/patches /u01/oracle/cfgtoollogs/opatch/*; \
       echo -e "\nPatches applied in SOA oracle home are:"; \
-      cd $ORACLE_HOME/OPatch; \
-      $ORACLE_HOME/OPatch/opatch lspatches; \
+      cd "$ORACLE_HOME/OPatch"; \
+      "$ORACLE_HOME/OPatch/opatch" lspatches; \
     else \
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
     fi && \
     # Extract XEngine tar gz if present
     if [ -f "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [  -f "XEngine_8_4_1_23.tar.gz" ]; then \
-        cd $ORACLE_HOME/soa/soa/thirdparty/edifecs && \
+        cd "$ORACLE_HOME/soa/soa/thirdparty/edifecs" && \
         tar -zxvf  XEngine_8_4_1_23.tar.gz \
     else \
         echo -e "\nNo XEngine_8_4_1_23.tar.gz present in ${ORACLE_HOME}/soa/soa/thirdparty/edifecs directory. Skipping untar."; \
