@@ -35,8 +35,7 @@ RUN mkdir /u01/patches  ${OPATCH_PATCH_DIR} && \
 COPY patches/* /u01/patches/
 COPY opatch_patch/* ${OPATCH_PATCH_DIR}/
 COPY container-scripts/* /u01/oracle/container-scripts/
-# hadolint ignore=DL3003
-RUN  cd /u01 && chmod 755 *.jar && \
+RUN  cd /u01 && chmod 755 ./*.jar && \
      chmod +xr /u01/oracle/container-scripts/*.*
 
 #

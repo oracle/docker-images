@@ -58,7 +58,8 @@ checksumPackages() {
   echo "INFO: Checking if required packages are valid..."
 
   md5sum --quiet -c install/soasuite.download 2> /dev/null
-  if [ "$?" -ne 0 ]; then
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
     cat <<EOF
 
 ERROR: MD5 for required packages to build the ${VERSION}
@@ -67,7 +68,7 @@ ERROR: MD5 for required packages to build the ${VERSION}
 EOF
     cat install/soasuite.download
     echo " "
-    exit $?
+    exit $rc
   fi
 }
 
@@ -133,15 +134,15 @@ checkFilePackages
 checksumPackages
 
 # Proxy settings - Set your own proxy environment
-if [ "${http_proxy}" != "" ]; then
+if [ "${http_proxy:-}" != "" ]; then
   PROXY_SETTINGS="--build-arg http_proxy=${http_proxy}"
 fi
 
-if [ "${https_proxy}" != "" ]; then
+if [ "${https_proxy:-}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
-if [ "${no_proxy}" != "" ]; then
+if [ "${no_proxy:-}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
 
