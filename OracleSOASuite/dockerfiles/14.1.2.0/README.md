@@ -37,7 +37,8 @@ For example:
 
 ## 2. Mount a host directory as a data volume
 
-Data volumes are designed to persist data, independent of the container’s lifecycle. Podman automatically creates volumes when you specify a volume name with the -v option, without the need to predefine directories on the host. In this project, the volumes will be used to store Database data files and WebLogic Server domain files. These volumes will be automatically created and managed by Podman. The names of the volumes are specified in the podman run commands.
+Data volumes are designed to persist data, independent of the container’s lifecycle. Podman automatically creates volumes when you specify a volume name with the -v option, without the need to predefine directories on the host.
+In this project, the volumes will be used to store Database data files and WebLogic Server domain files. These volumes will be automatically created and managed by Podman. The names of the volumes are specified in the podman run commands.
 
 `$ podman -d --name soadb -v soadb_vol:/opt/oracle/oradata`
 
