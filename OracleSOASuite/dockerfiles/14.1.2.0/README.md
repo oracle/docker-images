@@ -23,7 +23,6 @@ To create the Podman network and run containers, follow these steps:
 
 ## 1. Create a network
 
-
 The containers will be connected using a Podman user-defined network.
 
 ### Create a user-defined network
@@ -38,7 +37,7 @@ For example:
 
 ## 2. Mount a host directory as a data volume
 
-Data volumes are designed to persist data, independent of the container’s lifecycle. Podman automatically creates volumes when you specify a volume name with the -v option, without the need to predefine directories on the host. In this project, the volumes will be used to store Database data files and WebLogic Server domain files. These volumes will be automatically created and managed by Podman. The names of the volumes are specified in the podman run commands. 
+Data volumes are designed to persist data, independent of the container’s lifecycle. Podman automatically creates volumes when you specify a volume name with the -v option, without the need to predefine directories on the host. In this project, the volumes will be used to store Database data files and WebLogic Server domain files. These volumes will be automatically created and managed by Podman. The names of the volumes are specified in the podman run commands.
 
 `$ podman -d --name soadb -v soadb_vol:/opt/oracle/oradata`
 
@@ -69,18 +68,18 @@ The Oracle database server container requires custom configuration parameters fo
 
 To run the database container to host the RCU schemas:
 
-1.  Add the following parameters to a `db.env.txt` file:
+1. Add the following parameters to a `db.env.txt` file:
     ``` bash
     ORACLE_SID=soadb
     ORACLE_PDB=soapdb
     ORACLE_PWD=Oradoc_db1
     ENABLE_ARCHIVELOG=true
     ```
-1.  Enter the following command:
+1. Enter the following command:
     ``` bash
     `$ podman run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 -v soadb_vol:/opt/oracle/oradata --env-file ./db.env.txt container-registry.oracle.com/database/enterprise:19.3.0.0`
     ```
-1.  Verify that the database is running and healthy. The `STATUS` field should show `healthy` in the output of `podman ps`.
+1. Verify that the database is running and healthy. The `STATUS` field should show `healthy` in the output of `podman ps`.
 
 ## 4. Obtain the SOA 14.1.2.0 container image
 
@@ -104,7 +103,7 @@ ADMIN_PORT=<Node port number mapping Administration Server container port `7001`
 PERSISTENCE_STORE=<jdbc | file>
 ```
 >IMPORTANT: `DOMAIN_TYPE` must be carefully chosen and specified depending on the use case. It can't be changed once you proceed.
-For Oracle SOA Suite domains, the supported domain types are `soa`, `osb` and `soaosb`. 
+For Oracle SOA Suite domains, the supported domain types are `soa`, `osb` and `soaosb`.
 - soa       : Deploys a SOA Domain with Enterprise Scheduler (ESS)
 - osb       : Deploys an OSB Domain (Oracle Service Bus)
 - soaosb    : Deploys a Domain with SOA, OSB and Enterprise Scheduler (ESS)
@@ -133,7 +132,7 @@ For example:
 ```
 The options `-it` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation, and configuration, followed by starting the Administration Server.
 
-> IMPORTANT: You need to wait until all the above commands are run before you can access the Administration Server Web Console. The following lines highlight when the Administration Server is ready to be used:    
+> IMPORTANT: You need to wait until all the above commands are run before you can access the Administration Server Web Console. The following lines highlight when the Administration Server is ready to be used:
 ``` bash
 INFO: Admin server is running
 
@@ -269,7 +268,7 @@ For example:
 ``` bash
 `$ podman run -it --name osbms1 --network=SOANet -p 8004:8004 -v soadomain_vol:/u01/oracle/user_projects --env-file ./osbserver2.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"`
 ```
-The following lines indicate when the Oracle Service Bus Managed Server is ready to be used: 
+The following lines indicate when the Oracle Service Bus Managed Server is ready to be used:
 ``` bash   
 INFO: Managed Server is running
 
