@@ -1,7 +1,4 @@
-
-=====================================
-Running Oracle SOA Suite in containers
---------------------------------------
+# Running Oracle SOA Suite in containers
 
 Sample configurations to facilitate installation, configuration, and environment setup for Podman users. This project includes quick start `Containerfiles` for Oracle SOA 14.1.2.0 based on Oracle Linux 8, Oracle JDK 17, and Oracle Fusion Middleware Infrastructure 14.1.2.0.
 
@@ -24,7 +21,7 @@ To create the Podman network and run containers, follow these steps:
  8. [Access the Consoles](#8-access-the-consoles)
  9. [Clean up the environment](#9-clean-up-the-environment)
 
-### 1. Create a network
+## 1. Create a network
 
 
 The containers will be connected using a Podman user-defined network.
