@@ -40,12 +40,12 @@ To build the SOA image with patches, you need to download and drop the patch zip
 Build the Oracle SOA 12.2.1.4 image using:
 
 ```
-$ sh buildDockerImage.sh -v 12.2.1.4
-```
+`$ sh buildDockerImage.sh -v 12.2.1.4`
 
    Usage: buildDockerImage.sh -v [version]
    Builds a Docker Image for Oracle SOA Suite.
 
+```
 
 Verify you now have the image `oracle/soasuite:12.2.1.4` in place with 
 

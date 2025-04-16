@@ -31,39 +31,35 @@ The containers will be connected using a Podman user-defined network.
 In this configuration, the creation of a user-defined network will enable the communication between the containers just using container names. For this setup we will use a user-defined network using bridge driver.
 
 Create a user-defined network using the bridge driver:
-``` bash
 `$ podman network create -d bridge <network name>`
-```
+
 For example:
-``` bash
 `$ podman network create -d bridge SOANet`
-```
 
 ## 2. Mount a host directory as a data volume
 
 Data volumes are designed to persist data, independent of the container’s lifecycle. Podman automatically creates volumes when you specify a volume name with the -v option, without the need to predefine directories on the host. In this project, the volumes will be used to store Database data files and WebLogic Server domain files. These volumes will be automatically created and managed by Podman. The names of the volumes are specified in the podman run commands. 
-``` bash
-$ podman -d --name soadb -v soadb_vol:/opt/oracle/oradata
-```
+
+`$ podman -d --name soadb -v soadb_vol:/opt/oracle/oradata`
+
 The default storage location for Podman volumes is determined by Podman’s storage configuration.
 To identify the location of a volume, run:
-``` bash
-$ podman volume inspect <volume_name>
-```
+
+`$ podman volume inspect <volume_name>`
+
 The Mountpoint entry should point to the location of the volume in the host.
 
 Podman creates volumes with default permissions. Ensure that the container’s oracle user has the necessary read/write/execute permissions on the auto-created volume. This may require setting proper permissions or ownership using a post-creation script, depending on your environment.
-``` bash
-$ sudo chmod -R 777 $HOME/.local/shared/containers/storage/volumes/soadb_vol
-```
+
+`$ sudo chmod -R 777 $HOME/.local/shared/containers/storage/volumes/soadb_vol`
+
 To determine if a user already exists on your node system with uid:gid of 1000, run:
-``` bash
-$ getent passwd 1000
-```
+
+`$ getent passwd 1000`
+
 If this command returns a username (which is the first field), you can skip the following `useradd` command. If not, create the `oracle` user manually:
-``` bash
-$ useradd -u 1000 -g 0 oracle
-```
+
+`$ useradd -u 1000 -g 0 oracle`
 
 ## 3. Create the database
 
@@ -82,7 +78,7 @@ To run the database container to host the RCU schemas:
     ```
 1.  Enter the following command:
     ``` bash
-    $ podman run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 -v soadb_vol:/opt/oracle/oradata --env-file ./db.env.txt container-registry.oracle.com/database/enterprise:19.3.0.0
+    `$ podman run -d --name soadb --network=SOANet -p 1521:1521 -p 5500:5500 -v soadb_vol:/opt/oracle/oradata --env-file ./db.env.txt container-registry.oracle.com/database/enterprise:19.3.0.0`
     ```
 1.  Verify that the database is running and healthy. The `STATUS` field should show `healthy` in the output of `podman ps`.
 
@@ -133,7 +129,7 @@ To start a Podman container with a SOA domain and the WebLogic Server Administra
 
 For example:
 ``` bash
-$ podman run -it --name soaas --network=SOANet -p 7001:7001 -v soadomain_vol:/u01/oracle/user_projects --env-file ./adminserver.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205
+`$ podman run -it --name soaas --network=SOANet -p 7001:7001 -v soadomain_vol:/u01/oracle/user_projects --env-file ./adminserver.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205`
 ```
 The options `-it` in the above command runs the container in interactive mode and you will be able to see the commands running in the container. This includes the command for RCU creation, domain creation, and configuration, followed by starting the Administration Server.
 
@@ -147,7 +143,7 @@ These lines indicate that the Administration Server started successfully with th
 
 To view the Administration Server logs, enter the following command:
 ``` bash
-$ podman logs -f \<Administration Server container name\>
+`$ podman logs -f \<Administration Server container name\>`
 ```
 ## 6. Create SOA Managed Server containers
 
@@ -196,13 +192,13 @@ To start a Podman container for the SOA server (for `soa_server1`), you can use 
 
 For example:
 ``` bash
-$ podman run -it --name soams1 --network=SOANet -p 7003:7003  -v soadomain_vol:/u01/oracle/user_projects --env-file ./soaserver1.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"
+`$ podman run -it --name soams1 --network=SOANet -p 7003:7003  -v soadomain_vol:/u01/oracle/user_projects --env-file ./soaserver1.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"`
 ```
 Similarly, to start a second Podman container for the SOA server (for `soa_server2`), you can use the `podman run` command passing `soaserver2.env.list` with port `7005`.
 
 For example:
 ``` bash
-$ podman run -it --name soams2 --network=SOANet -p 7005:7005 -v soadomain_vol:/u01/oracle/user_projects --env-file ./soaserver2.env.list  container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"
+`$ podman run -it --name soams2 --network=SOANet -p 7005:7005 -v soadomain_vol:/u01/oracle/user_projects --env-file ./soaserver2.env.list  container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"`
 ```
 
 > **Note**: Using `-v` reuses the volume created by the Administration Server container.
@@ -215,9 +211,9 @@ INFO: Managed Server is running
 INFO: Managed Server has been started
 ```
 Once the Managed Server container is created, you can view the server logs:
-``` bash
-$ podman logs -f \<Managed Server container name\>
-```
+
+`$ podman logs -f \<Managed Server container name\>`
+
 ## 7. Create Oracle Service Bus Managed Server containers
 
 > **Note**: These steps are required only for the `osb` and `soaosb` domain type.
@@ -265,13 +261,13 @@ To start a Podman container for the Oracle Service Bus server (for `osb_server1`
 
 For example:
 ``` bash
-$ podman run -it --name osbms1 --network=SOANet -p 8002:8002 -v soadomain_vol:/u01/oracle/user_projects --env-file ./osbserver1.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"
+`$ podman run -it --name osbms1 --network=SOANet -p 8002:8002 -v soadomain_vol:/u01/oracle/user_projects --env-file ./osbserver1.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"`
 ```
 Similarly, to start a second Podman container for the Oracle Service Bus server (for `osb_server2`), you can use the `podman run` command passing `osbserver2.env.list`.
 
 For example:
 ``` bash
-$ podman run -it --name osbms1 --network=SOANet -p 8004:8004 -v soadomain_vol:/u01/oracle/user_projects --env-file ./osbserver2.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"
+`$ podman run -it --name osbms1 --network=SOANet -p 8004:8004 -v soadomain_vol:/u01/oracle/user_projects --env-file ./osbserver2.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"`
 ```
 The following lines indicate when the Oracle Service Bus Managed Server is ready to be used: 
 ``` bash   
@@ -282,7 +278,7 @@ INFO: Managed Server has been started
 
 Once the Managed Server container is created, you can view the server logs:
 ``` bash
-$ podman logs -f \<Managed Server container name\>
+`$ podman logs -f \<Managed Server container name\>`
 ```
 
 ## 8. Access the Consoles
@@ -302,19 +298,19 @@ Now you can access the following Consoles:
 
 1. Stop and remove all running containers from the node where the container is running:
     ``` bash
-    $ podman stop \<container name\>
+    `$ podman stop \<container name\>`
 
-    $ podman rm \<container name\>
+    `$ podman rm \<container name\>`
     ```
     where containers are `soadb`, `soaas`, `soams1`, `soams2`, `osbms1` and `osbms2`.
 
 2. Clear the data volume:
     ``` bash
-    $ podman volume rm soadb_vol
+    `$ podman volume rm soadb_vol`
 
-    $ podman volume rm soadomain_vol
+    `$ podman volume rm soadomain_vol`
     ```
 3. Remove the Podman network:
     ``` bash
-    $ podman network rm SOANet    
+    `$ podman network rm SOANet`
     ```
