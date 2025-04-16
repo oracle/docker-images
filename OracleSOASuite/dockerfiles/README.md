@@ -1,9 +1,8 @@
-SOA on Docker
-=============
+# SOA on Docker
 
 Sample Docker configurations to facilitate installation, configuration, and environment setup for Docker users. This project includes quick start dockerfiles for SOA 12.2.1.x based on Oracle Linux 7, Oracle JRE 8 (Server) and Oracle Fusion Middleware Infrastructure 12.2.1.x. This project also includes a setup for SOA 14.1.2.0 image build based on Oracle Linux 8, Oracle JDK 17, and Oracle Fusion Middleware Infrastructure 14.1.2.0 with an option to use Podman CLI as an alternative to docker.
 
-You will be able to build the SOA images based on the version which is required using the build scripts provided. 
+You will be able to build the SOA images based on the version which is required using the build scripts provided.
 
 ## SOA 12.2.1.x Docker image Creation and Running
 
@@ -11,19 +10,19 @@ To build a SOA image either you can start from building Oracle JDK and Oracle Fu
 
 >NOTE: If you download the Oracle Fusion Middleware Infrastructure image from the [Oracle Container Registry](https://container-registry.oracle.com) then you need to retag the image with appropriate version. e.g. for the 12.2.1.4 version, retag from `container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4` to `oracle/fmw-infrastructure:12.2.1.4.0`.
 
-```
-$ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4.0
+``` bash
+`$ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:12.2.1.4 oracle/fmw-infrastructure:12.2.1.4.0`
 ```
 
-## How to build the Oracle Java image
+### How to build the Oracle Java image
 
 Please refer [README.md](https://github.com/oracle/docker-images/blob/main/OracleJava/README.md) under docker-images/OracleJava for details on how to build Oracle Database image.
 
-## Building Oracle Fusion Middleware Infrastructure Docker Install Image
+### Building Oracle Fusion Middleware Infrastructure Docker Install Image
 
 Please refer [README.md](https://github.com/oracle/docker-images/blob/main/OracleFMWInfrastructure/README.md) under docker-images/OracleFMWInfrastructure for details on how to build Oracle Fusion Middleware Infrastructure image.
 
-## Building Docker Image for SOA
+### Building Docker Image for SOA
 
 >IMPORTANT: To build the Oracle SOA image, you must first download the required version of the Oracle SOA Suite, Oracle Service Bus and Oracle B2B binaries. These binaries must be downloaded and copied into the folder with the same version for e.g. 12.2.1.4.0 binaries need to be dropped into `../OracleSOASuite/dockerfiles/12.2.1.4`. 
 
@@ -39,7 +38,7 @@ To build the SOA image with patches, you need to download and drop the patch zip
 
 Build the Oracle SOA 12.2.1.4 image using:
 
-```
+``` bash
 `$ sh buildDockerImage.sh -v 12.2.1.4`
 
    Usage: buildDockerImage.sh -v [version]
@@ -49,19 +48,14 @@ Build the Oracle SOA 12.2.1.4 image using:
 
 Verify you now have the image `oracle/soasuite:12.2.1.4` in place with 
 
-```
-$ docker images | grep "soa"
-```
+`$ docker images | grep "soa"`
 
 If you are building the SOA image with patches, you can verify the patches applied with:
 
-```
-$ docker run oracle/soasuite:12.2.1.4 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'
-```
+`$ docker run oracle/soasuite:12.2.1.4 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'`
+
 
 >IMPORTANT: The image created in above step will NOT have a domain pre-configured. But it has the scripts to create and configure a SOA domain.
-
-
 
 ## SOA 14.1.2.0 Container image Creation and Running
 
@@ -71,23 +65,23 @@ To build a SOA image either you can start from building Oracle JDK and Oracle Fu
 
 >NOTE: Users can use Podman or Docker CLI to perform the build related Commands. The steps are provided using docker as well as podman for user reference.
 
-```
-$ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:14.1.2.0 oracle/fmw-infrastructure:14.1.2.0.0
-```
-
-```
-$ podman tag container-registry.oracle.com/middleware/fmw-infrastructure:14.1.2.0 oracle/fmw-infrastructure:14.1.2.0.0
+``` bash
+`$ docker tag container-registry.oracle.com/middleware/fmw-infrastructure:14.1.2.0 oracle/fmw-infrastructure:14.1.2.0.0`
 ```
 
-## How to build the Oracle Java image
+``` bash
+`$ podman tag container-registry.oracle.com/middleware/fmw-infrastructure:14.1.2.0 oracle/fmw-infrastructure:14.1.2.0.0`
+```
+
+### How to build the Oracle Java image
 
 Please refer [README.md](https://github.com/oracle/docker-images/blob/main/OracleJava/README.md) under docker-images/OracleJava for details on how to build Oracle Database image.
 
-## Building Oracle Fusion Middleware Infrastructure Docker Install Image
+### Building Oracle Fusion Middleware Infrastructure Docker Install Image
 
 Please refer [README.md](https://github.com/oracle/docker-images/blob/main/OracleFMWInfrastructure/README.md) under docker-images/OracleFMWInfrastructure for details on how to build Oracle Fusion Middleware Infrastructure image.
 
-## Building Container Image for SOA
+### Building Container Image for SOA
 
 >IMPORTANT: To build the Oracle SOA image, you must first download the required version of the Oracle SOA Suite, Oracle Service Bus and Oracle B2B binaries. These binaries must be downloaded and copied into the folder with the same version for e.g. 14.1.2.0.0 binaries need to be dropped into `../OracleSOASuite/dockerfiles/14.1.2.0`. 
 
@@ -103,7 +97,7 @@ To build the SOA image with patches, you need to download and drop the patch zip
 
 Build the Oracle SOA 14.1.2.0 image using:
 
-```
+``` bash
 $ sh buildDockerImage.sh -v 14.1.2.0
 
    Usage: buildDockerImage.sh -v [version]
@@ -115,40 +109,35 @@ $ sh buildDockerImage.sh -v 14.1.2.0
 ```
 
 For the podman users:
-```
-$ sh buildDockerImage.sh -v 14.1.2.0 -p
-```
+
+`$ sh buildDockerImage.sh -v 14.1.2.0 -p`
 
 >Note: -p ensures podman CLI is used for the image build.
 
 Verify you now have the image `oracle/soasuite:14.1.2.0` in place with 
 
-```
-$ docker images | grep "soa"
-```
+`$ docker images | grep "soa"`
 
-```
-$ podman images | grep "soa"
-```
+`$ podman images | grep "soa"`
 
 If you are building the SOA image with patches, you can verify the patches applied with:
 
-```
-$ docker run oracle/soasuite:14.1.2.0 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'
+``` bash
+`$ docker run oracle/soasuite:14.1.2.0 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'`
 ```
 
-```
-$ podman run oracle/soasuite:14.1.2.0 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'
+``` bash
+`$ podman run oracle/soasuite:14.1.2.0 sh -c '$ORACLE_HOME/OPatch/opatch lspatches'`
 ```
 
 >IMPORTANT: The image created in above step will NOT have a domain pre-configured. But it has the scripts to create and configure a SOA domain.
 
-# License
+## License
 
 To download and run SOA 12c and 14c Distributions regardless of inside or outside a Docker container, and regardless of the distribution, you must download the binaries from Oracle website and accept the license indicated at that page.
 
 All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker images are, unless otherwise noted, released under UPL 1.0 license.
 
-# Copyright
+## Copyright
 
 Copyright (c) 2019, 2025, Oracle and/or its affiliates.
