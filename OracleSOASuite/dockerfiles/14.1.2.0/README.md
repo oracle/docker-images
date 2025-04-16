@@ -15,7 +15,7 @@ To create the Podman network and run containers, follow these steps:
  1. [Create a network](#1-create-a-network)
  2. [Mount a host directory as a data volume](#2-mount-a-host-directory-as-a-data-volume)
  3. [Create the database](#3-create-the-database)
- 4. [Obtain the SOA 14.1.2.0 container image](#4-obtain-the-soa-141200-container-image)
+ 4. [Obtain the SOA 14.1.2.0 container image](#4-obtain-the-soa-14120-container-image)
  5. [Create a container for the Administration Server](#5-create-a-container-for-the-administration-server)
  6. [Create SOA Managed Server containers](#6-create-soa-managed-server-containers)
  7. [Create Oracle Service Bus Managed Server containers](#7-create-oracle-service-bus-managed-server-containers)
