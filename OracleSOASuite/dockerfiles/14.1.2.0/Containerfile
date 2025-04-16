@@ -36,19 +36,19 @@ COPY patches/* /u01/patches/
 COPY opatch_patch/* ${OPATCH_PATCH_DIR}/
 COPY container-scripts/* /u01/oracle/container-scripts/
 
-#WORKDIR /u01
-RUN  cd /u01 && chmod 755 ./*.jar && \
+WORKDIR /u01
+RUN  chmod 755 ./*.jar && \
      chmod +xr /u01/oracle/container-scripts/*.*
 
-#WORKDIR /u01/oracle
+WORKDIR /u01/oracle
 #
 # Copy files and packages for install
 # -----------------------------------
 USER oracle
 COPY install/* /u01/
 
-#WORKDIR /u01
-RUN cd /u01 && "$JAVA_HOME/bin/java" -jar "$FMW_JAR1" -silent -responseFile /u01/soasuite.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" && \
+WORKDIR /u01
+RUN "$JAVA_HOME/bin/java" -jar "$FMW_JAR1" -silent -responseFile /u01/soasuite.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" && \
   "$JAVA_HOME/bin/java" -jar "$FMW_JAR2" -silent -responseFile /u01/osb.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="Service Bus" && \
   "$JAVA_HOME/bin/java" -jar "$FMW_JAR3" -silent -responseFile /u01/b2b.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="B2B" && \
   rm -fr /u01/*.jar /u01/*.response
@@ -58,10 +58,11 @@ RUN cd /u01 && "$JAVA_HOME/bin/java" -jar "$FMW_JAR1" -silent -responseFile /u01
 # ------------------
 #
 
-#WORKDIR ${OPATCH_PATCH_DIR}
+WORKDIR ${OPATCH_PATCH_DIR}
 RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
     if [ ! -z "$opatchzip" ]; then \
-      cd ${OPATCH_PATCH_DIR} && echo -e "\nApplying the below OPatch patch present in ${OPATCH_PATCH_DIR} directory."; \
+#      cd ${OPATCH_PATCH_DIR};  \
+      echo -e "\nApplying the below OPatch patch present in ${OPATCH_PATCH_DIR} directory."; \
       ls p*.zip; \
       echo -e ""; \
       echo "Extracting patch: ${opatchzip}"; \
@@ -79,10 +80,11 @@ RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
 # Apply SOA Patches
 # -----------------
 
-#WORKDIR /u01/patches
+WORKDIR /u01/patches
 RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null`; \
     if [ ! -z "$patchzips" ]; then \
-      cd /u01/patches && echo -e "\nBelow patches present in patches directory. Applying these patches:"; \
+#      cd /u01/patches;  \
+      echo -e "\nBelow patches present in patches directory. Applying these patches:"; \
       ls p*.zip; \
       echo -e ""; \
       for filename in `ls p*.zip`; do echo "Extracting patch: ${filename}"; $JAVA_HOME/bin/jar xf ${filename}; done; \
@@ -91,7 +93,8 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
       $ORACLE_HOME/OPatch/opatch util cleanup -silent; \
       rm -rf /u01/patches /u01/oracle/cfgtoollogs/opatch/*; \
       echo -e "\nPatches applied in SOA oracle home are:"; \
-      cd $ORACLE_HOME/OPatch && $ORACLE_HOME/OPatch/opatch lspatches; \
+      cd $ORACLE_HOME/OPatch; \
+      $ORACLE_HOME/OPatch/opatch lspatches; \
     else \
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
     fi && \
@@ -107,7 +110,7 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
         gzip /u01/oracle/cfgtoollogs/opatch/*.log; \
     fi
 
-#WORKDIR /u01/oracle
+WORKDIR /u01/oracle
 #
 # Rebuild from base image
 # -----------------------
