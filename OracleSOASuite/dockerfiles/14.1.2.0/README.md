@@ -289,8 +289,8 @@ Now you can access the following Consoles:
 * Service Bus Console at http://\<hostname\>:7001/servicebus with weblogic/welcome1 credentials.
 
 
-> **Note**: `hostname` is the FQDN of the host name where the container is running. Do not use 'localhost' for `ADMIN_HOST`. Use the actual FQDN name of the host as `ADMIN_HOST`.
-> **Note**: In a multinode scenario, you cannot access the `SOA Composer` and `BPM Worklist` application URLs from the `soa-infra` application page.
+> **Note**: `hostname` is the FQDN of the host name where the container is running. Do not use 'localhost' for `ADMIN_HOST`. Use the actual FQDN name of the host as `ADMIN_HOST`. <br>
+In a multinode scenario, you cannot access the `SOA Composer` and `BPM Worklist` application URLs from the `soa-infra` application page.
 
 ## 9. Clean up the environment
 
