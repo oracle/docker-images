@@ -8,7 +8,7 @@ At the end of this configuration there will be at least two running containers:
 2. Oracle WebLogic Server Administration Server container
 3. Two Oracle WebLogic Server Managed Server containers (Oracle SOA Server or Oracle Service Bus Server)
 
-This documentation provides the steps for Single node scenario where all the containers created on a single node.
+This documentation provides the steps for a Single node scenario where all the containers are created on a single node.
 
 To create the Podman network and run containers, follow these steps:
 
@@ -22,11 +22,11 @@ To create the Podman network and run containers, follow these steps:
  8. [Access the Consoles](#8-access-the-consoles)
  9. [Clean up the environment](#9-clean-up-the-environment)
 
-### 1. Create a network
+## 1. Create a network
 
 The containers will be connected using a Podman user-defined network.
 
-##### Create a user-defined network
+### Create a user-defined network
 
 In this configuration, the creation of a user-defined network will enable the communication between the containers just using container names. For this setup we will use a user-defined network using bridge driver.
 
@@ -39,7 +39,7 @@ For example:
 $ podman network create -d bridge SOANet
 ```
 
-### 2. Mount a host directory as a data volume
+## 2. Mount a host directory as a data volume
 
 Data volumes are designed to persist data, independent of the container’s lifecycle. Podman automatically creates volumes when you specify a volume name with the -v option, without the need to predefine directories on the host. In this project, the volumes will be used to store Database data files and WebLogic Server domain files. These volumes will be automatically created and managed by Podman. The names of the volumes are specified in the podman run commands. 
 ``` bash
@@ -65,7 +65,7 @@ If this command returns a username (which is the first field), you can skip the 
 $ useradd -u 1000 -g 0 oracle
 ```
 
-### 3. Create the database
+## 3. Create the database
 
 You need to have a running database container or a database running on any machine. The database connection details are required for creating SOA-specific RCU schemas while configuring the SOA domain. While using a 19.3.0.0 CDB/PDB DB, ensure a PDB is used to load the schemas. RCU loading on a CDB is not supported.
 
@@ -86,11 +86,11 @@ To run the database container to host the RCU schemas:
     ```
 1.  Verify that the database is running and healthy. The `STATUS` field should show `healthy` in the output of `podman ps`.
 
-### 4. Obtain the SOA 14.1.2.0 container image
+## 4. Obtain the SOA 14.1.2.0 container image
 
 You can either build the SOA image with the `Containerfile` provided or use the already available Oracle SOA Suite (14.1.2.0) image in the [Oracle Container Registry](https://container-registry.oracle.com/ords/ocr/ba/middleware/soasuite).
 
-### 5. Create a container for the Administration Server
+## 5. Create a container for the Administration Server
 
 Start a container to launch the Administration Server from the image created using the steps above. The environment variables used to configure the domain are defined in `adminserver.env.list`. Replace in `adminserver.env.list` the values for the Database and WebLogic Server passwords.
 
@@ -149,7 +149,7 @@ To view the Administration Server logs, enter the following command:
 ``` bash
 $ podman logs -f \<Administration Server container name\>
 ```
-### 6. Create SOA Managed Server containers
+## 6. Create SOA Managed Server containers
 
 > **Note**: These steps are required only for the  `soa` and `soaosb` domain type.
 
@@ -218,7 +218,7 @@ Once the Managed Server container is created, you can view the server logs:
 ``` bash
 $ podman logs -f \<Managed Server container name\>
 ```
-### 7. Create Oracle Service Bus Managed Server containers
+## 7. Create Oracle Service Bus Managed Server containers
 
 > **Note**: These steps are required only for the `osb` and `soaosb` domain type.
 
@@ -285,7 +285,7 @@ Once the Managed Server container is created, you can view the server logs:
 $ podman logs -f \<Managed Server container name\>
 ```
 
-### 8. Access the Consoles
+## 8. Access the Consoles
 Now you can access the following Consoles:
 
 * EM Console at http://\<hostname\>:7001/em  with weblogic/welcome1 credentials.
@@ -298,7 +298,7 @@ Now you can access the following Consoles:
 
 > **Note**: In a multinode scenario, you cannot access the `SOA Composer` and `BPM Worklist` application URLs from the `soa-infra` application page.
 
-### 9. Clean up the environment
+## 9. Clean up the environment
 
 1. Stop and remove all running containers from the node where the container is running:
     ``` bash
