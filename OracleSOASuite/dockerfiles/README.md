@@ -61,7 +61,7 @@ If you are building the SOA image with patches, you can verify the patches appli
 
 To build a SOA image either you can start from building Oracle JDK and Oracle Fusion Middleware Infrastrucure image or use the already available Oracle Fusion Middleware Infrastructure image. The Fusion Middleware Infrastructure image is available in the [Oracle Container Registry](https://container-registry.oracle.com), and can be pulled from there. If you plan to use the Oracle Fusion Middleware Infrastructure image from the [Oracle Container Registry](https://container-registry.oracle.com), you can skip the next two steps and continue with "Building a Docker Image for SOA".
 
->NOTE: If you download the Oracle Fusion Middleware Infrastructure image from the [Oracle Container Registry](https://container-registry.oracle.com) then you need to retag the image with appropriate version. e.g. for the 14.1.2.0 version, retag from `container-registry.oracle.com/middleware/fmw-infrastructure:14.1.2.0` to `oracle/fmw-infrastructure:14.1.2.0.0`. 
+>NOTE: If you download the Oracle Fusion Middleware Infrastructure image from the [Oracle Container Registry](https://container-registry.oracle.com) then you need to retag the image with appropriate version. e.g. for the 14.1.2.0 version, retag from `container-registry.oracle.com/middleware/fmw-infrastructure:14.1.2.0` to `oracle/fmw-infrastructure:14.1.2.0.0`. <br>
 Users can use Podman or Docker CLI to perform the build related Commands. The steps are provided using docker as well as podman for user reference.
 
 ``` bash
