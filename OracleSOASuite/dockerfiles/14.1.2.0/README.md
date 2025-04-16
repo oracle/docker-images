@@ -204,7 +204,7 @@ For example:
 
 
 The following lines indicate when the SOA Managed Server is ready to be used:
-``` bash    
+``` bash
 INFO: Managed Server is running
 
 INFO: Managed Server has been started
@@ -269,7 +269,7 @@ For example:
 `$ podman run -it --name osbms1 --network=SOANet -p 8004:8004 -v soadomain_vol:/u01/oracle/user_projects --env-file ./osbserver2.env.list container-registry.oracle.com/middleware/soasuite:14.1.2.0-17-ol8-241205 "/u01/oracle/container-scripts/startMS.sh"`
 ```
 The following lines indicate when the Oracle Service Bus Managed Server is ready to be used:
-``` bash   
+``` bash
 INFO: Managed Server is running
 
 INFO: Managed Server has been started
@@ -290,7 +290,6 @@ Now you can access the following Consoles:
 
 
 > **Note**: `hostname` is the FQDN of the host name where the container is running. Do not use 'localhost' for `ADMIN_HOST`. Use the actual FQDN name of the host as `ADMIN_HOST`.
-
 > **Note**: In a multinode scenario, you cannot access the `SOA Composer` and `BPM Worklist` application URLs from the `soa-infra` application page.
 
 ## 9. Clean up the environment
