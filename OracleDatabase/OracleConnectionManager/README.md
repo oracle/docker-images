@@ -99,11 +99,11 @@ To create the connection manager container, run the following command as the roo
   --dns-search=example.info \
   --dns 10.0.20.25 \
   --network=rac_pub1_nw \
-  --ip=10.0.20.15 \
+  --ip=10.0.20.166 \
   --cap-add=AUDIT_WRITE \
   --cap-add=NET_RAW \
   -e DOMAIN=example.info \
-  -e PUBLIC_IP=10.0.20.15 \
+  -e PUBLIC_IP=10.0.20.166 \
   -e DNS_SERVER=10.0.20.25 \
   -e PUBLIC_HOSTNAME=racnodepc1-cman \
   -e DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170" \
@@ -121,13 +121,13 @@ If you want to provide your own pre-created `cman.ora` file, you can provide wit
     --dns-search=example.info \
     --dns 10.0.20.25 \
     --network=rac_pub1_nw \
-    --ip=10.0.20.15 \
+    --ip=10.0.20.166 \
     --cap-add=AUDIT_WRITE \
     --cap-add=NET_RAW \
     -v /opt/containers/cman.ora:/var/tmp/cman.ora \
     -e USER_CMAN_FILE=/var/tmp/cman.ora \
     -e DOMAIN=example.info \
-    -e PUBLIC_IP=10.0.20.15 \
+    -e PUBLIC_IP=10.0.20.166 \
     -e DNS_SERVER=10.0.20.25 \
     -e PUBLIC_HOSTNAME=racnodepc1-cman \
     --privileged=false \
