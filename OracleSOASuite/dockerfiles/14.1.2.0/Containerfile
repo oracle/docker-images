@@ -91,7 +91,9 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
       $ORACLE_HOME/OPatch/opatch util cleanup -silent; \
       rm -rf /u01/patches /u01/oracle/cfgtoollogs/opatch/*; \
       echo "Patches applied in SOA oracle home are:"; \
-      $ORACLE_HOME/OPatch/opatch lspatches; \
+      cd $ORACLE_HOME/OPatch && $ORACLE_HOME/OPatch/opatch lspatches && cd -; \
+    #   cd $ORACLE_HOME/OPatch; \
+    #   $ORACLE_HOME/OPatch/opatch lspatches; \
     else \
       echo "No patches present in patches directory. Skipping patch application."; \
     fi && \
