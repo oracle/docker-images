@@ -61,7 +61,6 @@ RUN "$JAVA_HOME/bin/java" -jar "$FMW_JAR1" -silent -responseFile /u01/soasuite.r
 WORKDIR ${OPATCH_PATCH_DIR}
 RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
     if [ ! -z "$opatchzip" ]; then \
-#      cd ${OPATCH_PATCH_DIR};  \
       echo -e "\nApplying the below OPatch patch present in ${OPATCH_PATCH_DIR} directory."; \
       ls p*.zip; \
       echo -e ""; \
@@ -83,7 +82,6 @@ RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
 WORKDIR /u01/patches
 RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null`; \
     if [ ! -z "$patchzips" ]; then \
-#      cd /u01/patches;  \
       echo -e "\nBelow patches present in patches directory. Applying these patches:"; \
       ls p*.zip; \
       echo -e ""; \
@@ -93,16 +91,14 @@ RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null
       $ORACLE_HOME/OPatch/opatch util cleanup -silent; \
       rm -rf /u01/patches /u01/oracle/cfgtoollogs/opatch/*; \
       echo -e "\nPatches applied in SOA oracle home are:"; \
-#      cd $ORACLE_HOME/OPatch; \
       $ORACLE_HOME/OPatch/opatch lspatches; \
     else \
       echo -e "\nNo patches present in patches directory. Skipping patch application."; \
     fi && \
     # Extract XEngine tar gz if present
-    if [ -f "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [  -f "XEngine_8_4_1_23.tar.gz" ]; then \
-        echo "INSIDE"; \
-        cd $ORACLE_HOME/soa/soa/thirdparty/edifecs && \
-        tar -zxvf  XEngine_8_4_1_23.tar.gz \
+    if [ -d "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [ -f "$ORACLE_HOME/soa/soa/thirdparty/edifecs/XEngine_8_4_1_23.tar.gz" ]; then \
+        tar -zxvf "$ORACLE_HOME/soa/soa/thirdparty/edifecs/XEngine_8_4_1_23.tar.gz" \
+        -C "$ORACLE_HOME/soa/soa/thirdparty/edifecs";
     else \
         echo -e "\nNo XEngine_8_4_1_23.tar.gz present in ${ORACLE_HOME}/soa/soa/thirdparty/edifecs directory. Skipping untar."; \
     fi && \
