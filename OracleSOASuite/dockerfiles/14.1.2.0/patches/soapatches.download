@@ -1,0 +1,5 @@
+#
+# Oracle SOA Suite for Oracle Middleware (FMW, SOA)
+# Download patches from : https://support.oracle.com
+#
+# To build the SOA image with patches, you must download and drop the SOA 14.1.2.0.0 patch zip files into the patches directory.
