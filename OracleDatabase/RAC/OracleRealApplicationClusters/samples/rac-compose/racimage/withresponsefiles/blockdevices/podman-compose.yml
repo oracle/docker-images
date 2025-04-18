@@ -157,7 +157,8 @@ services:
     dns_search: ${DNS_DOMAIN}
     dns: ${DNS_PUBLIC_IP}
     environment:
-      DOMAIN_NAME: ${DNS_DOMAIN}
+      DOMAIN: ${DNS_DOMAIN}
+      DNS_SERVER: ${DNS_PUBLIC_IP}
       PUBLIC_IP: ${CMAN_PUBLIC_IP}
       PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
       DB_HOSTDETAILS: ${DB_HOSTDETAILS}
