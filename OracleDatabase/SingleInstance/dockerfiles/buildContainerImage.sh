@@ -318,7 +318,7 @@ echo "Building image '${IMAGE_NAME}' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
+"${CONTAINER_RUNTIME}" build --ulimit nofile=65536:65536 --force-rm=true --no-cache=true \
       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
       -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
   echo ""
