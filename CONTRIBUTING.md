@@ -17,7 +17,7 @@ a discussion about the contribution to get feedback from other users.
 All contributors are expected to adhere to our [code of conduct](CODE_OF_CONDUCT.md).
 
 External contributions are only accepted from contributors who have signed the
-[the Oracle Contributor Agreement](https://oca.opensource.oracle.com/) (OCA).
+[Oracle Contributor Agreement](https://oca.opensource.oracle.com/) (OCA).
 The [OCA Bot](https://github.com/apps/oracle-contributor-agreement) automatically
 checks every pull request and will provide a link for you to follow to sign
 the agreement if it can't find one for you.

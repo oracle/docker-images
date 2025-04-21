@@ -6,7 +6,7 @@ This image is a specialized load balancer for doing [rolling, or canary deployme
 
 This is an extended version of <a href="https://github.com/oracle/docker-images/tree/master/ContainerCloud/images/rolling-router">the original image</a> that supports session affinity. The sticky sessions module used is <a href="https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng">nginx-sticky-module-ng</a>.
 
-Besides the the Nginx module above this version adds a new key value <a href="https://github.com/mikarinneoracle/docker-images/blob/master/ContainerCloud/images/rolling-router/deploy_keyvalues.sh#L23">stickyness</a> and based on the value, either 0 or 1:
+Besides the Nginx module above this version adds a new key value <a href="https://github.com/mikarinneoracle/docker-images/blob/master/ContainerCloud/images/rolling-router/deploy_keyvalues.sh#L23">stickyness</a> and based on the value, either 0 or 1:
 
 <ol>
 <li>First call from a client is load balanced based on <a href="https://github.com/mikarinneoracle/docker-images/blob/master/ContainerCloud/images/rolling-router/deploy_keyvalues.sh#L19">blendpercent</a> e.g. 10% (90/10 split)</li>
