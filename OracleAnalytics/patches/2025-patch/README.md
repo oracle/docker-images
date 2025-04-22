@@ -15,11 +15,11 @@ and place them in the same directory as this README.
 2. p34809489_122140_Generic.zip
 3. p36649916_122140_Generic.zip
 4. p37284722_122140_Generic.zip
-5. p37526122_122140_Linux-x86-64.zip
-6. p37684007_122140_Generic.zip
-7. p36316422_122140_Generic.zip
-8. p36946553_122140_Generic.zip
-9. p37388935_122140_Generic.zip
+5. p37684007_122140_Generic.zip
+6. p36316422_122140_Generic.zip
+7. p36946553_122140_Generic.zip
+8. p37388935_122140_Generic.zip
+9. p37526122_122140_Linux-x86-64.zip
 10. p37665839_122140_Linux-x86-64.zip
 
 To build, run:

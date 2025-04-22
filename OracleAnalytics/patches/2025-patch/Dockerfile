@@ -13,11 +13,11 @@
 # (2) p34809489_122140_Generic.zip
 # (3) p36649916_122140_Generic.zip
 # (4) p37284722_122140_Generic.zip
-# (5) p37526122_122140_Linux-x86-64.zip
-# (6) p37684007_122140_Generic.zip
-# (7) p36316422_122140_Generic.zip
-# (8) p36946553_122140_Generic.zip
-# (9) p37388935_122140_Generic.zip
+# (5) p37684007_122140_Generic.zip
+# (6) p36316422_122140_Generic.zip
+# (7) p36946553_122140_Generic.zip
+# (8) p37388935_122140_Generic.zip
+# (9) p37526122_122140_Linux-x86-64.zip
 # (10) p37665839_122140_Linux-x86-64.zip
 
 #     Download the patches from https://support.oracle.com
@@ -47,11 +47,11 @@ ENV PATCH_PKG_37804819="p37804819_122140_Generic.zip" \
     PATCH_PKG_34809489="p34809489_122140_Generic.zip" \
     PATCH_PKG_36649916="p36649916_122140_Generic.zip" \
     PATCH_PKG_37284722="p37284722_122140_Generic.zip" \
-    PATCH_PKG_37526122="p37526122_122140_Linux-x86-64.zip" \
     PATCH_PKG_37684007="p37684007_122140_Generic.zip" \
     PATCH_PKG_36316422="p36316422_122140_Generic.zip" \
     PATCH_PKG_36946553="p36946553_122140_Generic.zip" \
     PATCH_PKG_37388935="p37388935_122140_Generic.zip" \
+    PATCH_PKG_37526122="p37526122_122140_Linux-x86-64.zip" \
     PATCH_PKG_37665839="p37665839_122140_Linux-x86-64.zip"
 
 # Copy supplemental package and scripts
@@ -78,9 +78,6 @@ RUN unzip "/u01/$PATCH_PKG_37804819" -d /u01 && \
     unzip "/u01/$PATCH_PKG_37284722" -d /u01 && \
     "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/37284722 && \
     rm "/u01/$PATCH_PKG_37284722" && \
-    unzip "/u01/$PATCH_PKG_37526122" -d /u01 && \
-    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/37526122 && \
-    rm "/u01/$PATCH_PKG_37526122" && \
     unzip "/u01/$PATCH_PKG_37684007" -d /u01 && \
     "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/37684007 && \
     rm "/u01/$PATCH_PKG_37684007" && \
@@ -93,8 +90,11 @@ RUN unzip "/u01/$PATCH_PKG_37804819" -d /u01 && \
     unzip "/u01/$PATCH_PKG_37388935" -d /u01 && \
     "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/37388935 && \
     rm "/u01/$PATCH_PKG_37388935" && \
+    unzip "/u01/$PATCH_PKG_37526122" -d /u01 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/37526122 && \
+    rm "/u01/$PATCH_PKG_37526122" && \
     unzip "/u01/$PATCH_PKG_37665839" -d /u01 && \
-    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/37665839 && \
+    "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/36749613 && \
     rm "/u01/$PATCH_PKG_37665839"
 
 WORKDIR ${ORACLE_HOME}
