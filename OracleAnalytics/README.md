@@ -3,8 +3,8 @@
 Sample container configurations facilitate
 installation, configuration, and environment setup for DevOps users.
 This project includes quick start
-[container](dockerfiles/) for Oracle Analytics Server 2022 (6.4)
-based on Oracle Linux 7, Oracle JRE 8 (Server),
+[container](dockerfiles/) for Oracle Analytics Server 2022 (6.4) based on Oracle Linux 7 and Oracle Analytics Server 2025 (8.2)
+based on Oracle Linux 8, using Oracle JRE 8 (Server),
 and Oracle Fusion Middleware Infrastructure 12.2.1.4.0.
 
 For more information about Oracle Analytics Server,
@@ -32,7 +32,7 @@ you must use PDB when creating the schemas because CDB isn’t supported.
 You can create an Oracle Database container by using an
 [OracleDatabase](https://github.com/oracle/docker-images/tree/master/OracleDatabase)
 image.
-Follow these instructions to create a 12.1 or 12.2 Enterprise Edition database.
+Follow these instructions to create a 12.1+ / 12.2+ / 19+ / 21c / 23ai Enterprise Edition database.
 
 ## Oracle Analytics Server Container Image Creation
 
@@ -137,8 +137,14 @@ you must modify the previous `docker run` command to expose port 9514.
 
 For example:
 
+6.4:
 ```bash
 docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:6.4-patch
+```
+
+2025:
+```bash
+docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> -e BI_APP_LITE_PASSWORD=<bi_app_lite_password> oracle/analyticsserver:2025
 ```
 
 ### Using a Host Directory for Persistent Data
