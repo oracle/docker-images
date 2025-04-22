@@ -125,8 +125,8 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:21.3.0"
-export CMAN_PUBLIC_IP=10.0.20.15
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
 export PWD_SECRET_FILE=/opt/.secrets/pwdfile.enc
@@ -254,8 +254,8 @@ export PRIVATE2_NETWORK_SUBNET="192.168.18.0/24"
 export DNS_PUBLIC_IP=10.0.20.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:21.3.0"
-export CMAN_PUBLIC_IP=10.0.20.15
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
 export GRID_RESPONSE_FILE="/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp"
@@ -380,8 +380,8 @@ export PRIVATE2_NETWORK_SUBNET="192.168.18.0/24"
 export DNS_PUBLIC_IP=10.0.20.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:21.3.0"
-export CMAN_PUBLIC_IP=10.0.20.15
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
 export STORAGE_CONTAINER_NAME="racnode-storage"
@@ -536,8 +536,8 @@ export PRIVATE2_NETWORK_SUBNET="192.168.18.0/24"
 export DNS_PUBLIC_IP=10.0.20.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:21.3.0"
-export CMAN_PUBLIC_IP=10.0.20.15
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
 export STORAGE_CONTAINER_NAME="racnode-storage"
@@ -764,7 +764,7 @@ export PWD_SECRET_FILE=/opt/.secrets/pwdfile.enc
 export KEY_SECRET_FILE=/opt/.secrets/key.pem
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman1
-export CMAN_PUBLIC_IP=10.0.20.15
+export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_SERVICE=service:soepdb
 ```

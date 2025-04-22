@@ -4,7 +4,7 @@
 # Author: bruno.borges@oracle.com
 # Description: script to build a Docker image for WebLogic
 #
-#Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+#Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 #
 #Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -17,10 +17,10 @@ Builds a Docker Image for Oracle WebLogic.
 
 Parameters:
    -v: version to build. Required.
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+       Choose one of: 12.2.1.4, 14.1.1.0, 14.1.2.0
    -d: creates image based on 'developer' distribution
    -g: creates image based on 'generic' distribution
-   -j: choose '8' to create a 14.1.1.0 image with JDK 8 or '11' to create a 14.1.1.0 image with JDK 11. 
+   -j: choose the JDK to create a 12.2.1.4 (JDK '8'), 14.1.1.0 (JDK '8' or '11'), or 14.1.2.0 (JDK '17' or '21') image
    -m: creates image based on 'slim' distribution
    -c: enables Docker image layer cache during build
    -s: skips the MD5 check of packages
@@ -29,7 +29,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+Copyright (c) 2014, 2025, Oracle and/or its affiliates.
 
 EOF
 exit 0
@@ -38,8 +38,13 @@ exit 0
 # Validate packages
 validateJDK() {
    if [ "$VERSION" == "14.1.1.0" ]; then
-      if [ "$JDKVER" != 8 -a "$JDKVER" != 11 ]; then
+      if [[ "$JDKVER" != 8 && "$JDKVER" != 11 ]]; then
          echo "WebLogic Server 14.1.1.0 supports JDK 8 and 11.  JDK version $JDKVER is not supported."
+         exit 1
+      fi
+   elif [ "$VERSION" == "14.1.2.0" ]; then
+      if [[ "$JDKVER" != 17 && "$JDKVER" != 21 ]]; then
+         echo "WebLogic Server 14.1.1.0 supports JDK 17 and 21.  JDK version $JDKVER is not supported."
          exit 1
       fi
    fi
@@ -48,10 +53,11 @@ validateJDK() {
 checksumPackages() {
   echo "Checking if required packages are present and valid..."
   md5sum -c Checksum.$DISTRIBUTION
-  if [ "$?" -ne 0 ]; then
+  md5_req="$?"
+  if [ "$md5_req"  -ne 0 ]; then
     echo "MD5 for required packages to build this image did not match!"
     echo "Make sure to download missing files in folder $VERSION. See *.download files for more information"
-    exit $?
+    exit $md5_req
   fi
 }
 
@@ -114,17 +120,22 @@ elif [ $GENERIC -eq 1 ]; then
   DISTRIBUTION="generic"
 elif [ $SLIM -eq 1 ]; then
   DISTRIBUTION="slim"
+elif [ "$VERSION" == "14.1.2.0" ]; then
+  echo "14.1.2.0 has a single distribution"
 else
   echo "Invalid distribution, please elect one distribution only: -d, -m, or -g"
   exit 1
 fi
 
-# For WLS 14.1.1.0 Validate JDK is 8 or 11
+# For WLS 14.1.1.0 Validate JDK is 8 or 11, for 14.1.2.0 Validate JDK is 17 or 21
 validateJDK
 
-# Which JDK FOR VERSION 14.1.1.0
+# Which JDK FOR VERSION 14.1.1.0 or 14.1.2.0
 if [ "$VERSION" == "14.1.1.0" ]; then
    DIST="$DISTRIBUTION-$JDKVER"
+   echo "Version= $VERSION Distribution= $DIST"
+elif [ "$VERSION" == "14.1.2.0" ]; then
+   DIST="$JDKVER"
    echo "Version= $VERSION Distribution= $DIST"
 else
    DIST="$DISTRIBUTION"
@@ -136,7 +147,7 @@ fi
 IMAGE_NAME="oracle/weblogic:$VERSION-$DIST"
 
 # Go into version folder
-cd $VERSION
+cd $VERSION || return
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
@@ -148,6 +159,10 @@ echo "====================="
 
 # Proxy settings
 PROXY_SETTINGS=""
+http_proxy=""
+https_proxy=""
+ftp_proxy=""
+no_proxy=""
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
@@ -183,9 +198,10 @@ docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $PROXY_SETTINGS -t $IMAGE_N
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
-echo ""
+#echo ""
 
-if [ $? -eq 0 ]; then
+status="$?"
+if [ "$status" -eq 0 ]; then
 cat << EOF
   WebLogic Docker Image for '$DIST' version $VERSION is ready to be extended:
 

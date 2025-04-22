@@ -16,7 +16,7 @@
 # confirmations.
 #Please note that the script would remove write permissions on the remote hosts
 #for the user home directory and ~/.ssh directory for "group" and "others". This
-# is an SSH requirement. The user would be explicitly informed about this by teh script and prompted to continue. In case the user presses no, the script would exit. In case the user does not want to be prompted, they can use the -confirm option.
+# is an SSH requirement. The user would be explicitly informed about this by the script and prompted to continue. In case the user presses no, the script would exit. In case the user does not want to be prompted, they can use the -confirm option.
 # As a part of the setup, the script would use SSH to create files within ~/.ssh
 # directory of the remote node and to setup the requisite permissions. The 
 #script also uses SCP to copy the local host public key to the remote hosts so
