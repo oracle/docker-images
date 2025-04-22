@@ -4,18 +4,18 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Analytics Server 2022 (6.4)
+# This is the Dockerfile for Oracle Analytics Server 2025 (8.2)
 # 
 # REQUIRED FILE(S) TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) Oracle_Analytics_Server_Linux_2022(6.4).zip
+# (1) Oracle_Analytics_Server_Linux_2025(8.2).zip
 #     Download the installer file from https://www-sites.oracle.com/solutions/business-analytics/analytics-server/analytics-server.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/analyticsserver:6.4 .
+#      $ docker build -t oracle/analyticsserver:2025 .
 #
 # Pull base image
 # ---------------
@@ -32,8 +32,8 @@ ENV ORACLE_HOME=/u01/oracle
 # Environment variables required for this build (do NOT change)
 # (DOMAIN_NAME/HOME are reset here, to avoid FMW Infra environment leaking through)
 # -------------------------------------------------------------
-ENV BI_DISTRO_ZIP1=Oracle_Analytics_Server_Linux_2022(6.4).zip \
-    BI_INSTALLER1=Oracle_Analytics_Server_Linux_6.4.0.jar \
+ENV BI_DISTRO_ZIP1=Oracle_Analytics_Server_Linux_2025(8.2).zip \
+    BI_INSTALLER1=Oracle_Analytics_Server_2025_Linux.jar \
     DOMAIN_NAME="${BI_DOMAIN_NAME:-bi}" \
     DOMAINS_DIR=$ORACLE_HOME/user_projects/domains \
     DOMAIN_HOME=$ORACLE_HOME/user_projects/domains/${BI_DOMAIN_NAME:-bi}
