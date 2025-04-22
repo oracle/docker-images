@@ -698,6 +698,7 @@ start()
 
 list_descendants ()
 {
+  # shellcheck disable=SC3043,SC2155,SC2046
   local children=$(ps -o pid= --ppid "$1")
 
   for pid in $children
@@ -717,6 +718,7 @@ if [ -n "${CONTAINER_ID}" ]; then
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
 
+   # shellcheck disable=SC2046
    kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
    
    # Kill any processes containing the process ID.
@@ -741,6 +743,7 @@ if [ -n "${CONTAINER_ID}" ]; then
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
 
+   # shellcheck disable=SC2046
    kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
    
    # Kill any processes containing the process ID.
