@@ -121,7 +121,7 @@ validateMandatoryParameter() {
 }
 
 # TODO only ORACLE_HOME/DOMAIN_NAME/DOMAINS_DIR is mandatory once domain is configured
-mandatoryParameters=(ORACLE_HOME DOMAIN_NAME DOMAINS_DIR ADMIN_USERNAME ADMIN_PASSWORD DB_HOST DB_PORT DB_SERVICE DB_USERNAME DB_PASSWORD SCHEMA_PREFIX SCHEMA_PASSWORD)
+mandatoryParameters=(ORACLE_HOME DOMAIN_NAME DOMAINS_DIR ADMIN_USERNAME ADMIN_PASSWORD DB_HOST DB_PORT DB_SERVICE DB_USERNAME DB_PASSWORD SCHEMA_PREFIX SCHEMA_PASSWORD BI_APP_LITE_PASSWORD)
 missingMandatoryParameters=()
 for mandatoryParameter in "${mandatoryParameters[@]}"; do
   missingParam=$(validateMandatoryParameter "$mandatoryParameter")
@@ -190,6 +190,9 @@ if [ ! -f "$domainCheckFile" ]; then
   replacements+=" -e \"s|@@DEFAULT_SI_KEY@@|ssi|g\""
   replacements+=" -e \"s|@@PORT_RANGE_START@@|9500|g\""
   replacements+=" -e \"s|@@PORT_RANGE_END@@|9999|g\""
+  replacements+=" -e \"s|@@ENABLE_SSL@@|false|g\""
+  replacements+=" -e \"s|@@DB_ROLE@@|SYSDBA|g\""
+  replacements+=" -e \"s|@@APP_PASSWORD@@|$BI_APP_LITE_PASSWORD|g\""
 
   eval sed -i "$replacements" "$responseFile"
 
