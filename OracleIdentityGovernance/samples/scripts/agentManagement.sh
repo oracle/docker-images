@@ -696,6 +696,19 @@ start()
   echo "INFO: You can monitor the agent ${AI} from the Access Governance Console."
 }
 
+list_descendants ()
+{
+  # shellcheck disable=SC3043,SC2155,SC2046
+  local children=$(ps -o pid= --ppid "$1")
+
+  for pid in $children
+  do
+    list_descendants "$pid"
+  done
+
+  echo "$children"
+}
+
 forceStopPodman()
 {
 # Get the main process for the container.
@@ -705,6 +718,9 @@ if [ -n "${CONTAINER_ID}" ]; then
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
 
+   # shellcheck disable=SC2046
+   kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
+   
    # Kill any processes containing the process ID.
    # This kills the child processes too.
    # shellcheck disable=SC2046
@@ -727,6 +743,9 @@ if [ -n "${CONTAINER_ID}" ]; then
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
 
+   # shellcheck disable=SC2046
+   kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
+   
    # Kill any processes containing the process ID.
    # This kills the child processes too.
    # shellcheck disable=SC2046
