@@ -11,7 +11,7 @@ Example of how to create a 2-node RAC based on sample response files provided un
 
 racdockercompose
 ----------------
-Example of how to create a 2-node RAC based on Docker Compose. You can create a single-node RAC using Docker Compose based on your environment. For details, please refer to [README.MD of racdockercompose](./racdockercompose/README.md).
+Example of how to create a 2-node RAC based on Docker Compose. You can create a single-node RAC using Docker Compose based on your environment. For details, please refer to [README.MD of racdockercompose](./racdockercompose_1/README.md).
 
 racpodmancompose
 ----------------

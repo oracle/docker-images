@@ -99,13 +99,14 @@ To create the connection manager container, run the following command as the roo
   --dns-search=example.info \
   --dns 10.0.20.25 \
   --network=rac_pub1_nw \
-  --ip=10.0.20.15 \
+  --ip=10.0.20.166 \
   --cap-add=AUDIT_WRITE \
   --cap-add=NET_RAW \
   -e DOMAIN=example.info \
-  -e PUBLIC_IP=10.0.20.15 \
+  -e PUBLIC_IP=10.0.20.166 \
   -e DNS_SERVER=10.0.20.25 \
   -e PUBLIC_HOSTNAME=racnodepc1-cman \
+  -e DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170" \
   --privileged=false \
   -p 1521:1521 \
   --name racnodepc1-cman \
@@ -120,13 +121,13 @@ If you want to provide your own pre-created `cman.ora` file, you can provide wit
     --dns-search=example.info \
     --dns 10.0.20.25 \
     --network=rac_pub1_nw \
-    --ip=10.0.20.15 \
+    --ip=10.0.20.166 \
     --cap-add=AUDIT_WRITE \
     --cap-add=NET_RAW \
     -v /opt/containers/cman.ora:/var/tmp/cman.ora \
     -e USER_CMAN_FILE=/var/tmp/cman.ora \
     -e DOMAIN=example.info \
-    -e PUBLIC_IP=10.0.20.15 \
+    -e PUBLIC_IP=10.0.20.166 \
     -e DNS_SERVER=10.0.20.25 \
     -e PUBLIC_HOSTNAME=racnodepc1-cman \
     --privileged=false \
@@ -177,6 +178,7 @@ Run this command inside the OracleConnectionManager container.
 | DOMAIN              | The domain name associated with the container environment.  |
 | PUBLIC_IP          | The public IP address assigned to the Oracle Connection Manager container.  |
 | PUBLIC_HOSTNAME    | The public hostname assigned to the Oracle Connection Manager container.  |
+| DB_HOSTDETAILS       | Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`. |
 | DNS_SERVER        | The default is set to `10.0.20.25`, which is the DNS container resolving the Connection Manager and Oracle Database containers. Replace this with your DNS server IP if needed.  |
 | USER_CMAN_FILE    | (Optional) If you want to provide your own pre-created `cman.ora` file, set this environment variable and attach the file as a Podman volume in the `podman run` command.  |
 

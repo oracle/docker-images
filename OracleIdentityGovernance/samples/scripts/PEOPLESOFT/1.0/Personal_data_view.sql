@@ -24,7 +24,12 @@ address3,
 city,
 state,
 postal,
-lastupddttm) AS
+lastupddttm,
+description,
+employeeType,
+employmentStatus,
+hrStatus
+) AS
 SELECT
     pd.emplid,
     pd.first_name,
@@ -42,7 +47,11 @@ SELECT
     pd.city,
     pd.state,
     pd.postal,
-    pd.lastupddttm
+    pd.lastupddttm,
+    null,
+    null,
+    null,
+    null
 FROM
     ps_personal_data pd
         LEFT JOIN ps_email_addresses pe ON pd.emplid = pe.emplid and pe.pref_email_flag='Y';
