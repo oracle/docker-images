@@ -2,7 +2,7 @@
 
 Sample configurations to facilitate installation, configuration, and environment setup for Podman users. This project includes quick start `Containerfiles` for Oracle SOA 14.1.2.0 based on Oracle Linux 8, Oracle JDK 17, and Oracle Fusion Middleware Infrastructure 14.1.2.0.
 
-**IMPORTANT**: We provide Dockerfiles as samples to build SOA images but this is _NOT_ a recommended practice. We recommend obtaining patched SOA Suite images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
+**IMPORTANT**: We provide Containerfiles as samples to build SOA images but this is _NOT_ a recommended practice. We recommend obtaining patched SOA Suite images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
 
 The samples in this repository are for development purposes only. We recommend for production to use alternative methods, we suggest obtaining base SOA Suite images from the [Oracle Container Registry](<https://container-registry.oracle.com/ords/ocr/ba/middleware/soasuite>).
 
