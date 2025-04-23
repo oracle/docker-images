@@ -47,7 +47,7 @@ COPY $BI_DISTRO_ZIP1 install.file oraInst.loc /u01/
 USER root
 
 # tools for installing and running BI
-RUN dnf -y install unzip hostname && dnf clean all
+RUN dnf -y install unzip hostname libnsl && dnf clean all
 
 USER oracle
 RUN unzip "/u01/$BI_DISTRO_ZIP1" -d /u01 && \
