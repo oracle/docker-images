@@ -37,6 +37,13 @@ FROM oracle/analyticsserver:2025
 # ------
 LABEL "maintainer"="Padam Bengani <padam.bengani@oracle.com>"
 
+# Install
+#-------------------------------------------------------------
+USER root
+
+# tools for applying patches
+RUN dnf install -y binutils make gcc glibc-devel && dnf clean all
+
 # Common ENV
 #-----------
 ENV OPATCH_NO_FUSER=true
