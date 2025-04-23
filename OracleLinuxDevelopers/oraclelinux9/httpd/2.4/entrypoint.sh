@@ -2,8 +2,8 @@
 
 set -eu pipefail
 
-SERVER_CERT="$CERTIFICATE_DIR/localhost.crt"
-SERVER_KEY="$KEY_DIR/localhost.key"
+SERVER_CERT="$CERTIFICATE_DIR/fullchain.pem"
+SERVER_KEY="$KEY_DIR/privkey.pem"
 
 if [ ! -f "$SERVER_KEY" ]; then
     echo "Generating certificate private key for SSL support"
