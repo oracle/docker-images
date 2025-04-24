@@ -6,7 +6,7 @@ Sample configurations to facilitate installation, configuration, and environment
 
 The samples in this repository are for development purposes only. We recommend for production to use alternative methods, we suggest obtaining base SOA Suite images from the [Oracle Container Registry](<https://container-registry.oracle.com/ords/ocr/ba/middleware/soasuite>).
 
-Consider using the open source [WebLogic Kubernetes Operator](<https://docs.oracle.com/en/middleware/soa-suite/soa/14.1.2/soakn/oracle-soa-suite.html>) to deploy and manage SOA Suite domains.
+Refer [SOA Suite Image build using WebLogic Image Tool](<https://docs.oracle.com/en/middleware/soa-suite/soa/14.1.2/soakn/create-or-update-image.html>) to create custom images and refer [Oracle SOA Suite Domains on Kubernetes](<https://docs.oracle.com/en/middleware/soa-suite/soa/14.1.2/soakn/oracle-soa-suite.html>) to deploy and manage SOA Suite domains using open source Weblogic Kubernetes Operator.
 
 The sample files in this repository are for development purposes, customers and users are welcome to use them as starters, and customize, tweak, or create from scratch, new scripts and Containerfiles.
 
