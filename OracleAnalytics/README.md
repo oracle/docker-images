@@ -144,7 +144,7 @@ docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic
 
 2025:
 ```bash
-docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> -e BI_APP_LITE_PASSWORD=<bi_app_lite_password> oracle/analyticsserver:2025
+docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> -e BI_APP_LITE_PASSWORD=<bi_app_lite_password> oracle/analyticsserver:2025-patch
 ```
 
 ### Using a Host Directory for Persistent Data
