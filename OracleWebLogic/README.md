@@ -1,5 +1,5 @@
 # WebLogic on Docker
-===============
+
 This repository contains sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [Dockerfiles](dockerfiles/) and [samples](samples/) for WebLogic Server 12.2.1.4, 14.1.1.0, and 14.1.2.0 based on Oracle Linux and Oracle JDK 8, 11, 17, and 21.
 
 **IMPORTANT**: We provide Dockerfiles as samples to build WebLogic images but this is _NOT_ a recommended practice. We recommend obtaining patched WebLogic Server images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](<https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html#GUID-4FB15429-C985-472F-BDC6-669CA1B678E8>).
@@ -31,7 +31,7 @@ You must first download the Oracle Server JRE binary to the folder `../OracleJav
 Before you build, select the version and distribution for which you want to build an image, then download the required packages (see `.download` files) and place them in the folder of your distribution version of choice. Then, from the `dockerfiles` folder, run the `buildDockerImage.sh` script as root.
 
         `$ sh buildDockerImage.sh -h`
-        Usage: buildDockerImage.sh -v [version] [-d | -g | -i] [-s]
+        Usage: buildDockerImage.sh -v [version] [-d | -g | -i] [-s] [-j]
         Builds a Docker Image for Oracle WebLogic.
 
 ## Clustering WebLogic on Docker containers
@@ -80,4 +80,4 @@ All scripts and files hosted in this project and GitHub [`docker/OracleWebLogic`
 We support WebLogic Server in certified Docker containers, please read our Support statement. For additional details on the most current WebLogic Server supported configurations, please refer to the [Oracle Fusion Middleware Certification Pages](http://www.oracle.com/technetwork/middleware/ias/oracleas-supported-virtualization-089265.html).
 
 ## Copyright
-Copyright (c) 2014-2025 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014, 2025, Oracle and/or its affiliates.

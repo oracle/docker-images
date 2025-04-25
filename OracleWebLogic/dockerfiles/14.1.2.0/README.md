@@ -1,5 +1,5 @@
 # Oracle WebLogic Server on Docker
-=================================
+
 These Docker configurations have been used to create the Oracle WebLogic Server (WLS) image. Providing this WLS image facilitates the configuration and environment setup for DevOps users. This project includes the installation and creation of an empty WebLogic Server domain (an Administration Server only). These WLS 14.1.2.0 images are based on Oracle Linux and Oracle JDK 17 or Oracle JDK 21.
 
 **IMPORTANT**: We provide Dockerfiles as samples to build WebLogic images but this is _NOT_ a recommended practice. We recommend obtaining patched WebLogic Server images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches] (<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
@@ -21,7 +21,7 @@ The `buildDockerImage.sh` script is a utility shell script that performs MD5 che
 ### Building Oracle WebLogic Server Docker install images
 **IMPORTANT:** You must download the binary of Oracle WebLogic Server and put it in place (see `.download` files inside `dockerfiles/<version>`).  WebLogic Server 14.1.2.0 supports both Java SE 17 or 21.
 
-If you want to run WebLogic Server on Oracle JDK 17, you must build the image by using the Dockerfile in [`../../../OracleJava/17`](<https://github.com/oracle/docker-images/tree/master/OracleJava/17>). If you want to run images of WebLogic based on the Oracle JDK 17 image, you must build the image by using the Dockerfile in [`../../../OracleJava/21`](<https://github.com/oracle/docker-images/tree/master/OracleJava/21>).
+If you want to run WebLogic Server on Oracle JDK 17, you must build the image by using the Dockerfile in [`../../../OracleJava/17`](<https://github.com/oracle/docker-images/tree/master/OracleJava/17>). If you want to run images of WebLogic based on the Oracle JDK 21 image, you must build the image by using the Dockerfile in [`../../../OracleJava/21`](<https://github.com/oracle/docker-images/tree/master/OracleJava/21>).
 
 Before you build, select the version and distribution for which you want to build an image, then download the required packages (see `.download` files) and locate them in the folder of your distribution version of choice. Then, from the `dockerfiles` folder, run the `buildDockerImage.sh` script as root.
 
