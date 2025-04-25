@@ -1,4 +1,4 @@
-#Oracle Fusion Middleware Infrastructure on Docker
+# Oracle Fusion Middleware Infrastructure on Docker
 
 This Docker configuration has been used to create the Oracle Fusion Middleware Infrastructure image. Providing this FMW image facilitates the configuration and environment set up for DevOps users. This FMW Infrastructure 14.1.2.0 image is based on Oracle Linux and Oracle JDK 17 or Oracle JDK 21. This project includes the creation of a FMW Infrastructure domain. 
 
