@@ -156,7 +156,6 @@ docker build --force-rm=$NOCACHE --no-cache=$NOCACHE $PROXY_SETTINGS -t $IMAGE_N
 BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
-echo ""
 
 status="$?"
 if [ "$status" -eq 0 ]; then

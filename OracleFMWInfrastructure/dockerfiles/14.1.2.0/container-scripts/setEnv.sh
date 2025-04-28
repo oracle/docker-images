@@ -20,7 +20,7 @@ extract_env() {
    if [ -n "$env_value" ]; then
       env_arg=`echo $1=$env_value`
       echo " env_arg: $env_arg"
-      export $env_arg
+      export env_arg
    fi
 }
 

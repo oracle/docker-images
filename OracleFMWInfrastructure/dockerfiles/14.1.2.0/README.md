@@ -1,6 +1,6 @@
 # Oracle Fusion Middleware Infrastructure on Docker
 
-This Docker configuration has been used to create the Oracle Fusion Middleware Infrastructure image. Providing this FMW image facilitates the configuration and environment set up for DevOps users. This FMW Infrastructure 14.1.2.0 image is based on Oracle Linux and Oracle JDK 17 or Oracle JDK 21. This project includes the creation of a FMW Infrastructure domain. 
+This Docker configuration has been used to create the Oracle Fusion Middleware Infrastructure image. Providing this FMW image facilitates the configuration and environment set up for DevOps users. This FMW Infrastructure 14.1.2.0 image is based on Oracle Linux and Oracle JDK 17 or Oracle JDK 21. This project includes the creation of a FMW Infrastructure domain.
 
 **IMPORTANT**: We provide Dockerfiles as samples to build FMW Infrastructure images but this is _NOT_ a recommended practice. We recommend obtaining patched FMW Infrastructure images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches] (<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
 
@@ -45,51 +45,53 @@ The format of the `domain_security.properties` file is key=value pair.
 **Note**: Oracle recommends that the `domain_security.properties` file be deleted or secured after the container and WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
 ### Write your own Oracle Fusion Middleware Infrastructure domain with WLST
-The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/wlstg/index.html). You can find an example of a WLST script to create domains at [`createInfraDomain.py`](dockerfiles/14.1.2.0/container-scripts/createInfraDomain.py). You may want to tune this script with your own setup to create datasources and connection pools, security realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
+The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/wlstg/index.html). You can find an example of a WLST script to create domains at [`createInfraDomain.py`](dockerfiles/14.1.2.0/container-scripts/createInfraDomain.py). 
+You may want to tune this script with your own setup to create datasources and connection pools, security realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Running the Oracle FMW Infrastructure domain Docker image
-To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and an Oracle database. The Oracle database could be remote or running in a container. If you want to run the Oracle database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com), or build your own image using the Dockerfiles and scripts in this Git repository.
+To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and an Oracle database. The Oracle database could be remote or running in a container. 
+If you want to run the Oracle database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com), or build your own image using the Dockerfiles and scripts in this Git repository.
 
 Follow the steps below:
 
-  1. Create the Docker network for the infra server to run:
+    1. Create the Docker network for the infra server to run:
 
-	`$ docker network create -d bridge InfraNET`
+       `$ docker network create -d bridge InfraNET`
 
-  2. Run the database container to host the RCU schemas.
+    2. Run the database container to host the RCU schemas.
 
      The Oracle database server container requires custom configuration parameters for starting up the container. These custom configuration parameters correspond to the datasource parameters in the FMW Infrastructure image to connect to the database running in the container.
 
      Add to an `env.txt` file, the following parameters:
 
-	`DB_SID=InfraDB`
+       `DB_SID=InfraDB`
 
-	`DB_PDB=InfraPDB1`
+       `DB_PDB=InfraPDB1`
 
-	`DB_DOMAIN=us.oracle.com`
+       `DB_DOMAIN=us.oracle.com`
 
-	`DB_BUNDLE=basic`
+       `DB_BUNDLE=basic`
 
-	`$ docker run -d --name InfraDB --network=InfraNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:19.19.0.0`
+       `$ docker run -d --name InfraDB --network=InfraNET -p 1521:1521 -p 5500:5500 --env-file env.txt -it --shm-size="8g" container-registry.oracle.com/database/enterprise:19.19.0.0`
 
 
 Verify that the database is running and healthy. The `STATUS` field shows `healthy` in the output of `docker ps`.
 
 The database is created with the default password `Oradoc_db1`. To change the database password, you must use `sqlplus`.  To run `sqlplus`, pull the Oracle Instant Client from the Oracle Container Registry or the Docker Store, and run a `sqlplus` container with the following command:
 
-	$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA
+       `$ docker run -ti --network=InfraNET --rm store/oracle/database-instantclient:12.2.0.1 sqlplus sys/Oradoc_db1@InfraDB:1521/InfraDB.us.oracle.com AS SYSDBA`
 
-	SQL> alter user sys identified by MYDBPasswd container=all;
+       `SQL> alter user sys identified by MYDBPasswd container=all;`
 
 ### Build the FMW Infrastructure Image
 
-  1. To build the `14.1.2.0` FMW Infrastructure image, run:
+     1. To build the `14.1.2.0` FMW Infrastructure image, run:
 
-        `$ sh buildDockerImage.sh -v 14.1.2.0 
+      `$ sh buildDockerImage.sh -v 14.1.2.0`
 
-  2. Verify that you now have this image in place with:
+     2. Verify that you now have this image in place with:
 
-	`$ docker images`
+      `$ docker images`
 
 ## Start the containers
 In this image, the domain home will be persisted to a volume in the host. The `-v` option is used at Docker runtime to map the image directory where the domain home is persisted, `/u01/oracle/user_projects/domains`, to the host directory you have defined in `domain.properties` `DOMAIN_HOST_VOLUME`.
@@ -150,4 +152,4 @@ You will need the ip.address of the Admin server container to later use to conne
 7. Click OK to establish the connection.
 
 ## Copyright
-Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.

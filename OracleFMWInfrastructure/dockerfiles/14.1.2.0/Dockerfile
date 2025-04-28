@@ -88,7 +88,7 @@ RUN mkdir -p /u01 && \
     mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
     mkdir -p /u01/oracle/container-scripts && \
     microdnf update && \
-    microdnf install libaio libnsl jq && \
+    microdnf install -y libaio libnsl jq && \
     microdnf clean all
 
 

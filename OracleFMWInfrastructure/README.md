@@ -1,6 +1,7 @@
 # Oracle Fusion Middleware Infrastructure on Docker
 
-This repository contains sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. This project includes quick start [Dockerfiles](https://github.com/oracle/docker-images/tree/main/OracleFMWInfrastructure/dockerfiles) and [samples](https://github.com/oracle/docker-images/tree/main/OracleFMWInfrastructure/samples) for Oracle Fusion Middleware Infrastructure (FMW Infrastructure) 12.2.1.4, and 14.1.2.0 based on Oracle Linux and Oracle JDK 8, 17, and 21.
+This repository contains sample Docker configurations to facilitate installation, configuration, and environment setup for DevOps users. 
+This project includes quick start [Dockerfiles](https://github.com/oracle/docker-images/tree/main/OracleFMWInfrastructure/dockerfiles) and [samples](https://github.com/oracle/docker-images/tree/main/OracleFMWInfrastructure/samples) for Oracle Fusion Middleware Infrastructure (FMW Infrastructure) 12.2.1.4, and 14.1.2.0 based on Oracle Linux and Oracle JDK 8, 17, and 21.
 
 **IMPORTANT**: We provide Dockerfiles as samples to build FMW Infrastructure images but this is _NOT_ a recommended practice. We recommend obtaining patched FMW Infrastructure images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](https://docs.oracle.com/en/middleware/fusion-middleware/12.2.1.4/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html#GUID-4FB15429-C985-472F-BDC6-669CA1B678E8).
 
