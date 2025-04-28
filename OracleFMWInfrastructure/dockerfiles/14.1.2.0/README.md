@@ -45,11 +45,11 @@ The format of the `domain_security.properties` file is key=value pair.
 **Note**: Oracle recommends that the `domain_security.properties` file be deleted or secured after the container and WebLogic Server are started so that the user name and password are not inadvertently exposed.
 
 ### Write your own Oracle Fusion Middleware Infrastructure domain with WLST
-The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/wlstg/index.html). You can find an example of a WLST script to create domains at [`createInfraDomain.py`](dockerfiles/14.1.2.0/container-scripts/createInfraDomain.py). 
+The best way to create your own domain, or extend an existing domain, is by using the [WebLogic Scripting Tool](https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/wlstg/index.html). You can find an example of a WLST script to create domains at [`createInfraDomain.py`](dockerfiles/14.1.2.0/container-scripts/createInfraDomain.py).
 You may want to tune this script with your own setup to create datasources and connection pools, security realms, deploy artifacts, and so on. You can also extend images and override an existing domain, or create a new one with WLST.
 
 ## Running the Oracle FMW Infrastructure domain Docker image
-To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and an Oracle database. The Oracle database could be remote or running in a container. 
+To run an FMW Infrastructure domain sample container, you will need the FMW Infrastructure domain image and an Oracle database. The Oracle database could be remote or running in a container.
 If you want to run the Oracle database in a container, you can either pull the image from the [Docker Store](https://store.docker.com/images/oracle-database-enterprise-edition) or the [Oracle Container Registry](https://container-registry.oracle.com), or build your own image using the Dockerfiles and scripts in this Git repository.
 
 Follow the steps below:
@@ -116,7 +116,7 @@ You can override the default values of the following parameters during runtime i
 In this image we create a Development Mode domain by default, you can create a Production Mode domain (with Secured Production Mode disabled) by setting in the `docker run` command `PRODUCTION_MODE` to `prod` and set `ADMINISTRATION_PORT_ENABLED` to true.
 If you intend to run these images in production, then you should change the Production Mode to `production`. When you set the `DOMAIN_NAME`, the `DOMAIN_HOME=/u01/oracle/user_projects/domains/$DOMAIN_NAME`. Please see the documentation [Administering Security for Oracle WebLogic Server](<https://docs.oracle.com/en/middleware/fusion-middleware/weblogic-server/14.1.2/secmg/using-secured-production-mode.html#GUID-9ED2EF38-F763-4999-80ED-27A3FBCB9D7D>).
 
-  Start a container to launch the Administration Server and Managed Servers from the image created in step 1. To facilitate setting the environment variables defined in the `./properties/domain.properties' file, we provide scripts `./container-scripts/setEnv.sh`, `./run_admin_server.sh`, and `./run_managed_server.sh'.
+  Start a container to launch the Administration Server and Managed Servers from the image created in step 1. To facilitate setting the environment variables defined in the "./properties/domain.properties" file, we provide scripts "./container-scripts/setEnv.sh", "./run_admin_server.sh", and "./run_managed_server.sh".
 
         `$ docker run -d -p 9001:7001 -p 9002:9002 --name ${adminhost} --network=InfraNET -v ${scriptDir}/properties:/u01/oracle/properties -v ${DOMAIN_HOST_VOLUME}:/u01/oracle/user_projects/domains ${ENV_ARG} oracle/fmw-infrastructure:14.1.2.0`
 
