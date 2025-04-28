@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 #
-# Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
-# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 #Define DOMAIN_HOME
 export DOMAIN_ROOT="/u01/oracle/user_projects/domains"
@@ -27,7 +27,7 @@ function _kill() {
 trap _term SIGTERM
 
 # Set SIGKILL handler
-trap _kill SIGKILL
+#trap _kill SIGKILL
 
 echo "Configuring Domain for first time "
 echo "Start the Admin and Managed Servers  "

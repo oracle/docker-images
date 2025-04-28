@@ -1,16 +1,17 @@
-#Copyright (c) 2014, 2020, Oracle and/or its affiliates.
+#Copyright (c) 2025, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle FMW Infrastructure 12.2.1.3
+# This is the Dockerfile for Oracle FMW Infrastructure 14.1.2.0
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# The Oracle FMW Infrastructure image extends the Oracle WebLogic Infrastructure 12.2.1.3 image, you must first build the Oracle WebLogic Infrastructure image.
+# Download the FMW Infrastructure 14.1.2.0 installer from [oracle.com](https://www.oracle.com/middleware/technologies/weblogic-server-installers-downloads.html).  The FMW Infrastructure image extends the Oracle JDK image, [please see](https://github.com/oracle/docker-images/tree/main/OracleJava/17).
+#
 # Run:
-#      $ docker build -f Dockerfile -t oracle/fmw-infrastructure:12.2.1.3 .
+#      $ docker build -f Dockerfile -t oracle/fmw-infrastructure:14.1.2.0 .
 #
 # IMPORTANT
 # ---------
@@ -19,7 +20,7 @@
 # Extend base JRE image
 # You must build the image by using the Dockerfile in GitHub project `../../../OracleJava/java8`
 # ----------------------------------------------------------------------------------------------
-FROM oracle/serverjre:8 as builder
+FROM oracle/jdk:17 as builder
 
 # Labels
 # ------
@@ -44,8 +45,8 @@ RUN mkdir -p /u01 && \
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
-ENV FMW_PKG=fmw_12.2.1.3.0_infrastructure_Disk1_1of1.zip \
-    FMW_JAR=fmw_12.2.1.3.0_infrastructure.jar
+ENV FMW_PKG=V1045135-01.zip \
+    FMW_JAR=fmw_14.1.2.0.0_infrastructure.jar
 
 # Copy packages
 # -------------
@@ -55,12 +56,14 @@ RUN chown oracle:oracle -R /u01
 # Install
 # ------------------------------------------------------------
 USER oracle
-RUN cd /u01 && $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
-    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
-    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/install.file
+WORKDIR /u01
+RUN "$JAVA_HOME"/bin/jar xf /u01/"$FMW_PKG" && \
+    "$JAVA_HOME"/bin/java -jar /u01/"$FMW_JAR" -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="WebLogic Server" && \
+    rm /u01/$FMW_JAR /u01/"$FMW_PKG" /u01/install.file && \
+    rm -rf /u01/oracle/cfgtoollogs
 
 # Final image stage
-FROM oracle/serverjre:8
+FROM oracle/jdk:17
 ENV ORACLE_HOME=/u01/oracle \
     VOLUME_DIR=/u01/oracle/user_projects \
     SCRIPT_FILE=/u01/oracle/container-scripts/* \
@@ -69,13 +72,13 @@ ENV ORACLE_HOME=/u01/oracle \
     ADMIN_LISTEN_PORT="${ADMIN_LISTEN_PORT:-7001}" \
     ADMIN_NAME="${ADMIN_NAME:-AdminServer}" \
     ADMIN_HOST="${ADMIN_HOST:-InfraAdminContainer}" \
-    ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-true}" \
+    ADMINISTRATION_PORT_ENABLED="${ADMINISTRATION_PORT_ENABLED:-false}" \
     ADMINISTRATION_PORT="${ADMINISTRATION_PORT:-9002}" \
     MANAGEDSERVER_PORT="${MANAGEDSERVER_PORT:-8001}" \
     MANAGED_NAME="${MANAGED_NAME:-infraServer1}" \
     MANAGED_SERVER_CONTAINER="${MANAGED_SERVER_CONTAINER:-false}" \
     RCUPREFIX="${RCUPREFIX:-INFRA01}" \
-    PRODUCTION_MODE="${PRODUCTION_MODE:-prod}" \
+    PRODUCTION_MODE="${PRODUCTION_MODE:-dev}" \
     CONNECTION_STRING=${CONNECTION_STRING:-InfraDB:1521/InfraPDB1.us.oracle.com} \
     JAVA_OPTIONS="-Doracle.jdbc.fanEnabled=false -Dweblogic.StdoutDebugEnabled=false" \
     PATH=$PATH:/usr/java/default/bin:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:/u01/oracle/container-scripts
@@ -83,10 +86,11 @@ ENV ORACLE_HOME=/u01/oracle \
 RUN mkdir -p /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
     chmod a+xr /u01 && chown oracle:oracle /u01 && \
-    mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
+    mkdir -p "$VOLUME_DIR" && chown oracle:oracle /u01 "$VOLUME_DIR" && \
     mkdir -p /u01/oracle/container-scripts && \
-    yum install -y libaio && \
-    rm -rf /var/cache/yum
+    microdnf update && \
+    microdnf install -y libaio libnsl jq && \
+    microdnf clean all
 
 
 # Copy packages and scripts

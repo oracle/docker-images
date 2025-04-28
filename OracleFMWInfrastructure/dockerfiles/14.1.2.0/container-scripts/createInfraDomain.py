@@ -1,7 +1,7 @@
 #
-# Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2025, Oracle and/or its affiliates.
 #
-#Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+#Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
 import os
@@ -237,16 +237,15 @@ javaHome = None
 #domainParentDir will be passed by command line parameter -parent.
 domainParentDir = None
 #domainUser is hard-coded to weblogic. You can change to other name of your choice. Command line paramter -user.
-domainUser = 'weblogic'
+domainUser = 'xxxxxxxx'
 #domainPassword will be passed by Command line parameter -password.
-#domainPassword = 'welcome1'
 domainPassword = None
 #rcuDb will be passed by command line parameter -rcuDb.
 rcuDb = None
 #change rcuSchemaPrefix to your infra schema prefix. Command line parameter -rcuPrefix.
 rcuSchemaPrefix = 'DEV12'
 #change rcuSchemaPassword to your infra schema password. Command line parameter -rcuSchemaPwd.
-#rcuSchemaPassword = 'welcome1'
+#rcuSchemaPassword = 'xxxxxxxxx'
 rcuSchemaPassword = None
 
 i = 1
