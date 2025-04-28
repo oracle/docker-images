@@ -57,9 +57,9 @@ RUN chown oracle:oracle -R /u01
 # ------------------------------------------------------------
 USER oracle
 WORKDIR /u01
-RUN $JAVA_HOME/bin/jar xf /u01/$FMW_PKG && cd - && \
-    $JAVA_HOME/bin/java -jar /u01/$FMW_JAR -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="WebLogic Server" && \
-    rm /u01/$FMW_JAR /u01/$FMW_PKG /u01/install.file && \
+RUN "$JAVA_HOME"/bin/jar xf /u01/"$FMW_PKG" && \
+    "$JAVA_HOME"/bin/java -jar /u01/"$FMW_JAR" -silent -responseFile /u01/install.file -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="WebLogic Server" && \
+    rm /u01/$FMW_JAR /u01/"$FMW_PKG" /u01/install.file && \
     rm -rf /u01/oracle/cfgtoollogs
 
 # Final image stage
@@ -86,7 +86,7 @@ ENV ORACLE_HOME=/u01/oracle \
 RUN mkdir -p /u01 && \
     useradd -b /u01 -d /u01/oracle -m -s /bin/bash oracle && \
     chmod a+xr /u01 && chown oracle:oracle /u01 && \
-    mkdir -p $VOLUME_DIR && chown oracle:oracle /u01 $VOLUME_DIR && \
+    mkdir -p "$VOLUME_DIR" && chown oracle:oracle /u01 "$VOLUME_DIR" && \
     mkdir -p /u01/oracle/container-scripts && \
     microdnf update && \
     microdnf install -y libaio libnsl jq && \
