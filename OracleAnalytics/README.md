@@ -3,8 +3,8 @@
 Sample container configurations facilitate
 installation, configuration, and environment setup for DevOps users.
 This project includes quick start
-[container](dockerfiles/) for Oracle Analytics Server 2022 (6.4) based on Oracle Linux 7 and Oracle Analytics Server 2025 (8.2)
-based on Oracle Linux 8, using Oracle JRE 8 (Server),
+[container](dockerfiles/) for Oracle Analytics Server 2025 (8.2)
+based on Oracle Linux 8, Oracle JRE 8 (Server),
 and Oracle Fusion Middleware Infrastructure 12.2.1.4.0.
 
 For more information about Oracle Analytics Server,
@@ -41,8 +41,8 @@ Before you can build a BI image, you will need to build the [Oracle Java](https:
 ### Building the Oracle Analytics Server Image
 
 Download the binaries for
-[Oracle Analytics Server 2022 (6.4)](https://www-sites.oracle.com/solutions/business-analytics/analytics-server/analytics-server.html)
-for Linux x86-64-bit into the folder `OracleAnalytics/dockerfiles/6.4`.
+[Oracle Analytics Server 2025 (8.2)](https://www-sites.oracle.com/solutions/business-analytics/analytics-server/analytics-server.html)
+for Linux x86-64-bit into the folder `OracleAnalytics/dockerfiles/2025`.
 
 If you need a proxy for the host to access yum.oracle.com during build,
 first set up the appropriate environment. For example:
@@ -57,22 +57,22 @@ Build the image:
 
 ```bash
 cd OracleAnalytics/dockerfiles
-./buildContainerImage.sh -v 6.4
+./buildContainerImage.sh -v 2025
 ```
 
 Sample command(s) for users who don't want to use the above script to build the image:
 
 ```bash
 # without proxy
-docker build --force-rm=true --no-cache=true -t oracle/analyticsserver:6.4 -f Dockerfile .
+docker build --force-rm=true --no-cache=true -t oracle/analyticsserver:2025 -f Dockerfile .
 
 # with proxy
-docker build --force-rm=true --no-cache=true --build-arg http_proxy=http://myproxy.example.com:80 --build-arg https_proxy=https://myproxy.example.com:80 -t oracle/analyticsserver:6.4 -f Dockerfile .
+docker build --force-rm=true --no-cache=true --build-arg http_proxy=http://myproxy.example.com:80 --build-arg https_proxy=https://myproxy.example.com:80 -t oracle/analyticsserver:2025 -f Dockerfile .
 ```
 
 ### Building the Oracle Analytics Server Patched Image
 
-See the [Oracle Analytics patched image documentation](./patches/6.4-patch) for details.
+See the [Oracle Analytics patched image documentation](./patches/2025-patch) for details.
 
 ## Creating an Oracle Analytics Server Container
 
@@ -108,7 +108,7 @@ The following variables are predefined:
 For example:
 
 ```bash
-docker run -d --name bi -p 9500:9500 -p 9502:9502 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:6.4-patch
+docker run -d --name bi -p 9500:9500 -p 9502:9502 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:2025-patch
 ```
 
 Change _<...password>_ to your required values, and DB values to match your database.
@@ -137,12 +137,6 @@ you must modify the previous `docker run` command to expose port 9514.
 
 For example:
 
-6.4:
-```bash
-docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> oracle/analyticsserver:6.4-patch
-```
-
-2025:
 ```bash
 docker run -it -p 9500:9500 -p 9502:9502 -p 9514:9514 -e ADMIN_USERNAME=weblogic -e ADMIN_PASSWORD=<admin_password> -e DB_HOST=database -e DB_PORT=1521 -e DB_SERVICE=ORCLPDB1 -e DB_USERNAME=sys -e DB_PASSWORD=<db_password> -e SCHEMA_PREFIX=DEV -e SCHEMA_PASSWORD=<schema_password> -e BI_APP_LITE_PASSWORD=<bi_app_lite_password> oracle/analyticsserver:2025-patch
 ```
@@ -183,7 +177,7 @@ For example,
 
 3. Start a BI container that uses the database by name:
 
-   $ docker run --name bi --network=bi_net -e DB_HOST=database ...... oracle/analyticsserver:6.4-patch
+   $ docker run --name bi --network=bi_net -e DB_HOST=database ...... oracle/analyticsserver:2025-patch
 
 Note: In the above container run examples, other parameters are omitted for clarity.
 
