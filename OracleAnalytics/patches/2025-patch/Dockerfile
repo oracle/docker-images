@@ -73,8 +73,8 @@ COPY --chown=oracle:oracle \
 USER oracle
 
 RUN unzip "/u01/$PATCH_PKG_37804819" -d /u01 && \
-    chmod +x /u01/WLS_SPB_12.2.1.4*/tools/spbat/generic/SPBAT/spbat.sh && \
-    /u01/WLS_SPB_12.2.1.4*/tools/spbat/generic/SPBAT/spbat.sh -phase apply -oracle_home "$ORACLE_HOME" && \
+    chmod +x /u01/WLS_SPB_12.2.1.4.250408/tools/spbat/generic/SPBAT/spbat.sh && \
+    /u01/WLS_SPB_12.2.1.4.250408/tools/spbat/generic/SPBAT/spbat.sh -phase apply -oracle_home "$ORACLE_HOME" && \
     rm "/u01/$PATCH_PKG_37804819" && \
     unzip "/u01/$PATCH_PKG_34809489" -d /u01 && \
     "$ORACLE_HOME/OPatch/opatch" apply -silent /u01/34809489 && \
