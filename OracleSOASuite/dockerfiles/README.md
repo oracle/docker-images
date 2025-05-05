@@ -5,6 +5,12 @@ This project also includes a setup for SOA 14.1.2.0 image build based on Oracle 
 
 You will be able to build the SOA images based on the version which is required using the build scripts provided.
 
+**IMPORTANT**: We provide Containerfiles as samples to build SOA images but this is _NOT_ a recommended practice. We recommend obtaining patched SOA Suite images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
+
+The samples in this repository are for development purposes only. For production, we suggest obtaining base SOA Suite images from the [Oracle Container Registry](<https://container-registry.oracle.com/ords/ocr/ba/middleware/soasuite>).
+
+Consider using the open source [WebLogic Kubernetes Operator](<https://docs.oracle.com/en/middleware/soa-suite/soa/14.1.2/soakn/oracle-soa-suite.html>) to deploy and manage SOA Suite domains.
+
 ## SOA 12.2.1.x Docker image Creation and Running
 
 To build a SOA image either you can start from building Oracle JDK and Oracle Fusion Middleware Infrastrucure image or use the already available Oracle Fusion Middleware Infrastructure image. The Fusion Middleware Infrastructure image is available in the [Oracle Container Registry](https://container-registry.oracle.com), and can be pulled from there.
