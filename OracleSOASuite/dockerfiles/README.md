@@ -30,7 +30,7 @@ Please refer [README.md](https://github.com/oracle/docker-images/blob/main/Oracl
 
 Please refer [README.md](https://github.com/oracle/docker-images/blob/main/OracleFMWInfrastructure/README.md) under docker-images/OracleFMWInfrastructure for details on how to build the Oracle Fusion Middleware Infrastructure image.
 
-### Building Container Image for SOA
+### Building a Container image for SOA
 
 >IMPORTANT: To build the Oracle SOA image, you must first download the required version of the Oracle SOA Suite, Oracle Service Bus and Oracle B2B binaries. These binaries must be downloaded and copied into the folder with the same version for e.g. 12.2.1.4.0 binaries need to be dropped into `../OracleSOASuite/dockerfiles/12.2.1.4`.
 
@@ -92,7 +92,7 @@ Please refer [README.md](https://github.com/oracle/docker-images/blob/main/Oracl
 
 Please refer [README.md](https://github.com/oracle/docker-images/blob/main/OracleFMWInfrastructure/README.md) under docker-images/OracleFMWInfrastructure for details on how to build Oracle Fusion Middleware Infrastructure image.
 
-### Building Container Image for SOA
+### Building a Container Image for SOA
 
 >IMPORTANT: To build the Oracle SOA image, you must first download the required version of the Oracle SOA Suite, Oracle Service Bus and Oracle B2B binaries. These binaries must be downloaded and copied into the folder with the same version for e.g. 14.1.2.0.0 binaries need to be dropped into `../OracleSOASuite/dockerfiles/14.1.2.0`.
 
