@@ -5,7 +5,7 @@ This project also includes a setup for SOA 14.1.2.0 image build based on Oracle 
 
 You will be able to build the SOA images based on the version which is required using the build scripts provided.
 
-**IMPORTANT**: We provide Containerfiles as samples to build SOA images but this is _NOT_ a recommended practice. We recommend obtaining patched SOA Suite images; patched images have the latest security patches. For more information, see [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
+**IMPORTANT**: We provide Containerfiles as samples to build SOA images but this is NOT a recommended practice for production environments. We recommend obtaining patched SOA Suite images with the latest security patches for production deployments. For more information, [Obtaining, Creating, and Updating Oracle Fusion Middleware Images with Patches](<https://docs.oracle.com/en/middleware/fusion-middleware/14.1.2/opatc/obtaining-creating-and-updating-oracle-fusion-middleware-images-patches.html>).
 
 The samples in this repository are for development purposes only. For production, we suggest obtaining base SOA Suite images from the [Oracle Container Registry](<https://container-registry.oracle.com/ords/ocr/ba/middleware/soasuite>).
 
