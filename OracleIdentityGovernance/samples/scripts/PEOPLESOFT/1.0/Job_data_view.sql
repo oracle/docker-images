@@ -30,14 +30,22 @@ full_part_time,
 action,
 action_reason,
 locationCode,
-locationDetails,
+postalAddress,
+street,
+address2,
+city,
+county,
+state,
+postalCode,
 job_type,
 setid_jobcode,
 job_title,
 end_date,
 termination_dt,
 reports_to,
-dept_code_hierarchy,
+manager_department_codes,
+manager_department_levels,
+manager_department_titles,
 Description,
 lastupddttm ) AS
 SELECT
@@ -62,7 +70,13 @@ SELECT
     pj.action,
     pj.action_reason,
     pj.location,
-    null,
+    pl.descr,
+    pl.address1,
+    pl.address2,
+    pl.city,
+    pl.county,
+    pl.state,
+    pl.postal,
     pj.JOB_INDICATOR,
     setid_jobcode,
     pjc.descr,
@@ -71,7 +85,10 @@ SELECT
     pj.reports_to,
     null,
     null,
+    null,
+    null,
     pj.lastupddttm
 FROM
     ps_job pj
-        left join PS_JOBCODE_TBL pjc on pj.SETID_JOBCODE=pjc.setid and pj.jobcode = pjc.jobcode  and pj.effdt = pjc.effdt;
+        left join PS_JOBCODE_TBL pjc on pj.SETID_JOBCODE=pjc.setid and pj.jobcode = pjc.jobcode  and pj.effdt = pjc.effdt
+        left join PS_LOCATION_TBL pl on pj.location=pl.location;
