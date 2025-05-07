@@ -36,8 +36,8 @@ You can also deploy Oracle Connection Manager on Podman using the pre-built imag
 
 Example of pulling an Oracle Connection Manager Image from the Oracle Container Registry:
 ```bash
-podman pull container-registry.oracle.com/database/cman:23.5.0.0
-podman tag container-registry.oracle.com/database/cman:23.5.0.0 localhost/oracle/client-cman:23.5.0
+podman pull container-registry.oracle.com/database/cman:23.7.0.0
+podman tag container-registry.oracle.com/database/cman:23.7.0.0 localhost/oracle/client-cman:latest
 ```
 
 If you are using pre-built Oracle Connection Manager from [the Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Create Oracle Connection Manager Image](#create-oracle-connection-manager-image) to build the Oracle Connection Manager Image.
@@ -66,6 +66,12 @@ Note:
    -o: passes on container build option (e.g., --build-arg ARGUMENT=value).
    ```
 - If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.
+
+Once image is built, retag it to latest as we are going to refer latest image in podman run command-
+```bash
+podman tag localhost/oracle/client-cman:23.5.0 localhost/oracle/client-cman:latest
+```
+
 ## Create Network Bridge
 **Note:** You can change subnet according to your environment.
 
@@ -106,11 +112,10 @@ To create the connection manager container, run the following command as the roo
   -e PUBLIC_IP=10.0.20.166 \
   -e DNS_SERVER=10.0.20.25 \
   -e PUBLIC_HOSTNAME=racnodepc1-cman \
-  -e DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170" \
   --privileged=false \
   -p 1521:1521 \
   --name racnodepc1-cman \
-  oracle/client-cman:23.5.0
+  oracle/client-cman:latest
 ```
 
 ### Create Oracle Connection Manager Container using `cman.ora`
@@ -178,7 +183,7 @@ Run this command inside the OracleConnectionManager container.
 | DOMAIN              | The domain name associated with the container environment.  |
 | PUBLIC_IP          | The public IP address assigned to the Oracle Connection Manager container.  |
 | PUBLIC_HOSTNAME    | The public hostname assigned to the Oracle Connection Manager container.  |
-| DB_HOSTDETAILS       | Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`. |
+| DB_HOSTDETAILS       | This is optional field. Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`. |
 | DNS_SERVER        | The default is set to `10.0.20.25`, which is the DNS container resolving the Connection Manager and Oracle Database containers. Replace this with your DNS server IP if needed.  |
 | USER_CMAN_FILE    | (Optional) If you want to provide your own pre-created `cman.ora` file, set this environment variable and attach the file as a Podman volume in the `podman run` command.  |
 
