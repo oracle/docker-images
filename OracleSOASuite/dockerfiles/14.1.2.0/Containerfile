@@ -1,0 +1,143 @@
+#
+# Copyright (c) 2025, Oracle and/or its affiliates.
+#
+# Licensed under the Universal Permissive License v 1.0 as shown at 
+# https://oss.oracle.com/licenses/upl
+#
+# ORACLE CONTAINERFILES PROJECT
+# --------------------------
+# This is the Containerfile for Oracle SOA Suite
+#
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# See soasuite.download file in the install directory
+# Also see soapatches.download file in the patches directory
+#
+# Pull base image
+# ---------------
+FROM oracle/fmw-infrastructure:14.1.2.0.0 as builder
+
+#
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+USER root
+ENV FMW_JAR1=fmw_14.1.2.0.0_soa.jar \
+    FMW_JAR2=fmw_14.1.2.0.0_osb.jar \
+    FMW_JAR3=fmw_14.1.2.0.0_b2bhealthcare.jar \
+    OPATCH_PATCH_DIR="${OPATCH_PATCH_DIR:-/u01/opatch_patch}"  
+
+#
+# Copy installers and patches for install
+# -------------------------------------------
+COPY  $FMW_JAR1 $FMW_JAR2 $FMW_JAR3 /u01/
+RUN mkdir /u01/patches  ${OPATCH_PATCH_DIR} && \
+    chown oracle:root -R /u01
+COPY patches/* /u01/patches/
+COPY opatch_patch/* ${OPATCH_PATCH_DIR}/
+COPY container-scripts/* /u01/oracle/container-scripts/
+
+WORKDIR /u01
+RUN  chmod 755 ./*.jar && \
+     chmod +xr /u01/oracle/container-scripts/*.*
+
+WORKDIR /u01/oracle
+#
+# Copy files and packages for install
+# -----------------------------------
+USER oracle
+COPY install/* /u01/
+
+WORKDIR /u01
+RUN "$JAVA_HOME/bin/java" -jar "$FMW_JAR1" -silent -responseFile /u01/soasuite.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" && \
+  "$JAVA_HOME/bin/java" -jar "$FMW_JAR2" -silent -responseFile /u01/osb.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="Service Bus" && \
+  "$JAVA_HOME/bin/java" -jar "$FMW_JAR3" -silent -responseFile /u01/b2b.response -invPtrLoc /u01/oraInst.loc -jreLoc "$JAVA_HOME" -ignoreSysPrereqs -force -novalidation ORACLE_HOME="$ORACLE_HOME" INSTALL_TYPE="B2B" && \
+  rm -fr /u01/*.jar /u01/*.response
+
+#
+# Apply OPatch patch
+# ------------------
+#
+
+WORKDIR ${OPATCH_PATCH_DIR}
+RUN opatchzip=`ls ${OPATCH_PATCH_DIR}/p*.zip 2>/dev/null`; \
+    if [ ! -z "$opatchzip" ]; then \
+      echo "Applying the below OPatch patch present in ${OPATCH_PATCH_DIR} directory."; \
+      ls p*.zip; \
+      echo ""; \
+      echo "Extracting patch: ${opatchzip}"; \
+      $JAVA_HOME/bin/jar xf ${opatchzip} ; \
+      if ! $JAVA_HOME/bin/java -jar ${OPATCH_PATCH_DIR}/6880880/opatch_generic.jar -silent oracle_home=$ORACLE_HOME; then \
+        echo "Applying patch to opatch Failed" ; \
+        exit 1 ; \
+      fi; \
+      rm -rf ${OPATCH_PATCH_DIR}; \
+      echo "OPatch patch applied successfully."; \
+      #$ORACLE_HOME/OPatch/opatch version; \
+    fi
+
+#
+# Apply SOA Patches
+# -----------------
+
+WORKDIR /u01/patches
+RUN export OPATCH_NO_FUSER=TRUE && patchzips=`ls /u01/patches/p*.zip 2>/dev/null`; \
+    if [ ! -z "$patchzips" ]; then \
+      echo "Below patches present in patches directory. Applying these patches:"; \
+      ls p*.zip; \
+      echo ""; \
+      for filename in `ls p*.zip`; do echo "Extracting patch: ${filename}"; $JAVA_HOME/bin/jar xf ${filename}; done; \
+      rm -f /u01/patches/p*.zip; \
+      $ORACLE_HOME/OPatch/opatch napply -silent -oh $ORACLE_HOME -jre $JAVA_HOME -invPtrLoc /u01/oraInst.loc -phBaseDir /u01/patches; \
+      $ORACLE_HOME/OPatch/opatch util cleanup -silent; \
+      rm -rf /u01/patches/* /u01/oracle/cfgtoollogs/opatch/*; \
+      echo "Patches applied in SOA oracle home are:"; \
+      $ORACLE_HOME/OPatch/opatch lspatches; \
+    #   cd $ORACLE_HOME/OPatch; \
+    #   $ORACLE_HOME/OPatch/opatch lspatches; \
+    else \
+      echo "No patches present in patches directory. Skipping patch application."; \
+    fi && \
+    # Extract XEngine tar gz if present
+    if [ -d "${ORACLE_HOME}/soa/soa/thirdparty/edifecs" ] && [ -f "$ORACLE_HOME/soa/soa/thirdparty/edifecs/XEngine_8_4_1_23.tar.gz" ]; then \
+        tar -zxvf "$ORACLE_HOME/soa/soa/thirdparty/edifecs/XEngine_8_4_1_23.tar.gz" \
+        -C "$ORACLE_HOME/soa/soa/thirdparty/edifecs"; \
+    else \
+        echo "No XEngine_8_4_1_23.tar.gz present in ${ORACLE_HOME}/soa/soa/thirdparty/edifecs directory. Skipping untar."; \
+    fi && \
+    # zip as few log files grow larger when patches are installed.
+    if ls /u01/oracle/cfgtoollogs/opatch/*.log; then \
+        gzip /u01/oracle/cfgtoollogs/opatch/*.log; \
+    fi
+
+WORKDIR /u01/oracle
+#
+# Rebuild from base image
+# -----------------------
+
+FROM oracle/fmw-infrastructure:14.1.2.0.0
+
+#
+# Label
+# ----------
+LABEL "provider"="Oracle"
+
+#
+# Install the required packages
+# -----------------------------
+USER root
+ENV PATH=$PATH:/u01/oracle/container-scripts:/u01/oracle/oracle_common/modules/thirdparty/org.apache.ant/apache-ant/bin
+RUN microdnf install -y hostname && \
+    microdnf clean all
+
+COPY --from=builder --chown=oracle:root /u01 /u01
+
+#
+# Define default command to start bash.
+# 
+USER oracle
+HEALTHCHECK --start-period=5m --interval=1m CMD curl -k -s --fail `$HEALTH_SCRIPT_FILE` || exit 1
+WORKDIR $ORACLE_HOME
+CMD ["/u01/oracle/container-scripts/createDomainAndStart.sh"]
+
+
+
