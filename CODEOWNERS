@@ -12,7 +12,7 @@
 /OracleDatabase/           @gvenzl
 /OracleDatabase/RAC/       @psaini79
 /OracleFMWInfrastructure/  @mriccell
-/OracleGoldenGate/         @sbalousek @masubram @sahudebasish
+/OracleGoldenGate/         @masubram @sahudebasish
 /OracleHTTPServer/         @Prabhat-Kishore
 /OracleIdentityGovernance/ @rishiagarwal-oracle
 /OracleInstantClient/      @cjbj
