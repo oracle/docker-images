@@ -1,7 +1,7 @@
 # Copyright (c) 2022, 2025 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 #
-FROM ghcr.io/graalvm/jdk-community:21
+FROM ghcr.io/graalvm/jdk:ol9-java17
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
