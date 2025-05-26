@@ -125,9 +125,13 @@ function run_user_scripts {
 	while read -r script; do
 		case "${script}" in
 		*.sh)
-			echo "Running script '${script}'"
+			echo "Running shell script '${script}'"
 			# shellcheck disable=SC1090
 			source "${script}"
+			;;
+		*.py)
+			echo "Running Python script '${script}'"
+			python3 "${script}"
 			;;
 		*)
 			echo "Ignoring '${script}'"

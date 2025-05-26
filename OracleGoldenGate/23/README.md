@@ -25,6 +25,9 @@ This project was tested with:
 
 - Oracle GoldenGate 23.4 Microservices for Oracle on Linux x86-64
 - Oracle GoldenGate 23.4 Microservices for PostgreSQL on Linux x86-64
+- Oracle GoldenGate 23.4 Microservices for MSSQL on Linux x86-64
+- Oracle GoldenGate 23.4 Microservices for MYSQL on Linux x86-64
+- Oracle GoldenGate 23.8 Microservices for Distributed Applications and Analytics on Linux x86-64
 
 **IMPORTANT:** You must download the installation binaries of Oracle GoldenGate. You only need to provide the binaries for the version you plan to install. The binaries can be downloaded from the [Oracle Technology Network](https://www.oracle.com/technetwork/middleware/goldengate/downloads/index.html). Do not decompress the Oracle GoldenGate ZIP file. The container build process will handle that
 for you. You also must have Internet connectivity when building the container image for the package manager to perform additional software installations.
@@ -160,7 +163,7 @@ Version 23.4 ...
 
 ### Running Scripts Before Setup and on Startup
 
-The container images can be configured to run scripts before setup and on startup. Currently, `.sh` extensions are supported. For setup scripts just mount the volume `/u01/ogg/scripts/setup` or extend the image to include scripts in this directory. For startup scripts just mount the volume `/u01/ogg/scripts/startup` or extend the image to include scripts in this directory. Both of those locations
+The container images can be configured to run scripts before setup and on startup. Currently, `.sh` and `.py` extensions are supported. For setup scripts just mount the volume `/u01/ogg/scripts/setup` or extend the image to include scripts in this directory. For startup scripts just mount the volume `/u01/ogg/scripts/startup` or extend the image to include scripts in this directory. Both of those locations
 are static and the content is controlled by the volume mount.
 
 The example below mounts the local directory `${PWD}/myScripts` to `/u01/ogg/scripts` which is then searched for custom startup scripts:

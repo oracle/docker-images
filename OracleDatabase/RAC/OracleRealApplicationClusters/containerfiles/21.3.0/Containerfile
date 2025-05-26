@@ -134,6 +134,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$GRID_SETUP_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
     sync
 
 #############################################
@@ -168,6 +169,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
     $INSTALL_DIR/install/$GRID_SETUP_FILE && \
     $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
     sync
 
 
@@ -181,6 +183,11 @@ FROM rac-image-slim-${SLIMMING} AS builder
 ARG SLIMMING
 # hadolint ignore=DL3006
 ARG VERSION
+# Linux Env Variable
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=/u01/app/21c/grid \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=/u01/app/oracle/product/21c/dbhome_1
 COPY $VERSION/$INSTALL_GRID_BINARIES_FILE $VERSION/$GRID_SW_INSTALL_RSP $VERSION/$DB_SETUP_FILE $VERSION/$DB_INSTALL_RSP $VERSION/$INSTALL_DB_BINARIES_FILE $VERSION/$ENABLE_RAC_FILE $VERSION/$GRID_HOME_CLEANUP $VERSION/$ORACLE_HOME_CLEANUP $VERSION/$INSTALL_FILE_1* $VERSION/$INSTALL_FILE_2*  $INSTALL_SCRIPTS/
 # hadolint ignore=SC2086
 RUN chmod 755 $INSTALL_SCRIPTS/*.sh
@@ -199,6 +206,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
       $DB_HOME/root.sh && \
       su  $GRID_USER -c "$INSTALL_SCRIPTS/$GRID_HOME_CLEANUP" && \
       su  $DB_USER -c "$INSTALL_SCRIPTS/$ORACLE_HOME_CLEANUP" && \
+      rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
       :; \
     fi
 # hadolint ignore=SC3014
@@ -208,6 +216,7 @@ RUN if [ "${SLIMMING}x" == 'truex' ]; then \
     fi
 # hadolint ignore=SC2086
 RUN rm -f $INSTALL_DIR/install/* && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
     sync
 
 #############################################
@@ -217,6 +226,11 @@ RUN rm -f $INSTALL_DIR/install/* && \
 #############################################
 # hadolint ignore=DL3006
 FROM rac-image-slim-${SLIMMING} AS final
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=/u01/app/21c/grid \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=/u01/app/oracle/product/21c/dbhome_1
+RUN rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage
 # hadolint ignore=DL3006
 COPY  --from=builder /u01 /u01
 # hadolint ignore=SC2086
@@ -242,6 +256,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
     rm -f /etc/sysctl.d/99-oracle-database-preinstall-21c-sysctl.conf && \
     rm -f /etc/sysctl.d/99-sysctl.conf && \
     rm -f $INSTALL_DIR/install/* && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
     sync
 
 USER ${USER}
@@ -268,7 +283,8 @@ ARG VERSION
 ENV GRID_BASE=/u01/app/grid \
     GRID_HOME=/u01/app/21c/grid \
     DB_BASE=/u01/app/oracle \
-    DB_HOME=/u01/app/oracle/product/21c/dbhome_1
+    DB_HOME=/u01/app/oracle/product/21c/dbhome_1 \
+    SLIMMING=false
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
@@ -279,3 +295,4 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
      GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
      DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
+COPY $VERSION/$ADDNODE_RSP $VERSION/$GRID_INSTALL_RSP $VERSION/$DBCA_RSP $SCRIPT_DIR/
