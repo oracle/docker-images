@@ -28,7 +28,8 @@ lastupddttm,
 description,
 employeeType,
 employmentStatus,
-hrStatus
+hrStatus,
+manager
 ) AS
 SELECT
     pd.emplid,
@@ -48,6 +49,7 @@ SELECT
     pd.state,
     pd.postal,
     pd.lastupddttm,
+    null,
     null,
     null,
     null,
