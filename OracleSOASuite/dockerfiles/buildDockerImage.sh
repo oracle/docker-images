@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Script to build a Docker image for Oracle SOA suite.
+# Script to build a Container image for Oracle SOA suite.
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2016, 2021, Oracle and/or its affiliates.
+# Copyright (c) 2016, 2025, Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at 
 # https://oss.oracle.com/licenses/upl
@@ -14,14 +14,15 @@ cat << EOF
 
 Usage: buildDockerImage.sh -v [version]
 
-Builds a Docker Image for Oracle SOA/OSB
+Builds a Container Image for Oracle SOA/OSB
 Parameters:
    -h: view usage
    -v: Release version to build. Required.
    -s: Skip checksum verification
+   -p: Uses podman CLI to build the image. Option enabled only for 14.1.2.0
 
 LICENSE Universal Permissive License (UPL), Version 1.0
-Copyright (c) 2016-2017: Oracle and/or its affiliates.
+Copyright (c) 2016-2025: Oracle and/or its affiliates.
 
 EOF
 exit $1
@@ -30,7 +31,6 @@ exit $1
 #=============================================================
 checkFilePackages() {
   echo "INFO: Checking if required packages are present..."
-
   jarList=`grep -v -e "^#.*" install/soasuite.download | awk '{print $2}'`
   for jar in ${jarList}; do
      if [ -s ${jar} ]; then
@@ -58,7 +58,8 @@ checksumPackages() {
   echo "INFO: Checking if required packages are valid..."
 
   md5sum --quiet -c install/soasuite.download 2> /dev/null
-  if [ "$?" -ne 0 ]; then
+  rc=$?
+  if [ "$rc" -ne 0 ]; then
     cat <<EOF
 
 ERROR: MD5 for required packages to build the ${VERSION}
@@ -67,7 +68,7 @@ ERROR: MD5 for required packages to build the ${VERSION}
 EOF
     cat install/soasuite.download
     echo " "
-    exit $?
+    exit $rc
   fi
 }
 
@@ -76,7 +77,7 @@ EOF
 #=============================================================
 VERSION="NONE"
 SKIPMD5=0
-while getopts "hsv:" optname; do
+while getopts "hsv:p" optname; do
   case "$optname" in
     "h")
       usage 0
@@ -86,6 +87,14 @@ while getopts "hsv:" optname; do
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "p")
+      if [ "${VERSION}" != "14.1.2.0" ]; then
+        usage
+      fi
+
+      BUILD_CLI=podman
+      BUILD_OPTS="--format docker"
       ;;
     *)
       # Should not occur
@@ -99,10 +108,17 @@ if [ "${VERSION}" = "NONE" ]; then
   usage
 fi
 
+
 . ../setenv.sh
 
 IMAGE_NAME="oracle/soasuite:$VERSION"
-DOCKERFILE_NAME=Dockerfile
+
+if [ "${VERSION}" = "14.1.2.0" ]; then
+  CONTAINERFILE_NAME=Containerfile
+else
+  CONTAINERFILE_NAME=Dockerfile
+fi
+
 THEDIR=${VERSION}
 
 if [ ! -d ${THEDIR} ]; then
@@ -110,29 +126,31 @@ if [ ! -d ${THEDIR} ]; then
   usage
 fi
 
+
 # Go into version folder
-cd ${THEDIR}
+cd "${THEDIR}" || exit 1
 
 checkFilePackages
 checksumPackages
 
 # Proxy settings - Set your own proxy environment
-if [ "${http_proxy}" != "" ]; then
+if [ "${http_proxy:-}" != "" ]; then
   PROXY_SETTINGS="--build-arg http_proxy=${http_proxy}"
 fi
 
-if [ "${https_proxy}" != "" ]; then
+if [ "${https_proxy:-}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
-if [ "${no_proxy}" != "" ]; then
+if [ "${no_proxy:-}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
 
 # ################## #
 # BUILDING THE IMAGE #
 # ################## #
-buildCmd="docker build $BUILD_OPTS --force-rm=true $PROXY_SETTINGS -t $IMAGE_NAME -f $DOCKERFILE_NAME ."
+
+buildCmd="${BUILD_CLI:-docker} build $BUILD_OPTS --force-rm=true $PROXY_SETTINGS -t $IMAGE_NAME -f $CONTAINERFILE_NAME ."
 
 cat > /dev/stdout <<EOF
 
@@ -163,12 +181,12 @@ echo ""
 
 if [ ${status} -eq 0 ]; then
   cat << EOF
-INFO: Oracle SOA suite Docker Image for version: $VERSION
+INFO: Oracle SOA suite Container Image for version: $VERSION
       is ready to be extended.
       --> $IMAGE_NAME
 INFO: Build completed in $BUILD_ELAPSED seconds.
 
 EOF
 else
-  echo "ERROR: Oracle SOA Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
+  echo "ERROR: Oracle SOA Container Image was NOT successfully created. Check the output and correct any reported problems with the image build operation."
 fi
