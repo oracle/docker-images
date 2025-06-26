@@ -5,8 +5,8 @@ FROM ghcr.io/graalvm/jdk-community:21
 
 LABEL org.opencontainers.image.source = "https://github.com/oracle/docker-images"
 
-ARG KV_VERSION=24.4.9
-ARG DOWNLOAD_ROOT=http://download.oracle.com/otn-pub/otn_software/nosql-database
+ARG KV_VERSION=25.1.13
+ARG DOWNLOAD_ROOT="https://github.com/oracle/nosql/releases/download/v${KV_VERSION}/"
 ARG DOWNLOAD_FILE="kv-ce-${KV_VERSION}.zip"
 ARG DOWNLOAD_LINK="${DOWNLOAD_ROOT}/${DOWNLOAD_FILE}"
 

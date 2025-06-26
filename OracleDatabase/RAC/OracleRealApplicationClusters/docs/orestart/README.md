@@ -46,7 +46,7 @@ export RECO_ASM_DEVICE_LIST=/dev/asm-disk3
 export DEVICE="--device=/dev/oracleoci/oraclevdd:/dev/asm-disk1"
 export DOMAIN=example.info
 export DNS_SERVER_IP=10.0.20.25
-export IMAGE_NAME=oracle/database-rac:21.16.0
+export IMAGE_NAME=container-registry.oracle.com/database/rac_ru:latest
 export PUB_BRIDGE=rac_pub1_nw
 
 ######ORACLE RESTART Variable######
@@ -134,9 +134,9 @@ To validate if the environment is healthy, run the following command:
 ```bash
 podman ps -a
 
-CONTAINER ID  IMAGE                                  COMMAND                CREATED      STATUS                PORTS       NAMES
-131b86004040  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...   3 days ago   Up 3 days (healthy)               rac-dnsserver
-e010e1122e99  localhost/oracle/database-rac:21.16.0   podman network di...  3 hours ago  Up 3 hours (healthy)              dbmc1
+CONTAINER ID  IMAGE                                                  COMMAND                CREATED      STATUS                PORTS       NAMES
+131b86004040  localhost/oracle/rac-dnsserver:latest                 /bin/sh -c exec $...   3 days ago   Up 3 days (healthy)               rac-dnsserver
+e010e1122e99  container-registry.oracle.com/database/rac_ru:latest   podman network di...  3 hours ago  Up 3 hours (healthy)              dbmc1
 ```
 **Note:**
 - Look for `(healthy)` next to container names under the `STATUS` section.
@@ -155,61 +155,43 @@ Validate if Oracle Grid Infrastructure Stack is up and running from within conta
 # Verify the status of Oracle Restart stack:
 su - grid
 #Verify the status of Oracle Clusterware stack:
-[grid@dbmc1 ~]$ crsctl check cluster -all
-**************************************************************
-dbmc1:
-CRS-4537: Cluster Ready Services is online
-CRS-4529: Cluster Synchronization Services is online
-CRS-4533: Event Manager is online
-**************************************************************
-
-[grid@dbmc1 u01]$ crsctl check crs
+[grid@dbmc1 ~]$ crsctl check has
 CRS-4638: Oracle High Availability Services is online
-CRS-4537: Cluster Ready Services is online
+[grid@dbmc1 ~]$ crsctl check css
 CRS-4529: Cluster Synchronization Services is online
+[grid@dbmc1 ~]$ crsctl check evm
 CRS-4533: Event Manager is online
-
-[grid@dbmc1 u01]$ crsctl stat res -t
+[grid@dbmc1 ~]$ crsctl stat res -t
 --------------------------------------------------------------------------------
 Name           Target  State        Server                   State details       
 --------------------------------------------------------------------------------
 Local Resources
 --------------------------------------------------------------------------------
+ora.DATA.dg
+               ONLINE  ONLINE       dbmc1                    STABLE
 ora.LISTENER.lsnr
-               ONLINE  ONLINE       dbmc1                STABLE
-ora.net1.network
-               ONLINE  ONLINE       dbmc1                STABLE
+               ONLINE  ONLINE       dbmc1                    STABLE
+ora.asm
+               ONLINE  ONLINE       dbmc1                    Started,STABLE
 ora.ons
-               ONLINE  ONLINE       dbmc1                STABLE
+               OFFLINE OFFLINE      dbmc1                    STABLE
 --------------------------------------------------------------------------------
 Cluster Resources
 --------------------------------------------------------------------------------
-ora.ASMNET1LSNR_ASM.lsnr(ora.asmgroup)
-      1        ONLINE  ONLINE       dbmc1                STABLE
-ora.DATA.dg(ora.asmgroup)
-      1        ONLINE  ONLINE       dbmc1                STABLE
-ora.asm(ora.asmgroup)
-      1        ONLINE  ONLINE       dbmc1                Started,STABLE
-ora.asmnet1.asmnetwork(ora.asmgroup)
-      1        ONLINE  ONLINE       dbmc1                STABLE
-ora.cvu
-      1        ONLINE  ONLINE       dbmc1                STABLE
+ora.cssd
+      1        ONLINE  ONLINE       dbmc1                    STABLE
+ora.diskmon
+      1        OFFLINE OFFLINE                               STABLE
+ora.evmd
+      1        ONLINE  ONLINE       dbmc1                    STABLE
 ora.orclcdb.db
-      1        ONLINE  ONLINE       dbmc1                Open,HOME=/u01/app/o
-                                                             racle/product/21c/d
-                                                             bhome_1,STABLE
-ora.orclcdb.orclcdb_orclpdb.svc
-      1        ONLINE  ONLINE       dbmc1                STABLE
+      1        ONLINE  ONLINE       dbmc1                    Open,HOME=/u01/app/o
+                                                             racle/product/21c/db
+                                                             home_1,STABLE
 ora.orclcdb.orclpdb.pdb
-      1        ONLINE  ONLINE       dbmc1                READ WRITE,STABLE
-ora.orclcdb.soepdb.svc
-      1        ONLINE  ONLINE       dbmc1                STABLE
-ora.dbmc1.vip
-      1        ONLINE  ONLINE       dbmc1                STABLE
+      1        ONLINE  ONLINE       dbmc1                    STABLE
 --------------------------------------------------------------------------------
 
-[grid@dbmc1 ~]$ /u01/app/21c/grid/bin/olsnodes -n
-dbmc1       1
 ```
 ### Validating Oracle Restart Database
 Validate Oracle Restart Database from within Container-
@@ -218,7 +200,7 @@ su - oracle
 
 #Confirm the status of Oracle Database instances:
 [oracle@dbmc1 ~]$ srvctl status database -d ORCLCDB
-Instance ORCLCDB is running on node dbmc1
+Database is running.
 ```
 
 
@@ -231,7 +213,7 @@ Instance ORCLCDB is running on node dbmc1
 | DEVICE                 | --device=/dev/oracleoci/oraclevdd:/dev/asm-disk1 | Device mapping for Docker container |
 | DOMAIN                 | example.info                | Domain name for the environment                          |
 | DNS_SERVER_IP          | 10.0.20.25                  | IP address of the DNS server                             |
-| IMAGE_NAME             | oracle/database-rac:21.16.0  | Name of the Docker image for Oracle RAC                  |
+| IMAGE_NAME             | container-registry.oracle.com/database/rac_ru:latest | Name of the Docker image for Oracle RAC                  |
 | PUB_BRIDGE             | rac_pub1_nw                 | Name of the public bridge network interface              |
 | GPCNODE                | dbmc1                       | Hostname of GPC Host                                  |
 | GPCNODE_PUB_IP         | 10.0.20.195                 | Public IP address of RAC node 1                          |
