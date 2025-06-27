@@ -74,12 +74,10 @@ checkPodmanVersion() {
   echo "Checking Podman version."
   PODMAN_VERSION=$("${CONTAINER_RUNTIME}" info --format '{{.host.BuildahVersion}}' 2>/dev/null ||
                    "${CONTAINER_RUNTIME}" info --format '{{.Host.BuildahVersion}}')
-  # Remove dot in Podman version
-  PODMAN_VERSION=${PODMAN_VERSION//./}
 
-  if [ -z "${PODMAN_VERSION}" ]; then
+  if [ -z "${PODMAN_VERSION//./}" ]; then
     exit 1;
-  elif [ "${PODMAN_VERSION}" -lt "${MIN_PODMAN_VERSION//./}" ]; then
+  elif [ "$(printf '%s\n' "$MIN_PODMAN_VERSION" "$PODMAN_VERSION" | sort -V | head -n1)" != "$MIN_PODMAN_VERSION" ]; then
     echo "Podman version is below the minimum required version ${MIN_PODMAN_VERSION}"
     echo "Please upgrade your Podman installation to proceed."
     exit 1;
@@ -91,10 +89,8 @@ checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
   DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
-  # Remove dot in Docker version
-  DOCKER_VERSION=${DOCKER_VERSION//./}
 
-  if [ "${DOCKER_VERSION}" -lt "${MIN_DOCKER_VERSION//./}" ]; then
+  if [ "$(printf '%s\n' "$MIN_DOCKER_VERSION" "$DOCKER_VERSION" | sort -V | head -n1)" != "$MIN_DOCKER_VERSION" ]; then
     echo "Docker version is below the minimum required version ${MIN_DOCKER_VERSION}"
     echo "Please upgrade your Docker installation to proceed."
     exit 1;
