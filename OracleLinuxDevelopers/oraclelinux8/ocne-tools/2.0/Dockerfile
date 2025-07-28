@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Oracle and/or its affiliates.
+# Copyright (c) 2025 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # hadolint ignore=DL3007
@@ -15,6 +15,7 @@ COPY help.sh /opt/help.sh
 
 USER oracle
 
+# remove original OCI cli entrypoint.
 ENTRYPOINT []
 
 CMD ["/bin/bash", "/opt/help.sh"]
