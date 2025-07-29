@@ -15,7 +15,7 @@ COPY help.sh /opt/help.sh
 
 USER oracle
 
-# remove original OCI cli entrypoint.
+# remove original OCI cli entrypoint from upstream image
 ENTRYPOINT []
 
 CMD ["/bin/bash", "/opt/help.sh"]
