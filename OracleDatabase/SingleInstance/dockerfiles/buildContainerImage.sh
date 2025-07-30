@@ -74,12 +74,10 @@ checkPodmanVersion() {
   echo "Checking Podman version."
   PODMAN_VERSION=$("${CONTAINER_RUNTIME}" info --format '{{.host.BuildahVersion}}' 2>/dev/null ||
                    "${CONTAINER_RUNTIME}" info --format '{{.Host.BuildahVersion}}')
-  # Remove dot in Podman version
-  PODMAN_VERSION=${PODMAN_VERSION//./}
 
-  if [ -z "${PODMAN_VERSION}" ]; then
+  if [ -z "${PODMAN_VERSION//./}" ]; then
     exit 1;
-  elif [ "${PODMAN_VERSION}" -lt "${MIN_PODMAN_VERSION//./}" ]; then
+  elif [ "$(printf '%s\n' "$MIN_PODMAN_VERSION" "$PODMAN_VERSION" | sort -V | head -n1)" != "$MIN_PODMAN_VERSION" ]; then
     echo "Podman version is below the minimum required version ${MIN_PODMAN_VERSION}"
     echo "Please upgrade your Podman installation to proceed."
     exit 1;
@@ -91,10 +89,8 @@ checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
   DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
-  # Remove dot in Docker version
-  DOCKER_VERSION=${DOCKER_VERSION//./}
 
-  if [ "${DOCKER_VERSION}" -lt "${MIN_DOCKER_VERSION//./}" ]; then
+  if [ "$(printf '%s\n' "$MIN_DOCKER_VERSION" "$DOCKER_VERSION" | sort -V | head -n1)" != "$MIN_DOCKER_VERSION" ]; then
     echo "Docker version is below the minimum required version ${MIN_DOCKER_VERSION}"
     echo "Please upgrade your Docker installation to proceed."
     exit 1;
@@ -179,16 +175,16 @@ done
 # Check that we have a container runtime installed
 checkContainerRuntime
 
-# Only 19c EE is supported on ARM64 platform
+# Only 19c EE and 23ai Free are supported on ARM64 platform
 if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   BUILD_OPTS=("--build-arg" "BASE_IMAGE=oraclelinux:8" "${BUILD_OPTS[@]}")
   PLATFORM=".arm64"
-  if { [ "${VERSION}" == "19.3.0" ] && [ "${ENTERPRISE}" -eq 1 ]; }; then
+  if [ "${VERSION}" == "19.3.0" ] && { [ "${BASE_ONLY}" -eq 1 ] || [ "${ENTERPRISE}" -eq 1 ]; }; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=LINUX.ARM64_1919000_db_home.zip" "${BUILD_OPTS[@]}")
   elif { [ "${VERSION}" == "23.6.0" ] && [ "${FREE}" -eq 1 ]; }; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23ai-1.0-1.el8.aarch64.rpm" "${BUILD_OPTS[@]}")
   else
-    echo "Currently only 19c enterprise edition is supported on ARM64 platform.";
+    echo "Currently only 19c enterprise edition and 23ai Free are supported on ARM64 platform.";
     exit 1;
   fi;
 fi;
