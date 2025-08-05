@@ -9,22 +9,21 @@
 /OracleAccessManagement/   @manjunathdhegde-2910
 /OracleBI/                 @sjvp
 /OracleCoherence/          @thegridman
-/OracleDatabase/           @gvenzl
+/OracleDatabase/           @yunus-qureshi
 /OracleDatabase/RAC/       @psaini79
 /OracleFMWInfrastructure/  @mriccell
-/OracleGoldenGate/         @sbalousek
+/OracleGoldenGate/         @masubram @sahudebasish
 /OracleHTTPServer/         @Prabhat-Kishore
 /OracleIdentityGovernance/ @rishiagarwal-oracle
 /OracleInstantClient/      @cjbj
 /OracleInternetDirectory/  @manjunathdhegde-2910 @kuldeepbshah
 /OracleJava/               @aureliogrb
 /OracleLinuxDevelopers/    @Djelibeybi @AmedeeBulle
-/OracleRestDataServices/   @gvenzl
+/OracleRestDataServices/   @chrishoina
 /OracleSOASuite/           @knvijay @rdas0405
 /OracleUnifiedDirectory/   @kuldeepbshah
 /OracleUnifiedDirectorySM/ @kuldeepbshah
 /OracleVeridata/           @arnabnandioracle
-/OracleWebCenterContent/   @deboghos @pjadam
-/OracleWebCenterPortal/    @dgothe
+/OracleWebCenterContent/   @deboghos
 /OracleWebLogic/           @mriccell
-/OracleManagementAgent/    @drupanchal @ChaitanyaKulkarni28 @niravg75
+/OracleManagementAgent/    @drupanchal @niravg75
