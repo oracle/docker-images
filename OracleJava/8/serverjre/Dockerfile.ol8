@@ -8,26 +8,24 @@
 #
 # ARGS
 # ----
-# This docker file requires two arguments:
-# 1) JDK8_TOKEN is a valid dowload token for Server JRE 8 (Create the token for JDK 8).  It can be created in cloud.oracle.com/jms under Java Download
+# This docker file requires one arguments:
+# JDK8_TOKEN is a valid dowload token for Server JRE 8 (Create the token for JDK 8).  It can be created in cloud.oracle.com/jms under Java Download
 # Token generation is documented on https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html
-# 2) OCI_REGION is the Oracle Cloud Infrastucture (OCI) region where the token is generated.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # This dockerfile will download a copy of latest version of JDK 8 from
-#	https://javamanagementservice-download.<OCI_REGION>.oci.oraclecloud.com/java/8/latest/
+#	https://java.oraclecloud.com/java/8/latest/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build --file Dockerfile.ol8 --tag oracle/serverjre:8 --build-arg JDK8_TOKEN=<token> --build-arg OCI_REGION=<region> .
+#      $ docker build --file Dockerfile.ol8 --tag oracle/serverjre:8 --build-arg JDK8_TOKEN=<token> .
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
 FROM oraclelinux:8 as builder
 ARG JDK8_TOKEN
-ARG OCI_REGION
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
@@ -40,7 +38,7 @@ ENV LANG en_US.UTF-8
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
-ENV JAVA_URL=https://javamanagementservice-download."${OCI_REGION}".oci.oraclecloud.com/java/8/latest/ \
+ENV JAVA_URL=https://java.oraclecloud.com/java/8/latest/ \
     JAVA_HOME=/usr/java/jdk-8
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]

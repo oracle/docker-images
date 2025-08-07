@@ -1,6 +1,6 @@
 ######################################################################
 #
-# Copyright (c) 2001,2002, Oracle Corporation. All rights reserved.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 #
 # NAME
 #    cman.ora
@@ -32,9 +32,9 @@ CMAN_###CMAN_HOSTNAME###.###DOMAIN### =
     # Valid values: boolean values for on/off
     (connection_statistics=yes)
     (log_directory=###DB_HOME###/network/log)
-    (log_level=USER)
+    (log_level=###LOG_LEVEL###)
     (trace_directory=###DB_HOME###/network/trace)
-    (trace_level=USER)
+    (trace_level=###TRACE_LEVEL###)
     (valid_node_checking_registration=on)
     (registration_invited_nodes=*) 
   )

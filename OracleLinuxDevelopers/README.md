@@ -110,7 +110,11 @@ opt-in. To activate `yarn`, run `corepack enable` when building your downstream 
 * [`oraclelinux8-python:3.6-oracledb`](oraclelinux8/python/3.6-oracledb/Dockerfile)
 * [`oraclelinux8-python:3.8`](oraclelinux8/python/3.8/Dockerfile)
 * [`oraclelinux8-python:3.9`](oraclelinux8/python/3.9/Dockerfile)
+* [`oraclelinux8-python:3.9-oracledb`](oraclelinux8/python/3.9-oracledb/Dockerfile)
 * [`oraclelinux8-python:3.11`](oraclelinux8/python/3.11/Dockerfile)
+* [`oraclelinux8-python:3.11-oracledb`](oraclelinux8/python/3.11-oracledb/Dockerfile)
+* [`oraclelinux8-python:3.12`](oraclelinux8/python/3.12/Dockerfile)
+* [`oraclelinux8-python:3.12-oracledb`](oraclelinux8/python/3.12-oracledb/Dockerfile)
 
 ### Ruby module
 
@@ -129,6 +133,32 @@ You should then be able to create a new Ruby on Rails application.
 * [`oraclelinux8-ruby:2.7-nodejs`](oraclelinux8/ruby/2.7-nodejs/Dockerfile)
 * [`oraclelinux8-ruby:3.0`](oraclelinux8/ruby/3.0/Dockerfile)
 * [`oraclelinux8-ruby:3.1`](oraclelinux8/ruby/3.1/Dockerfile)
+
+## Oracle Linux 9 based images
+
+### Go Toolset module
+
+* [`oraclelinux9-golang:1.18`](oraclelinux9/golang/1.18/Dockerfile)
+
+### NGINX module
+
+* [`oraclelinux9-nginx:1.20`](oraclelinux9/nginx/1.20/Dockerfile)
+* [`oraclelinux9-nginx:1.20-core`](oraclelinux9/nginx/1.20-core/Dockerfile)
+* [`oraclelinux9-nginx:1.20-full`](oraclelinux9/nginx/1.20-full/Dockerfile)
+
+### Node.js module
+
+* [`oraclelinux9-nodejs:16`](oraclelinux9/nodejs/16/Dockerfile)
+* [`oraclelinux9-nodejs:18`](oraclelinux9/nodejs/18/Dockerfile)
+
+### Python modules
+
+* [`oraclelinux9-python:3.9`](oraclelinux9/python/3.9/Dockerfile)
+* [`oraclelinux9-python:3.11`](oraclelinux9/python/3.11/Dockerfile)
+* [`oraclelinux9-python:3.11-oracledb`](oraclelinux9/python/3.11-oracledb/Dockerfile)
+* [`oraclelinux9-python:3.12`](oraclelinux9/python/3.12/Dockerfile)
+* [`oraclelinux9-python:3.12-oracledb`](oraclelinux9/python/3.12-oracledb/Dockerfile)
+
 
 [1]: https://github.com/orgs/oracle/packages?repo_name=docker-images
 [2]: https://yum.oracle.com

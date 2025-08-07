@@ -68,6 +68,7 @@ class OraRacProv:
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
        retcode1=self.ocvu.check_home(None,dbhome,dbuser)
        status=self.ocommon.check_rac_installed(retcode1)
+       self.ocommon.reset_os_password(dbuser)
        if not status:
          self.ocommon.log_info_message("Start perform_ssh_setup()",self.file_name)
          self.perform_ssh_setup()

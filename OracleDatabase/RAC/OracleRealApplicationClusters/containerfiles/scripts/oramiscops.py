@@ -53,7 +53,35 @@ class OraMiscOps:
        self.ocommon.log_info_message("Start setup()",self.file_name)
        ct = datetime.datetime.now()
        bts = ct.timestamp()
-       self.ocommon.update_gi_env_vars_from_rspfile()
+       #default version as 0 integer, will read from rsp file
+       version=0
+       if self.ocommon.check_key("GRID_RESPONSE_FILE",self.ora_env_dict):
+               gridrsp=self.ora_env_dict["GRID_RESPONSE_FILE"]
+               self.ocommon.log_info_message("GRID_RESPONSE_FILE parameter is set and file location is:" + gridrsp ,self.file_name)
+
+               if os.path.isfile(gridrsp):
+                 with open(gridrsp) as fp:
+                   for line in fp:
+                      if len(line.split("=")) == 2:
+                         key=(line.split("=")[0]).strip()
+                         value=(line.split("=")[1]).strip()
+                         self.ocommon.log_info_message("KEY and Value pair set to: " + key + ":" + value ,self.file_name)
+                         if key == "oracle.install.responseFileVersion":
+                            match = re.search(r'v(\d{2})', value)
+                            if match:
+                              version=int(match.group(1))
+                            else:
+                                 # Default to version 23 if no match is found
+                              version=23
+               #print version in logs
+               msg="Version detected in response file is {0}".format(version)
+               self.ocommon.log_info_message(msg,self.file_name)                    
+         ## Calling this function from here to make sure INSTALL_NODE is set
+       if version == int(19) or version == int(21):
+            self.ocommon.update_pre_23c_gi_env_vars_from_rspfile()
+       else:
+            # default to read when its either set as 23 in response file or if response file is not present
+            self.ocommon.update_gi_env_vars_from_rspfile()
        if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
           self.ocommon.update_rac_env_vars_from_rspfile(self.ora_env_dict["DBCA_RESPONSE_FILE"])
        if self.ocommon.check_key("DEL_RACHOME",self.ora_env_dict):

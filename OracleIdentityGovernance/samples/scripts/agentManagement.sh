@@ -255,13 +255,22 @@ loadImage(){
 runAgent(){
    groupId=$(id -g)
    . "$ENV_FILE"
+   hostAddressMap=$(getProperty idoConfig.hostAddressMap)
+      host_prefix="--add-host "
+      addHost=$(echo "$hostAddressMap" | awk -F ";" -v prefix="$host_prefix" -v OFS=" " '{
+       for (i=1; i<=NF; i++) {
+           $i = prefix $i
+       }
+       print
+   }')
    if [ "$containerRuntime" = "docker" ]
    then
       if [ ! "$(docker ps -a -f "name=$AI" --format '{{.Names}}')" ]
       then
          echo "INFO: Starting new container."
           if [ -f "$CONFDIR"/config.properties ]; then
-              docker run -d --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+              # shellcheck disable=SC2086
+              docker run -d --env-file "$CONFDIR"/config.properties $addHost -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           else
               docker run -d -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           fi
@@ -309,7 +318,8 @@ runAgent(){
       then
          echo "INFO: Starting new container."
           if [ -f "$CONFDIR"/config.properties ]; then
-            podman run -d --user root --env-file "$CONFDIR"/config.properties -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
+            # shellcheck disable=SC2086
+            podman run -d --user root --env-file "$CONFDIR"/config.properties $addHost -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           else
             podman run -d --user root -v "$PV":/app --group-add "$groupId" --name "$AI"  "$imageName"
           fi
@@ -696,6 +706,19 @@ start()
   echo "INFO: You can monitor the agent ${AI} from the Access Governance Console."
 }
 
+list_descendants ()
+{
+  # shellcheck disable=SC3043,SC2155,SC2046
+  local children=$(ps -o pid= --ppid "$1")
+
+  for pid in $children
+  do
+    list_descendants "$pid"
+  done
+
+  echo "$children"
+}
+
 forceStopPodman()
 {
 # Get the main process for the container.
@@ -704,6 +727,9 @@ if [ -n "${CONTAINER_ID}" ]; then
    echo Container ID : "$CONTAINER_ID"
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
+
+   # shellcheck disable=SC2046
+   kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
 
    # Kill any processes containing the process ID.
    # This kills the child processes too.
@@ -726,6 +752,9 @@ if [ -n "${CONTAINER_ID}" ]; then
    echo Container ID : "$CONTAINER_ID"
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
+
+    # shellcheck disable=SC2046
+    kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
 
    # Kill any processes containing the process ID.
    # This kills the child processes too.
