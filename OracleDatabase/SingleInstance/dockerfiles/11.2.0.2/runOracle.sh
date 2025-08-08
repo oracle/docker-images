@@ -19,7 +19,11 @@ function runUserScripts {
   
     for f in $SCRIPTS_ROOT/*; do
         case "$f" in
-            *.sh)     echo "$0: running $f"; . "$f" ;;
+            *.sh)
+              echo "$0: running $f"
+              # shellcheck disable=SC1090
+              . "$f"
+              ;;
             *.sql)    echo "$0: running $f"; echo "exit" | su -p oracle -c "$ORACLE_HOME/bin/sqlplus / as sysdba @$f"; echo ;;
             *)        echo "$0: ignoring $f" ;;
         esac
@@ -175,7 +179,7 @@ fi;
 /etc/init.d/oracle-xe start | grep -qc "Oracle Database 11g Express Edition is not configured"
 if [ "$?" == "0" ]; then
    # Check whether container has enough memory
-   if [ `df -Pk /dev/shm | tail -n 1 | awk '{print $2}'` -lt 1048576 ]; then
+   if [ "`df -Pk /dev/shm | tail -n 1 | awk '{print $2}'`" -lt 1048576 ]; then
       echo "Error: The container doesn't have enough memory allocated."
       echo "A database XE container needs at least 1 GB of shared memory (/dev/shm)."
       echo "You currently only have $((`df -Pk /dev/shm | tail -n 1 | awk '{print $2}'`/1024)) MB allocated to the container."
@@ -190,7 +194,7 @@ if [ "$?" == "0" ]; then
 fi;
 
 # Check whether database is up and running
-$ORACLE_BASE/$CHECK_DB_FILE
+IGNORE_DB_STARTED_MARKER=true $ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
@@ -199,6 +203,8 @@ if [ $? -eq 0 ]; then
   # Execute custom provided startup scripts
   runUserScripts $ORACLE_BASE/scripts/startup
 
+  # Create marker file for the health check
+  touch "$DB_STARTED_MARKER_FILE"
 else
   echo "#####################################"
   echo "########### E R R O R ###############"

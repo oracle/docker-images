@@ -77,6 +77,11 @@ EOF
 ################ MAIN #######################
 #############################################
 
+if [ "$IGNORE_DB_STARTED_MARKER" != true ] && [ ! -f "$DB_STARTED_MARKER_FILE" ]; then
+   echo "Database was not started yet." >&2
+   exit 1
+fi
+
 ORACLE_PWD=$($ORACLE_BASE/$DECRYPT_PWD_FILE)
 export ORACLE_PWD
 
@@ -92,7 +97,7 @@ else
    DB_ROLE=""
    # shellcheck disable=SC2034
    ORAENV_ASK=NO
-   # shellcheck source=/dev/null
+   # shellcheck disable=SC1090
    source oraenv
    checkDatabaseRole
    checkPDBOpen
