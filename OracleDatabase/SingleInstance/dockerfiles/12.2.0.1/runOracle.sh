@@ -178,7 +178,7 @@ else
 fi;
 
 # Check whether database is up and running
-$ORACLE_BASE/$CHECK_DB_FILE
+IGNORE_DB_STARTED_MARKER=true $ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
@@ -187,6 +187,8 @@ if [ $? -eq 0 ]; then
   # Execute custom provided startup scripts
   $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
   
+  # Create marker file for the health check
+  touch "$DB_STARTED_MARKER_FILE"
 else
   echo "#####################################"
   echo "########### E R R O R ###############"
