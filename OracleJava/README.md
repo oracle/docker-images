@@ -15,20 +15,20 @@ cd ../OracleJava/24
 docker build --file Dockerfile.ol9 --tag oracle/jdk:24 .
 ```
 
-Updates to prior LTS releases: JDK 17, JDK 11, JDK 8, and Server JRE 8 are offered under the [Oracle Technology Network License Agreement for Oracle Java SE](https://www.java.com/otnlicense). Users must accept the license terms, generate a download token, and provide it, as well as the OCI region for the token, as build arguments.  Token generation is documented on [https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html](https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html).
+Updates to prior LTS releases: JDK 17, JDK 11, JDK 8, and Server JRE 8 are offered under the [Oracle Technology Network License Agreement for Oracle Java SE](https://www.java.com/otnlicense). Users must accept the license terms, generate a download token, and provide it as a build argument.  Token generation is documented on [https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html](https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html).
 
 e.g., To build the JDK 17 container image generate a token for JDK 17 and run:
 
 ```bash
 cd ../OracleJava/17
-docker build --file Dockerfile.ol8 --tag oracle/jdk:17 --build-arg JDK17_TOKEN=<$token> --build-arg OCI_REGION=<$region> .
+docker build --file Dockerfile.ol8 --tag oracle/jdk:17 --build-arg JDK17_TOKEN=<$token> .
 ```
 
 e.g., To build the Server JRE 8 container image generate a token for JDK 8 and run:
 
 ```bash
 cd ../OracleJava/8/serverjre
-docker build --file Dockerfile.ol8 --tag oracle/serverjre:8 --build-arg JDK8_TOKEN=<$token> --build-arg OCI_REGION=<$region> .
+docker build --file Dockerfile.ol8 --tag oracle/serverjre:8 --build-arg JDK8_TOKEN=<$token> .
 ```
 
 For the NFTC releases (JDK 24 and 21) the right command is already scripted in `build.sh` so you can alternatively run:

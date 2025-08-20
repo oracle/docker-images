@@ -43,9 +43,9 @@ job_title,
 end_date,
 termination_dt,
 reports_to,
-manager_department_codes,
-manager_department_levels,
-manager_department_titles,
+department_codes,
+department_levels,
+department_titles,
 Description,
 lastupddttm ) AS
 SELECT
