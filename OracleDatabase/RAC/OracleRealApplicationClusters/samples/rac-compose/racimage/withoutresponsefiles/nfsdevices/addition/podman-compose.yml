@@ -1,0 +1,75 @@
+---
+version: "3"
+networks:
+  rac_pub1_nw:
+    external: true
+  rac_priv1_nw:
+    external: true
+  rac_priv2_nw:
+    external: true
+secrets:
+  pwdsecret:
+    external: pwdsecret
+  keysecret:
+    external: keysecret
+volumes:
+  racstorage:
+    external: true
+services:
+  racnodep3:
+    container_name: ${RACNODE3_CONTAINER_NAME}
+    hostname: ${RACNODE3_HOST_NAME}
+    image: ${RAC_IMAGE_NAME}
+    restart: always
+    dns: ${DNS_PUBLIC_IP}
+    dns_search: ${DNS_DOMAIN}
+    shm_size: 4G
+    secrets:
+      - pwdsecret
+      - keysecret
+    volumes:
+      - racstorage:/oradata
+    environment:
+      DNS_SERVERS: ${DNS_PUBLIC_IP}
+      CRS_PRIVATE_IP1: ${RACNODE3_CRS_PRIVATE_IP1}
+      CRS_PRIVATE_IP2: ${RACNODE3_CRS_PRIVATE_IP2}
+      INSTALL_NODE: ${INSTALL_NODE}
+      OP_TYPE: racaddnode
+      EXISTING_CLS_NODE: ${EXISTING_CLS_NODE}
+      CRS_NODES: ${CRS_NODES}
+      SCAN_NAME: ${SCAN_NAME}
+      CRS_ASM_DEVICE_LIST: ${CRS_ASM_DEVICE_LIST}
+      CRS_ASM_DISCOVERY_STRING: "/oradata"
+      INIT_SGA_SIZE: 3G
+      INIT_PGA_SIZE: 2G
+      DB_PWD_FILE: pwdsecret
+      PWD_KEY: keysecret
+      CMAN_HOST: ${CMAN_HOST_NAME}
+      CMAN_PORT: 1521
+      ASM_ON_NAS: True
+      DB_SERVICE: ${DB_SERVICE}
+    sysctls:
+        - kernel.shmall=2097152
+        - kernel.shmmax=8589934592
+        - kernel.shmmni=4096
+        - 'kernel.sem=250 32000 100 128'
+        - 'net.ipv4.conf.eth1.rp_filter=2'
+        - 'net.ipv4.conf.eth2.rp_filter=2'
+    ulimits:
+      rtprio: 99
+    cap_add:
+      - SYS_RESOURCE
+      - NET_ADMIN
+      - SYS_NICE
+      - AUDIT_WRITE
+      - AUDIT_CONTROL
+      - NET_RAW 
+    networks:
+      - rac_pub1_nw
+      - rac_priv1_nw
+      - rac_priv2_nw
+    healthcheck:
+      test: ["CMD", "/bin/python3", "/opt/scripts/startup/scripts/main.py", "--checkracstatus"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}

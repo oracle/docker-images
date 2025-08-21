@@ -1,0 +1,300 @@
+# LICENSE UPL 1.0
+#
+# Copyright (c) 2018,2025 Oracle and/or its affiliates.
+#
+# ORACLE CONTAINERFILES PROJECT
+# --------------------------
+# This is the Containerfile for Oracle Database 19c Release 3 Real Application Clusters
+#
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) LINUX.X64_193000_grid_home.zip
+# (2 LINUX.X64_193000_db_home.zip
+#     Download Oracle Grid 19c Release 3 Enterprise Edition for Linux x64
+#     Download Oracle Database 19c Release 3  Enterprise Edition for Linux x64
+#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Run:
+#      $ docker build -t oracle/database:19c-rac .
+
+
+ARG BASE_OL_IMAGE=oraclelinux:8
+ARG SLIMMING=false
+# Pull base image
+# ---------------
+# hadolint ignore=DL3006,DL3025
+FROM $BASE_OL_IMAGE AS racbase
+ARG SLIMMING=false
+ARG VERSION
+# Labels
+# ------
+LABEL "provider"="Oracle"                                               \
+      "issues"="https://github.com/oracle/docker-images/issues"         \
+      "volume.setup.location1"="/opt/scripts"              \
+      "volume.startup.location1"="/opt/scripts/startup"          \
+      "port.listener"="1521"                                            \
+      "port.oemexpress"="5500"
+
+# Argument to control removal of components not needed after db software installation
+ARG INSTALL_FILE_1="LINUX.X64_193000_grid_home.zip"
+ARG INSTALL_FILE_2="LINUX.X64_193000_db_home.zip"
+ARG DB_EDITION="EE"
+ARG USER="root"
+ARG WORKDIR="/rac-work-dir"
+ARG IGNORE_PREREQ=false
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+# hadolint ignore=DL3044
+ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
+    INSTALL_DIR=/opt/scripts \
+# Grid Env variables
+    GRID_INSTALL_RSP="gridsetup_19c.rsp" \
+    GRID_SW_INSTALL_RSP="grid_sw_install_19c.rsp" \
+    GRID_SETUP_FILE="setupGrid.sh" \
+    INITSH="initsh" \
+    WORKDIR=$WORKDIR \
+    FIXUP_PREQ_FILE="fixupPreq.sh" \
+    INSTALL_GRID_BINARIES_FILE="installGridBinaries.sh" \
+    INSTALL_GRID_PATCH="applyGridPatch.sh" \
+    INVENTORY=/u01/app/oraInventory \
+    INSTALL_FILE_1=$INSTALL_FILE_1 \
+    INSTALL_FILE_2=$INSTALL_FILE_2 \
+    DB_EDITION=$DB_EDITION \
+    ADDNODE_RSP="grid_addnode.rsp"  \
+    SETUPSSH="setupSSH.expect"  \
+    DOCKERORACLEINIT="dockeroracleinit" \
+    GRID_USER_HOME="/home/grid" \
+    ASM_DISCOVERY_DIR="/dev" \
+# RAC DB Env Variables
+    DB_INSTALL_RSP="db_sw_install_19c.rsp" \
+    DBCA_RSP="dbca_19c.rsp" \
+    DB_SETUP_FILE="setupDB.sh" \
+    RUN_FILE="runOracle.sh" \
+    ENABLE_RAC_FILE="enableRAC.sh" \
+    INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
+    GRID_HOME_CLEANUP="GridHomeCleanup.sh" \
+    ORACLE_HOME_CLEANUP="OracleHomeCleanup.sh" \
+    DB_USER="oracle" \
+    GRID_USER="grid" \
+    SLIMMING=$SLIMMING \
+    COMMON_SCRIPTS="/common_scripts" \
+    CHECK_SPACE_FILE="checkSpace.sh" \
+    RESET_FAILED_UNITS="resetFailedUnits.sh" \
+    SET_CRONTAB="setCrontab.sh" \
+    CRONTAB_ENTRY="crontabEntry" \
+    EXPECT="/usr/bin/expect" \
+    BIN="/usr/sbin" \
+   IGNORE_PREREQ=$IGNORE_PREREQ
+
+#############################################
+# -------------------------------------------
+# Start new stage for Non-Slim Image 
+# -------------------------------------------
+#############################################
+
+FROM racbase AS rac-image-slim-false
+ARG SLIMMING
+ARG VERSION
+ENV CV_ASSUME_DISTID=OEL7.8
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=/u01/app/19c/grid \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=/u01/app/oracle/product/19c/dbhome_1
+# Use second ENV so that variable get substituted
+# hadolint ignore=DL3044
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     SCRIPT_DIR=$INSTALL_DIR/startup \
+     RAC_SCRIPTS_DIR="scripts" \
+     GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \
+     DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
+     GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
+     DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
+
+# Copy binaries
+# -------------
+# COPY Binaries
+COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
+
+# Setup Scripts
+COPY $VERSION/$RUN_FILE $VERSION/$ADDNODE_RSP $VERSION/$SETUPSSH $VERSION/$GRID_INSTALL_RSP $VERSION/$DBCA_RSP $VERSION/$INITSH  $SCRIPT_DIR/
+
+COPY $RAC_SCRIPTS_DIR $SCRIPT_DIR/scripts
+# hadolint ignore=SC2086
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GRID_SETUP_FILE && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new stage for slim image
+# -------------------------------------------
+#############################################
+FROM racbase AS rac-image-slim-true
+ARG SLIMMING
+ARG VERSION
+ENV CV_ASSUME_DISTID=OEL7.8
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     SCRIPT_DIR=$INSTALL_DIR/startup \
+     RAC_SCRIPTS_DIR="scripts"
+
+# Copy binaries
+# -------------
+# COPY Binaries
+COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
+
+# Setup Scripts
+COPY $VERSION/$RUN_FILE $VERSION/$SETUPSSH $VERSION/$INITSH $SCRIPT_DIR/
+
+COPY $RAC_SCRIPTS_DIR $SCRIPT_DIR/scripts
+# hadolint ignore=SC2086
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GRID_SETUP_FILE && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
+    sync
+
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the grid and DB
+# -------------------------------------------
+#############################################
+# hadolint ignore=DL3006
+FROM rac-image-slim-${SLIMMING} AS builder
+ARG SLIMMING
+# hadolint ignore=DL3006
+ARG VERSION
+# Linux Env Variable
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=/u01/app/19c/grid \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=/u01/app/oracle/product/19c/dbhome_1
+COPY $VERSION/$INSTALL_GRID_BINARIES_FILE $VERSION/$GRID_SW_INSTALL_RSP $VERSION/$DB_SETUP_FILE $VERSION/$DB_INSTALL_RSP $VERSION/$INSTALL_DB_BINARIES_FILE $VERSION/$ENABLE_RAC_FILE $VERSION/$GRID_HOME_CLEANUP $VERSION/$ORACLE_HOME_CLEANUP $VERSION/$INSTALL_FILE_1* $VERSION/$INSTALL_FILE_2*  $INSTALL_SCRIPTS/
+# hadolint ignore=SC2086
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage
+
+## Install software if SLIMMING is false
+# hadolint ignore=SC2086
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+      sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+      sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+      su  $GRID_USER -c "$INSTALL_DIR/install/$INSTALL_GRID_BINARIES_FILE EE $PATCH_NUMBER" && \
+      $INVENTORY/orainstRoot.sh && \
+      $GRID_HOME/root.sh && \
+      su  $DB_USER  -c  "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
+      su  $DB_USER  -c  "$INSTALL_DIR/install/$ENABLE_RAC_FILE" && \
+      $INVENTORY/orainstRoot.sh && \
+      $DB_HOME/root.sh && \
+      su  $GRID_USER -c "$INSTALL_SCRIPTS/$GRID_HOME_CLEANUP" && \
+      su  $DB_USER -c "$INSTALL_SCRIPTS/$ORACLE_HOME_CLEANUP" && \
+      rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
+      :; \
+    fi
+# hadolint ignore=SC3014
+RUN if [ "${SLIMMING}x" == 'truex' ]; then \
+      mkdir /u01 && \
+      :; \
+    fi
+# hadolint ignore=SC2086
+RUN rm -f $INSTALL_DIR/install/* && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new layer for grid & database runtime
+# -------------------------------------------
+#############################################
+# hadolint ignore=DL3006
+FROM rac-image-slim-${SLIMMING} AS final
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=/u01/app/19c/grid \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=/u01/app/oracle/product/19c/dbhome_1
+RUN rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage
+# hadolint ignore=DL3006
+COPY  --from=builder /u01 /u01
+# hadolint ignore=SC2086
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+       $INVENTORY/orainstRoot.sh && \
+       $GRID_HOME/root.sh && \
+       $DB_HOME/root.sh && \
+       chmod 666 $SCRIPT_DIR/*.rsp && \
+       :; \
+    fi && \ 
+    $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
+    sync && \
+    chmod 755 $SCRIPT_DIR/*.sh && \
+    chmod 755 $SCRIPT_DIR/scripts/*.py && \
+    chmod 755 $SCRIPT_DIR/scripts/cmdExec && \
+    chmod 755 $SCRIPT_DIR/scripts/*.expect && \
+    echo "nohup $SCRIPT_DIR/runOracle.sh &" >> /etc/rc.local && \
+    rm -f /etc/rc.d/init.d/oracle-database-preinstall-19c-firstboot && \
+    chmod +x /etc/rc.d/rc.local  && \
+    cp $SCRIPT_DIR/$INITSH /usr/bin/$INITSH && \
+    setcap 'cap_net_admin,cap_net_raw+ep' /usr/bin/ping && \
+    chmod 755 /usr/bin/$INITSH && \
+    rm -f /etc/sysctl.d/99-oracle-database-preinstall-19c-sysctl.conf && \
+    rm -f /etc/sysctl.d/99-sysctl.conf && \
+    rm -f $INSTALL_DIR/install/* && \
+    rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
+    sync
+
+USER ${USER}
+VOLUME ["/common_scripts"]
+WORKDIR $WORKDIR
+
+HEALTHCHECK --interval=2m --start-period=30m \
+   CMD "$SCRIPT_DIR/scripts/main.py --checkracinst=true" >/dev/null || exit 1
+
+# Define default command to start Oracle Grid and RAC Database setup.
+# hadolint ignore=DL3025
+ENTRYPOINT /usr/bin/$INITSH
+################################################################
+# --------------------------------------------------------------
+# Start new stage for base image required by patching/extensions
+# --------------------------------------------------------------
+################################################################
+FROM final AS base
+ARG VERSION
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+ENV GRID_BASE=/u01/app/grid \
+    GRID_HOME=/u01/app/19c/grid \
+    DB_BASE=/u01/app/oracle \
+    DB_HOME=/u01/app/oracle/product/19c/dbhome_1 \
+    SLIMMING=false
+# Use second ENV so that variable get substituted
+# hadolint ignore=DL3044
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     SCRIPT_DIR=$INSTALL_DIR/startup \
+     RAC_SCRIPTS_DIR="scripts" \
+     GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \
+     DB_PATH=$DB_HOME/bin:$DB_HOME/OPatch/:$DB_HOME/perl/bin:/usr/sbin:/bin:/sbin \
+     GRID_LD_LIBRARY_PATH=$GRID_HOME/lib:/usr/lib:/lib \
+     DB_LD_LIBRARY_PATH=$DB_HOME/lib:/usr/lib:/lib
+COPY $VERSION/$ADDNODE_RSP $VERSION/$GRID_INSTALL_RSP $VERSION/$DBCA_RSP $SCRIPT_DIR/

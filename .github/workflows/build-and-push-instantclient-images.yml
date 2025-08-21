@@ -7,6 +7,7 @@ on:
     paths:
       - 'OracleInstantClient/*/19/*'
       - 'OracleInstantClient/*/21/*'
+      - 'OracleInstantClient/*/23/*'
       - '.github/workflows/build-and-push-instantclient-images.yml'
   workflow_dispatch:
 
@@ -39,8 +40,8 @@ jobs:
             git diff --name-only '${{ github.event.before }}..${{ github.event.after }}' > "${changes}"
             if grep -q build-and-push-instantclient-images.yml "${changes}"; then
               echo "PUSH: Action updated: rebuilding all images"
-              ol="oraclelinux7 oraclelinux8"
-              ic="19 21"
+              ol="oraclelinux7 oraclelinux8 oraclelinux9"
+              ic="19 21 23"
             else
               echo "PUSH: Rebuilding changed images only"
               if grep -q oraclelinux7 "${changes}"; then
@@ -49,17 +50,23 @@ jobs:
               if grep -q oraclelinux8 "${changes}"; then
                 ol="${ol} oraclelinux8"
               fi
+              if grep -q oraclelinux9 "${changes}"; then
+                ol="${ol} oraclelinux9"
+              fi
               if grep -q /19/ "${changes}"; then
                 ic="19"
               fi
               if grep -q /21/ "${changes}"; then
                 ic="${ic} 21"
               fi
+              if grep -q /23/ "${changes}"; then
+                ic="${ic} 23"
+              fi
             fi
           else
             echo "MANUAL: Rebuilding all"
-            ol='oraclelinux7 oraclelinux8'
-            ic="19 21"
+            ol="oraclelinux7 oraclelinux8 oraclelinux9"
+            ic="19 21 23"
           fi
           echo "Rebuilding: ${ol} ${ic}"
           echo "ol=${ol}" >> $GITHUB_OUTPUT
@@ -81,6 +88,12 @@ jobs:
           do
             for i in ${{ steps.linux-version.outputs.ic }}
             do
+              if [[ ${o} = "oraclelinux7" && ${i} = "23" ]]; then
+                continue
+              fi
+              if [[ ${o} = "oraclelinux9" && ${i} = "21" ]]; then
+                continue
+              fi
               docker build --tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i} OracleInstantClient/${o}/${i}
             done
           done
@@ -91,6 +104,12 @@ jobs:
           do
             for i in ${{ steps.linux-version.outputs.ic }}
             do
+              if [[ ${o} = "oraclelinux7" && ${i} = "23" ]]; then
+                continue
+              fi
+              if [[ ${o} = "oraclelinux9" && ${i} = "21" ]]; then
+                continue
+              fi
               docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i}
             done
           done

@@ -10,6 +10,11 @@ jobs:
     name: Lint new or modified files
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
     steps:
       - name: Checkout Git repository with history
         uses: actions/checkout@v4
@@ -20,7 +25,7 @@ jobs:
         run: cat .github/super-linter.env >> "$GITHUB_ENV"
 
       - name: Run Super Linter
-        uses: github/super-linter/slim@v5
+        uses: github/super-linter/slim@v7
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

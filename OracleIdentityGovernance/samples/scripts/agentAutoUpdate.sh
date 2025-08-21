@@ -23,10 +23,16 @@ mkdir -p newpackage || true
 
 cd newpackage || exit
 #Download upgrade cli
-wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/fFvMAmluNZpv4P5dCzH7VsyJUYra5AMxhLiBSOa3AZuul4KtycxDuJtyUyWaweU4/n/idjypktnxhrf/b/agcs_ido_agent_updater/o/idm-agcs-agent-cli-upgrade.jar
+wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/JcqrvD9KJiJKJd_2o6LoHhJU812gb-9rh2bOAYI_2t7nJP7eBxaLXDnWShQg0ds9/n/idjypktnxhrf/b/agcs_ido_agent_updater/o/idm-agcs-agent-cli-upgrade.jar
 
 #Get Agent Package
 agentVersion=$(unzip -q -c  "$1"/data/agent/agent-lcm/idm-agcs-agent-lcm.jar META-INF/MANIFEST.MF | grep "Agent-Version: " | awk '{print $2}' | tr -d '\n' | tr -d '\r')
+
+# shellcheck disable=SC3028,SC3007
+r=$[ $RANDOM % 121 ]
+# shellcheck disable=SC3007
+sleep $[r]
+
 if [ -f "$1"/cacerts ]
  then
    java \
@@ -44,18 +50,33 @@ if [ -f "$1"/cacerts ]
    -co "$1"/data/conf/config.properties \
    -cv "$agentVersion"
  else
-   java \
-   -DidoConfig.logDir="$1"/data/logs \
-   -DidoConfig.metricsDir="$1"/newpackage \
-   -DidoConfig.walletDir="$1"/newpackage \
-   -DidoConfig.workDir="$1"/newpackage \
-   -cp idm-agcs-agent-cli-upgrade.jar \
-   com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
-   --config "$1"/data/conf/config.json \
-   ido autoRunUpdate \
-   -ip "$1" \
-   -co "$1"/data/conf/config.properties \
-   -cv "$agentVersion"
+   if [ -f "$1"/data/conf/config.properties ]
+    then
+      java \
+      -DidoConfig.logDir="$1"/data/logs \
+      -DidoConfig.metricsDir="$1"/newpackage \
+      -DidoConfig.walletDir="$1"/newpackage \
+      -DidoConfig.workDir="$1"/newpackage \
+      -cp idm-agcs-agent-cli-upgrade.jar \
+      com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
+      --config "$1"/data/conf/config.json \
+      ido autoRunUpdate \
+      -ip "$1" \
+      -co "$1"/data/conf/config.properties \
+      -cv "$agentVersion"
+    else
+      java \
+      -DidoConfig.logDir="$1"/data/logs \
+      -DidoConfig.metricsDir="$1"/newpackage \
+      -DidoConfig.walletDir="$1"/newpackage \
+      -DidoConfig.workDir="$1"/newpackage \
+      -cp idm-agcs-agent-cli-upgrade.jar \
+      com.oracle.idm.agcs.agent.cli.AgentUpdateMain \
+      --config "$1"/data/conf/config.json \
+      ido autoRunUpdate \
+      -ip "$1" \
+      -cv "$agentVersion"
+   fi
 fi
 
 # shellcheck disable=SC2181
