@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -11,7 +12,6 @@
 # 
 
 EDITION=$1
-# shellcheck disable=SC2034
 PATCH_NUMBER=$2
 
 # Check whether edition has been passed on

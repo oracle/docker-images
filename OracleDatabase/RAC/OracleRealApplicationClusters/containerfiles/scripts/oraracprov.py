@@ -4,7 +4,7 @@
 # Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-############################
+##############################
 
 """
  This file contains to the code call different classes objects based on setup type
@@ -66,7 +66,12 @@ class OraRacProv:
           for node in crs_nodes.split(","):
               self.clu_checks(node)
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-       retcode1=self.ocvu.check_home(None,dbhome,dbuser)
+      #  retcode1=self.ocvu.check_home(None,dbhome,dbuser)
+       retcode=1
+       if self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
+         retcode1=self.ocvu.check_db_home_has(None,dbhome,dbuser)
+       else:
+         retcode1=self.ocvu.check_db_home(None,dbhome,dbuser)
        status=self.ocommon.check_rac_installed(retcode1)
        self.ocommon.reset_os_password(dbuser)
        if not status:
@@ -132,7 +137,15 @@ class OraRacProv:
       # hostname=self.ocommon.get_public_hostname()  
        retcode1=self.ocvu.check_ohasd(hostname)
        retcode2=self.ocvu.check_asm(hostname)
-       retcode3=self.ocvu.check_clu(hostname,None)
+       retcode3=1
+       if self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
+          self.ocommon.log_info_message("Start check_clu() CRS_GPC is set. Check if oracle restart crs is configured properly",self.file_name) 
+          retcode3=self.ocvu.check_clu(hostname,None,True)
+          self.ocommon.log_info_message("End check_clu()",self.file_name) 
+       else:
+          self.ocommon.log_info_message("Start check_clu() Check if crs is configued properly",self.file_name) 
+          retcode3=self.ocvu.check_clu(hostname,None,None)
+          self.ocommon.log_info_message("End check_clu()",self.file_name) 
 
        if retcode1 == 0:
           msg="Cluvfy ohasd check passed!"
@@ -200,6 +213,7 @@ class OraRacProv:
        lang=self.ora_env_dict["LANGUAGE"] if self.ocommon.check_key("LANGUAGE",self.ora_env_dict) else "en"
        edition= self.ora_env_dict["DB_EDITION"] if self.ocommon.check_key("DB_EDITION",self.ora_env_dict) else "EE"
        ignoreflag= " -ignorePrereq " if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict) else " "
+       prereqfailure = " -ignorePrereqFailure " if self.ocommon.check_key("IGNORE_DB_PREREQS", self.ora_env_dict) else " "
 
        copyflag=" -noCopy "
        if not self.ocommon.check_key("COPY_DB_SOFTWARE",self.ora_env_dict):
@@ -214,7 +228,7 @@ class OraRacProv:
        mythreads=[]
        for node in pub_nodes.split(" "):
           self.ocommon.log_info_message("Running DB Sw install on node " + node,self.file_name)
-          thread=Process(target=self.db_sw_install_on_node,args=(dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag))
+          thread=Process(target=self.db_sw_install_on_node,args=(dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag,prereqfailure))
           #thread.setDaemon(True)
           mythreads.append(thread)
           thread.start()
@@ -228,14 +242,21 @@ class OraRacProv:
 
        #self.manage_thread()
 
-   def db_sw_install_on_node(self,dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag):
+   def db_sw_install_on_node(self,dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag,prereqfailure):
        """
        Perform the db_install
        """
        runCmd=""
+       export_line=""
        if self.ocommon.check_key("APPLY_RU_LOCATION",self.ora_env_dict):
           ruLoc=self.ora_env_dict["APPLY_RU_LOCATION"]
+         #  runCmd='''runInstaller -applyRU "{0}/37960098" -applyOneOffs "{0}/37962946"'''.format(self.ora_env_dict["APPLY_RU_LOCATION"])
           runCmd='''runInstaller -applyRU "{0}"'''.format(self.ora_env_dict["APPLY_RU_LOCATION"])
+          oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+          version = oraversion.split(".", 1)[0].strip()
+          self.ocommon.log_info_message("disk" + version, self.file_name)
+          # Add CV_ASSUME_DISTID only if Oracle version is 19
+          export_line = "export CV_ASSUME_DISTID=OL8; " if int(version) == 19 else ""
        else:
           runCmd='''runInstaller '''
           
@@ -243,25 +264,53 @@ class OraRacProv:
        if self.ocommon.check_key("DEBUG_MODE",self.ora_env_dict):
           dbgCmd='''{0} -debug '''.format(runCmd)
           runCmd=dbgCmd
-          
-       rspdata='''su - {0} -c "ssh {17} {1}/{16} {18} -waitforcompletion {15} -silent 
-              oracle.install.option=INSTALL_DB_SWONLY
-              ORACLE_HOSTNAME={2}
-              UNIX_GROUP_NAME={3}
-              oracle.install.db.CLUSTER_NODES={4}
-              INVENTORY_LOCATION={5}
-              SELECTED_LANGUAGES={6}
-              ORACLE_HOME={7}
-              ORACLE_BASE={8}
-              oracle.install.db.InstallEdition={9}
-              oracle.install.db.OSDBA_GROUP={10}
-              oracle.install.db.OSBACKUPDBA_GROUP={11}
-              oracle.install.db.OSDGDBA_GROUP={12}
-              oracle.install.db.OSKMDBA_GROUP={13}
-              oracle.install.db.OSRACDBA_GROUP={14}
-              SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
-              DECLINE_SECURITY_UPDATES=true"'''.format(dbuser,dbhome,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,runCmd,node,ignoreflag)
-       cmd=rspdata.replace('\n'," ")  
+       rspdata=""
+      
+       if self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
+         rspdata = '''su - {0} -c "ssh {17} '{18}{1}/{16} {19} -waitforcompletion {15} -silent
+            oracle.install.option=INSTALL_DB_SWONLY
+            ORACLE_HOSTNAME={2}
+            UNIX_GROUP_NAME={3}
+            INVENTORY_LOCATION={5}
+            SELECTED_LANGUAGES={6}
+            ORACLE_HOME={7}
+            ORACLE_BASE={8}
+            oracle.install.db.InstallEdition={9}
+            oracle.install.db.OSDBA_GROUP={10}
+            oracle.install.db.OSBACKUPDBA_GROUP={11}
+            oracle.install.db.OSDGDBA_GROUP={12}
+            oracle.install.db.OSKMDBA_GROUP={13}
+            oracle.install.db.OSRACDBA_GROUP={14}
+            SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+            DECLINE_SECURITY_UPDATES=true'"'''.format(
+            dbuser, dbhome, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase,
+            edition, osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, runCmd, node, export_line, ignoreflag, prereqfailure
+         )
+
+       else:
+         rspdata = '''su - {0} -c "ssh {17} '{18}{1}/{16} {19} -waitforcompletion {15} -silent
+            oracle.install.option=INSTALL_DB_SWONLY
+            ORACLE_HOSTNAME={2}
+            UNIX_GROUP_NAME={3}
+            oracle.install.db.CLUSTER_NODES={4}
+            INVENTORY_LOCATION={5}
+            SELECTED_LANGUAGES={6}
+            ORACLE_HOME={7}
+            ORACLE_BASE={8}
+            oracle.install.db.InstallEdition={9}
+            oracle.install.db.OSDBA_GROUP={10}
+            oracle.install.db.OSBACKUPDBA_GROUP={11}
+            oracle.install.db.OSDGDBA_GROUP={12}
+            oracle.install.db.OSKMDBA_GROUP={13}
+            oracle.install.db.OSRACDBA_GROUP={14}
+            SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+            DECLINE_SECURITY_UPDATES=true'"'''.format(
+            dbuser, dbhome, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase,
+            edition, osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, runCmd, node, export_line, ignoreflag, prereqfailure
+         )
+
+       cmd = rspdata.replace('\n', ' ')
+
        #dbswrsp="/tmp/dbswrsp.rsp" 
        #self.ocommon.write_file(dbswrsp,rspdata)
        #if os.path.isfile(dbswrsp):
@@ -418,9 +467,14 @@ class OraRacProv:
       if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict):
          prereq=" -ignorePreReqs " 
       dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
+      oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+      version = oraversion.split(".", 1)[0].strip()
+      self.ocommon.log_info_message("disk" + version, self.file_name)
+      export_line = "export CV_ASSUME_DISTID=OL8;" if int(version) == 19 else ""
+      dbca_validate_option = "-J-Doracle.assistants.dbca.validate.ConfigurationParams=false" if int(version) == 19 else ""
       if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
          dbrsp=self.check_responsefile()
-         cmd='''su - {0} -c "{1}/bin/dbca  -silent {3} -createDatabase -responseFile {2}"'''.format(dbuser,dbhome,dbrsp,prereq)
+         cmd = '''su - {0} -c "{1}{2}/bin/dbca  -silent {3} {4} -createDatabase -responseFile {5}"'''.format(dbuser, export_line, dbhome, prereq, dbca_validate_option, dbrsp)
       else:
          cmd=self.prepare_db_cmd() 
 
@@ -458,30 +512,56 @@ class OraRacProv:
        arcmode=self.ora_env_dict["ENABLE_ARCHIVELOG"] if self.ocommon.check_key("ENABLE_ARCHIVELOG",self.ora_env_dict) else  "true" 
        pdbsettings=self.get_pdb_params()
        initparams=self.get_init_params()
-       if self.ocommon.check_key("SETUP_TDE_WALLET",self.ora_env_dict):
-          tdewallet='''-configureTDE true -tdeWalletPassword HIDDEN_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
+      #  if self.ocommon.check_key("SETUP_TDE_WALLET",self.ora_env_dict):
+      #     tdewallet='''-configureTDE true -tdeWalletPassword HIDDEN_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
        #memorypct=self.get_memorypct()
+       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+       self.ocommon.log_info_message("oraversion: " + oraversion, self.file_name)
 
-       rspdata='''su - {0} -c "{1}/bin/dbca -silent {15} -createDatabase  \
-       -templateName General_Purpose.dbc \
-       -gdbname {2} \
-       -createAsContainerDatabase {3} \
-       -sysPassword HIDDEN_STRING \
-       -systemPassword HIDDEN_STRING \
-       -datafileDestination {4} \
-       -storageType {5} \
-       -characterSet {6} \
-       -redoLogFileSize {7} \
-       -databaseType {8} \
-       -databaseConfigType {9} \
-       -nodelist {10} \
-       -useOMF true \
-       {12} \
-       {13} \
-       {16} \
-       -enableArchive {14}"'''.format(dbuser,dbhome,dbname,cdbflag,dbfiledest,stype,charset,redosize,dbtype,dbctype,crs_nodes,dbname,pdbsettings,initparams,arcmode,prereq,tdewallet)
-       cmd='\n'.join(line.lstrip() for line in rspdata.splitlines())
+       version = oraversion.split(".", 1)[0].strip()
+       self.ocommon.log_info_message("parsed version: " + version, self.file_name)
 
+       tdewallet = ""  # default to empty
+
+       if self.ocommon.check_key("SETUP_TDE_WALLET", self.ora_env_dict):
+         if int(version) < 21:
+            tdewallet = ""
+         else:
+            tdewallet = '''-configureTDE true -tdeWalletPassword HIDDEN_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
+
+
+       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+       version = oraversion.split(".", 1)[0].strip()
+       self.ocommon.log_info_message("disk" + version, self.file_name)
+
+       # Conditionally set the export and additional dbca options if version is 19
+       export_line = "export CV_ASSUME_DISTID=OL8;" if int(version) == 19 else ""
+       dbca_validate_option = "-J-Doracle.assistants.dbca.validate.ConfigurationParams=false" if int(version) == 19 else ""
+
+       rspdata = '''su - {0} -c "{17}{1}/bin/dbca -silent {15} -createDatabase  \
+         -templateName General_Purpose.dbc \
+         -gdbname {2} \
+         -createAsContainerDatabase {3} \
+         -sysPassword HIDDEN_STRING \
+         -systemPassword HIDDEN_STRING \
+         -datafileDestination {4} \
+         -storageType {5} \
+         -characterSet {6} \
+         -redoLogFileSize {7} \
+         -databaseType {8} \
+         -databaseConfigType {9} \
+         -nodelist {10} \
+         -useOMF true \
+         {12} \
+         {13} \
+         {18} \
+         {16} \
+         -enableArchive {14}"'''.format(
+         dbuser, dbhome, dbname, cdbflag, dbfiledest, stype, charset, redosize,
+         dbtype, dbctype, crs_nodes, dbname, pdbsettings, initparams, arcmode,
+         prereq, tdewallet, export_line, dbca_validate_option)
+
+       cmd = '\n'.join(line.lstrip() for line in rspdata.splitlines())
        return cmd
    
    def get_pdb_params(self):

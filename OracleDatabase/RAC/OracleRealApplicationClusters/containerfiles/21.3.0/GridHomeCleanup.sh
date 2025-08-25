@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2019,2025 Oracle and/or its affiliates.
@@ -11,9 +12,9 @@
 #
 
 # Image Cleanup Script
-# shellcheck disable=SC1090
+
 source /home/"${GRID_USER}"/.bashrc
-# shellcheck disable=SC2034
+
 ORACLE_HOME=${GRID_HOME}
 
 rm -rf /u01/app/grid/*

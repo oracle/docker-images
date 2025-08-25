@@ -179,7 +179,7 @@ class OraSetupSSH:
            sshcmd_output, sshcmd_error, sshcmd_retcode = self.ocommon.execute_cmd(sshcmd, None, None)
            self.ocommon.check_os_err(sshcmd_output, sshcmd_error, sshcmd_retcode, False)
         else:
-          cmd='''su - {0} -c "echo \"{4}\" | {1}/{2} comp admprv -n {3} -o user_equiv -fixup"'''.format(user,gihome,sshscr,new_nodes,'HIDDEN_STRING')
+          cmd='''su - {0} -c "echo \"{4}\" | {1}/{2} comp admprv -n {3} -o user_equiv -fixup"'''.format(user,gihome,sshscr,cls_nodes,'HIDDEN_STRING')
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,None)
 

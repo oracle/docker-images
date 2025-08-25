@@ -56,18 +56,23 @@ class OraRacDel:
        if self.ocommon.check_key("EXISTING_CLS_NODE",self.ora_env_dict):
           if len(self.ora_env_dict["EXISTING_CLS_NODE"].split(",")) == 0:
              self.ora_env_dict=self.add_key("LAST_CRS_NODE","true",self.ora_env_dict)
- 
+       if self.ocommon.detect_k8s_env():
+         if self.ocommon.check_key("EXISTING_CLS_NODE", self.ora_env_dict):
+            node = self.ora_env_dict["EXISTING_CLS_NODE"].split(",")[0]
+            self.ocommon.stop_scan_lsnr(giuser, gihome, hostname)
+            self.ocommon.stop_scan(giuser, gihome, hostname)
+
+       # Remove Oracle stack from node to be deleted
        self.del_dbinst_main(hostname)
        self.del_dbhome_main(hostname)
        self.del_gihome_main(hostname)
        self.del_ginode(hostname)
+
        if self.ocommon.detect_k8s_env():
-          if self.ocommon.check_key("EXISTING_CLS_NODE",self.ora_env_dict):
-            node=self.ora_env_dict["EXISTING_CLS_NODE"].split(",")[0]
-            self.ocommon.update_scan(giuser,gihome,None,node)
-            self.ocommon.start_scan(giuser,gihome,node)
-            self.ocommon.update_scan_lsnr(giuser,gihome,node)
-       
+         if self.ocommon.check_key("EXISTING_CLS_NODE", self.ora_env_dict):
+            node = self.ora_env_dict["EXISTING_CLS_NODE"].split(",")[0]
+            self.ocommon.update_scan(giuser, gihome, None, node)
+            self.ocommon.update_scan_lsnr(giuser, gihome, node)
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -91,7 +96,7 @@ class OraRacDel:
        hostname=self.ocommon.get_public_hostname() 
        retcode1=self.ocvu.check_ohasd(hostname)
        retcode2=self.ocvu.check_asm(hostname)
-       retcode3=self.ocvu.check_clu(hostname,None)
+       retcode3=self.ocvu.check_clu(hostname,None,None)
 
        if retcode1 == 0:
           msg="Cluvfy ohasd check passed!"
@@ -152,7 +157,7 @@ class OraRacDel:
        node=""
        nodeflag=False
        for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True)
+           retcode3=self.ocvu.check_clu(cnode,True,None)
            if retcode3 == 0:
               node=cnode
               nodeflag=True
@@ -258,7 +263,7 @@ class OraRacDel:
        node=""
        nodeflag=False
        for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True)
+           retcode3=self.ocvu.check_clu(cnode,True,None)
            if retcode3 == 0:
               node=cnode
               nodeflag=True

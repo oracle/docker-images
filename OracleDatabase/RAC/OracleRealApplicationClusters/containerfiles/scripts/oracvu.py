@@ -4,7 +4,7 @@
 # Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-#############################
+############################
 
 """
  This file contains to the code call different classes objects based on setup type
@@ -181,7 +181,7 @@ class OraCvu:
        self.ocommon.check_os_err(output,error,retcode,None)
        return retcode
 
-   def check_clu(self,node,sshflag):
+   def check_clu(self,node,sshflag,crsflag):
        """
        This function check if crs is configued properly
        """
@@ -197,7 +197,11 @@ class OraCvu:
        if sshflag:
           crs_nodes=" -n " + node
           cmd='''su - {0} -c "ssh {3} '{1}/bin/cluvfy comp clumgr {2}'"'''.format(giuser,gihome,crs_nodes,node)
-           
+
+       if crsflag:
+          crs_nodes=" -n " + node
+          cmd='''su - {0} -c "ssh {3} '{1}/bin/cluvfy stage -post hacfg'"'''.format(giuser,gihome,crs_nodes,node)
+
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,None)
        return retcode
@@ -258,4 +262,60 @@ class OraCvu:
           self.ocommon.check_os_err(output,error,retcode,None)
        else:
           self.ocommon.check_os_err(output,error,retcode,None)
+
+   def check_db_home(self, node, db_home, user):
+      """
+      This function checks if the Oracle Database home is installed correctly
+      """
+      giuser, gihome, gbase, oinv = self.ocommon.get_gi_params()
+      oracle_home = db_home
+
+      if not node:
+         crs_nodes = " -allnodes "
+      else:
+         crs_nodes = " -n " + node
+
+      cvufile = '''{0}/bin/cluvfy'''.format(gihome)
+      if not self.ocommon.check_file(cvufile, True, None, None):
+         return 1
+
+      cmd = '''su - {0} -c "{1}/bin/cluvfy stage -post dbinst -d {3}"'''.format(user, gihome, node, db_home)
+      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+      if retcode == 0:
+         return 0
+      else:
+         return 1
+   
+   def check_db_home_has(self, node, db_home, user):
+      """
+      This function checks if the Oracle Database home is installed correctly
+      by running OPatch lsinventory on each node individually.
+      """
+
+      # Get GI params in case needed later
+      giuser, gihome, gbase, oinv = self.ocommon.get_gi_params()
+
+      if not node:
+         import socket
+         node_list = [socket.gethostname()]
+      else:
+         node_list = [n.strip() for n in node.split(',')]
+
+      for each_node in node_list:
+         self.ocommon.log_info_message("Checking DB home inventory on node: " + each_node, self.file_name)
+
+         # Build and run the OPatch lsinventory command remotely
+         cmd = '''su - {0} -c "ssh {1} '{2}/OPatch/opatch lsinventory'"'''.format(user, each_node, db_home)
+         output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+
+         # Check for execution success
+         if retcode != 0 or not output or "Oracle Home" not in output:
+               self.ocommon.log_error_message("OPatch lsinventory failed or output invalid on node: " + each_node, self.file_name)
+               return 1
+
+      return 0
+
+
+
+
 

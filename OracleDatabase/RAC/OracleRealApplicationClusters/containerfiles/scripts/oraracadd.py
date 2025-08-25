@@ -4,7 +4,7 @@
 # Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-############################
+#############################
 
 """
  This file contains to the code call different classes objects based on setup type
@@ -115,7 +115,7 @@ class OraRacAdd:
        hostname=self.ocommon.get_public_hostname()
        retcode1=self.ocvu.check_ohasd(hostname)
        retcode2=self.ocvu.check_asm(hostname)
-       retcode3=self.ocvu.check_clu(hostname,None)
+       retcode3=self.ocvu.check_clu(hostname,None,None)
        if retcode1 == 0:
           msg="Cluvfy ohasd check passed!"
           self.ocommon.log_info_message(msg,self.file_name)
@@ -167,7 +167,7 @@ class OraRacAdd:
        nodeflag=False
        cmd=None
        for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True)
+           retcode3=self.ocvu.check_clu(cnode,True,None)
            if retcode3 == 0:
               node=cnode
               nodeflag=True
@@ -211,7 +211,7 @@ class OraRacAdd:
        node=""
        nodeflag=False
        for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True)
+           retcode3=self.ocvu.check_clu(cnode,True,None)
            if retcode3 == 0:
               node=cnode
               nodeflag=True
