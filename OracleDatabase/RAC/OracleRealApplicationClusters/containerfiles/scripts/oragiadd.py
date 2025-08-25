@@ -89,6 +89,10 @@ class OraGIAdd:
                self.ocommon.start_scan(giuser,gihome,pubhostname)
                self.ocommon.update_scan_lsnr(giuser,gihome,pubhostname)
                self.ocommon.start_scan_lsnr(giuser,gihome,pubhostname)
+           if self.ocommon.check_key("ADD_CDP",self.ora_env_dict):
+              self.ocommon.log_info_message("Start addcdp()",self.file_name)
+              self.addcdp()
+              self.ocommon.log_info_message("End addcdp()",self.file_name)  
          ct = datetime.datetime.now()
          ets = ct.timestamp()
          totaltime=ets - bts
@@ -131,7 +135,7 @@ class OraGIAdd:
        self.ocommon.log_info_message("Performing CVU checks before DB home installation to make sure clusterware is up and running",self.file_name)
        retcode1=self.ocvu.check_ohasd(hostname)
        retcode2=self.ocvu.check_asm(hostname)
-       retcode3=self.ocvu.check_clu(hostname,None)
+       retcode3=self.ocvu.check_clu(hostname,None,None)
 
        if retcode1 == 0:
           msg="Cluvfy ohasd check passed!"
@@ -185,7 +189,7 @@ class OraGIAdd:
        nodeflag=False
        existing_crs_nodes=self.ocommon.get_existing_clu_nodes(True)
        for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True)
+           retcode3=self.ocvu.check_clu(cnode,True,None)
            if retcode3 == 0:
               node=cnode
               nodeflag=True
@@ -239,7 +243,7 @@ class OraGIAdd:
        nodeflag=False
        existing_crs_nodes=self.ocommon.get_existing_clu_nodes(True)
        for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True)
+           retcode3=self.ocvu.check_clu(cnode,True,None)
            if retcode3 == 0:
               node=cnode
               nodeflag=True
@@ -253,36 +257,51 @@ class OraGIAdd:
 
        version=oraversion.split(".",1)[0].strip() 
        if int(version) < 23:
-         rspdata='''
-           oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{3} 
-           oracle.install.option=CRS_ADDNODE
-           ORACLE_BASE={0}
-           INVENTORY_LOCATION={1}
-           oracle.install.asm.OSDBA=asmdba
-           oracle.install.asm.OSOPER=asmoper
-           oracle.install.asm.OSASM=asmadmin
-           oracle.install.crs.config.clusterNodes={2}
-           oracle.install.crs.rootconfig.configMethod=ROOT
-           oracle.install.asm.configureAFD=false
-           oracle.install.crs.rootconfig.executeRootScript=false
-           oracle.install.crs.configureRHPS=false
-         '''.format(obase,invloc,clunodes,oraversion,"false")
-#        fdata="\n".join([s for s in rspdata.split("\n") if s])
-       else:
-         rspdata=''' 
-           oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{3}
-           oracle.install.option=CRS_ADDNODE
-           ORACLE_BASE={0}
-           INVENTORY_LOCATION={1}
-           OSDBA=asmdba
-           OSOPER=asmoper
-           OSASM=asmadmin
-           clusterNodes={2}
-           configMethod=ROOT
-           configureAFD=false
-           executeRootScript=false
-         '''.format(obase,invloc,clunodes,oraversion,"false")
+         rspdata = '''
+            oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{3} 
+            oracle.install.option=CRS_ADDNODE
+            ORACLE_BASE={0}
+            INVENTORY_LOCATION={1}
+            oracle.install.asm.OSDBA=asmdba
+            oracle.install.asm.OSOPER=asmoper
+            oracle.install.asm.OSASM=asmadmin
+            oracle.install.crs.config.clusterNodes={2}
+            oracle.install.crs.rootconfig.configMethod=ROOT
+            oracle.install.asm.configureAFD=false
+            oracle.install.crs.rootconfig.executeRootScript=false
+            oracle.install.crs.configureRHPS=false
+         '''.format(obase, invloc, clunodes, oraversion)
 
+       elif int(version) == 26:
+         rspdata = '''
+            oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{3}
+            oracle.install.option=CRS_ADDNODE
+            ORACLE_BASE={0}
+            INVENTORY_LOCATION={1}
+            OSDBA=asmdba
+            OSOPER=asmoper
+            OSASM=asmadmin
+            clusterNodes={2}
+            configMethod=ROOT
+            executeRootScript=false
+         '''.format(obase, invloc, clunodes, oraversion)
+
+       else:
+         rspdata = '''
+            oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{3}
+            oracle.install.option=CRS_ADDNODE
+            ORACLE_BASE={0}
+            INVENTORY_LOCATION={1}
+            OSDBA=asmdba
+            OSOPER=asmoper
+            OSASM=asmadmin
+            clusterNodes={2}
+            configMethod=ROOT
+            executeRootScript=false
+         '''.format(obase, invloc, clunodes, oraversion)
+         major_ver,minor_ver=self.ocommon.get_ora_version()
+         if int(minor_ver) < 9: 
+            rspdata+="configureAFD=false\n"
        self.ocommon.write_file(gridrsp,rspdata)
        if os.path.isfile(gridrsp):
          return gridrsp
@@ -312,3 +331,17 @@ class OraGIAdd:
            cmd='''su - {0}  -c "ssh {1}  sudo {2}/root.sh"'''.format(giuser,node,gihome)
            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
            self.ocommon.check_os_err(output,error,retcode,True) 
+   
+   def addcdp(self):
+      """
+      add cdp to existing RAC cluster
+      """
+      msg=""
+      retvalue=self.ocommon.add_cdp()
+      if not retvalue:
+         msg="New CDP didnt added to existing RAC cluster"
+         self.ocommon.log_info_message(msg,self.file_name)
+         self.ocommon.prog_exit("Error occurred")
+      else:
+         msg="New CDP is now added to the RAC cluster"
+         self.ocommon.log_info_message(msg,self.file_name)

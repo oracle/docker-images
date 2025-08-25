@@ -20,9 +20,14 @@ if [ -n "$region" ]; then
     for proxy in $(printenv | grep -i _proxy | cut -d= -f1); do unset $proxy; done
     echo "-$region" > /etc/yum/vars/ociregion
 fi 
-
+# Refer Doc ID 2760289.1 for error- "libxcrypt-compat compat-openssl11" only available in OL9
+# Error in invoking target 'libasmclntsh19.ohso libasmperl19.ohso client_sharedlib' of makefile '/u01/app/oracle/product/19c/dbhome_1/rdbms/lib/ins_rdbms.mk'.
 mkdir /asmdisks && \
 mkdir /responsefiles  && \
 chmod ug+x /opt/scripts/startup/*.sh && \
-yum -y install systemd oracle-database-preinstall-19c net-tools which zip unzip tar openssl expect e2fsprogs openssh-server vim-minimal passwd which sudo hostname policycoreutils-python-utils python3 lsof rsync && \
+yum -y install systemd oracle-database-preinstall-19c net-tools which zip  \
+unzip tar openssl expect e2fsprogs openssh-server vim-minimal passwd which  \
+sudo hostname policycoreutils-python-utils python3 lsof rsync libxcrypt-devel  \
+libxcrypt  fontconfig libvirt-libs librdmacm libibverbs liblsan libasan \
+libxcrypt-compat compat-openssl11 && \
 yum clean all

@@ -34,7 +34,7 @@ if [ "$GRID_HOME" == "" ]; then
 fi;
 
 # Install Oracle binaries
-# shellcheck disable=SC2115
+
 unzip -q "$INSTALL_SCRIPTS"/"$PATCH" -d "$GRID_USER_HOME"  && \
 rm -f "$INSTALL_SCRIPTS"/"$GRID_PATCH" && \
 cd "$GRID_USER_HOME"/"$PATCH_NUMBER"/"$PATCH_NUMBER" && \

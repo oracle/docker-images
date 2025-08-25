@@ -57,7 +57,7 @@ class OraAsmca:
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
        device_prop,cname,cred,casm,crdbms,asdvm,cuasize=self.get_device_prop(device_prop,type)
-       self.ocommon.log_info_message("device prop set to :" + device_prop + " DG Name: " + cname + " Redudancy : " + cred, self.file_name)
+       self.ocommon.log_info_message("device prop set to :" + device_prop + " DG Name: " + cname + " Redundancy : " + cred, self.file_name)
        cmd='''su - {0} -c "{1}/bin/asmcmd lsdg {2}"'''.format(giuser,gihome,cname)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,None)
@@ -74,7 +74,7 @@ class OraAsmca:
        disk_lst=self.get_device_list(device_list) 
        self.ocommon.log_info_message("The type is set to :" + type,self.file_name)
        device_prop,cname,cred,casm,crdbms,asdvm,cuasize=self.get_device_prop(device_prop,type)
-       self.ocommon.log_info_message("device prop set to :" + device_prop + " DG Name: " + cname + " Redudancy : " + cred, self.file_name) 
+       self.ocommon.log_info_message("device prop set to :" + device_prop + " DG Name: " + cname + " Redundancy : " + cred, self.file_name) 
        cmd='''su - {0} -c "{1}/bin/asmca -silent -createDiskGroup {3} {2}"'''.format(giuser,gihome,disk_lst,device_prop)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,True)
