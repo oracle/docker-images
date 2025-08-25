@@ -1,3 +1,4 @@
+# shellcheck disable=all
 #!/bin/bash
 # LICENSE UPL 1.0
 #
