@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 #############################
 
 # Copyright 2025, Oracle Corporation and/or affiliates.  All rights reserved.
