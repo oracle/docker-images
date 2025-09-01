@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -9,7 +10,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# shellcheck disable=SC2034
+
 EDITION=$1
 
 # Create Directories
@@ -33,7 +34,6 @@ if [ "${SLIMMING}x" != 'truex' ] ; then
       chown -R "${GRID_USER}":oinstall "$GRID_HOME"
       mkdir -p "$INVENTORY"
       chown -R "${GRID_USER}":oinstall "$INVENTORY"
-      # shellcheck disable=SC2129
       echo "export PATH=$GRID_PATH" >> /home/"${GRID_USER}"/.bashrc
       echo "export LD_LIBRARY_PATH=$GRID_LD_LIBRARY_PATH" >> /home/"${GRID_USER}"/.bashrc
       echo "export SCRIPT_DIR=$SCRIPT_DIR" >> /home/"${GRID_USER}"/.bashrc

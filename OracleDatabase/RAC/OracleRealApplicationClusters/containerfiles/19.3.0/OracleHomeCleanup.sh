@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2019,2025 Oracle and/or its affiliates.
@@ -11,7 +12,7 @@
 #
 
 # Image Cleanup Script
-# shellcheck disable=SC1090
+
 source /home/"${DB_USER}"/.bashrc
 ORACLE_HOME=${DB_HOME}
 
