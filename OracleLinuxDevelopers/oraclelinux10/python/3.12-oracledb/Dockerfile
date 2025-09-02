@@ -5,9 +5,6 @@ FROM ghcr.io/oracle/oraclelinux10-python:3.12
 
 RUN dnf -y install oraclelinux-developer-release-el10 && \
     dnf -y install python3.12-oracledb && \
-    # Optionally install Oracle Instant Client to use python-oracledb Thick mode
-    # dnf -y install oracle-instantclient-release-23ai-el10 && \
-    # dnf -y install oracle-instantclient-basic && \
     rm -rf /var/cache/dnf
 
 CMD ["/bin/python3", "--version"]
