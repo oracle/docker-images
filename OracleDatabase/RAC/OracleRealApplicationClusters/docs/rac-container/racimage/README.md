@@ -556,7 +556,7 @@ podman start racnodep2
 It can take approximately 20 minutes or longer to create and set up a two-node Oracle RAC Database on Containers. To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message, similar to the following, on the installing node i.e. `racnodep1` in this case:
@@ -659,7 +659,7 @@ podman start racnodep3
 
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:
 ```bash
@@ -731,7 +731,7 @@ podman start racnodep3
 ```
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:

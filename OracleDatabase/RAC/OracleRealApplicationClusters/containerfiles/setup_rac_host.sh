@@ -261,7 +261,7 @@ setup_rac_container() {
     podman-compose start ${RACNODE1_CONTAINER_NAME}
     podman-compose start ${RACNODE2_CONTAINER_NAME}
 
-    RAC_LOG="/tmp/orod/oracle_rac_setup.log"
+    RAC_LOG="/tmp/orod/oracle_db_setup.log"
     success_message_line="ORACLE RAC DATABASE IS READY TO USE"
     last_lines=""
     start_time=$(date +%s)
