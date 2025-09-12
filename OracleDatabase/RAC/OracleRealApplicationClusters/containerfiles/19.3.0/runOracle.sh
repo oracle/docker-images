@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -33,7 +34,7 @@ fi
 if [ -z ${EXECUTOR} ]; then
     EXECUTOR="python3"
 fi
-# shellcheck disable=SC2164
+
 cd $BASE_DIR
 $EXECUTOR $SCRIPT_NAME
 
