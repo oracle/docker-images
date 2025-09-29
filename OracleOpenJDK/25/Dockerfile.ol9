@@ -4,18 +4,18 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle OpenJDK 24 on Oracle Linux 9
+# This is the Dockerfile for Oracle OpenJDK 25 on Oracle Linux 9
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 #
-# (1) openjdk-24.xx_linux-x64_bin.tar.gz
-#     Downloaded from https://jdk.java.net/24/
+# (1) openjdk-25.xx_linux-x64_bin.tar.gz
+#     Downloaded from https://jdk.java.net/25/
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build --file Dockerfile.ol9 --tag oracle/openjdk:24 .
+#      $ docker build --file Dockerfile.ol9 --tag oracle/openjdk:25 .
 #
 # This command is already scripted in build.sh so you can alternatively run
 #		$ bash build.sh
@@ -25,8 +25,8 @@ FROM oraclelinux:9
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
-ENV JAVA_URL=https://download.java.net/java/GA/jdk24.0.2/fdc5d0102fe0414db21410ad5834341f/12/GPL \
-	JAVA_HOME=/usr/java/jdk-24 \
+ENV JAVA_URL=https://download.java.net/java/GA/jdk25/bd75d5f9689641da8e1daabeccb5528b/36/GPL \
+	JAVA_HOME=/usr/java/jdk-25 \
 	LANG=en_US.UTF-8
 
 # If you need the Java Version you can read it from the release file with
@@ -49,7 +49,7 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL"/openjdk-24.0.2_linux-"${ARCH}"_bin.tar.gz ; \
+    JAVA_PKG="$JAVA_URL"/openjdk-25_linux-"${ARCH}"_bin.tar.gz ; \
 	JAVA_SHA256="$(curl "$JAVA_PKG".sha256)" ; \
 	curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
 	echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c -; \
