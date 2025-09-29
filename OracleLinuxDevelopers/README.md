@@ -159,6 +159,40 @@ You should then be able to create a new Ruby on Rails application.
 * [`oraclelinux9-python:3.12`](oraclelinux9/python/3.12/Dockerfile)
 * [`oraclelinux9-python:3.12-oracledb`](oraclelinux9/python/3.12-oracledb/Dockerfile)
 
+## Oracle Linux 10 based images
+
+### Go Toolset
+
+* [`oraclelinux10-golang:latest`](oraclelinux10/golang/latest/Dockerfile)
+* [`oraclelinux10-golang:1.24`](oraclelinux10/golang/1.24/Dockerfile)
+
+### Nginx
+
+* [`oraclelinux10-nginx:1.26`](oraclelinux10/nginx/1.26/Dockerfile)
+* [`oraclelinux10-nginx:1.26-core`](oraclelinux10/nginx/1.26-core/Dockerfile)
+* [`oraclelinux10-nginx:1.26-full`](oraclelinux10/nginx/1.26-full/Dockerfile)
+
+### httpd
+
+* [`oraclelinux10-httpd:2.4`](oraclelinux10/httpd/2.4/Dockerfile)
+
+### Node.js
+
+* [`oraclelinux10-nodejs:22`](oraclelinux10/nodejs/22/Dockerfile)
+
+### Python
+
+* [`oraclelinux10-python:3.12`](oraclelinux10/python/3.12/Dockerfile)
+* [`oraclelinux10-python:3.12-oracledb`](oraclelinux10/python/3.12-oracledb/Dockerfile)
+
+### Ruby
+
+* [`oraclelinux10-ruby:3.3`](oraclelinux10/ruby/3.3/Dockerfile)
+
+### Valkey
+
+* [`oraclelinux10-valkey:7`](oraclelinux10/valkey/7/Dockerfile)
+
 
 [1]: https://github.com/orgs/oracle/packages?repo_name=docker-images
 [2]: https://yum.oracle.com
