@@ -291,7 +291,7 @@ class OraCommon:
                 env_dict[key] = value
                 self.oenv.update_env_vars(env_dict)
              else:
-                msg='''Variable {0} value is not defined to add in the env variables. Exiting!'''.format(value)
+                msg='''Variable {0} value is not defined to add in the env variables. Exiting!'''.format(key)
                 self.log_error_message(msg,self.file_name)
                 self.prog_exit(self)
 
@@ -1423,49 +1423,45 @@ class OraCommon:
          """
          This function returns the installation command.
          """
+         cmd=""
          giuser, gihome, gbase, oinv = self.get_gi_params()
          pwdparam = f'''oracle.install.asm.SYSASMPassword={"HIDDEN_STRING"} oracle.install.asm.monitorPassword={"HIDDEN_STRING"}'''
          copyflag = " -noCopy " if self.check_key("COPY_GRID_SOFTWARE", self.ora_env_dict) else ""
          prereq = " -ignorePreReq " if self.check_key("IGNORE_CRS_PREREQS", self.ora_env_dict) else " "
-         prereqfailure = " -ignorePrereqFailure " if self.check_key("IGNORE_CRS_PREREQS", self.ora_env_dict) else " "
+         prereqfailure = " -ignorePrereqFailure " if self.check_key("IGNORE_CRS_PREREQS_FAILURE", self.ora_env_dict) else " "
          snic = "-J-Doracle.install.crs.allowSingleNIC=true" if self.check_key("SINGLENIC", self.ora_env_dict) else ""
       
          if key == "INSTALL":
             runCmd = "gridSetup.sh"
-            # Running only in Oracle Restart in RU Patch scenario, else setup fails
-            # if self.check_key("APPLY_RU_LOCATION", self.ora_env_dict) and self.check_key("CRS_GPC", self.ora_env_dict):
-            #       runCmd += f''' -applyRU "{self.ora_env_dict["APPLY_RU_LOCATION"]}"'''
             if self.check_key("DEBUG_MODE", self.ora_env_dict):
                   runCmd += " -debug"
 
             self.log_info_message(f"runCmd set to : {runCmd}", self.file_name)
 
             if self.detect_k8s_env():
-                  cmd_parts = []
                   oraversion = self.get_rsp_version("INSTALL", None)
                   version = oraversion.split(".", 1)[0].strip()
                   distid_env = ""
                   if int(version) == 19:
                      distid_env = "export CV_ASSUME_DISTID=OL8; "
                   if self.check_key("CRS_GPC", self.ora_env_dict):
-                     gridCmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent -responseFile {rspfile} {prereqfailure}"'''
-                     cmd_parts.append(gridCmd)
-
-                  if cmd_parts:
-                     cmd = " && ".join(cmd_parts)
+                     if int(version) <= 21:
+                       cmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent -responseFile {rspfile} {prereq} {prereqfailure}"'''
+                     else:
+                       cmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent -responseFile {rspfile} {pwdparam} {prereq} {prereqfailure}"'''
                   else:
                      param1 = f'''oracle.install.crs.config.netmaskList={netmasklist}''' if netmasklist else \
                               '''oracle.install.crs.config.netmaskList=eth0:255.255.0.0,eth1:255.255.255.0,eth2:255.255.255.0'''
-                     cmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent {snic} -responseFile {rspfile} {param1} {pwdparam} {prereqfailure}"'''
+                     cmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent {snic} -responseFile {rspfile} {param1} {pwdparam} {prereq} {prereqfailure}"'''
             else:
-                  cmd = f'''su - {giuser} -c "{gihome}/{runCmd} -waitforcompletion {copyflag} -silent {snic} -responseFile {rspfile} {prereq} {pwdparam}"'''
+                  cmd = f'''su - {giuser} -c "{gihome}/{runCmd} -waitforcompletion {copyflag} -silent {snic} -responseFile {rspfile} {prereq} {prereqfailure} {pwdparam}"'''
          elif key == 'ADDNODE':
             status = self.check_home_inv(None, gihome, giuser)
             if status:
                   copyflag = " -noCopy "
             else:
                   copyflag = " "
-            cmd = f'''su - {giuser} -c "ssh {node} '{gihome}/gridSetup.sh -silent -waitForCompletion {copyflag} {prereq} -responseFile {rspfile}'"'''
+            cmd = f'''su - {giuser} -c "ssh {node} '{gihome}/gridSetup.sh -silent -waitForCompletion {copyflag} {prereq} {prereqfailure} -responseFile {rspfile}'"'''
          else:
             cmd = ""
          return cmd
@@ -1491,11 +1487,6 @@ class OraCommon:
          self.log_info_message("disk" + version, self.file_name)
          self.opatch_apply(node)
 
-         # Returning only in Oracle Restart in RU Patch scenario, else below command fails in Oracle Restart
-         # if int(version) == 19 and self.check_key("APPLY_RU_LOCATION", self.ora_env_dict):
-         #    if self.check_key("CRS_GPC", self.ora_env_dict):
-         #       self.log_info_message("Oracle Restart RU patch scenario detected. Skipping crs_sw_install_on_node", self.file_name) 
-               # return
             
          # Handle Oracle 19c (special case)
          if int(version) == 19:
@@ -1505,12 +1496,18 @@ class OraCommon:
             self.log_info_message("Oracle RU Patch deployment detected.", self.file_name)
             apply_ru = ''' -applyRU "{0}" '''.format(self.ora_env_dict["APPLY_RU_LOCATION"])
 
-         if self.check_key("ONEOFF_FOLDER_NAME", self.ora_env_dict) and self.check_key("ONEOFF_IDS", self.ora_env_dict):
-            one_off_ids=self.ora_env_dict["ONEOFF_IDS"] 
-            one_off_ids_with_location=""
-            for id in one_off_ids:
-               one_off_ids_with_location=one_off_ids_with_location+","+self.ora_env_dict["APPLY_RU_LOCATION"]+"/"+id
-            apply_oneoff = ''' --applyOneOffs "{0}" '''.format(one_off_ids_with_location)
+         if self.check_key("ONEOFF_FOLDER_NAME", self.ora_env_dict) and self.check_key("GRID_ONEOFF_IDS", self.ora_env_dict):
+            grid_oneoff_ids = self.ora_env_dict["GRID_ONEOFF_IDS"]
+            oneoff_ids_with_location = ""
+
+            # Split by comma to get individual oneoff IDs
+            for oneoff_id in grid_oneoff_ids.split(","):
+               if oneoff_ids_with_location:
+                     oneoff_ids_with_location += ","
+               oneoff_ids_with_location += self.ora_env_dict["ONEOFF_FOLDER_NAME"] + "/" + oneoff_id.strip()
+
+            apply_oneoff = ''' -applyOneOffs "{0}" '''.format(oneoff_ids_with_location)
+
 
          if int(version) < 23:
             rspdata = '''su - {0} -c "ssh {10} '{11}{1}/gridSetup.sh {12} {13} {14} -waitforcompletion {2} -silent
@@ -3234,6 +3231,15 @@ class OraCommon:
         return RECO DG NAME
         """
         return self.ora_env_dict["DB_RECOVERY_FILE_DEST"] if self.check_key("DB_RECOVERY_FILE_DEST",self.ora_env_dict) else dgname
+
+
+######  function to return DG Name for REDO LOG DESTINATION
+      def getredodestdgname(self,dgname):
+        """
+        return REDO DG NAME
+        """
+        return self.ora_env_dict["LOG_FILE_DEST"] if self.check_key("LOG_FILE_DEST",self.ora_env_dict) else dgname
+
 
 ##### Function to catalog the backup
       def catalog_bkp(self):
