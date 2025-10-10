@@ -350,7 +350,7 @@ class OraMiscOps:
             osid=self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME",self.ora_env_dict) else "ORCLCDB"
             scanname = self.get_scan_name()
             scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
-            connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",'HIDDEN_STRING',scanname,scanport,osid,None,None,None)
+            connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",None,scanname,scanport,osid,None,None,None)
             status=self.ocommon.get_db_role(osuser,dbhome,osid,connect_str)
           else:
              status="NOTAVAILABLE"
@@ -403,7 +403,7 @@ class OraMiscOps:
        osid=self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME",self.ora_env_dict) else "ORCLCDB"
        scanname = self.get_scan_name()
        scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
-       connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",'HIDDEN_STRING',scanname,scanport,osid,None,None,None)
+       connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",None,scanname,scanport,osid,None,None,None)
        status=self.ocommon.get_dbinst_status(osuser,dbhome,osid,connect_str)
        if self.ocommon.check_substr_match(status,"OPEN"):
          mode="OPEN"
@@ -915,7 +915,7 @@ class OraMiscOps:
     if self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
         return self.ocommon.get_public_hostname()
     else:
-        scanname=self.ora_env_dict["SCAN_NAME"]
+        scan_name=self.ora_env_dict["SCAN_NAME"]
         return scan_name
 
    def update_ons(self):
