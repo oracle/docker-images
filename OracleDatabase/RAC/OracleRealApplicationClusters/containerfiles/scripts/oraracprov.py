@@ -213,7 +213,7 @@ class OraRacProv:
        lang=self.ora_env_dict["LANGUAGE"] if self.ocommon.check_key("LANGUAGE",self.ora_env_dict) else "en"
        edition= self.ora_env_dict["DB_EDITION"] if self.ocommon.check_key("DB_EDITION",self.ora_env_dict) else "EE"
        ignoreflag= " -ignorePrereq " if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict) else " "
-       prereqfailure = " -ignorePrereqFailure " if self.ocommon.check_key("IGNORE_DB_PREREQS", self.ora_env_dict) else " "
+       prereqfailure = " -ignorePrereqFailure " if self.ocommon.check_key("IGNORE_DB_PREREQS_FAILURE", self.ora_env_dict) else " "
 
        copyflag=" -noCopy "
        if not self.ocommon.check_key("COPY_DB_SOFTWARE",self.ora_env_dict):
@@ -242,91 +242,97 @@ class OraRacProv:
 
        #self.manage_thread()
 
-   def db_sw_install_on_node(self,dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag,prereqfailure):
-       """
-       Perform the db_install
-       """
-       runCmd=""
-       export_line=""
-       if self.ocommon.check_key("APPLY_RU_LOCATION",self.ora_env_dict):
-          ruLoc=self.ora_env_dict["APPLY_RU_LOCATION"]
-         #  runCmd='''runInstaller -applyRU "{0}/37960098" -applyOneOffs "{0}/37962946"'''.format(self.ora_env_dict["APPLY_RU_LOCATION"])
-          runCmd='''runInstaller -applyRU "{0}"'''.format(self.ora_env_dict["APPLY_RU_LOCATION"])
-          oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-          version = oraversion.split(".", 1)[0].strip()
-          self.ocommon.log_info_message("disk" + version, self.file_name)
-          # Add CV_ASSUME_DISTID only if Oracle version is 19
-          export_line = "export CV_ASSUME_DISTID=OL8; " if int(version) == 19 else ""
-       else:
-          runCmd='''runInstaller '''
-          
-       
-       if self.ocommon.check_key("DEBUG_MODE",self.ora_env_dict):
-          dbgCmd='''{0} -debug '''.format(runCmd)
-          runCmd=dbgCmd
-       rspdata=""
-      
-       if self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
+   def db_sw_install_on_node(self, dbuser, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase, edition,osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, node, ignoreflag, prereqfailure):
+      """
+      Perform DB software installation using runInstaller
+      """
+      runCmd = ""
+      export_line = ""
+
+      # Check if RU location is provided
+      if self.ocommon.check_key("APPLY_RU_LOCATION", self.ora_env_dict):
+         ruLoc = self.ora_env_dict["APPLY_RU_LOCATION"]
+         runCmd = 'runInstaller -applyRU "{}"'.format(ruLoc)
+         oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+         version = oraversion.split(".", 1)[0].strip()
+         self.ocommon.log_info_message("disk " + version, self.file_name)
+         # Add CV_ASSUME_DISTID only for Oracle 19
+         export_line = "export CV_ASSUME_DISTID=OL8; " if int(version) == 19 else ""
+      else:
+         runCmd = "runInstaller"
+
+      # Enable debug mode if specified
+      if self.ocommon.check_key("DEBUG_MODE", self.ora_env_dict):
+         runCmd = "{} -debug".format(runCmd)
+
+      # Prepare DB one-offs if available
+      apply_db_oneoff = ""
+      if self.ocommon.check_key("DB_ONEOFF_IDS", self.ora_env_dict) and self.ocommon.check_key("ONEOFF_FOLDER_NAME", self.ora_env_dict):
+         db_oneoff_ids = self.ora_env_dict["DB_ONEOFF_IDS"].split(',')
+         oneoff_with_location = ",".join([
+            self.ora_env_dict["ONEOFF_FOLDER_NAME"] + "/" + oid for oid in db_oneoff_ids if oid
+         ])
+         apply_db_oneoff = '-applyOneOffs "{}"'.format(oneoff_with_location)
+
+      # Construct the runInstaller command
+      if self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
          rspdata = '''su - {0} -c "ssh {17} '{18}{1}/{16} {19} -waitforcompletion {15} -silent
-            oracle.install.option=INSTALL_DB_SWONLY
-            ORACLE_HOSTNAME={2}
-            UNIX_GROUP_NAME={3}
-            INVENTORY_LOCATION={5}
-            SELECTED_LANGUAGES={6}
-            ORACLE_HOME={7}
-            ORACLE_BASE={8}
-            oracle.install.db.InstallEdition={9}
-            oracle.install.db.OSDBA_GROUP={10}
-            oracle.install.db.OSBACKUPDBA_GROUP={11}
-            oracle.install.db.OSDGDBA_GROUP={12}
-            oracle.install.db.OSKMDBA_GROUP={13}
-            oracle.install.db.OSRACDBA_GROUP={14}
-            SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
-            DECLINE_SECURITY_UPDATES=true'"'''.format(
-            dbuser, dbhome, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase,
-            edition, osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, runCmd, node, export_line, ignoreflag, prereqfailure
+               oracle.install.option=INSTALL_DB_SWONLY
+               ORACLE_HOSTNAME={2}
+               UNIX_GROUP_NAME={3}
+               INVENTORY_LOCATION={5}
+               SELECTED_LANGUAGES={6}
+               ORACLE_HOME={7}
+               ORACLE_BASE={8}
+               oracle.install.db.InstallEdition={9}
+               oracle.install.db.OSDBA_GROUP={10}
+               oracle.install.db.OSBACKUPDBA_GROUP={11}
+               oracle.install.db.OSDGDBA_GROUP={12}
+               oracle.install.db.OSKMDBA_GROUP={13}
+               oracle.install.db.OSRACDBA_GROUP={14}
+               SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+               DECLINE_SECURITY_UPDATES=true
+               {21}'"'''.format(
+               dbuser, dbhome, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase,
+               edition, osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, runCmd, node, export_line,
+               ignoreflag, prereqfailure, apply_db_oneoff
+         )
+      else:
+         rspdata = '''su - {0} -c "ssh {17} '{18}{1}/{16} {19} -waitforcompletion {15} -silent
+               oracle.install.option=INSTALL_DB_SWONLY
+               ORACLE_HOSTNAME={2}
+               UNIX_GROUP_NAME={3}
+               oracle.install.db.CLUSTER_NODES={4}
+               INVENTORY_LOCATION={5}
+               SELECTED_LANGUAGES={6}
+               ORACLE_HOME={7}
+               ORACLE_BASE={8}
+               oracle.install.db.InstallEdition={9}
+               oracle.install.db.OSDBA_GROUP={10}
+               oracle.install.db.OSBACKUPDBA_GROUP={11}
+               oracle.install.db.OSDGDBA_GROUP={12}
+               oracle.install.db.OSKMDBA_GROUP={13}
+               oracle.install.db.OSRACDBA_GROUP={14}
+               SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+               DECLINE_SECURITY_UPDATES=true
+               {21}'"'''.format(
+               dbuser, dbhome, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase,
+               edition, osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, runCmd, node, export_line,
+               ignoreflag, prereqfailure, apply_db_oneoff
          )
 
-       else:
-         rspdata = '''su - {0} -c "ssh {17} '{18}{1}/{16} {19} -waitforcompletion {15} -silent
-            oracle.install.option=INSTALL_DB_SWONLY
-            ORACLE_HOSTNAME={2}
-            UNIX_GROUP_NAME={3}
-            oracle.install.db.CLUSTER_NODES={4}
-            INVENTORY_LOCATION={5}
-            SELECTED_LANGUAGES={6}
-            ORACLE_HOME={7}
-            ORACLE_BASE={8}
-            oracle.install.db.InstallEdition={9}
-            oracle.install.db.OSDBA_GROUP={10}
-            oracle.install.db.OSBACKUPDBA_GROUP={11}
-            oracle.install.db.OSDGDBA_GROUP={12}
-            oracle.install.db.OSKMDBA_GROUP={13}
-            oracle.install.db.OSRACDBA_GROUP={14}
-            SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
-            DECLINE_SECURITY_UPDATES=true'"'''.format(
-            dbuser, dbhome, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase,
-            edition, osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, runCmd, node, export_line, ignoreflag, prereqfailure
-         )
+      cmd = rspdata.replace('\n', ' ')
+      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
 
-       cmd = rspdata.replace('\n', ' ')
+      # Update thread status if applicable
+      if len(self.mythread) > 0 and node in self.mythread.keys():
+         swthread_list = self.mythread[node]
+         value = swthread_list[0]
+         new_list = [value, 'FALSE']
+         new_val = {node, tuple(new_list)}
+         self.mythread.update(new_val)
 
-       #dbswrsp="/tmp/dbswrsp.rsp" 
-       #self.ocommon.write_file(dbswrsp,rspdata)
-       #if os.path.isfile(dbswrsp):
-       #cmd='''su - {0} -c "{1}/runInstaller -ignorePrereq -waitforcompletion -silent  -responseFile {2}"'''.format(dbuser,dbhome,dbswrsp)
-       output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       self.ocommon.check_os_err(output,error,retcode,None)
-       #else:
-       #   self.ocommon.log_error_message("DB response file does not exist at its location: " + dbswrsp + ".Exiting..",self.file_name)
-       #   self.ocommon.prog_exit("127") 
-       if len(self.mythread) > 0:
-          if node in self.mythread.keys():
-             swthread_list=self.mythread[node]
-             value=swthread_list[0]
-             new_list=[value,'FALSE']
-             new_val={node,tuple(new_list)}
-             self.mythread.update(new_val)
 
    def run_rootsh(self):
        """
@@ -587,6 +593,7 @@ class OraRacProv:
        dgname=self.ocommon.setdgprefix(self.ocommon.getcrsdgname())
        dbdest=self.ocommon.setdgprefix(self.ocommon.getdbdestdgname(dgname))
        dbrdest=self.ocommon.setdgprefix(self.ocommon.getdbrdestdgname(dbdest))
+       redologdest=self.ocommon.setdgprefix(self.ocommon.getredodestdgname(dbrdest))
        dbrdestsize=self.ora_env_dict["DB_RECOVERY_FILE_DEST_SIZE"] if self.ocommon.check_key("DB_RECOVERY_FILE_DEST_SIZE",self.ora_env_dict) else None
        cpucount=self.ora_env_dict["CPU_COUNT"] if self.ocommon.check_key("CPU_COUNT",self.ora_env_dict) else None
        dbfiles=self.ora_env_dict["DB_FILES"] if self.ocommon.check_key("DB_FILES",self.ora_env_dict) else "1024" 
@@ -600,7 +607,7 @@ class OraRacProv:
        remotepasswdfile="REMOTE_LOGIN_PASSWORDFILE=EXCLUSIVE"
        lgformat="LOG_ARCHIVE_FORMAT=%t_%s_%r.arc"
    
-       initprm='''db_recovery_file_dest={0},db_create_file_dest={2},{3},{4},db_unique_name={5},db_files={6},LOG_BUFFER={7},DB_FLASHBACK_RETENTION_TARGET={8},DB_BLOCK_CHECKSUM={9},DB_LOST_WRITE_PROTECT={10},PARALLEL_THREADS_PER_CPU={11},DG_BROKER_CONFIG_FILE1={12},DG_BROKER_CONFIG_FILE2={13}'''.format(dbrdest,dbrdest,dbdest,remotepasswdfile,lgformat,dbuname,dbfiles,lgbuffer,dbrettime,dbblkck,dblwp,ptpc,dgbr1,dgbr2)
+       initprm='''db_recovery_file_dest={0},db_create_file_dest={2},{3},{4},db_unique_name={5},db_files={6},LOG_BUFFER={7},DB_FLASHBACK_RETENTION_TARGET={8},DB_BLOCK_CHECKSUM={9},DB_LOST_WRITE_PROTECT={10},PARALLEL_THREADS_PER_CPU={11},DG_BROKER_CONFIG_FILE1={12},DG_BROKER_CONFIG_FILE2={13},DB_CREATE_ONLINE_LOG_DEST_1={14}'''.format(dbrdest,dbrdest,dbdest,remotepasswdfile,lgformat,dbuname,dbfiles,lgbuffer,dbrettime,dbblkck,dblwp,ptpc,dgbr1,dgbr2,redologdest)
 
        if sgasize:
            initprm= initprm + ''',sga_target={0},sga_max_size={0}'''.format(sgasize)
