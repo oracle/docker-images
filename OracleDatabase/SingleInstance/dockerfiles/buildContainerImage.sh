@@ -89,6 +89,10 @@ checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
   DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
+  # Remove +dfsg* if present
+  DOCKER_VERSION=${DOCKER_VERSION%%+dfsg*}
+  # Remove dot in Docker version
+  DOCKER_VERSION=${DOCKER_VERSION//./}
 
   if [ "$(printf '%s\n' "$MIN_DOCKER_VERSION" "$DOCKER_VERSION" | sort -V | head -n1)" != "$MIN_DOCKER_VERSION" ]; then
     echo "Docker version is below the minimum required version ${MIN_DOCKER_VERSION}"
@@ -182,7 +186,7 @@ if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   if [ "${VERSION}" == "19.3.0" ] && { [ "${BASE_ONLY}" -eq 1 ] || [ "${ENTERPRISE}" -eq 1 ]; }; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=LINUX.ARM64_1919000_db_home.zip" "${BUILD_OPTS[@]}")
   elif { [ "${VERSION}" == "23.9.0" ] && [ "${FREE}" -eq 1 ]; }; then
-    BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23ai-23.9-1.el8.x86_64.rpm" "${BUILD_OPTS[@]}")
+    BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23ai-23.9-1.el8.aarch64.rpm" "${BUILD_OPTS[@]}")
   else
     echo "Currently only 19c enterprise edition and 23ai Free are supported on ARM64 platform.";
     exit 1;
