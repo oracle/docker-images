@@ -18,7 +18,9 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:9 as base
+ARG BASE_IMAGE=oraclelinux:9
+# hadolint ignore=DL3006
+FROM ${BASE_IMAGE} as base
 
 # Labels
 # ------
