@@ -29,7 +29,7 @@ ln -s "$ORACLE_BASE"/scripts /docker-entrypoint-initdb.d && \
 mkdir -p "$ORACLE_BASE"/oradata /home/oracle && \
 mkdir -p "$ORACLE_HOME" && \
 chmod ug+x "$ORACLE_BASE"/*.sh && \
-dnf install -y oraclelinux-developer-release-el8 && \
+dnf install -y oraclelinux-developer-release-el9 && \
 dnf -y install oracle-database-preinstall-23ai openssl hostname file expect && \
 rm -rf /var/cache/yum && \
 ln -s "$ORACLE_BASE"/"$PWD_FILE" /home/oracle/ && \
