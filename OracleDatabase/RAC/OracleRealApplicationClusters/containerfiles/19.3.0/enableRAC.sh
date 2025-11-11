@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -8,7 +9,7 @@
 # Description: Enable RAC feature in Oracle Software
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# shellcheck disable=SC1090
+
 source /home/"${DB_USER}"/.bashrc
 
 export ORACLE_HOME=${DB_HOME}

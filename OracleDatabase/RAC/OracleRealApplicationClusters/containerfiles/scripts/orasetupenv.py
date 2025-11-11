@@ -4,7 +4,7 @@
 # Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-############################
+#############################
 
 """
  This file contains to the code call different classes objects based on setup type
@@ -97,6 +97,9 @@ class OraSetupEnv:
         # self.ocommon.log_info_message("Start crs_sw_install()",self.file_name)
         # self.crs_sw_install()
         # self.ocommon.log_info_message("End crs_sw_install()",self.file_name)
+         self.ocommon.log_info_message("Running comment_out_swap_space()",self.file_name)
+         self.comment_out_swap_space()
+         self.ocommon.log_info_message("Ended comment_out_swap_space()",self.file_name)
          self.setup_ssh_for_k8s()
          self.set_banner()
 
@@ -792,3 +795,62 @@ class OraSetupEnv:
               else:
                  msg="Grid is not installed on this machine"
                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
+
+    def comment_out_swap_space(self):
+         """
+         This function comments out the SWAP_SPACE=500 parameter in oraparam.ini
+         file for Oracle version 19 in both GRID_HOME and DB_HOME.
+         """
+         oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+         version = oraversion.split(".", 1)[0].strip()
+
+         # Get DB and GI homes
+         dbuser, dbhome, dbase, oinv = self.ocommon.get_db_params()
+         giuser, gihome, gibase, oinv = self.ocommon.get_gi_params()
+
+         if int(version) != 19:
+            self.ocommon.log_info_message(
+                  "Skipping commenting out SWAP_SPACE as Oracle version is {}".format(version),
+                  self.file_name
+            )
+            return
+
+         homes_to_check = [gihome, dbhome]
+         section_name = "[Generic Prereqs]"
+         param_name = "SWAP_SPACE=500"
+
+         for home in homes_to_check:
+            file_path = "{}/oui/oraparam.ini".format(home)
+
+            try:
+                  with open(file_path, 'r') as file:
+                     lines = file.readlines()
+
+                  in_section = False
+                  modified_lines = []
+
+                  for line in lines:
+                     if line.strip() == section_name:
+                        in_section = True
+                     elif line.startswith('[') and in_section:
+                        in_section = False
+
+                     if in_section and line.strip() == param_name:
+                        modified_lines.append("#{}".format(line))
+                     else:
+                        modified_lines.append(line)
+
+                  with open(file_path, 'w') as file:
+                     file.writelines(modified_lines)
+
+                  self.ocommon.log_info_message(
+                     "Successfully commented out {} in {}".format(param_name, file_path),
+                     self.file_name
+                  )
+
+            except Exception as e:
+                  self.ocommon.log_error_message(
+                     "Failed to comment out {} in {}: {}".format(param_name, file_path, str(e)),
+                     self.file_name
+                  )
+

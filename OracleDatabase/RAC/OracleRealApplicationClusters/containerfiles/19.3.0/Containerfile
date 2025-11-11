@@ -20,7 +20,7 @@
 #      $ docker build -t oracle/database:19c-rac .
 
 
-ARG BASE_OL_IMAGE=oraclelinux:8
+ARG BASE_OL_IMAGE=oraclelinux:9
 ARG SLIMMING=false
 # Pull base image
 # ---------------
@@ -99,7 +99,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
 FROM racbase AS rac-image-slim-false
 ARG SLIMMING
 ARG VERSION
-ENV CV_ASSUME_DISTID=OEL7.8
+ENV CV_ASSUME_DISTID=OL8
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 # Linux Env Variable
@@ -145,7 +145,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 FROM racbase AS rac-image-slim-true
 ARG SLIMMING
 ARG VERSION
-ENV CV_ASSUME_DISTID=OEL7.8
+ENV CV_ASSUME_DISTID=OL8
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
