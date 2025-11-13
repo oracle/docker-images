@@ -523,7 +523,7 @@ podman start racnodep2
 It can take at least 20 minutes or longer to create and setup 2 node RAC primary and standby setup. To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 You should see the database creation success message at the end:
@@ -613,7 +613,7 @@ Below is the example of adding 1 more node to the existing Oracle RAC 2 node clu
   podman network connect rac_priv1_nw --ip 192.168.17.172  racnodep3
   podman network connect rac_priv2_nw --ip 192.168.18.172  racnodep3
   podman start racnodep3
-  podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+  podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
   ```
   Successful message for addition of nodes-
   ```bash
@@ -673,7 +673,7 @@ Below is an example of adding one more node to the existing Oracle RAC 2 node cl
   podman network connect rac_priv1_nw --ip 192.168.17.172  racnodep3
   podman network connect rac_priv2_nw --ip 192.168.18.172  racnodep3
   podman start racnodep3
-  podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+  podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 
   ========================================================
   Oracle Database ORCLCDB3 is up and running on racnodep3.
