@@ -120,6 +120,12 @@ Retag it as below as we are going to refer this image as `localhost/oracle/datab
 ```bash
 podman tag localhost/oracle/database-rac:21.3.0 localhost/oracle/database-rac:21c
 ```
+**Note** : There is a known issue with Oracle Database 19.3.0 that causes compilation to fail, as described in [Doc ID 2760289.1](https://support.oracle.com/knowledge/Oracle%20Database%20Products/2760289_1.html): "19c Database Installation/relink fails with: Error in invoking target 'libasmclntsh19.ohso libasmperl19.ohso client_sharedlib' of makefile ins_rdbms.mk". As a result, you cannot install the base 19.3.0 software directly on Oracle Linux 9. The fix is included in version 19.21 and later. Therefore, when building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`
+
+Example: To build Oracle RAC Database Container Image for version 19.3.0, use below command:
+```bash
+./buildContainerImage.sh -v 19.3.0 -i -o "--build-arg  BASE_OL_IMAGE=oraclelinux:8"
+```
 
 ### Building Oracle RAC Database Container Slim Image
 In this document, an `Oracle RAC Database Container Slim Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation.
