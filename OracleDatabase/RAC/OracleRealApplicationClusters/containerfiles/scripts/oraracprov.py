@@ -182,7 +182,7 @@ class OraRacProv:
        if len(crs_nodes_list) == 1:
           self.ocommon.log_info_message("Cluster size=1. Node=" + crs_nodes_list[0],self.file_name)
           user=self.ora_env_dict["DB_USER"]
-          cmd='''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user,crs_nodes_list[0])
+          cmd = '''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -b 4096 -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user, crs_nodes_list[0])
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,None)
        else:
@@ -232,15 +232,9 @@ class OraRacProv:
           #thread.setDaemon(True)
           mythreads.append(thread)
           thread.start()
-  
-#       for thread in mythreads:
-#          self.ocommon.log_info_message("Starting Thread",self.file_name)
-#          thread.start()
 
        for thread in mythreads:  # iterates over the threads
           thread.join()       # waits until the thread has finished wor
-
-       #self.manage_thread()
 
    def db_sw_install_on_node(self, dbuser, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase, edition,osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, node, ignoreflag, prereqfailure):
       """
@@ -249,15 +243,18 @@ class OraRacProv:
       runCmd = ""
       export_line = ""
 
+      # Get Oracle version
+      oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+      version = oraversion.split(".", 1)[0].strip()
+      self.ocommon.log_info_message("disk " + version, self.file_name)
+
+      # Set export line for Oracle 19
+      export_line = "export CV_ASSUME_DISTID=OL8; " if int(version) == 19 else ""
+
       # Check if RU location is provided
       if self.ocommon.check_key("APPLY_RU_LOCATION", self.ora_env_dict):
          ruLoc = self.ora_env_dict["APPLY_RU_LOCATION"]
          runCmd = 'runInstaller -applyRU "{}"'.format(ruLoc)
-         oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-         version = oraversion.split(".", 1)[0].strip()
-         self.ocommon.log_info_message("disk " + version, self.file_name)
-         # Add CV_ASSUME_DISTID only for Oracle 19
-         export_line = "export CV_ASSUME_DISTID=OL8; " if int(version) == 19 else ""
       else:
          runCmd = "runInstaller"
 
@@ -516,6 +513,18 @@ class OraRacProv:
        dbtype=self.ora_env_dict["DB_TYPE"] if self.ocommon.check_key("DB_TYPE",self.ora_env_dict) else  "OLTP"
        dbctype=self.ora_env_dict["DB_CONFIG_TYPE"] if self.ocommon.check_key("DB_CONFIG_TYPE",self.ora_env_dict) else  "RAC"
        arcmode=self.ora_env_dict["ENABLE_ARCHIVELOG"] if self.ocommon.check_key("ENABLE_ARCHIVELOG",self.ora_env_dict) else  "true" 
+       
+       # Preference for TOTAL_MEMORY if both TOTAL_MEMORY and MEMORY_PERCENTAGE are specified
+       # Else, use MEMORY_PERCENTAGE for memory calculation
+       # No parameter passed if both parameters are NOT specified. In that case, DBCA will use -memoryPercentage as 40 by default
+
+       if self.ocommon.check_key("TOTAL_MEMORY",self.ora_env_dict):
+        memcalculation=''' -totalMemory {0}'''.format(self.ora_env_dict["TOTAL_MEMORY"])
+       elif self.ocommon.check_key("MEMORY_PERCENTAGE",self.ora_env_dict):
+        memcalculation=''' -memoryPercentage {0}'''.format(self.ora_env_dict["MEMORY_PERCENTAGE"])
+       else:
+        memcalculation=''' '''
+
        pdbsettings=self.get_pdb_params()
        initparams=self.get_init_params()
       #  if self.ocommon.check_key("SETUP_TDE_WALLET",self.ora_env_dict):
@@ -542,7 +551,8 @@ class OraRacProv:
 
        # Conditionally set the export and additional dbca options if version is 19
        export_line = "export CV_ASSUME_DISTID=OL8;" if int(version) == 19 else ""
-       dbca_validate_option = "-J-Doracle.assistants.dbca.validate.ConfigurationParams=false" if int(version) == 19 else ""
+       # dbca_validate_option = "-J-Doracle.assistants.dbca.validate.ConfigurationParams=false" if int(version) == 19 else ""
+       dbca_validate_option = ""
 
        rspdata = '''su - {0} -c "{17}{1}/bin/dbca -silent {15} -createDatabase  \
          -templateName General_Purpose.dbc \
@@ -562,10 +572,11 @@ class OraRacProv:
          {13} \
          {18} \
          {16} \
-         -enableArchive {14}"'''.format(
+         -enableArchive {14} \
+         {19}"'''.format(
          dbuser, dbhome, dbname, cdbflag, dbfiledest, stype, charset, redosize,
          dbtype, dbctype, crs_nodes, dbname, pdbsettings, initparams, arcmode,
-         prereq, tdewallet, export_line, dbca_validate_option)
+         prereq, tdewallet, export_line, dbca_validate_option, memcalculation)
 
        cmd = '\n'.join(line.lstrip() for line in rspdata.splitlines())
        return cmd

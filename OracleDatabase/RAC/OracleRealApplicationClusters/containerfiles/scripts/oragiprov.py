@@ -176,7 +176,7 @@ class OraGIProv:
        if len(crs_nodes_list) == 1:
           self.ocommon.log_info_message("Cluster size=1. Node=" + crs_nodes_list[0],self.file_name)
           user=self.ora_env_dict["GRID_USER"]
-          cmd='''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user,crs_nodes_list[0])
+          cmd = '''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -b 4096 -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user, crs_nodes_list[0])
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,None)
        else:
@@ -228,6 +228,7 @@ class OraGIProv:
           #thread.setDaemon(True)
           mythreads.append(thread)
           thread.start()
+          sleep(10)
 
 #       for thread in mythreads:
 #          thread.start()
@@ -338,7 +339,7 @@ class OraGIProv:
        if clusterusage != "GENERAL_PURPOSE":
          scanname=self.ora_env_dict["SCAN_NAME"]
          scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
-       else: 
+       else:
           scanname=""
           scanport=""
        clutype=self.ora_env_dict["CLUSTER_TYPE"] if self.ocommon.check_key("CLUSTER_TYPE",self.ora_env_dict) else "STANDALONE"
@@ -381,51 +382,59 @@ class OraGIProv:
             asmstr, disksWithFGNames, oraversion, gridrsp, netmasklist, clusterusage
          )
 
+   def get_responsefile(self, obase, invloc, scanname, scanport, clutype, cluname, clunodes, nwiface, gimrflag, passwd, dgname, dgred, fgname, asmdisk, asmstr, disksWithFGNames, oraversion, gridrsp, netmasklist, crsconfig):
+      """
+      This function prepares the response file if no response file is passed.
+      """      
+      self.ocommon.log_info_message("I am in get_responsefile", self.file_name)
+      
+      rspdata = '''
+      oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{15}
+      oracle.install.option={19}
+      ORACLE_BASE={0}
+      INVENTORY_LOCATION={1}
+      oracle.install.asm.OSDBA=asmdba
+      oracle.install.asm.OSOPER=asmoper
+      oracle.install.asm.OSASM=asmadmin
+      oracle.install.crs.config.gpnp.scanName={2}
+      oracle.install.crs.config.gpnp.scanPort={3}
+      oracle.install.crs.config.clusterName={5}
+      oracle.install.crs.config.clusterNodes={6}
+      oracle.install.crs.config.networkInterfaceList={7}
+      oracle.install.crs.configureGIMR={8}
+      oracle.install.asm.SYSASMPassword=
+      oracle.install.asm.monitorPassword=
+      oracle.install.crs.config.storageOption=
+      oracle.install.asm.diskGroup.name={10}
+      oracle.install.asm.diskGroup.redundancy={11}
+      oracle.install.asm.diskGroup.AUSize=4
+      oracle.install.asm.diskGroup.disksWithFailureGroupNames={18}
+      oracle.install.asm.diskGroup.disks={13}
+      oracle.install.asm.diskGroup.quorumFailureGroupNames=
+      oracle.install.asm.diskGroup.diskDiscoveryString={14}
+      oracle.install.crs.rootconfig.configMethod=ROOT
+      oracle.install.asm.configureAFD=false
+      oracle.install.crs.rootconfig.executeRootScript=false
+      oracle.install.crs.config.ignoreDownNodes=false
+      oracle.install.config.managementOption=NONE
+      oracle.install.crs.configureRHPS={16}
+      oracle.install.crs.config.ClusterConfiguration={17}
+      '''.format(
+         obase, invloc, scanname, scanport, clutype, cluname, clunodes,
+         nwiface, gimrflag, passwd, dgname, dgred, fgname, asmdisk, asmstr,
+         oraversion, "false", "STANDALONE", disksWithFGNames, crsconfig
+      )
 
-   def get_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,crsconfig):
-       """
-       This function prepare the response file if no response file passed
-       """      
-       self.ocommon.log_info_message("I am in get_responsefile", self.file_name)
-       rspdata='''
-       oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{15} 
-       oracle.install.option={19}
-       ORACLE_BASE={0}
-       INVENTORY_LOCATION={1}
-       oracle.install.asm.OSDBA=asmdba
-       oracle.install.asm.OSOPER=asmoper
-       oracle.install.asm.OSASM=asmadmin
-       oracle.install.crs.config.gpnp.scanName={2}
-       oracle.install.crs.config.gpnp.scanPort={3}
-       oracle.install.crs.config.clusterName={5}
-       oracle.install.crs.config.clusterNodes={6}
-       oracle.install.crs.config.networkInterfaceList={7}
-       oracle.install.crs.configureGIMR={8}
-       oracle.install.asm.SYSASMPassword={9}
-       oracle.install.asm.monitorPassword={9}
-       oracle.install.crs.config.storageOption=
-       oracle.install.asm.diskGroup.name={10}
-       oracle.install.asm.diskGroup.redundancy={11}
-       oracle.install.asm.diskGroup.AUSize=4
-       oracle.install.asm.diskGroup.disksWithFailureGroupNames={18}
-       oracle.install.asm.diskGroup.disks={13}
-       oracle.install.asm.diskGroup.quorumFailureGroupNames=
-       oracle.install.asm.diskGroup.diskDiscoveryString={14}
-       oracle.install.crs.rootconfig.configMethod=ROOT
-       oracle.install.asm.configureAFD=false
-       oracle.install.crs.rootconfig.executeRootScript=false
-       oracle.install.crs.config.ignoreDownNodes=false
-       oracle.install.config.managementOption=NONE
-       oracle.install.crs.configureRHPS={16}
-       oracle.install.crs.config.ClusterConfiguration={17}
-       '''.format(obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,oraversion,"false","STANDALONE",disksWithFGNames,crsconfig)
-#      fdata="\n".join([s for s in rspdata.split("\n") if s])
-       self.ocommon.write_file(gridrsp,rspdata)
-       if os.path.isfile(gridrsp):
-          return gridrsp,netmasklist
-       else:
-          self.ocommon.log_error_message("Grid response file does not exist at its location: " + gridrsp + ".Exiting..",self.file_name)
-          self.ocommon.prog_exit("127")
+      self.ocommon.write_file(gridrsp, rspdata)
+      if os.path.isfile(gridrsp):
+         return gridrsp, netmasklist
+      else:
+         self.ocommon.log_error_message(
+               "Grid response file does not exist at its location: " + gridrsp + ". Exiting..",
+               self.file_name
+         )
+         self.ocommon.prog_exit("127")
+
 
    def get_23c_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,clusterusage):
        """
@@ -685,20 +694,26 @@ class OraGIProv:
          self.ocommon.log_info_message("Running install_cvuqdisk() on node " + node,self.file_name)
          self.install_cvuqdisk(node)
 
-   def install_cvuqdisk(self,node):
-      rpm_directory = "/u01/app/23c/grid/cv/rpm"
-      giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
-      try:
-         # Construct the rpm command using wildcard for version
-         cmd = '''su - {0} -c "ssh {1} 'sudo rpm -Uvh {2}/cvuqdisk-*.rpm'"'''.format(giuser, node, rpm_directory)
-         # Run the rpm command using subprocess
-         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-         self.ocommon.check_os_err(output,error,retcode,None)             
-         self.ocommon.log_info_message("Successfully installed cvuqdisk file.",self.file_name)
-         
-      except subprocess.CalledProcessError as e:
-         self.ocommon.log_error_message("Error installing cvuqdisk. Exiting..." + e,self.file_name)
+   def install_cvuqdisk(self, node):
+      """
+      Install cvuqdisk rpm on the given node.
+      Dynamically picks RPM location from GRID_HOME instead of hardcoding.
+      """
+      # Get GI parameters
+      giuser, gihome, obase, invloc = self.ocommon.get_gi_params()
 
+      # Construct rpm directory path based on GRID_HOME
+      rpm_directory = os.path.join(gihome, "cv", "rpm")
+
+      try:
+         # Construct and run rpm install command
+         cmd = f'''su - {giuser} -c "ssh {node} 'sudo rpm -Uvh {rpm_directory}/cvuqdisk-*.rpm'"'''
+         output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+         self.ocommon.check_os_err(output, error, retcode, None)
+         self.ocommon.log_info_message("Successfully installed cvuqdisk file.", self.file_name)
+
+      except subprocess.CalledProcessError as e:
+         self.ocommon.log_error_message(f"Error installing cvuqdisk. Exiting... {e}", self.file_name)
 
    def backup_oracle_etc_files(self):
       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
