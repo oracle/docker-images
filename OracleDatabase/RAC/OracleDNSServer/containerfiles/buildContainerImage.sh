@@ -19,7 +19,7 @@ It builds a container image for a DNS server
 
 Parameters:
    -v: version to build
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+       Choose one of: $(printf "%s  " */ | sed 's#/##g')
    -o: passes on container build option
 
 LICENSE UPL 1.0
@@ -30,20 +30,27 @@ EOF
   exit 0
 }
 
-# Validate packages
+
 checksumPackages() {
-  if hash md5sum 2>/dev/null; then
+  if [ "$SKIPMD5" -eq 1 ]; then
+    echo "Skipping MD5 checksum verification."
+    return 0
+  fi
+
+  if command -v md5sum >/dev/null 2>&1; then
     echo "Checking if required packages are present and valid..."
     md5sum -c Checksum
-    if [ "$?" -ne 0 ]; then
+    rc=$?
+    if [ "$rc" -ne 0 ]; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
-      exit $?
+      exit "$rc"
     fi
   else
     echo "Ignored MD5 sum, 'md5sum' command not available."
   fi
 }
+
 
 ##############
 #### MAIN ####
@@ -90,7 +97,6 @@ IMAGE_NAME="oracle/rac-dnsserver:$VERSION"
 # Go into version folder
 cd "$VERSION" || exit
 
-
 echo "=========================="
 echo "DOCKER info:"
 docker info
@@ -124,26 +130,24 @@ fi
 echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
-BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
+BUILD_START=$(date +%s)
+
+if ! docker build --force-rm=true --no-cache=true \
+     $DOCKEROPS $PROXY_SETTINGS \
+     -t "$IMAGE_NAME" -f Containerfile .; then
   echo "There was an error building the image."
   exit 1
-}
-BUILD_END=$(date '+%s')
-BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
+fi
 
-echo ""
+BUILD_END=$(date +%s)
+BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 
-if [ $? -eq 0 ]; then
 cat << EOF
-  Oracle Database Docker Image for Real Application Clusters (RAC) version $VERSION is ready to be extended: 
-    
+
+  Oracle Database Docker Image for Real Application Clusters (RAC) version $VERSION is ready to be extended:
+
     --> $IMAGE_NAME
 
   Build completed in $BUILD_ELAPSED seconds.
-  
-EOF
 
-else
-  echo "Oracle Database Real Application Clusters Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
-fi
+EOF
