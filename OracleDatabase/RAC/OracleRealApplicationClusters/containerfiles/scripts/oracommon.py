@@ -1604,7 +1604,10 @@ class OraCommon:
                 if int(version) == 19:
                     distid_env = "export CV_ASSUME_DISTID=OL8; "
                 if self.check_key("CRS_GPC", self.ora_env_dict):
-                    cmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent -responseFile {rspfile} {pwdparam} {prereq} {prereqfailure}"'''
+                    if int(version) <= 21:
+                        cmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent -responseFile {rspfile} {prereq} {prereqfailure}"'''
+                    else:
+                        cmd = f'''su - {giuser} -c "{distid_env}{gihome}/{runCmd} -waitforcompletion {copyflag} -silent -responseFile {rspfile} {pwdparam} {prereq} {prereqfailure}"'''
                 else:
                     param1 = f'''oracle.install.crs.config.netmaskList={netmasklist}''' if netmasklist else \
                              '''oracle.install.crs.config.netmaskList=eth0:255.255.0.0,eth1:255.255.255.0,eth2:255.255.255.0'''

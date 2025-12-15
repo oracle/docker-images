@@ -333,31 +333,39 @@ class OraMiscOps:
        print(status)
 
    def checkdbrole(self):
-       """
-        This will verify RAC DB Role
-       """
-       status=""
-       mode=""
-       dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-       #retcode1=self.ocvu.check_home(None,dbhome,dbuser)
-       retcode1=0
-       if retcode1 != 0:
-          status="RAC_NOT_INSTALLED_OR_CONFIGURED"
-       else:
-          mode=self.checkracsvc()
-          if (mode == "OPEN") or ( mode == "MOUNT"):
-            osuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
-            osid=self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME",self.ora_env_dict) else "ORCLCDB"
-            scanname = self.get_scan_name()
-            scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
-            connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",None,scanname,scanport,osid,None,None,None)
-            status=self.ocommon.get_db_role(osuser,dbhome,osid,connect_str)
-          else:
-             status="NOTAVAILABLE"
+      """
+      Verify RAC DB Role
+      """
+      status = ""
+      mode = ""
 
-       msg='''Database role set to {0}'''.format(status)
-       self.ocommon.log_info_message(msg,self.file_name)
-       print(status)
+      dbuser, dbhome, dbase, oinv = self.ocommon.get_db_params()
+      retcode1 = 0  # RAC check disabled for now
+
+      if retcode1 != 0:
+         status = "RAC_NOT_INSTALLED_OR_CONFIGURED"
+      else:
+         mode = self.checkracsvc()
+         if mode in ("OPEN", "MOUNT"):
+               osuser, dbhome, dbbase, oinv = self.ocommon.get_db_params()
+               dbname = self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME", self.ora_env_dict) else "ORCLCDB"
+               hostname = self.ocommon.get_public_hostname()
+               osid = self.ocommon.get_inst_sid(osuser, dbhome, dbname, hostname)
+               if not osid:
+                  osid = dbname + "1"
+               scanname = self.get_scan_name()
+               scanport = self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT", self.ora_env_dict) else "1521"
+               connect_str = self.ocommon.get_sqlplus_str(
+                  dbhome, osid, osuser, "sys", None, scanname, scanport, dbname, None, None, None
+               )
+               status = self.ocommon.get_db_role(osuser, dbhome, osid, connect_str)
+         else:
+               status = "NOTAVAILABLE"
+
+      msg = f"Database role set to {status}"
+      self.ocommon.log_info_message(msg, self.file_name)
+      print(status)
+
 
    def getconnectstr(self):
        """
@@ -395,26 +403,31 @@ class OraMiscOps:
        return connect_str
 
    def checkracsvc(self):
-       """
-       Check the RAC SVC
-       """
-       mode=""
-       osuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
-       osid=self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME",self.ora_env_dict) else "ORCLCDB"
-       scanname = self.get_scan_name()
-       scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
-       connect_str=self.ocommon.get_sqlplus_str(dbhome,osid,osuser,"sys",None,scanname,scanport,osid,None,None,None)
-       status=self.ocommon.get_dbinst_status(osuser,dbhome,osid,connect_str)
-       if self.ocommon.check_substr_match(status,"OPEN"):
-         mode="OPEN"
-       elif self.ocommon.check_substr_match(status,"MOUNT"):
-         mode="MOUNT"
-       elif self.ocommon.check_substr_match(status,"NOMOUNT"):
-         mode="NOMOUNT"
-       else:
-         mode="NOTAVAILABLE"
-
-       return mode
+      """
+      Check the RAC SVC
+      """
+      mode = ""
+      osuser, dbhome, dbbase, oinv = self.ocommon.get_db_params()
+      dbname = self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME", self.ora_env_dict) else "ORCLCDB"
+      hostname = self.ocommon.get_public_hostname()
+      osid = self.ocommon.get_inst_sid(osuser, dbhome, dbname, hostname)
+      if not osid:
+         osid = dbname + "1"
+      scanname = self.get_scan_name()
+      scanport = self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT", self.ora_env_dict) else "1521"
+      connect_str = self.ocommon.get_sqlplus_str(
+         dbhome, osid, osuser, "sys", None, scanname, scanport, dbname, None, None, None
+      )
+      status = self.ocommon.get_dbinst_status(osuser, dbhome, osid, connect_str)
+      if self.ocommon.check_substr_match(status, "OPEN"):
+         mode = "OPEN"
+      elif self.ocommon.check_substr_match(status, "MOUNT"):
+         mode = "MOUNT"
+      elif self.ocommon.check_substr_match(status, "NOMOUNT"):
+         mode = "NOMOUNT"
+      else:
+         mode = "NOTAVAILABLE"
+      return mode
     
    def checkraclocal(self):
        """
@@ -423,7 +436,8 @@ class OraMiscOps:
        status=""
        mode=""
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-       retcode1=self.ocvu.check_home(None,dbhome,dbuser)
+       node=self.ocommon.get_public_hostname()
+       retcode1=self.ocvu.check_home(node,dbhome,dbuser)
        retcode1=0
        if retcode1 != 0:
           status="RAC_NOT_INSTALLED_OR_CONFIGURED" 
