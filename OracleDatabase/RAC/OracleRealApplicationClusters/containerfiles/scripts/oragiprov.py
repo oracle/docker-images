@@ -382,59 +382,50 @@ class OraGIProv:
             asmstr, disksWithFGNames, oraversion, gridrsp, netmasklist, clusterusage
          )
 
-   def get_responsefile(self, obase, invloc, scanname, scanport, clutype, cluname, clunodes, nwiface, gimrflag, passwd, dgname, dgred, fgname, asmdisk, asmstr, disksWithFGNames, oraversion, gridrsp, netmasklist, crsconfig):
-      """
-      This function prepares the response file if no response file is passed.
-      """      
-      self.ocommon.log_info_message("I am in get_responsefile", self.file_name)
-      
-      rspdata = '''
-      oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{15}
-      oracle.install.option={19}
-      ORACLE_BASE={0}
-      INVENTORY_LOCATION={1}
-      oracle.install.asm.OSDBA=asmdba
-      oracle.install.asm.OSOPER=asmoper
-      oracle.install.asm.OSASM=asmadmin
-      oracle.install.crs.config.gpnp.scanName={2}
-      oracle.install.crs.config.gpnp.scanPort={3}
-      oracle.install.crs.config.clusterName={5}
-      oracle.install.crs.config.clusterNodes={6}
-      oracle.install.crs.config.networkInterfaceList={7}
-      oracle.install.crs.configureGIMR={8}
-      oracle.install.asm.SYSASMPassword=
-      oracle.install.asm.monitorPassword=
-      oracle.install.crs.config.storageOption=
-      oracle.install.asm.diskGroup.name={10}
-      oracle.install.asm.diskGroup.redundancy={11}
-      oracle.install.asm.diskGroup.AUSize=4
-      oracle.install.asm.diskGroup.disksWithFailureGroupNames={18}
-      oracle.install.asm.diskGroup.disks={13}
-      oracle.install.asm.diskGroup.quorumFailureGroupNames=
-      oracle.install.asm.diskGroup.diskDiscoveryString={14}
-      oracle.install.crs.rootconfig.configMethod=ROOT
-      oracle.install.asm.configureAFD=false
-      oracle.install.crs.rootconfig.executeRootScript=false
-      oracle.install.crs.config.ignoreDownNodes=false
-      oracle.install.config.managementOption=NONE
-      oracle.install.crs.configureRHPS={16}
-      oracle.install.crs.config.ClusterConfiguration={17}
-      '''.format(
-         obase, invloc, scanname, scanport, clutype, cluname, clunodes,
-         nwiface, gimrflag, passwd, dgname, dgred, fgname, asmdisk, asmstr,
-         oraversion, "false", "STANDALONE", disksWithFGNames, crsconfig
-      )
-
-      self.ocommon.write_file(gridrsp, rspdata)
-      if os.path.isfile(gridrsp):
-         return gridrsp, netmasklist
-      else:
-         self.ocommon.log_error_message(
-               "Grid response file does not exist at its location: " + gridrsp + ". Exiting..",
-               self.file_name
-         )
-         self.ocommon.prog_exit("127")
-
+   def get_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,crsconfig):
+       """
+       This function prepare the response file if no response file passed
+       """      
+       self.ocommon.log_info_message("I am in get_responsefile", self.file_name)
+       rspdata='''
+       oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{15} 
+       oracle.install.option={19}
+       ORACLE_BASE={0}
+       INVENTORY_LOCATION={1}
+       oracle.install.asm.OSDBA=asmdba
+       oracle.install.asm.OSOPER=asmoper
+       oracle.install.asm.OSASM=asmadmin
+       oracle.install.crs.config.gpnp.scanName={2}
+       oracle.install.crs.config.gpnp.scanPort={3}
+       oracle.install.crs.config.clusterName={5}
+       oracle.install.crs.config.clusterNodes={6}
+       oracle.install.crs.config.networkInterfaceList={7}
+       oracle.install.crs.configureGIMR={8}
+       oracle.install.asm.SYSASMPassword={9}
+       oracle.install.asm.monitorPassword={9}
+       oracle.install.crs.config.storageOption=
+       oracle.install.asm.diskGroup.name={10}
+       oracle.install.asm.diskGroup.redundancy={11}
+       oracle.install.asm.diskGroup.AUSize=4
+       oracle.install.asm.diskGroup.disksWithFailureGroupNames={18}
+       oracle.install.asm.diskGroup.disks={13}
+       oracle.install.asm.diskGroup.quorumFailureGroupNames=
+       oracle.install.asm.diskGroup.diskDiscoveryString={14}
+       oracle.install.crs.rootconfig.configMethod=ROOT
+       oracle.install.asm.configureAFD=false
+       oracle.install.crs.rootconfig.executeRootScript=false
+       oracle.install.crs.config.ignoreDownNodes=false
+       oracle.install.config.managementOption=NONE
+       oracle.install.crs.configureRHPS={16}
+       oracle.install.crs.config.ClusterConfiguration={17}
+       '''.format(obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,oraversion,"false","STANDALONE",disksWithFGNames,crsconfig)
+#      fdata="\n".join([s for s in rspdata.split("\n") if s])
+       self.ocommon.write_file(gridrsp,rspdata)
+       if os.path.isfile(gridrsp):
+          return gridrsp,netmasklist
+       else:
+          self.ocommon.log_error_message("Grid response file does not exist at its location: " + gridrsp + ".Exiting..",self.file_name)
+          self.ocommon.prog_exit("127")
 
    def get_23c_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,clusterusage):
        """

@@ -124,8 +124,8 @@ class OraSetupSSH:
                 else:
                     self.performsshsetup(
                         user, gihome, sshscr, cluster_nodes, version, password, i, expect, script_dir)
-                retcode = self.verifyssh(user, gihome, sshscr, cluster_nodes.replace(",", " "), version)
-
+                retcode = self.verifyssh(
+                    user, gihome, sshscr, cluster_nodes, version)
                 if retcode == 0:
                     break
                 else:
@@ -155,8 +155,8 @@ class OraSetupSSH:
                         keyscan_output, keyscan_error, keyscan_retcode, False)
                     self.performsshsetup(
                         user, gihome, sshscr, new_nodes, version, password, i, expect, script_dir)
-                retcode = self.verifyssh(user, gihome, sshscr, new_nodes.replace(",", " "), version)
-
+                retcode = self.verifyssh(
+                    user, gihome, sshscr, new_nodes, version)
                 if retcode == 0:
                     break
                 else:
@@ -174,7 +174,7 @@ class OraSetupSSH:
             "Verifying SSH between nodes " + cls_nodes, self.file_name)
         retcode1 = 0
         if int(version) == 19 or int(version) == 21:
-            nodes_list = cls_nodes.replace(",", " ").split()
+            nodes_list = cls_nodes.split(" ")
             for node in nodes_list:
                 cmd = '''su - {0} -c "ssh -o BatchMode=yes -o ConnectTimeout=5 {0}@{1} echo ok 2>&1"'''.format(
                     user, node)
@@ -321,8 +321,7 @@ class OraSetupSSH:
                             time.sleep(5)
                             i = i+1
 
-        retcode = self.verifyssh(user, gihome, sshscr, cluster_nodes.replace(",", " "), version)
-
+        retcode = self.verifyssh(user, gihome, sshscr, new_nodes, version)
 
     def setupsshdirs(self, user, ohome, ctype):
         """

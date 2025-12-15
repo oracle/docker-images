@@ -100,6 +100,7 @@ class OraSetupEnv:
          self.ocommon.log_info_message("Running comment_out_swap_space()",self.file_name)
          self.comment_out_swap_space()
          self.ocommon.log_info_message("Ended comment_out_swap_space()",self.file_name)
+         self.create_ssh_keypair()
          self.setup_ssh_for_k8s()
          self.set_banner()
 
@@ -693,7 +694,34 @@ class OraSetupEnv:
         else:
           if self.ocommon.detect_k8s_env():
              self.ocommon.log_error_message("SSH_PRIVATE_KEY and SSH_PUBLIC_KEY is ot set in K8s env. Exiting..",self.file_name)
-             self.ocommon.prog_exit("127")               
+             self.ocommon.prog_exit("127")
+
+    def create_ssh_keypair(self):
+      """
+      Generate SSH key pair only if they are not present.
+      Set their paths in self.ora_env_dict as SSH_PRIVATE_KEY and SSH_PUBLIC_KEY.
+      """
+      privkey_path = "/tmp/id_rsa"
+      pubkey_path = "/tmp/id_rsa.pub"
+      if self.ocommon.check_key("CRS_GPC", self.ora_env_dict): # only for oracle restart
+         # Check if already set
+         if not self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict) or \
+            not self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict) or \
+            not (os.path.exists(privkey_path) and os.path.exists(pubkey_path)):
+            if not (os.path.exists(privkey_path) and os.path.exists(pubkey_path)):
+                  cmd = [
+                     "ssh-keygen", "-t", "rsa", "-b", "4096",
+                     "-f", privkey_path, "-N", ""
+                  ]
+                  subprocess.run(cmd, check=True)
+                  os.chmod(privkey_path, 0o600)
+                  os.chmod(pubkey_path, 0o644)
+            # Set environment dictionary values (add/remove as per your ocommon.add_key implementation)
+            self.ora_env_dict = self.ocommon.add_key("SSH_PRIVATE_KEY", privkey_path, self.ora_env_dict)
+            self.ora_env_dict = self.ocommon.add_key("SSH_PUBLIC_KEY", pubkey_path, self.ora_env_dict)
+            # Optionally set environment variables too
+            os.environ["SSH_PRIVATE_KEY"] = privkey_path
+            os.environ["SSH_PUBLIC_KEY"] = pubkey_path
 ###### Install CRS Software on node ######
     def crs_sw_install(self):
        """
