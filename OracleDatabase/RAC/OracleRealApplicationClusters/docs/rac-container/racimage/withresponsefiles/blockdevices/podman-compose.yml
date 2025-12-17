@@ -106,7 +106,7 @@ services:
       - rac_priv1_nw
       - rac_priv2_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod/oracle_rac_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "if [ `cat /tmp/orod/oracle_db_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

@@ -118,7 +118,7 @@ podman start ${GPCNODE}
 It can take approximately 20 minutes or longer to create and start the Oracle Restart setup . To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message similar to the following:
