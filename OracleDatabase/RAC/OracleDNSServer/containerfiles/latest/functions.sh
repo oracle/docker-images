@@ -1,19 +1,22 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
-# Copyright (c) 2018-2025 Oracle and/or its affiliates. All rights reserved.
-#
-# Since: January, 2018
+#############################
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-# Description: Common functions for CMAN 
+############################
+#
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# shellcheck disable=SC1091
-source /tmp/envfile
 
-export logfile=/tmp/orod.log
-export logdir=/tmp
+export CONFIGENV=${CONFIGENV:-/dnsserver/env}
+export ENVFILE="${CONFIGENV}"/"dns_envfile"
+# shellcheck disable=SC1091
+source ${ENVFILE}
+
+export logdir=${LOGDIR:-/dnsserver/logs}
+export logfile=${logdir}/orod.log
 export STD_OUT_FILE="/proc/self/fd/1"
 export STD_ERR_FILE="/proc/self/fd/2"
 

@@ -1,20 +1,28 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
-# Copyright (c) 2018-2025 Oracle and/or its affiliates. All rights reserved.
-# 
-# Since: January, 2018
-# Author: paramdeep.saini@oracle.com, sanjay.singh@oracle.com
+#############################
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Author: paramdeep.saini@oracle.com
+############################
+#
 # Description: Runs  NFS server inside the container
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
+
+export CONFIGENV=${CONFIGENV:-/dnsserver/env}
+export ENVFILE="${CONFIGENV}"/"dns_envfile"
 # shellcheck disable=SC1091
-source /tmp/envfile
-# shellcheck disable=SC1090
-source "$SCRIPT_DIR/functions.sh"
+source ${ENVFILE}
+
+export logdir=${LOGDIR:-/dnsserver/logs}
+# shellcheck disable=SC1091
+source $SCRIPT_DIR/functions.sh
 
 ####################### Constants #################
+declare -r FALSE=1
+declare -r TRUE=0
 declare -x HOSTNAME
 declare -x RAC_PUBLIC_SUBNET
 declare -x RAC_PRIVATE_SUBNET

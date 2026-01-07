@@ -1,29 +1,37 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
-# Copyright (c) 2018-2025 Oracle and/or its affiliates. All rights reserved.
-# 
-# Since: January, 2018
+#############################
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-# Description: Runs the DNS Server Inside the container
+############################
+#
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
 
-env > /tmp/envfile
+export CONFIGENV=${CONFIGENV:-/dnsserver/env}
+export ENVFILE="${CONFIGENV}"/"dns_envfile"
 
-chmod 755 /tmp/envfile 
+env > ${ENVFILE}
 # shellcheck disable=SC1091
-source /tmp/envfile
+source ${ENVFILE}
+
+export logdir=${LOGDIR:-/dnsserver/logs}
+
+
+chmod 755 ${ENVFILE}
 # shellcheck disable=SC1091
-source "$SCRIPT_DIR/functions.sh"
+source ${ENVFILE}
+
+source $SCRIPT_DIR/functions.sh
 
 ########### SIGINT handler ############
 function _int() {
    echo "Stopping container."
 sudo kill -9 "$(pgrep named)"
-touch /tmp/stop
+touch ${logdir}/stop
 }
 
 ########### SIGTERM handler ############
@@ -31,14 +39,15 @@ function _term() {
    echo "Stopping container."
    echo "SIGTERM received, shutting down!"
 sudo kill -9 "$(pgrep named)"
-touch /tmp/sigterm
+touch ${logdir}/sigterm
 }
 
 ########### SIGKILL handler ############
 function _kill() {
    echo "SIGKILL received, shutting down database!"
+   local cmd
    sudo kill -9 "$(pgrep named)"
-   touch /tmp/sigkill
+   touch ${logdir}/sigkill
 }
 
 ###################################
@@ -56,18 +65,19 @@ trap _term SIGTERM
 # Set SIGKILL handler
 trap '_kill' SIGTERM
 
-############ Removing /tmp/orod.log #####
+############ Removing ${logdir}/orod.log #####
 # shellcheck disable=SC2154
 print_message "Creating $logfile"
 chmod 666 "$logfile"
+sudo $SCRIPT_DIR/$CONFIG_DNS_SERVER_FILE
 
-if sudo "$SCRIPT_DIR/$CONFIG_DNS_SERVER_FILE"; then
-    print_message "DNS Server Started Successfully"
-    echo "$TRUE"
-else
-    error_exit "DNS Server startup failed!"
+if [ $? -eq 0 ];then
+ print_message "DNS Server Started Successfully"
+  echo $TRUE
+else 
+ error_exit "DNS Server startup failed!"
 fi
 
-tail -f /tmp/orod.log &
+tail -f ${logdir}/orod.log &
 childPID=$!
 wait $childPID
