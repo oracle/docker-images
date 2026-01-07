@@ -1,8 +1,12 @@
-# LICENSE UPL 1.0
 #
-# Copyright (c) 2018-2025 Oracle and/or its affiliates. All rights reserved.
+#############################
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Author: paramdeep.saini@oracle.com
+############################
 #
-# ORACLE DOCKERFILES PROJECT
+#
+# ORACLE CONTAINERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 19c RAC Storage Server. This file create DNS Server for RAC. 
 # 
@@ -14,7 +18,7 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:8
+FROM oraclelinux:9
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -37,7 +41,9 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     NAMED_EMPTY_FILE="named.empty" \
     FUNCTIONS="functions.sh" \
     RUN_FILE="runOracle.sh" \
-    SUDO_SETUP_FILE="setupSudo.sh" \ 
+    SUDO_SETUP_FILE="setupSudo.sh" \
+    LOGDIR="/dnsserver/logs" \
+    CONFIGENV="/dnsserver/env" \
     BIN="/usr/sbin" \
     ORADATA="/oradata" \
     container="true" 
@@ -69,6 +75,10 @@ RUN  chmod 755 $INSTALL_DIR/install/*.sh && \
      echo "nohup $SCRIPT_DIR/runOracle.sh &" >> /etc/rc.local && \
      chmod +x /etc/rc.d/rc.local  && \
      useradd orcladmin && \
+     mkdir -p ${LOGDIR} && \
+     mkdir -p ${CONFIGENV} && \
+     chown orcladmin:orcladmin ${LOGDIR} && \
+     chown orcladmin:orcladmin ${CONFIGENV} &&  \
      sync
 
 # Define default command to start Oracle Database.

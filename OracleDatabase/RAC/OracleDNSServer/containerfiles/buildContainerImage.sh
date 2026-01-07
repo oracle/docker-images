@@ -63,7 +63,7 @@ fi
 # Parameters
 VERSION="latest"
 SKIPMD5=0
-DOCKEROPS=""
+PODMANOPS=""
 
 while getopts "hiv:o:" optname; do
   case "$optname" in
@@ -77,7 +77,7 @@ while getopts "hiv:o:" optname; do
       VERSION="$OPTARG"
       ;;
     "o")
-      DOCKEROPS="$OPTARG"
+      PODMANOPS="$OPTARG"
       ;;
     "?")
       usage;
@@ -85,8 +85,7 @@ while getopts "hiv:o:" optname; do
       exit 1;
       ;;
     *)
-    # Should not occur
-      echo "Unknown error while processing options inside buildDockerImage.sh"
+      echo "Unknown error while processing options inside buildPodmanImage.sh"
       ;;
   esac
 done
@@ -98,8 +97,8 @@ IMAGE_NAME="oracle/rac-dnsserver:$VERSION"
 cd "$VERSION" || exit
 
 echo "=========================="
-echo "DOCKER info:"
-docker info
+echo "PODMAN info:"
+podman info
 echo "=========================="
 
 # Proxy settings
@@ -132,8 +131,8 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date +%s)
 
-if ! docker build --force-rm=true --no-cache=true \
-     $DOCKEROPS $PROXY_SETTINGS \
+if ! podman build --force-rm=true --no-cache=true \
+     $PODMANOPS $PROXY_SETTINGS \
      -t "$IMAGE_NAME" -f Containerfile .; then
   echo "There was an error building the image."
   exit 1
@@ -144,7 +143,7 @@ BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 
 cat << EOF
 
-  Oracle Database Docker Image for Real Application Clusters (RAC) version $VERSION is ready to be extended:
+  Oracle Database Container Image for Real Application Clusters (RAC) version $VERSION is ready to be extended:
 
     --> $IMAGE_NAME
 
