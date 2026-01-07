@@ -12,8 +12,8 @@
 
 export CONFIGENV=${CONFIGENV:-/dnsserver/env}
 export ENVFILE="${CONFIGENV}"/"dns_envfile"
-# shellcheck disable=SC1091
-source ${ENVFILE}
+# shellcheck disable=SC1090
+source "${ENVFILE}"
 
 export logdir=${LOGDIR:-/dnsserver/logs}
 export logfile=${logdir}/orod.log

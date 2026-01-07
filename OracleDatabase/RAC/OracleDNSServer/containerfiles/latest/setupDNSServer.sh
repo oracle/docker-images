@@ -13,15 +13,17 @@
 
 export CONFIGENV=${CONFIGENV:-/dnsserver/env}
 export ENVFILE="${CONFIGENV}"/"dns_envfile"
-# shellcheck disable=SC1091
-source ${ENVFILE}
+# shellcheck disable=SC1090
+source "${ENVFILE}"
 
 export logdir=${LOGDIR:-/dnsserver/logs}
 # shellcheck disable=SC1091
-source $SCRIPT_DIR/functions.sh
+source "$SCRIPT_DIR"/functions.sh
 
 ####################### Constants #################
+# shellcheck disable=SC2034
 declare -r FALSE=1
+# shellcheck disable=SC2034
 declare -r TRUE=0
 declare -x HOSTNAME
 declare -x RAC_PUBLIC_SUBNET
