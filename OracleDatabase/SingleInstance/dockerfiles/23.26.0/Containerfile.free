@@ -4,7 +4,7 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Contatinerfile for Oracle Database 23ai Free
+# This is the Contatinerfile for Oracle Database 26ai Free
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -13,16 +13,25 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run: 
-#      $ podman build -t oracle/database:23.6.0-free -f Containerfile.free .
+#      $ podman build -t oracle/database:23.26.0-free -f Containerfile.free .
 #
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:8 as base
+ARG BASE_IMAGE=oraclelinux:9
+# hadolint ignore=DL3006
+FROM ${BASE_IMAGE} as base
 
 # Labels
 # ------
 LABEL "provider"="Oracle"                                               \
+      "maintainer"="Oracle Database Container Team <container-team_ww@oracle.com>" \
+      "vendor"="Oracle Corporation"                                     \
+      "version"="23.26.0"                                               \
+      "release"="Free"                                                  \
+      "name"="Oracle AI Database 26ai Free"                             \
+      "summary"="Oracle AI Database 26ai Free"                          \
+      "description"="Oracle AI Database 26ai Free is a fully functional version of Oracle AI Database 26ai for developers to learn, build, and deploy applications." \
       "issues"="https://github.com/oracle/docker-images/issues"         \
       "volume.data"="/opt/oracle/oradata"                               \
       "volume.setup.location1"="/opt/oracle/scripts/setup"              \
@@ -31,19 +40,19 @@ LABEL "provider"="Oracle"                                               \
       "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
       "port.listener"="1521"                                            
 
-ARG INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23ai-1.0-1.el8.x86_64.rpm"
+ARG INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-free/oracle-ai-database-free-26ai-23.26.0-1.el9.x86_64.rpm"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 ENV ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/23ai/dbhomeFree \
+    ORACLE_HOME=/opt/oracle/product/26ai/dbhomeFree \
     ORACLE_SID=FREE \
     INSTALL_FILE_1=$INSTALL_FILE_1 \
     RUN_FILE="runOracle.sh" \
     PWD_FILE="setPassword.sh" \
     CREATE_DB_FILE="createDB.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
-    CONF_FILE="oracle-free-23ai.conf" \
+    CONF_FILE="oracle-free-26ai.conf" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
     DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
@@ -101,15 +110,20 @@ FROM base
 USER oracle
 COPY --chown=oracle:oinstall --from=builder $ORACLE_BASE $ORACLE_BASE
 COPY --chown=oracle:oinstall --from=builder /etc/oratab /etc/oratab
-COPY --from=builder /etc/init.d/oracle-free-23ai /etc/init.d/oracle-free-23ai
-COPY --from=builder /usr/share/doc/oracle-free-23ai/LICENSE /usr/share/doc/oracle-free-23ai/LICENSE
+COPY --from=builder /etc/init.d/oracle-free-26ai /etc/init.d/oracle-free-26ai
+COPY --from=builder /usr/share/doc/oracle-free-26ai/LICENSE /usr/share/doc/oracle-free-26ai/LICENSE
 
 USER root
 # To enforce ORACLE_SID as FREE, adding it to .bashrc
 RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
     $ORACLE_HOME/root.sh && \
     echo 'export ORACLE_SID=FREE' >> /home/oracle/.bashrc && \
-    chown oracle.oinstall /home/oracle/.bashrc
+    chown oracle.oinstall /home/oracle/.bashrc && \
+    mkdir /licenses && \
+    cp /usr/share/doc/oracle-free-26ai/LICENSE /licenses/license.txt && \
+    chmod -R 644 /licenses/license.txt && \
+    rm -rf /tmp/* /var/tmp/*
+
 
 USER oracle
 WORKDIR /home/oracle

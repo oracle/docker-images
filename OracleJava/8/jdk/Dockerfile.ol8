@@ -26,7 +26,7 @@
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
-FROM oraclelinux:8 as builder
+FROM oraclelinux:8 AS builder
 ARG JDK8_TOKEN
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
@@ -35,7 +35,7 @@ LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 RUN dnf install -y tar
 
 # Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
@@ -63,9 +63,9 @@ RUN set -eux; \
 FROM oraclelinux:8
 
 # Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 ENV JAVA_HOME=/usr/java/jdk-8
-ENV PATH $JAVA_HOME/bin:$PATH
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Copy the uncompressed Java Runtime from the builder image
 COPY --from=builder $JAVA_HOME $JAVA_HOME

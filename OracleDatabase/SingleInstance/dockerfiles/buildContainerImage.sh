@@ -89,6 +89,10 @@ checkDockerVersion() {
   # Get Docker Server version
   echo "Checking Docker version."
   DOCKER_VERSION=$("${CONTAINER_RUNTIME}" version --format '{{.Server.Version }}'|| exit 0)
+  # Remove +dfsg* if present
+  DOCKER_VERSION=${DOCKER_VERSION%%+dfsg*}
+  # Remove dot in Docker version
+  DOCKER_VERSION=${DOCKER_VERSION//./}
 
   if [ "$(printf '%s\n' "$MIN_DOCKER_VERSION" "$DOCKER_VERSION" | sort -V | head -n1)" != "$MIN_DOCKER_VERSION" ]; then
     echo "Docker version is below the minimum required version ${MIN_DOCKER_VERSION}"
@@ -175,16 +179,16 @@ done
 # Check that we have a container runtime installed
 checkContainerRuntime
 
-# Only 19c EE and 23ai Free are supported on ARM64 platform
+# Only 19c EE and 26ai Free are supported on ARM64 platform
 if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   BUILD_OPTS=("--build-arg" "BASE_IMAGE=oraclelinux:8" "${BUILD_OPTS[@]}")
   PLATFORM=".arm64"
   if [ "${VERSION}" == "19.3.0" ] && { [ "${BASE_ONLY}" -eq 1 ] || [ "${ENTERPRISE}" -eq 1 ]; }; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=LINUX.ARM64_1919000_db_home.zip" "${BUILD_OPTS[@]}")
-  elif { [ "${VERSION}" == "23.6.0" ] && [ "${FREE}" -eq 1 ]; }; then
-    BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=https://download.oracle.com/otn-pub/otn_software/db-free/oracle-database-free-23ai-1.0-1.el8.aarch64.rpm" "${BUILD_OPTS[@]}")
+  elif { [ "${VERSION}" == "23.26.0" ] && [ "${FREE}" -eq 1 ]; }; then
+    BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=https://download.oracle.com/otn-pub/otn_software/db-free/oracle-ai-database-free-26ai-23.26.0-1.el8.aarch64.rpm" "${BUILD_OPTS[@]}")
   else
-    echo "Currently only 19c enterprise edition and 23ai Free are supported on ARM64 platform.";
+    echo "Currently only 19c enterprise edition and 26ai Free are supported on ARM64 platform.";
     exit 1;
   fi;
 fi;
@@ -227,7 +231,7 @@ cd "${VERSION}" || {
 }
 
 # Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.6.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
+if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || [ "${VERSION}" == "23.26.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; }; then
   DOCKERFILE=$( if [[ -f "Containerfile.${EDITION}" ]]; then echo "Containerfile.${EDITION}"; else echo "${DOCKERFILE}.${EDITION}";fi )
 fi;
 

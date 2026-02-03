@@ -1,10 +1,11 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
-# Copyright (c) 2018-2025 Oracle and/or its affiliates. All rights reserved.
+#############################
+# Copyright (c) 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
+# Author: paramdeep.saini@oracle.com
+############################
 #
-# Since: January, 2018
-# Author: paramdeep.saini@oracle.com, sanjay.singh@oracle.com
 # Description: Sets up the unix environment for DB installation.
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.

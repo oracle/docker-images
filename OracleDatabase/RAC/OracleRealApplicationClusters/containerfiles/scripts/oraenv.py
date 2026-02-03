@@ -15,6 +15,7 @@ import os
 class OraEnv:
    __instance                                  = None
    __env_var_file                              = '/etc/rac_env_vars'
+   __env_var_file_writable                     = '/etc/rac_env_vars_writable'
    __env_var_file_flag                         = None
    __env_var_dict                              = {}
    __ora_asm_diskgroup_name                    = '+DATA'
@@ -116,13 +117,13 @@ class OraEnv:
       """ Static access method to return the logfile name. """
       if file_type == "NONE":
          if "LOGFILE_NAME"  not in OraEnv.__env_var_dict:
-             OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_rac_setup.log"
+             OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_db_setup.log"
       elif file_type == "DEL_PARAMS":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_rac_del.log"
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_db_del.log"
       elif file_type == "RESET_PASSWORD":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_rac_reset_passwd.log"
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_db_reset_passwd.log"
       elif file_type == "ADD_TNS":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_rac_populate_tns_file.log"
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_db_populate_tns_file.log"
       elif file_type == "CHECK_RAC_INST":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_check_rac_inst_file.log"
       elif file_type == "CHECK_GI_LOCAL":
@@ -160,7 +161,7 @@ class OraEnv:
       elif file_type == "LIST_ASMDISKS":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_list_asmdisks_status.log"
       elif file_type == "LIST_ASMDGREDUNDANCY":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_list_asmdgredudancy_status.log"
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_list_asmdgredundancy_status.log"
       elif file_type == "LIST_ASMINSTNAME":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_list_asminstname_status.log"
       elif file_type == "LIST_ASMINSTSTATUS":
@@ -169,6 +170,8 @@ class OraEnv:
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_listenerendp_status.log"
       elif file_type == "RUN_DATAPATCH":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_rundatapatch_status.log"
+      elif file_type == "ONS":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_ons_status.log"
       else:
         pass
 

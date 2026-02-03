@@ -4,7 +4,7 @@
 # Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
-############################
+#############################
 
 """
  This file contains to the code call different classes objects based on setup type
@@ -97,6 +97,10 @@ class OraSetupEnv:
         # self.ocommon.log_info_message("Start crs_sw_install()",self.file_name)
         # self.crs_sw_install()
         # self.ocommon.log_info_message("End crs_sw_install()",self.file_name)
+         self.ocommon.log_info_message("Running comment_out_swap_space()",self.file_name)
+         self.comment_out_swap_space()
+         self.ocommon.log_info_message("Ended comment_out_swap_space()",self.file_name)
+         self.create_ssh_keypair()
          self.setup_ssh_for_k8s()
          self.set_banner()
 
@@ -690,7 +694,34 @@ class OraSetupEnv:
         else:
           if self.ocommon.detect_k8s_env():
              self.ocommon.log_error_message("SSH_PRIVATE_KEY and SSH_PUBLIC_KEY is ot set in K8s env. Exiting..",self.file_name)
-             self.ocommon.prog_exit("127")               
+             self.ocommon.prog_exit("127")
+
+    def create_ssh_keypair(self):
+      """
+      Generate SSH key pair only if they are not present.
+      Set their paths in self.ora_env_dict as SSH_PRIVATE_KEY and SSH_PUBLIC_KEY.
+      """
+      privkey_path = "/tmp/id_rsa"
+      pubkey_path = "/tmp/id_rsa.pub"
+      if self.ocommon.check_key("CRS_GPC", self.ora_env_dict): # only for oracle restart
+         # Check if already set
+         if not self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict) or \
+            not self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict) or \
+            not (os.path.exists(privkey_path) and os.path.exists(pubkey_path)):
+            if not (os.path.exists(privkey_path) and os.path.exists(pubkey_path)):
+                  cmd = [
+                     "ssh-keygen", "-t", "rsa", "-b", "4096",
+                     "-f", privkey_path, "-N", ""
+                  ]
+                  subprocess.run(cmd, check=True)
+                  os.chmod(privkey_path, 0o600)
+                  os.chmod(pubkey_path, 0o644)
+            # Set environment dictionary values (add/remove as per your ocommon.add_key implementation)
+            self.ora_env_dict = self.ocommon.add_key("SSH_PRIVATE_KEY", privkey_path, self.ora_env_dict)
+            self.ora_env_dict = self.ocommon.add_key("SSH_PUBLIC_KEY", pubkey_path, self.ora_env_dict)
+            # Optionally set environment variables too
+            os.environ["SSH_PRIVATE_KEY"] = privkey_path
+            os.environ["SSH_PUBLIC_KEY"] = pubkey_path
 ###### Install CRS Software on node ######
     def crs_sw_install(self):
        """
@@ -792,3 +823,62 @@ class OraSetupEnv:
               else:
                  msg="Grid is not installed on this machine"
                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
+
+    def comment_out_swap_space(self):
+         """
+         This function comments out the SWAP_SPACE=500 parameter in oraparam.ini
+         file for Oracle version 19 in both GRID_HOME and DB_HOME.
+         """
+         oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+         version = oraversion.split(".", 1)[0].strip()
+
+         # Get DB and GI homes
+         dbuser, dbhome, dbase, oinv = self.ocommon.get_db_params()
+         giuser, gihome, gibase, oinv = self.ocommon.get_gi_params()
+
+         if int(version) != 19:
+            self.ocommon.log_info_message(
+                  "Skipping commenting out SWAP_SPACE as Oracle version is {}".format(version),
+                  self.file_name
+            )
+            return
+
+         homes_to_check = [gihome, dbhome]
+         section_name = "[Generic Prereqs]"
+         param_name = "SWAP_SPACE=500"
+
+         for home in homes_to_check:
+            file_path = "{}/oui/oraparam.ini".format(home)
+
+            try:
+                  with open(file_path, 'r') as file:
+                     lines = file.readlines()
+
+                  in_section = False
+                  modified_lines = []
+
+                  for line in lines:
+                     if line.strip() == section_name:
+                        in_section = True
+                     elif line.startswith('[') and in_section:
+                        in_section = False
+
+                     if in_section and line.strip() == param_name:
+                        modified_lines.append("#{}".format(line))
+                     else:
+                        modified_lines.append(line)
+
+                  with open(file_path, 'w') as file:
+                     file.writelines(modified_lines)
+
+                  self.ocommon.log_info_message(
+                     "Successfully commented out {} in {}".format(param_name, file_path),
+                     self.file_name
+                  )
+
+            except Exception as e:
+                  self.ocommon.log_error_message(
+                     "Failed to comment out {} in {}: {}".format(param_name, file_path, str(e)),
+                     self.file_name
+                  )
+

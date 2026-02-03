@@ -20,7 +20,7 @@
 #      $ docker build -t oracle/database:19c-rac .
 
 
-ARG BASE_OL_IMAGE=oraclelinux:8
+ARG BASE_OL_IMAGE=oraclelinux:9
 ARG SLIMMING=false
 # Pull base image
 # ---------------
@@ -30,11 +30,19 @@ ARG SLIMMING=false
 ARG VERSION
 # Labels
 # ------
-LABEL "provider"="Oracle"                                               \
-      "issues"="https://github.com/oracle/docker-images/issues"         \
-      "volume.setup.location1"="/opt/scripts"              \
-      "volume.startup.location1"="/opt/scripts/startup"          \
-      "port.listener"="1521"                                            \
+LABEL "provider"="Oracle"                                                           \
+      "maintainer"="Paramdeep Saini<paramdeep.saini@oracle.com>,Jyoti Prakash Verma<jyoti.verma@oracle.com>,Saurabh Ahuja<saurabh.ahuja@oracle.com>"  \
+      "vendor"="Oracle Corporation"                                                 \
+      "version"="19.3.0"                                                            \
+      "release"="19.3.0"                                                            \
+      "name"="Oracle Database 19c"                                                  \
+      "summary"="Oracle Database 19c"                                               \
+      "description"="Container Image for Oracle Database Server Release 19c"        \
+      "issues"="https://github.com/oracle/docker-images/issues"                     \
+      "volume.data"="/opt/oracle/oradata"                                           \
+      "volume.setup.location1"="/opt/scripts"                                       \
+      "volume.startup.location1"="/opt/scripts/startup"                             \
+      "port.listener"="1521"                                                        \
       "port.oemexpress"="5500"
 
 # Argument to control removal of components not needed after db software installation
@@ -50,6 +58,7 @@ ARG IGNORE_PREREQ=false
 # Linux Env Variable
 # hadolint ignore=DL3044
 ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
+    OCI_FILE="ociregion.sh" \
     INSTALL_DIR=/opt/scripts \
 # Grid Env variables
     GRID_INSTALL_RSP="gridsetup_19c.rsp" \
@@ -99,7 +108,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
 FROM racbase AS rac-image-slim-false
 ARG SLIMMING
 ARG VERSION
-ENV CV_ASSUME_DISTID=OEL7.8
+ENV CV_ASSUME_DISTID=OL8
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 # Linux Env Variable
@@ -121,7 +130,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # COPY Binaries
-COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
+COPY $VERSION/$SETUP_LINUX_FILE $OCI_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
 # Setup Scripts
 COPY $VERSION/$RUN_FILE $VERSION/$ADDNODE_RSP $VERSION/$SETUPSSH $VERSION/$GRID_INSTALL_RSP $VERSION/$DBCA_RSP $VERSION/$INITSH  $SCRIPT_DIR/
@@ -145,7 +154,7 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 FROM racbase AS rac-image-slim-true
 ARG SLIMMING
 ARG VERSION
-ENV CV_ASSUME_DISTID=OEL7.8
+ENV CV_ASSUME_DISTID=OL8
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -158,7 +167,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # COPY Binaries
-COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
+COPY $VERSION/$SETUP_LINUX_FILE $OCI_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
 # Setup Scripts
 COPY $VERSION/$RUN_FILE $VERSION/$SETUPSSH $VERSION/$INITSH $SCRIPT_DIR/
@@ -229,6 +238,7 @@ RUN rm -f $INSTALL_DIR/install/* && \
 #############################################
 # hadolint ignore=DL3006
 FROM rac-image-slim-${SLIMMING} AS final
+ARG VERSION
 ENV GRID_BASE=/u01/app/grid \
     GRID_HOME=/u01/app/19c/grid \
     DB_BASE=/u01/app/oracle \
@@ -260,7 +270,10 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
     rm -f /etc/sysctl.d/99-sysctl.conf && \
     rm -f $INSTALL_DIR/install/* && \
     rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
+    mkdir /licenses && \
     sync
+
+COPY $VERSION/license.txt /licenses/
 
 USER ${USER}
 VOLUME ["/common_scripts"]
