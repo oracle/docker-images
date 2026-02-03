@@ -132,14 +132,14 @@ detectJDKversion()
   javac -version
   if [ ! "$?" ]
    then
-     echo "ERROR: JDK is not installed. Please install JDK 11"
+     echo "ERROR: JDK is not installed. Please install either JDK 11 or JDK 17"
      errorFlag=true
      return
   fi
   javaVersion=$(javac -version 2>&1 | awk '{ print $2 }' | cut -d'.' -f1)
-  if [ "$javaVersion" != "11" ]
+  if [ "$javaVersion" != "11" ] && [ "$javaVersion" != "17" ]
    then
-     echo "ERROR: JDK 11 is required"
+     echo "ERROR: Either JDK 11 or JDK 17 is required"
      errorFlag=true
   fi
 }
@@ -708,6 +708,7 @@ start()
 
 list_descendants ()
 {
+  # shellcheck disable=SC3043,SC2155,SC2046
   local children=$(ps -o pid= --ppid "$1")
 
   for pid in $children
@@ -727,6 +728,7 @@ if [ -n "${CONTAINER_ID}" ]; then
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
 
+   # shellcheck disable=SC2046
    kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
 
    # Kill any processes containing the process ID.
@@ -751,7 +753,8 @@ if [ -n "${CONTAINER_ID}" ]; then
    CONTAINER_PROCESS_ID=$(ps -ef | grep -v grep | grep "$CONTAINER_ID" | awk '{print $2}')
    echo Container Process ID: ${CONTAINER_PROCESS_ID}
 
-   kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
+    # shellcheck disable=SC2046
+    kill -9 $(list_descendants ${CONTAINER_PROCESS_ID})
 
    # Kill any processes containing the process ID.
    # This kills the child processes too.
