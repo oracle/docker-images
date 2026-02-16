@@ -117,7 +117,7 @@ COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_RSP $INSTALL_DB_BINARIES_FILE $
 
 # Install DB software binaries
 USER oracle
-RUN chmod ug+x $INSTALL_DIR/*.sh && \
+RUN chmod ug+x "$INSTALL_DIR"/*.sh && \
     sync && \
     $INSTALL_DIR/$INSTALL_DB_BINARIES_FILE $DB_EDITION
 
@@ -135,8 +135,8 @@ USER oracle
 COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
 
 USER root
-RUN $ORACLE_BASE/oraInventory/orainstRoot.sh && \
-    $ORACLE_HOME/root.sh
+RUN "$ORACLE_BASE"/oraInventory/orainstRoot.sh && \
+    "$ORACLE_HOME"/root.sh
 
 USER oracle
 WORKDIR /home/oracle
@@ -148,4 +148,4 @@ HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
-CMD exec $ORACLE_BASE/$RUN_FILE
+CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
