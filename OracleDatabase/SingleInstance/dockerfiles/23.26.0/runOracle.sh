@@ -237,7 +237,7 @@ if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d
    
    # Start database
    if [ "${ORACLE_SID}" = "FREE" ]; then
-      su -c '/etc/init.d/oracle-free-23ai start'
+      su -c '/etc/init.d/oracle-free-26ai start'
    else
       "$ORACLE_BASE"/"$START_FILE";
    fi

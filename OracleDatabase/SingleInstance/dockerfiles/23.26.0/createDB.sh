@@ -151,7 +151,7 @@ EOF
   su -c "sed -i -e \"s|^CHARSET=.*$|CHARSET=$ORACLE_CHARACTERSET|g\" /etc/sysconfig/\"$CONF_FILE\""
 
   # Creating database for FREE edition
-  su -c '/etc/init.d/oracle-free-23ai configure << EOF
+  su -c '/etc/init.d/oracle-free-26ai configure << EOF
 ${ORACLE_PWD}
 ${ORACLE_PWD}
 EOF

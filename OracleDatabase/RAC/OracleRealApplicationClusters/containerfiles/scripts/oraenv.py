@@ -15,6 +15,7 @@ import os
 class OraEnv:
    __instance                                  = None
    __env_var_file                              = '/etc/rac_env_vars'
+   __env_var_file_writable                     = '/etc/rac_env_vars_writable'
    __env_var_file_flag                         = None
    __env_var_dict                              = {}
    __ora_asm_diskgroup_name                    = '+DATA'

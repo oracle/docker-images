@@ -79,7 +79,7 @@ you should see the following in podman logs output:
  DNS Server IS READY TO USE!
 #################################################
 ```
-**Note:** You also have the option to add a private domain name (if required) using an environment variable. For example, you can add `-e PRIVATE_DOMAIN_NAME="example-priv.info"` and also add `RAC_NODE_NAME_PREFIXD="racnoded"` for the Docker domain prefix.
+**Note:** You also have the option to add a private domain name (if required) using an environment variable. For example, you can add `-e PRIVATE_DOMAIN_NAME="example-priv.info"`.
 
 ## Environment Variables Explained
 | Environment Variable    | Description                                                                                                         |

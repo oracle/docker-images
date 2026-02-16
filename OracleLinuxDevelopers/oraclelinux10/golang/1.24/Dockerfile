@@ -3,7 +3,7 @@
 
 FROM ghcr.io/oracle/oraclelinux:10
 
-RUN dnf -y install go-toolset-1.24.6 && \
+RUN dnf -y install go-toolset && \
     rm -rf /var/cache/dnf
 
 CMD ["/bin/go", "version"]

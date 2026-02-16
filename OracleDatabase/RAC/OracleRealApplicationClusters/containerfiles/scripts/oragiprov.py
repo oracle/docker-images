@@ -176,7 +176,7 @@ class OraGIProv:
        if len(crs_nodes_list) == 1:
           self.ocommon.log_info_message("Cluster size=1. Node=" + crs_nodes_list[0],self.file_name)
           user=self.ora_env_dict["GRID_USER"]
-          cmd='''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user,crs_nodes_list[0])
+          cmd = '''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -b 4096 -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user, crs_nodes_list[0])
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,None)
        else:
@@ -228,6 +228,7 @@ class OraGIProv:
           #thread.setDaemon(True)
           mythreads.append(thread)
           thread.start()
+          sleep(10)
 
 #       for thread in mythreads:
 #          thread.start()
@@ -338,7 +339,7 @@ class OraGIProv:
        if clusterusage != "GENERAL_PURPOSE":
          scanname=self.ora_env_dict["SCAN_NAME"]
          scanport=self.ora_env_dict["SCAN_PORT"] if self.ocommon.check_key("SCAN_PORT",self.ora_env_dict) else "1521"
-       else: 
+       else:
           scanname=""
           scanport=""
        clutype=self.ora_env_dict["CLUSTER_TYPE"] if self.ocommon.check_key("CLUSTER_TYPE",self.ora_env_dict) else "STANDALONE"
@@ -380,7 +381,6 @@ class OraGIProv:
             nwiface, gimrflag, passwd, dgname, dgred, fgname, asmdisk,
             asmstr, disksWithFGNames, oraversion, gridrsp, netmasklist, clusterusage
          )
-
 
    def get_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,crsconfig):
        """
@@ -685,20 +685,26 @@ class OraGIProv:
          self.ocommon.log_info_message("Running install_cvuqdisk() on node " + node,self.file_name)
          self.install_cvuqdisk(node)
 
-   def install_cvuqdisk(self,node):
-      rpm_directory = "/u01/app/23c/grid/cv/rpm"
-      giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
-      try:
-         # Construct the rpm command using wildcard for version
-         cmd = '''su - {0} -c "ssh {1} 'sudo rpm -Uvh {2}/cvuqdisk-*.rpm'"'''.format(giuser, node, rpm_directory)
-         # Run the rpm command using subprocess
-         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-         self.ocommon.check_os_err(output,error,retcode,None)             
-         self.ocommon.log_info_message("Successfully installed cvuqdisk file.",self.file_name)
-         
-      except subprocess.CalledProcessError as e:
-         self.ocommon.log_error_message("Error installing cvuqdisk. Exiting..." + e,self.file_name)
+   def install_cvuqdisk(self, node):
+      """
+      Install cvuqdisk rpm on the given node.
+      Dynamically picks RPM location from GRID_HOME instead of hardcoding.
+      """
+      # Get GI parameters
+      giuser, gihome, obase, invloc = self.ocommon.get_gi_params()
 
+      # Construct rpm directory path based on GRID_HOME
+      rpm_directory = os.path.join(gihome, "cv", "rpm")
+
+      try:
+         # Construct and run rpm install command
+         cmd = f'''su - {giuser} -c "ssh {node} 'sudo rpm -Uvh {rpm_directory}/cvuqdisk-*.rpm'"'''
+         output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+         self.ocommon.check_os_err(output, error, retcode, None)
+         self.ocommon.log_info_message("Successfully installed cvuqdisk file.", self.file_name)
+
+      except subprocess.CalledProcessError as e:
+         self.ocommon.log_error_message(f"Error installing cvuqdisk. Exiting... {e}", self.file_name)
 
    def backup_oracle_etc_files(self):
       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
