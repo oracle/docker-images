@@ -1,6 +1,6 @@
 # Oracle Real Application Clusters in Linux Containers for Developers
 
-Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 21c (v21.3).
+Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 23.26ai (26ai).
 
 ## Overview of Running Oracle RAC in Containers
 
@@ -9,9 +9,9 @@ Oracle Real Application Clusters (Oracle RAC) is an option for the award-winning
 Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system, and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms.
 Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package.
 
-For more information on Oracle RAC Database 21c, refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+For more information on Oracle RAC Database 23.26ai, refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
-This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images v21.3, and set up Oracle RAC on Single or Multiple Host machines with Oracle ASM.
+This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images 23.26ai, and set up Oracle RAC on Single or Multiple Host machines with Oracle ASM.
 In this installation guide, we use [Podman](https://docs.podman.io/en/v3.0/) to create Oracle RAC Containers and manage them.
 
 ## Using this Documentation
@@ -66,8 +66,8 @@ If you have a preconfigured DNS server in your environment, then you can replace
 
 * The Oracle RAC `Containerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), if you are planning to build Oracle RAC Container Images from the next section.
 However, if you are using pre-built RAC images from the Oracle Container Registry, you can skip this step.
-  - Oracle Grid Infrastructure 21c (21.3) for Linux x86-64
-  - Oracle Database 21c (21.3) for Linux x86-64
+  - Oracle Grid Infrastructure 23.26ai (26ai) for Linux x86-64
+  - Oracle Database 23.26ai (26ai) for Linux x86-64
 
 **Notes**
 
@@ -81,12 +81,12 @@ Oracle RAC is supported for production use on Podman starting with Oracle Databa
 Refer to [this documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using the Oracle Container Registry.
 
 Example of pulling an Oracle RAC Image from the Oracle Container Registry:
+
 ```bash
-# For Oracle RAC Container Image
 podman pull container-registry.oracle.com/database/rac_ru:latest
-podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
+podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:23.26ai
 ```
-**NOTE** Currently, latest tag in Oracle Container registry represents `21.16.0` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.
+**NOTE** Currently, latest tag in Oracle Container registry represents `23.26ai` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later. 
 
 If you are using pre-built Oracle RAC images from the Oracle Container Registry, then you can skip the section that follows where we build the container images.
 
@@ -104,9 +104,9 @@ Before you begin, you must download grid and database binaries and stage them un
 ```bash
  ./buildContainerImage.sh -v <Software Version>
 ```
-Example: Building Oracle RAC image for v 21.3.0-
+Example: Building Oracle RAC image for v 26.0.0-
 ```bash
- ./buildContainerImage.sh -v 21.3.0
+ ./buildContainerImage.sh -v 26.0.0
 ```
 
 ### Building Oracle RAC Database Container Slim Image
@@ -114,9 +114,9 @@ In this document, an Oracle RAC container slim image refers to a container image
 ```bash
   ./buildContainerImage.sh -v <Software Version> -i -o '--build-arg SLIMMING=true'
 ```
-  Example: Building Oracle Slim Image for v 21.3.0-
+  Example: Building Oracle Slim Image for version 26.0.0-
  ```bash
- ./buildContainerImage.sh -v 21.3.0 -i -o '--build-arg SLIMMING=true'
+ ./buildContainerImage.sh -v 26.0.0 -i -o '--build-arg SLIMMING=true'
  ```
  To build an Oracle RAC slim image, you must use `--build-arg SLIMMING=true`.
  To change the base image for building Oracle RAC images, you must use `--build-arg  BASE_OL_IMAGE=oraclelinux:9`.
@@ -130,7 +130,7 @@ In this document, an Oracle RAC container slim image refers to a container image
    -o: passes on container build option (e.g., --build-arg SLIMMIMG=true for slim,--build-arg  BASE_OL_IMAGE=oraclelinux:9 to change base image). The default is "--build-arg SLIMMING=false"
    ```
 - Ensure that you have enough space in `/var/lib/containers` while building the Oracle RAC image. Also, if required use `export TMPDIR=</path/to/tmpdir>` for Podman to refer to any other folder as the temporary podman cache location instead of the default '/tmp' location.
-- After the `21.3.0` Oracle RAC container image is built, to apply the 21c RU and build the 21c patched image, refer to [Example of how to create a patched database image](./samples/applypatch/README.md).
+- After Oracle RAC Container image is built, you can also apply RU and one-off patches to build the patched image. For example: After the `21.3.0` Oracle RAC container image is built, to apply the 21c RU and build the 21c patched image, refer to [Example of how to create a patched database image](./samples/applypatch/README.md).
 - If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.
 - In the slim image case, the resulting images will not contain the Oracle Grid Infrastructure binaries and Oracle RAC Database binaries.
 
@@ -217,12 +217,14 @@ Refer to [README](./DELETION.md) for instructions on how to delete a Node from E
 
 ## Building a Patched Oracle RAC Container Image
 
-If you want to build a patched image based on a base 21.3.0 container image, then refer to the GitHub page [Example of how to create a patched database image](./samples/applypatch/README.md).
+If you want to build a patched image based on a base container image, then refer to the GitHub page [Example of how to create a patched database image](./samples/applypatch/README.md).
 
 ## Sample Container Files for Older Releases
 
 This project offers example container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
 
+* Oracle Database 23.26ai Oracle Grid Infrastructure (26ai) for Linux x86-64
+* Oracle Database 23.26ai (26ai) for Linux x86-64
 * Oracle Database 21c Oracle Grid Infrastructure (21.3) for Linux x86-64
 * Oracle Database 21c (21.3) for Linux x86-64
 * Oracle Database 19c Oracle Grid Infrastructure (19.3) for Linux x86-64
@@ -239,7 +241,7 @@ Refer to [README](./CLEANUP.md) for instructions on how to connect to an Oracle 
 
 ## Support
 
-At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 9.3 or later. To see the current Linux support certifications, refer to [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
+At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.5 or later. To see the current Linux support certifications, refer to [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
 
 ## License
 

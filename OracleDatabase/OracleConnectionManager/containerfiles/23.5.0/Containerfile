@@ -19,7 +19,6 @@ ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006
 FROM $BASE_OL_IMAGE AS base
 
 # Labels
@@ -69,11 +68,11 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
-          dnf install -y oracle-database-preinstall-23ai && \
-          dnf clean all; \
+        dnf install -y oracle-database-preinstall-23ai  && \
+        dnf clean all; \
      else \
           dnf -y install oraclelinux-developer-release-el8 && \
-          dnf -y oracle-database-preinstall-23ai && \
+          dnf -y install oracle-database-preinstall-23c && \
           dnf clean all; \
           :; \
      fi && \
@@ -111,7 +110,6 @@ USER oracle
 COPY $INSTALL_FILE_1 $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/install/
 
 WORKDIR /u01/app/
-# shellcheck disable=SC2086
 RUN  unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $DB_HOME && \
      $DB_HOME/runInstaller -ignorePrereq -waitforcompletion  -silent \
      UNIX_GROUP_NAME="oinstall" \
@@ -131,7 +129,7 @@ RUN  unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $DB_HOME && \
 FROM base
 
 COPY  --from=builder /u01 /u01
-# shellcheck disable=SC2086
+
 RUN  sh /u01/app/oraInventory/orainstRoot.sh && \
      sync && \
      echo "export ORACLE_HOME=$DB_HOME" >> /home/oracle/.bashrc && \
@@ -148,5 +146,5 @@ VOLUME ["/common_scripts"]
 WORKDIR /home/oracle
 
 # Define default command to start Oracle Grid and RAC Database setup.
-# hadolint ignore=DL3025
+
 CMD exec $SCRIPT_DIR/$RUN_FILE
