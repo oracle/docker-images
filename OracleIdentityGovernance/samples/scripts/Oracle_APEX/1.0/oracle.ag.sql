@@ -66,7 +66,7 @@ BEGIN
 
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_workspace_id
               FROM apex_workspace_schemas
              WHERE workspace_' || 'name = UPPER(:workspaceName);
@@ -231,7 +231,7 @@ BEGIN
 
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_workspace_id
               FROM apex_workspace_schemas
              WHERE works' || 'pace_name = UPPER(:workspaceName);
@@ -460,7 +460,7 @@ FROM
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_2
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -633,7 +633,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_1
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -792,7 +792,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NUL' || 'L THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -998,7 +998,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_1
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -1255,7 +1255,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_1
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -1497,7 +1497,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_1
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -1812,7 +1812,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_1
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -2016,7 +2016,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_1
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);
@@ -2278,7 +2278,7 @@ END;');
 BEGIN
     IF :workspaceName IS NOT NULL THEN
         BEGIN
-            SELECT workspace_id
+            SELECT DISTINCT workspace_id
               INTO l_ws_id_1
               FROM apex_workspace_schemas
              WHERE workspace_name = UPPER(:workspaceName);

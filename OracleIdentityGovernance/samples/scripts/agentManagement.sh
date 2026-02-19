@@ -132,14 +132,14 @@ detectJDKversion()
   javac -version
   if [ ! "$?" ]
    then
-     echo "ERROR: JDK is not installed. Please install JDK 11"
+     echo "ERROR: JDK is not installed. Please install either JDK 11 or JDK 17"
      errorFlag=true
      return
   fi
   javaVersion=$(javac -version 2>&1 | awk '{ print $2 }' | cut -d'.' -f1)
-  if [ "$javaVersion" != "11" ]
+  if [ "$javaVersion" != "11" ] && [ "$javaVersion" != "17" ]
    then
-     echo "ERROR: JDK 11 is required"
+     echo "ERROR: Either JDK 11 or JDK 17 is required"
      errorFlag=true
   fi
 }
