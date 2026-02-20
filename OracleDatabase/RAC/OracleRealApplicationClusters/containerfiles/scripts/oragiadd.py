@@ -104,10 +104,12 @@ class OraGIAdd:
                 self.ocommon.start_scan(giuser, gihome, pubhostname)
                 self.ocommon.update_scan_lsnr(giuser, gihome, pubhostname)
                 self.ocommon.start_scan_lsnr(giuser, gihome, pubhostname)
-            if self.ocommon.check_key("ADD_CDP", self.ora_env_dict):
-                self.ocommon.log_info_message("Start addcdp()", self.file_name)
-                self.addcdp()
-                self.ocommon.log_info_message("End addcdp()", self.file_name)
+                if self.ocommon.check_key("ADD_CDP", self.ora_env_dict):
+                    self.ocommon.log_info_message("Start updatecdp()", self.file_name)
+                    self.updatecdp(operation="ADDNODE")
+                    self.ocommon.log_info_message("End updatecdp()", self.file_name)
+
+
         ct = datetime.datetime.now()
         ets = ct.timestamp()
         totaltime = ets - bts
@@ -182,17 +184,87 @@ class OraGIAdd:
 
     def perform_ssh_setup(self):
         """
-        Perform ssh setup
+        Perform SSH setup.
+
+        - Non-k8s:
+            * Perform SSH setup (ADDNODE)
+            * Verify SSH at the end
+
+        - k8s:
+            * SSH is assumed to be pre-configured
+            * Only verify SSH connectivity to
+            CRS nodes + EXISTING_CLS_NODE(s)
         """
-        if not self.ocommon.detect_k8s_env():
-            user = self.ora_env_dict["GRID_USER"]
-            ohome = self.ora_env_dict["GRID_HOME"]
-            self.osetupssh.setupssh(user, ohome, 'ADDNODE')
-            # if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            # self.osetupssh.verifyssh(user,'ADDNODE')
+
+        user = self.ora_env_dict["GRID_USER"]
+        ohome = self.ora_env_dict["GRID_HOME"]
+
+        giuser, gihome, _, _ = self.ocommon.get_gi_params()
+
+        # --------------------------------------------------
+        # Resolve CRS nodes (space-separated)
+        # --------------------------------------------------
+        cluster_nodes = self.ocommon.get_cluster_nodes() or ""
+        cluster_nodes = cluster_nodes.replace(",", " ").split()
+
+        # --------------------------------------------------
+        # Resolve existing cluster nodes (may be None)
+        # --------------------------------------------------
+        existing_nodes = self.ocommon.get_existing_clu_nodes(False)
+        if existing_nodes:
+            existing_nodes = existing_nodes.replace(",", " ").split()
         else:
+            existing_nodes = []
+
+        # --------------------------------------------------
+        # Merge + normalize node list
+        # --------------------------------------------------
+        all_nodes = sorted(set(cluster_nodes + existing_nodes))
+        all_nodes_str = " ".join(all_nodes)
+
+        # --------------------------------------------------
+        # Determine GI version
+        # --------------------------------------------------
+        oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+        version = int(oraversion.split(".", 1)[0].strip())
+
+        # --------------------------------------------------
+        # Non-k8s: perform SSH setup
+        # --------------------------------------------------
+        if not self.ocommon.detect_k8s_env():
             self.ocommon.log_info_message(
-                "SSH setup must be already completed during env setup as this this k8s env.", self.file_name)
+                "Performing SSH setup for ADDNODE",
+                self.file_name
+            )
+
+            self.osetupssh.setupssh(user, ohome, "ADDNODE")
+
+        else:
+            # --------------------------------------------------
+            # k8s: setup already done, verify only
+            # --------------------------------------------------
+            self.ocommon.log_info_message(
+                "k8s environment detected; skipping SSH setup and verifying connectivity only",
+                self.file_name
+            )
+
+        # --------------------------------------------------
+        # Final authoritative verification (common path)
+        # --------------------------------------------------
+        if all_nodes_str:
+            self.ocommon.log_info_message(
+                "Final SSH verification for nodes: {0}".format(all_nodes_str),
+                self.file_name
+            )
+
+            self.osetupssh.verifyssh(
+                giuser,
+                gihome,
+                "runcluvfy.sh",
+                all_nodes_str,
+                version
+            )
+
 
     def crs_sw_configure(self):
         """
@@ -369,16 +441,20 @@ class OraGIAdd:
             output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
             self.ocommon.check_os_err(output, error, retcode, True)
 
-    def addcdp(self):
+    def updatecdp(self, operation):
         """
-        add cdp to existing RAC cluster
+        Update CDP of existing RAC cluster
         """
-        msg = ""
-        retvalue = self.ocommon.add_cdp()
+        install_node,_=self.ocommon.get_installnode()
+        retvalue = self.ocommon.update_cdp(operation,install_node)
         if not retvalue:
-            msg = "New CDP didnt added to existing RAC cluster"
-            self.ocommon.log_info_message(msg, self.file_name)
+            self.ocommon.log_info_message(
+                "Update CDP failed for the existing RAC cluster",
+                self.file_name
+            )
             self.ocommon.prog_exit("Error occurred")
         else:
-            msg = "New CDP is now added to the RAC cluster"
-            self.ocommon.log_info_message(msg, self.file_name)
+            self.ocommon.log_info_message(
+                "CDP is now updated for the existing RAC cluster",
+                self.file_name
+            )

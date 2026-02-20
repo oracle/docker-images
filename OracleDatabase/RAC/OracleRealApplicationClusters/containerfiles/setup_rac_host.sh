@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034,SC2166,SC2155,SC1090,SC2046,SC2178,SC2207,SC2163,SC2115,SC2173,SC1091,SC1143,SC2164,SC3014
 #############################
 # Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
@@ -39,7 +40,7 @@ setup_nfs_variables() {
     export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
     export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
     export INSTALL_NODE=racnodep1
-    export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+    export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
     export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
     export SCAN_NAME=racnodepc1-scan
     export CRS_ASM_DISCOVERY_STRING="/oradata"
@@ -66,7 +67,7 @@ setup_nfs_variables() {
     export DNS_PRIVATE2_IP=192.168.18.25
     export CMAN_CONTAINER_NAME=racnodepc1-cman
     export CMAN_HOST_NAME=racnodepc1-cman
-    export CMAN_IMAGE_NAME="localhost/oracle/client-cman:21.3.0"
+    export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
     export CMAN_PUBLIC_IP=10.0.20.15
     export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
     export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -156,7 +157,7 @@ setup_blockdevices_variables(){
     export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
     export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
     export INSTALL_NODE=racnodep1
-    export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+    export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
     export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
     export SCAN_NAME=racnodepc1-scan
     export ASM_DEVICE1="/dev/asm-disk1"
@@ -187,7 +188,7 @@ setup_blockdevices_variables(){
     export DNS_PRIVATE2_IP=192.168.18.25
     export CMAN_CONTAINER_NAME=racnodepc1-cman
     export CMAN_HOST_NAME=racnodepc1-cman
-    export CMAN_IMAGE_NAME="localhost/oracle/client-cman:21.3.0"
+    export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
     export CMAN_PUBLIC_IP=10.0.20.15
     export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
     export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -261,7 +262,7 @@ setup_rac_container() {
     podman-compose start ${RACNODE1_CONTAINER_NAME}
     podman-compose start ${RACNODE2_CONTAINER_NAME}
 
-    RAC_LOG="/tmp/orod/oracle_rac_setup.log"
+    RAC_LOG="/tmp/orod/oracle_db_setup.log"
     success_message_line="ORACLE RAC DATABASE IS READY TO USE"
     last_lines=""
     start_time=$(date +%s)

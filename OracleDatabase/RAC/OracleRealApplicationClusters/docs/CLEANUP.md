@@ -1,5 +1,5 @@
 # Cleanup Oracle RAC Database Container Environment
-To clean up the Oracle Real Application Clusters (Oracle RAC) environment, complete the following commands.
+To clean up the Oracle Real Application Clusters (Oracle RAC) environment, complete the following commands.  
 
 ```bash
 podman inspect rac-dnsserver &> /dev/null && podman rm -f rac-dnsserver
@@ -18,13 +18,13 @@ If you have set up the container environment to use block devices, then clean up
 dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000 
 dd if=/dev/zero of=/dev/oracleoci/oraclevde  bs=8k count=10000
 ```
-If you have set up the container environment using an Oracle Slim Image, then clean up the data folders:
+If you have set up the container environment using an Oracle Slim Image, then clean up the data folders:  
 ```bash
 rm -rf /scratch/rac/cluster01/node1/*
 rm -rf /scratch/rac/cluster01/node2/*
 ```
 
-If you have set up the container environment with User Defined Response files, then clean up the response files:
+If you have set up the container environment with User Defined Response files, then clean up the response files:  
 ```bash
 rm -rf /scratch/common_scripts/podman/rac/*
 ```

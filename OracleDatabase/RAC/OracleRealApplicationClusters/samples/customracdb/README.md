@@ -8,18 +8,18 @@ Once you have built your Oracle RAC container image you can create a Oracle RAC 
   - [Section 3 : Creating the RAC Container](#section-3--creating-the-rac-container)
     - [Network and Password Management](#network-and-password-management)
   - [Section 4: Oracle RAC on Docker](#section-4-oracle-rac-on-docker)
-    - [Create Racnoded1 with Block Devices](#create-racnoded1-with-block-devices)
-      - [Create Racnoded2 with Block Devices](#create-racnoded2-with-block-devices)
+    - [Create racnoded1 with Block Devices](#create-racnoded1-with-block-devices)
+      - [Create racnoded2 with Block Devices](#create-racnoded2-with-block-devices)
     - [Deploying RAC on Docker with NFS Volume](#deploying-rac-on-docker-with-nfs-volume)
-      - [Create Racnoded1 with NFS Volume](#create-racnoded1-with-nfs-volume)
-      - [Create Racnoded2 with NFS Volume](#create-racnoded2-with-nfs-volume)
+      - [Create racnoded1 with NFS Volume](#create-racnoded1-with-nfs-volume)
+      - [Create racnoded2 with NFS Volume](#create-racnoded2-with-nfs-volume)
     - [Attach the network to containers](#attach-the-network-to-containers)
-      - [Attach the network to Racnoded1](#attach-the-network-to-racnoded1)
-      - [Attach the network to Racnoded2](#attach-the-network-to-racnoded2)
+      - [Attach the network to racnoded1](#attach-the-network-to-racnoded1)
+      - [Attach the network to racnoded2](#attach-the-network-to-racnoded2)
     - [Start the containers](#start-the-containers)
-      - [Start Racnoded2](#start-racnoded2)
+      - [Start racnoded2](#start-racnoded2)
       - [Reset the password](#reset-the-password)
-      - [Start Racnoded1](#start-racnoded1)
+      - [Start racnoded1](#start-racnoded1)
       - [Connect to the RAC container](#connect-to-the-rac-container)
   - [Section 5: Oracle RAC on Podman](#section-5-oracle-rac-on-podman)
     - [Deploying RAC on Podman With Block Devices](#deploying-rac-on-podman-with-block-devices)
@@ -120,11 +120,11 @@ Repeat for each shared block device. In the example above, `/dev/xvde` is a shar
 
 Now create the Docker container using the image. For the details of environment variables, please refer to section 5. You can use following example to create a container:
 
-### Create Racnoded1 with Block Devices
+### Create racnoded1 with Block Devices
 
 ```bash
 docker create -t -i \
---hostname Racnoded1 \
+--hostname racnoded1 \
 --volume /boot:/boot:ro \
 --volume /dev/shm \
 --volume /opt/.secrets:/run/secrets \
@@ -138,11 +138,11 @@ docker create -t -i \
 --cap-add=SYS_RESOURCE \
 --cap-add=NET_ADMIN \
 -e NODE_VIP=172.16.1.160 \
--e VIP_HOSTNAME=Racnoded1-vip \
+-e VIP_HOSTNAME=racnoded1-vip \
 -e PRIV_IP=192.168.17.150 \
--e PRIV_HOSTNAME=Racnoded1-priv \
+-e PRIV_HOSTNAME=racnoded1-priv \
 -e PUBLIC_IP=172.16.1.150 \
--e PUBLIC_HOSTNAME=Racnoded1 \
+-e PUBLIC_HOSTNAME=racnoded1 \
 -e SCAN_NAME="racnode-scan" \
 -e SCAN_IP=172.16.1.70 \
 -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
@@ -150,7 +150,7 @@ docker create -t -i \
 -e DEFAULT_GATEWAY=172.16.1.1 \
 -e ASM_DEVICE_LIST=/dev/asm_disk1 \
 -e ASM_DISCOVERY_DIR=/dev \
--e CRS_NODES="Racnoded1,Racnoded2" \
+-e CRS_NODES="racnoded1,racnoded2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
 -e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 -e OP_TYPE="INSTALL" \
@@ -158,14 +158,14 @@ docker create -t -i \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --cpu-rt-runtime=95000 \
 --ulimit rtprio=99 \
---name Racnoded1 oracle/database-rac:19.3.0
+--name racnoded1 oracle/database-rac:19.3.0
 ```
 
-#### Create Racnoded2 with Block Devices
+#### Create racnoded2 with Block Devices
 
 ```bash
 docker create -t -i \
---hostname Racnoded2 \
+--hostname racnoded2 \
 --volume /boot:/boot:ro \
 --volume /dev/shm \
 --volume /opt/.secrets:/run/secrets \
@@ -179,11 +179,11 @@ docker create -t -i \
 --cap-add=SYS_RESOURCE \
 --cap-add=NET_ADMIN \
 -e NODE_VIP=172.16.1.161 \
--e VIP_HOSTNAME=Racnoded2-vip \
+-e VIP_HOSTNAME=racnoded2-vip \
 -e PRIV_IP=192.168.17.151 \
--e PRIV_HOSTNAME=Racnoded2-priv \
+-e PRIV_HOSTNAME=racnoded2-priv \
 -e PUBLIC_IP=172.16.1.151 \
--e PUBLIC_HOSTNAME=Racnoded2 \
+-e PUBLIC_HOSTNAME=racnoded2 \
 -e SCAN_NAME="racnode-scan" \
 -e SCAN_IP=172.16.1.70 \
 -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
@@ -191,14 +191,14 @@ docker create -t -i \
 -e DEFAULT_GATEWAY=172.16.1.1 \
 -e ASM_DEVICE_LIST=/dev/asm_disk1 \
 -e ASM_DISCOVERY_DIR=/dev \
--e CRS_NODES="Racnoded1,Racnoded2" \
+-e CRS_NODES="racnoded1,racnoded2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
 -e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 --restart=always \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --cpu-rt-runtime=95000 \
 --ulimit rtprio=99 \
---name Racnoded2 oracle/database-rac:19.3.0
+--name racnoded2 oracle/database-rac:19.3.0
 ```
 
 **Note:** Change environment variable such as IPs, ASM_DEVICE_LIST, PWD_FILE and PWD_KEY based on your env. Also, change the devices based on your env.
@@ -207,11 +207,11 @@ docker create -t -i \
 
 Create RAC containers and utilize RAC storage containers for ASM devices:
 
-#### Create Racnoded1 with NFS Volume
+#### Create racnoded1 with NFS Volume
 
 ```bash
 docker create -t -i \
---hostname Racnoded1 \
+--hostname racnoded1 \
 --volume /boot:/boot:ro \
 --volume /dev/shm \
 --volume /opt/.secrets:/run/secrets \
@@ -225,11 +225,11 @@ docker create -t -i \
 --cap-add=SYS_RESOURCE \
 --cap-add=NET_ADMIN \
 -e NODE_VIP=172.16.1.160 \
--e VIP_HOSTNAME=Racnoded1-vip \
+-e VIP_HOSTNAME=racnoded1-vip \
 -e PRIV_IP=192.168.17.150 \
--e PRIV_HOSTNAME=Racnoded1-priv \
+-e PRIV_HOSTNAME=racnoded1-priv \
 -e PUBLIC_IP=172.16.1.150 \
--e PUBLIC_HOSTNAME=Racnoded1 \
+-e PUBLIC_HOSTNAME=racnoded1 \
 -e SCAN_NAME="racnode-scan" \
 -e SCAN_IP=172.16.1.70 \
 -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
@@ -237,7 +237,7 @@ docker create -t -i \
 -e DEFAULT_GATEWAY=172.16.1.1 \
 -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
 -e ASM_DISCOVERY_DIR=/oradata \
--e CRS_NODES="Racnoded1,Racnoded2" \
+-e CRS_NODES="racnoded1,racnoded2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
 -e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 -e OP_TYPE="INSTALL" \
@@ -245,14 +245,14 @@ docker create -t -i \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --cpu-rt-runtime=95000 \
 --ulimit rtprio=99 \
---name Racnoded1 oracle/database-rac:19.3.0
+--name racnoded1 oracle/database-rac:19.3.0
 ```
 
-#### Create Racnoded2 with NFS Volume
+#### Create racnoded2 with NFS Volume
 
 ```bash
 docker create -t -i \
---hostname Racnoded2 \
+--hostname racnoded2 \
 --volume /boot:/boot:ro \
 --volume /dev/shm \
 --volume /opt/.secrets:/run/secrets \
@@ -266,11 +266,11 @@ docker create -t -i \
 --cap-add=SYS_RESOURCE \
 --cap-add=NET_ADMIN \
 -e NODE_VIP=172.16.1.161 \
--e VIP_HOSTNAME=Racnoded2-vip \
+-e VIP_HOSTNAME=racnoded2-vip \
 -e PRIV_IP=192.168.17.151 \
--e PRIV_HOSTNAME=Racnoded2-priv \
+-e PRIV_HOSTNAME=racnoded2-priv \
 -e PUBLIC_IP=172.16.1.151 \
--e PUBLIC_HOSTNAME=Racnoded2 \
+-e PUBLIC_HOSTNAME=racnoded2 \
 -e SCAN_NAME="racnode-scan" \
 -e SCAN_IP=172.16.1.70 \
 -e COMMON_OS_PWD_FILE=common_os_pwdfile.enc \
@@ -278,14 +278,14 @@ docker create -t -i \
 -e DEFAULT_GATEWAY=172.16.1.1 \
 -e ASM_DEVICE_LIST=/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img  \
 -e ASM_DISCOVERY_DIR=/oradata \
--e CRS_NODES="Racnoded1,Racnoded2" \
+-e CRS_NODES="racnoded1,racnoded2" \
 -e GRID_RESPONSE_FILE="grid_sample.rsp" \
 -e DBCA_RESPONSE_FILE="dbca_sample.rsp" \
 --restart=always \
 --tmpfs=/run -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
 --cpu-rt-runtime=95000 \
 --ulimit rtprio=99 \
---name Racnoded2 oracle/database-rac:19.3.0
+--name racnoded2 oracle/database-rac:19.3.0
 ```
 
 **Notes:**
@@ -297,52 +297,52 @@ docker create -t -i \
 
 You need to assign the Docker networks created in [section 1 of README.md](../../../OracleRealApplicationClusters/README.md) to containers. Please execute following commands:
 
-#### Attach the network to Racnoded1
+#### Attach the network to racnoded1
 
 ```bash
-# docker network disconnect bridge Racnoded1
-# docker network connect rac_pub1_nw --ip 172.16.1.150 Racnoded1
-# docker network connect rac_priv1_nw --ip 192.168.17.150  Racnoded1
+# docker network disconnect bridge racnoded1
+# docker network connect rac_pub1_nw --ip 172.16.1.150 racnoded1
+# docker network connect rac_priv1_nw --ip 192.168.17.150  racnoded1
 ```
 
-#### Attach the network to Racnoded2
+#### Attach the network to racnoded2
 
 You need to assign the Docker networks created in section 1 to containers. Please execute following commands:
 
 ```bash
-# docker network disconnect bridge Racnoded2
-# docker network connect rac_pub1_nw --ip 172.16.1.151 Racnoded2
-# docker network connect rac_priv1_nw --ip 192.168.17.151  Racnoded2
+# docker network disconnect bridge racnoded2
+# docker network connect rac_pub1_nw --ip 172.16.1.151 racnoded2
+# docker network connect rac_priv1_nw --ip 192.168.17.151  racnoded2
 ```
 
 ### Start the containers
 
 You need to start the container. Please execute following command:
 
-#### Start Racnoded2
+#### Start racnoded2
 
 ```bash
-# docker start Racnoded2
+# docker start racnoded2
 ```
 
 #### Reset the password
 
-Execute this step only on Racnoded2.
+Execute this step only on racnoded2.
 
 ```bash
-docker exec Racnoded2 /bin/bash -c "sudo /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_file common_os_pwdfile.enc --pwd_key_file pwd.key"
+docker exec racnoded2 /bin/bash -c "sudo /opt/scripts/startup/resetOSPassword.sh --op_type reset_grid_oracle --pwd_file common_os_pwdfile.enc --pwd_key_file pwd.key"
 ```
 
-#### Start Racnoded1
+#### Start racnoded1
 
 ```bash
-# docker start Racnoded1
+# docker start racnoded1
 ```
 
 It can take at least 40 minutes or longer to create and setup 2 node RAC cluster. To check the logs, use following command from another terminal session:
 
 ```bash
-# docker logs -f Racnoded1
+# docker logs -f racnoded1
 ```
 
 You should see database creation success message at the end:
@@ -358,7 +358,7 @@ ORACLE RAC DATABASE IS READY TO USE!
 To connect to the container execute following command:
 
 ```bash
-# docker exec -i -t Racnoded1 /bin/bash
+# docker exec -i -t racnoded1 /bin/bash
 ```
 
 If the install fails for any reason, log in to container using the above command and check `/tmp/orod.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
