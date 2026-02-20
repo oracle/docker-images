@@ -1,15 +1,15 @@
 # Oracle Real Application Clusters in Linux Containers
 
-Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 21c
+Learn about container deployment options for Oracle Real Application Clusters (Oracle RAC) Release 23.26ai
 
 ## Overview of Running Oracle RAC in Containers
 
 Oracle Real Application Clusters (Oracle RAC) is an option for the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications.
 
 Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms.
-Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 21c refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 23.26ai refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
-This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images v21c, and setup Oracle RAC on Single or Multiple Host machines with Oracle ASM.
+This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images, and setup Oracle RAC on Single or Multiple Host machines with Oracle ASM.
 In this installation guide, we use [Podman](https://docs.podman.io/en/v3.0/) to create Oracle RAC Containers and manage them.
 
 ## Using this Documentation
@@ -68,8 +68,8 @@ Replace environment variables `-e DNS_SERVERS=10.0.20.25`,`--dns=10.0.20.25`,`-e
 
 * The Oracle RAC `Containerfile` does not contain any Oracle software binaries. Download the following software from the [Oracle Technology Network](https://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), if you are planning to build Oracle RAC Container Images in the next section.
 However, if you are using pre-built RAC Images from the Oracle Container Registry, then you can skip this step.
-  - Oracle Grid Infrastructure 21c (21) for Linux x86-64
-  - Oracle Database 21c (21) for Linux x86-64
+  - Oracle Grid Infrastructure 23.26ai for Linux x86-64
+  - Oracle Database 23.26ai for Linux x86-64
 
 **Notes**
 * If the Podman bridge network is not available outside your host, you can use the Oracle Connection Manager [CMAN Container](../OracleConnectionManager/README.md) to access the Oracle RAC Database from outside the host.
@@ -79,13 +79,12 @@ However, if you are using pre-built RAC Images from the Oracle Container Registr
 Oracle RAC is supported for production use on Podman starting with Oracle Database 19c (19.16) and Oracle Database 21c (21.7). You can also deploy Oracle RAC on Podman using the pre-built images available on the Oracle Container Registry.
 Refer to this [documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using Oracle Container Registry.
 
-Example of pulling an Oracle RAC Image from the Oracle Container Registry:
+Example of pulling an Oracle RAC Database Image from the Oracle Container Registry:
 ```bash
-# For Oracle RAC Container Image
 podman pull container-registry.oracle.com/database/rac_ru:latest
-podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
+podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:23.26ai
 ```
-**NOTE** Currently, latest tag in Oracle Container registry represents `21.16.0` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.
+**NOTE:** Currently, latest tag in Oracle Container registry represents `23.26ai` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.
 
 If you are using pre-built Oracle RAC images from the [Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Building Oracle RAC Database Container Image](#building-oracle-rac-database-container-image).
 
@@ -94,7 +93,7 @@ If you are using pre-built Oracle RAC images from the [Oracle Container Registry
 
 * If you want to build the latest Oracle RAC Image from this Github repository, instead of using a pre-built image, then follow below instructions to build `Oracle RAC Container Image` and `Oracle RAC Container Slim Image`.
 
-* Below section assumes that you have completed all of the prerequisites in [Preparation Steps for running Oracle RAC Database in containers](#preparation-steps-for-running-oracle-rac-database-in-containers) and completed all the steps, based on your environment.
+* Below section assumes that you have completed all of the prerequisites in [Preparation Steps for running Oracle RAC Database in containers](#preparation-steps-for-running-oracle-rac-database-in-containers) and completed all the steps, based on your environment.  
 
   **Note:** Ensure that you do not uncompress the binaries and patches manually before building the Oracle RAC Image.
 
@@ -103,7 +102,7 @@ If you are using pre-built Oracle RAC images from the [Oracle Container Registry
 * Ensure that you have enough space in `/var/lib/containers` while building the Oracle RAC Image. Also, if required use `export TMPDIR=</path/to/tmpdir>` for Podman to use another folder as the temporary podman cache location instead of the default `/tmp` location.
 
 ### Building Oracle RAC Database Container Image
-In  this document,an `Oracle RAC Database Container Image` refers to an Oracle RAC Database Container Image with Oracle Grid Infrastructure and Oracle Database Software Binaries installed during Oracle RAC Podman Image creation. The resulting images will contain the Oracle Grid Infrastructure and Oracle RAC Database Software Binaries.
+In  this document,an `Oracle RAC Database Container Image` refers to an Oracle RAC Database Container Image with Oracle Grid Infrastructure and Oracle Database Software Binaries installed during Oracle RAC Podman Image creation. The resulting images will contain the Oracle Grid Infrastructure and Oracle RAC Database Software Binaries.  
 
 Before you begin, you must download Oracle Grid Infrastructure and Oracle RDBMS Binaries and stage them under `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationCluster/containerfiles/<VERSION>`.
 
@@ -111,40 +110,42 @@ Use the below command to build the Oracle RAC Database Container Image:
 ```bash
 ./buildContainerImage.sh -v <Software Version>
 ```
-Example: To build Oracle RAC Database Container Image for version 21.3.0, use below command:
+Example: To build Oracle RAC Database Container Image for version 23.26ai(26ai), use below command:
 ```bash
-./buildContainerImage.sh -v 21.3.0
+./buildContainerImage.sh -v 26.0.0
 ```
 
-Retag it as below as we are going to refer this image as `localhost/oracle/database-rac:21c` everywhere:
+Retag it as below as we are going to refer this image as `localhost/oracle/database-rac:23.26ai` everywhere:
 ```bash
-podman tag localhost/oracle/database-rac:21.3.0 localhost/oracle/database-rac:21c
+podman tag localhost/oracle/database-rac:26.0.0 localhost/oracle/database-rac:23.26ai
 ```
 **Note** : There is a known issue with Oracle Database 19.3.0 that causes compilation to fail, as described in [Doc ID 2760289.1](https://support.oracle.com/knowledge/Oracle%20Database%20Products/2760289_1.html): "19c Database Installation/relink fails with: Error in invoking target 'libasmclntsh19.ohso libasmperl19.ohso client_sharedlib' of makefile ins_rdbms.mk".  
-As a result, Base 19.3.0 software cannot be directly installed on Oracle Linux 9. The fix is included in version 19.21 and later. Therefore, when building Oracle RAC Database Container Images for 19.3.0, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`
+
+As a result, you cannot install the base 19.3.0 software directly on Oracle Linux 9. The fix is included in version 19.21 and later. Therefore, when building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`.  
 
 Example: To build Oracle RAC Database Container Image for version 19.3.0, use below command:
 ```bash
-./buildContainerImage.sh -v 19.3.0 -i -o "--build-arg  BASE_OL_IMAGE=oraclelinux:8"
+./buildContainerImage.sh -v 19.3.0 -i -o "--build-arg BASE_OL_IMAGE=oraclelinux:8"
 ```
 
 ### Building Oracle RAC Database Container Slim Image
-In this document, an `Oracle RAC Database Container Slim Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation.
+In this document, an `Oracle RAC Database Container Slim Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation.  
+
 To build an Oracle RAC Database Container Slim Image that doesn't contain the Oracle Grid infrastructure and Oracle RAC Database software, run the following command:
 ```bash
 ./buildContainerImage.sh -v <Software Version> -i -o '--build-arg SLIMMING=true'
 ```
-Example: To build Oracle RAC Database Container Slim Image for version 21.3.0, use the below command:
+Example: To build Oracle RAC Database Container Slim Image for version 23.26ai(26ai), use the below command:
 ```bash
-./buildContainerImage.sh -v 21.3.0 -i -o '--build-arg SLIMMING=true'
+./buildContainerImage.sh -v 26.0.0 -i -o '--build-arg SLIMMING=true'
 ```
 To build an Oracle RAC Database Container Slim Image, you need to use `--build-arg SLIMMING=true`.
 
-To change the Base Image during building Oracle RAC Database Container Images, you must use `--build-arg  BASE_OL_IMAGE=oraclelinux:8`.
+To change the Base Image during building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`.
 
-Retag it as below as we are going to refer this image as `localhost/oracle/database-rac:21c-slim` everywhere:
+Retag it as below as we are going to refer this image as `localhost/oracle/database-rac:23.26ai-slim` everywhere:
 ```bash
-podman tag localhost/oracle/database-rac:21.3.0-slim localhost/oracle/database-rac:21c-slim
+podman tag localhost/oracle/database-rac:26.0.0-slim localhost/oracle/database-rac:23.26ai-slim
 ```
 
 ### Building Oracle RAC Database Container Base Image
@@ -152,13 +153,13 @@ In this document, an `Oracle RAC Database Container Base Image` refers to a cont
 ```bash
 ./buildContainerImage.sh -v <Software Version> -b
 ```
-Example: To build Oracle RAC Database Container Base Image for version 21.3.0, use the below command:
+Example: To build Oracle RAC Database Container Base Image for version 23.26ai(26ai), use the below command:
 ```bash
-./buildContainerImage.sh -v 21.3.0 -b
+./buildContainerImage.sh -v 26.0.0 -b
 ```
 To build an Oracle RAC Database Container Base Image, you need to use `-b`.
 
-To change the Base Image during building Oracle RAC Database Container Images, you must use `--build-arg  BASE_OL_IMAGE=oraclelinux:8`.
+To change the Base Image during building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:9`.
 
 **Notes**
 - Usage of `./buildContainerImage.sh`:
@@ -166,9 +167,9 @@ To change the Base Image during building Oracle RAC Database Container Images, y
    -v: version to build
    -i: ignore the MD5 checksums
    -t: user-defined image name and tag (e.g., image_name:tag). Default is set to `oracle/database-rac:<VERSION>` for  RAC Image and `oracle/database-rac:<VERSION>-slim` for RAC slim image.
-   -o: passes on container build option (e.g., --build-arg SLIMMIMG=true for slim,--build-arg  BASE_OL_IMAGE=oraclelinux:8 to change base image). The default is "--build-arg SLIMMING=false"
+   -o: passes on container build option (e.g., --build-arg SLIMMIMG=true for slim,--build-arg BASE_OL_IMAGE=oraclelinux:9 to change base image). The default is "--build-arg SLIMMING=false"
    ```
-- After building the `21.3.0` Oracle RAC Database Container Image, to apply the 21c RU and build the 21c patched image, refer to [Example of how to create a patched database image](./samples/applypatch/README.md).
+- After Oracle RAC Container image is built, you can also apply RU and one-off patches to build the patched image. For Example: After building the `21.3.0` Oracle RAC Database Container Image, to apply the 21c RU and build the 21c patched image, refer to [Example of how to create an Oracle RAC Database Container Patched Image](./samples/applypatch/README.md).
 - If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.
 - In case of the Oracle RAC Database Container Slim Image, the resulting images will not contain the Oracle Grid Infrastructure and Oracle RAC Database Software Binaries.
 
@@ -238,20 +239,19 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
 ```
 ## Password Management
 - Specify the secret volume for resetting the grid, oracle, and database user password during node creation or node addition. The volume can be a shared volume among all the containers. For example:
-
    ```bash
    mkdir /opt/.secrets/
    ```
 - Generate a password file
-
-  Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users.
-
-  For this deployment scenario, it will be a common password for the grid, oracle, and database users.
+  
+  Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users.  
+  
+  For this deployment scenario, it will be a common password for the grid, oracle, and database users.  
   
   Run the below commands:
     ```bash
     cd /opt/.secrets
-    openssl genrsa -out key.pem
+    openssl genrsa -out key.pem 4096
     openssl rsa -in key.pem -out key.pub -pubout
     openssl pkeyutl -in pwdfile.txt -out pwdfile.enc -pubin -inkey key.pub -encrypt
     rm -rf /opt/.secrets/pwdfile.txt

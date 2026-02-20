@@ -1,5 +1,4 @@
 # Oracle RAC on Podman using Oracle RAC Image
-===============================================================
 
 Refer to the following instructions to set up Oracle RAC on Podman using an Oracle RAC Image for various scenarios.
 
@@ -41,7 +40,8 @@ You can deploy multi-node Oracle RAC Database using Oracle RAC Database Containe
 * Ensure the Oracle RAC Database Container Image is present. You can either pull ru image from the Oracle Container Registry by following [Getting Oracle RAC Database Container Images](../../../README.md#getting-oracle-rac-database-container-images), or you can create the Oracle RAC Container Patched image by following [Building a Patched Oracle RAC Container Image](../../../README.md#building-a-patched-oracle-rac-container-image)
 ```bash
 # podman images|grep database-rac
-localhost/oracle/database-rac        21c          41239091d2ac  16 minutes ago  20.2 GB
+localhost/oracle/database-rac        26.0.0        c717efbe4111  10 minutes ago  10 GB
+localhost/oracle/database-rac        23.26ai       c717efbe4111  10 minutes ago  10 GB
 ```
 * Configure the [Network Management](../../../README.md#network-management).
 * Configure the [Password Management](../../../README.md#password-management).
@@ -74,7 +74,6 @@ Repeat this command on each shared block device. In this example command, `/dev/
 Create the Oracle RAC containers using the Oracle RAC Database Container Image. For details about environment variables, see [Environment Variables Explained](#environment-variables-for-oracle-rac-on-containers)
 
 You can use the following example to create a container on host `racnodep1`:
-
 ```bash
 podman create -t -i \
 --hostname racnodep1 \
@@ -118,7 +117,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 
 To create another container with hostname `racnodep2`, use the following command:
@@ -165,15 +164,15 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 #### Section 2.1.2: Deploying with NFS Storage Devices
 
 ##### Section 2.1.2.1: Prerequisites for setting up Oracle RAC with NFS storage devices
 
-* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.
+* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.  
 
-**Note:** You can skip this step if you are planning to use block devices for storage.
+  **Note:** You can skip this step if you are planning to use block devices for storage.
 * Make sure the ASM NFS Storage devices do not have any existing file system.
 
 ##### Section 2.1.2.2: Create Oracle RAC Containers
@@ -223,7 +222,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 
 To create another container on host `racnodep2`, use the following command:
@@ -271,7 +270,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 
 ### Section 2.2: Deploying Two-Node Oracle RAC Setup on Podman using Oracle RAC Image Using User Defined Response files
@@ -281,14 +280,14 @@ Follow the below instructions to setup Oracle RAC on Podman using Oracle RAC Ima
 #### Section 2.2.1: Deploying With BlockDevices
 
 ##### Prerequisites for setting up Oracle RAC with User-Defined files
-- On the shared folder between both RAC nodes, create a file named [grid_setup_21c.rsp](withresponsefiles/blockdevices/grid_setup_21c.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/grid_setup_21c.rsp`
-- On the shared folder between both RAC nodes, create a file named [dbca_21c.rsp](withresponsefiles/dbca_21c.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/dbca_21c.rsp`
+- On the shared folder between both RAC nodes, create a file named [grid_setup_23.26ai.rsp](withresponsefiles/blockdevices/grid_setup_23.26ai.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp`
+- On the shared folder between both RAC nodes, create a file named [dbca_23.26ai.rsp](withresponsefiles/blockdevices/dbca_23.26ai.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/dbca_23.26ai.rsp`
 - If SELinux is enabled on the host machine then execute the following as well -
   ```bash
-  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_21c.rsp
-  restorecon -v /scratch/common_scripts/podman/rac/grid_setup_21c.rsp
-  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_21c.rsp
-  restorecon -v /scratch/common_scripts/podman/rac/dbca_21c.rsp
+  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp
+  restorecon -v /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp
+  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
+  restorecon -v /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
   ```
   **Note:** Passwords defined in response files is going to be overwritten by passwords defined in `podman secret` due to security reasons of exposure of the password as plain text.
 You can skip this step if you are not planning to use **User Defined Response Files for RAC**.
@@ -300,8 +299,8 @@ podman create -t -i \
 --dns-search "example.info" \
 --dns 10.0.20.25 \
 --shm-size 4G \
---volume /scratch/common_scripts/podman/rac/grid_setup_21c.rsp:/tmp/grid_21c.rsp \
---volume /scratch/common_scripts/podman/rac/dbca_21c.rsp:/tmp/dbca_21c.rsp \
+--volume /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp:/tmp/grid_setup_23.26ai.rsp \
+--volume /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp \
 --cpuset-cpus 0-1 \
 --memory 16G \
 --memory-swap 32G \
@@ -322,8 +321,8 @@ podman create -t -i \
 --secret keysecret \
 -e DNS_SERVERS="10.0.20.25" \
 -e DB_SERVICE=service:soepdb \
--e GRID_RESPONSE_FILE=/tmp/grid_21c.rsp \
--e DBCA_RESPONSE_FILE=/tmp/dbca_21c.rsp \
+-e GRID_RESPONSE_FILE=/tmp/grid_setup_23.26ai.rsp \
+-e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.170 \
 -e CRS_PRIVATE_IP2=192.168.18.170 \
 -e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
@@ -341,7 +340,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 
 Create another Oracle RAC container `racnodep2`:
@@ -351,8 +350,8 @@ podman create -t -i \
 --dns-search "example.info" \
 --dns 10.0.20.25 \
 --shm-size 4G \
---volume /scratch/common_scripts/podman/rac/grid_setup_21c.rsp:/tmp/grid_21c.rsp \
---volume /scratch/common_scripts/podman/rac/dbca_21c.rsp:/tmp/dbca_21c.rsp \
+--volume /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp:/tmp/grid_setup_23.26ai.rsp \
+--volume /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp \
 --cpuset-cpus 0-1 \
 --memory 16G \
 --memory-swap 32G \
@@ -373,8 +372,8 @@ podman create -t -i \
 --health-cmd "/bin/python3 /opt/scripts/startup/scripts/main.py --checkracstatus" \
 -e DNS_SERVERS="10.0.20.25" \
 -e DB_SERVICE=service:soepdb \
--e GRID_RESPONSE_FILE=/tmp/grid_21c.rsp \
--e DBCA_RESPONSE_FILE=/tmp/dbca_21c.rsp \
+-e GRID_RESPONSE_FILE=/tmp/grid_setup_23.26ai.rsp \
+-e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.171 \
 -e CRS_PRIVATE_IP2=192.168.18.171 \
 -e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
@@ -392,7 +391,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 #### Section 2.2.2: Deploying with NFS storage devices
 
@@ -402,14 +401,14 @@ localhost/oracle/database-rac:21c
   **Note:** You can skip this step if you are planning to use block devices for storage.
 
 - Make sure the ASM NFS Storage devices do not have any existing file system.
-- On the shared folder between both Oracle RAC nodes, create the file name [grid_setup_21c.rsp](withresponsefiles/nfsdevices/grid_setup_21c.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/grid_setup_21c.rsp`
-- On the shared folder between both RAC nodes, create a file named [dbca_21c.rsp](withresponsefiles/dbca_21c.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/dbca_21c.rsp`
+- On the shared folder between both Oracle RAC nodes, create the file name [grid_setup_23.26ai.rsp](withresponsefiles/nfsdevices/grid_setup_23.26ai.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp`
+- On the shared folder between both RAC nodes, create a file named [dbca_23.26ai.rsp](withresponsefiles/nfsdevices/dbca_23.26ai.rsp). In this example, we copy the file to `/scratch/common_scripts/podman/rac/dbca_23.26ai.rsp`
 - If the SELinux is enabled on the machine then also run the following the following as well-
   ```bash
-  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_21c.rsp
-  restorecon -v /scratch/common_scripts/podman/rac/grid_setup_21c.rsp
-  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_21c.rsp
-  restorecon -v /scratch/common_scripts/podman/rac/dbca_21c.rsp
+  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp
+  restorecon -v /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp
+  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
+  restorecon -v /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
   ```
 **Note:** You can skip this step if you are not planning to deploy with user-defined Response Files for Oracle RAC.
 
@@ -421,8 +420,8 @@ podman create -t -i \
 --dns-search "example.info" \
 --dns 10.0.20.25 \
 --shm-size 4G \
---volume /scratch/common_scripts/podman/rac/grid_setup_21c.rsp:/tmp/grid_21c.rsp \
---volume /scratch/common_scripts/podman/rac/dbca_21c.rsp:/tmp/dbca_21c.rsp \
+--volume /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp:/tmp/grid_setup_23.26ai.rsp \
+--volume /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp \
 --cpuset-cpus 0-1 \
 --memory 16G \
 --memory-swap 32G \
@@ -443,8 +442,8 @@ podman create -t -i \
 --secret keysecret \
 -e DNS_SERVERS="10.0.20.25" \
 -e DB_SERVICE=service:soepdb \
--e GRID_RESPONSE_FILE=/tmp/grid_21c.rsp \
--e DBCA_RESPONSE_FILE=/tmp/dbca_21c.rsp \
+-e GRID_RESPONSE_FILE=/tmp/grid_setup_23.26ai.rsp \
+-e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.170 \
 -e CRS_PRIVATE_IP2=192.168.18.170 \
 -e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
@@ -463,7 +462,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep1 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 
 Create another Oracle RAC container. In this example, the hostname is `racnodep2`
@@ -473,8 +472,8 @@ podman create -t -i \
 --dns-search "example.info" \
 --dns 10.0.20.25 \
 --shm-size 4G \
---volume /scratch/common_scripts/podman/rac/grid_setup_21c.rsp:/tmp/grid_21c.rsp \
---volume /scratch/common_scripts/podman/rac/dbca_21c.rsp:/tmp/dbca_21c.rsp \
+--volume /scratch/common_scripts/podman/rac/grid_setup_23.26ai.rsp:/tmp/grid_setup_23.26ai.rsp \
+--volume /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp \
 --cpuset-cpus 0-1 \
 --memory 16G \
 --memory-swap 32G \
@@ -495,8 +494,8 @@ podman create -t -i \
 --secret keysecret \
 -e DNS_SERVERS="10.0.20.25" \
 -e DB_SERVICE=service:soepdb \
--e GRID_RESPONSE_FILE=/tmp/grid_21c.rsp \
--e DBCA_RESPONSE_FILE=/tmp/dbca_21c.rsp \
+-e GRID_RESPONSE_FILE=/tmp/grid_setup_23.26ai.rsp \
+-e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.171 \
 -e CRS_PRIVATE_IP2=192.168.18.171 \
 -e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
@@ -515,7 +514,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep2 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 **Note:**
 - To use this example, change the environment variables based on your environment. See [Environment Variables for Oracle RAC on Containers](#environment-variables-for-oracle-rac-on-containers) for more details.
@@ -556,7 +555,7 @@ podman start racnodep2
 It can take approximately 20 minutes or longer to create and set up a two-node Oracle RAC Database on Containers. To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message, similar to the following, on the installing node i.e. `racnodep1` in this case:
@@ -572,9 +571,9 @@ Note:
 
   For example:
   ```bash
-  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_21c.rsp
-  restorecon -vF  /scratch/common_scripts/podman/rac/dbca_21c.rsp
-  ls -lZ /scratch/common_scripts/podman/rac/dbca_21c.rsp
+  semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
+  restorecon -vF  /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
+  ls -lZ /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
   ```
 
 ## Section 5: Validate the Oracle RAC Environment
@@ -582,10 +581,10 @@ To validate if the environment is healthy, run the following command:
 ```bash
 podman ps -a
 
-CONTAINER ID  IMAGE                                  COMMAND               CREATED         STATUS                   PORTS       NAMES
-f1345fd4047b  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...  8 hours ago     Up 8 hours (healthy)                 rac-dnsserver
-2f42e49758d1  localhost/oracle/database-rac:21c                         46 minutes ago  Up 37 minutes (healthy)                 racnodep1
-a27fceea9fe6  localhost/oracle/database-rac:21c                         46 minutes ago  Up 37 minutes (healthy)                 racnodep2
+CONTAINER ID  IMAGE                                  COMMAND                 CREATED            STATUS                      PORTS       NAMES
+f1345fd4047b  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...    8 hours ago        Up 8 hours (healthy)                    rac-dnsserver
+2f42e49758d1  localhost/oracle/database-rac:23.26ai                          46 minutes ago     Up 37 minutes (healthy)                 racnodep1
+a27fceea9fe6  localhost/oracle/database-rac:23.26ai                          46 minutes ago     Up 37 minutes (healthy)                 racnodep2
 ```
 **Note:**
 - Look for `(healthy)` next to container names under the `STATUS` section.
@@ -645,7 +644,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep3 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 
 Attach the networks to the new container and start the container:
@@ -659,7 +658,7 @@ podman start racnodep3
 
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:
 ```bash
@@ -718,7 +717,7 @@ podman create -t -i \
 --ulimit rtprio=99  \
 --systemd=always \
 --name racnodep3 \
-localhost/oracle/database-rac:21c
+localhost/oracle/database-rac:23.26ai
 ```
 
 Attach the networks to the new container and start the container:
@@ -731,7 +730,7 @@ podman start racnodep3
 ```
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:

@@ -1,5 +1,4 @@
 #!/bin/bash
-# LICENSE UPL 1.0
 #
 #############################
 # Copyright (c) 2024, Oracle and/or its affiliates.
@@ -13,21 +12,14 @@
 source $SCRIPT_DIR/functions.sh 
 
 ####################### Constants #################
-# shellcheck disable=SC2034
 declare -r FALSE=1
-# shellcheck disable=SC2034
 declare -r TRUE=0
-# shellcheck disable=SC2034
 declare -r ETCHOSTS="/etc/hosts"
-# shellcheck disable=SC2034
 declare -A dbhost_map
-# shellcheck disable=SC2034
 declare -A rule_map
-# shellcheck disable=SC2034
 declare hostip
-# shellcheck disable=SC2034
 declare action=""
-# shellcheck disable=SC2034
+
 progname="$(basename $0)"
 ###################### Constants ####################
 
@@ -86,15 +78,17 @@ if [ -z "${PORT}" ]; then
 fi
 
 if [ -z "${PUBLIC_IP}" ]; then
-    error_exit  "Container hostname is not set or set to the empty string"
+    PUBLIC_IP=$(nslookup `hostname -f` | tail -n -2 | sed -e '/^$/d' | sed -e 's/Address: \(.*\)/\1/')
+    print_message  "Container hostip is not set. Setting to [$PUBLIC_IP]"
 else
     print_message "Public IP is set to ${PUBLIC_IP}"
 fi
 
 if [ -z "${PUBLIC_HOSTNAME}" ]; then
-   error_exit "RAC Node PUBLIC Hostname is not set ot set to empty string"
+   PUBLIC_HOSTNAME=`hostname`
+   print_message "RAC Node PUBLIC Hostname is not set. Setting to ${PUBLIC_HOSTNAME}"
 else
-  print_message "RAC Node PUBLIC Hostname is set to ${PUBLIC_HOSTNAME}"
+   print_message "RAC Node PUBLIC Hostname is set to ${PUBLIC_HOSTNAME}"
 fi
 
 if [ -z "${LOG_LEVEL}" ]; then
@@ -104,11 +98,11 @@ fi
 if [ -z "${TRACE_LEVEL}" ]; then
    TRACE_LEVEL=user
 fi
-# shellcheck disable=SC2166
+
 if [ "${TRACE_LEVEL}" != "user" -a "${TRACE_LEVEL}" != "admin" -a "${TRACE_LEVEL}" != "support" ]; then
       print_message "Invalid trace-level [${TRACE_LEVEL}] specified."
 fi
-# shellcheck disable=SC2166
+
 if [ "${LOG_LEVEL}" != "user" -a "${LOG_LEVEL}" != "admin" -a "${LOG_LEVEL}" != "support" ]; then
       print_message "Invalid log-level [${LOG_LEVEL}] specified."
 fi
@@ -116,7 +110,6 @@ fi
 if [ -z "${REGISTRATION_INVITED_NODES}" ]; then
    REGISTRATION_INVITED_NODES='*'
 else
-# shellcheck disable=SC2034
    REGINVITEDNODESET=1
 fi
 
@@ -173,7 +166,7 @@ if [ $RULESRVSET -eq 1 ]; then
       print_message "Invalid input. SrvIP [${RULE_SRV}] not a valid subnet. "
    fi
 fi
-# shellcheck disable=SC2166
+
 if [ "${RULE_ACT}" != "accept" -a "${RULE_ACT}" != "reject" -a "${RULE_ACT}" != "drop" ]; then
       print_message "Invalid rule-action [${RULE_ACT}] specified."
 fi
@@ -192,7 +185,6 @@ do
     for rule_env_var in "${rule_env_vars[@]}"
     do
        echo "export ${rule_env_var}"
-       # shellcheck disable=SC2163
        export ${rule_env_var}
     done
 
@@ -204,7 +196,6 @@ do
 
     dbhost_map[${HOST}]=${IP}
     rule_map[${HOST}]=${db_hostvalue}
-    # shellcheck disable=SC2178
     rule_env_vars=""
 done
 
@@ -280,9 +271,7 @@ fi
 
 SetupEtcHosts()
 {
-# shellcheck disable=SC2034
 local stat=3
-# shellcheck disable=SC2034
 local HOST_LINE
 if [ "$action" == "" ]; then
  if [ ! -z "${HOSTFILE}" ]; then 
@@ -330,7 +319,6 @@ do
     for rule_env_var in "${rule_env_vars[@]}"
     do
        echo "export ${rule_env_var}"
-       # shellcheck disable=SC2163
        export ${rule_env_var}
     done
 
@@ -462,12 +450,6 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-####### Populating resolv.conf and /etc/hosts ###
-setupEtcResolvConf
-SetupEtcHosts
-####################
-
-
 if [ "$action" == "delete" ]; then
      del_rule_details=`echo ${RULEDETAILS} | sed -e 's/.*?=\(.*\)/\1/g'`
      IFS=':' read  -a del_rule_vars <<< "${del_rule_details}"
@@ -475,7 +457,6 @@ if [ "$action" == "delete" ]; then
      for del_rule_var in "${del_rule_vars[@]}"
      do
          echo "export ${del_rule_var}"
-         # shellcheck disable=SC2163
          export ${del_rule_var}
      done
 
@@ -498,6 +479,9 @@ else
    print_message "Generating CMAN file"
    cman_file
 fi
+
+setupEtcResolvConf
+SetupEtcHosts
 
 print_message "Copying CMAN file to $DB_HOME/network/admin"
 copycmanora
