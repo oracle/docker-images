@@ -19,10 +19,13 @@
 # Run: 
 #      $ podman build -t oracle/database:26.0.0-rac . 
 #
+
+# hadolint global ignore=SC2086,SC3014
 ARG SLIMMING=false
 ARG BASE_OL_IMAGE=oraclelinux:9
 # Pull base image
 # ---------------
+# hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 ARG VERSION

@@ -15,6 +15,7 @@
 # Run:
 #      $ podman build -t oracle/cman:23.26ai .
 
+# hadolint global ignore=DL3006,DL3025,SC2086
 ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image
