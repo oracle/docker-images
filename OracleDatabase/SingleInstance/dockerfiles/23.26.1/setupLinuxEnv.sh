@@ -34,7 +34,7 @@ if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
 else
     dnf install -y oraclelinux-developer-release-el9
 fi && \
-dnf -y install oracle-database-preinstall-23ai openssl hostname file expect && \
+dnf -y install oracle-ai-database-preinstall-26ai openssl hostname file expect && \
 rm -rf /var/cache/yum && \
 ln -s "$ORACLE_BASE"/"$PWD_FILE" /home/oracle/ && \
 echo oracle:oracle | chpasswd && \
