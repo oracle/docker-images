@@ -43,6 +43,7 @@ class OraMiscOps:
          self.osetupssh           = orasetupssh
          self.ocvu                = oracvu
          self.oracstdby           = OraRacStdby(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
+
       except BaseException as ex:
          traceback.print_exc(file = sys.stdout)
 
@@ -207,6 +208,14 @@ class OraMiscOps:
           self.update_ons()
        else:
           pass
+       if self.ocommon.check_key("SID_PROFILE_UPDATE", self.ora_env_dict):
+          self.update_osid_for_grid_and_db_users()
+       else:
+          pass
+       if self.ocommon.check_key("UPDATE_CDP", self.ora_env_dict):
+          self.updatecdp()
+       else:
+          pass                      
 
        ct = datetime.datetime.now()
        ets = ct.timestamp()
@@ -428,6 +437,7 @@ class OraMiscOps:
       else:
          mode = "NOTAVAILABLE"
       return mode
+
     
    def checkraclocal(self):
        """
@@ -952,4 +962,86 @@ class OraMiscOps:
          msg='''ONS Details is now updated to {0}'''.format(onsstate)
          status="ONS_UPDATED_SUCCESSFULLY"
          self.ocommon.log_info_message(msg,self.file_name)
-         print(status)   
+         print(status)
+
+   def update_osid_for_grid_and_db_users(self):
+      """
+      Update OSID for both Grid and DB users by modifying their .bashrc profile.
+      """
+      status = ""
+      msg = ""
+      users = []
+
+      # Gather DB user details
+      try:
+         dbuser, dbhome, dbbase, dbinv = self.ocommon.get_db_params()
+         dbname = self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME", self.ora_env_dict) else "ORCLCDB"
+         hostname = self.ocommon.get_public_hostname()
+         dbosid = self.ocommon.get_inst_sid(dbuser, dbhome, dbname, hostname)
+         if not dbosid:
+               dbosid = dbname + "1"
+         users.append((dbuser, dbosid))
+      except Exception as e:
+         status = "DB_USER_INFO_FAILED"
+         msg = '''Failed to get DB user info: {0}'''.format(e)
+         self.ocommon.log_info_message(msg, self.file_name)
+         print(status)
+         self.ocommon.prog_exit("Error occurred")
+
+      # Gather GI user details
+      try:
+         giuser, gihome, gibase, giinv = self.ocommon.get_gi_params()
+         giname = self.ora_env_dict["DB_NAME"] if self.ocommon.check_key("DB_NAME", self.ora_env_dict) else "ORCLCDB"
+         hostname = self.ocommon.get_public_hostname()
+         giosid = self.ocommon.get_inst_sid(giuser, gihome, giname, hostname)
+         if not giosid:
+               giosid = giname + "1"
+         users.append((giuser, giosid))
+      except Exception as e:
+         status = "GI_USER_INFO_FAILED"
+         msg = '''Failed to get GI user info: {0}'''.format(e)
+         self.ocommon.log_info_message(msg, self.file_name)
+         print(status)
+         self.ocommon.prog_exit("Error occurred")
+
+      # Update .bashrc for each user
+      for osuser, osid in users:
+         bashrc_path = "/home/{0}/.bashrc".format(osuser)
+         bashrc_line = "\nexport ORACLE_SID={0}\n".format(osid)
+         try:
+               with open(bashrc_path, "a") as bashrc_file:
+                  bashrc_file.write(bashrc_line)
+               msg = '''ORACLE_SID {0} is now added to {1}'''.format(osid, bashrc_path)
+               status = "OSID_UPDATED_SUCCESSFULLY"
+               self.ocommon.log_info_message(msg, self.file_name)
+               print(status)
+         except Exception as e:
+               status = "OSID_NOT_UPDATED"
+               msg = '''Failed to update {0} for user {1}: {2}'''.format(bashrc_path, osuser, e)
+               self.ocommon.log_info_message(msg, self.file_name)
+               print(status)
+               self.ocommon.prog_exit("Error occurred")
+   def updatecdp(self):
+      """
+      Update CDP of the existing RAC cluster
+      """
+
+      status = ""
+      msg = ""
+
+      retvalue = self.ocommon.update_cdp("INSTALL", None)
+
+      if not retvalue:
+         status = "CDP_NOT_UPDATED"
+         msg = "Update CDP failed for the existing RAC cluster"
+         self.ocommon.log_info_message(msg, self.file_name)
+         print(status)
+         self.ocommon.prog_exit("Error occurred")
+      else:
+         status = "CDP_UPDATED_SUCCESSFULLY"
+         msg = "CDP is now updated for the existing RAC cluster"
+         self.ocommon.log_info_message(msg, self.file_name)
+         print(status)
+
+      return True
+

@@ -68,10 +68,7 @@ class OraRacProv:
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
       #  retcode1=self.ocvu.check_home(None,dbhome,dbuser)
        retcode=1
-       if self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
-         retcode1=self.ocvu.check_db_home_has(None,dbhome,dbuser)
-       else:
-         retcode1=self.ocvu.check_db_home(None,dbhome,dbuser)
+       retcode1=self.ocvu.check_db_home(None,dbhome,dbuser)
        status=self.ocommon.check_rac_installed(retcode1)
        self.ocommon.reset_os_password(dbuser)
        if not status:
@@ -116,6 +113,8 @@ class OraRacProv:
                self.ocommon.log_info_message("End create_db()",self.file_name)
                self.ocommon.perform_db_check("INSTALL")
             self.ocommon.update_statefile("completed")
+            self.ocommon.update_osid_for_grid_and_db_users()
+            self.ocommon.update_listener_env_for_users()
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -129,70 +128,168 @@ class OraRacProv:
        self.ocommon.check_env_variable("DB_BASE",True)
        self.ocommon.check_env_variable("INVENTORY",True)
 
-   def clu_checks(self,hostname):
-       """
-       Performing clu checks
-       """
-       self.ocommon.log_info_message("Performing CVU checks before DB home installation to make sure clusterware is up and running on " + hostname,self.file_name) 
-      # hostname=self.ocommon.get_public_hostname()  
-       retcode1=self.ocvu.check_ohasd(hostname)
-       retcode2=self.ocvu.check_asm(hostname)
-       retcode3=1
-       if self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
-          self.ocommon.log_info_message("Start check_clu() CRS_GPC is set. Check if oracle restart crs is configured properly",self.file_name) 
-          retcode3=self.ocvu.check_clu(hostname,None,True)
-          self.ocommon.log_info_message("End check_clu()",self.file_name) 
-       else:
-          self.ocommon.log_info_message("Start check_clu() Check if crs is configued properly",self.file_name) 
-          retcode3=self.ocvu.check_clu(hostname,None,None)
-          self.ocommon.log_info_message("End check_clu()",self.file_name) 
+   def clu_checks(self, hostname):
+      """
+      Performing CVU checks with retry.
+      Handles RAC, bare-metal Oracle Restart, and Kubernetes CRS_GPC correctly.
+      """
 
-       if retcode1 == 0:
-          msg="Cluvfy ohasd check passed!"
-          self.ocommon.log_info_message(msg,self.file_name)
-       else:
-          msg="Cluvfy ohasd check faild. Exiting.."
-          self.ocommon.log_error_message(msg,self.file_name)
-          self.ocommon.prog_exit("127")
+      max_retries = 10          # ~10 * 30s = 5 minutes
+      retry_sleep = 30
 
-       if retcode2 == 0:
-          msg="Cluvfy asm check passed!"
-          self.ocommon.log_info_message(msg,self.file_name)
-       else:
-          msg="Cluvfy asm check faild. Exiting.."
-          self.ocommon.log_error_message(msg,self.file_name)
-          #self.ocommon.prog_exit("127")
+      is_crs_gpc = self.ocommon.check_key("CRS_GPC", self.ora_env_dict)
 
-       if retcode3 == 0:
-          msg="Cluvfy clumgr check passed!"
-          self.ocommon.log_info_message(msg,self.file_name)
-       else:
-          msg="Cluvfy clumgr  check faild. Exiting.."
-          self.ocommon.log_error_message(msg,self.file_name)
-          self.ocommon.prog_exit("127")
+      self.ocommon.log_info_message(
+         "Performing CVU checks before DB home installation to make sure "
+         "clusterware is up and running on {0}".format(hostname),
+         self.file_name
+      )
+
+      for attempt in range(1, max_retries + 1):
+
+         self.ocommon.log_info_message(
+               "CVU check attempt {0}/{1} on node {2}".format(
+                  attempt, max_retries, hostname
+               ),
+               self.file_name
+         )
+
+         # -----------------------------
+         # Mandatory checks (ALL modes)
+         # -----------------------------
+         retcode_ohasd = self.ocvu.check_ohasd(hostname)
+         retcode_asm   = self.ocvu.check_asm(hostname)
+
+         # -----------------------------
+         # CLU check (RAC only)
+         # -----------------------------
+         retcode_clu = 0
+
+         if not is_crs_gpc:
+               self.ocommon.log_info_message(
+                  "Start check_clu(): CRS detected (RAC / non-GPC)",
+                  self.file_name
+               )
+               retcode_clu = self.ocvu.check_clu(hostname, None, None)
+         else:
+               self.ocommon.log_info_message(
+                  "CRS_GPC detected: Skipping cluvfy post hacfg validation "
+                  "(CRS lifecycle is operator-managed)",
+                  self.file_name
+               )
+               retcode_clu = 0
+
+         # -----------------------------
+         # Success path
+         # -----------------------------
+         if retcode_ohasd == 0 and retcode_asm == 0 and retcode_clu == 0:
+               self.ocommon.log_info_message(
+                  "All required CVU checks passed successfully on node {0}".format(hostname),
+                  self.file_name
+               )
+               return
+
+         # -----------------------------
+         # Retry path
+         # -----------------------------
+         if attempt < max_retries:
+               self.ocommon.log_info_message(
+                  "CVU checks not ready yet on node {0}. "
+                  "This is expected after pod restart. Retrying in {1} seconds..."
+                  .format(hostname, retry_sleep),
+                  self.file_name
+               )
+               time.sleep(retry_sleep)
+               continue
+
+         # -----------------------------
+         # Final failure (no more retries)
+         # -----------------------------
+         if retcode_ohasd != 0:
+               self.ocommon.log_error_message(
+                  "Cluvfy ohasd check failed after retries. Exiting..",
+                  self.file_name
+               )
+               self.ocommon.prog_exit("127")
+
+         if retcode_asm != 0:
+               self.ocommon.log_error_message(
+                  "Cluvfy asm check failed after retries. Exiting..",
+                  self.file_name
+               )
+               self.ocommon.prog_exit("127")
+
+         if not is_crs_gpc and retcode_clu != 0:
+               self.ocommon.log_error_message(
+                  "Cluvfy clumgr check failed after retries. Exiting..",
+                  self.file_name
+               )
+               self.ocommon.prog_exit("127")
+
 
    def perform_ssh_setup(self):
-       """
-       Perform ssh setup
-       """
-       #if not self.ocommon.detect_k8s_env():
-       pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-       crs_nodes=pub_nodes.replace(" ",",")
-       crs_nodes_list=crs_nodes.split(",")
-       if len(crs_nodes_list) == 1:
-          self.ocommon.log_info_message("Cluster size=1. Node=" + crs_nodes_list[0],self.file_name)
-          user=self.ora_env_dict["DB_USER"]
-          cmd = '''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -b 4096 -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user, crs_nodes_list[0])
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,None)
-       else:
-          if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
-            dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-            self.osetupssh.setupssh(dbuser,dbhome,"INSTALL")
-            #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            #self.osetupssh.verifyssh(dbuser,"INSTALL")
-          else:
-            self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this env variables SSH_PRIVATE_KEY and SSH_PUBLIC_KEY are set.",self.file_name)
+      """
+      Perform ssh setup
+      """
+
+      pub_nodes, vip_nodes, priv_nodes = self.ocommon.process_cluster_vars("CRS_NODES")
+      crs_nodes = pub_nodes.replace(" ", ",")
+      nodes = crs_nodes.split(",")
+
+      is_gpc = self.ocommon.check_key("CRS_GPC", self.ora_env_dict)
+      is_k8s = self.ocommon.detect_k8s_env()
+
+      has_keys = (
+         self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict) and
+         self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict)
+      )
+
+      # --------------------------------------------------
+      # Case 1: Local SSH bootstrap
+      #   - CRS_GPC with no keys (K8s or non-K8s)
+      #   - OR single-node RAC on non-K8s
+      # --------------------------------------------------
+      if (is_gpc and not has_keys) or (not is_gpc and len(nodes) == 1 and not is_k8s):
+         node = nodes[0]
+         user = self.ora_env_dict["DB_USER"]
+
+         self.ocommon.log_info_message(
+               f"Bootstrapping local SSH for node {node}",
+               self.file_name
+         )
+
+         cmd = (
+               'su - {0} -c '
+               '"/bin/rm -rf ~/.ssh ; '
+               '/bin/mkdir -p ~/.ssh && chmod 700 ~/.ssh ; '
+               '/bin/ssh-keygen -t rsa -b 4096 -q -N \'\' -f ~/.ssh/id_rsa ; '
+               '/bin/ssh-keyscan -H {1} >> ~/.ssh/known_hosts 2>/dev/null ; '
+               '/bin/cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys ; '
+               '/bin/chmod 600 ~/.ssh/authorized_keys ~/.ssh/known_hosts"'
+         ).format(user, node)
+
+         out, err, rc = self.ocommon.execute_cmd(cmd, None, None)
+         self.ocommon.check_os_err(out, err, rc, None)
+         return
+
+      # --------------------------------------------------
+      # Case 2: Multi-node RAC → CVU SSH setup
+      # --------------------------------------------------
+      if not is_gpc and len(nodes) > 1:
+         if not has_keys:
+               dbuser, dbhome, dbase, oinv = self.ocommon.get_db_params()
+               self.ocommon.log_info_message(
+                  "Multi-node RAC detected; running CVU-based SSH setup",
+                  self.file_name
+               )
+               self.osetupssh.setupssh(dbuser, dbhome, "INSTALL")
+         else:
+               self.ocommon.log_info_message(
+                  "Injected SSH keys detected; skipping CVU SSH setup",
+                  self.file_name
+               )
+
+
 
    def db_sw_install(self):
        """
@@ -624,7 +721,7 @@ class OraRacProv:
            initprm= initprm + ''',sga_target={0},sga_max_size={0}'''.format(sgasize)
 
        if pgasize:
-          initprm= initprm + ''',pga_aggregate_size={0}'''.format(pgasize)
+          initprm= initprm + ''',pga_aggregate_target={0}'''.format(pgasize)
    
        if processes:
           initprm= initprm + ''',processes={0}'''.format(processes)
