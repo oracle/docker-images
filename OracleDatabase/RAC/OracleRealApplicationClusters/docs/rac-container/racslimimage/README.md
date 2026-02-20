@@ -17,7 +17,7 @@ Refer below instructions for the setup of Oracle RAC on Podman using Slim Image 
   - [Section 4: Start the Containers](#section-4-start-the-containers)
   - [Section 5: Validation Oracle RAC Environment](#section-5-validating-oracle-rac-environment)
   - [Section 6: Connecting to Oracle RAC Environment](#section-6-connecting-to-oracle-rac-environment)
-  - [Section 7: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image](#section-7-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-slim-image)
+  - [Section 7: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image](#section-7-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-slim-image-and-using-block-devices)
     - [Section 7.1: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image Without Response File](#section-71-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-slim-image-without-response-file)
   - [Section 8: Sample of Addition of Nodes to Oracle RAC Containers based on Oracle RAC Slim Image with NFS Storage Devices](#section-8-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-oracle-rac-slim-image-with-nfs-storage-devices)
     - [Section 8.1: Sample of Addition of Nodes to Oracle RAC Containers based on Oracle RAC Image Without Response File](#section-81-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-oracle-rac-image-without-response-file)
@@ -183,7 +183,7 @@ localhost/oracle/database-rac:23.26ai-slim
 #### Section 2.1.2: Deploying with NFS Storage Devices
 ##### Section 2.1.2.1: Prerequisites for setting up Oracle RAC with NFS Storage Devices
 
-* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details. 
+* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.  
 
   **Note:** You can skip this step if you are planning to use block devices for storage.
 * Make sure the ASM NFS Storage devices do not have any existing file system.

@@ -86,7 +86,7 @@ Example of pulling an Oracle RAC Image from the Oracle Container Registry:
 podman pull container-registry.oracle.com/database/rac_ru:latest
 podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:23.26ai
 ```
-**NOTE** Currently, latest tag in Oracle Container registry represents `23.26ai` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later. 
+**NOTE** Currently, latest tag in Oracle Container registry represents `23.26ai` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.  
 
 If you are using pre-built Oracle RAC images from the Oracle Container Registry, then you can skip the section that follows where we build the container images.
 
