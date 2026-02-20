@@ -16,7 +16,7 @@ Example of how to create 2 node Oracle RAC Setup on **Podman Compose** using Ora
 Refer [Podman Compose using Oracle RAC container image](./rac-compose/racimage/README.md) for details in order to setup 2 node Oracle RAC Setup on Podman Compose using Oracle RAC Container Image.  
 Refer [Podman Compose using Oracle RAC slim image](./rac-compose/racslimimage/README.md) for details in order to setup 2 node Oracle RAC Setup on Podman Compose using Oracle RAC Slim Image.
 
-## License 
+## License
 
 All scripts and files hosted in this repository which are required to build the container  images are, unless otherwise noted, released under UPL 1.0 license.
 
