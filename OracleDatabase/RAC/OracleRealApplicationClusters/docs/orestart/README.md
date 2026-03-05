@@ -1,6 +1,6 @@
 # Oracle Database on Oracle Restart
 
-After you build your Oracle RAC Database Container Image, you can create use this image to deploy an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle Database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts.
+After you build your Oracle RAC Database Container Image, you can use this image to deploy an Oracle database on Oracle Restart. Oracle Restart improves the availability of your Oracle Database. When you install Oracle Restart, various Oracle components can be automatically restarted after a hardware or software failure or whenever your database host computer restarts.
 You can choose to deploy Oracle Database on Oracle Restart on block devices as demonstrated in the detail in this document.
 
 Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicationClusters/README.md#getting-oracle-rac-database-container-images) for getting Oracle RAC Container Images.
@@ -118,7 +118,7 @@ podman start ${GPCNODE}
 It can take approximately 20 minutes or longer to create and start the Oracle Restart setup . To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message similar to the following:
@@ -134,9 +134,9 @@ To validate if the environment is healthy, run the following command:
 ```bash
 podman ps -a
 
-CONTAINER ID  IMAGE                                                  COMMAND                CREATED      STATUS                PORTS       NAMES
-131b86004040  localhost/oracle/rac-dnsserver:latest                 /bin/sh -c exec $...   3 days ago   Up 3 days (healthy)               rac-dnsserver
-e010e1122e99  container-registry.oracle.com/database/rac_ru:latest   podman network di...  3 hours ago  Up 3 hours (healthy)              dbmc1
+CONTAINER ID  IMAGE                                                  COMMAND                CREATED        STATUS                 PORTS         NAMES
+131b86004040  localhost/oracle/rac-dnsserver:latest                 /bin/sh -c exec $...   3 days ago      Up 3 days (healthy)                  rac-dnsserver
+2b88f1a6c71f  localhost/oracle/database-rac:23.26ai                                        16 minutes ago  Up 16 minutes (healthy)              dbmc1
 ```
 **Note:**
 - Look for `(healthy)` next to container names under the `STATUS` section.
@@ -163,35 +163,44 @@ CRS-4529: Cluster Synchronization Services is online
 CRS-4533: Event Manager is online
 [grid@dbmc1 ~]$ crsctl stat res -t
 --------------------------------------------------------------------------------
-Name           Target  State        Server                   State details       
+Name           Target  State        Server                   State details
 --------------------------------------------------------------------------------
 Local Resources
 --------------------------------------------------------------------------------
-ora.DATA.dg
-               ONLINE  ONLINE       dbmc1                    STABLE
 ora.LISTENER.lsnr
                ONLINE  ONLINE       dbmc1                    STABLE
-ora.asm
-               ONLINE  ONLINE       dbmc1                    Started,STABLE
+ora.chad
+               ONLINE  ONLINE       dbmc1                    STABLE
+ora.net1.network
+               ONLINE  ONLINE       dbmc1                    STABLE
 ora.ons
-               OFFLINE OFFLINE      dbmc1                    STABLE
+               ONLINE  ONLINE       dbmc1                    STABLE
 --------------------------------------------------------------------------------
 Cluster Resources
 --------------------------------------------------------------------------------
-ora.cssd
+ora.ASMNET1LSNR_ASM.lsnr(ora.asmgroup)
       1        ONLINE  ONLINE       dbmc1                    STABLE
-ora.diskmon
+ora.DATA.dg(ora.asmgroup)
+      1        ONLINE  ONLINE       dbmc1                    STABLE
+ora.asm(ora.asmgroup)
+      1        ONLINE  ONLINE       dbmc1                    Started,STABLE
+ora.asmnet1.asmnetwork(ora.asmgroup)
+      1        ONLINE  ONLINE       dbmc1                    STABLE
+ora.cvu
+      1        ONLINE  ONLINE       dbmc1                    STABLE
+ora.cvuhelper
       1        OFFLINE OFFLINE                               STABLE
-ora.evmd
+ora.dbmc1.vip
       1        ONLINE  ONLINE       dbmc1                    STABLE
 ora.orclcdb.db
       1        ONLINE  ONLINE       dbmc1                    Open,HOME=/u01/app/o
-                                                             racle/product/21c/db
-                                                             home_1,STABLE
+                                                             racle/product/26ai/d
+                                                             bhome_1,STABLE
 ora.orclcdb.orclpdb.pdb
+      1        ONLINE  ONLINE       dbmc1                    READ WRITE,STABLE
+ora.orclcdb.soepdb.svc
       1        ONLINE  ONLINE       dbmc1                    STABLE
 --------------------------------------------------------------------------------
-
 ```
 ### Validating Oracle Restart Database
 Validate Oracle Restart Database from within Container-

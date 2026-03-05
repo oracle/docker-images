@@ -28,7 +28,7 @@ services:
       - pwdsecret
       - keysecret
     volumes:
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_21ai.rsp
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       PRIVATE_IP1_LIST: ${RACNODE3_PRIVATE_IP1_LIST}
@@ -46,7 +46,7 @@ services:
       CRS_ASM_DISCOVERY_DIR: ${CRS_ASM_DISCOVERY_DIR}
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_RESPONSE_FILE: /tmp/grid_21ai.rsp
+      GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
     sysctls:
         - kernel.shmall=2097152
         - kernel.shmmax=8589934592
@@ -70,7 +70,7 @@ services:
       - rac_priv1_nw
       - rac_priv2_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod/oracle_rac_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "if [ `cat /tmp/orod/oracle_db_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

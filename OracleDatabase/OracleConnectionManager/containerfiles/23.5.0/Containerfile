@@ -15,6 +15,7 @@
 # Run:
 #      $ podman build -t oracle/cman:23ai .
 
+# hadolint global ignore=SC2086,SC3014
 ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image
@@ -68,12 +69,13 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 ######
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
+# hadolint global ignore=DL3041
 RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
-          dnf install -y oracle-database-preinstall-23ai && \
-          dnf clean all; \
+        dnf install -y oracle-database-preinstall-23ai  && \
+        dnf clean all; \
      else \
           dnf -y install oraclelinux-developer-release-el8 && \
-          dnf -y oracle-database-preinstall-23ai && \
+          dnf -y install oracle-database-preinstall-23c && \
           dnf clean all; \
           :; \
      fi && \

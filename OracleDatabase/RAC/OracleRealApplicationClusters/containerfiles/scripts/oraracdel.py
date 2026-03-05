@@ -76,7 +76,7 @@ class OraRacDel:
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
-       self.ocommon.log_info_message("Total time for setup() = [ " + str(round(totaltime,3)) + " ] seconds",self.file_name)
+       self.ocommon.log_info_message("Total time for delete setup() = [ " + str(round(totaltime,3)) + " ] seconds",self.file_name)
 
 ##### Check env vars ########
  

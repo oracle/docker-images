@@ -546,7 +546,7 @@ class OraRacStdby:
          initprm= initprm + ''',sga_target={0},sga_max_size={0}'''.format(sgasize)
 
       if pgasize:
-        initprm= initprm + ''',pga_aggregate_size={0}'''.format(pgasize)
+        initprm= initprm + ''',pga_aggregate_target={0}'''.format(pgasize)
 
       if processes:
         initprm= initprm + ''',processes={0}'''.format(processes)

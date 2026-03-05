@@ -200,7 +200,7 @@ useLocalUndoForPDBs=true
 # Mandatory     : No
 #-----------------------------------------------------------------------------
 
-pdbAdminPassword=Oracle_12c
+pdbAdminPassword=<< YOUR PASSWORD HERE >>
 
 #-----------------------------------------------------------------------------
 # Name          : nodelist
@@ -230,7 +230,7 @@ templateName=/u01/app/oracle/product/18.3.0/dbhome_1/assistants/dbca/templates/G
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-sysPassword=Oracle_12c
+sysPassword=<< YOUR PASSWORD HERE >>
 
 #-----------------------------------------------------------------------------
 # Name          : systemPassword
@@ -240,7 +240,7 @@ sysPassword=Oracle_12c
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-systemPassword=Oracle_12c
+systemPassword=<< YOUR PASSWORD HERE >>
 
 #-----------------------------------------------------------------------------
 # Name          : serviceUserPassword
@@ -292,7 +292,7 @@ runCVUChecks=true
 # Mandatory     : Yes, if emConfiguration is specified or
 #                 the value of runCVUChecks is TRUE
 #-----------------------------------------------------------------------------
-dbsnmpPassword=Oracle_12c
+dbsnmpPassword=<< YOUR PASSWORD HERE >>
 
 #-----------------------------------------------------------------------------
 # Name          : omsHost

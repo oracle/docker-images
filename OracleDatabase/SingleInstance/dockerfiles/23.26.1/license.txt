@@ -1,0 +1,1 @@
+Oracle Licensing for this image is governed by the License Agreement, which must be accepted on the Oracle Container Registry (https://container-registry.oracle.com/ ).

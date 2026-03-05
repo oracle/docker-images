@@ -73,7 +73,7 @@ services:
       - keysecret
     volumes:
       - racstorage:/oradata
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_21c.rsp
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE1_CRS_PRIVATE_IP1}
@@ -130,7 +130,7 @@ services:
       - keysecret
     volumes:
       - racstorage:${CRS_ASM_DISCOVERY_STRING}
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_21c.rsp
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE2_CRS_PRIVATE_IP1}

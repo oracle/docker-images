@@ -80,6 +80,34 @@ class OraCommon:
 
         return output.decode(), error.decode(), retcode
 
+    def execute_cmd_noshell(self, cmd_list, env=None, cwd=None):
+        """
+        Execute OS command without shell=True.
+        cmd_list must be a list of arguments.
+        """
+
+        try:
+            message = "Received Command : {}".format(" ".join(cmd_list))
+            self.log_info_message(message, self.file_name)
+
+            out = subprocess.Popen(
+                cmd_list,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=env,
+                cwd=cwd
+            )
+
+            output, error = out.communicate()
+            retcode = out.returncode
+
+        except Exception:
+            error_msg = sys.exc_info()
+            self.log_error_message(error_msg, self.file_name)
+            self.prog_exit(self)
+
+        return output.decode(), error.decode(), retcode
+
     def mask_str(self, mstr):
         """
          Function to mask the string.
@@ -1834,42 +1862,121 @@ class OraCommon:
 
     def restore_gi_files(self, gihome, giuser):
         """
-        Restoring GI Files
+        Restore GI-related OS files (/etc/oracle).
+        Start CRS/HAS ONLY if restore was performed.
+        Returns True on success, False on failure.
         """
+
         giuser, gihome, gibase, oinv = self.get_gi_params()
-        srcdir = gibase+"/.etcoraclebackup"
+        srcdir = "{0}/.etcoraclebackup".format(gibase)
+
         oraversion = self.get_rsp_version("INSTALL", None)
         version = oraversion.split(".", 1)[0].strip()
-        self.log_info_message("restore_gi_files" + version, self.file_name)
-        if int(version) == 19 and self.check_key("CRS_GPC", self.ora_env_dict):
-            files = os.listdir(srcdir)
-            if files:
-                cmd = 'cp -rp {0}/oracle /etc/'.format(srcdir)
-                output, error, retcode = self.execute_cmd(cmd, None, None)
-                self.check_os_err(output, error, retcode, None)
-                oracle_home = gihome
-                cmd = (
-                    'export ORACLE_HOME={0} && '
-                    '{0}/perl/bin/perl -I{0}/perl/lib -I{0}/crs/install -I{0}/xag '
-                    '{0}/crs/install/roothas.pl -updateosfiles'
-                ).format(oracle_home)
 
-                output, error, retcode = self.execute_cmd(cmd, None, None)
-                self.check_os_err(output, error, retcode, None)
-                if retcode == 0:
-                    status = self.start_has(gihome, giuser)
-                    return bool(status)
-                else:
-                    return False
-        else:
-            # If no files, run rootcrs.sh to update os files
-            cmd = '{0}/crs/install/rootcrs.sh -updateosfiles'.format(gihome)
+        self.log_info_message(
+            "restore_gi_files invoked (Oracle major version: {0})".format(version),
+            self.file_name
+        )
+
+        restored = False
+
+        # --------------------------------------------------
+        # 1. Restore /etc/oracle if backup exists
+        # --------------------------------------------------
+        if os.path.isdir(srcdir) and os.listdir(srcdir):
+            self.log_info_message(
+                "Found /etc/oracle backup at {0}, restoring".format(srcdir),
+                self.file_name
+            )
+
+            cmd = "cp -rp {0}/oracle /etc/".format(srcdir)
             output, error, retcode = self.execute_cmd(cmd, None, None)
             self.check_os_err(output, error, retcode, None)
-            if retcode == 0:
-                return True
-            else:
+
+            if retcode != 0:
+                self.log_error_message(
+                    "Failed to restore /etc/oracle from backup",
+                    self.file_name
+                )
                 return False
+
+            restored = True
+        else:
+            self.log_info_message(
+                "No /etc/oracle backup found; skipping restore",
+                self.file_name
+            )
+
+        # --------------------------------------------------
+        # 2. Update OS files (always)
+        # --------------------------------------------------
+        if self.check_key("CRS_GPC", self.ora_env_dict):
+            self.log_info_message(
+                "CRS_GPC set: updating OS files using roothas.pl",
+                self.file_name
+            )
+
+            cmd = (
+                "export ORACLE_HOME={0} && "
+                "{0}/perl/bin/perl "
+                "-I{0}/perl/lib "
+                "-I{0}/crs/install "
+                "-I{0}/xag "
+                "{0}/crs/install/roothas.pl -updateosfiles"
+            ).format(gihome)
+        else:
+            self.log_info_message(
+                "CRS_GPC not set: updating OS files using rootcrs.sh",
+                self.file_name
+            )
+            cmd = "{0}/crs/install/rootcrs.sh -updateosfiles".format(gihome)
+
+        output, error, retcode = self.execute_cmd(cmd, None, None)
+        self.check_os_err(output, error, retcode, None)
+
+        if retcode != 0:
+            self.log_error_message(
+                "OS file update failed",
+                self.file_name
+            )
+            return False
+
+        # --------------------------------------------------
+        # 3. Start Oracle stack ONLY if restore happened
+        # --------------------------------------------------
+        if not restored:
+            self.log_info_message(
+                "GI files not restored; skipping CRS/HAS startup",
+                self.file_name
+            )
+            return True
+
+        if self.check_key("CRS_GPC", self.ora_env_dict):
+            self.log_info_message(
+                "Starting Oracle Restart stack (HAS)",
+                self.file_name
+            )
+            status = self.start_has(gihome, giuser)
+        else:
+            self.log_info_message(
+                "Starting Oracle Clusterware (CRS)",
+                self.file_name
+            )
+            status = self.start_crs(gihome, giuser)
+
+        if not status:
+            self.log_error_message(
+                "Failed to start Oracle stack after GI restore",
+                self.file_name
+            )
+            return False
+
+        self.log_info_message(
+            "GI restore completed and Oracle stack started successfully",
+            self.file_name
+        )
+        return True
+
 
 ######  Starting Crs ###############
     def start_crs(self, gihome, giuser):
@@ -3135,17 +3242,51 @@ class OraCommon:
 #          else:
 #            self.log_info_message("No custom script dir specified to execute user specified scripts. Not executing any user specified script.",self.file_name)
 
-# Synching Oracle Home
     def sync_gi_home(self, node, ohome, user, clsnodes):
         """
-         This home sync GI home during addnode from source machine to remote machine
+        Sync GI home during addnode.
+        ED25519-safe and StrictHostKeyChecking-compliant.
         """
-        # install_node,pubhost=self.get_installnode()
+
+        ssh_opts = (
+            "-o StrictHostKeyChecking=yes "
+            "-o PasswordAuthentication=no "
+            "-o BatchMode=yes"
+        )
+
         for target_node in clsnodes:
-            cmd = '''su - {0} -c "ssh {1} 'rsync -Pav -e ssh --exclude \'{1}*\' {3}/* {0}@{2}:{3}'"'''.format(
-                user, node, target_node, ohome)
-            output, error, retcode = self.execute_cmd(cmd, None, None)
+
+            # ------------------------------------------------------------
+            # Ensure ED25519 host key exists on SOURCE node (critical)
+            # ------------------------------------------------------------
+            seed_cmd = (
+                "su - {0} -c "
+                "\"ssh-keygen -F {1} >/dev/null || "
+                "ssh-keyscan -t ed25519 -H {1} >> ~/.ssh/known_hosts\""
+            ).format(user, target_node)
+
+            self.execute_cmd(seed_cmd, None, None)
+
+            # ------------------------------------------------------------
+            # rsync using SSH with enforced ED25519 verification
+            # ------------------------------------------------------------
+            rsync_cmd = (
+                "su - {0} -c "
+                "\"ssh {1} "
+                "'rsync -Pav -e \\\"ssh {2}\\\" "
+                "--exclude \\\"{1}*\\\" "
+                "{3}/* {0}@{4}:{3}'\""
+            ).format(
+                user,
+                node,
+                ssh_opts,
+                ohome,
+                target_node
+            )
+
+            output, error, retcode = self.execute_cmd(rsync_cmd, None, None)
             self.check_os_err(output, error, retcode, False)
+
 
 # Set the User profiles
     def set_user_profile(self, ouser, key, val, type):
@@ -3728,16 +3869,18 @@ class OraCommon:
 
     def modify_scan(self, giuser, gihome, scanname):
         """
-        Modify Scan Details 
+        Modify Scan Details (run as sudo)
         """
-        cmd = '''{1}/bin/srvctl modify scan -scanname {2}'''.format(
-            giuser, gihome, scanname)
+
+        cmd = (
+            'su - {0} -c '
+            '"sudo {1}/bin/srvctl modify scan -scanname {2}"'
+        ).format(giuser, gihome, scanname)
+
         output, error, retcode = self.execute_cmd(cmd, None, None)
         self.check_os_err(output, error, retcode, None)
-        if retcode == 0:
-            return True
-        else:
-            return False
+
+        return retcode == 0
 
     def updateasmcount(self, giuser, gihome, asmcount):
         """
@@ -3894,66 +4037,111 @@ class OraCommon:
 
     def get_asmdsk(self, giuser, gihome, dg):
         """
-        check asm disks based on dg group
+        Return ASM disks that belong to a specific diskgroup
         """
+
         sid = self.get_asmsid(giuser, gihome)
-        cmd = '''su - {0} -c "export ORACLE_SID={1};{2}/bin/asmcmd lsdsk --suppressheader --member"'''.format(
-            giuser, sid, gihome, dg)
+
+        cmd = (
+            '''su - {0} -c "export ORACLE_SID={1};'''
+            '''{2}/bin/asmcmd lsdsk -G {3} --suppressheader"'''
+        ).format(giuser, sid, gihome, dg)
+
         output, error, retcode = self.execute_cmd(cmd, None, None)
         self.check_os_err(output, error, retcode, None)
-        if retcode == 0:
-            return output.strip().replace('\n', ',')
-        else:
-            return "ERROR OCCURRED"
 
-    def add_cdp(self):
+        if retcode == 0 and output:
+            disks = []
+            for line in output.strip().splitlines():
+                parts = line.split()
+                if len(parts) == 1:
+                    disks.append(parts[0])      # path-only format
+                else:
+                    disks.append(parts[-1])     # multi-column format
+            return ",".join(disks)
+
+        return ""
+    def _wait_for_cdp_removal(self, gihome, retries=10, sleep_sec=3):
         """
-        Add one or more CDPs to the existing RAC cluster.
-        Works if ADD_CDP is a single node or a comma-separated list of nodes.
+        Wait until CDP is fully removed from OCR.
         """
+        check_cmd = "{}/bin/srvctl status cdp".format(gihome)
+
+        for i in range(retries):
+            out, err, rc = self.execute_cmd(check_cmd, None, None)
+
+            if rc != 0 and "PRCS-1157" in (out + err):
+                return True  # CDP is gone
+
+            time.sleep(sleep_sec)
+
+        return False
+
+    def update_cdp(self, operation, node):
+        """
+        Reconcile CDP configuration with current SCAN topology.
+        CDPs are recreated but NOT enabled or started.
+        """
+
         giuser, gihome, obase, invloc = self.get_gi_params()
+
+        oraversion = self.get_rsp_version(operation, node)
+        major_version = int(oraversion.split(".", 1)[0].strip())
+
+        if major_version < 23:
+            self.log_info_message(
+                "GI version {}: CDP update not required".format(oraversion),
+                self.file_name
+            )
+            return True
+
         self.log_info_message(
-            "Adding CDP to the existing RAC cluster details", self.file_name)
+            "GI version {}: Reconciling CDP configuration".format(oraversion),
+            self.file_name
+        )
 
-        if not self.check_key("ADD_CDP", self.ora_env_dict):
-            return True  # nothing to add
+        remove_cmd = "sudo {}/bin/srvctl remove cdp".format(gihome)
+        add_cmd = "sudo {}/bin/srvctl add cdp".format(gihome)
 
-        # Handle single or multiple nodes
-        node_list = [n.strip()
-                     for n in self.ora_env_dict["ADD_CDP"].split(",") if n.strip()]
+        # Step 1: Remove CDP
+        out, err, rc = self.execute_cmd(remove_cmd, None, None)
 
-        success = True
-        for nodename in node_list:
-            # Construct and execute the command
-            cmd = '''su - {0} -c "{1}/bin/srvctl start cdp -node {2}"'''.format(
-                giuser, gihome, nodename)
-            output, error, retcode = self.execute_cmd(cmd, None, None)
-            self.check_os_err(output, error, retcode, None)
+        if rc != 0 and "PRCS-1157" not in (out + err):
+            self.log_info_message(
+                "Failed to remove CDP (rc={})\nCommand: {}\nSTDOUT: {}\nSTDERR: {}".format(
+                    rc, remove_cmd, out.strip(), err.strip()
+                ),
+                self.file_name
+            )
+            return False
 
-            retvalue = False
-            if retcode != 0:
-                # Verify if CDP is already running
-                cmd = '''su - {0} -c "{1}/bin/srvctl status cdp"'''.format(
-                    giuser, gihome)
-                output, error, retcode = self.execute_cmd(cmd, None, None)
-                retvalue = nodename in output
-            else:
-                retvalue = True  # command succeeded
+        # Step 2: WAIT for OCR propagation
+        if not self._wait_for_cdp_removal(gihome):
+            self.log_info_message(
+                "Timed out waiting for CDP removal from OCR",
+                self.file_name
+            )
+            return False
 
-            if not retvalue:
-                msg = "CDP {0} didn't get added to the existing RAC cluster".format(
-                    nodename)
-                self.log_info_message(msg, self.file_name)
-                success = False
-            else:
-                msg = "New CDP {0} is now added to the RAC cluster".format(
-                    nodename)
-                self.log_info_message(msg, self.file_name)
+        # Step 3: Add CDP (retry-safe)
+        out, err, rc = self.execute_cmd(add_cmd, None, None)
 
-        if not success:
-            self.prog_exit("Error occurred while adding CDPs")
+        if rc != 0:
+            self.log_info_message(
+                "Failed to add CDP (rc={})\nCommand: {}\nSTDOUT: {}\nSTDERR: {}".format(
+                    rc, add_cmd, out.strip(), err.strip()
+                ),
+                self.file_name
+            )
+            return False
 
-        return success
+        self.log_info_message(
+            "CDP configuration added (disabled, not running)",
+            self.file_name
+        )
+
+        return True
+
 
     def update_ons(self, giuser, gihome, onsstate):
         """
@@ -4050,3 +4238,120 @@ class OraCommon:
             "get_ora_version():[" + vdata + "]", self.file_name)
         major_version, minor_version, other_version = vdata.split(".", 2)
         return major_version, minor_version
+    
+    def seed_ed25519_on_source(self, user, source_node, target_node):
+        """
+        Ensure ED25519 host key for target_node exists
+        in known_hosts ON THE SOURCE NODE.
+        """
+
+        cmd = (
+            "su - {0} -c "
+            "\"ssh {1} "
+            "'ssh-keygen -F {2} >/dev/null || "
+            "ssh-keyscan -t ed25519 -H {2} >> ~/.ssh/known_hosts'\""
+        ).format(user, source_node, target_node)
+
+        self.execute_cmd(cmd, None, None)
+
+    def update_osid_for_grid_and_db_users(self):
+        """
+        Update OSID for both Grid and DB users by modifying their .bashrc profile.
+        """
+        status = ""
+        msg = ""
+        users = []
+
+        # Gather DB user details
+        try:
+            dbuser, dbhome, dbbase, dbinv = self.get_db_params()
+            dbname = self.ora_env_dict["DB_NAME"] if self.check_key("DB_NAME", self.ora_env_dict) else "ORCLCDB"
+            hostname = self.get_public_hostname()
+            dbosid = self.get_inst_sid(dbuser, dbhome, dbname, hostname)
+            if not dbosid:
+                dbosid = dbname + "1"
+            users.append((dbuser, dbosid))
+        except Exception as e:
+            status = "DB_USER_INFO_FAILED"
+            msg = '''Failed to get DB user info: {0}'''.format(e)
+            self.log_info_message(msg, self.file_name)
+            print(status)
+            self.prog_exit("Error occurred")
+
+        # Gather GI user details
+        try:
+            giuser, gihome, gibase, giinv = self.get_gi_params()
+            giname = self.ora_env_dict["DB_NAME"] if self.check_key("DB_NAME", self.ora_env_dict) else "ORCLCDB"
+            hostname = self.get_public_hostname()
+            giosid = self.get_inst_sid(giuser, gihome, giname, hostname)
+            if not giosid:
+                giosid = giname + "1"
+            users.append((giuser, giosid))
+        except Exception as e:
+            status = "GI_USER_INFO_FAILED"
+            msg = '''Failed to get GI user info: {0}'''.format(e)
+            self.log_info_message(msg, self.file_name)
+            print(status)
+            self.prog_exit("Error occurred")
+
+        # Update .bashrc for each user
+        for osuser, osid in users:
+            bashrc_path = "/home/{0}/.bashrc".format(osuser)
+            bashrc_line = "\nexport ORACLE_SID={0}\n".format(osid)
+            try:
+                with open(bashrc_path, "a") as bashrc_file:
+                    bashrc_file.write(bashrc_line)
+                msg = '''ORACLE_SID {0} is now added to {1}'''.format(osid, bashrc_path)
+                # status = "OSID_UPDATED_SUCCESSFULLY"
+                self.log_info_message(msg, self.file_name)
+                # print(status)
+            except Exception as e:
+                # status = "OSID_NOT_UPDATED"
+                msg = '''Failed to update {0} for user {1}: {2}'''.format(bashrc_path, osuser, e)
+                self.log_info_message(msg, self.file_name)
+                # print(status)
+                self.prog_exit("Error occurred")
+
+    def update_listener_env_for_users(self):
+        """
+        Configure listener-related environment variables for interactive shells
+        (oracle and grid users). Idempotent and safe across pod restarts.
+        """
+
+        giuser, gihome, gibase, giinv = self.get_gi_params()
+        dbuser, dbhome, dbbase, dbinv = self.get_db_params()
+
+        marker = "# --- RAC listener environment ---"
+
+        exports = [
+            "export GRID_HOME={0}".format(gihome),
+            "export TNS_ADMIN={0}/network/admin".format(gihome),
+        ]
+
+        for user in [giuser, dbuser]:
+            bashrc_path = "/home/{0}/.bashrc".format(user)
+
+            try:
+                existing = ""
+                if self.check_file(bashrc_path, True, None, None):
+                    existing = self.read_file(bashrc_path)
+
+                with open(bashrc_path, "a") as bashrc:
+                    if marker not in existing:
+                        bashrc.write("\n{0}\n".format(marker))
+
+                    for line in exports:
+                        if line not in existing:
+                            bashrc.write("{0}\n".format(line))
+
+                self.log_info_message(
+                    "Listener environment updated for user {0}".format(user),
+                    self.file_name
+                )
+
+            except Exception as e:
+                self.log_error_message(
+                    "Failed to update listener environment for user {0}: {1}".format(user, e),
+                    self.file_name
+                )
+                self.prog_exit("127")

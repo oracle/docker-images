@@ -19,7 +19,7 @@ This guide provides information about example container build files that you can
 
 ## How to build and run Oracle Connection Manager in Containers
 This project offers example container images for the following:
-* Oracle Database 23ai Client (23.5) for Linux x86-64
+* Oracle Database 23.26ai Client (26ai) for Linux x86-64
 * Oracle Database 21c Client (21.3) for Linux x86-64
 * Oracle Database 19c Client (19.3) for Linux x86-64
 * Oracle Database 18c Client (18.3) for Linux x86-64
@@ -36,14 +36,14 @@ You can also deploy Oracle Connection Manager on Podman using the pre-built imag
 
 Example of pulling an Oracle Connection Manager Image from the Oracle Container Registry:
 ```bash
-podman pull container-registry.oracle.com/database/cman:23.7.0.0
-podman tag container-registry.oracle.com/database/cman:23.7.0.0 localhost/oracle/client-cman:latest
+podman pull container-registry.oracle.com/database/cman:latest
+podman tag container-registry.oracle.com/database/cman:latest localhost/oracle/client-cman:latest
 ```
 
 If you are using pre-built Oracle Connection Manager from [the Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Create Oracle Connection Manager Image](#create-oracle-connection-manager-image) to build the Oracle Connection Manager Image.
 
 ### Create Oracle Connection Manager Image
-**IMPORTANT:** You must provide the installation binaries of the Oracle ADMIN Client Oracle Database 23ai Client for Linux x86-64 (client_cman_home.zip) and put them into the `containerfiles/<version>` folder. You  only need to provide the binaries for the edition that you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html).
+**IMPORTANT:** You must provide the installation binaries of the Oracle ADMIN Client Oracle Database 23.26ai Client for Linux x86-64 (client_cman_home.zip) and put them into the `containerfiles/<version>` folder. You  only need to provide the binaries for the edition that you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html).
 You also have to ensure you have internet connectivity for yum. You must not uncompress the binaries.
 
 The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks. It provides an easy way for beginners to get started. Expert users are welcome to directly call `podman build` with their prefered set of parameters.
@@ -51,7 +51,7 @@ Before you build the image, ensure that you have provided the installation binar
 
 ```bash
 ./buildContainerImage.sh -v (Software Version)
-./buildContainerImage.sh -v 23.5.0
+./buildContainerImage.sh -v 26.0.0
 ```
 For detailed usage of command, please execute following command:
 ```bash
@@ -69,7 +69,7 @@ Note:
 
 Once image is built, retag it to latest as we are going to refer latest image in podman run command-
 ```bash
-podman tag localhost/oracle/client-cman:23.5.0 localhost/oracle/client-cman:latest
+podman tag localhost/oracle/client-cman:26.0.0 localhost/oracle/client-cman:latest
 ```
 
 ## Create Network Bridge
@@ -138,7 +138,7 @@ If you want to provide your own pre-created `cman.ora` file, you can provide wit
     --privileged=false \
     -p 1521:1521 \
     --name racnodepc1-cman \
-    oracle/client-cman:23.5.0
+    oracle/client-cman:latest
 ```
 
 To check the Cman container/services creation logs, you can run a tail command on the podman logs. It should take two minutes to create the Cman container service.
@@ -189,7 +189,7 @@ Run this command inside the OracleConnectionManager container.
 
 ## License
 
-To download and run the Oracle ADMIN Client Oracle Database 23ai Client, regardless of whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated on that page.
+To download and run the Oracle ADMIN Client Oracle Database 23.26ai Client, regardless of whether inside or outside a container, you must download the binaries from the Oracle website and accept the license indicated on that page.
 
 All scripts and files hosted in this repository which are required to build the container  images are, unless otherwise noted, released under UPL 1.0 license.
 

@@ -107,7 +107,10 @@ class OraSetupEnv:
         ct = datetime.datetime.now()
         ets = ct.timestamp()
         totaltime=ets - bts
-        self.ocommon.log_info_message("Total time for setup() = [ " + str(round(totaltime,3)) + " ] seconds",self.file_name)
+        # --------------------------------------------------
+        # Final validation (single authority)
+        # --------------------------------------------------
+        self.finalize_orasetupenv(bts)
  
       ###########  SETUP_MACHINE ENDS here ####################
 
@@ -131,6 +134,18 @@ class OraSetupEnv:
             msg="CRS_NODES is not passed as an env variable. If CRS_NODES is not passed as env variable then user must pass PUBLIC_HOSTS,VIRTUAL_HOSTS and PRIVATE_HOST as en env variable so that CRS_NODES can be populated."
             self.ocommon.log_error_message(msg,self.file_name)
             self.populate_crs_nodes()
+        # ----------------------------------------------------
+        # Default orasetupenv timeout (in minutes)
+        # ----------------------------------------------------
+        if not self.ocommon.check_key("ORASETUPENV_TIMEOUT_MINUTES", self.ora_env_dict):
+           self.ora_env_dict = self.ocommon.add_key(
+                 "ORASETUPENV_TIMEOUT_MINUTES", "15", self.ora_env_dict
+           )
+
+           self.ocommon.log_info_message(
+                 "ORASETUPENV_TIMEOUT_MINUTES not set, defaulting to 15 minutes",
+                 self.file_name
+           )
 
     def check_statefile(self):
        """
@@ -663,18 +678,45 @@ class OraSetupEnv:
                self.ocommon.log_info_message("Resetting OS Password for OS user : " + user,self.file_name)
                self.ocommon.reset_os_password(user)
               
-###### Setting up parallel Oracle and Grid User setup using Keys ####
-    def setup_ssh_using_keys(self,sshi):
-        """ 
-        Setting up ssh  using keys
-        """
-        self.ocommon.log_info_message("I am in setup_ssh_using_keys",self.file_name)
-        uohome=sshi.split(":")
-        self.ocommon.log_info_message("I am in setup_ssh_using_keys + uhome[0] and uhome[1]",self.file_name)
-        self.osetupssh.setupsshdirs(uohome[0],uohome[1],None)
-        self.osetupssh.setupsshusekey(uohome[0],uohome[1],None)
-        #self.osetupssh.verifyssh(uohome[0],None)
-  
+    ###### Setting up parallel Oracle and Grid User setup using Keys ####
+    def setup_ssh_using_keys(self, sshi):
+      """
+      Setting up SSH using keys.
+      INSTALL  : populate keys from secrets
+      ADDNODE  : reuse existing cluster keys (DO NOT overwrite)
+      """
+
+      self.ocommon.log_info_message(
+         "I am in setup_ssh_using_keys", self.file_name
+      )
+
+      uohome = sshi.split(":")
+      user = uohome[0]
+      ohome = uohome[1]
+
+      self.ocommon.log_info_message(
+         "setup_ssh_using_keys user={0} home={1}".format(user, ohome),
+         self.file_name
+      )
+
+      # ------------------------------------------------------------
+      # Determine operation type
+      # ------------------------------------------------------------
+      ctype = None
+      
+      # ------------------------------------------------------------
+      # SSH directory handling
+      # ------------------------------------------------------------
+      self.osetupssh.setupsshdirs(user, ohome, ctype)
+
+      # ------------------------------------------------------------
+      # SSH key distribution (idempotent)
+      # ------------------------------------------------------------
+      self.osetupssh.setupsshusekey(user, ohome, ctype)
+
+      # verifyssh intentionally deferred / conditional
+      # self.osetupssh.verifyssh(user, None)
+
 ###### Setting up ssh for K8s #######
     def setup_ssh_for_k8s(self):
         """
@@ -881,4 +923,148 @@ class OraSetupEnv:
                      "Failed to comment out {} in {}: {}".format(param_name, file_path, str(e)),
                      self.file_name
                   )
+ 
+    def wait_for_orasetupenv_completion(self, log_file_path):
+      """
+      Wait until 'Total time for orasetupenv setup' is printed in the log
+      on all CRS public nodes.
+      Runs ONLY on INSTALL_NODE.
+      """
 
+      # --------------------------------------------------
+      # Run only on INSTALL_NODE
+      # --------------------------------------------------
+      install_node = self.ora_env_dict["INSTALL_NODE"]
+      local_host = self.ocommon.get_public_hostname()
+
+      if local_host.lower() != install_node.lower():
+         self.ocommon.log_info_message(
+               "Not INSTALL_NODE ({}), skipping wait_for_orasetupenv_completion".format(
+                  local_host
+               ),
+               self.file_name
+         )
+         return True
+
+      timeout_minutes = int(self.ora_env_dict["ORASETUPENV_TIMEOUT_MINUTES"])
+      giuser = self.ora_env_dict["GRID_USER"]
+
+      # --------------------------------------------------
+      # Get CRS public nodes using existing helper
+      # --------------------------------------------------
+      pub_nodes, vip_nodes, priv_nodes = self.ocommon.process_cluster_vars("CRS_NODES")
+
+      # pub_nodes is space-separated → convert to list
+      crs_nodes = pub_nodes.replace(" ", ",").split(",")
+
+      self.ocommon.log_info_message(
+         "Waiting for orasetupenv completion on CRS nodes {} "
+         "(timeout={} minutes)".format(",".join(crs_nodes), timeout_minutes),
+         self.file_name
+      )
+
+      # Single-node cluster
+      if len(crs_nodes) == 1:
+         self.ocommon.log_info_message(
+               "Single node cluster detected, skipping orasetupenv wait",
+               self.file_name
+         )
+         return True
+
+      start_time = time.time()
+      timeout_seconds = timeout_minutes * 60
+      completed_nodes = set()
+      marker = "Total time for orasetupenv setup"
+
+      while True:
+         for node in crs_nodes:
+               if node in completed_nodes:
+                  continue
+               cmd = [
+                  "su", "-", giuser, "-c",
+                  "ssh -o ConnectTimeout=5 {} grep -q \"Total time for orasetupenv setup\" {}".format(
+                     node, log_file_path
+                  )
+               ]
+
+               output, error, retcode = self.ocommon.execute_cmd_noshell(cmd)
+               if retcode == 0:
+                  self.ocommon.log_info_message(
+                     "orasetupenv completed on node {}".format(node),
+                     self.file_name
+                  )
+                  completed_nodes.add(node)
+
+         if len(completed_nodes) == len(crs_nodes):
+               self.ocommon.log_info_message(
+                  "orasetupenv completed successfully on all CRS nodes",
+                  self.file_name
+               )
+               return True
+
+         if time.time() - start_time > timeout_seconds:
+               pending_nodes = set(crs_nodes) - completed_nodes
+               raise TimeoutError(
+                  "Timeout waiting for orasetupenv completion. Pending nodes: {}".format(
+                     ",".join(pending_nodes)
+                  )
+               )
+
+         time.sleep(10)
+    def finalize_orasetupenv(self, start_ts):
+      """
+      Final validation phase for orasetupenv.
+      - Waits for orasetupenv completion on all CRS nodes
+      - Performs a single SSH verification at the very end
+      """
+
+      ct = datetime.datetime.now()
+      totaltime = ct.timestamp() - start_ts
+
+      self.ocommon.log_info_message(
+         "Total time for orasetupenv setup() = [ {0} ] seconds"
+         .format(round(totaltime, 3)),
+         self.file_name
+      )
+      if self.ocommon.detect_k8s_env(): 
+         log_file = self.ora_env_dict.get("LOG_FILE_NAME")
+         if not log_file:
+            self.ocommon.log_error_message(
+                  "LOG_FILE_NAME is not set, cannot wait for orasetupenv completion",
+                  self.file_name
+            )
+            return False
+
+         # --------------------------------------------------
+         # Wait for orasetupenv completion (authoritative)
+         # --------------------------------------------------
+         if os.path.basename(log_file) == "oracle_db_setup.log":
+            self.wait_for_orasetupenv_completion(log_file)
+
+         # --------------------------------------------------
+         # Final SSH verification (single point of truth)
+         # --------------------------------------------------
+         giuser, gihome, _, _ = self.ocommon.get_gi_params()
+         version = self.ocommon.get_rsp_version("INSTALL", None).split(".", 1)[0]
+         nodes = self.ocommon.get_cluster_nodes()
+
+         rc = self.osetupssh.verifyssh(
+            giuser,
+            gihome,
+            "runcluvfy.sh",
+            nodes,
+            version
+         )
+
+         if rc != 0:
+            self.ocommon.log_error_message(
+                  "Final SSH verification failed after orasetupenv completion",
+                  self.file_name
+            )
+            return False
+
+         self.ocommon.log_info_message(
+            "Final SSH verification successful on all cluster nodes",
+            self.file_name
+         )
+         return True

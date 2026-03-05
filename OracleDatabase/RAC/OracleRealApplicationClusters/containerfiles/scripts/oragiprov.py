@@ -166,28 +166,69 @@ class OraGIProv:
            self.ocommon.prog_exit("127")
 
    def perform_ssh_setup(self):
-       """
-       Perform ssh setup
-       """
-       #if not self.ocommon.detect_k8s_env():
-       pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-       crs_nodes=pub_nodes.replace(" ",",")
-       crs_nodes_list=crs_nodes.split(",")
-       if len(crs_nodes_list) == 1:
-          self.ocommon.log_info_message("Cluster size=1. Node=" + crs_nodes_list[0],self.file_name)
-          user=self.ora_env_dict["GRID_USER"]
-          cmd = '''su - {0} -c "/bin/rm -rf ~/.ssh ; sleep 1; /bin/ssh-keygen -t rsa -b 4096 -q -N \'\' -f ~/.ssh/id_rsa ; sleep 1; /bin/ssh-keyscan {1} > ~/.ssh/known_hosts 2>/dev/null ; sleep 1; /bin/cp ~/.ssh/id_rsa.pub  ~/.ssh/authorized_keys"'''.format(user, crs_nodes_list[0])
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,None)
-       else:
-          if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
-            user=self.ora_env_dict["GRID_USER"]
-            ohome=self.ora_env_dict["GRID_HOME"]
-            self.osetupssh.setupssh(user,ohome,"INSTALL")
-            #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            # self.osetupssh.verifyssh(user,"INSTALL")
-          else:
-            self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this env variables SSH_PRIVATE_KEY and SSH_PUBLIC_KEY are set.",self.file_name)
+      """
+      Perform ssh setup
+      """
+
+      pub_nodes, vip_nodes, priv_nodes = self.ocommon.process_cluster_vars("CRS_NODES")
+      crs_nodes = pub_nodes.replace(" ", ",")
+      nodes = crs_nodes.split(",")
+
+      is_gpc = self.ocommon.check_key("CRS_GPC", self.ora_env_dict)
+      is_k8s = self.ocommon.detect_k8s_env()
+
+      has_injected_keys = (
+         self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict) and
+         self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict)
+      )
+
+      user = self.ora_env_dict["GRID_USER"]
+      ohome = self.ora_env_dict["GRID_HOME"]
+
+      # --------------------------------------------------
+      # Case 1: Local SSH bootstrap
+      #   - CRS_GPC with no injected keys (K8s or non-K8s)
+      #   - OR single-node RAC on non-K8s
+      # --------------------------------------------------
+      if (is_gpc and not has_injected_keys) or \
+         (not is_gpc and len(nodes) == 1 and not is_k8s):
+
+         node = nodes[0]
+
+         self.ocommon.log_info_message(
+               f"Bootstrapping local SSH for GRID user on node {node}",
+               self.file_name
+         )
+
+         cmd = (
+               'su - {0} -c '
+               '"/bin/rm -rf ~/.ssh ; '
+               '/bin/mkdir -p ~/.ssh && chmod 700 ~/.ssh ; '
+               '/bin/ssh-keygen -t rsa -b 4096 -q -N \'\' -f ~/.ssh/id_rsa ; '
+               '/bin/ssh-keyscan -H {1} >> ~/.ssh/known_hosts 2>/dev/null ; '
+               '/bin/cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys ; '
+               '/bin/chmod 600 ~/.ssh/authorized_keys ~/.ssh/known_hosts"'
+         ).format(user, node)
+
+         output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+         self.ocommon.check_os_err(output, error, retcode, None)
+         return
+
+      # --------------------------------------------------
+      # Case 2: Multi-node RAC → CVU SSH setup
+      # --------------------------------------------------
+      if not is_gpc and len(nodes) > 1:
+         if not has_injected_keys:
+               self.ocommon.log_info_message(
+                  "Multi-node RAC detected; running legacy SSH setup for GRID user",
+                  self.file_name
+               )
+               self.osetupssh.setupssh(user, ohome, "INSTALL")
+         else:
+               self.ocommon.log_info_message(
+                  "Injected SSH keys detected; skipping legacy SSH setup",
+                  self.file_name
+               )
 
    def crs_sw_install(self):
        """
@@ -707,28 +748,95 @@ class OraGIProv:
          self.ocommon.log_error_message(f"Error installing cvuqdisk. Exiting... {e}", self.file_name)
 
    def backup_oracle_etc_files(self):
-      oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-      self.ocommon.log_info_message("oraversion: " + str(oraversion), self.file_name)
-      gridrsp = "/tmp/grid.rsp"
-      version = oraversion.split(".", 1)[0].strip()
-      self.ocommon.log_info_message("disk version: " + version, self.file_name)
+      """
+      Backup /etc/oracle based on Oracle version rules.
 
-      if int(version) == 19:
-         self.ocommon.log_info_message("running backup_oracle_etc_files()", self.file_name)
-         giuser, gihome, gibase, oinv = self.ocommon.get_gi_params()
-         node = self.ocommon.get_public_hostname()
-         targetdir=gibase+"/.etcoraclebackup"
-         try:
-            if self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
-               backup_dir="/etc/oracle"
-               cmd = '''su - {0} -c "ssh {1} sudo mkdir -p {2}/"'''.format(giuser, node, targetdir)
-               output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-               self.ocommon.check_os_err(output, error, retcode, None)
-               cmd = '''su - {0} -c "ssh {1} sudo cp -rp {3} {2}/"'''.format(giuser, node, targetdir, backup_dir)
-               output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-               self.ocommon.check_os_err(output, error, retcode, None)
-               self.ocommon.log_info_message(
-                  "Successfully backed up /etc/oracle files on node {0}.".format(node), self.file_name)
-         except subprocess.CalledProcessError as e:
-               self.ocommon.log_error_message(
-                  "Error backing up /etc/oracle on node {0}. Exiting... {1}".format(node, str(e)), self.file_name)
+      - Version > 19  : always backup
+      - Version == 19 : backup only if CRS_GPC is set
+      """
+
+      oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+      self.ocommon.log_info_message(
+         "oraversion: {0}".format(oraversion),
+         self.file_name
+      )
+
+      if not oraversion:
+         self.ocommon.log_info_message(
+               "Oracle version not detected; skipping /etc/oracle backup",
+               self.file_name
+         )
+         return True
+
+      version = oraversion.split(".", 1)[0].strip()
+      self.ocommon.log_info_message(
+         "Oracle major version: {0}".format(version),
+         self.file_name
+      )
+
+      # --------------------------------------------------
+      # Decide whether backup is required
+      # --------------------------------------------------
+      if int(version) == 19 and not self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
+         self.ocommon.log_info_message(
+               "Oracle 19c detected and CRS_GPC not set; skipping /etc/oracle backup",
+               self.file_name
+         )
+         return True
+
+      self.ocommon.log_info_message(
+         "Running backup_oracle_etc_files()",
+         self.file_name
+      )
+
+      giuser, gihome, gibase, oinv = self.ocommon.get_gi_params()
+      node = self.ocommon.get_public_hostname()
+
+      targetdir = "{0}/.etcoraclebackup".format(gibase)
+      backup_dir = "/etc/oracle"
+
+      # --------------------------------------------------
+      # 1. Create backup directory
+      # --------------------------------------------------
+      cmd = (
+         'su - {0} -c "ssh {1} sudo mkdir -p {2}"'
+         .format(giuser, node, targetdir)
+      )
+      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
+
+      if retcode != 0:
+         self.ocommon.log_error_message(
+               "Failed to create backup directory {0} on node {1}".format(targetdir, node),
+               self.file_name
+         )
+         return False
+
+      # --------------------------------------------------
+      # 2. Copy /etc/oracle
+      # --------------------------------------------------
+      cmd = (
+         'su - {0} -c "ssh {1} sudo cp -rp {3} {2}/"'
+         .format(giuser, node, targetdir, backup_dir)
+      )
+      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
+
+      if retcode != 0:
+         self.ocommon.log_error_message(
+               "Failed to backup {0} on node {1}".format(backup_dir, node),
+               self.file_name
+         )
+         return False
+
+      # --------------------------------------------------
+      # Success
+      # --------------------------------------------------
+      self.ocommon.log_info_message(
+         "Successfully backed up {0} to {1} on node {2}".format(
+               backup_dir, targetdir, node
+         ),
+         self.file_name
+      )
+
+      return True

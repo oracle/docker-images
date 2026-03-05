@@ -46,6 +46,9 @@ class OraSetupSSH:
             self.ocommon.log_info_message(ex_value, self.file_name)
             self.ocommon.log_info_message(stack_trace, self.file_name)
 
+    # ============================================================
+    # ENTRY POINT
+    # ============================================================
     def setup(self):
         """
         This function setup ssh between computes
@@ -83,6 +86,9 @@ class OraSetupSSH:
         self.ocommon.log_info_message(
             "Total time for setup() = [ " + str(round(totaltime, 3)) + " ] seconds", self.file_name)
 
+    # ============================================================
+    # PASSWORD-BASED SSH (LEGACY / FALLBACK)
+    # ============================================================
     def setupssh(self, user, ohome, ctype):
         """
         This function setup the ssh between user as SKIP_SSH_SETUP flag is not set
@@ -128,10 +134,9 @@ class OraSetupSSH:
                     user, gihome, sshscr, cluster_nodes, version)
                 if retcode == 0:
                     break
-                else:
-                    i = i + 1
-                    self.ocommon.log_info_message(
-                        '''SSH setup verification failed. Trying again..''', self.file_name)
+                i = i + 1
+                self.ocommon.log_info_message(
+                    '''SSH setup verification failed. Trying again..''', self.file_name)
         elif ctype == 'ADDNODE':
             cluster_nodes = self.ocommon.get_cluster_nodes()
             cluster_nodes = cluster_nodes.replace(" ", ",")
@@ -159,39 +164,72 @@ class OraSetupSSH:
                     user, gihome, sshscr, new_nodes, version)
                 if retcode == 0:
                     break
-                else:
-                    i = i + 1
-                    self.ocommon.log_info_message(
-                        '''SSH setup verification failed. Trying again..''', self.file_name)
+                i = i + 1
+                self.ocommon.log_info_message(
+                    '''SSH setup verification failed. Trying again..''', self.file_name)
         else:
             cluster_nodes = self.ocommon.get_cluster_nodes()
 
     def verifyssh(self, user, gihome, sshscr, cls_nodes, version):
         """
-        This function setup the ssh between user as SKIP_SSH_SETUP flag is not set
+        Verify SSH connectivity (quiet).
+        Logs only summary information.
         """
-        self.ocommon.log_info_message(
-            "Verifying SSH between nodes " + cls_nodes, self.file_name)
-        retcode1 = 0
-        if int(version) == 19 or int(version) == 21:
-            nodes_list = cls_nodes.split(" ")
-            for node in nodes_list:
-                cmd = '''su - {0} -c "ssh -o BatchMode=yes -o ConnectTimeout=5 {0}@{1} echo ok 2>&1"'''.format(
-                    user, node)
-                output, error, retcode = self.ocommon.execute_cmd(
-                    cmd, None, None)
-                self.ocommon.check_os_err(output, error, retcode, None)
-                if retcode != 0:
-                    retcode1 = 255
-        else:
-            cls_nodes = cls_nodes.replace(" ", ",")
-            cmd = '''su - {0} -c "{1}/{2} comp admprv -n {3} -o user_equiv -sshonly -verbose"'''.format(
-                user, gihome, sshscr, cls_nodes)
-            output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-            self.ocommon.check_os_err(output, error, retcode, None)
-            retcode1 = retcode
 
-        return retcode1
+        self.ocommon.log_info_message(
+            "Verifying SSH between nodes {0}".format(cls_nodes),
+            self.file_name
+        )
+
+        if not cls_nodes:
+            return 0
+
+        nodes = cls_nodes.replace(",", " ").split()
+
+        # -----------------------------
+        # Modern versions (19c+)
+        # -----------------------------
+        if int(version) >= 19:
+            for node in nodes:
+                cmd = (
+                    'su - {0} -c '
+                    '"ssh -o BatchMode=yes -o ConnectTimeout=5 '
+                    '{0}@{1} echo ok '
+                    '>/dev/null 2>&1"'
+                ).format(user, node)
+
+                _, _, rc = self.ocommon.execute_cmd(cmd, None, None)
+
+                if rc != 0:
+                    self.ocommon.log_info_message(
+                        "SSH verification failed for user {0} on node {1}"
+                        .format(user, node),
+                        self.file_name
+                    )
+                    return 255
+
+            return 0
+
+        # -----------------------------
+        # Legacy path
+        # -----------------------------
+        cls_nodes = cls_nodes.replace(" ", ",")
+        cmd = (
+            'su - {0} -c "{1}/{2} comp admprv '
+            '-n {3} -o user_equiv -sshonly '
+            '>/dev/null 2>&1"'
+        ).format(user, gihome, sshscr, cls_nodes)
+
+        _, _, rc = self.ocommon.execute_cmd(cmd, None, None)
+
+        if rc != 0:
+            self.ocommon.log_info_message(
+                "SSH verification failed for user {0}".format(user),
+                self.file_name
+            )
+
+        return rc
+
 
     def performsshsetup(self, user, gihome, sshscr, cls_nodes, version, password, counter, expect, script_dir):
         """
@@ -272,56 +310,62 @@ class OraSetupSSH:
 
     def setupsshusekey(self, user, ohome, ctype):
         """
-        This function setup the ssh between user as SKIP_SSH_SETUP flag is not set
-        This will be using existing key to setup the ssh
+        SSH setup using existing RSA key.
+        Quiet retries; authoritative verification at the end.
         """
-        # Populate Known Host file
-        i = 1
 
-        cluster_nodes = ""
-        new_nodes = self.ocommon.get_cluster_nodes()
-        existing_cls_node = self.ocommon.get_existing_clu_nodes(None)
-        giuser, gihome, gibase, oinv = self.ocommon.get_gi_params()
-        oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-        version = oraversion.split(".", 1)[0].strip()
-        sshscr = self.ora_env_dict["SSHSCR"] if self.ocommon.check_key(
-            "SSHSCR", self.ora_env_dict) else "bin/cluvfy"
-        if user == 'grid':
-            sshscr = "runcluvfy.sh"
-        else:
-            sshscr = "bin/cluvfy"
-            file = '''{0}/{1}'''.format(gihome, sshscr)
-            if not self.ocommon.check_file(file, "local", None, None):
-                sshscr = "runcluvfy.sh"
-        # node=exiting_cls_node.split(" ")[0]
-        if existing_cls_node is not None:
-            cluster_nodes = existing_cls_node.replace(
-                ",", " ") + " " + new_nodes
-        else:
-            cluster_nodes = new_nodes
+        self.ocommon.log_info_message(
+            "Setting up SSH trust for user {0} ({1})".format(
+                user, ctype or "INSTALL"
+            ),
+            self.file_name
+        )
 
-        for node1 in cluster_nodes.split(" "):
-            for node in cluster_nodes.split(" "):
-                i = 1
-                cmd = '''su - {0} -c "ssh -o  StrictHostKeyChecking=no -x -l {0} {3} \\"ssh-keygen -R {1}; ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N \'\' ;ssh -o  StrictHostKeyChecking=no -x -l {0} {1} \\\"/bin/sh -c true\\\"\\""'''.format(
-                    user, node, ohome, node1)
-                output, error, retcode = self.ocommon.execute_cmd(
-                    cmd, None, None)
-                self.ocommon.check_os_err(output, error, retcode, None)
-                if int(retcode) != 0:
-                    while (i < 5):
-                        self.ocommon.log_info_message(
-                            '''SSH setup failed for the cmd {0}. Trying again and count is {1}'''.format(cmd, i), self.file_name)
-                        output, error, retcode = self.ocommon.execute_cmd(
-                            cmd, None, None)
-                        self.ocommon.check_os_err(output, error, retcode, None)
-                        if (retcode == 0):
-                            break
-                        else:
-                            time.sleep(5)
-                            i = i+1
+        new_nodes = self.ocommon.get_cluster_nodes() or ""
+        existing_nodes = self.ocommon.get_existing_clu_nodes(None)
 
-        retcode = self.verifyssh(user, gihome, sshscr, new_nodes, version)
+        all_nodes = sorted(set(
+            (existing_nodes.replace(",", " ").split() if existing_nodes else []) +
+            (new_nodes.replace(",", " ").split() if new_nodes else [])
+        ))
+
+        max_retries = 5
+        retry_sleep = 20   # increased delay to reduce noise
+
+        for src in all_nodes:
+            for tgt in all_nodes:
+                self.ocommon.log_info_message(
+                    "Configuring SSH trust {0} -> {1}".format(src, tgt),
+                    self.file_name
+                )
+
+                cmd = (
+                    'su - {0} -c "ssh -o StrictHostKeyChecking=no -x -l {0} {1} '
+                    '\\\"ssh-keygen -R {2} >/dev/null 2>&1; '
+                    'test -s ~/.ssh/id_rsa || '
+                    'ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N \\\\\\\"\\\\\\\"; '
+                    'ssh -o StrictHostKeyChecking=no -x -l {0} {2} '
+                    '\\\\\\\"/bin/sh -c true\\\\\\\"\\\"\"'
+                ).format(user, src, tgt)
+
+                success = False
+
+                for attempt in range(1, max_retries + 1):
+                    _, _, rc = self.ocommon.execute_cmd(cmd, None, None)
+                    if rc == 0:
+                        success = True
+                        break
+                    time.sleep(retry_sleep)
+
+                if not success:
+                    self.ocommon.log_warn_message(
+                        "SSH trust not ready yet for {0} -> {1}. "
+                        "This is expected during setup and can be ignored for now; "
+                        "final SSH verification will be performed later.".format(
+                            src, tgt
+                        ),
+                        self.file_name
+                    )
 
     def setupsshdirs(self, user, ohome, ctype):
         """

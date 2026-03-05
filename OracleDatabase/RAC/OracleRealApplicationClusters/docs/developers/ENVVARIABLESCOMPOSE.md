@@ -22,7 +22,7 @@ Learn about the environment variables (env variables) that you can use when crea
 | RACNODE1_CRS_PRIVATE_IP1   | Default set to `192.168.17.170`. Set this env variable when you want to set the private IP for the first private network of the first Oracle RAC container. |
 | RACNODE1_CRS_PRIVATE_IP2   | Default set to `192.168.18.170`. Set this env variable when you want to set the private IP for the second private network of the first Oracle RAC container. |
 | INSTALL_NODE               | Default set to `racnodep1`. Set this env variable to any of the RAC containers. Note: This value will remain the same across the Oracle RAC Cluster for both nodes where the actual Oracle RAC cluster installation occurs. |
-| RAC_IMAGE_NAME             | Default set to `localhost/oracle/database-rac:21.0.0`. Set this env variable when you want to specify the Oracle RAC Image name. |
+| RAC_IMAGE_NAME             | Default set to `localhost/oracle/database-rac:23.26ai`. Set this env variable when you want to specify the Oracle RAC Image name. |
 | CRS_NODES                  | Default set to `"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"`. Set this env variable to a value with the same format used here for all the Oracle RAC cluster node cluster setup. |
 | SCAN_NAME                  | Default set to `racnodepc1-scan`. Set this env variable when you want to specify a resolvable scan name from the DNS. |
 | CRS_ASM_DISCOVERY_STRING   | With NFS storage devices the default is set to `/oradata`. With block devices, the default is set to `/dev/asm-disk*`. This value specifies the discovery string for ASM. Do not change this unless you have modified `podman-compose.yml` to find a different discovery string. |
@@ -38,7 +38,7 @@ Learn about the environment variables (env variables) that you can use when crea
 | KEY_SECRET_FILE            | Default set to `/opt/.secrets/key.pem`. Do not change this value. |
 | CMAN_CONTAINER_NAME        | Default set to `racnodepc1-cman`. Set this env variable when you want to set a connection manager container name. |
 | CMAN_HOST_NAME             | Default set to `racnodepc1-cman`. Set this env variable when you want to set the hostname for the connection manager container. |
-| CMAN_IMAGE_NAME            | Default set to `"localhost/oracle/client-cman:21.0.0"`. Set this env variable when you want to set the connection manager image name. |
+| CMAN_IMAGE_NAME            | Default set to `"localhost/oracle/client-cman:23.26ai"`. Set this env variable when you want to set the connection manager image name. |
 | CMAN_PUBLIC_IP             | Default set to 10.0.20.15. Set this env variable when you want to set public ip for connection manager container. |
 | CMAN_PUBLIC_HOSTNAME       | Default set to `racnodepc1-cman`. Set this env variable when you want to set the public hostname for the connection manager container. |
 | DB_HOSTDETAILS             | Default set to `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`. Set this env variable when you want to use connection manager container to set details for the database host. |

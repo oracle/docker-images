@@ -87,14 +87,14 @@ services:
       CRS_ASM_DISCOVERY_STRING: "/oradata"
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_HOME: /u01/app/21c/grid
+      GRID_HOME: /u01/app/26ai/grid
       GRID_BASE: /u01/app/grid
-      DB_HOME: /u01/app/oracle/product/21c/dbhome_1
+      DB_HOME: /u01/app/oracle/product/26ai/dbhome_1
       DB_BASE: /u01/app/oracle
       INVENTORY: /u01/app/oraInventory
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
-      DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip
+      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
       DB_NAME: ORCLCDB
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
@@ -154,14 +154,14 @@ services:
       CRS_ASM_DISCOVERY_STRING: "/oradata"
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_HOME: /u01/app/21c/grid
+      GRID_HOME: /u01/app/26ai/grid
       GRID_BASE: /u01/app/grid
-      DB_HOME: /u01/app/oracle/product/21c/dbhome_1
+      DB_HOME: /u01/app/oracle/product/26ai/dbhome_1
       DB_BASE: /u01/app/oracle
       INVENTORY: /u01/app/oraInventory
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
-      DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip
+      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
       DB_NAME: ORCLCDB
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
@@ -201,7 +201,8 @@ services:
     dns_search: ${DNS_DOMAIN}
     dns: ${DNS_PUBLIC_IP}
     environment:
-      DOMAIN_NAME: ${DNS_DOMAIN}
+      DOMAIN: ${DNS_DOMAIN}
+      DNS_SERVER: ${DNS_PUBLIC_IP}
       PUBLIC_IP: ${CMAN_PUBLIC_IP}
       PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
       DB_HOSTDETAILS: ${DB_HOSTDETAILS}

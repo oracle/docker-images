@@ -13,7 +13,7 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run: 
-#      $ podman build -t oracle/database:23.26.0-free -f Containerfile.free .
+#      $ podman build -t oracle/database:23.26.1-free -f Containerfile.free .
 #
 #
 # Pull base image
@@ -27,7 +27,7 @@ FROM ${BASE_IMAGE} as base
 LABEL "provider"="Oracle"                                               \
       "maintainer"="Oracle Database Container Team <container-team_ww@oracle.com>" \
       "vendor"="Oracle Corporation"                                     \
-      "version"="23.26.0"                                               \
+      "version"="23.26.1"                                               \
       "release"="Free"                                                  \
       "name"="Oracle AI Database 26ai Free"                             \
       "summary"="Oracle AI Database 26ai Free"                          \
@@ -40,7 +40,7 @@ LABEL "provider"="Oracle"                                               \
       "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
       "port.listener"="1521"                                            
 
-ARG INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-free/oracle-ai-database-free-26ai-23.26.0-1.el9.x86_64.rpm"
+ARG INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-free/oracle-ai-database-free-26ai-23.26.1-1.el9.x86_64.rpm"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------

@@ -47,7 +47,7 @@ services:
       - pwdsecret
       - keysecret
     volumes:
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_21c.rsp
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE1_CRS_PRIVATE_IP1}
@@ -61,7 +61,7 @@ services:
       INIT_PGA_SIZE: 2G
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
-      GRID_RESPONSE_FILE: /tmp/grid_21c.rsp
+      GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
       CMAN_HOST: ${CMAN_HOST_NAME}
       CMAN_PORT: 1521
       DB_SERVICE: ${DB_SERVICE}
@@ -105,7 +105,7 @@ services:
       - pwdsecret
       - keysecret
     volumes:
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_21c.rsp
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE2_CRS_PRIVATE_IP1}
@@ -118,7 +118,7 @@ services:
       INIT_PGA_SIZE: 2G
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
-      GRID_RESPONSE_FILE: /tmp/grid_21c.rsp
+      GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
       CMAN_HOST: ${CMAN_HOST_NAME}
       CMAN_PORT: 1521
       DB_SERVICE: ${DB_SERVICE}
@@ -157,8 +157,7 @@ services:
     dns_search: ${DNS_DOMAIN}
     dns: ${DNS_PUBLIC_IP}
     environment:
-      DOMAIN: ${DNS_DOMAIN}
-      DNS_SERVER: ${DNS_PUBLIC_IP}
+      DOMAIN_NAME: ${DNS_DOMAIN}
       PUBLIC_IP: ${CMAN_PUBLIC_IP}
       PUBLIC_HOSTNAME: ${CMAN_PUBLIC_HOSTNAME}
       DB_HOSTDETAILS: ${DB_HOSTDETAILS}

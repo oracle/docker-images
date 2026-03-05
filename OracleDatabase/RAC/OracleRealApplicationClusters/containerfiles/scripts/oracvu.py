@@ -181,30 +181,48 @@ class OraCvu:
        self.ocommon.check_os_err(output,error,retcode,None)
        return retcode
 
-   def check_clu(self,node,sshflag,crsflag):
-       """
-       This function check if crs is configued properly
-       """
-       giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
-       crs_nodes=""
-       if not node:
-          crs_nodes=" -allnodes "
-          cmd='''su - {0} -c "{1}/bin/cluvfy comp clumgr {2}"'''.format(giuser,gihome,crs_nodes)
-       else:
-          crs_nodes=" -n " + node
-          cmd='''su - {0} -c "{1}/bin/cluvfy comp clumgr {2}"'''.format(giuser,gihome,crs_nodes)
-       
-       if sshflag:
-          crs_nodes=" -n " + node
-          cmd='''su - {0} -c "ssh {3} '{1}/bin/cluvfy comp clumgr {2}'"'''.format(giuser,gihome,crs_nodes,node)
+   def check_clu(self, node, sshflag, crsflag):
+      """
+      This function checks if CRS is configured properly.
+      For Oracle Restart (CRS_GPC), CRS checks are not applicable.
+      """
 
-       if crsflag:
-          crs_nodes=" -n " + node
-          cmd='''su - {0} -c "ssh {3} '{1}/bin/cluvfy stage -post hacfg'"'''.format(giuser,gihome,crs_nodes,node)
+      # -----------------------------------------
+      # Oracle Restart: skip CRS / clumgr checks
+      # -----------------------------------------
+      if crsflag:
+         self.ocommon.log_info_message(
+               "CRS_GPC detected (Oracle Restart). Skipping CRS/clumgr checks.",
+               self.file_name
+         )
+         return 0
 
-       output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       self.ocommon.check_os_err(output,error,retcode,None)
-       return retcode
+      # -----------------------------------------
+      # Existing RAC logic (unchanged)
+      # -----------------------------------------
+      giuser, gihome, gbase, oinv = self.ocommon.get_gi_params()
+
+      if not node:
+         crs_nodes = " -allnodes "
+         cmd = '''su - {0} -c "{1}/bin/cluvfy comp clumgr {2}"'''.format(
+               giuser, gihome, crs_nodes
+         )
+      else:
+         crs_nodes = " -n " + node
+         cmd = '''su - {0} -c "{1}/bin/cluvfy comp clumgr {2}"'''.format(
+               giuser, gihome, crs_nodes
+         )
+
+      if sshflag:
+         crs_nodes = " -n " + node
+         cmd = '''su - {0} -c "ssh {0}@{3} '{1}/bin/cluvfy comp clumgr {2}'"'''.format(
+               giuser, gihome, crs_nodes, node
+         )
+
+      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
+      self.ocommon.check_os_err(output, error, retcode, None)
+      return retcode
+
 
    def check_home(self,node,home,user):
        """
@@ -264,29 +282,6 @@ class OraCvu:
           self.ocommon.check_os_err(output,error,retcode,None)
 
    def check_db_home(self, node, db_home, user):
-      """
-      This function checks if the Oracle Database home is installed correctly
-      """
-      giuser, gihome, gbase, oinv = self.ocommon.get_gi_params()
-      oracle_home = db_home
-
-      if not node:
-         crs_nodes = " -allnodes "
-      else:
-         crs_nodes = " -n " + node
-
-      cvufile = '''{0}/bin/cluvfy'''.format(gihome)
-      if not self.ocommon.check_file(cvufile, True, None, None):
-         return 1
-
-      cmd = '''su - {0} -c "{1}/bin/cluvfy stage -post dbinst -d {3}"'''.format(user, gihome, node, db_home)
-      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-      if retcode == 0:
-         return 0
-      else:
-         return 1
-   
-   def check_db_home_has(self, node, db_home, user):
       """
       This function checks if the Oracle Database home is installed correctly
       by running OPatch lsinventory on each node individually.

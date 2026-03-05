@@ -49,8 +49,8 @@ services:
     volumes:
       - /scratch/rac/cluster01/node1:/u01
       - /scratch:/scratch
-      - /scratch/common_scripts/podman/rac/dbca_21c.rsp:/tmp/dbca_21c.rsp
-      - /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp:/tmp/grid_21c.rsp 
+      - /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp
+      - /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp:/tmp/grid_23.26ai.rsp 
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE1_CRS_PRIVATE_IP1}
@@ -60,12 +60,12 @@ services:
       SCAN_NAME: ${SCAN_NAME}
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_HOME: /u01/app/21c/grid
+      GRID_HOME: /u01/app/26ai/grid
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
-      DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip
-      GRID_RESPONSE_FILE: /tmp/grid_21c.rsp
-      DBCA_RESPONSE_FILE: /tmp/dbca_21c.rsp
+      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
+      GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
+      DBCA_RESPONSE_FILE: /tmp/dbca_23.26ai.rsp
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
       CMAN_HOST: ${CMAN_HOST_NAME}
@@ -113,8 +113,8 @@ services:
     volumes:
       - /scratch/rac/cluster01/node2:/u01
       - /scratch:/scratch
-      - /scratch/common_scripts/podman/rac/dbca_21c.rsp:/tmp/dbca_21c.rsp
-      - /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp:/tmp/grid_21c.rsp 
+      - /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp
+      - /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp:/tmp/grid_23.26ai.rsp 
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE2_CRS_PRIVATE_IP1}
@@ -124,12 +124,12 @@ services:
       SCAN_NAME: ${SCAN_NAME}
       INIT_SGA_SIZE: 3G
       INIT_PGA_SIZE: 2G
-      GRID_HOME: /u01/app/21c/grid
+      GRID_HOME: /u01/app/26ai/grid
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_213000_grid_home.zip
-      DB_SW_ZIP_FILE: LINUX.X64_213000_db_home.zip
-      GRID_RESPONSE_FILE: /tmp/grid_21c.rsp
-      DBCA_RESPONSE_FILE: /tmp/dbca_21c.rsp
+      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
+      GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
+      DBCA_RESPONSE_FILE: /tmp/dbca_23.26ai.rsp
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
       CMAN_HOST: ${CMAN_HOST_NAME}

@@ -17,12 +17,12 @@ First Validate if Container is healthy or not by running-
 ```bash
 podman ps -a
 
-CONTAINER ID  IMAGE                                        COMMAND                                       CREATED         STATUS                     PORTS                    NAMES
-598385416fd7  localhost/oracle/rac-dnsserver:latest        /bin/sh -c exec $...                          55 minutes ago  Up 55 minutes (healthy)                            rac-dnsserver
-835e3d113898  localhost/oracle/rac-storage-server:latest                                                55 minutes ago  Up 55 minutes (healthy)                            racnode-storage
-9ba7bbee9095  localhost/oracle/database-rac:21c                                                      52 minutes ago  Up 52 minutes (healthy)                            racnodep1
-ebbf520b0c95  localhost/oracle/database-rac:21c                                                      52 minutes ago  Up 52 minutes (healthy)                            racnodep2
-36df843594d9  localhost/oracle/client-cman:21.3.0          /bin/sh -c exec $...                          12 minutes ago  Up 12 minutes (healthy)  0.0.0.0:1521->1521/tcp  racnodepc1-cman
+CONTAINER ID  IMAGE                                        COMMAND                                       CREATED         STATUS                     PORTS                     NAMES
+598385416fd7  localhost/oracle/rac-dnsserver:latest        /bin/sh -c exec $...                          55 minutes ago  Up 55 minutes (healthy)                              rac-dnsserver
+835e3d113898  localhost/oracle/rac-storage-server:latest                                                 55 minutes ago  Up 55 minutes (healthy)                              racnode-storage
+9ba7bbee9095  localhost/oracle/database-rac:23.26ai                                                      52 minutes ago  Up 52 minutes (healthy)                              racnodep1
+ebbf520b0c95  localhost/oracle/database-rac:23.26ai                                                      52 minutes ago  Up 52 minutes (healthy)                              racnodep2
+36df843594d9  localhost/oracle/client-cman:23.26ai         /bin/sh -c exec $...                          12 minutes ago  Up 12 minutes (healthy)     0.0.0.0:1521->1521/tcp   racnodepc1-cman
 ```
 
 Look for `(healthy)` next to container names under `STATUS` section.
@@ -55,9 +55,9 @@ CRS-4537: Cluster Ready Services is online
 CRS-4529: Cluster Synchronization Services is online
 CRS-4533: Event Manager is online
 
-[grid@racnodep1 u01]$ crsctl stat res -t
+[grid@racnodep1 ~]$ crsctl stat res -t
 --------------------------------------------------------------------------------
-Name           Target  State        Server                   State details       
+Name           Target  State        Server                   State details
 --------------------------------------------------------------------------------
 Local Resources
 --------------------------------------------------------------------------------
@@ -68,8 +68,8 @@ ora.chad
                ONLINE  ONLINE       racnodep1                STABLE
                ONLINE  ONLINE       racnodep2                STABLE
 ora.helper
-               OFFLINE OFFLINE      racnodep1                STABLE
-               OFFLINE OFFLINE      racnodep2                STABLE
+               OFFLINE OFFLINE      racnodep1                IDLE,STABLE
+               OFFLINE OFFLINE      racnodep2                IDLE,STABLE
 ora.net1.network
                ONLINE  ONLINE       racnodep1                STABLE
                ONLINE  ONLINE       racnodep2                STABLE
@@ -89,11 +89,9 @@ ora.DATA.dg(ora.asmgroup)
       1        ONLINE  ONLINE       racnodep1                STABLE
       2        ONLINE  ONLINE       racnodep2                STABLE
 ora.LISTENER_SCAN1.lsnr
-      1        ONLINE  ONLINE       racnodep1                STABLE
+      1        ONLINE  ONLINE       racnodep2                STABLE
 ora.LISTENER_SCAN2.lsnr
       1        ONLINE  ONLINE       racnodep1                STABLE
-ora.LISTENER_SCAN3.lsnr
-      1        ONLINE  ONLINE       racnodep2                STABLE
 ora.asm(ora.asmgroup)
       1        ONLINE  ONLINE       racnodep1                Started,STABLE
       2        ONLINE  ONLINE       racnodep2                Started,STABLE
@@ -104,26 +102,29 @@ ora.asmnet2.asmnetwork(ora.asmgroup)
       1        ONLINE  ONLINE       racnodep1                STABLE
       2        ONLINE  ONLINE       racnodep2                STABLE
 ora.cdp1.cdp
-      1        ONLINE  ONLINE       racnodep1                STABLE
+      1        OFFLINE OFFLINE                               STABLE
 ora.cdp2.cdp
-      1        ONLINE  ONLINE       racnodep1                STABLE
-ora.cdp3.cdp
-      1        ONLINE  ONLINE       racnodep2                STABLE
+      1        OFFLINE OFFLINE                               STABLE
 ora.cvu
-      1        ONLINE  ONLINE       racnodep1                STABLE
+      1        ONLINE  ONLINE       racnodep2                STABLE
+ora.cvuhelper
+      1        OFFLINE OFFLINE                               STABLE
 ora.orclcdb.db
       1        ONLINE  ONLINE       racnodep1                Open,HOME=/u01/app/o
-                                                             racle/product/23ai/db
-                                                             home_1,STABLE
+                                                             racle/product/26ai/d
+                                                             bhome_1,STABLE
       2        ONLINE  ONLINE       racnodep2                Open,HOME=/u01/app/o
-                                                             racle/product/23ai/db
-                                                             home_1,STABLE
+                                                             racle/product/26ai/d
+                                                             bhome_1,STABLE
+ora.orclcdb.orclcdb_orclpdb.svc
+      1        ONLINE  ONLINE       racnodep2                STABLE
+      2        ONLINE  ONLINE       racnodep1                STABLE
 ora.orclcdb.orclpdb.pdb
       1        ONLINE  ONLINE       racnodep1                READ WRITE,STABLE
       2        ONLINE  ONLINE       racnodep2                READ WRITE,STABLE
 ora.orclcdb.soepdb.svc
-      1        ONLINE  ONLINE       racnodep1                STABLE
-      2        ONLINE  ONLINE       racnodep2                STABLE
+      1        ONLINE  ONLINE       racnodep2                STABLE
+      2        ONLINE  ONLINE       racnodep1                STABLE
 ora.racnodep1.vip
       1        ONLINE  ONLINE       racnodep1                STABLE
 ora.racnodep2.vip
@@ -131,14 +132,12 @@ ora.racnodep2.vip
 ora.rhpserver
       1        OFFLINE OFFLINE                               STABLE
 ora.scan1.vip
-      1        ONLINE  ONLINE       racnodep1                STABLE
+      1        ONLINE  ONLINE       racnodep2                STABLE
 ora.scan2.vip
       1        ONLINE  ONLINE       racnodep1                STABLE
-ora.scan3.vip
-      1        ONLINE  ONLINE       racnodep2                STABLE
 --------------------------------------------------------------------------------
 
-/u01/app/21c/grid/bin/olsnodes -n
+[grid@racnodep1 ~]$ olsnodes -n
 racnodep1       1
 racnodep2       2
 ```
@@ -148,7 +147,7 @@ Validate Oracle RAC Database from within Container-
 su - oracle
 
 #Confirm the status of Oracle Database instances:
-[oracle@racnodep1 ~]$  srvctl status database -d  ORCLCDB
+[oracle@racnodep1 ~]$  srvctl status database -d ORCLCDB
 Instance ORCLCDB1 is running on node racnodep1
 Instance ORCLCDB2 is running on node racnodep2
 
@@ -166,7 +165,7 @@ SCAN VIP is enabled.
 ```
 
 ## Debugging Oracle RAC Containers
-If the install fails for any reason, log in to container using the above command and check `/tmp/orod/oracle_rac_setup.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
+If the install fails for any reason, log in to container using the above command and check `/tmp/orod/oracle_db_setup.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
 
 
 ## Client Connection

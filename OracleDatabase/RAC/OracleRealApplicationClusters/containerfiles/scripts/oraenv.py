@@ -154,8 +154,6 @@ class OraEnv:
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_asmcount_status.log"
       elif file_type == "UPDATE_ASMDEVICES":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_asmdevices_status.log"
-      elif file_type == "UPDATE_LISTENERENDP":
-         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_listenerendp_status.log"
       elif file_type == "LIST_ASMDG":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_list_asmdg_status.log"
       elif file_type == "LIST_ASMDISKS":
@@ -168,10 +166,14 @@ class OraEnv:
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_list_amsinst_status.log"         
       elif file_type == "UPDATE_LISTENERENDP":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_listenerendp_status.log"
+      elif file_type == "UPDATE_CDP":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_update_cdp_status.log"
       elif file_type == "RUN_DATAPATCH":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_rundatapatch_status.log"
       elif file_type == "ONS":
          OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/oracle_ons_status.log"
+      elif file_type == "SIDPROFILEUPDATE":
+         OraEnv.__env_var_dict["LOG_FILE_NAME"] = OraEnv.logdir__ + "/sid_profile_update_status.log"
       else:
         pass
 
