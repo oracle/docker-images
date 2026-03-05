@@ -49,12 +49,12 @@ sed -i -e "s|###ORACLE_BASE###|$ORACLE_BASE|g" "$INSTALL_DIR"/"$INSTALL_RSP" && 
 sed -i -e "s|###ORACLE_HOME###|$ORACLE_HOME|g" "$INSTALL_DIR"/"$INSTALL_RSP"
 
 # Install Oracle binaries
+# shellcheck disable=2164
 cd "$ORACLE_HOME"       && \
 mv "$INSTALL_DIR"/"$INSTALL_FILE_1" "$ORACLE_HOME"/ && \
 unzip "$INSTALL_FILE_1" && \
 rm "$INSTALL_FILE_1"    && \
 "$ORACLE_HOME"/runInstaller -silent -force -waitforcompletion -responsefile "$INSTALL_DIR"/"$INSTALL_RSP" -ignorePrereqFailure && \
-# shellcheck disable=2164
 cd "$HOME"
 
 if $SLIMMING; then
