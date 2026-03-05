@@ -54,7 +54,7 @@ mv "$INSTALL_DIR"/"$INSTALL_FILE_1" "$ORACLE_HOME"/ && \
 unzip "$INSTALL_FILE_1" && \
 rm "$INSTALL_FILE_1"    && \
 "$ORACLE_HOME"/runInstaller -silent -force -waitforcompletion -responsefile "$INSTALL_DIR"/"$INSTALL_RSP" -ignorePrereqFailure && \
-cd "$HOME" || exit
+cd "$HOME"
 
 if $SLIMMING; then
     # Remove not needed components
