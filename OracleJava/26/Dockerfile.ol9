@@ -70,7 +70,7 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 RUN set -eux; \
-# Ensure we get the latest Oracle Linux 8 updates available at build time
+# Ensure we get the latest Oracle Linux 9 updates available at build time
     dnf -y update; \
 # JDK assumes freetype is available
     dnf install -y \
