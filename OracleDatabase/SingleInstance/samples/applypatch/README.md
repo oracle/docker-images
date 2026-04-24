@@ -5,7 +5,8 @@ In order to build such an image you will have to provide the patch zip file.
 Note: Some patches require a newer version of `OPatch`, the Oracle Interim Patch Installer utility.
 The scripts will automatically install a newer OPatch version, if provided.
 
-# The patch structure
+The patch structure
+-------------------
 The scripts used in this example rely on following directory structure:
 
     19.3.0
@@ -15,7 +16,7 @@ The scripts used in this example rely on following directory structure:
           002 (optional)
           00N (optional, Nth patch directory)
           p6880880*.zip (optional, OPatch zip file)
-       
+
 **patches:** The working directory for patch installation.  
 **001:** The directory containing the patch zip file.  
 **00N:** The second, third, ... directory containing the second, third, ... patch zip file.
@@ -23,7 +24,8 @@ This is useful if you want to install multiple patches at once. The script will
 go into each of these directories in the numbered order and apply the patches.  
 **Important**: It is up to the user to guarantee the patch order, if any.
 
-# Installing the patch
+Installing the patch
+--------------------
 You will need to build a new Docker image with the patches in place. In order
 to do so, first copy the patch zip file into the 001 directory within the patches directory.
 If you have multiple patches to be applied at once, add more sub directories following the
@@ -60,5 +62,6 @@ Example:
 
     ./buildContainerImage.sh -i -e -v 19.3.0 -o '--build-arg SLIMMING=false'
 
-# Copyright
+Copyright
+---------
 Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.

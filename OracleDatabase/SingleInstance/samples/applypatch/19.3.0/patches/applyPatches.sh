@@ -9,6 +9,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
+# shellcheck disable=SC2164,SC2045
 
 # Make sure Oracle perl binary is in PATH
 PATH=$ORACLE_HOME/perl/bin:$PATH
