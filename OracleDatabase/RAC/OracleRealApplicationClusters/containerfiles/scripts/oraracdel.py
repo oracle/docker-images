@@ -7,12 +7,14 @@
 ############################
 
 """
- This file contains to the code call different classes objects based on setup type
+This file contains RAC delete-node and deinstall workflow logic.
 """
 
 import os
 import sys
 import traceback
+import datetime
+import time
 
 from oralogger import *
 from oraenv import *
@@ -23,10 +25,11 @@ from orasshsetup import *
 from oracvu import *
 from oragiprov import *
 from oraasmca import *
+from oraops import OperationRunner, CommandBuilder
 
 class OraRacDel:
    """
-   This class delete the RAC database
+   This class deletes RAC database components
    """
    def __init__(self,oralogger,orahandler,oraenv,oracommon,oracvu,orasetupssh):
       try:
@@ -37,15 +40,17 @@ class OraRacDel:
          self.ora_env_dict        = oraenv.get_env_vars()
          self.file_name           = os.path.basename(__file__)
          self.osetupssh           = orasetupssh
+         self.op_runner           = OperationRunner(self.ocommon, self.file_name, "RAC")
+         self.cmd_builder         = CommandBuilder(self.ocommon)
          self.ocvu                = oracvu
       except BaseException as ex:
          traceback.print_exc(file = sys.stdout)
 
    def setup(self):
        """
-       This function setup the RAC home on this machine
+       Run RAC delete workflow on this machine.
        """
-       self.ocommon.log_info_message("Start setup()",self.file_name)
+       self.ocommon.log_step("RAC", "delete_setup", "start", None, self.file_name)
        ct = datetime.datetime.now()
        bts = ct.timestamp()
        self.env_param_checks()
@@ -55,7 +60,7 @@ class OraRacDel:
        hostname=self.ocommon.get_public_hostname()
        if self.ocommon.check_key("EXISTING_CLS_NODE",self.ora_env_dict):
           if len(self.ora_env_dict["EXISTING_CLS_NODE"].split(",")) == 0:
-             self.ora_env_dict=self.add_key("LAST_CRS_NODE","true",self.ora_env_dict)
+             self.ora_env_dict=self.ocommon.add_key("LAST_CRS_NODE","true",self.ora_env_dict)
        if self.ocommon.detect_k8s_env():
          if self.ocommon.check_key("EXISTING_CLS_NODE", self.ora_env_dict):
             node = self.ora_env_dict["EXISTING_CLS_NODE"].split(",")[0]
@@ -82,7 +87,7 @@ class OraRacDel:
  
    def env_param_checks(self):
        """
-       Perform the env setup checks
+       Perform environment setup checks.
        """
        self.ocommon.check_env_variable("DB_HOME",True)
        self.ocommon.check_env_variable("DB_BASE",True)
@@ -90,7 +95,7 @@ class OraRacDel:
 
    def clu_checks(self):
        """
-       Performing clu checks
+       Perform cluster validation checks.
        """
        self.ocommon.log_info_message("Performing CVU checks before DB home installation to make sure clusterware is up and running",self.file_name) 
        hostname=self.ocommon.get_public_hostname() 
@@ -102,7 +107,7 @@ class OraRacDel:
           msg="Cluvfy ohasd check passed!"
           self.ocommon.log_info_message(msg,self.file_name)
        else:
-          msg="Cluvfy ohasd check faild. Exiting.."
+          msg="Cluvfy ohasd check failed. Exiting..."
           self.ocommon.log_error_message(msg,self.file_name) 
           self.ocommon.prog_exit("127")
 
@@ -110,7 +115,7 @@ class OraRacDel:
           msg="Cluvfy asm check passed!"
           self.ocommon.log_info_message(msg,self.file_name)
        else:
-          msg="Cluvfy asm check faild. Exiting.."
+          msg="Cluvfy asm check failed. Exiting..."
           self.ocommon.log_error_message(msg,self.file_name)
           self.ocommon.prog_exit("127")
 
@@ -118,7 +123,7 @@ class OraRacDel:
           msg="Cluvfy clumgr check passed!"
           self.ocommon.log_info_message(msg,self.file_name)
        else:
-          msg="Cluvfy clumgr  check faild. Exiting.."
+          msg="Cluvfy clumgr check failed. Exiting..."
           self.ocommon.log_error_message(msg,self.file_name)
           self.ocommon.prog_exit("127")
 
@@ -126,24 +131,30 @@ class OraRacDel:
 ######### Deleting DB Instnce #######
    def del_dbinst_main(self,hostname):
        """
-       This function call the del_dbinst to perform the db instance deletion
+       Call del_dbinst to perform DB instance deletion.
        """
        if  self.ocommon.check_key("LAST_CRS_NODE",self.ora_env_dict):
            msg='''This is a last node {0} in the cluster.'''.format(hostname)
            self.ocommon.log_info_message(msg,self.file_name)
        else:
            status,osid,host,mode=self.ocommon.check_dbinst()
-           msg='''Database instance {0}  exist on this machine {1}.'''.format(osid,hostname)
+           msg='''Database instance {0} exists on this machine {1}.'''.format(osid,hostname)
            self.ocommon.log_info_message(msg,self.file_name)
            self.del_dbinst()
            status,osid,host,mode=self.ocommon.check_dbinst()
            if status:
-             msg='''Oracle Database {0} is stil up and running on {1}.'''.format(osid,host)
+             msg='''Oracle Database {0} is still up and running on {1}.'''.format(osid,host)
              self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
              self.ocommon.prog_exit("127")
            else:
              msg='''Oracle Database {0} is not up and running on {1}.'''.format(osid,host)
              self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
+
+   def _get_first_active_crs_node(self, existing_crs_nodes):
+       """
+       Return first cluster node where cluvfy clumgr passes.
+       """
+       return self.ocommon.get_first_active_crs_node(existing_crs_nodes, self.ocvu)
 
    def del_dbinst(self):
        """
@@ -154,22 +165,15 @@ class OraRacDel:
        hostname=self.ocommon.get_public_hostname() 
        inst_sid=self.ocommon.get_inst_sid(dbuser,dbhome,dbname,hostname) 
        existing_crs_nodes=self.ocommon.get_existing_clu_nodes(True)
-       node=""
-       nodeflag=False
-       for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True,None)
-           if retcode3 == 0:
-              node=cnode
-              nodeflag=True
-              break
+       node=self._get_first_active_crs_node(existing_crs_nodes)
+       nodeflag=bool(node)
 
        if inst_sid:
          if nodeflag:
-            cmd='''su - {0} -c "ssh {4} '{1}/bin/dbca -silent -ignorePrereqFailure -deleteInstance -gdbName {2} -nodeName {5} -instanceName {3}'"'''.format(dbuser,dbhome,dbname,inst_sid,node,hostname)
-            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-            self.ocommon.check_os_err(output,error,retcode,True)
+            cmd=self.cmd_builder.build_rac_delete_instance(dbuser, dbhome, dbname, inst_sid, node, hostname)
+            output,error,retcode=self.op_runner.run_command("rac_delete_dbinst", cmd, None, None, True)
          else:
-            self.ocommon.log_error_message("Clusterware is not up on any node : " + existing_crs_nodes + ".Exiting...",self.file_name) 
+            self.ocommon.log_error_message("Clusterware is not up on any node: " + existing_crs_nodes + ". Exiting...",self.file_name) 
             self.ocommon.prog_exit("127")
        else:
            self.ocommon.log_info_message("No database instance is up and running on this machine!",self.file_name) 
@@ -177,7 +181,7 @@ class OraRacDel:
 #######  DEL RAC DB HOME ########
    def del_dbhome_main(self,hostname):
        """
-       This function call the del_dbhome to perform the db home deletion 
+       Call del_dbhome to perform DB home deletion.
        """
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
        if self.ocommon.check_key("DEL_RACHOME",self.ora_env_dict):
@@ -186,7 +190,7 @@ class OraRacDel:
           if status: 
              self.del_dbhome()
           else:
-             self.ocommon.log_info_message("No configured RAC home exist on this machine",self.file_name)  
+             self.ocommon.log_info_message("No configured RAC home exists on this machine",self.file_name)  
 
    def del_dbhome(self):
        """
@@ -203,12 +207,12 @@ class OraRacDel:
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,False) 
        else:
-          self.ocommon.log_error_message("No responsefile exist under " + dbrspdir,self.file_name)
+          self.ocommon.log_error_message("No response file exists under " + dbrspdir,self.file_name)
           self.ocommon.prog_exit("127")
 
    def generate_delrspfile(self,rspdir,user,home):
        """
-       Generate the responsefile to perform  home deletion
+       Generate the response file to perform home deletion.
        """
        cmd='''su - {0} -c "{1}/deinstall/deinstall -silent -checkonly -local -o {2}"'''.format(user,home,rspdir)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
@@ -217,7 +221,7 @@ class OraRacDel:
 #######  DEL GI HOME ########
    def del_gihome_main(self,hostname):
        """
-       This function call the del_gihome to perform the gi home deletion
+       Call del_gihome to perform GI home deletion.
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
        self.ocommon.log_info_message("gi params " + gihome ,self.file_name)
@@ -229,7 +233,7 @@ class OraRacDel:
           if status:
              self.del_gihome()
           else:
-             self.ocommon.log_info_message("No configured GI home exist on this machine",self.file_name)
+             self.ocommon.log_info_message("No configured GI home exists on this machine",self.file_name)
 
    def del_gihome(self):
        """
@@ -250,7 +254,7 @@ class OraRacDel:
           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
           self.ocommon.check_os_err(output,error,retcode,False)
        else:
-          self.ocommon.log_error_message("No responsefile exist under " + girspdir,self.file_name)
+          self.ocommon.log_error_message("No response file exists under " + girspdir,self.file_name)
           self.ocommon.prog_exit("127")
 
    def del_ginode(self,hostname):
@@ -260,20 +264,13 @@ class OraRacDel:
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
 
        existing_crs_nodes=self.ocommon.get_existing_clu_nodes(True)
-       node=""
-       nodeflag=False
-       for cnode in existing_crs_nodes.split(","):
-           retcode3=self.ocvu.check_clu(cnode,True,None)
-           if retcode3 == 0:
-              node=cnode
-              nodeflag=True
-              break
+       node=self._get_first_active_crs_node(existing_crs_nodes)
+       nodeflag=bool(node)
 
        if nodeflag:
-            cmd='''su - {0} -c "ssh {2} '/bin/sudo {1}/bin/crsctl delete node -n {3}'"'''.format(giuser,gihome,node,hostname)
-            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-            self.ocommon.check_os_err(output,error,retcode,True)
+            cmd=self.cmd_builder.build_gi_delete_node(giuser, gihome, node, hostname)
+            output,error,retcode=self.op_runner.run_command("rac_delete_ginode", cmd, None, None, True)
        else:
-            self.ocommon.log_error_message("Clusterware is not up on any node : " + existing_crs_nodes + ".Exiting...",self.file_name) 
+            self.ocommon.log_error_message("Clusterware is not up on any node: " + existing_crs_nodes + ". Exiting...",self.file_name) 
             self.ocommon.prog_exit("127")
 

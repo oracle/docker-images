@@ -7,7 +7,7 @@
 ############################
 
 """
- This file contains to the code call different classes objects based on setup type
+This file contains code to run CVU checks for cluster setup and validation.
 """
 
 from oralogger import *
@@ -18,11 +18,12 @@ from orasetupenv import *
 from orasshsetup import *
 
 import os
+import re
 import sys
 
 class OraCvu:
    """
-   This class performs the CVU checks
+   This class performs CVU checks for cluster setup and validation
    """
    def __init__(self,oralogger,orahandler,oraenv,oracommon):
       try:
@@ -44,97 +45,99 @@ class OraCvu:
 
    def setup(self):
        """
-       This function setup the grid on this machine
+       Placeholder for class-level setup hooks.
        """
        pass
 
+   def _get_crs_nodes_for_check(self, checktype, ctype):
+       """
+       Build CRS node list for CVU checks based on network type and operation type.
+       """
+       existing_cls_node = ""
+       if ctype == 'ADDNODE':
+           existing_cls_node = self.ocommon.get_existing_clu_nodes(True)
+
+       if not self.ocommon.check_key("CRS_NODES", self.ora_env_dict):
+           return None, None
+
+       pub_nodes, vip_nodes, priv_nodes = self.ocommon.process_cluster_vars("CRS_NODES")
+       if checktype == "private":
+          crs_nodes = priv_nodes.replace(" ", ",")
+       else:
+          crs_nodes = pub_nodes.replace(" ", ",")
+          if existing_cls_node:
+             crs_nodes = crs_nodes + "," + existing_cls_node
+
+       _nwmask, _nwsubnet, nwname = self.ocommon.get_nwlist(checktype)
+       return crs_nodes, nwname
+
+   def _get_cluvfy_node_option(self, node):
+       """
+       Return cluvfy node selector argument.
+       """
+       if not node:
+          return " -allnodes "
+       return " -n " + node
+
    def node_reachability_checks(self,checktype,user,ctype):
        """
-       This function performs the cluvfy checks
+       This function performs cluvfy node reachability checks.
        """
-       exiting_cls_node=""
-       if ctype == 'ADDNODE':
-           exiting_cls_node=self.ocommon.get_existing_clu_nodes(True)
-
-       if self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
-          pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-          if checktype=="private":
-             crs_nodes=priv_nodes.replace(" ",",")
-          else:
-             crs_nodes=pub_nodes.replace(" ",",")
-             if exiting_cls_node:
-                crs_nodes = crs_nodes + "," +  exiting_cls_node
-
-          nwmask,nwsubnet,nwname=self.ocommon.get_nwlist(checktype)   
-          self.cluvfy_nodereach(crs_nodes,nwname,user)
-          
+       crs_nodes, nwname = self._get_crs_nodes_for_check(checktype, ctype)
+       if crs_nodes:
+          self.cluvfy_nodereach(crs_nodes, nwname, user)
 
    def node_connectivity_checks(self,checktype,user,ctype):
        """
-       This function performs the cluvfy checks
+       This function performs cluvfy node connectivity checks.
        """
-       exiting_cls_node=""
-       if ctype == 'ADDNODE':
-           exiting_cls_node=self.ocommon.get_existing_clu_nodes(True)
-
-       if self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
-          pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-          if checktype=="private":
-             crs_nodes=priv_nodes.replace(" ",",")
-          else:
-             crs_nodes=pub_nodes.replace(" ",",")
-             if exiting_cls_node:
-                crs_nodes = crs_nodes + "," +  exiting_cls_node
-
-          nwmask,nwsubnet,nwname=self.ocommon.get_nwlist(checktype)
-          self.cluvfy_nodereach(crs_nodes,nwname,user)
+       crs_nodes, nwname = self._get_crs_nodes_for_check(checktype, ctype)
+       if crs_nodes:
+          self.cluvfy_nodecon(crs_nodes, nwname, user)
 
    def cluvfy_nodereach(self,crs_nodes,nwname,user):
        """
-       This function performs the cluvfy checks
+       Run cluvfy nodereach validation.
        """
        ohome=self.ora_env_dict["GRID_HOME"]
-       self.ocommon.log_info_message("Performing cluvfy check to perform node reachability.",self.file_name) 
+       self.ocommon.log_info_message("Performing cluvfy node reachability check.",self.file_name) 
        cmd='''su - {2} -c "{1}/runcluvfy.sh comp nodereach -n {0} -verbose"'''.format(crs_nodes,ohome,user)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,True)
 
    def cluvfy_nodecon(self,crs_nodes,nwname,user):
        """
-       This function performs the cluvfy checks
+       Run cluvfy node connectivity validation.
        """
        ohome=self.ora_env_dict["GRID_HOME"]
-       self.ocommon.log_info_message("Performing cluvfy check to perform node connectivty.",self.file_name)
+       self.ocommon.log_info_message("Performing cluvfy check for node connectivity.",self.file_name)
        cmd='''su - {3} -c "{1}/runcluvfy.sh comp nodecon -n {0} -networks {2} -verbose"'''.format(crs_nodes,ohome,nwname,user)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,None) 
 
    def cluvfy_compsys(self,ctype,user):
        """
-       This function performs the cluvfy comp sys checks
+       Run cluvfy comp sys validation.
        """
        ohome=self.ora_env_dict["GRID_HOME"]
-       self.ocommon.log_info_message("Performing cluvfy check to perform node connectivty.",self.file_name)
+       self.ocommon.log_info_message("Performing cluvfy comp sys check.",self.file_name)
        cmd='''su - {2} -c "{1}/runcluvfy.sh comp sys  -n racnode6,racnode8 -p {0} -verbose"'''.format(ctype,ohome,user)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,None)
 
    def cluvfy_checkrspfile(self,fname,ohome,user):
        """
-       This function performs the cluvfy check on a responsefile 
+       This function performs the cluvfy check on a response file.
        """
        self.cluvfy_updcvucfg(ohome,user)
-       self.ocommon.log_info_message("Performing cluvfy check on a responsefile: " + fname,self.file_name) 
+       self.ocommon.log_info_message("Performing cluvfy check on response file: " + fname,self.file_name) 
        cmd='''su - {0} -c "{1}/runcluvfy.sh stage -pre crsinst -responseFile {2} | tee -a {3}/cluvfy_check.txt"'''.format(user,ohome,fname,"/tmp")
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       if self.ocommon.check_key("IGNORE_CVU_CHECKS",self.ora_env_dict):  
-          self.ocommon.check_os_err(output,error,retcode,None)
-       else:
-          self.ocommon.check_os_err(output,error,retcode,None)
-          
+       self.ocommon.check_os_err(output,error,retcode,None)
+
    def cluvfy_updcvucfg(self,ohome,user):
        """
-       This function update the CVU config file with the correct CV_DESTLOC 
+       This function updates CVU config file with the correct CV_DESTLOC.
        """
        match=None
        tmpdir=self.ocommon.get_tmpdir()
@@ -142,24 +145,15 @@ class OraCvu:
        self.ocommon.log_info_message("Updating CVU config file: " + fname,self.file_name)
        fdata=self.ocommon.read_file(fname)       
        match=re.search("CV_DESTLOC=",fdata,re.MULTILINE)
-       if not match:
-          cmd='''su - {0} -c "echo CV_DESTLOC=\"{1}\" >> {2}"'''.format(user,tmpdir,fname)
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       else:
-          cmd='''su - {0} -c "echo CV_DESTLOC=\"{1}\" >> {2}"'''.format(user,tmpdir,fname)
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       
+       cmd='''su - {0} -c "echo CV_DESTLOC=\"{1}\" >> {2}"'''.format(user,tmpdir,fname)
+       output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+
    def check_ohasd(self,node):
        """
-       This function check if crs is configued properly
+       This function checks whether CRS is configured properly.
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
-       crs_nodes=""
-       if not node:
-          crs_nodes=" -allnodes "
-       else:
-          crs_nodes=" -n " + node
-
+       crs_nodes=self._get_cluvfy_node_option(node)
        cmd='''su - {0} -c "{1}/bin/cluvfy comp ohasd {2}"'''.format(giuser,gihome,crs_nodes)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,None)
@@ -167,15 +161,11 @@ class OraCvu:
 
    def check_asm(self,node):
        """
-       This function check if crs is configued properly
+       This function checks whether ASM is configured properly.
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
-       crs_nodes=""
-       if not node:
-          crs_nodes=" -allnodes "
-       else:
-          crs_nodes=" -n " + node
-        
+       crs_nodes=self._get_cluvfy_node_option(node)
+
        cmd='''su - {0} -c "{1}/bin/cluvfy comp asm {2}"'''.format(giuser,gihome,crs_nodes)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        self.ocommon.check_os_err(output,error,retcode,None)
@@ -226,13 +216,10 @@ class OraCvu:
 
    def check_home(self,node,home,user):
        """
-       This function check if crs is configued properly
+       This function checks if CRS software is configured properly.
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
-       if not node:
-          crs_nodes=" -allnodes "
-       else:
-          crs_nodes=" -n " + node
+       crs_nodes=self._get_cluvfy_node_option(node)
 
        cvufile='''{0}/bin/cluvfy'''.format(gihome)
        if not self.ocommon.check_file(cvufile,True,None,None):
@@ -247,15 +234,12 @@ class OraCvu:
 
    def check_db_homecfg(self,node):
        """
-       This function check if  db home is configured properly
+       This function checks whether DB home is configured properly.
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
        dbuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
 
-       if not node:
-          crs_nodes=" -allnodes "
-       else:
-          crs_nodes=" -n " + node
+       crs_nodes=self._get_cluvfy_node_option(node)
 
        cmd='''su - {0} -c "{1}/bin/cluvfy stage -pre dbcfg {2} -d {3}"'''.format(dbuser,gihome,crs_nodes,dbhome)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
@@ -264,31 +248,32 @@ class OraCvu:
 
    def check_addnode(self):
        """
-       This function check if the node can be added
+       This function checks whether a node can be added.
        """
        exiting_cls_node=self.ocommon.get_existing_clu_nodes(True)
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
        node=exiting_cls_node.split(",")[0]
-       tmpdir=self.ocommon.get_tmpdir()
        if self.ocommon.check_key("CRS_NODES",self.ora_env_dict):
           pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
           crs_nodes=pub_nodes.replace(" ",",")
-       cmd='''su - {0} -c "ssh {1} '{2}/runcluvfy.sh stage -pre nodeadd -n {3}'"'''.format(giuser,node,gihome,crs_nodes,tmpdir)
+       cmd='''su - {0} -c "ssh {1} '{2}/runcluvfy.sh stage -pre nodeadd -n {3}'"'''.format(giuser,node,gihome,crs_nodes)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        if self.ocommon.check_key("IGNORE_CVU_CHECKS",self.ora_env_dict):
-          self.ocommon.log_info_message("Ignoring CVU checks failure as IGNORE_CVU_CHECKS set to ignore CVU checks.",self.file_name)          
-          self.ocommon.check_os_err(output,error,retcode,None)
-       else:
-          self.ocommon.check_os_err(output,error,retcode,None)
+          self.ocommon.log_info_message("Ignoring CVU checks failure as IGNORE_CVU_CHECKS set to ignore CVU checks.",self.file_name)
+       self.ocommon.check_os_err(output,error,retcode,None)
 
    def check_db_home(self, node, db_home, user):
       """
       This function checks if the Oracle Database home is installed correctly
-      by running OPatch lsinventory on each node individually.
-      """
+      by validating:
+         - ORACLE_HOME directory exists
+         - OPatch lsinventory succeeds
+         - dbca binary exists
 
-      # Get GI params in case needed later
-      giuser, gihome, gbase, oinv = self.ocommon.get_gi_params()
+      Return:
+         0 -> DB Home valid
+         1 -> DB Home invalid
+      """
 
       if not node:
          import socket
@@ -297,15 +282,58 @@ class OraCvu:
          node_list = [n.strip() for n in node.split(',')]
 
       for each_node in node_list:
-         self.ocommon.log_info_message("Checking DB home inventory on node: " + each_node, self.file_name)
 
-         # Build and run the OPatch lsinventory command remotely
-         cmd = '''su - {0} -c "ssh {1} '{2}/OPatch/opatch lsinventory'"'''.format(user, each_node, db_home)
+         self.ocommon.log_info_message(
+               "Checking DB home inventory on node: {0}".format(each_node),
+               self.file_name
+         )
+
+         # -------------------------------------------------
+         # Check ORACLE_HOME directory exists
+         # -------------------------------------------------
+         cmd = '''su - {0} -c "ssh {1} 'test -d {2}'"'''.format(
+               user, each_node, db_home
+         )
+
+         _, _, retcode = self.ocommon.execute_cmd(cmd, None, None)
+
+         if retcode != 0:
+               self.ocommon.log_error_message(
+                  "ORACLE_HOME directory does not exist on node: {0}".format(each_node),
+                  self.file_name
+               )
+               return 1
+
+         # -------------------------------------------------
+         # Check OPatch inventory
+         # -------------------------------------------------
+         cmd = '''su - {0} -c "ssh {1} '{2}/OPatch/opatch lsinventory'"'''.format(
+               user, each_node, db_home
+         )
+
          output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
 
-         # Check for execution success
          if retcode != 0 or not output or "Oracle Home" not in output:
-               self.ocommon.log_error_message("OPatch lsinventory failed or output invalid on node: " + each_node, self.file_name)
+               self.ocommon.log_error_message(
+                  "OPatch lsinventory failed or output invalid on node: {0}".format(each_node),
+                  self.file_name
+               )
+               return 1
+
+         # -------------------------------------------------
+         # Check DBCA binary exists (prevents broken homes)
+         # -------------------------------------------------
+         cmd = '''su - {0} -c "ssh {1} 'test -f {2}/bin/dbca'"'''.format(
+               user, each_node, db_home
+         )
+
+         _, _, retcode = self.ocommon.execute_cmd(cmd, None, None)
+
+         if retcode != 0:
+               self.ocommon.log_error_message(
+                  "dbca binary not found in ORACLE_HOME on node: {0}".format(each_node),
+                  self.file_name
+               )
                return 1
 
       return 0
