@@ -7,7 +7,7 @@
 #############################
 
 """
- This file contains to the code call different classes objects based on setup type
+This file contains Grid Infrastructure provisioning and CVU orchestration logic.
 """
 
 from oralogger import *
@@ -17,16 +17,18 @@ from oramachine import *
 from orasetupenv import *
 from orasshsetup import *
 from oracvu import *
+from oraops import OperationRunner, CommandBuilder
 import time
 
 import os
 import sys
 import subprocess
 import datetime
+from multiprocessing import Process
 
 class OraGIProv:
    """
-   This class performs the CVU checks
+   This class performs Grid Infrastructure provisioning and related checks
    """
    def __init__(self,oralogger,orahandler,oraenv,oracommon,oracvu,orasetupssh):
       try:
@@ -37,6 +39,8 @@ class OraGIProv:
          self.ora_env_dict        = oraenv.get_env_vars()
          self.file_name           = os.path.basename(__file__)
          self.osetupssh           = orasetupssh
+         self.op_runner           = OperationRunner(self.ocommon, self.file_name, "GI")
+         self.cmd_builder         = CommandBuilder(self.ocommon)
          self.ocvu                = oracvu
          self.stopThreaFlag       = False
          self.mythread            = {}
@@ -51,11 +55,43 @@ class OraGIProv:
          self.ocommon.log_info_message(ex_value,self.file_name)
          self.ocommon.log_info_message(stack_trace,self.file_name)
 
+   def _get_public_nodes(self):
+      """
+      Return CRS public nodes as a list while filtering empty entries.
+      """
+      pub_nodes, vip_nodes, priv_nodes = self.ocommon.process_cluster_vars("CRS_NODES")
+      return [node for node in pub_nodes.split(" ") if node]
+
+   def _run_remote_sudo(self, giuser, node, command, check_status=True):
+      """
+      Execute a remote sudo command over SSH via grid user.
+      """
+      cmd = self.cmd_builder.build_remote_sudo(giuser, node, command)
+      output, error, retcode = self.op_runner.run_command("gi_remote_sudo", cmd, None, None, check_status)
+      return output, error, retcode
+
+   def _write_responsefile(self, gridrsp, rspdata, netmasklist):
+      """
+      Write response file and validate existence.
+      """
+      self.ocommon.write_file(gridrsp, rspdata)
+      gridrsp = self.ocommon.validate_response_file(gridrsp, "grid")
+      return gridrsp, netmasklist
+
+   def _validate_install_markers(self, swdata, required_markers):
+      """
+      Validate required output markers from install output.
+      """
+      for marker in required_markers:
+         if not self.ocommon.check_substr_match(swdata, marker):
+            self.ocommon.log_error_message("Grid software install failed. Exiting...", self.file_name)
+            self.ocommon.prog_exit("127")
+
    def setup(self):
          """
-         This function setup the grid on this machine
+         This function sets up Grid on this machine
          """
-         self.ocommon.log_info_message("Start setup()",self.file_name)
+         self.ocommon.log_step("GI", "setup", "start", None, self.file_name)
          ct = datetime.datetime.now()
          bts = ct.timestamp()
          giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
@@ -72,57 +108,51 @@ class OraGIProv:
          else:
            self.env_param_checks()
            self.ocommon.reset_os_password(giuser)
-           self.ocommon.log_info_message("Start perform_ssh_setup()",self.file_name)
+           self.ocommon.log_step("GI", "perform_ssh_setup", "start", None, self.file_name)
            self.perform_ssh_setup()
-           self.ocommon.log_info_message("End perform_ssh_setup()",self.file_name)
+           self.ocommon.log_step("GI", "perform_ssh_setup", "end", None, self.file_name)
            if self.ocommon.check_key("RESET_FAILED_SYSTEMD",self.ora_env_dict):
-              self.ocommon.log_info_message("Start reset_failed_units()",self.file_name)
+              self.ocommon.log_step("GI", "reset_failed_units", "start", None, self.file_name)
               self.reset_failed_units_on_all_nodes()
            if self.ocommon.check_key("PERFORM_CVU_CHECKS",self.ora_env_dict):
-              self.ocommon.log_info_message("Start ocvu.node_reachability_checks()",self.file_name)
+              self.ocommon.log_step("GI", "ocvu.node_reachability_checks", "start", None, self.file_name)
               self.ocvu.node_reachability_checks("public",self.ora_env_dict["GRID_USER"],"INSTALL")
-              self.ocommon.log_info_message("End ocvu.node_reachability_checks()",self.file_name)
-              self.ocommon.log_info_message("Start ocvu.node_connectivity_checks()",self.file_name)
+              self.ocommon.log_step("GI", "ocvu.node_reachability_checks", "end", None, self.file_name)
+              self.ocommon.log_step("GI", "ocvu.node_connectivity_checks", "start", None, self.file_name)
               self.ocvu.node_connectivity_checks("public",self.ora_env_dict["GRID_USER"],"INSTALL")
-              self.ocommon.log_info_message("End ocvu.node_connectivity_checks()",self.file_name)
+              self.ocommon.log_step("GI", "ocvu.node_connectivity_checks", "end", None, self.file_name)
            if retcode1 != 0 and self.ocommon.check_key("COPY_GRID_SOFTWARE",self.ora_env_dict):
-              self.ocommon.log_info_message("Start crs_sw_instal()",self.file_name)
+              self.ocommon.log_step("GI", "crs_sw_install", "start", None, self.file_name)
               self.crs_sw_install()
-              self.ocommon.log_info_message("End crs_sw_instal()",self.file_name)
+              self.ocommon.log_step("GI", "crs_sw_install", "end", None, self.file_name)
               # run root should run in RAC all setups and CRS non RU Patch situation, else not
-            #   if not (
-            #       self.ocommon.check_key("APPLY_RU_LOCATION", self.ora_env_dict)
-            #       and self.ocommon.check_key("CRS_GPC", self.ora_env_dict)
-            #   ):
-              self.ocommon.log_info_message("Start run_rootsh() and run_orainstsh()", self.file_name)
+              self.ocommon.log_step("GI", "run_rootsh_and_orainstsh", "start", None, self.file_name)
               self.run_orainstsh()
               self.run_rootsh()
-              self.ocommon.log_info_message("End run_rootsh() and run_orainstsh()", self.file_name)
-           self.ocommon.log_info_message("Start install_cvuqdisk_on_all_nodes()",self.file_name)
+              self.ocommon.log_step("GI", "run_rootsh_and_orainstsh", "end", None, self.file_name)
+           self.ocommon.log_step("GI", "install_cvuqdisk_on_all_nodes", "start", None, self.file_name)
            self.install_cvuqdisk_on_all_nodes()
-           self.ocommon.log_info_message("Start crs_config_install()",self.file_name)
+           self.ocommon.log_step("GI", "crs_config_install", "start", None, self.file_name)
            gridrsp=self.crs_config_install()
-           self.ocommon.log_info_message("End crs_config_install()",self.file_name)
-           self.ocommon.log_info_message("Start run_rootsh()",self.file_name)
-         #   if self.ocommon.check_key("APPLY_RU_LOCATION", self.ora_env_dict) and self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
-         #       self.run_orainstsh()
+           self.ocommon.log_step("GI", "crs_config_install", "end", None, self.file_name)
+           self.ocommon.log_step("GI", "run_rootsh", "start", None, self.file_name)
            self.run_rootsh()
-           self.ocommon.log_info_message("End run_rootsh()",self.file_name)
-           self.ocommon.log_info_message("Start execute_postconfig()",self.file_name)
+           self.ocommon.log_step("GI", "run_rootsh", "end", None, self.file_name)
+           self.ocommon.log_step("GI", "execute_postconfig", "start", None, self.file_name)
            self.run_postroot(gridrsp)
-           self.ocommon.log_info_message("End execute_postconfig()",self.file_name)
+           self.ocommon.log_step("GI", "execute_postconfig", "end", None, self.file_name)
            retcode1=self.ocvu.check_ohasd(None)
            retcode3=1
            if self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
-              self.ocommon.log_info_message("Start check_clu() CRS_GPC is set. Check if oracle restart crs is configured properly",self.file_name) 
+              self.ocommon.log_info_message("Start check_clu(): CRS_GPC is set; validating Oracle Restart CRS configuration",self.file_name) 
               retcode3=self.ocvu.check_clu(pubhostname,None,True)
               self.ocommon.log_info_message("End check_clu()",self.file_name) 
            else:
-              self.ocommon.log_info_message("Start check_clu() Check if crs is configued properly",self.file_name) 
+              self.ocommon.log_info_message("Start check_clu(): validating CRS configuration",self.file_name) 
               retcode3=self.ocvu.check_clu(None,None,None)
               self.ocommon.log_info_message("End check_clu()",self.file_name) 
            if retcode1 != 0 and  retcode3 != 0:
-              self.ocommon.log_info_message("Cluster state is not healthy. Exiting..",self.file_name)
+              self.ocommon.log_info_message("Cluster state is not healthy. Exiting...",self.file_name)
               self.ocommon.prog_exit("127")
            else:
               self.ora_env_dict=self.ocommon.add_key("CLUSTER_SETUP_FLAG","running",self.ora_env_dict)
@@ -136,7 +166,7 @@ class OraGIProv:
 
    def env_param_checks(self):
        """
-       Perform the env setup checks
+       Perform environment setup checks.
        """
        if not self.ocommon.check_key("CRS_GPC",self.ora_env_dict):
           self.scan_check()
@@ -150,17 +180,10 @@ class OraGIProv:
        Check if scan is set
        """
        if self.ocommon.check_key("GRID_RESPONSE_FILE",self.ora_env_dict):
-          self.ocommon.log_info_message("GRID_RESPONSE_FILE is set. Ignoring checking SCAN_NAME as CVU will validate responsefile",self.file_name)
+          self.ocommon.log_info_message("GRID_RESPONSE_FILE is set. Skipping SCAN_NAME check because CVU will validate the response file.",self.file_name)
        else:
           if self.ocommon.check_key("SCAN_NAME",self.ora_env_dict):
              self.ocommon.log_info_message("SCAN_NAME variable is set: " + self.ora_env_dict["SCAN_NAME"],self.file_name)
-             #ipaddr=self.ocommon.get_ip(self.ora_env_dict["SCAN_NAME"])
-             #status=self.ocommon.validate_ip(ipaddr)
-             #if status:
-             #   self.ocommon.log_info_message("SCAN_NAME is a valid IP. Check passed...",self.file_name)
-             #else:
-             #   self.ocommon.log_error_message("SCAN_NAME is not a valid IP. Check failed. Exiting...",self.file_name)
-             #   self.ocommon.prog_exit("127") 
           else:
            self.ocommon.log_error_message("SCAN_NAME is not set. Exiting...",self.file_name)
            self.ocommon.prog_exit("127")
@@ -210,8 +233,7 @@ class OraGIProv:
                '/bin/chmod 600 ~/.ssh/authorized_keys ~/.ssh/known_hosts"'
          ).format(user, node)
 
-         output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-         self.ocommon.check_os_err(output, error, retcode, None)
+         output, error, retcode = self.op_runner.run_command("gi_local_ssh_bootstrap", cmd, None, None, None)
          return
 
       # --------------------------------------------------
@@ -229,61 +251,51 @@ class OraGIProv:
                   "Injected SSH keys detected; skipping legacy SSH setup",
                   self.file_name
                )
+      else:
+         self.ocommon.log_info_message(
+            "Skipping legacy SSH setup for current topology/keys combination",
+            self.file_name
+         )
 
    def crs_sw_install(self):
        """
-       This function performs the crs software install on all the nodes
+       This function performs CRS software install on all nodes
        """
        giuser,gihome,gibase,oinv=self.ocommon.get_gi_params()
-       pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-       crs_nodes=pub_nodes.replace(" ",",")
+       nodes=self._get_public_nodes()
+       crs_nodes=",".join(nodes)
        osdba=self.ora_env_dict["OSDBA_GROUP"] if self.ocommon.check_key("OSDBA",self.ora_env_dict) else "asmdba"
        osoper=self.ora_env_dict["OSPER_GROUP"] if self.ocommon.check_key("OSPER_GROUP",self.ora_env_dict) else "asmoper"
        osasm=self.ora_env_dict["OSASM_GROUP"] if self.ocommon.check_key("OSASM_GROUP",self.ora_env_dict) else "asmadmin"
-       unixgrp="oinstall"
-       hostname=self.ocommon.get_public_hostname()
-       lang=self.ora_env_dict["LANGUAGE"] if self.ocommon.check_key("LANGUAGE",self.ora_env_dict) else "en"
 
        copyflag=" -noCopy "
-      #  copyflag=""
        if not self.ocommon.check_key("COPY_GRID_SOFTWARE",self.ora_env_dict):
           copyflag=" -noCopy "
 
        oraversion=self.ocommon.get_rsp_version("INSTALL",None)
        version=oraversion.split(".",1)[0].strip()
 
-       ## Clering the dictionary
+       ## Clearing the dictionary
        self.mythread.clear()
        mythreads=[]
-       #self.mythread.clear()
-       myproc=[]
-       self.ocommon.log_info_message("Running CRS Sw install on node " + pub_nodes,self.file_name)
-       for node in pub_nodes.split(" "):
-          #self.crs_sw_install_on_node(giuser,copyflag,crs_nodes,oinv,gihome,gibase,osdba,osoper,osasm,version,node)
-          self.ocommon.log_info_message("Running CRS Sw install on node " + node,self.file_name)
-          #thread=Thread(target=self.ocommon.crs_sw_install_on_node,args=(giuser,copyflag,crs_nodes,oinv,gihome,gibase,osdba,osoper,osasm,version,node))
-          ##thread.setDaemon(True)
-          #mythreads.append(thread)
+       self.ocommon.log_step("GI", "crs_sw_install", "nodes", ",".join(nodes), self.file_name)
+       for node in nodes:
+          self.ocommon.log_step("GI", "crs_sw_install", "node", node, self.file_name)
 
           thread=Process(target=self.ocommon.crs_sw_install_on_node,args=(giuser,copyflag,crs_nodes,oinv,gihome,gibase,osdba,osoper,osasm,version,node))
-          #thread.setDaemon(True)
           mythreads.append(thread)
           thread.start()
-          sleep(10)
+          time.sleep(10)
 
-#       for thread in mythreads:
-#          thread.start()
-#          sleep(10)
-#          self.ocommon.log_info_message("Starting thread ",self.file_name)
  
        for thread in mythreads:  # iterates over the threads
           thread.join()       # waits until the thread has finished work       
-          self.ocommon.log_info_message("Joining the threads ",self.file_name)
+          self.ocommon.log_info_message("Joining worker processes",self.file_name)
 
 
    def crs_config_install(self):
        """
-       This function performs the crs software install on all the nodes
+       This function performs CRS software install on all nodes
        """
        gridrsp=""
        netmasklist=None
@@ -316,7 +328,7 @@ class OraGIProv:
        with open(filename, 'r') as f:
         for line in f:
             if line.startswith('networkInterfaceList='):
-                self.ocommon.log_info_message("networkInterfaceList parameter is found from response file in line:" + line, self.file_name)
+                self.ocommon.log_info_message("networkInterfaceList parameter found in response file line: " + line, self.file_name)
                 # Extract network interface details
                 interface_data = line.strip().split('=')[1].split(',')
                 for interface in interface_data:
@@ -328,7 +340,7 @@ class OraGIProv:
                         try:
                             subnet_mask = self.ocommon.get_netmask_info(nwname)
                            #  self.ocommon.log_info_message(f"Subnet mask (from ocommon): {subnet_mask}", self.file_name)
-                        except Exception as e:
+                        except Exception:
                             self.ocommon.log_warning_message(f"Failed to retrieve subnet mask for {nwname} using ocommon, using default (may be inaccurate)", self.file_name)
                             subnet_mask = "255.255.255.0"  # Default subnet mask if retrieval fails
                             self.ocommon.log_info_message(f"Default subnet mask used: {subnet_mask}", self.file_name)
@@ -337,7 +349,7 @@ class OraGIProv:
 
        # Remove the trailing comma
        netmasklist = netmasklist[:-1]
-       self.ocommon.log_info_message("netmasklist parameter is set and returned from parse_gridrsp_file method:" + netmasklist ,self.file_name)
+       self.ocommon.log_info_message("netmasklist generated from parse_gridrsp_file(): " + netmasklist ,self.file_name)
        return netmasklist
 
    def check_responsefile(self):
@@ -348,21 +360,18 @@ class OraGIProv:
        netmasklist = ""
        if self.ocommon.check_key("GRID_RESPONSE_FILE",self.ora_env_dict):
           gridrsp=self.ora_env_dict["GRID_RESPONSE_FILE"]
-          self.ocommon.log_info_message("GRID_RESPONSE_FILE parameter is set and file location is:" + gridrsp ,self.file_name)
-          netmasklist = self.parse_gridrsp_file(gridrsp)
-          self.ocommon.log_info_message("netmasklist parameter is set to:" + netmasklist ,self.file_name)
+          self.ocommon.log_info_message("GRID_RESPONSE_FILE parameter is set. File location: " + gridrsp ,self.file_name)
 
-       if os.path.isfile(gridrsp):
-          return gridrsp, netmasklist
-       else:
-          self.ocommon.log_error_message("Grid response file does not exist at its location: " + gridrsp + ".Exiting..",self.file_name)
-          self.ocommon.prog_exit("127")
+       gridrsp = self.ocommon.validate_response_file(gridrsp, "grid")
+       netmasklist = self.parse_gridrsp_file(gridrsp)
+       self.ocommon.log_info_message("netmasklist parameter is set to: " + netmasklist ,self.file_name)
+       return gridrsp, netmasklist
 
    def prepare_responsefile(self):
        """
-       This function prepare the response file if no response file passed
+       This function prepares a response file if no response file is passed
        """
-       self.ocommon.log_info_message("Preparing Grid responsefile.",self.file_name)
+       self.ocommon.log_info_message("Preparing Grid response file.",self.file_name)
        asmfg_disk=""
        asm_disk=""
        gimrfg_disk=""
@@ -395,16 +404,14 @@ class OraGIProv:
        discovery_str=self.ocommon.build_asm_discovery_str("CRS_ASM_DEVICE_LIST")
        asmstr=self.ora_env_dict["CRS_ASM_DISCOVERY_STRING"] if self.ocommon.check_key("CRS_ASM_DISCOVERY_STRING",self.ora_env_dict) else discovery_str
        oraversion=self.ocommon.get_rsp_version("INSTALL",None)
-       self.ocommon.log_info_message("oraversion" + oraversion, self.file_name)
+       self.ocommon.log_info_message("Oracle version: " + oraversion, self.file_name)
        disksWithFGNames=asmdisk.replace(',',',,') + ','
-       self.ocommon.log_info_message("disksWithFGNames" + disksWithFGNames, self.file_name)
+       self.ocommon.log_info_message("disksWithFGNames: " + disksWithFGNames, self.file_name)
        gridrsp="/tmp/grid.rsp"
     
        version=oraversion.split(".",1)[0].strip()
        self.ocommon.log_info_message("disk" + version, self.file_name)
        if int(version) < 23: # 21,19 etc. versions
-         if self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
-            clsnodes = None
          return self.get_responsefile(
             obase, invloc, scanname, scanport, clutype, cluname, clunodes,
             nwiface, gimrflag, passwd, dgname, dgred, fgname, asmdisk,
@@ -425,9 +432,9 @@ class OraGIProv:
 
    def get_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,crsconfig):
        """
-       This function prepare the response file if no response file passed
+       This function prepares a response file if no response file is passed
        """      
-       self.ocommon.log_info_message("I am in get_responsefile", self.file_name)
+       self.ocommon.log_info_message("Generating legacy response file (pre-23c format)", self.file_name)
        rspdata='''
        oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{15} 
        oracle.install.option={19}
@@ -460,19 +467,13 @@ class OraGIProv:
        oracle.install.crs.configureRHPS={16}
        oracle.install.crs.config.ClusterConfiguration={17}
        '''.format(obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,oraversion,"false","STANDALONE",disksWithFGNames,crsconfig)
-#      fdata="\n".join([s for s in rspdata.split("\n") if s])
-       self.ocommon.write_file(gridrsp,rspdata)
-       if os.path.isfile(gridrsp):
-          return gridrsp,netmasklist
-       else:
-          self.ocommon.log_error_message("Grid response file does not exist at its location: " + gridrsp + ".Exiting..",self.file_name)
-          self.ocommon.prog_exit("127")
+       return self._write_responsefile(gridrsp, rspdata, netmasklist)
 
    def get_23c_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,clusterusage):
        """
-       This function prepare the response file if no response file passed
+       This function prepares a response file if no response file is passed
        """
-       self.ocommon.log_info_message("I am in get_23c_responsefile", self.file_name)
+       self.ocommon.log_info_message("Generating 23c response file", self.file_name)
        rspdata='''
        oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{15}
        installOption=CRS_CONFIG
@@ -500,22 +501,16 @@ class OraGIProv:
        ignoreDownNodes=false
        managementOption=NONE
        '''.format(obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,oraversion,clusterusage,disksWithFGNames)
-#      fdata="\n".join([s for s in rspdata.split("\n") if s])
        major_ver,minor_ver=self.ocommon.get_ora_version()
        if int(minor_ver) < 9: 
           rspdata+="configureAFD=false\n"
-       self.ocommon.write_file(gridrsp,rspdata)
-       if os.path.isfile(gridrsp):
-          return gridrsp,netmasklist
-       else:
-          self.ocommon.log_error_message("Grid response file does not exist at its location: " + gridrsp + ".Exiting..",self.file_name)
-          self.ocommon.prog_exit("127")
+       return self._write_responsefile(gridrsp, rspdata, netmasklist)
 
    def get_26ai_responsefile(self,obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,disksWithFGNames,oraversion,gridrsp,netmasklist,clusterusage):
        """
-       This function prepare the response file if no response file passed
+       This function prepares a response file if no response file is passed
        """
-       self.ocommon.log_info_message("I am in get_26ai_responsefile", self.file_name)
+       self.ocommon.log_info_message("Generating 26ai response file", self.file_name)
        rspdata='''
        oracle.install.responseFileVersion=/oracle/install/rspfmt_dbinstall_response_schema_v{15}
        installOption=CRS_CONFIG
@@ -543,49 +538,28 @@ class OraGIProv:
        ignoreDownNodes=false
        managementOption=NONE
        '''.format(obase,invloc,scanname,scanport,clutype,cluname,clunodes,nwiface,gimrflag,passwd,dgname,dgred,fgname,asmdisk,asmstr,oraversion,clusterusage,disksWithFGNames)
-       self.ocommon.write_file(gridrsp,rspdata)
-       if os.path.isfile(gridrsp):
-          return gridrsp,netmasklist
-       else:
-          self.ocommon.log_error_message("Grid response file does not exist at its location: " + gridrsp + ".Exiting..",self.file_name)
-          self.ocommon.prog_exit("127")
+       return self._write_responsefile(gridrsp, rspdata, netmasklist)
 
    def check_crs_config_install(self,swdata):
        """
-       This function check the if the sw install went fine
+       This function checks whether software install completed successfully
        """
-       #if not self.ocommon.check_substr_match(swdata,"orainstRoot.sh"):
-       #   self.ocommon.log_error_message("Grid software install failed. Exiting...",self.file_name)
-       #   self.ocommon.prog_exit("127")
-       if not self.ocommon.check_substr_match(swdata,"root.sh"):
-          self.ocommon.log_error_message("Grid software install failed. Exiting...",self.file_name)
-          self.ocommon.prog_exit("127")        
-       if not self.ocommon.check_substr_match(swdata,"executeConfigTools -responseFile"):
-          self.ocommon.log_error_message("Grid software install failed. Exiting...",self.file_name)
-          self.ocommon.prog_exit("127")
+       self._validate_install_markers(swdata, ("root.sh", "executeConfigTools -responseFile"))
 
    def check_crs_sw_install(self,swdata):
        """
-       This function check the if the sw install went fine
+       This function checks whether software install completed successfully
        """
-       if not self.ocommon.check_substr_match(swdata,"orainstRoot.sh"):
-          self.ocommon.log_error_message("Grid software install failed. Exiting...",self.file_name)
-          self.ocommon.prog_exit("127")
-       if not self.ocommon.check_substr_match(swdata,"root.sh"):
-          self.ocommon.log_error_message("Grid software install failed. Exiting...",self.file_name)
-          self.ocommon.prog_exit("127")
+       self._validate_install_markers(swdata, ("orainstRoot.sh", "root.sh"))
 
    def run_orainstsh(self):
        """
-       This function run the orainst after grid setup
+       This function runs orainstRoot.sh after Grid setup
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
-       pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-       for node in pub_nodes.split(" "):
-           cmd='''su - {0}  -c "ssh {1}  sudo {2}/orainstRoot.sh"'''.format(giuser,node,oinv)
-           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-           self.ocommon.check_os_err(output,error,retcode,True)
-          
+       for node in self._get_public_nodes():
+           self._run_remote_sudo(giuser, node, "{0}/orainstRoot.sh".format(oinv), True)
+
    def run_rootsh(self):
       """
       This function runs rsync from first node to other nodes
@@ -593,91 +567,63 @@ class OraGIProv:
       and then executes root.sh after grid setup
       """
       giuser, gihome, gbase, oinv = self.ocommon.get_gi_params()
-      pub_nodes, vip_nodes, priv_nodes = self.ocommon.process_cluster_vars("CRS_NODES")
-      node_list = pub_nodes.split(" ")
+      node_list = self._get_public_nodes()
 
-      # # for RAC RU Setup condition check
-      # if self.ocommon.check_key("APPLY_RU_LOCATION", self.ora_env_dict) and not self.ocommon.check_key("CRS_GPC", self.ora_env_dict):
-      #    source_node = node_list[0]
-      #    target_nodes = node_list[1:]
 
-      #    for node in target_nodes:
-      #          rsync_cmd = '''su - {0} -c "rsync -aHAXxv --progress {1}/ {2}:{1}/"'''.format(
-      #           giuser, gihome, node
-      #          )
-      #          output, error, retcode = self.ocommon.execute_cmd(rsync_cmd, None, None)
-      #          self.ocommon.check_os_err(output, error, retcode, True)
 
       # Clear thread tracking
       self.mythread.clear()
       mythreads = []
 
       # Run root.sh on each node
-      for node in node_list:
-         oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-         version = oraversion.split(".", 1)[0].strip()
-         self.ocommon.log_info_message("oraversion " + version, self.file_name)
+      oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+      version = oraversion.split(".", 1)[0].strip()
+      self.ocommon.log_info_message("Oracle version: " + version, self.file_name)
 
+      for node in node_list:
          if int(version) == 19 or int(version) == 21:
                self.run_rootsh_on_node(node, giuser, gihome)
          else:
-               self.ocommon.log_info_message("Running root.sh on node " + node, self.file_name)
+               self.ocommon.log_step("GI", "run_rootsh", "node", node, self.file_name)
                thread = Process(target=self.run_rootsh_on_node, args=(node, giuser, gihome))
                mythreads.append(thread)
                thread.start()
 
       for thread in mythreads:
          thread.join()
-         self.ocommon.log_info_message("Joining the root.sh thread ", self.file_name)
+         self.ocommon.log_info_message("Joining root.sh worker process", self.file_name)
 
 
    def run_rootsh_on_node(self,node,giuser,gihome):
        """
-       This function run root.sh on a node
+       This function runs root.sh on a node
        """
-       cmd='''su - {0}  -c "ssh {1}  sudo {2}/root.sh"'''.format(giuser,node,gihome)
-       output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       self.ocommon.check_os_err(output,error,retcode,True)
-#       if len(self.mythread) > 0:
-#          if node in self.mythread.keys():
-#             swthread_list=self.mythread[node]
-#             value=swthread_list[0]
-#             new_list=[value,'FALSE']
-#             new_val={node,tuple(new_list)}
-#             self.mythread.update(new_val)
+       self._run_remote_sudo(giuser, node, "{0}/root.sh".format(gihome), True)
 
    def run_postroot(self,gridrsp):
        """
-       This function execute the post root steps:
+       This function executes post-root steps
        """
        giuser,gihome,gbase,oinv=self.ocommon.get_gi_params()
-       cmd='''su - {0} -c "{1}/gridSetup.sh -executeConfigTools -responseFile {2} -silent"'''.format(giuser,gihome,gridrsp)
-       output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-       self.ocommon.check_os_err(output,error,retcode,None) 
+       cmd=self.cmd_builder.build_gi_postroot_config(giuser, gihome, gridrsp)
+       output,error,retcode=self.op_runner.run_command("gi_execute_config_tools", cmd, None, None, None)
 
    def reset_systemd(self):
       """
-      This function reset the systemd
-      This function reset the systemd
+      This function resets systemd
       """
-      pass
       while True:
          self.ocommon.log_info_message("Root.sh is running. Resetting systemd to avoid failure.",self.file_name)
-         cmd='''systemctl reset-failed'''.format()
-         cmd='''systemctl reset-failed'''.format()
-         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-         self.ocommon.check_os_err(output,error,retcode,None)
-         cmd = '''systemctl is-system-running'''.format()
-         cmd = '''systemctl is-system-running'''.format()
-         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-         self.ocommon.check_os_err(output,error,retcode,None)
-         sleep(3)
+         cmd="systemctl reset-failed"
+         output,error,retcode=self.op_runner.run_command("gi_systemd_reset_failed", cmd, None, None, None)
+         cmd = "systemctl is-system-running"
+         output,error,retcode=self.op_runner.run_command("gi_systemd_is_running", cmd, None, None, None)
+         time.sleep(3)
          if self.stopThreaFlag:
             break
    def reset_failed_units_on_all_nodes(self):
-      pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-      for node in pub_nodes.split(" "):
-         self.ocommon.log_info_message("Running reset_failed_units() on node " + node,self.file_name)
+      for node in self._get_public_nodes():
+         self.ocommon.log_step("GI", "reset_failed_units", "node", node, self.file_name)
          self.reset_failed_units(node)
 
    def reset_failed_units(self,node):
@@ -685,7 +631,6 @@ class OraGIProv:
       SERVICE_NAME = "rhnsd"
       SCRIPT_DIR = "/opt/scripts/startup/scripts"
       RESET_FAILED_UNITS = "resetFailedUnits.sh"
-      GRID_USER = "grid"
       CRON_JOB_FREQUENCY = "* * * * *"
 
       def error_exit(message):
@@ -700,30 +645,26 @@ class OraGIProv:
                if subprocess.run(["systemctl", "is-active", "--quiet", SERVICE_NAME]).returncode != 0:
                   self.ocommon.log_info_message(SERVICE_NAME + " is not responding. Stopping the service.",self.file_name)
                   cmd='''su - {0} -c "ssh {1}  sudo systemctl stop {2}"'''.format(giuser,node,SERVICE_NAME)
-                  output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                  self.ocommon.check_os_err(output,error,retcode,None)
+                  output,error,retcode=self.op_runner.run_command("gi_reset_failed_units_stop_service", cmd, None, None, None)
                   cmd='''su - {0} -c "ssh {1}  sudo systemctl disable {2}"'''.format(giuser,node,SERVICE_NAME)
-                  output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                  self.ocommon.check_os_err(output,error,retcode,None)
-                  self.ocommon.log_info_message(SERVICE_NAME + "stopped.",self.file_name)
+                  output,error,retcode=self.op_runner.run_command("gi_reset_failed_units_disable_service", cmd, None, None, None)
+                  self.ocommon.log_info_message(SERVICE_NAME + " stopped.",self.file_name)
                else:
                   self.ocommon.log_info_message(SERVICE_NAME + " is responsive. No action needed.",self.file_name)
          else:
                self.ocommon.log_info_message(SERVICE_NAME + " is not running.",self.file_name)
 
-         self.ocommon.log_info_message("Setting Crontab",self.file_name)         
+         self.ocommon.log_info_message("Setting crontab",self.file_name)         
          cmd = '''su - {0} -c "ssh {1} 'sudo crontab -l | {{ cat; echo \\"{2} {3}/{4}\\"; }} | sudo crontab -'"'''.format(giuser, node, CRON_JOB_FREQUENCY, SCRIPT_DIR, RESET_FAILED_UNITS)
          try:
-               output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-               self.ocommon.check_os_err(output,error,retcode,None)             
+               output,error,retcode=self.op_runner.run_command("gi_reset_failed_units_crontab", cmd, None, None, None)
                self.ocommon.log_info_message("Successfully installed " + SCRIPT_DIR + "/" + RESET_FAILED_UNITS + " using crontab",self.file_name)
          except subprocess.CalledProcessError:
                error_exit("Error occurred in crontab setup")
 
    def install_cvuqdisk_on_all_nodes(self):
-      pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
-      for node in pub_nodes.split(" "):
-         self.ocommon.log_info_message("Running install_cvuqdisk() on node " + node,self.file_name)
+      for node in self._get_public_nodes():
+         self.ocommon.log_step("GI", "install_cvuqdisk", "node", node, self.file_name)
          self.install_cvuqdisk(node)
 
    def install_cvuqdisk(self, node):
@@ -739,9 +680,8 @@ class OraGIProv:
 
       try:
          # Construct and run rpm install command
-         cmd = f'''su - {giuser} -c "ssh {node} 'sudo rpm -Uvh {rpm_directory}/cvuqdisk-*.rpm'"'''
-         output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-         self.ocommon.check_os_err(output, error, retcode, None)
+         cmd = self.cmd_builder.build_gi_install_cvuqdisk(giuser, node, rpm_directory)
+         output, error, retcode = self.op_runner.run_command("gi_install_cvuqdisk", cmd, None, None, None)
          self.ocommon.log_info_message("Successfully installed cvuqdisk file.", self.file_name)
 
       except subprocess.CalledProcessError as e:
@@ -757,7 +697,7 @@ class OraGIProv:
 
       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
       self.ocommon.log_info_message(
-         "oraversion: {0}".format(oraversion),
+         "Oracle version: {0}".format(oraversion),
          self.file_name
       )
 
@@ -802,8 +742,7 @@ class OraGIProv:
          'su - {0} -c "ssh {1} sudo mkdir -p {2}"'
          .format(giuser, node, targetdir)
       )
-      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-      self.ocommon.check_os_err(output, error, retcode, None)
+      output, error, retcode = self.op_runner.run_command("gi_backup_oracle_etc_mkdir", cmd, None, None, None)
 
       if retcode != 0:
          self.ocommon.log_error_message(
@@ -819,8 +758,7 @@ class OraGIProv:
          'su - {0} -c "ssh {1} sudo cp -rp {3} {2}/"'
          .format(giuser, node, targetdir, backup_dir)
       )
-      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-      self.ocommon.check_os_err(output, error, retcode, None)
+      output, error, retcode = self.op_runner.run_command("gi_backup_oracle_etc_copy", cmd, None, None, None)
 
       if retcode != 0:
          self.ocommon.log_error_message(

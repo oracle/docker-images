@@ -7,7 +7,7 @@
 ############################
 
 """
- This file contains to the code call different classes objects based on setup type
+This file contains code that calls different class objects based on setup type.
 """
 
 import os
@@ -49,16 +49,19 @@ class OraMiscOps:
 
    def setup(self):
        """
-       This function setup the RAC home on this machine
+       Set up misc RAC operations on this machine.
        """
-       self.ocommon.log_info_message("Start setup()",self.file_name)
+       self.ocommon.log_info_message("Start miscops setup()",self.file_name)
        ct = datetime.datetime.now()
        bts = ct.timestamp()
+       quiet_custom_run = self.ocommon.check_key("QUIET_CUSTOM_RUN", self.ora_env_dict)
+       readiness_check = self.ocommon.check_key("CHECK_RAC_STATUS", self.ora_env_dict)
        #default version as 0 integer, will read from rsp file
        version=0
        if self.ocommon.check_key("GRID_RESPONSE_FILE",self.ora_env_dict):
                gridrsp=self.ora_env_dict["GRID_RESPONSE_FILE"]
-               self.ocommon.log_info_message("GRID_RESPONSE_FILE parameter is set and file location is:" + gridrsp ,self.file_name)
+               if not quiet_custom_run:
+                  self.ocommon.log_info_message("GRID_RESPONSE_FILE parameter is set. File location: " + gridrsp ,self.file_name)
 
                if os.path.isfile(gridrsp):
                  with open(gridrsp) as fp:
@@ -66,156 +69,75 @@ class OraMiscOps:
                       if len(line.split("=")) == 2:
                          key=(line.split("=")[0]).strip()
                          value=(line.split("=")[1]).strip()
-                         self.ocommon.log_info_message("KEY and Value pair set to: " + key + ":" + value ,self.file_name)
+                         if not quiet_custom_run:
+                            self.ocommon.log_info_message("KEY and Value pair set to: " + key + ":" + value ,self.file_name)
                          if key == "oracle.install.responseFileVersion":
                             match = re.search(r'v(\d{2})', value)
                             if match:
                               version=int(match.group(1))
                             else:
-                                 # Default to version 23 if no match is found
+                               # Default to version 23 if no match is found
                               version=23
                #print version in logs
                msg="Version detected in response file is {0}".format(version)
-               self.ocommon.log_info_message(msg,self.file_name)                    
+               if not quiet_custom_run:
+                  self.ocommon.log_info_message(msg,self.file_name)
          ## Calling this function from here to make sure INSTALL_NODE is set
        if version == int(19) or version == int(21):
-            self.ocommon.update_pre_23c_gi_env_vars_from_rspfile()
+            self.ocommon.update_pre_23c_gi_env_vars_from_rspfile(log_details=not quiet_custom_run)
        else:
             # default to read when its either set as 23 in response file or if response file is not present
-            self.ocommon.update_gi_env_vars_from_rspfile()
+            self.ocommon.update_gi_env_vars_from_rspfile(log_details=not quiet_custom_run)
        if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
-          self.ocommon.update_rac_env_vars_from_rspfile(self.ora_env_dict["DBCA_RESPONSE_FILE"])
-       if self.ocommon.check_key("DEL_RACHOME",self.ora_env_dict):
-          self.delracnode()
-       else:
-          pass
+          self.ocommon.update_rac_env_vars_from_rspfile(
+             self.ora_env_dict["DBCA_RESPONSE_FILE"],
+             log_details=not quiet_custom_run,
+          )
+       precheck_ops = [
+          ("DEL_RACHOME", self.delracnode),
+          ("TNS_PARAMS", self.populate_tnsfile),
+          ("CHECK_RAC_INST", self.checkraclocal),
+       ]
+       for env_key, op_handler in precheck_ops:
+          if self.ocommon.check_key(env_key, self.ora_env_dict):
+             op_handler()
 
-       if self.ocommon.check_key("TNS_PARAMS",self.ora_env_dict):
-           self.populate_tnsfile()
-       else:
-           pass
-
-       if self.ocommon.check_key("CHECK_RAC_INST",self.ora_env_dict):
-          self.checkraclocal()
-       else:
-          pass
-
-       if self.ocommon.check_key("CHECK_RAC_STATUS",self.ora_env_dict):
+       if readiness_check:
           mode1=self.checkracinst()
           if mode1=='OPEN':
              sys.exit(0)
           else:
              sys.exit(127)
-       else:
-          pass
-         
-       if self.ocommon.check_key("CHECK_GI_LOCAL",self.ora_env_dict):
-          self.checkgilocal()
-       else:
-          pass
 
-       if self.ocommon.check_key("CHECK_RAC_DB",self.ora_env_dict):
-          self.checkracdb()
-       else:
-          pass
-
-       if self.ocommon.check_key("CHECK_DB_ROLE",self.ora_env_dict):
-          self.checkdbrole()
-       else:
-          pass
-
-
-       if self.ocommon.check_key("CHECK_CONNECT_STR",self.ora_env_dict):
-          self.checkconnstr()
-       else:
-          pass
-
-       if self.ocommon.check_key("CHECK_PDB_CONNECT_STR",self.ora_env_dict):
-          self.checkpdbconnstr()
-       else:
-          pass
-
-       if self.ocommon.check_key("NEW_DB_LSNR_ENDPOINTS",self.ora_env_dict):
-          self.setupdblsnr()
-       else:
-          pass
-
-       if self.ocommon.check_key("NEW_LOCAL_LISTENER",self.ora_env_dict):
-          self.setuplocallsnr()
-       else:
-          pass
-
-       if self.ocommon.check_key("CHECK_DB_SVC",self.ora_env_dict):
-          self.checkdbsvc()
-       else:
-          pass
-
-       if self.ocommon.check_key("MODIFY_DB_SVC",self.ora_env_dict):
-          self.modifydbsvc()
-       else:
-          pass
-
-       if self.ocommon.check_key("CHECK_DB_VERSION",self.ora_env_dict):
-          self.checkdbversion()
-       else:
-          pass
-
-       if self.ocommon.check_key("RESET_PASSWORD",self.ora_env_dict):
-          self.resetpassword()
-       else:
-          pass
-       if self.ocommon.check_key("MODIFY_SCAN",self.ora_env_dict):
-          self.modifyscan()
-       else:
-          pass
-       if self.ocommon.check_key("UPDATE_ASMCOUNT",self.ora_env_dict):
-          self.updateasmcount()
-       else:
-          pass
-       if self.ocommon.check_key("UPDATE_LISTENERENDP",self.ora_env_dict):
-          self.updatelistenerendp()
-       else:
-          pass
-       if self.ocommon.check_key("LIST_ASMDG",self.ora_env_dict):
-          self.listasmdg()
-       else:
-          pass
-       if self.ocommon.check_key("LIST_ASMDISKS",self.ora_env_dict):
-          self.listasmdisks()
-       else:
-          pass
-       if self.ocommon.check_key("LIST_ASMDGREDUNDANCY",self.ora_env_dict):
-          self.listasmdgredundancy()
-       else:
-          pass
-       if self.ocommon.check_key("LIST_ASMINSTNAME",self.ora_env_dict):
-          self.listasminstname()
-       else:
-          pass      
-       if self.ocommon.check_key("LIST_ASMINSTSTATUS",self.ora_env_dict):
-          self.listasminststatus()
-       else:
-          pass
-       if self.ocommon.check_key("UPDATE_ASMDEVICES",self.ora_env_dict):
-          self.updateasmdevices()
-       else:
-          pass
-       if self.ocommon.check_key("RUN_DATAPATCH",self.ora_env_dict):
-          self.run_datapatch()
-       else:
-          pass
-       if self.ocommon.check_key("ONS",self.ora_env_dict):
-          self.update_ons()
-       else:
-          pass
-       if self.ocommon.check_key("SID_PROFILE_UPDATE", self.ora_env_dict):
-          self.update_osid_for_grid_and_db_users()
-       else:
-          pass
-       if self.ocommon.check_key("UPDATE_CDP", self.ora_env_dict):
-          self.updatecdp()
-       else:
-          pass                      
+       postcheck_ops = [
+          ("CHECK_GI_LOCAL", self.checkgilocal),
+          ("CHECK_RAC_DB", self.checkracdb),
+          ("CHECK_DB_ROLE", self.checkdbrole),
+          ("CHECK_CONNECT_STR", self.checkconnstr),
+          ("CHECK_PDB_CONNECT_STR", self.checkpdbconnstr),
+          ("NEW_DB_LSNR_ENDPOINTS", self.setupdblsnr),
+          ("NEW_LOCAL_LISTENER", self.setuplocallsnr),
+          ("CHECK_DB_SVC", self.checkdbsvc),
+          ("MODIFY_DB_SVC", self.modifydbsvc),
+          ("CHECK_DB_VERSION", self.checkdbversion),
+          ("RESET_PASSWORD", self.resetpassword),
+          ("MODIFY_SCAN", self.modifyscan),
+          ("UPDATE_ASMCOUNT", self.updateasmcount),
+          ("UPDATE_LISTENERENDP", self.updatelistenerendp),
+          ("LIST_ASMDG", self.listasmdg),
+          ("LIST_ASMDISKS", self.listasmdisks),
+          ("LIST_ASMDGREDUNDANCY", self.listasmdgredundancy),
+          ("LIST_ASMINSTNAME", self.listasminstname),
+          ("LIST_ASMINSTSTATUS", self.listasminststatus),
+          ("UPDATE_ASMDEVICES", self.updateasmdevices),
+          ("RUN_DATAPATCH", self.run_datapatch),
+          ("ONS", self.update_ons),
+          ("SID_PROFILE_UPDATE", self.update_osid_for_grid_and_db_users),
+          ("UPDATE_CDP", self.updatecdp),
+       ]
+       for env_key, op_handler in postcheck_ops:
+          if self.ocommon.check_key(env_key, self.ora_env_dict):
+             op_handler()
 
        ct = datetime.datetime.now()
        ets = ct.timestamp()
@@ -1044,4 +966,3 @@ class OraMiscOps:
          print(status)
 
       return True
-
