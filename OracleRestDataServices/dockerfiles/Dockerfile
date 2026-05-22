@@ -1,80 +1,98 @@
-# LICENSE UPL 1.0
-#
-# Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
-#
-# ORACLE DOCKERFILES PROJECT
-# --------------------------
-# This is the Dockerfile for Oracle Rest Data Services
-#
-# REQUIRED FILES TO BUILD THIS IMAGE
-# ----------------------------------
-# (1) ords.3.0.10.165.06.53.zip
-#     Download Oracle Rest Data Services from
-#     http://www.oracle.com/technetwork/developer-tools/rest-data-services/downloads/index.html
-#
-# HOW TO BUILD THIS IMAGE
-# -----------------------
-# Put the downloaded file in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/restdataservices:3.0.10 . 
-#
-# Pull base image
-# ---------------
-
-ARG BASE_IMAGE=container-registry.oracle.com/java/serverjre:latest
+# Use a base image passed as a build argument
+ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-# Labels
-# ----------
-LABEL maintainer "gerald.venzl@oracle.com"
+ARG DB_HOST
+ARG DB_PORT
+ARG DB_SERVICE
+ARG DB_USER
+ARG DB_PASSWORD
+ARG ORDS_DB_API
+ARG ORDS_REST_ENABLED_SQL
+ARG ORDS_SDW
+ARG ORDS_GATEWAY_MODE
+ARG ORDS_GATEWAY_USER
+ARG ORDS_PROXY_USER
+ARG ORDS_PASSWORD_SYS
+ARG ORDS_PASSWORD_APEX
 
-# Environment variables required for this build (do NOT change)
-# -------------------------------------------------------------
-ENV ORDS_HOME=/opt/oracle/ords \
-    INSTALL_FILE=ords*.zip \
-    CONFIG_PROPS="ords_params.properties.tmpl" \
-    STANDALONE_PROPS="standalone.properties.tmpl" \
-    RUN_FILE="runOrds.sh"
 
-# Copy binaries
-# -------------
-COPY $INSTALL_FILE $CONFIG_PROPS $STANDALONE_PROPS $RUN_FILE $ORDS_HOME/
 
-# ARG for installing APEX prerequisites
-ARG INCLUDE_APEX=true
+# Set environment variables
+ENV ORACLE_HOME=/opt/oracle/product/19c/dbhome_1
+ENV PATH=$ORACLE_HOME/bin:$PATH
+ENV ORDS_HOME=/opt/oracle/ords
+ENV CONFIG_DIR=/etc/ords/config
 
-# Setup filesystem and oracle user
-# Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with ORDS installation
-# ------------------------------------------------------------
-RUN if [ ! -e ${ORDS_HOME}/${INSTALL_FILE} ]; then curl https://download.oracle.com/otn_software/java/ords/ords-21.4.2.062.1806.zip -o $ORDS_HOME/ords-latest.zip; fi && \
-    mkdir -p  $ORDS_HOME/doc_root $ORDS_HOME/config/ords && \
-    chmod ug+x $ORDS_HOME/*.sh && \
-    groupadd -g 54322 dba && \
-    useradd -u 54321 -d /home/oracle -g dba -m -s /bin/bash oracle && \
-    if [ $INCLUDE_APEX == "true" ]; then \
-        yum -y install oracle-instantclient-release-el7 && \
-        yum -y install oracle-instantclient-sqlplus.x86_64 && \
-        cd "${ORDS_HOME}"/config/ && \
-        curl https://download.oracle.com/otn_software/apex/apex-latest.zip -o apex-latest.zip && \
-        jar -xvf apex-latest.zip && \
-        rm apex-latest.zip; \
-    fi && \
-    cd $ORDS_HOME && \
-    jar -xf $INSTALL_FILE && \
-    rm $INSTALL_FILE  && \
-    java -jar $ORDS_HOME/ords.war configdir $ORDS_HOME/config && \
-    chown -R oracle:dba $ORDS_HOME && \
-    yum install -y tar && \
-    rm -rf /var/cache/yum && \
-    rm -rf /var/tmp/yum-*
-    
-# Finalize setup
-# -------------------
-USER oracle
-WORKDIR /home/oracle
+ENV DB_HOST=$DB_HOST
+ENV DB_PORT=$DB_PORT
+ENV DB_SERVICE=$DB_SERVICE
+ENV DB_USER=$DB_USER
+ENV DB_PASSWORD=$DB_PASSWORD
+ENV ORDS_DB_API=$ORDS_DB_API
+ENV ORDS_REST_ENABLED_SQL=$ORDS_REST_ENABLED_SQL
+ENV ORDS_SDW=$ORDS_SDW
+ENV ORDS_GATEWAY_MODE=$ORDS_GATEWAY_MODE
+ENV ORDS_GATEWAY_USER=$ORDS_GATEWAY_USER
+ENV ORDS_PROXY_USER=$ORDS_PROXY_USER
+ENV ORDS_PASSWORD_SYS=$ORDS_PASSWORD_SYS
+ENV ORDS_PASSWORD_APEX=$ORDS_PASSWORD_APEX
 
-VOLUME ["$ORDS_HOME/config/ords"]
-EXPOSE 8443
+# Copy the ORDS files into the container
+COPY tmp $ORDS_HOME
+COPY ords_params.properties $CONFIG_DIR/
+COPY gen_pool_xml.sh $CONFIG_DIR/
 
-# Define default command to start Oracle Database.
-CMD $ORDS_HOME/$RUN_FILE
+USER root
+# Install Java 11 OpenJDK
+RUN yum install -y java-11-openjdk-devel
+
+# Add ORDS bin directory to PATH
+RUN echo 'export PATH="$PATH:$ORDS_HOME/bin"' >> ~/.bashrc
+
+# Create the configuration directory
+RUN mkdir -p $CONFIG_DIR
+
+# Provide database connection details and other configurations
+RUN echo "db.hostname=$DB_HOST" > $CONFIG_DIR/ords_params.properties && \
+    echo "db.port=$DB_PORT" >> $CONFIG_DIR/ords_params.properties && \
+    echo "db.servicename=$DB_SERVICE" >> $CONFIG_DIR/ords_params.properties && \
+    echo "db.username=$DB_USER" >> $CONFIG_DIR/ords_params.properties && \
+    echo "db.password=$DB_PASSWORD" >> $CONFIG_DIR/ords_params.properties && \
+    echo "db.apex.password=$ORDS_PASSWORD_APEX" >> $CONFIG_DIR/ords_params.properties && \
+    echo "db.ords.password=$ORDS_PASSWORD_SYS" >> $CONFIG_DIR/ords_params.properties && \
+    echo "feature.sdw=$ORDS_SDW" >> $CONFIG_DIR/ords_params.properties && \
+    echo "feature.db-api=$ORDS_DB_API" >> $CONFIG_DIR/ords_params.properties && \
+    echo "feature.restEnabledSql=$ORDS_REST_ENABLED_SQL" >> $CONFIG_DIR/ords_params.properties && \
+    echo "plsql.gateway.add=true" >> $CONFIG_DIR/ords_params.properties && \
+	echo "plsql.gateway.mode=$ORDS_GATEWAY_MODE" >> $CONFIG_DIR/ords_params.properties && \
+    echo "rest.services.enabled=ORDS_REST_ENABLED_SQL" >> $CONFIG_DIR/ords_params.properties
+
+# Install ORDS using the new CLI with non-interactive parameters
+RUN cd $ORDS_HOME && \
+    ./bin/ords --config $CONFIG_DIR install \
+       --log-folder ${ORDS_CONF}/logs \
+       --admin-user $DB_USER \
+       --db-hostname $DB_HOST \
+       --db-port $DB_PORT \
+       --db-servicename $DB_SERVICE \
+       --feature-db-api true \
+       --feature-rest-enabled-sql true \
+       --feature-sdw true \
+       --gateway-mode proxied \
+       --gateway-user APEX_PUBLIC_USER \
+       --proxy-user \
+       --password-stdin <<EOF
+SysPassw0rd
+ApexPassw0rd
+EOF
+
+# Run the gen_pool_xml.sh script
+RUN cd $CONFIG_DIR && \
+    bash ./gen_pool_xml.sh
+
+# Clean up by removing the script if no longer needed
+RUN rm $CONFIG_DIR/gen_pool_xml.sh
+
+# Start ORDS using the new CLI
+CMD ["sh", "-c", "$ORDS_HOME/bin/ords --config $CONFIG_DIR serve"]
