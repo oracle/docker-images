@@ -1,0 +1,35 @@
+
+###############################################################################
+## Copyright(c) Oracle Corporation 1998,2021. All rights reserved.           ##
+##                                                                           ##
+## Specify values for the variables listed below to customize                ##
+## your installation.                                                        ##
+##                                                                           ##
+## Each variable is associated with a comment. The comment                   ##
+## can help to populate the variables with the appropriate                   ##
+## values.							             ##
+##                                                                           ##
+###############################################################################
+
+#-------------------------------------------------------------------------------
+# Do not change the following system generated value. 
+#-------------------------------------------------------------------------------
+oracle.install.responseFileVersion=/oracle/install/rspfmt_gsminstall_response_schema_v21.0.0
+
+#-------------------------------------------------------------------------------
+# Unix group to be set for the inventory directory.  
+#-------------------------------------------------------------------------------
+UNIX_GROUP_NAME=
+#-------------------------------------------------------------------------------
+# Inventory location.
+#-------------------------------------------------------------------------------
+INVENTORY_LOCATION=
+#-------------------------------------------------------------------------------
+# Complete path of the Oracle Home  
+#-------------------------------------------------------------------------------
+ORACLE_HOME=
+
+#-------------------------------------------------------------------------------
+# Complete path of the Oracle Base. 
+#-------------------------------------------------------------------------------
+ORACLE_BASE=
