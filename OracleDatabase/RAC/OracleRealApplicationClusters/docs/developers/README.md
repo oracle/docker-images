@@ -74,6 +74,8 @@ podman pull container-registry.oracle.com/database/rac_ru:latest
 podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:23.26ai
 ```
 
+**Note:** The pre-built Oracle Container Registry image `container-registry.oracle.com/database/rac_ru:latest` can still work on Oracle Linux 8. For Oracle Linux 9 hosts using cgroup v2, prefer building the image from the latest containerfiles in this repository, because the OCR image can still carry the older `init.ohasd` cgroup v1 behavior and fail during Grid setup.
+
 **Notes**
 - Use the Oracle `DNSServer` Image to deploy a container providing DNS resolutions. Refer [OracleDNSServer](../../../OracleDNSServer/README.md)
 - `OracleRACStorageServer` container image can be used for deploy Oracle RAC with NFS Storage. Refer [OracleRACStorageServer](../../../OracleRACStorageServer/README.md) for details.

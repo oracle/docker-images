@@ -88,6 +88,8 @@ podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle
 ```
 **NOTE** Currently, latest tag in Oracle Container registry represents `23.26ai` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.  
 
+**NOTE** The pre-built Oracle Container Registry image `container-registry.oracle.com/database/rac_ru:latest` can still work on Oracle Linux 8. If you are deploying on Oracle Linux 9 with cgroup v2, prefer building the image from the latest containerfiles in this repository, because the OCR image can still use older `init.ohasd` cgroup v1 handling and fail during Grid setup.
+
 If you are using pre-built Oracle RAC images from the Oracle Container Registry, then you can skip the section that follows where we build the container images.
 
 If you want to build the latest Oracle RAC Image from this Github repository, instead of a pre-built image, then then follow these instructions.
