@@ -82,9 +82,9 @@ Refer to this [documentation](https://docs.oracle.com/en/operating-systems/oracl
 Example of pulling an Oracle RAC Database Image from the Oracle Container Registry:
 ```bash
 podman pull container-registry.oracle.com/database/rac_ru:latest
-podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:23.26ai
+podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
 ```
-**NOTE:** Currently, latest tag in Oracle Container registry represents `23.26ai` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.
+**NOTE:** Currently, latest tag in Oracle Container registry represents `21.17.0` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.
 
 **NOTE:** The pre-built Oracle Container Registry image `container-registry.oracle.com/database/rac_ru:latest` can still work on Oracle Linux 8. If you are deploying on Oracle Linux 9 with cgroup v2, prefer building the Oracle RAC image from the latest containerfiles in this repository instead of using the pre-built Oracle Container Registry image, because the OCR image can still use older `init.ohasd` cgroup v1 handling and fail during Grid setup when `ohasd.bin` does not move under `oracle-ohasd.service`.
 
