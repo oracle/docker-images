@@ -10,9 +10,11 @@
  This file contains to the code call different classes objects based on setup type
 """
 
-from distutils.log import debug
+import datetime
 import os
+import re
 import sys
+import time
 import traceback
 
 from oralogger import *
@@ -25,6 +27,7 @@ from oracvu import *
 from oragiprov import *
 from oraasmca import *
 from oraracprov import *
+from oraops import OperationRunner
 
 class OraRacStdby:
    """
@@ -43,6 +46,7 @@ class OraRacStdby:
          self.ogiprov             = OraGIProv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
          self.oasmca              = OraAsmca(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
          self.oraracprov          = OraRacProv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
+         self.op_runner           = OperationRunner(self.ocommon, self.file_name, "RAC")
       except BaseException as ex:
          ex_type, ex_value, ex_traceback = sys.exc_info()
          trace_back = traceback.extract_tb(ex_traceback)
@@ -52,6 +56,15 @@ class OraRacStdby:
          self.ocommon.log_info_message(ex_type.__name__,self.file_name)
          self.ocommon.log_info_message(ex_value,self.file_name)
          self.ocommon.log_info_message(stack_trace,self.file_name)
+
+   def _run_step(self, action, fn, *args, **kwargs):
+      """
+      Run a setup step with standardized start/end logging.
+      """
+      self.ocommon.log_info_message("Start {0}()".format(action), self.file_name)
+      result = fn(*args, **kwargs)
+      self.ocommon.log_info_message("End {0}()".format(action), self.file_name)
+      return result
 
    def setup(self):
           """
@@ -74,12 +87,8 @@ class OraRacStdby:
             sshFlag=True
           status=self.ocommon.check_home_inv(None,dbhome,dbuser)
           if not status:
-            self.ocommon.log_info_message("Start oraracprov.db_sw_install()",self.file_name)
-            self.oraracprov.db_sw_install()
-            self.ocommon.log_info_message("End oraracprov.db_sw_install()",self.file_name)
-            self.ocommon.log_info_message("Start oraracprov.run_rootsh()",self.file_name)
-            self.oraracprov.run_rootsh()
-            self.ocommon.log_info_message("End oraracprov.run_rootsh()",self.file_name)
+            self._run_step("oraracprov.db_sw_install", self.oraracprov.db_sw_install)
+            self._run_step("oraracprov.run_rootsh", self.oraracprov.run_rootsh)
           if not self.ocommon.check_key("SKIP_DBCA",self.ora_env_dict):
              self.oraracprov.create_asmdg()
              status,osid,host,mode=self.ocommon.check_dbinst()
@@ -91,25 +100,17 @@ class OraRacStdby:
                if not sshFlag:
                   self.oraracprov.perform_ssh_setup()
                self.check_primary_db()
-               self.ocommon.log_info_message("Start configure_primary_db()",self.file_name)
-               self.configure_primary_db()
-               self.ocommon.log_info_message("End configure_primary_db()",self.file_name)
-               self.ocommon.log_info_message("Start create_standbylogs()",self.file_name)
-               self.create_standbylogs()
-               self.ocommon.log_info_message("End create_standbylogs()",self.file_name)
+               self._run_step("configure_primary_db", self.configure_primary_db)
+               self._run_step("create_standbylogs", self.create_standbylogs)
                #self.populate_tnsfile()
                #self.copy_tnsfile(dbhome,dbuser)
-               self.ocommon.log_info_message("Start create_db()",self.file_name)
-               self.create_db()
-               self.ocommon.log_info_message("End create_db()",self.file_name)
-               self.ocommon.log_info_message("Start configure_standby_db()",self.file_name)
-               self.configure_standby_db()
-               self.ocommon.log_info_message("End configure_standby_db()",self.file_name)
+               self._run_step("create_db", self.create_db)
+               self._run_step("configure_standby_db", self.configure_standby_db)
                ### Calling populate TNS again as create_db reset the oldtnames.ora
                #self.populate_tnsfile()
                #self.copy_tnsfile(dbhome,dbuser)
-               self.configure_dgsetup() 
-               self.restart_db()
+               self._run_step("configure_dgsetup", self.configure_dgsetup)
+               self._run_step("restart_db", self.restart_db)
 
           ct = datetime.datetime.now()
           ets = ct.timestamp()
@@ -180,7 +181,7 @@ class OraRacStdby:
              if status == 'completed':
                 break
              else:
-               msg='''Primary DB {0} setup is still not completed as primary check did not return "completed". Sleeping for 60 seconds and sleeping count is {0}'''.format(counter)
+               msg='''Primary DB {0} setup is not yet completed. Sleeping for 60 seconds (attempt {1}/{2}).'''.format(prmydbuname,counter,end_counter)
                self.ocommon.log_info_message(msg,self.file_name)
                time.sleep(60)
                counter=counter+1
@@ -189,7 +190,7 @@ class OraRacStdby:
              msg='''Primary Database {0} is open!'''.format(prmydbuname)
              self.ocommon.log_info_message(msg,self.file_name)
           else:
-             msg='''Primary DB {0} is not in open state.Primary DB setup did not complete or failed. Exiting...'''
+             msg='''Primary DB {0} is not in open state. Primary DB setup did not complete or failed. Exiting...'''.format(prmydbuname)
              self.ocommon.log_error_message(msg,self.file_name)
              self.ocommon.prog_exit("127")
                                    
@@ -427,6 +428,7 @@ class OraRacStdby:
 
        cmd='''chown {1}:{2} {0}'''.format(tnsfile,osuser,osgroup)
        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+       self.ocommon.check_os_err(output,error,retcode,None)
 
    def create_remote_tns_enteries(self,dbhome,dbuname,connect_str,scan_name,scan_port):
        """
@@ -468,7 +470,7 @@ class OraRacStdby:
 
      dbpasswd=self.ocommon.get_db_passwd()
      self.ocommon.set_mask_str(dbpasswd)
-     output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
+     output,error,retcode=self.op_runner.run_command("rac_stdby_create_db", cmd, None, None, None)
      self.ocommon.check_os_err(output,error,retcode,None)
      ### Unsetting the encrypt value to None
      self.ocommon.unset_mask_str()

@@ -1,0 +1,253 @@
+# LICENSE UPL 1.0
+#
+# Copyright (c) 2018,2022 Oracle and/or its affiliates.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile for Oracle GSM 26ai to build the container image
+# MAINTAINER <paramdeep.saini@oracle.com>
+#
+# This is the Dockerfile for Oracle GSM 26ai
+#
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) LINUX.X64_260000_gsm.zip
+#     Download Oracle 26ai GSM Software
+#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put all downloaded files in the same directory as this Dockerfile
+# Run:
+#      $ docker build -t oracle/gsm:26.0.0 .
+#
+
+ARG SLIMMING=false
+ARG BASE_OL_IMAGE=oraclelinux:9
+
+# Pull base image
+# ---------------
+# hadolint ignore=DL3006
+FROM $BASE_OL_IMAGE AS base
+ARG SLIMMING=false
+ARG VERSION
+
+# Labels
+# ------
+LABEL "provider"="Oracle"                                          \
+      "issues"="https://github.com/oracle/docker-images/issues"    \
+      "volume.setup.location1"="/opt/oracle/scripts"               \
+      "port.listener"="1522"                                           
+
+# Argument to control removal of components not needed after db software installation
+
+ARG INSTALL_FILE_1="LINUX.X64_260000_gsm.zip"
+ARG USER="root"
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+ENV GSM_BASE="/u01/app/oracle" \
+    GSM_USER="oracle" \
+    GSM_HOME="/u01/app/oracle/product/23.0.0/gsmhome_1" \
+    INVENTORY="/u01/app/oracle/oraInventory" \
+    INSTALL_DIR="/opt/oracle/scripts" \
+    INSTALL_FILE_1=$INSTALL_FILE_1 \
+    INSTALL_RSP="26ai_gsm_install.rsp" \
+    RUN_FILE="runOracle.sh" \
+    SETUP_LINUX_FILE="setupLinuxEnv.sh" \
+    CHECK_SPACE_FILE="checkSpace.sh" \
+    USER_SCRIPTS_FILE="runUserScripts.sh" \
+    INSTALL_GSM_BINARIES_FILE="installGSMBinaries.sh" \
+    GSM_SETUP_FILE="setupOshardEnv.sh"  \
+    GSM_ENV_SETUP_FILE="setupGSM.sh" \
+    GSM_SCRIPTS="scripts" \
+    MAINPY="main.py" \
+    PYTHON_FILE="/usr/bin/python" \
+    PYTHON3_FILE="/usr/bin/python3" \
+    ORAPCATALOG="orapcatalog.py" \
+    CMDEXEC="cmdExec" \
+    ORAMACHINE="oramachine.py" \
+    ORALOGGER="oralogger.py" \
+    ORAFACTORY="orafactory.py" \
+    ORAGSM="oragsm.py" \
+    ORASSHARD="orasshard.py" \
+    ORAENV="oraenv.py" \
+    ORAPSHARD="orapshard.py" \
+    MAINPY="main.py" \
+    ORASCATALOG="orascatalog.py" \
+    ORACOMMON="oracommon.py" \
+    DEMOAPPSQL="demoapp.sql" \
+    RUNORASHARD="runOraShardSetup.sh" \
+    CHECKLIVENESS="checkLiveness.sh" 
+# Use second ENV so that variable get substituted
+# hadolint ignore=DL3044
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     ORACLE_HOME=$GSM_HOME \
+     ORACLE_BASE=$GSM_BASE \
+     SCRIPT_DIR=$INSTALL_DIR/sharding \
+     SHARD_SCRIPT_DIR=$INSTALL_DIR/sharding \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     GSM_PATH=$GSM_HOME/bin:$PATH \
+     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib 
+    
+#############################################
+# -------------------------------------------
+# Start new stage for slim image
+# -------------------------------------------
+#############################################
+FROM base AS gsm-image-slim-false
+ARG SLIMMING
+ARG VERSION
+
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     ORACLE_HOME=$GSM_HOME \
+     ORACLE_BASE=$GSM_BASE \
+     SCRIPT_DIR=$INSTALL_DIR/sharding \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     GSM_PATH=$GSM_HOME/bin:$PATH \
+     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib  \
+    INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     GSM_SCRIPTS="scripts"
+
+# Copy binaries
+# -------------
+# COPY Binaries
+COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$GSM_ENV_SETUP_FILE $INSTALL_SCRIPTS/
+COPY $VERSION/$RUN_FILE $VERSION/$GSM_SETUP_FILE $VERSION/$CHECKLIVENESS $VERSION/$USER_SCRIPTS_FILE $SCRIPT_DIR/
+COPY $GSM_SCRIPTS/$ORAPCATALOG $GSM_SCRIPTS/$CMDEXEC $GSM_SCRIPTS/$ORAPSHARD $GSM_SCRIPTS/$MAINPY $GSM_SCRIPTS/$ORASCATALOG $GSM_SCRIPTS/$ORACOMMON $GSM_SCRIPTS/$DEMOAPPSQL $GSM_SCRIPTS/$RUNORASHARD $GSM_SCRIPTS/$CMDEXEC $GSM_SCRIPTS/$ORAMACHINE $GSM_SCRIPTS/$ORALOGGER $GSM_SCRIPTS/$ORAFACTORY $GSM_SCRIPTS/$ORAGSM  $GSM_SCRIPTS/$ORASSHARD $GSM_SCRIPTS/$ORAENV $SCRIPT_DIR/scripts/
+
+# hadolint ignore=SC2086
+RUN chmod 755 $INSTALL_DIR/install/*.sh && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GSM_ENV_SETUP_FILE  && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new stage for slim image true
+# -------------------------------------------
+#############################################
+FROM base AS gsm-image-slim-true
+ARG SLIMMING
+ARG VERSION
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+# Linux Env Variable
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     ORACLE_HOME=$GSM_HOME \
+     ORACLE_BASE=$GSM_BASE \
+     SCRIPT_DIR=$INSTALL_DIR/sharding \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     GSM_PATH=$GSM_HOME/bin:$PATH \
+     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib  \
+     INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     GSM_SCRIPTS="scripts"
+
+# Copy binaries
+# -------------
+# COPY Binaries
+COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$GSM_ENV_SETUP_FILE $INSTALL_SCRIPTS/
+COPY $VERSION/$RUN_FILE $VERSION/$GSM_SETUP_FILE $VERSION/$CHECKLIVENESS $VERSION/$USER_SCRIPTS_FILE $SCRIPT_DIR/
+COPY $GSM_SCRIPTS/$ORAPCATALOG $GSM_SCRIPTS/$ORAPSHARD $GSM_SCRIPTS/$CMDEXEC $GSM_SCRIPTS/$MAINPY $GSM_SCRIPTS/$ORASCATALOG $GSM_SCRIPTS/$ORACOMMON $GSM_SCRIPTS/$DEMOAPPSQL $GSM_SCRIPTS/$RUNORASHARD $GSM_SCRIPTS/$CMDEXEC $GSM_SCRIPTS/$ORAMACHINE $GSM_SCRIPTS/$ORALOGGER $GSM_SCRIPTS/$ORAFACTORY $GSM_SCRIPTS/$ORAGSM  $GSM_SCRIPTS/$ORASSHARD $GSM_SCRIPTS/$ORAENV $SCRIPT_DIR/scripts/
+
+# hadolint ignore=SC2086
+RUN chmod 755 $INSTALL_DIR/install/*.sh && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GSM_ENV_SETUP_FILE  && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the GSM
+# -------------------------------------------
+#############################################
+
+# hadolint ignore=DL3006
+FROM gsm-image-slim-${SLIMMING} AS builder
+ARG SLIMMING
+ARG VERSION
+
+# hadolint ignore=SC2086
+COPY $VERSION/$INSTALL_FILE_1 $VERSION/$INSTALL_RSP $VERSION/$INSTALL_GSM_BINARIES_FILE $VERSION/$GSM_SETUP_FILE $INSTALL_DIR/install/
+
+USER ${USER}
+# hadolint ignore=SC2086
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+ chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+    :;\   
+  fi
+USER ${GSM_USER}
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+ "$INSTALL_DIR/install/$INSTALL_GSM_BINARIES_FILE" && \
+ :;\  
+fi
+
+USER ${USER}
+# hadolint ignore=SC2086
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
+   $INVENTORY/orainstRoot.sh && \
+   $GSM_HOME/root.sh && \
+   rm -rf $INSTALL_DIR/install && \
+   :;\ 
+   fi    
+
+#RUN if [ "${SLIMMING}x" == 'truex' ]; then \
+#      mkdir /u01 && \
+#      :; \
+#fi
+
+# hadolint ignore=SC2086
+RUN rm -f $INSTALL_DIR/install/* && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new layer for GSM runtime
+# -------------------------------------------
+#############################################
+# hadolint ignore=DL3006
+FROM gsm-image-slim-${SLIMMING} AS final
+
+COPY --from=builder /u01 /u01
+# hadolint ignore=SC2086
+RUN if [ ! -f $PYTHON_FILE ]; then \
+      ln -s $PYTHON3_FILE $PYTHON_FILE && \
+      :; \
+    fi && \
+    rm -f $INSTALL_DIR/install/*  && \
+    cp $SCRIPT_DIR/scripts/cmdExec  $SCRIPT_DIR/ && \
+    for helper in cmdExec main.py orapcatalog.py orapshard.py orascatalog.py oracommon.py demoapp.sql runOraShardSetup.sh oramachine.py oralogger.py orafactory.py oragsm.py orasshard.py oraenv.py; do \
+      ln -sf scripts/$helper $SHARD_SCRIPT_DIR/$helper; \
+    done && \
+    ln -sf ../$CHECKLIVENESS $SCRIPT_DIR/scripts/$CHECKLIVENESS && \
+    chown -R oracle:oinstall $SCRIPT_DIR && \
+    chmod 755 $SCRIPT_DIR/*.sh && \
+    chmod 755 $SCRIPT_DIR/scripts/*.py && \
+    chmod 755 $SCRIPT_DIR/scripts/*.sh && \
+    chmod 755 $SCRIPT_DIR/scripts/cmdExec && \
+    chmod 755 $SCRIPT_DIR/cmdExec && \
+    sync
+
+USER  ${GSM_USER}
+WORKDIR /home/${GSM_USER}
+EXPOSE 1522
+
+VOLUME ["$GSM_BASE/oradata"]
+
+HEALTHCHECK --interval=2m --start-period=25m \
+   CMD "$SCRIPT_DIR/$CHECKLIVENESS" >/dev/null || exit 1
+
+# Define default command to start Oracle Database.
+# hadolint ignore=DL3025
+CMD exec $SCRIPT_DIR/$RUN_FILE

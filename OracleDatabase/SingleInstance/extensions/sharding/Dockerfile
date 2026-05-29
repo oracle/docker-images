@@ -19,17 +19,20 @@
 
 ARG BASE_IMAGE_VERSION=19.3.0
 ARG BASE_IMAGE=oracle/database:${BASE_IMAGE_VERSION}-ee
-ARG BASE_REPO=https://github.com/oracle/db-sharding
+ARG BASE_REPO=https://github.com/oracle/docker-images
 
 # Creating stage for downloading necessary script files
-FROM oraclelinux:7-slim as downloader
+# hadolint ignore=DL3006
+FROM ${BASE_IMAGE} as downloader
 ARG BASE_REPO
 ENV BASE_REPO=$BASE_REPO
 WORKDIR /tmp
 
-RUN yum -y install gzip tar && \
-    curl -L -o master.tar.gz ${BASE_REPO}/archive/master.tar.gz && \
-    tar -xvf master.tar.gz
+# hadolint ignore=DL3002
+USER root
+# hadolint ignore=DL3032,DL3033
+RUN yum -y install git && \
+    git clone --depth=1 ${BASE_REPO}
 
 # Creating another stage for sharding extension creation
 # hadolint ignore=DL3006
@@ -55,17 +58,39 @@ ENV CMD_EXEC="cmdExec" \
    SSHARD_PY="orasshard.py" \
    RUN_SHARD_FILE="runOraShardSetup.sh" \
    RUN_FILE="runOracle.sh" \
+   PYTHON_FILE="/usr/bin/python" \
+   PYTHON3_FILE="/usr/libexec/platform-python3.6" \
    SHARD_SETUP="false"
 
+# Create Soft link and install python3 RPM
+
+USER root
+# hadolint ignore=DL3032,DL3033
+RUN yum -y install python3
+RUN if [ ! -f $PYTHON_FILE ]; then \
+      ln -s $PYTHON3_FILE $PYTHON_FILE && \
+      :; \
+    fi && \
+    sync
+
 # backup original runOracle
+USER oracle
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
     mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN"
+# hadolint ignore=SC2086
+RUN mkdir -p $ORACLE_BASE/scripts/sharding/scripts && \
+    chown -R oracle:dba $ORACLE_BASE/scripts && \
+    sync
 
 # Copy updated scripts for sharding support
-COPY  --chown=oracle:dba --from=downloader /tmp/db-sharding-master/container-based-sharding-deployment/containerfiles/scripts/* $ORACLE_BASE/scripts/sharding/
-RUN mv "$ORACLE_BASE/scripts/sharding/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"
+COPY  --chown=oracle:dba --from=downloader /tmp/docker-images/OracleDatabase/GDD/containerfiles/scripts/* $ORACLE_BASE/scripts/sharding/
+# hadolint ignore=SC2086
+RUN mv "$ORACLE_BASE/scripts/sharding/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" && \
+    chmod 755 $ORACLE_BASE/scripts/sharding/* && \
+    sync
 
 # Set perms and append a call to main runOracle
+# hadolint ignore=SC2086
 RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
         mv "$ORACLE_BASE/$RUN_FILE.extended" "$ORACLE_BASE/$RUN_FILE" ; \
     else echo ". $ORACLE_BASE/$RUN_FILE.orig" > "$ORACLE_BASE/$RUN_FILE" ; fi ; \
@@ -73,4 +98,6 @@ RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
        sed  -i "\$a . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
     fi && \
     sed -i '/alert.log/,$ s/wait \$childPID//' "$ORACLE_BASE"/runOracle.sh.orig && \
-    chmod ug+x $ORACLE_BASE/$RUN_FILE $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME $ORACLE_BASE/scripts/sharding/*.sh $ORACLE_BASE/scripts/sharding/*.py && sync
+    chmod ug+x $ORACLE_BASE/$RUN_FILE $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME $ORACLE_BASE/scripts/sharding/*.sh $ORACLE_BASE/scripts/sharding/*.py && \
+    chown oracle:dba $ORACLE_BASE/$RUN_FILE && \
+    sync

@@ -9,8 +9,7 @@
 # Description: Setup the Linux kernel parameter inside the container. Note that some parameter need to be set on container  host.
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-
-rpm -Uvh "$GRID_HOME/cv/rpm/cvuqdisk*"
+rpm -Uvh $GRID_HOME/cv/rpm/cvuqdisk*
 echo "oracle   soft   nofile    1024" > /etc/security/limits.conf
 echo "oracle   hard   nofile    65536" >> /etc/security/limits.conf
 echo "oracle   soft   nproc    16384" >> /etc/security/limits.conf

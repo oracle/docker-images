@@ -24,6 +24,7 @@ from oraracstdby import *
 from oraracadd import *
 from oracvu import *
 from oragiadd import *
+from oraops import OperationRunner, CommandBuilder
 
 class OraRacAdd:
    """
@@ -39,6 +40,8 @@ class OraRacAdd:
          self.file_name           = os.path.basename(__file__)
          self.osetupssh           = orasetupssh
          self.ocvu                = oracvu
+         self.op_runner           = OperationRunner(self.ocommon, self.file_name, "RAC")
+         self.cmd_builder         = CommandBuilder(self.ocommon)
          self.ogiadd              = OraGIAdd(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
       except BaseException as ex:
          traceback.print_exc(file = sys.stdout)
@@ -266,12 +269,11 @@ class OraRacAdd:
        if nodeflag:
           #cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
           if int(version) < 23:
-              cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\"  -waitForCompletion  {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+              cmd=self.cmd_builder.build_rac_addnode(dbuser, dbhome, crs_nodes, copyflag, node)
           else:
-             cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\"  -waitForCompletion  {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+             cmd=self.cmd_builder.build_rac_addnode(dbuser, dbhome, crs_nodes, copyflag, node)
              #cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/runInstaller -setupDBHome -OSDBA <group> -OSBACKUPDBA <group> -OSDGDBA <group> -OSKMDBA <group> -OSRACDBA <group> -ORACLE_BASE <base> -clusterNodes <new nodes>'"'''
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,None)
+          output,error,retcode=self.op_runner.run_command("rac_addnode_db_sw", cmd, None, None, None)
        else:
           self.ocommon.log_error_message("Clusterware is not up on any node : " + existing_crs_nodes + ".Exiting...",self.file_name)
           self.prog_exit("127")
@@ -305,9 +307,8 @@ class OraRacAdd:
        if nodeflag:
           dbname,osid,dbuname=self.ocommon.getdbnameinfo()
           for new_node in pub_nodes.split(" "):
-             cmd='''su - {0} -c "ssh {2} '{1}/bin/dbca -addInstance -silent  -nodeName {3} -gdbName {4}'"'''.format(dbuser,dbhome,node,new_node,osid)
-             output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-             self.ocommon.check_os_err(output,error,retcode,True)
+             cmd=self.cmd_builder.build_rac_add_instance(dbuser, dbhome, node, new_node, osid)
+             output,error,retcode=self.op_runner.run_command("rac_addnode_dbca_addinst", cmd, None, None, True)
        else:
           self.ocommon.log_error_message("Clusterware is not up on any node : " + existing_crs_nodes + ".Exiting...",self.file_name)
           self.prog_exit("127")

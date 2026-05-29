@@ -1,0 +1,27 @@
+module shard-podman  1.0;
+ 
+require {
+        type kernel_t;
+        class system syslog_read;
+        type container_runtime_t;
+        type container_init_t;
+        class file getattr;
+        type container_file_t;
+        type lib_t;
+        type textrel_shlib_t;
+        type unlabeled_t;
+        class file read;
+        type bin_t;
+        class file { execmod execute map setattr };
+ 
+}
+ 
+#============= container_init_t ==============
+allow container_init_t container_runtime_t:file getattr;
+allow container_init_t bin_t:file map;
+allow container_init_t bin_t:file execute;
+allow container_init_t container_file_t:file execmod;
+allow container_init_t lib_t:file execmod;
+allow container_init_t textrel_shlib_t:file setattr;
+allow container_init_t kernel_t:system syslog_read;
+allow container_init_t unlabeled_t:file read;
