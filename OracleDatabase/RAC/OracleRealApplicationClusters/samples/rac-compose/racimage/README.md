@@ -150,6 +150,12 @@ podman-compose start ${RACNODE2_CONTAINER_NAME}
 podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
+If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
+
+```bash
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+```
+
 Successful Message when RAC container is setup properly-
 ```bash
 ===================================

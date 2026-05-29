@@ -558,6 +558,12 @@ It can take approximately 20 minutes or longer to create and set up a two-node O
 podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
+If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
+
+```bash
+podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+```
+
 When the database configuration is complete, you should see a message, similar to the following, on the installing node i.e. `racnodep1` in this case:
 
 ```bash
