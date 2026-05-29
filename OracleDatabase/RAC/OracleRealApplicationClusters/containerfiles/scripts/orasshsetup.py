@@ -7,24 +7,27 @@
 ############################
 
 """
- This file contains to the code call different classes objects based on setup type
+This file contains SSH setup orchestration logic for cluster users and nodes.
 """
 
 from oralogger import *
 from oraenv import *
 from oracommon import *
-from oramachine import *
 from orasetupenv import *
-from orasshsetup import *
 from oracvu import *
 
+import datetime
+import glob
 import os
+import shutil
 import sys
+import time
+import traceback
 
 
 class OraSetupSSH:
     """
-    This class setup the env before setting up the rac env
+    This class sets up SSH trust and connectivity for RAC environments
     """
 
     def __init__(self, oralogger, orahandler, oraenv, oracommon):
@@ -37,7 +40,7 @@ class OraSetupSSH:
             self.file_name = os.path.basename(__file__)
         except BaseException as ex:
             ex_type, ex_value, ex_traceback = sys.exc_info()
-            trace_back = sys.tracebacklimit.extract_tb(ex_traceback)
+            trace_back = traceback.extract_tb(ex_traceback)
             stack_trace = list()
             for trace in trace_back:
                 stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (
@@ -46,12 +49,21 @@ class OraSetupSSH:
             self.ocommon.log_info_message(ex_value, self.file_name)
             self.ocommon.log_info_message(stack_trace, self.file_name)
 
+    def _get_ssh_users(self):
+        """
+        Return SSH users and homes for GRID and DB owners.
+        """
+        return [
+            (self.ora_env_dict["GRID_USER"], self.ora_env_dict["GRID_HOME"]),
+            (self.ora_env_dict["DB_USER"], self.ora_env_dict["DB_HOME"]),
+        ]
+
     # ============================================================
     # ENTRY POINT
     # ============================================================
     def setup(self):
         """
-        This function setup ssh between computes
+        Set up SSH between cluster nodes.
         """
         self.ocommon.log_info_message("Start setup()", self.file_name)
         ct = datetime.datetime.now()
@@ -60,25 +72,25 @@ class OraSetupSSH:
             self.ocommon.log_info_message(
                 "Skipping SSH setup as SKIP_SSH_SETUP flag is set", self.file_name)
         else:
-            SSH_USERS = [self.ora_env_dict["GRID_USER"] + ":" + self.ora_env_dict["GRID_HOME"],
-                         self.ora_env_dict["DB_USER"] + ":" + self.ora_env_dict["DB_HOME"]]
-            if (self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict)) and (self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict)):
+            ssh_users = self._get_ssh_users()
+            has_ssh_keys = (
+                self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict)
+                and self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict)
+            )
+            if has_ssh_keys:
                 if self.ocommon.check_file(self.ora_env_dict["SSH_PRIVATE_KEY"], True, None, None) and self.ocommon.check_file(self.ora_env_dict["SSH_PUBLIC_KEY"], True, None, None):
-                    for sshi in SSH_USERS:
-                        uohome = sshi.split(":")
-                        self.setupsshusekey(uohome[0], uohome[1], None)
-                        # self.verifyssh(uohome[0],None)
+                    for user_name, user_home in ssh_users:
+                        self.setupsshusekey(user_name, user_home, None)
+                        # self.verifyssh(user_name,None)
             else:
-                for sshi in SSH_USERS:
-                    uohome = sshi.split(":")
-                    exiting_cls_node = self.ocommon.get_existing_clu_nodes(
-                        False)
+                for user_name, user_home in ssh_users:
+                    exiting_cls_node = self.ocommon.get_existing_clu_nodes(False)
                     if exiting_cls_node:
-                        self.setupssh(uohome[0], uohome[1], "ADDNODE")
+                        self.setupssh(user_name, user_home, "ADDNODE")
                     else:
-                        self.setupssh(uohome[0], uohome[1], "INSTALL")
+                        self.setupssh(user_name, user_home, "INSTALL")
 
-                    # self.verifyssh(uohome[0],None)
+                    # self.verifyssh(user_name,None)
 
         ct = datetime.datetime.now()
         ets = ct.timestamp()
@@ -91,7 +103,7 @@ class OraSetupSSH:
     # ============================================================
     def setupssh(self, user, ohome, ctype):
         """
-        This function setup the ssh between user as SKIP_SSH_SETUP flag is not set
+        Set up SSH for a user when SKIP_SSH_SETUP is not enabled.
         """
         self.ocommon.reset_os_password(user)
         passwd = self.ocommon.get_os_password()
@@ -124,19 +136,15 @@ class OraSetupSSH:
                 self.ocommon.log_info_message(
                     '''SSH setup in progress. Count set to {0}'''.format(i), self.file_name)
                 self.ocommon.set_mask_str(password.strip())
-                if int(version) == 19 or int(version) == 21:
-                    self.performsshsetup(
-                        user, gihome, sshscr, cluster_nodes, version, password, i, expect, script_dir)
-                else:
-                    self.performsshsetup(
-                        user, gihome, sshscr, cluster_nodes, version, password, i, expect, script_dir)
+                self.performsshsetup(
+                    user, gihome, sshscr, cluster_nodes, version, password, i, expect, script_dir)
                 retcode = self.verifyssh(
                     user, gihome, sshscr, cluster_nodes, version)
                 if retcode == 0:
                     break
                 i = i + 1
                 self.ocommon.log_info_message(
-                    '''SSH setup verification failed. Trying again..''', self.file_name)
+                    '''SSH setup verification failed. Trying again...''', self.file_name)
         elif ctype == 'ADDNODE':
             cluster_nodes = self.ocommon.get_cluster_nodes()
             cluster_nodes = cluster_nodes.replace(" ", ",")
@@ -166,7 +174,7 @@ class OraSetupSSH:
                     break
                 i = i + 1
                 self.ocommon.log_info_message(
-                    '''SSH setup verification failed. Trying again..''', self.file_name)
+                    '''SSH setup verification failed. Trying again...''', self.file_name)
         else:
             cluster_nodes = self.ocommon.get_cluster_nodes()
 
@@ -233,12 +241,9 @@ class OraSetupSSH:
 
     def performsshsetup(self, user, gihome, sshscr, cls_nodes, version, password, counter, expect, script_dir):
         """
-        Sets up SSH between cluster nodes and patches all sshUserSetup.sh scripts
+        Set up SSH between cluster nodes and patch sshUserSetup.sh scripts
         under GRID_HOME and DB_HOME to use 4096-bit keys.
         """
-        import shutil
-        import glob
-        import os
 
         self.ocommon.set_mask_str(password.strip())
         self.ocommon.log_info_message(
@@ -283,9 +288,6 @@ class OraSetupSSH:
                                 f"Patched {script}: {line.strip()} -> BITS=4096", self.file_name)
                         else:
                             f.write(line)
-
-            # Pick the main script to run (GRID_HOME version)
-            ssh_user_setup_sh = f"{grid_home}/oui/prov/resources/scripts/sshUserSetup.sh"
 
             # Run the patched SSH setup
             sshcmd = (
@@ -369,7 +371,7 @@ class OraSetupSSH:
 
     def setupsshdirs(self, user, ohome, ctype):
         """
-        This function setup the ssh directories
+        Set up SSH directories and key files for a user.
         """
         sshdir = '''/home/{0}/.ssh'''.format(user)
         privkey = self.ora_env_dict["SSH_PRIVATE_KEY"]

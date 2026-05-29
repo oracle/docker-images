@@ -41,4 +41,3 @@ if [ "${SLIMMING}x" != 'truex' ] ; then
       echo "export GRID_BASE=$GRID_BASE" >> /home/"${GRID_USER}"/.bashrc
       echo "export DB_HOME=$DB_HOME" >> /home/"${GRID_USER}"/.bashrc
 fi
-

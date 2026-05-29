@@ -1,0 +1,154 @@
+# LICENSE UPL 1.0
+#
+# Copyright (c) 2018,2021 Oracle and/or its affiliates.
+#
+# ORACLE DOCKERFILES PROJECT
+# --------------------------
+# This is the Dockerfile for Oracle GSM 19c Release to build the container image
+# MAINTAINER <paramdeep.saini@oracle.com>
+#
+# This is the Dockerfile for Oracle GSM 19c
+#
+# REQUIRED FILES TO BUILD THIS IMAGE
+# ----------------------------------
+# (1) LINUX.X64_193000_gsm.zip
+#     Download Oracle Database 19c GSM Software
+#     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+#
+# HOW TO BUILD THIS IMAGE
+# -----------------------
+# Put all downloaded files in the same directory as this Dockerfile
+# Run:
+#      $ docker build -t oracle/gsm:19.3.0 .
+#
+# Pull base image
+# ---------------
+ARG BASE_OL_IMAGE=oraclelinux:7-slim
+
+# Pull base image
+# ---------------
+# hadolint ignore=DL3006
+FROM $BASE_OL_IMAGE AS base
+ARG VERSION
+
+# Labels
+# ------
+LABEL "provider"="Oracle"                                          \
+      "issues"="https://github.com/oracle/docker-images/issues"    \
+      "volume.setup.location1"="/opt/oracle/scripts"               \
+      "port.listener"="1522"
+
+# Argument to control removal of components not needed after db software installation
+ARG SLIMMING=false
+ARG INSTALL_FILE_1="LINUX.X64_193000_gsm.zip"
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+ENV GSM_BASE="/u01/app/oracle" \
+    GSM_HOME="/u01/app/oracle/product/19c/gsmhome_1" \
+    INVENTORY="/u01/app/oracle/oraInventory" \
+    INSTALL_DIR="/opt/oracle/scripts" \
+    INSTALL_FILE_1=$INSTALL_FILE_1 \
+    INSTALL_RSP="19c_gsm_install.rsp" \
+    RUN_FILE="runOracle.sh" \
+    SETUP_LINUX_FILE="setupLinuxEnv.sh" \
+    CHECK_SPACE_FILE="checkSpace.sh" \
+    USER_SCRIPTS_FILE="runUserScripts.sh" \
+    INSTALL_GSM_BINARIES_FILE="installGSMBinaries.sh" \
+    GSM_SETUP_FILE="setupOshardEnv.sh"  \
+    GSM_ENV_SETUP_FILE="setupGSM.sh" \
+    GSM_SCRIPTS="scripts" \
+    MAINPY="main.py" \
+    PYTHON_FILE="/usr/bin/python" \
+    PYTHON3_FILE="/usr/bin/python3.6" \
+    CHECKLIVENESS="checkLiveness.sh"
+# Use second ENV so that variable get substituted
+# hadolint ignore=DL3044
+ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
+     ORACLE_HOME=$GSM_HOME \
+     ORACLE_BASE=$GSM_BASE \
+     SCRIPT_DIR=$INSTALL_DIR/sharding \
+     SHARD_SCRIPT_DIR=$INSTALL_DIR/sharding \
+     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     GSM_PATH=$GSM_HOME/bin:$PATH \
+     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib
+
+
+# Copy files needed during both installation and runtime
+# ------------
+COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$GSM_ENV_SETUP_FILE $INSTALL_DIR/install/
+COPY $VERSION/$RUN_FILE $VERSION/$GSM_SETUP_FILE $VERSION/$CHECKLIVENESS $VERSION/$USER_SCRIPTS_FILE $SCRIPT_DIR/
+COPY $GSM_SCRIPTS $SCRIPT_DIR/scripts/
+
+RUN chmod 755 $INSTALL_DIR/install/*.sh && \
+    sync && \
+    $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
+    $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
+    $INSTALL_DIR/install/$GSM_ENV_SETUP_FILE  && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new stage for installing the GSM
+# -------------------------------------------
+#############################################
+
+from base AS builder
+ARG VERSION
+
+COPY $VERSION/$INSTALL_FILE_1 $VERSION/$INSTALL_RSP $VERSION/$INSTALL_GSM_BINARIES_FILE $VERSION/$GSM_SETUP_FILE $INSTALL_DIR/install/
+
+# hadolint ignore=SC2086
+RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
+    sync && \
+    sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+    su oracle -c "$INSTALL_DIR/install/$INSTALL_GSM_BINARIES_FILE" && \
+    $INVENTORY/orainstRoot.sh && \
+    $GSM_HOME/root.sh && \
+    rm -rf $INSTALL_DIR/install && \
+    rm -f /etc/sysctl.d/99-oracle-database-preinstall-19c-sysctl.conf && \
+    rm -f /etc/sysctl.d/99-sysctl.conf && \
+    rm -f /etc/rc.d/init.d/oracle-database-preinstall-19c-firstboot && \
+    rm -f /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+    sync
+
+#############################################
+# -------------------------------------------
+# Start new layer for GSM runtime
+# -------------------------------------------
+#############################################
+
+FROM base
+
+COPY --from=builder /u01 /u01
+
+# hadolint ignore=SC2086
+RUN test -x "$PYTHON3_FILE" && \
+    ln -sf $PYTHON3_FILE $PYTHON_FILE && \
+    rm -f $INSTALL_DIR/install/*  && \
+    cp $SCRIPT_DIR/scripts/cmdExec  $SCRIPT_DIR/ && \
+    for helper in cmdExec main.py orapcatalog.py orapshard.py orascatalog.py oracommon.py demoapp.sql runOraShardSetup.sh oramachine.py oralogger.py orafactory.py oragsm.py orasshard.py oraenv.py; do \
+      ln -sf scripts/$helper $SHARD_SCRIPT_DIR/$helper; \
+    done && \
+    ln -sf ../$CHECKLIVENESS $SCRIPT_DIR/scripts/$CHECKLIVENESS && \
+    chown -R oracle:oinstall $SCRIPT_DIR && \
+    chmod 755 $SCRIPT_DIR/*.sh && \
+    chmod 755 $SCRIPT_DIR/scripts/*.py && \
+    chmod 755 $SCRIPT_DIR/scripts/*.sh && \
+    chmod 755 $SCRIPT_DIR/scripts/cmdExec && \
+    chmod 755 $SCRIPT_DIR/cmdExec && \
+    sync
+
+USER  oracle
+WORKDIR /home/oracle
+EXPOSE 1521
+
+VOLUME ["$GSM_BASE/oradata"]
+
+HEALTHCHECK --interval=2m --start-period=25m \
+   CMD "$SCRIPT_DIR/$CHECKLIVENESS" >/dev/null || exit 1
+
+# Define default command to start Oracle Database.
+# hadolint ignore=DL3025
+CMD exec $SCRIPT_DIR/$RUN_FILE

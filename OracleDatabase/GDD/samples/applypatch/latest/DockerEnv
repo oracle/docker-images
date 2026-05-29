@@ -1,0 +1,10 @@
+# Stage 1: Base Stage with Environment Variables
+ARG BASE_GSM_IMAGE=localhost/oracle/gsm:19.3.0
+FROM $BASE_GSM_IMAGE
+ARG BASE_RELEASE=19c
+
+# Write the environment variables to a .env file
+RUN echo "GSM_HOME=$GSM_HOME" >> /tmp/.env && \
+    echo "PREINSTALL_PKG=oracle-database-preinstall-${BASE_RELEASE}c" >> /tmp/.env
+
+ENTRYPOINT ["/bin/bash"]

@@ -7,7 +7,7 @@
 #############################
 
 """
- This file contains to the code call different classes objects based on setup type
+ This file contains code that invokes different class objects based on setup type
 """
 
 from oralogger import *
@@ -17,17 +17,17 @@ from oramachine import *
 from orasshsetup import *
 from oracvu import *
 
+from oraops import OperationRunner, CommandBuilder
 import os
-import re
 import sys
-import itertools
-from time import sleep, perf_counter
+import datetime
+import subprocess
+import time
 #from threading import Thread
-from multiprocessing import Process
 
 class OraSetupEnv:
     """
-    This class setup the env before setting up the rac env
+    This class sets up the environment before RAC setup
     """
     def __init__(self,oralogger,orahandler,oraenv,oracommon,oracvu,orasetupssh):
       try:
@@ -39,6 +39,8 @@ class OraSetupEnv:
          self.osetupssh           = orasetupssh
          self.ora_env_dict        = oraenv.get_env_vars()
          self.file_name           = os.path.basename(__file__)
+         self.op_runner           = OperationRunner(self.ocommon, self.file_name, "ENV")
+         self.cmd_builder         = CommandBuilder(self.ocommon)
       except BaseException as ex:
          ex_type, ex_value, ex_traceback = sys.exc_info()
          trace_back = sys.tracebacklimit.extract_tb(ex_traceback)
@@ -51,10 +53,10 @@ class OraSetupEnv:
 
     def setup(self):
         """
-        This function setup the grid on this machine
+        Set up environment on this machine.
         """
         
-        self.ocommon.log_info_message("Start setup()",self.file_name)
+        self.ocommon.log_step("ENV", "setup", "start", None, self.file_name)
         ct = datetime.datetime.now()
         bts = ct.timestamp()
         if self.ocommon.check_key("RESET_PASSWORD",self.ora_env_dict):
@@ -73,6 +75,8 @@ class OraSetupEnv:
                   self.validate_private_nodes()
          #self.ocommon.update_domainfrom_resolvconf_file()
          self.populate_env_vars()
+         # Fix Kubernetes injected /16 alias on public interface
+         self.normalize_pod_public_mask()
          self.check_statefile()
          self.env_var_checks()
          self.stdby_env_var_checks()
@@ -97,9 +101,9 @@ class OraSetupEnv:
         # self.ocommon.log_info_message("Start crs_sw_install()",self.file_name)
         # self.crs_sw_install()
         # self.ocommon.log_info_message("End crs_sw_install()",self.file_name)
-         self.ocommon.log_info_message("Running comment_out_swap_space()",self.file_name)
+         self.ocommon.log_step("ENV", "comment_out_swap_space", "start", None, self.file_name)
          self.comment_out_swap_space()
-         self.ocommon.log_info_message("Ended comment_out_swap_space()",self.file_name)
+         self.ocommon.log_step("ENV", "comment_out_swap_space", "end", None, self.file_name)
          self.create_ssh_keypair()
          self.setup_ssh_for_k8s()
          self.set_banner()
@@ -114,7 +118,7 @@ class OraSetupEnv:
  
       ###########  SETUP_MACHINE ENDS here ####################
 
-    ## Function to perfom DB checks ######
+    ## Function to perform DB checks ######
     def populate_env_vars(self):
         """
         Populate the env vars if not set
@@ -174,13 +178,13 @@ class OraSetupEnv:
 
         crs_nodes=""
         if not self.ocommon.check_key("PUBLIC_HOSTS",self.ora_env_dict):
-           self.ocommon.log_error_message("PUBLIC_HOSTS list is not found in env variable list.Exiting...",self.file_name)
+           self.ocommon.log_error_message("PUBLIC_HOSTS list is not found in env variable list. Exiting...",self.file_name)
            self.ocommon.prog_exit("127")
         else:
            pub_node_list=self.ora_env_dict["PUBLIC_HOSTS"].split(",")
 
         if not self.ocommon.check_key("VIRTUAL_HOSTS",self.ora_env_dict):
-           self.ocommon.log_error_message("VIRTUAL_HOSTS list is not found in env variable list.Exiting...",self.file_name)
+           self.ocommon.log_error_message("VIRTUAL_HOSTS list is not found in env variable list. Exiting...",self.file_name)
            self.ocommon.prog_exit("127")
         else:
            virt_node_list=self.ora_env_dict["VIRTUAL_HOSTS"].split(",")
@@ -250,7 +254,7 @@ class OraSetupEnv:
             self.ocommon.log_info_message("CRS_PRIVATE_IP2 is not set.",self.file_name)
 
         if not priv_node_status:
-           self.ocommon.log_error_message("PRIVATE_HOSTS or CRS_PRIVATE_IP1 or CRS_PRIVATE_IP2 list is not found in env variable list.Exiting...",self.file_name)
+           self.ocommon.log_error_message("PRIVATE_HOSTS or CRS_PRIVATE_IP1 or CRS_PRIVATE_IP2 list is not found in env variable list. Exiting...",self.file_name)
            self.ocommon.prog_exit("127")
 
     def env_var_checks(self):
@@ -265,7 +269,7 @@ class OraSetupEnv:
 
     def stdby_env_var_checks(self):
         """
-        Check the stby env variable
+        Check standby environment variables
         """
         if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
            if self.ora_env_dict["OP_TYPE"] == 'setupracstandby':
@@ -285,15 +289,13 @@ class OraSetupEnv:
             if self.ocommon.validate_ip(self.ora_env_dict["DEFAULT_GATEWAY"]):
                 #cmd='''ip route; ip route del default'''
                 cmd='''ip route; ip route flush 0/0;ip route'''
-                output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                self.ocommon.check_os_err(output,error,retcode,None)
+                output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, None)
                 ### Set the Default gw
                 self.ocommon.log_info_message("Setting default gateway based on new gateway setting",self.file_name)
                 cmd='''route add default gw {0}'''.format(self.ora_env_dict["DEFAULT_GATEWAY"])
-                output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                self.ocommon.check_os_err(output,error,retcode,None)
+                output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, None)
             else:
-                self.ocommon.log_error_message("DEFAULT_GATEWAY IP is not correct. Exiting..",self.file_name)
+                self.ocommon.log_error_message("DEFAULT_GATEWAY IP is not correct. Exiting...",self.file_name)
                 self.ocommon.prog_exit("NONE")
 
     def add_ntp_conf(self):
@@ -303,19 +305,16 @@ class OraSetupEnv:
         if self.ocommon.check_key("NTP_START",self.ora_env_dict):
             self.ocommon.log_info_message("NTP_START variable is set. Touching /etc/ntpd.conf",self.file_name)
             cmd='''touch /etc/ntp.conf'''
-            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-            self.ocommon.check_os_err(output,error,retcode,True)
+            output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
             ### Start NTP
             self.ocommon.log_info_message("NTP_START variable is set. Starting NTPD",self.file_name)
             cmd='''systemctl start ntpd'''
-            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-            self.ocommon.check_os_err(output,error,retcode,True)
+            output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
 
     def populate_etchosts(self,entry):
         """
         Populating hosts file
         """
-        cmd=None
         etchostfile="/etc/hosts"
         if not self.ocommon.detect_k8s_env(): 
             if self.ocommon.check_key("HOSTFILE",self.ora_env_dict):
@@ -339,14 +338,13 @@ class OraSetupEnv:
                                                     
     def write_etchost(self,node,file,mode,lentry):
        """
-       This funtion write an entry to /etc/host if the entry doesn't exit
+       This function writes an entry to /etc/hosts if the entry does not exist
        """
        if node == "":
           self.ocommon.log_info_message("write_etchost(): Node is : [NULL]. PASS",self.file_name)
           return
        if mode == 'append':
           #fdata=self.ocommon.read_file(file)
-          #match=re.search(node,fdata,re.MULTILINE)
           #if not match:
            domain=self.ora_env_dict["PUBLIC_HOSTS_DOMAIN"] if self.ocommon.check_key("PUBLIC_HOSTS_DOMAIN",self.ora_env_dict) else self.ocommon.get_host_domain()
            if domain is None:
@@ -365,7 +363,6 @@ class OraSetupEnv:
            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
        elif mode == 'write':
           #fdata=self.ocommon.read_file(file)
-          #match=re.search(node,fdata,re.MULTILINE)
           #if not match:
            #self.ocommon.log_info_message(" The  lentry set to :", lentry)
            cmd='''echo "{0}" > "{1}"'''.format(lentry,file)
@@ -375,11 +372,10 @@ class OraSetupEnv:
                
     def touch_fstab(self):
         """
-        This function toch fstab
+        This function touches fstab
         """
         cmd='''touch /etc/fstab'''
-        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-        self.ocommon.check_os_err(output,error,retcode,True)
+        output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
 
     def  reset_systemd(self):
         """
@@ -387,19 +383,16 @@ class OraSetupEnv:
         """
         self.ocommon.log_info_message("Checking systemd failed units.",self.file_name)
         cmd="""systemctl | grep failed | awk '{ print $2 }'"""
-        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-        self.ocommon.check_os_err(output,error,retcode,True)
+        output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
         self.ocommon.log_info_message("Disabling failed units.",self.file_name)
         if output:
           for svc in output.split('\n'):
               if svc:
                 cmd='''systemctl disable {0}'''.format(svc)
-                output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                self.ocommon.check_os_err(output,error,retcode,True)
+                output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
         self.ocommon.log_info_message("Resetting systemd.",self.file_name)
         cmd='''systemctl reset-failed'''
-        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-        self.ocommon.check_os_err(output,error,retcode,None)
+        output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, None)
         
     def check_systemd(self):
         """
@@ -407,8 +400,7 @@ class OraSetupEnv:
         """
         self.ocommon.log_info_message("Checking systemd. It must be in running state to setup clusterware inside containers for clusterware.",self.file_name)
         cmd="""systemctl status | awk '/State:/{ print $0 }' | grep -v 'awk /State:/' | awk '{ print $2 }'"""
-        output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-        self.ocommon.check_os_err(output,error,retcode,True)
+        output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
         if 'running' in output:
            self.ocommon.log_info_message("Systemctl status check passed!",self.file_name)
         else:
@@ -484,8 +476,7 @@ class OraSetupEnv:
             if os.path.isdir(self.ora_env_dict["COMMON_SCRIPTS"]):
                 self.ocommon.log_info_message("COMMON_SCRIPT variable is set. Changing permissions and ownership",self.file_name)
                 cmd='''chown -R grid:oinstall {0}; chmod 775 {0}'''.format(self.ora_env_dict["COMMON_SCRIPTS"])
-                output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                self.ocommon.check_os_err(output,error,retcode,True)
+                output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
             else:
                 self.ocommon.log_info_message("COMMON_SCRIPT variable is set but directory doesn't exist!",self.file_name)
 
@@ -528,156 +519,163 @@ class OraSetupEnv:
                 search_domain = search_domain + ' ' + domain
 
         if dns_search_flag:
-            self.ocommon.log_info_message("Search Domain {0} is ready. Adding enteries in /etc/resolv.conf".format(search_domain),self.file_name)
+            self.ocommon.log_info_message("Search domain {0} is ready. Adding entries in /etc/resolv.conf".format(search_domain),self.file_name)
             cmd='''echo "{0}" > /etc/resolv.conf'''.format(search_domain)
-            output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-            self.ocommon.check_os_err(output,error,retcode,True)
+            output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
         
-    ## Function to perfom grid sw installation ######
+    ## Function to perform grid software installation ######
     def add_dns_servers(self):
         """
         This function add the dns servers
         """
         if self.ocommon.check_key("DNS_SERVERS",self.ora_env_dict):
            self.ocommon.log_info_message("DNS_SERVERS variable is set. Populating /etc/resolv.conf with DNS servers.",self.file_name)
+           resolv_conf = open('/etc/resolv.conf').read()
            for server in self.ora_env_dict["DNS_SERVERS"].split(','):
-               if server not in open('/etc/resolv.conf').read():
+               if server not in resolv_conf:
                     cmd='''echo "nameserver  {0}" >> /etc/resolv.conf'''.format(server)
-                    output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                    self.ocommon.check_os_err(output,error,retcode,True)
+                    output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
+                    resolv_conf = resolv_conf + "\nnameserver  {0}".format(server)
         else:
             self.ocommon.log_info_message("DNS_SERVERS variable is not set.",self.file_name)
 
-    ## Function to perfom oracle sw installation ######
+
+    ## Function to perform Oracle software installation ######
+    def _setup_software(self, sw_zip_key, copy_key, params_getter, unzip_flag_key,
+                        sw_label, missing_action_msg, setup_dir_messages,
+                        not_empty_msg):
+      # Shared software setup helper for GI/DB software unzip paths.
+      if not self.ocommon.check_key("OP_TYPE", self.ora_env_dict):
+         return
+
+      if not (self.ocommon.check_key("STAGING_SOFTWARE_LOC", self.ora_env_dict) and
+              self.ocommon.check_key(sw_zip_key, self.ora_env_dict)):
+         return
+
+      swfile = self.ora_env_dict["STAGING_SOFTWARE_LOC"] + "/" + self.ora_env_dict[sw_zip_key]
+      if os.path.isfile(swfile):
+         if not self.ocommon.check_key(copy_key, self.ora_env_dict):
+            self.ora_env_dict = self.ocommon.add_key(copy_key, "True", self.ora_env_dict)
+
+         user, home, base, oinv = params_getter()
+         grp = self.ora_env_dict["OINSTALL"]
+
+         self.ocommon.log_info_message("Copy Software flag is set", self.file_name)
+
+         setup_dirs = {
+            "oinv": oinv,
+            "base": base,
+            "home": home,
+         }
+         for key, msg in setup_dir_messages:
+            self.ocommon.log_info_message(msg, self.file_name)
+            self.setup_sw_dirs(setup_dirs[key], user, grp)
+
+         home_files = os.listdir(setup_dirs["home"])
+         if len(home_files) == 0:
+            self.ocommon.log_info_message(sw_label + " software file is set : " + swfile, self.file_name)
+            self.ocommon.log_info_message("Starting " + sw_label.lower() + " software unzipping file", self.file_name)
+            cmd='su - {0} -c " unzip -q {1} -d {2}"'.format(user, swfile, setup_dirs["home"])
+            output, error, retcode = self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)
+            self.ora_env_dict = self.ocommon.add_key(unzip_flag_key, "true", self.ora_env_dict)
+         else:
+            self.ocommon.log_error_message(not_empty_msg, self.file_name)
+      else:
+         install_node, pubhost = self.ocommon.get_installnode()
+         if install_node.lower() == pubhost.lower():
+            self.ocommon.log_error_message(missing_action_msg.format(swfile), self.file_name)
+            self.ocommon.prog_exit("127")
+         else:
+            self.ocommon.log_info_message(
+               (sw_label.lower() + " software file " + swfile +
+                " doesn't exist. software will be copied from install node..." + install_node.lower()),
+               self.file_name
+            )
+
+    ## Function to perform grid software installation ######
     def setup_gi_sw(self):
       """
       This function unzip the Grid and Oracle Software
       """
-      gihome=""
-      oinv=""
-      gibase=""
-      giuser=""
-      gigrp=""
-      giswfie=""
-         ### Unzipping Gi Software
-      if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
-      #if self.ocommon.check_key("OP_TYPE",self.ora_env_dict) and any(optype == self.ora_env_dict["OP_TYPE"] for optype not in ("racaddnode")):
-         if self.ocommon.check_key("STAGING_SOFTWARE_LOC",self.ora_env_dict) and self.ocommon.check_key("GRID_SW_ZIP_FILE",self.ora_env_dict):  
-            giswfile=self.ora_env_dict["STAGING_SOFTWARE_LOC"] + "/" + self.ora_env_dict["GRID_SW_ZIP_FILE"]
-            if os.path.isfile(giswfile):
-                  if not self.ocommon.check_key("COPY_GRID_SOFTWARE",self.ora_env_dict):
-                     self.ora_env_dict=self.ocommon.add_key("COPY_GRID_SOFTWARE","True",self.ora_env_dict) 
-                  giuser,gihome,gibase,oinv=self.ocommon.get_gi_params()
-                  gigrp=self.ora_env_dict["OINSTALL"]
-                  self.ocommon.log_info_message("copy Software flag is set",self.file_name)
-                  self.ocommon.log_info_message("Setting up oracle invetnory directory!",self.file_name) 
-                  self.setup_sw_dirs(oinv,giuser,gigrp)
-                  self.ocommon.log_info_message("Setting up Grid_BASE directory!",self.file_name)
-                  self.setup_sw_dirs(gibase,giuser,gigrp)
-                  self.ocommon.log_info_message("Setting up Grid_HOME directory!",self.file_name)
-                  self.setup_sw_dirs(gihome,giuser,gigrp)
-                  dir = os.listdir(gihome)
-                  if len(dir) == 0:
-                     self.ocommon.log_info_message("Grid software file is set : " + giswfile ,self.file_name)
-                     self.ocommon.log_info_message("Starting grid software unzipping file",self.file_name) 
-                     cmd='''su - {0} -c \" unzip -q {1} -d {2}\"'''.format(giuser,giswfile,gihome)
-                     output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                     self.ocommon.check_os_err(output,error,retcode,True)
-                     self.ora_env_dict=self.ocommon.add_key("GI_SW_UNZIPPED_FLAG","true",self.ora_env_dict)
-                  else:
-                     self.ocommon.log_error_message("oracle gi home directory is not empty. skipping software unzipping...",self.file_name)                                 
-            else:
-               install_node,pubhost=self.ocommon.get_installnode()
-               if install_node.lower() == pubhost.lower():
-                  self.ocommon.log_error_message("grid software file " + giswfile + " doesn't exist. Exiting...",self.file_name)
-                  self.ocommon.prog_exit("127")
-               else:
-                  self.ocommon.log_info_message("grid software file " + giswfile + " doesn't exist. software will be copied from install node..." + install_node.lower(),self.file_name)
+      self._setup_software(
+         sw_zip_key="GRID_SW_ZIP_FILE",
+         copy_key="COPY_GRID_SOFTWARE",
+         params_getter=self.ocommon.get_gi_params,
+         unzip_flag_key="GI_SW_UNZIPPED_FLAG",
+         sw_label="Grid",
+         missing_action_msg="grid software file {0} doesn't exist. Exiting...",
+         setup_dir_messages=(
+            ("oinv", "Setting up Oracle inventory directory!"),
+            ("base", "Setting up Grid_BASE directory!"),
+            ("home", "Setting up Grid_HOME directory!"),
+         ),
+         not_empty_msg="oracle gi home directory is not empty. skipping software unzipping...",
+      )
 
-    ## Function to unzip the software 
+    ## Function to unzip the software
     def setup_db_sw(self):
       """
       unzip the software
-      """ 
-      dbhome=""
-      dbbase=""
-      dbuser=""
-      gigrp=""
-      dbswfile=""                                                                    
-      ### Unzipping Gi Software
-      if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
-      #if self.ocommon.check_key("OP_TYPE",self.ora_env_dict) and any(optype == self.ora_env_dict["OP_TYPE"] for optype not in ("racaddnode")):
-         if self.ocommon.check_key("STAGING_SOFTWARE_LOC",self.ora_env_dict) and self.ocommon.check_key("DB_SW_ZIP_FILE",self.ora_env_dict):
-            dbswfile=self.ora_env_dict["STAGING_SOFTWARE_LOC"] + "/" + self.ora_env_dict["DB_SW_ZIP_FILE"]  
-            if os.path.isfile(dbswfile):
-               if not self.ocommon.check_key("COPY_DB_SOFTWARE",self.ora_env_dict):
-                     self.ora_env_dict=self.ocommon.add_key("COPY_DB_SOFTWARE","True",self.ora_env_dict) 
-               dbuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
-               gigrp=self.ora_env_dict["OINSTALL"]
-               self.ocommon.log_info_message("Copy Software flag is set",self.file_name)
-               self.ocommon.log_info_message("Setting up ORACLE_BASE directory!",self.file_name)
-               self.setup_sw_dirs(dbbase,dbuser,gigrp)
-               self.ocommon.log_info_message("Setting up DB_HOME directory!",self.file_name)
-               self.setup_sw_dirs(dbhome,dbuser,gigrp) 
-               dir = os.listdir(dbhome)
-               if len(dir) == 0:  
-                  self.ocommon.log_info_message("DB software file is set : " + dbswfile , self.file_name)
-                  self.ocommon.log_info_message("Starting db software unzipping file",self.file_name)
-                  cmd='''su - {0} -c \" unzip -q {1} -d {2}\"'''.format(dbuser,dbswfile,dbhome)
-                  output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-                  self.ocommon.check_os_err(output,error,retcode,True)
-                  self.ora_env_dict=self.ocommon.add_key("RAC_SW_UNZIPPED_FLAG","true",self.ora_env_dict)
-               else:
-                  self.ocommon.log_error_message("oracle db home directory is not empty. skipping software unzipping...",self.file_name) 
-            else:
-               install_node,pubhost=self.ocommon.get_installnode()
-               if install_node.lower() == pubhost.lower():
-                  self.ocommon.log_error_message("db software file " + dbswfile + " doesn't exist. exiting...",self.file_name)
-                  self.ocommon.prog_exit("127")
-               else:
-                  self.ocommon.log_info_message("db software file " + dbswfile + " doesn't exist. software will be copied from install node..." + install_node.lower(),self.file_name)
- 
+      """
+      self._setup_software(
+         sw_zip_key="DB_SW_ZIP_FILE",
+         copy_key="COPY_DB_SOFTWARE",
+         params_getter=self.ocommon.get_db_params,
+         unzip_flag_key="RAC_SW_UNZIPPED_FLAG",
+         sw_label="DB",
+         missing_action_msg="db software file {0} does not exist. Exiting...",
+         setup_dir_messages=(
+            ("base", "Setting up ORACLE_BASE directory!"),
+            ("home", "Setting up DB_HOME directory!"),
+         ),
+         not_empty_msg="oracle db home directory is not empty. skipping software unzipping...",
+      )
+
     def setup_sw_dirs(self,dir,user,group):
         """
-        This function setup the Oracle Software directories if not already created
+        Set up Oracle software directories if not already created.
         """
         if os.path.isdir(dir):
-           self.ocommon.log_info_message("Directory " + dir   +  " already exist!",self.file_name)   
+           self.ocommon.log_info_message("Directory " + dir   +  " already exists!",self.file_name)   
         else:
            self.ocommon.log_info_message("Creating dir " + dir,self.file_name)
            cmd='''mkdir -p {0}'''.format(dir)
-           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-           self.ocommon.check_os_err(output,error,retcode,True)         
+           output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True)         
            ####
            self.ocommon.log_info_message("Changing the permissions of directory",self.file_name)
            cmd='''chown -R {0}:{1} {2}'''.format(user,group,dir)
-           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-           self.ocommon.check_os_err(output,error,retcode,True) 
+           output,error,retcode=self.op_runner.run_command("env_execute_cmd", cmd, None, None, True) 
+
 
 ###### Checking GI Home #######
+    def _should_reset_os_password(self):
+        """Return True when passwords should be reset for nosetup without SSH keys."""
+        return (
+           self.ocommon.check_key("OP_TYPE", self.ora_env_dict)
+           and self.ora_env_dict["OP_TYPE"] == 'nosetup'
+           and not self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict)
+           and not self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict)
+        )
+
+    def _reset_user_password(self, user_key):
+        if self._should_reset_os_password():
+           user = self.ora_env_dict[user_key]
+           self.ocommon.log_info_message("Resetting OS Password for OS user : " + user, self.file_name)
+           self.ocommon.reset_os_password(user)
+
     def reset_grid_user_passwd(self):
         """
-        This function check the Gi home and if it is not setup the it will reset the GI user password
+        This function checks GI home and resets the GI user password when required
         """
-        if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
-          if self.ora_env_dict["OP_TYPE"] == 'nosetup':
-             if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
-                user=self.ora_env_dict["GRID_USER"]
-                self.ocommon.log_info_message("Resetting OS Password for OS user : " + user,self.file_name)
-                self.ocommon.reset_os_password(user)
-               
+        self._reset_user_password("GRID_USER")
+
 ###### Checking RAC Home #######
     def reset_db_user_passwd(self):
         """
-        This function check the RAC home and if it is not setup the it will reset the DB user password
+        This function checks RAC home and resets the DB user password when required
         """
-        if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
-          if self.ora_env_dict["OP_TYPE"] == 'nosetup':
-             if not self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and not self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
-               user=self.ora_env_dict["DB_USER"]
-               self.ocommon.log_info_message("Resetting OS Password for OS user : " + user,self.file_name)
-               self.ocommon.reset_os_password(user)
-              
+        self._reset_user_password("DB_USER")
+
     ###### Setting up parallel Oracle and Grid User setup using Keys ####
     def setup_ssh_using_keys(self, sshi):
       """
@@ -687,7 +685,7 @@ class OraSetupEnv:
       """
 
       self.ocommon.log_info_message(
-         "I am in setup_ssh_using_keys", self.file_name
+         "Entering setup_ssh_using_keys", self.file_name
       )
 
       uohome = sshi.split(":")
@@ -720,7 +718,7 @@ class OraSetupEnv:
 ###### Setting up ssh for K8s #######
     def setup_ssh_for_k8s(self):
         """
-        This function setup ssh using private and public key in K8s env
+        Set up SSH using private and public keys in K8s environment.
         """
         if self.ocommon.check_key("SSH_PRIVATE_KEY",self.ora_env_dict) and self.ocommon.check_key("SSH_PUBLIC_KEY",self.ora_env_dict):
            if self.ocommon.check_file(self.ora_env_dict["SSH_PRIVATE_KEY"],True,None,None) and self.ocommon.check_file(self.ora_env_dict["SSH_PUBLIC_KEY"],True,None,None):
@@ -735,7 +733,7 @@ class OraSetupEnv:
               self.ocommon.log_info_message("End SSH Setup using SSH_PRIVATE_KEY and SSH_PUBLIC_KEY",self.file_name)
         else:
           if self.ocommon.detect_k8s_env():
-             self.ocommon.log_error_message("SSH_PRIVATE_KEY and SSH_PUBLIC_KEY is ot set in K8s env. Exiting..",self.file_name)
+             self.ocommon.log_error_message("SSH_PRIVATE_KEY and SSH_PUBLIC_KEY are not set in K8s environment. Exiting...",self.file_name)
              self.ocommon.prog_exit("127")
 
     def create_ssh_keypair(self):
@@ -767,7 +765,7 @@ class OraSetupEnv:
 ###### Install CRS Software on node ######
     def crs_sw_install(self):
        """
-       This function performs the crs software install on all the nodes
+       Perform CRS software install on all nodes.
        """
        giuser,gihome,gibase,oinv=self.ocommon.get_gi_params()
        status=True
@@ -790,7 +788,7 @@ class OraSetupEnv:
           version=oraversion.split(".",1)[0].strip()
        
           #self.crs_sw_install_on_node(giuser,copyflag,crs_nodes,oinv,gihome,gibase,osdba,osoper,osasm,version,node)
-          self.ocommon.log_info_message("Running CRS Sw install on node " + node,self.file_name)
+          self.ocommon.log_step("ENV", "crs_sw_install", "node", node, self.file_name)
           self.ocommon.crs_sw_install_on_node(giuser,copyflag,crs_nodes,oinv,gihome,gibase,osdba,osoper,osasm,version,node)
           self.ocommon.run_orainstsh_local(giuser,node,oinv)
           self.ocommon.run_rootsh_local(gihome,giuser,node)
@@ -798,7 +796,7 @@ class OraSetupEnv:
 ###### Setting up ssh for K8s #######
     def populate_user_profiles(self):
         """
-        This function setup the user profiles if the env is k8s
+        Set up user profiles if the environment is K8s.
         """
         giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
         dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
@@ -846,10 +844,10 @@ class OraSetupEnv:
         """
         if self.ocommon.check_key("OP_TYPE",self.ora_env_dict):
            if self.ocommon.check_key("GI_SW_UNZIPPED_FLAG",self.ora_env_dict) and self.ora_env_dict["OP_TYPE"] == 'nosetup':
-               msg="Since OP_TYPE is setup to default value(nosetup),setup will be initated by other nodes based on the value OP_TYPES"
+               msg="Since OP_TYPE is set to default value (nosetup), setup will be initiated by other nodes based on OP_TYPE"
                self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name) 
            elif self.ocommon.check_key("GI_SW_UNZIPPED_FLAG",self.ora_env_dict) and self.ora_env_dict["OP_TYPE"] != 'nosetup':
-               msg="Since OP_TYPE is set to " + self.ora_env_dict["OP_TYPE"] + " ,setup will be initated on this node"
+               msg="Since OP_TYPE is set to " + self.ora_env_dict["OP_TYPE"] + ", setup will be initiated on this node"
                self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)                
            else:
               giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
@@ -867,62 +865,75 @@ class OraSetupEnv:
                  self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
 
     def comment_out_swap_space(self):
-         """
-         This function comments out the SWAP_SPACE=500 parameter in oraparam.ini
-         file for Oracle version 19 in both GRID_HOME and DB_HOME.
-         """
-         oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-         version = oraversion.split(".", 1)[0].strip()
+      """
+      This function comments out the SWAP_SPACE=500 parameter in oraparam.ini
+      file for:
+         - Oracle 19 always
+         - Oracle 23+ only if APPLY_RU_LOCATION is defined
+      in both GRID_HOME and DB_HOME.
+      """
 
-         # Get DB and GI homes
-         dbuser, dbhome, dbase, oinv = self.ocommon.get_db_params()
-         giuser, gihome, gibase, oinv = self.ocommon.get_gi_params()
+      oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+      version = int(oraversion.split(".", 1)[0].strip())
 
-         if int(version) != 19:
-            self.ocommon.log_info_message(
-                  "Skipping commenting out SWAP_SPACE as Oracle version is {}".format(version),
+      # Get DB and GI homes
+      dbuser, dbhome, dbase, oinv = self.ocommon.get_db_params()
+      giuser, gihome, gibase, oinv = self.ocommon.get_gi_params()
+
+      # Determine whether to execute
+      should_execute = False
+
+      if version == 19:
+         should_execute = True
+      elif version >= 23:
+         if self.ocommon.check_key("APPLY_RU_LOCATION", self.ora_env_dict) or self.ocommon.check_key("ONEOFF_FOLDER_NAME", self.ora_env_dict):
+               should_execute = True
+
+      if not should_execute:
+         self.ocommon.log_info_message(
+               "Skipping commenting out SWAP_SPACE for Oracle version {}".format(version),
+               self.file_name
+         )
+         return
+
+      homes_to_check = [gihome, dbhome]
+      section_name = "[Generic Prereqs]"
+      param_name = "SWAP_SPACE=500"
+
+      for home in homes_to_check:
+         file_path = "{}/oui/oraparam.ini".format(home)
+
+         try:
+               with open(file_path, 'r') as file:
+                  lines = file.readlines()
+
+               in_section = False
+               modified_lines = []
+
+               for line in lines:
+                  if line.strip() == section_name:
+                     in_section = True
+                  elif line.startswith('[') and in_section:
+                     in_section = False
+
+                  if in_section and line.strip() == param_name:
+                     modified_lines.append("#{}".format(line))
+                  else:
+                     modified_lines.append(line)
+
+               with open(file_path, 'w') as file:
+                  file.writelines(modified_lines)
+
+               self.ocommon.log_info_message(
+                  "Successfully commented out {} in {}".format(param_name, file_path),
                   self.file_name
-            )
-            return
+               )
 
-         homes_to_check = [gihome, dbhome]
-         section_name = "[Generic Prereqs]"
-         param_name = "SWAP_SPACE=500"
-
-         for home in homes_to_check:
-            file_path = "{}/oui/oraparam.ini".format(home)
-
-            try:
-                  with open(file_path, 'r') as file:
-                     lines = file.readlines()
-
-                  in_section = False
-                  modified_lines = []
-
-                  for line in lines:
-                     if line.strip() == section_name:
-                        in_section = True
-                     elif line.startswith('[') and in_section:
-                        in_section = False
-
-                     if in_section and line.strip() == param_name:
-                        modified_lines.append("#{}".format(line))
-                     else:
-                        modified_lines.append(line)
-
-                  with open(file_path, 'w') as file:
-                     file.writelines(modified_lines)
-
-                  self.ocommon.log_info_message(
-                     "Successfully commented out {} in {}".format(param_name, file_path),
-                     self.file_name
-                  )
-
-            except Exception as e:
-                  self.ocommon.log_error_message(
-                     "Failed to comment out {} in {}: {}".format(param_name, file_path, str(e)),
-                     self.file_name
-                  )
+         except Exception as e:
+               self.ocommon.log_error_message(
+                  "Failed to comment out {} in {}: {}".format(param_name, file_path, str(e)),
+                  self.file_name
+               )
  
     def wait_for_orasetupenv_completion(self, log_file_path):
       """
@@ -1038,7 +1049,7 @@ class OraSetupEnv:
          # --------------------------------------------------
          # Wait for orasetupenv completion (authoritative)
          # --------------------------------------------------
-         if os.path.basename(log_file) == "oracle_db_setup.log":
+         if os.path.basename(log_file).startswith("oracle_db_setup") and os.path.basename(log_file).endswith(".log"):
             self.wait_for_orasetupenv_completion(log_file)
 
          # --------------------------------------------------
@@ -1068,3 +1079,105 @@ class OraSetupEnv:
             self.file_name
          )
          return True
+
+    def normalize_pod_public_mask(self):
+      """
+      Detect public interface dynamically using public hostname.
+      Remove incorrect /16 alias injected by flannel/CNI.
+      Works for any interface name (eth0, net1, ensX, etc).
+      """
+
+      if not self.ocommon.detect_k8s_env():
+         return True
+
+      import socket
+
+      pubhostname = self.ocommon.get_public_hostname()
+
+      try:
+         public_ip = socket.gethostbyname(pubhostname)
+      except Exception:
+         self.ocommon.log_info_message(
+               "Could not resolve public hostname {}".format(pubhostname),
+               self.file_name
+         )
+         return True
+
+      self.ocommon.log_info_message(
+         "Public hostname {} resolves to {}".format(pubhostname, public_ip),
+         self.file_name
+      )
+
+      
+      cmd = "/sbin/ip -o addr show | grep {}".format(public_ip)
+      out, err, rc = self.ocommon.execute_cmd(cmd, None, None)
+
+      if rc != 0 or not out:
+         self.ocommon.log_info_message(
+               "Could not detect public interface",
+               self.file_name
+         )
+         return True
+
+      iface = out.split()[1].split("@")[0]
+
+      self.ocommon.log_info_message(
+         "Detected public interface {}".format(iface),
+         self.file_name
+      )
+
+      cmd = "/sbin/ip -o -4 addr show dev {}".format(iface)
+      out, err, rc = self.ocommon.execute_cmd(cmd, None, None)
+
+      if rc != 0 or not out:
+         return True
+
+      removed = False
+
+      for line in out.splitlines():
+
+         parts = line.split()
+
+         cidr = None
+         for p in parts:
+               if "/" in p and "." in p:
+                  cidr = p.strip()
+                  break
+
+         if not cidr:
+               continue
+
+         self.ocommon.log_info_message(
+               "Found address {}".format(cidr),
+               self.file_name
+         )
+
+         # Skip the REAL public IP
+         if cidr.startswith(public_ip + "/"):
+               continue
+
+         # Remove only incorrect /16 aliases
+         if "/16" in cidr:
+
+               self.ocommon.log_info_message(
+                  "Removing incorrect alias {} from {}".format(cidr, iface),
+                  self.file_name
+               )
+
+               delcmd = "/sbin/ip addr del {} dev {}".format(cidr, iface)
+               self.ocommon.execute_cmd(delcmd, None, None)
+
+               removed = True
+
+      if removed:
+         self.ocommon.log_info_message(
+               "Public interface normalization complete",
+               self.file_name
+         )
+      else:
+         self.ocommon.log_info_message(
+               "No incorrect public aliases detected",
+               self.file_name
+         )
+
+      return True

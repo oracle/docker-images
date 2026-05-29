@@ -9,7 +9,6 @@
 from oralogger import *
 from oraenv import *
 from oracommon import *
-from oramachine import *
 from orasetupenv import *
 
 import os
@@ -17,11 +16,11 @@ import sys
 
 class OraMachine:
     """
-     This calss setup the compute before starting the installation.
+     This class sets up compute before starting the installation.
     """
     def __init__(self,oralogger,orahandler,oraenv,oracommon,oracvu,orasetupssh):
         """
-        This constructor of OraMachine class to setup the compute 
+        Constructor for OraMachine class to set up compute 
 
         Attributes:
            oralogger (object): object of OraLogger Class.
@@ -42,7 +41,7 @@ class OraMachine:
         self.osetupenv           = OraSetupEnv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
     def setup(self):
         """
-          This function setup the compute before starting the installation
+          Set up compute before starting the installation.
         """
         self.ocommon.log_info_message("Start setup()",self.file_name)
         ct = datetime.datetime.now()
@@ -58,6 +57,6 @@ class OraMachine:
 
     def memory_check(self):
         """
-          This function check the memory available inside the container
+          Check memory available inside the container.
         """
         pass 

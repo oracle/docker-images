@@ -1,0 +1,169 @@
+---
+version: "3.8"
+networks:
+  shard_pub1_nw:
+    name: shard_pub1_nw
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "${NETWORK_SUBNET}"
+services:
+  catalog_db:
+    container_name: ${CAT_CONTAINER_NAME}
+    privileged: ${CONTAINER_PRIVILEGED_FLAG}
+    hostname: ${CAT_HOSTNAME}
+    image: ${SIDB_IMAGE}
+    dns_search: ${DNS_SEARCH}
+    restart: ${CONTAINER_RESTART_POLICY}
+    volumes:
+      - ${DOCKERVOLLOC}/dbfiles/CATALOG:/opt/oracle/oradata
+      - /opt/.secrets:/run/secrets:ro
+      - /opt/containers/shard_host_file:/etc/hosts
+    environment:
+      SHARD_SETUP: ${CAT_SHARD_SETUP}
+      DOMAIN: ${DOMAIN}
+      ORACLE_SID: ${CAT_CDB}
+      ORACLE_PDB: ${CAT_PDB}
+      OP_TYPE: ${CATALOG_OP_TYPE}
+      COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
+      PWD_KEY: ${PWD_KEY}
+      INIT_SGA_SIZE: ${CATALOG_INIT_SGA_SIZE}
+      INIT_PGA_SIZE: ${CATALOG_INIT_PGA_SIZE}
+      ENABLE_ARCHIVELOG: ${CATALOG_ARCHIVELOG}
+    networks:
+      shard_pub1_nw:
+        ipv4_address: ${LOCAL_NETWORK}.102
+    healthcheck:
+      test: ["CMD-SHELL","if [ `cat /tmp/test.log | grep -c 'GSM Catalog Setup Completed'` -ge 1 ]; then exit 0;else exit 1;fi"]
+      interval: ${healthcheck_interval}
+      timeout: ${healthcheck_timeout}
+      retries: ${healthcheck_retries}
+  shard1_db:
+    container_name: ${SHARD1_CONTAINER_NAME}
+    privileged: ${CONTAINER_PRIVILEGED_FLAG}
+    hostname: ${SHARD1_HOSTNAME}
+    image: ${SIDB_IMAGE}
+    dns_search: ${DNS_SEARCH}
+    restart: ${CONTAINER_RESTART_POLICY}
+    volumes:
+      - ${DOCKERVOLLOC}/dbfiles/ORCL1CDB:/opt/oracle/oradata
+      - /opt/.secrets:/run/secrets:ro
+      - /opt/containers/shard_host_file:/etc/hosts
+    environment:
+      SHARD_SETUP: ${SHARD1_SHARD_SETUP}
+      DOMAIN: ${DOMAIN}
+      ORACLE_SID: ${SHARD1_CDB}
+      ORACLE_PDB: ${SHARD1_PDB}
+      OP_TYPE: ${ALLSHARD_OP_TYPE}
+      COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
+      PWD_KEY: ${PWD_KEY}
+      INIT_SGA_SIZE: ${ALLSHARD_INIT_SGA_SIZE}
+      INIT_PGA_SIZE: ${ALLSHARD_INIT_PGA_SIZE}
+      ENABLE_ARCHIVELOG: ${SHARD_ARCHIVELOG}
+    networks:
+      shard_pub1_nw:
+        ipv4_address: ${LOCAL_NETWORK}.103
+    healthcheck:
+      test: ["CMD-SHELL","if [ `cat /tmp/test.log | grep -c 'GSM Shard Setup Completed'` -ge 1 ]; then exit 0;else exit 1;fi"]
+      interval: ${healthcheck_interval}
+      timeout: ${healthcheck_timeout}
+      retries: ${healthcheck_retries}
+  shard2_db:
+    container_name: ${SHARD2_CONTAINER_NAME}
+    privileged: ${CONTAINER_PRIVILEGED_FLAG}
+    hostname: ${SHARD2_HOSTNAME}
+    image: ${SIDB_IMAGE}
+    dns_search: ${DNS_SEARCH}
+    restart: ${CONTAINER_RESTART_POLICY}
+    volumes:
+      - ${DOCKERVOLLOC}/dbfiles/ORCL2CDB:/opt/oracle/oradata
+      - /opt/.secrets:/run/secrets:ro
+      - /opt/containers/shard_host_file:/etc/hosts
+    environment:
+      SHARD_SETUP: ${SHARD2_SHARD_SETUP}
+      DOMAIN: ${DOMAIN}
+      ORACLE_SID: ${SHARD2_CDB}
+      ORACLE_PDB: ${SHARD2_PDB}
+      OP_TYPE: ${ALLSHARD_OP_TYPE}
+      COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
+      PWD_KEY: ${PWD_KEY}
+      INIT_SGA_SIZE: ${ALLSHARD_INIT_SGA_SIZE}
+      INIT_PGA_SIZE: ${ALLSHARD_INIT_PGA_SIZE}
+      ENABLE_ARCHIVELOG: ${SHARD_ARCHIVELOG}
+    networks:
+      shard_pub1_nw:
+        ipv4_address: ${LOCAL_NETWORK}.104
+    healthcheck:
+      test: ["CMD-SHELL","if [ `cat /tmp/test.log | grep -c 'GSM Shard Setup Completed'` -ge 1 ]; then exit 0;else exit 1;fi"]
+      interval: ${healthcheck_interval}
+      timeout: ${healthcheck_timeout}
+      retries: ${healthcheck_retries}
+  primary_gsm:
+    container_name: ${PRIMARY_GSM_CONTAINER_NAME}
+    privileged: ${CONTAINER_PRIVILEGED_FLAG}
+    hostname: ${PRIMARY_GSM_HOSTNAME}
+    image: ${GSM_IMAGE}
+    dns_search: ${DNS_SEARCH}
+    restart: ${CONTAINER_RESTART_POLICY}
+    volumes:
+      - ${DOCKERVOLLOC}/dbfiles/GSMDATA:/opt/oracle/gsmdata
+      - /opt/.secrets:/run/secrets:ro
+      - /opt/containers/shard_host_file:/etc/hosts
+    environment:
+      DOMAIN: ${DOMAIN}
+      SHARD_DIRECTOR_PARAMS: ${PRIMARY_SHARD_DIRECTOR_PARAMS}
+      SHARD1_GROUP_PARAMS: ${PRIMARY_SHARD1_GROUP_PARAMS}
+      CATALOG_PARAMS: ${PRIMARY_CATALOG_PARAMS}
+      SHARD1_PARAMS: ${PRIMARY_SHARD1_PARAMS}
+      SHARD2_PARAMS: ${PRIMARY_SHARD2_PARAMS}
+      SERVICE1_PARAMS: ${PRIMARY_SERVICE1_PARAMS}
+      SERVICE2_PARAMS: ${PRIMARY_SERVICE2_PARAMS}
+      COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
+      PWD_KEY: ${PWD_KEY}
+      MASTER_GSM: "TRUE"
+      OP_TYPE: ${GSM_OP_TYPE}
+    networks:
+      shard_pub1_nw:
+        ipv4_address: ${LOCAL_NETWORK}.100
+    depends_on:
+      catalog_db:
+        condition: service_healthy
+      shard1_db:
+        condition: service_healthy
+      shard2_db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL","if [ `cat /tmp/test.log | grep -c 'GSM Setup Completed'` -ge 1 ]; then exit 0;else exit 1;fi"]
+      interval: ${healthcheck_interval}
+      timeout: ${healthcheck_timeout}
+      retries: ${healthcheck_retries}
+  standby_gsm:
+    container_name: ${STANDBY_GSM_CONTAINER_NAME}
+    privileged: ${CONTAINER_PRIVILEGED_FLAG}
+    hostname: ${STANDBY_GSM_HOSTNAME}
+    image: ${GSM_IMAGE}
+    dns_search: ${DNS_SEARCH}
+    restart: ${CONTAINER_RESTART_POLICY}
+    volumes:
+      - ${DOCKERVOLLOC}/dbfiles/GSM2DATA:/opt/oracle/gsmdata
+      - /opt/.secrets:/run/secrets:ro
+      - /opt/containers/shard_host_file:/etc/hosts
+    environment:
+      CATALOG_SETUP: ${STANDBY_GSM_SHARD_SETUP}
+      DOMAIN: ${DOMAIN}
+      SHARD_DIRECTOR_PARAMS: ${STANDBY_SHARD_DIRECTOR_PARAMS}
+      SHARD1_GROUP_PARAMS: ${STANDBY_SHARD1_GROUP_PARAMS}
+      CATALOG_PARAMS: ${STANDBY_CATALOG_PARAMS}
+      SHARD1_PARAMS: ${STANDBY_SHARD1_PARAMS}
+      SHARD2_PARAMS: ${STANDBY_SHARD2_PARAMS}
+      SERVICE1_PARAMS: ${STANDBY_SERVICE1_PARAMS}
+      SERVICE2_PARAMS: ${STANDBY_SERVICE2_PARAMS}
+      COMMON_OS_PWD_FILE: ${COMMON_OS_PWD_FILE}
+      PWD_KEY: ${PWD_KEY}
+      OP_TYPE: ${GSM_OP_TYPE}
+    networks:
+      shard_pub1_nw:
+        ipv4_address: ${LOCAL_NETWORK}.101
+    depends_on:
+      primary_gsm:
+        condition: service_healthy

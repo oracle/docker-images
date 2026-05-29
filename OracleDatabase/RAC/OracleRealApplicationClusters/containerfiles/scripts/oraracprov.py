@@ -7,14 +7,15 @@
 ##############################
 
 """
- This file contains to the code call different classes objects based on setup type
+This file contains RAC provisioning workflow logic for GI/DB setup and DB creation.
 """
 
-from distutils.log import debug
 import os
 import sys
 import traceback
 import datetime
+import time
+from multiprocessing import Process
 
 from oralogger import *
 from oraenv import *
@@ -25,6 +26,7 @@ from orasshsetup import *
 from oracvu import *
 from oragiprov import *
 from oraasmca import *
+from oraops import OperationRunner, CommandBuilder
 
 dgname=""
 dbfiledest=""
@@ -32,7 +34,7 @@ dbrdest=""
 
 class OraRacProv:
    """
-   This class provision the RAC database
+   This class provisions the RAC database
    """
    def __init__(self,oralogger,orahandler,oraenv,oracommon,oracvu,orasetupssh):
       try:
@@ -43,6 +45,8 @@ class OraRacProv:
          self.ora_env_dict        = oraenv.get_env_vars()
          self.file_name           = os.path.basename(__file__)
          self.osetupssh           = orasetupssh
+         self.op_runner           = OperationRunner(self.ocommon, self.file_name, "RAC")
+         self.cmd_builder         = CommandBuilder(self.ocommon)
          self.ocvu                = oracvu
          self.mythread            = {}
          self.ogiprov             = OraGIProv(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
@@ -52,9 +56,9 @@ class OraRacProv:
  
    def setup(self):
        """
-       This function setup the RAC home on this machine
+       Set up the RAC home on this machine.
        """
-       self.ocommon.log_info_message("Start setup()",self.file_name)
+       self.ocommon.log_step("RAC", "setup", "start", None, self.file_name)
        ct = datetime.datetime.now()
        bts = ct.timestamp()
        sshFlag=False
@@ -66,40 +70,39 @@ class OraRacProv:
           for node in crs_nodes.split(","):
               self.clu_checks(node)
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-      #  retcode1=self.ocvu.check_home(None,dbhome,dbuser)
        retcode=1
        retcode1=self.ocvu.check_db_home(None,dbhome,dbuser)
        status=self.ocommon.check_rac_installed(retcode1)
        self.ocommon.reset_os_password(dbuser)
        if not status:
-         self.ocommon.log_info_message("Start perform_ssh_setup()",self.file_name)
+         self.ocommon.log_step("RAC", "perform_ssh_setup", "start", None, self.file_name)
          self.perform_ssh_setup()
-         self.ocommon.log_info_message("End perform_ssh_setup()",self.file_name)
+         self.ocommon.log_step("RAC", "perform_ssh_setup", "end", None, self.file_name)
          sshFlag=True
          status=self.ocommon.check_home_inv(None,dbhome,dbuser)
          if not status:
-            self.ocommon.log_info_message("Start db_sw_install()",self.file_name)
+            self.ocommon.log_step("RAC", "db_sw_install", "start", None, self.file_name)
             self.db_sw_install()
-            self.ocommon.log_info_message("End db_sw_install()",self.file_name)
-            self.ocommon.log_info_message("Start run_rootsh()",self.file_name)
+            self.ocommon.log_step("RAC", "db_sw_install", "end", None, self.file_name)
+            self.ocommon.log_step("RAC", "run_rootsh", "start", None, self.file_name)
             self.run_rootsh()
-            self.ocommon.log_info_message("End run_rootsh()",self.file_name)
+            self.ocommon.log_step("RAC", "run_rootsh", "end", None, self.file_name)
        if not self.ocommon.check_key("SKIP_DBCA",self.ora_env_dict):
             self.create_asmdg()
             status,osid,host,mode=self.ocommon.check_dbinst()
             hostname=self.ocommon.get_public_hostname()
             if status:
-               msg='''Database instance {0} already exist on this machine {1}.'''.format(osid,hostname)
+               msg='''Database instance {0} already exists on this machine {1}.'''.format(osid,hostname)
                self.ocommon.update_statefile("completed")
                self.ocommon.log_info_message(self.ocommon.print_banner(msg),self.file_name)
                
             elif self.ocommon.check_key("CLONE_DB",self.ora_env_dict):
-               self.ocommon.log_info_message("Start clone_db()",self.file_name)
+               self.ocommon.log_step("RAC", "clone_db", "start", None, self.file_name)
                self.clone_db(crs_nodes)
             else:
                if not sshFlag:
                   self.perform_ssh_setup()
-               self.ocommon.log_info_message("Start create_db()",self.file_name)
+               self.ocommon.log_step("RAC", "create_db", "start", None, self.file_name)
                self.create_db()
                self.ocommon.log_info_message("Setting db listener",self.file_name)
                self.ocommon.setup_db_lsnr()
@@ -110,7 +113,7 @@ class OraRacProv:
                if sname is not None:
                   self.ocommon.start_db_service(sname,osid)
                   self.ocommon.check_db_service_status(sname,osid) 
-               self.ocommon.log_info_message("End create_db()",self.file_name)
+               self.ocommon.log_step("RAC", "create_db", "end", None, self.file_name)
                self.ocommon.perform_db_check("INSTALL")
             self.ocommon.update_statefile("completed")
             self.ocommon.update_osid_for_grid_and_db_users()
@@ -122,7 +125,7 @@ class OraRacProv:
 
    def env_param_checks(self):
        """
-       Perform the env setup checks
+       Perform environment setup checks.
        """
        self.ocommon.check_env_variable("DB_HOME",True)
        self.ocommon.check_env_variable("DB_BASE",True)
@@ -207,21 +210,21 @@ class OraRacProv:
          # -----------------------------
          if retcode_ohasd != 0:
                self.ocommon.log_error_message(
-                  "Cluvfy ohasd check failed after retries. Exiting..",
+                  "Cluvfy ohasd check failed after retries. Exiting...",
                   self.file_name
                )
                self.ocommon.prog_exit("127")
 
          if retcode_asm != 0:
                self.ocommon.log_error_message(
-                  "Cluvfy asm check failed after retries. Exiting..",
+                  "Cluvfy asm check failed after retries. Exiting...",
                   self.file_name
                )
                self.ocommon.prog_exit("127")
 
          if not is_crs_gpc and retcode_clu != 0:
                self.ocommon.log_error_message(
-                  "Cluvfy clumgr check failed after retries. Exiting..",
+                  "Cluvfy clumgr check failed after retries. Exiting...",
                   self.file_name
                )
                self.ocommon.prog_exit("127")
@@ -229,7 +232,7 @@ class OraRacProv:
 
    def perform_ssh_setup(self):
       """
-      Perform ssh setup
+      Perform SSH setup.
       """
 
       pub_nodes, vip_nodes, priv_nodes = self.ocommon.process_cluster_vars("CRS_NODES")
@@ -268,8 +271,7 @@ class OraRacProv:
                '/bin/chmod 600 ~/.ssh/authorized_keys ~/.ssh/known_hosts"'
          ).format(user, node)
 
-         out, err, rc = self.ocommon.execute_cmd(cmd, None, None)
-         self.ocommon.check_os_err(out, err, rc, None)
+         out, err, rc = self.op_runner.run_command("rac_local_ssh_bootstrap", cmd, None, None, None)
          return
 
       # --------------------------------------------------
@@ -293,7 +295,7 @@ class OraRacProv:
 
    def db_sw_install(self):
        """
-       Perform the db_install
+       Perform DB software installation.
        """
        dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
        pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
@@ -313,25 +315,18 @@ class OraRacProv:
        prereqfailure = " -ignorePrereqFailure " if self.ocommon.check_key("IGNORE_DB_PREREQS_FAILURE", self.ora_env_dict) else " "
 
        copyflag=" -noCopy "
-       if not self.ocommon.check_key("COPY_DB_SOFTWARE",self.ora_env_dict):
-          copyflag=" -noCopy "
   
-       mythread_list=[]
-
-       oraversion=self.ocommon.get_rsp_version("INSTALL",None)
-       version=oraversion.split(".",1)[0].strip()
-
        self.mythread.clear()
        mythreads=[]
        for node in pub_nodes.split(" "):
-          self.ocommon.log_info_message("Running DB Sw install on node " + node,self.file_name)
+          self.ocommon.log_step("RAC", "db_sw_install", "node", node, self.file_name)
           thread=Process(target=self.db_sw_install_on_node,args=(dbuser,hostname,unixgrp,crs_nodes,oinv,lang,dbhome,dbase,edition,osdba,osbkp,osdgdba,oskmdba,osracdba,copyflag,node,ignoreflag,prereqfailure))
           #thread.setDaemon(True)
           mythreads.append(thread)
           thread.start()
 
        for thread in mythreads:  # iterates over the threads
-          thread.join()       # waits until the thread has finished wor
+          thread.join()       # waits until the thread has finished work
 
    def db_sw_install_on_node(self, dbuser, hostname, unixgrp, crs_nodes, oinv, lang, dbhome, dbase, edition,osdba, osbkp, osdgdba, oskmdba, osracdba, copyflag, node, ignoreflag, prereqfailure):
       """
@@ -343,7 +338,7 @@ class OraRacProv:
       # Get Oracle version
       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
       version = oraversion.split(".", 1)[0].strip()
-      self.ocommon.log_info_message("disk " + version, self.file_name)
+      self.ocommon.log_info_message("Oracle major version: " + version, self.file_name)
 
       # Set export line for Oracle 19
       export_line = "export CV_ASSUME_DISTID=OL8; " if int(version) == 19 else ""
@@ -416,8 +411,7 @@ class OraRacProv:
          )
 
       cmd = rspdata.replace('\n', ' ')
-      output, error, retcode = self.ocommon.execute_cmd(cmd, None, None)
-      self.ocommon.check_os_err(output, error, retcode, None)
+      output, error, retcode = self.op_runner.run_command("rac_db_sw_install_on_node", cmd, None, None, None)
 
       # Update thread status if applicable
       if len(self.mythread) > 0 and node in self.mythread.keys():
@@ -427,52 +421,38 @@ class OraRacProv:
          new_val = {node, tuple(new_list)}
          self.mythread.update(new_val)
 
-
    def run_rootsh(self):
        """
-       This function run the root.sh after DB home install
+       Run root.sh after DB home installation.
        """
        dbuser,dbhome,dbbase,oinv=self.ocommon.get_db_params()
        pub_nodes,vip_nodes,priv_nodes=self.ocommon.process_cluster_vars("CRS_NODES")
        for node in pub_nodes.split(" "):
-           cmd='''su - {0}  -c "ssh {1}  sudo {2}/root.sh"'''.format(dbuser,node,dbhome)
-           output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-           self.ocommon.check_os_err(output,error,retcode,True)
+           cmd=self.cmd_builder.build_remote_sudo(dbuser, node, "{0}/root.sh".format(dbhome))
+           output,error,retcode=self.op_runner.run_command("rac_run_rootsh", cmd, None, None, True)
+   def _ensure_asmdg(self, device_key, dest_key, prop_key):
+       """
+       Validate and create ASM disk group when required keys are present.
+       """
+       if not (self.ocommon.check_key(device_key,self.ora_env_dict) and self.ocommon.check_key(dest_key,self.ora_env_dict)):
+          return
+
+       dg_name=self.ocommon.rmdgprefix(self.ora_env_dict[dest_key])
+       device_prop=self.ora_env_dict[prop_key] if self.ocommon.check_key(prop_key,self.ora_env_dict) else None
+       self.ocommon.log_info_message("Disk group validation for: " + dg_name + " is in progress", self.file_name)
+       status=self.oasmca.validate_dg(self.ora_env_dict[device_key],device_prop,dg_name)
+       if not status:
+          self.oasmca.create_dg(self.ora_env_dict[device_key],device_prop,dg_name)
+       else:
+          self.ocommon.log_info_message("ASM disk group already exists.",self.file_name)
 
    def create_asmdg(self):
        """
-       Perform the asm disk group creation
+       Perform ASM disk group creation.
        """
-       dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-       if (self.ocommon.check_key("REDO_ASM_DEVICE_LIST",self.ora_env_dict)) and (self.ocommon.check_key("LOG_FILE_DEST",self.ora_env_dict)):
-          lgdest=self.ocommon.rmdgprefix(self.ora_env_dict["LOG_FILE_DEST"])
-          device_prop=self.ora_env_dict["REDO_ASMDG_PROPERTIES"] if self.ocommon.check_key("REDO_ASMDG_PROPERTIES",self.ora_env_dict) else None
-          self.ocommon.log_info_message("dg validation for :" + lgdest + " is in progress", self.file_name)
-          status=self.oasmca.validate_dg(self.ora_env_dict["REDO_ASM_DEVICE_LIST"],device_prop,lgdest)
-          if not status:
-             self.oasmca.create_dg(self.ora_env_dict["REDO_ASM_DEVICE_LIST"],device_prop,lgdest)
-          else:
-             self.ocommon.log_info_message("ASM diskgroup exist!",self.file_name)
-         
-       if (self.ocommon.check_key("RECO_ASM_DEVICE_LIST",self.ora_env_dict)) and (self.ocommon.check_key("DB_RECOVERY_FILE_DEST",self.ora_env_dict)):
-          dbrdest=self.ocommon.rmdgprefix(self.ora_env_dict["DB_RECOVERY_FILE_DEST"]) 
-          device_prop=self.ora_env_dict["RECO_ASMDG_PROPERTIES"] if self.ocommon.check_key("RECO_ASMDG_PROPERTIES",self.ora_env_dict) else None
-          self.ocommon.log_info_message("dg validation for :" + dbrdest + " is in progress", self.file_name)
-          status=self.oasmca.validate_dg(self.ora_env_dict["RECO_ASM_DEVICE_LIST"],device_prop,dbrdest)
-          if not status:
-             self.oasmca.create_dg(self.ora_env_dict["RECO_ASM_DEVICE_LIST"],device_prop,dbrdest)
-          else:
-             self.ocommon.log_info_message("ASM diskgroup exist!",self.file_name)
-
-       if (self.ocommon.check_key("DB_ASM_DEVICE_LIST",self.ora_env_dict)) and (self.ocommon.check_key("DB_DATA_FILE_DEST",self.ora_env_dict)):
-          dbfiledest=self.ocommon.rmdgprefix(self.ora_env_dict["DB_DATA_FILE_DEST"])
-          device_prop=self.ora_env_dict["DB_ASMDG_PROPERTIES"] if self.ocommon.check_key("DB_ASMDG_PROPERTIES",self.ora_env_dict) else None
-          self.ocommon.log_info_message("dg validation for :" + dbfiledest + " is in progress", self.file_name)
-          status=self.oasmca.validate_dg(self.ora_env_dict["DB_ASM_DEVICE_LIST"],device_prop,dbfiledest)
-          if not status:
-             self.oasmca.create_dg(self.ora_env_dict["DB_ASM_DEVICE_LIST"],device_prop,dbfiledest)
-          else:
-             self.ocommon.log_info_message("ASM diskgroup exist!",self.file_name)
+       self._ensure_asmdg("REDO_ASM_DEVICE_LIST", "LOG_FILE_DEST", "REDO_ASMDG_PROPERTIES")
+       self._ensure_asmdg("RECO_ASM_DEVICE_LIST", "DB_RECOVERY_FILE_DEST", "RECO_ASMDG_PROPERTIES")
+       self._ensure_asmdg("DB_ASM_DEVICE_LIST", "DB_DATA_FILE_DEST", "DB_ASMDG_PROPERTIES")
 
    def set_clonedb_params(self):
        """
@@ -493,7 +473,7 @@ class OraRacProv:
  
    def clone_db(self,crs_nodes):
       """
-      This function clone the DB
+      Clone the DB.
       """
       if self.ocommon.check_key("GOLD_DB_BACKUP_LOC",self.ora_env_dict) and self.ocommon.check_key("GOLD_DB_NAME",self.ora_env_dict) and self.ocommon.check_key("DB_NAME",self.ora_env_dict)  and  self.ocommon.check_key("GOLD_SID_NAME",self.ora_env_dict) and self.ocommon.check_key("GOLD_PDB_NAME",self.ora_env_dict):
          self.ocommon.log_info_message("GOLD_DB_BACKUP_LOC set to " + self.ora_env_dict["GOLD_DB_BACKUP_LOC"] ,self.file_name)
@@ -504,11 +484,9 @@ class OraRacProv:
          fdata='''db_name={0}'''.format(self.ora_env_dict["GOLD_DB_NAME"])
          self.ocommon.append_file(pfile,fdata)
          self.ocommon.start_db(self.ora_env_dict["GOLD_SID_NAME"],"nomount",pfile)
-       ## VV  self.ocommon.catalog_bkp()
          self.ocommon.restore_spfile()
          cmd='''rm -f {0}'''.format(pfile)
-         output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-         self.ocommon.check_os_err(output,error,retcode,False)
+         output,error,retcode=self.op_runner.run_command("rac_clone_db_cleanup_pfile", cmd, None, None, False)
          self.ocommon.shutdown_db(self.ora_env_dict["GOLD_SID_NAME"])
          self.ocommon.start_db(self.ora_env_dict["GOLD_SID_NAME"],"nomount")
          self.set_clonedb_params()
@@ -541,26 +519,22 @@ class OraRacProv:
          self.ocommon.start_rac_db(osuser,dbhome,self.ora_env_dict["DB_NAME"])
          self.ocommon.get_db_status(osuser,dbhome,self.ora_env_dict["DB_NAME"])
          self.ocommon.get_db_config(osuser,dbhome,self.ora_env_dict["DB_NAME"])
-         self.ocommon.log_info_message("End clone_db()",self.file_name) 
+         self.ocommon.log_step("RAC", "clone_db", "end", None, self.file_name) 
                   
    def check_responsefile(self):
       """
-      This function returns the valid response file
+      Return the valid response file.
       """
       dbrsp=None
       if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
          dbrsp=self.ora_env_dict["DBCA_RESPONSE_FILE"]
-         self.ocommon.log_info_message("DBCA_RESPONSE_FILE parameter is set and file location is:" + dbrsp ,self.file_name)
-      else:
-         self.ocommon.log_error_message("DBCA response file does not exist at its location: " + dbrsp + ".Exiting..",self.file_name)
-         self.ocommon.prog_exit("127")
-         
-      if os.path.isfile(dbrsp):
-	      return dbrsp
+         self.ocommon.log_info_message("DBCA_RESPONSE_FILE parameter is set. File location: " + dbrsp ,self.file_name)
+
+      return self.ocommon.validate_response_file(dbrsp, "dbca")
    
    def create_db(self):
       """
-      Perform the DB Creation
+      Perform DB creation.
       """
       cmd=""
       prereq=" "
@@ -569,7 +543,7 @@ class OraRacProv:
       dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
       version = oraversion.split(".", 1)[0].strip()
-      self.ocommon.log_info_message("disk" + version, self.file_name)
+      self.ocommon.log_info_message("Oracle major version: " + version, self.file_name)
       export_line = "export CV_ASSUME_DISTID=OL8;" if int(version) == 19 else ""
       dbca_validate_option = "-J-Doracle.assistants.dbca.validate.ConfigurationParams=false" if int(version) == 19 else ""
       if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
@@ -581,8 +555,7 @@ class OraRacProv:
       dbpasswd=self.ocommon.get_db_passwd()
       tdepasswd=self.ocommon.get_tde_passwd() 
       self.ocommon.set_mask_str(dbpasswd) 
-      output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-      self.ocommon.check_os_err(output,error,retcode,True)
+      output,error,retcode=self.op_runner.run_command("rac_create_db", cmd, None, None, True)
       ### Unsetting the encrypt value to None
       self.ocommon.unset_mask_str()
       if self.ocommon.check_key("DBCA_RESPONSE_FILE",self.ora_env_dict):
@@ -590,7 +563,7 @@ class OraRacProv:
 
    def prepare_db_cmd(self):
        """
-       Perform the asm disk group creation
+       Build DBCA command.
        """
        prereq=" "
        if self.ocommon.check_key("IGNORE_DB_PREREQS",self.ora_env_dict):
@@ -624,14 +597,11 @@ class OraRacProv:
 
        pdbsettings=self.get_pdb_params()
        initparams=self.get_init_params()
-      #  if self.ocommon.check_key("SETUP_TDE_WALLET",self.ora_env_dict):
-      #     tdewallet='''-configureTDE true -tdeWalletPassword HIDDEN_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
-       #memorypct=self.get_memorypct()
        oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-       self.ocommon.log_info_message("oraversion: " + oraversion, self.file_name)
+       self.ocommon.log_info_message("Oracle version: " + oraversion, self.file_name)
 
        version = oraversion.split(".", 1)[0].strip()
-       self.ocommon.log_info_message("parsed version: " + version, self.file_name)
+       self.ocommon.log_info_message("Oracle major version: " + version, self.file_name)
 
        tdewallet = ""  # default to empty
 
@@ -641,14 +611,8 @@ class OraRacProv:
          else:
             tdewallet = '''-configureTDE true -tdeWalletPassword HIDDEN_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
 
-
-       oraversion = self.ocommon.get_rsp_version("INSTALL", None)
-       version = oraversion.split(".", 1)[0].strip()
-       self.ocommon.log_info_message("disk" + version, self.file_name)
-
        # Conditionally set the export and additional dbca options if version is 19
        export_line = "export CV_ASSUME_DISTID=OL8;" if int(version) == 19 else ""
-       # dbca_validate_option = "-J-Doracle.assistants.dbca.validate.ConfigurationParams=false" if int(version) == 19 else ""
        dbca_validate_option = ""
 
        rspdata = '''su - {0} -c "{17}{1}/bin/dbca -silent {15} -createDatabase  \
@@ -680,7 +644,7 @@ class OraRacProv:
    
    def get_pdb_params(self):
        """
-       Perform the asm disk group creation
+       Return PDB parameters.
        """
        pdbnum=self.ora_env_dict["PDB_COUNT"] if self.ocommon.check_key("PDB_COUNT",self.ora_env_dict) else  "1"
        pdbname=self.ora_env_dict["ORACLE_PDB_NAME"] if self.ocommon.check_key("ORACLE_PDB_NAME",self.ora_env_dict) else  "ORCLPDB"
@@ -692,7 +656,7 @@ class OraRacProv:
 
    def get_init_params(self):
        """
-       Perform the asm disk group creation
+       Return DB init parameters.
        """
        sgasize=self.ora_env_dict["INIT_SGA_SIZE"] if self.ocommon.check_key("INIT_SGA_SIZE",self.ora_env_dict) else  None
        pgasize=self.ora_env_dict["INIT_PGA_SIZE"] if self.ocommon.check_key("INIT_PGA_SIZE",self.ora_env_dict) else  None
