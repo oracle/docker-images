@@ -247,7 +247,7 @@ This project offers example container files for Oracle Grid Infrastructure and O
 * Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
 * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
 
-To install older releases of Oracle RAC on Podman, refer to the [README.md](./README_1.md)
+To install older releases of Oracle RAC on Podman or Oracle RAC on Docker, refer to the [README.md](./README_1.md)
 
 ## Cleanup
 Refer to [README](./CLEANUP.md) for instructions on how to connect to an Oracle RAC Database Container Environment.
