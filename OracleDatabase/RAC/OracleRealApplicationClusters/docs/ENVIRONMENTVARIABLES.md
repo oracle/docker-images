@@ -4,7 +4,7 @@
 |--------------------------|---------------------|------------|--------------------------------------------------------------|
 | DNS_SERVERS              | Mandatory           | All        | Specify the comma-separated list of DNS server IP addresses where both Oracle RAC nodes are resolved. |
 | OP_TYPE                  | Mandatory           | All        | Specify the operation type. It can accept setuprac/setupgrid/addgridnode/racaddnode/setupracstandby. |
-| CRS_NODES                | Mandatory           | All        | Specify the CRS nodes in the format pubhost:pubhost1,viphost:viphost1;pubhost:pubhost2,viphost:viphost2. You can add as many hosts separated by semicolon. pubhost and viphost are separated by comma. |
+| CRS_NODES                | Mandatory           | All        | Specify the CRS nodes in the format pubhost:pubhost1,viphost:viphost1;pubhost:pubhost2,viphost:viphost2. You can add as many hosts separated by semicolon. pubhost and viphost are separated by comma. When passing this through the shell, quote the whole value, for example `CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"`. |
 | SCAN_NAME                | Mandatory           | All        | Specify the SCAN name. |
 | CRS_ASM_DEVICE_LIST      | Mandatory           | All        | Specify the ASM disk lists. |
 | PUBLIC_HOSTS_DOMAIN      | Optional            | All        | Specify public domain where RAC containers are resolving to. |
