@@ -80,15 +80,26 @@ However, if you are using pre-built RAC images from the Oracle Container Registr
 Oracle RAC is supported for production use on Podman starting with Oracle Database 19c (19.16), and Oracle Database 21c (21.7). You can also deploy Oracle RAC on Podman using the pre-built images available on the Oracle Container Registry.
 Refer to [this documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/docker/docker-UsingDockerRegistries.html#docker-registry) for details on using the Oracle Container Registry.
 
-Example of pulling an Oracle RAC Image from the Oracle Container Registry:
+Example Oracle Container Registry tags:
 
 ```bash
+# Oracle Linux 9, Oracle RAC 23.26ai
+podman pull container-registry.oracle.com/database/rac:latest
+podman tag container-registry.oracle.com/database/rac:latest localhost/oracle/database-rac:23.26ai
+
+# Oracle Linux 9, Oracle RAC 19c
+podman pull container-registry.oracle.com/database/rac_ru:latest-19
+podman tag container-registry.oracle.com/database/rac_ru:latest-19 localhost/oracle/database-rac:19c
+
+# Oracle Linux 8, Oracle RAC 21c
 podman pull container-registry.oracle.com/database/rac_ru:latest
 podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
 ```
-**NOTE** Currently, latest tag in Oracle Container registry represents `21.17.0` tag. If you are pulling any other version of container image, then retag approriately as per your environment to use in `podman create` commands later.  
+**NOTE** Use `container-registry.oracle.com/database/rac:latest` for Oracle RAC 23.26ai on Oracle Linux 9.
 
-**NOTE** The pre-built Oracle Container Registry image `container-registry.oracle.com/database/rac_ru:latest` can still work on Oracle Linux 8. If you are deploying on Oracle Linux 9 with cgroup v2, prefer building the image from the latest containerfiles in this repository, because the OCR image can still use older `init.ohasd` cgroup v1 handling and fail during Grid setup.
+**NOTE** Use `container-registry.oracle.com/database/rac_ru:latest-19` for Oracle RAC 19c on Oracle Linux 9.
+
+**NOTE** Use `container-registry.oracle.com/database/rac_ru:latest` for Oracle RAC 21c on Oracle Linux 8. This is the documented Oracle Linux 8 compatibility path because the older `rac_ru` image line retains the cgroup compatibility behavior needed there.
 
 If you are using pre-built Oracle RAC images from the Oracle Container Registry, then you can skip the section that follows where we build the container images.
 
@@ -236,14 +247,14 @@ This project offers example container files for Oracle Grid Infrastructure and O
 * Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
 * Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
 
-To install older releases of Oracle RAC on Podman or Oracle RAC on Docker, refer to the [README.md](./README_1.md)
+To install older releases of Oracle RAC on Podman, refer to the [README.md](./README_1.md)
 
 ## Cleanup
 Refer to [README](./CLEANUP.md) for instructions on how to connect to an Oracle RAC Database Container Environment.
 
 ## Support
 
-At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.5 or later. To see the current Linux support certifications, refer to [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
+At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.10 or later. To see the current Linux support certifications, refer to [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
 
 ## License
 
