@@ -20,7 +20,7 @@
 #      $ docker build -t oracle/database:21c-rac .
 
 
-ARG BASE_OL_IMAGE=oraclelinux:8
+ARG BASE_OL_IMAGE=oraclelinux:9
 ARG SLIMMING=false
 # Pull base image
 # ---------------

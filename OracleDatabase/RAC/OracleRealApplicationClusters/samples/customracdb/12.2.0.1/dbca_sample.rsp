@@ -200,7 +200,7 @@ useLocalUndoForPDBs=true
 # Mandatory     : No
 #-----------------------------------------------------------------------------
 
-pdbAdminPassword=Oracle_19c
+pdbAdminPassword=<< YOUR PASSWORD HERE >>
 
 #-----------------------------------------------------------------------------
 # Name          : nodelist
@@ -230,7 +230,7 @@ templateName={ORACLE_HOME}/assistants/dbca/templates/General_Purpose.dbc
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-sysPassword=Oracle_19c
+sysPassword=<< YOUR PASSWORD HERE >>
 
 #-----------------------------------------------------------------------------
 # Name          : systemPassword
@@ -240,7 +240,7 @@ sysPassword=Oracle_19c
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-systemPassword=Oracle_19c
+systemPassword=<< YOUR PASSWORD HERE >>
 
 #-----------------------------------------------------------------------------
 # Name          : serviceUserPassword

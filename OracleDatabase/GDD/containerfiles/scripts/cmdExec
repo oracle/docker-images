@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# LICENSE UPL 1.0
+#
+# Copyright (c) 2020,2021 Oracle and/or its affiliates.
+#
+# Since: January, 2020
+# Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
+# shellcheck disable=SC2046
+# shellcheck disable=SC2124
+# shellcheck disable=SC2068
+
+
+TIMESTAMP=`date "+%Y-%m-%d"`
+DEFAULT_LOG_DIR="/var/log/gdd"
+if [ ! -d "$DEFAULT_LOG_DIR" ]; then
+  DEFAULT_LOG_DIR="/var/tmp/gdd"
+  mkdir -p "$DEFAULT_LOG_DIR"
+fi
+
+BASE_TMP_DIR="${TMP_DIR:-${LOG_DIR:-${SHARDING_LOG_DIR:-${TMPDIR:-$DEFAULT_LOG_DIR}}}}"
+LOGFILE="${BASE_TMP_DIR}/sharding_cmd_${TIMESTAMP}.log"
+
+echo $(date -u) " : " $@ >> $LOGFILE 
+
+cmd=$@
+
+$cmd
+
+if [ $? -eq 0 ]; then
+  exit 0
+else
+  exit 127
+fi

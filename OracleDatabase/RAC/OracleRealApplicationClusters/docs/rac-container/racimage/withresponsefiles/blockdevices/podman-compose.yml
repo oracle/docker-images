@@ -64,7 +64,7 @@ services:
       - pwdsecret
       - keysecret
     volumes:
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_21c.rsp
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       PRIVATE_IP1_LIST: ${RACNODE1_PRIVATE_IP1_LIST}
@@ -80,7 +80,7 @@ services:
       INIT_PGA_SIZE: 2G
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
-      GRID_RESPONSE_FILE: /tmp/grid_21c.rsp
+      GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
       CMAN_HOST: ${CMAN_HOST_NAME}
       CMAN_PORT: 1521
     sysctls:
@@ -106,7 +106,7 @@ services:
       - rac_priv1_nw
       - rac_priv2_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod/oracle_rac_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "if [ `cat /tmp/orod/oracle_db_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
@@ -122,7 +122,7 @@ services:
       - pwdsecret
       - keysecret
     volumes:
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_21c.rsp
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       PRIVATE_IP1_LIST: ${RACNODE2_PRIVATE_IP1_LIST}
@@ -137,7 +137,7 @@ services:
       INIT_PGA_SIZE: 2G
       DB_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
-      GRID_RESPONSE_FILE: /tmp/grid_21c.rsp
+      GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
       CMAN_HOST: ${CMAN_HOST_NAME}
       CMAN_PORT: 1521
     sysctls:

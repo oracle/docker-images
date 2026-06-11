@@ -1,0 +1,193 @@
+#!/bin/bash
+# Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
+# MAINTAINER <paramdeep.saini@oracle.com>
+# shellcheck disable=SC2155
+# shellcheck disable=SC2173
+
+
+
+export NOW=$(date +"%Y%m%d%H%M")
+export LOGDIR="/tmp"
+export LOGFILE="${LOGDIR}/runOracle_${NOW}.log"
+export STD_OUT_FILE="/proc/1/fd/1"
+export STD_ERR_FILE="/proc/1/fd/2"
+export PDB_SQL_SCRIPT="/tmp/pdb.sql"
+export TOP_PID=$$
+export GSM_HOST=$(hostname)
+rm -f /tmp/sqllog.output
+rm -f $PDB_SQL_SCRIPT
+rm -f $LOGFILE
+
+
+#################################### Print and Exit Functions Begin Here #######################
+error_exit() {
+local NOW=$(date +"%m-%d-%Y %T %Z")
+        # Display error message and exit
+#       echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+        echo "${NOW} : ${PROGNAME}: ${1:-"Unknown Error"}" | tee -a $LOGFILE > $STD_OUT_FILE
+        kill -s TERM $TOP_PID
+}
+
+print_message ()
+{
+        local NOW=$(date +"%m-%d-%Y %T %Z")
+        # Display  message and return
+        echo "${NOW} : ${PROGNAME} : ${1:-"Unknown Message"}" | tee -a $LOGFILE > $STD_OUT_FILE
+        return $?
+}
+#################################### Print and Exit Functions End Here #######################
+
+
+########### Move DB files ############
+function moveFiles {
+
+   if [ ! -d $ORACLE_BASE/gsmdata/gsmconfig ]; then
+      mkdir -p $ORACLE_BASE/gsmdata/gsmconfig
+   fi;
+
+   mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/gsmdata/gsmconfig/
+   mv $ORACLE_HOME/network/admin/gsm.ora $ORACLE_BASE/gsmdata/gsmconfig/
+    
+   symLinkFiles;
+}
+
+########### Symbolic link DB files ############
+function symLinkFiles {
+
+   if [ ! -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
+      ln -s $ORACLE_BASE/gsmdata/gsmconfig/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
+   fi;
+
+   if [ ! -L $ORACLE_HOME/network/admin/gsm.ora ]; then
+      ln -s $ORACLE_BASE/gsmdata/gsmconfig/gsm.ora $ORACLE_HOME/network/admin/gsm.ora
+   fi;
+
+
+}
+
+########### SIGINT handler ############
+function _int() {
+   print_message "Stopping container."
+   print_message "SIGINT received, shutting down database!"
+   $ORACLE_HOME/bin/gdsctl <<EOF
+   stop gsm
+   exit;
+EOF
+}
+
+########### SIGTERM handler ############
+function _term() {
+   print_message "Stopping container."
+   print_message "SIGTERM received, shutting down database!"
+   $ORACLE_HOME/bin/gdsctl <<EOF
+   stop gsm
+   exit;
+EOF
+}
+
+########### SIGKILL handler ############
+function _kill() {
+   print_message "SIGKILL received, shutting down database!"
+   $ORACLE_HOME/bin/gdsctl <<EOF
+   stop gsm
+   exit;
+EOF
+}
+
+stopGSM()
+{
+   echo "Starting GSM"
+   $ORACLE_HOME/bin/gdsctl <<EOF
+   stop gsm
+   exit;
+EOF
+}
+
+startGSM()
+{
+   echo "Starting GSM"
+   $ORACLE_HOME/bin/gdsctl <<EOF
+   start gsm 
+   exit;
+EOF
+}
+
+###################################
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+############# MAIN ################
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+###################################
+
+# Github issue #711
+if hostname | grep -q "_"; then
+   print_message "Error: The hostname must not container any '_'".
+   print_message "Your current hostname is '$(hostname)'"
+fi;
+
+# Set SIGINT handler
+trap _int SIGINT
+
+# Set SIGTERM handler
+trap _term SIGTERM
+
+# Set SIGKILL handler
+trap _kill SIGKILL
+
+# Check whether GSM config already exists
+if [ -d $ORACLE_BASE/gsmdata/gsmconfig ]; then
+   symLinkFiles;
+   # Start gsm
+   startGSM 
+else
+
+ if [ -z ${CUSTOM_SETUP_SCRIPT} ]; then
+    print_message "Calling GSM SETUP script $GSM_SETUP_FILE shipped with dockerimage as no previous configuration found" 
+    $SCRIPT_DIR/$GSM_SETUP_FILE
+ else
+    print_message "Calling CUSTOM Script  /opt/oracle/scripts/setup/$CUSTOM_SETUP_SCRIPT script to setup the GSM as no previous configuration found"
+    /opt/oracle/scripts/setup/$CUSTOM_SETUP_SCRIPT
+ fi
+
+  if [ $? -eq 0 ]; then
+    print_message "#########################"
+    print_message "GSM IS READY TO USE!"
+    print_message "#########################"
+    # Move GSM operational files to gsmdata
+    stopGSM
+    moveFiles;
+    startGSM
+  else
+    print_message "#####################################"
+    print_message "########### E R R O R ###############"
+    print_message "GSM SETUP WAS NOT SUCCESSFUL!"
+    print_message "Please check output for further info!"
+    print_message "########### E R R O R ###############"
+    print_message "#####################################"
+  fi;
+fi
+
+# Check whether GSM is up and running
+#$ORACLE_BASE/$CHECK_GSM_FILE
+#if [ $? -eq 0 ]; then
+#  echo "#########################"
+#  echo "GSM IS READY TO USE!"
+#  echo "#########################"
+
+#  # Execute custom provided startup scripts
+#  $ORACLE_BASE/$USER_SCRIPTS_FILE $ORACLE_BASE/scripts/startup
+
+#else
+#  echo "#####################################"
+#  echo "########### E R R O R ###############"
+#  echo "GSM SETUP WAS NOT SUCCESSFUL!"
+#  echo "Please check output for further info!"
+#  echo "########### E R R O R ###############"
+#  echo "#####################################"
+#fi;
+
+# Tail on alert log and wait (otherwise container will exit)
+echo "The following output is now a tail of the alert.log:"
+tail -f $ORACLE_BASE/diag/gsm/*/*/trace/alert*.log &
+childPID=$!
+wait $childPID

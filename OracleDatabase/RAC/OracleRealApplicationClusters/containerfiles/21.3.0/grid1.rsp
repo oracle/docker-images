@@ -354,7 +354,7 @@ oracle.install.asmOnNAS.gimrLocation=
 #-------------------------------------------------------------------------------
 # Password for SYS user of Oracle ASM
 #-------------------------------------------------------------------------------
-oracle.install.asm.SYSASMPassword=Oracle_12c
+oracle.install.asm.SYSASMPassword=<< YOUR PASSWORD HERE >>
 
 #-------------------------------------------------------------------------------
 # The ASM DiskGroup
@@ -450,7 +450,7 @@ oracle.install.asm.diskGroup.diskDiscoveryString=/oradata/asm_*
 # Password for ASMSNMP account
 # ASMSNMP account is used by Oracle Enterprise Manager to monitor Oracle ASM instances
 #-------------------------------------------------------------------------------
-oracle.install.asm.monitorPassword=Oracle_12c
+oracle.install.asm.monitorPassword=<< YOUR PASSWORD HERE >>
 
 #-------------------------------------------------------------------------------
 # GIMR Storage data ASM DiskGroup

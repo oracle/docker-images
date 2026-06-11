@@ -36,7 +36,7 @@ You can deploy multi node Oracle RAC Setup using Oracle RAC Image either on Bloc
 * Ensure the Oracle RAC Image is present. You can either pull ru image from the Oracle Container Registry by following [Building Oracle RAC Database Container Images](../../../README.md#getting-oracle-rac-database-container-images), or you can create the Oracle RAC Container Patched image by following [Building Oracle RAC Database Container Images](../../../README.md#building-a-patched-oracle-rac-container-image)
 ```bash
 # podman images|grep database-rac
-localhost/oracle/database-rac        21c          41239091d2ac  16 minutes ago  20.2 GB
+localhost/oracle/database-rac        23.26ai          c717efbe4111  16 minutes ago  10 GB
 ```
 * Execute the [Network](../../../README.md#network-management).
 * Execute the [Password Management](../../../README.md#password-management).
@@ -61,9 +61,9 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export ASM_DEVICE1="/dev/asm-disk1"
 export ASM_DEVICE2="/dev/asm-disk2"
@@ -91,10 +91,10 @@ export DNS_PUBLIC_IP=10.0.20.25
 export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
-export CMAN_HOST_NAME=racnodepc1-cman
+export CMAN_HOST_NAME=racnodepc1-cman1
 export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
 export CMAN_PUBLIC_IP=10.0.20.166
-export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
+export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
 export DB_SERVICE=service:soepdb
 ```
@@ -147,6 +147,12 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+```
+
+If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
+
+```bash
 podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
 ```
 
@@ -169,14 +175,14 @@ podman-compose logs -f ${CMAN_CONTAINER_NAME}
 #### Section 2.1.2: Setup Using User Defined Response files
 Make sure you completed pre-requisites step to install Podman Compose on required Podman Host Machines.
 
-On the shared folder between both RAC nodes, copy file named [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp)  to shared location e.g `/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp`.  You can skip this step if you are planing to not to use **User Defined Response Files for RAC**.
+On the shared folder between both RAC nodes, copy file named [grid_setup_new_23.26ai.rsp](withresponsefiles/nfsdevices/grid_setup_new_23.26ai.rsp)  to shared location e.g `/scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp`.  You can skip this step if you are planing to not to use **User Defined Response Files for RAC**.
 
 If SELinux host is enable on machine then execute the following as well -
 ```bash
-semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
-restorecon -v /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
-semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_21c.rsp
-restorecon -v /scratch/common_scripts/podman/rac/dbca_21c.rsp
+semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp
+restorecon -v /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp
+semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
+restorecon -v /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
 ```
 Now, Export the required environment variables required by `podman-compose.yml` file -
 ```bash
@@ -189,9 +195,9 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export ASM_DEVICE1="/dev/asm-disk1"
 export ASM_DEVICE2="/dev/asm-disk2"
@@ -223,7 +229,7 @@ export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
-export GRID_RESPONSE_FILE="/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp"
+export GRID_RESPONSE_FILE="/scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp"
 export DB_SERVICE=service:soepdb
 ```
 Create podman networks-
@@ -278,7 +284,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -322,9 +328,9 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export CRS_ASM_DISCOVERY_STRING="/oradata"
 export CRS_ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
@@ -348,10 +354,10 @@ export DNS_PUBLIC_IP=10.0.20.25
 export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
-export CMAN_HOST_NAME=racnodepc1-cman
+export CMAN_HOST_NAME=racnodepc1-cman1
 export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
 export CMAN_PUBLIC_IP=10.0.20.166
-export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
+export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
 export STORAGE_CONTAINER_NAME="racnode-storage"
 export STORAGE_HOST_NAME="racnode-storage"
@@ -431,7 +437,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -455,10 +461,10 @@ Make sure you completed pre-requisites step to install Podman Compose on require
 
 If SELinux  is enabled in your host machine then execute the following as well -
 ```bash
-semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
-restorecon -v /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
-semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_21c.rsp
-restorecon -v /scratch/common_scripts/podman/rac/dbca_21c.rsp
+semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp
+restorecon -v /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp
+semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
+restorecon -v /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
 ```
 Create placeholder for NFS storage and make sure it is empty -
 
@@ -468,13 +474,13 @@ mkdir -p /scratch/stage/rac-storage/$ORACLE_DBNAME
 rm -rf /scratch/stage/rac-storage/ORCLCDB/asm_disk0*
 ```
 
-On the shared folder between both RAC nodes, copy file name [grid_setup_new_21c.rsp](withresponsefiles/nfsdevices/grid_setup_new_21c.rsp) to shared location e.g `/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp`. You can skip this step if you are planing to not to use **User Defined Response Files for RAC**.
+On the shared folder between both RAC nodes, copy file name [grid_setup_new_23.26ai.rsp](withresponsefiles/nfsdevices/grid_setup_new_23.26ai.rsp) to shared location e.g `/scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp`. You can skip this step if you are planing to not to use **User Defined Response Files for RAC**.
 If SELinux host is enable on machine then execute the following as well -
 ```bash
-semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
-restorecon -v /scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp
-semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_21c.rsp
-restorecon -v /scratch/common_scripts/podman/rac/dbca_21c.rsp
+semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp
+restorecon -v /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp
+semanage fcontext -a -t container_file_t /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
+restorecon -v /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp
 ```
 Now, Export the required environment variables required by `podman-compose.yml` file -
 ```bash
@@ -487,9 +493,9 @@ export RACNODE1_PUBLIC_IP=10.0.20.170
 export RACNODE1_CRS_PRIVATE_IP1=192.168.17.170
 export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export CRS_ASM_DISCOVERY_STRING="/oradata"
 export CRS_ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
@@ -513,10 +519,10 @@ export DNS_PUBLIC_IP=10.0.20.25
 export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
-export CMAN_HOST_NAME=racnodepc1-cman
+export CMAN_HOST_NAME=racnodepc1-cman1
 export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
 export CMAN_PUBLIC_IP=10.0.20.166
-export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
+export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
 export STORAGE_CONTAINER_NAME="racnode-storage"
 export STORAGE_HOST_NAME="racnode-storage"
@@ -524,7 +530,7 @@ export STORAGE_IMAGE_NAME="localhost/oracle/rac-storage-server:latest"
 export ORACLE_DBNAME="ORCLCDB"
 export STORAGE_PUBLIC_IP=10.0.20.80
 export NFS_STORAGE_VOLUME="/scratch/stage/rac-storage/$ORACLE_DBNAME"
-export GRID_RESPONSE_FILE="/scratch/common_scripts/podman/rac/grid_setup_new_21c.rsp"
+export GRID_RESPONSE_FILE="/scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp"
 export DB_SERVICE=service:soepdb
 ```
 
@@ -600,7 +606,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -637,9 +643,9 @@ export RACNODE3_PUBLIC_IP=10.0.20.172
 export RACNODE3_CRS_PRIVATE_IP1=192.168.17.172
 export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
 export INSTALL_NODE=racnodep3
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\""
+export CRS_NODES="pubhost:racnodep3,viphost:racnodep3-vip"
 export EXISTING_CLS_NODE="racnodep1,racnodep2"
 export SCAN_NAME=racnodepc1-scan
 export ASM_DEVICE1="/dev/asm-disk1"
@@ -676,7 +682,7 @@ podman network connect ${PRIVATE1_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP1}
 podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP2}  ${RACNODE3_CONTAINER_NAME}
 
 podman-compose start ${RACNODE3_CONTAINER_NAME}
-podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -703,9 +709,9 @@ export RACNODE3_PUBLIC_IP=10.0.20.172
 export RACNODE3_CRS_PRIVATE_IP1=192.168.17.172
 export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
 export INSTALL_NODE=racnodep3
-export RAC_IMAGE_NAME=localhost/oracle/database-rac:21c
+export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\""
+export CRS_NODES="pubhost:racnodep3,viphost:racnodep3-vip"
 export EXISTING_CLS_NODE="racnodep1,racnodep2"
 export SCAN_NAME=racnodepc1-scan
 export CRS_ASM_DISCOVERY_STRING="/oradata"
@@ -742,7 +748,7 @@ podman network connect ${PRIVATE1_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP1}
 podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP2}  ${RACNODE3_CONTAINER_NAME}
 
 podman-compose start ${RACNODE3_CONTAINER_NAME}
-podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -760,8 +766,8 @@ You can validate if Oracle Container environment is healthy by running below com
 podman ps -a
 CONTAINER ID  IMAGE                                  COMMAND               CREATED         STATUS                   PORTS       NAMES
 f1345fd4047b  localhost/oracle/rac-dnsserver:latest  /bin/sh -c exec $...  8 hours ago     Up 8 hours (healthy)                 rac-dnsserver
-2f42e49758d1  localhost/oracle/database-rac:21c                        46 minutes ago  Up 37 minutes (healthy)              racnodep1
-a27fceea9fe6  localhost/oracle/database-rac:21c                        46 minutes ago  Up 37 minutes (healthy)              racnodep2
+2f42e49758d1  localhost/oracle/database-rac:23.26ai                        46 minutes ago  Up 37 minutes (healthy)              racnodep1
+a27fceea9fe6  localhost/oracle/database-rac:23.26ai                        46 minutes ago  Up 37 minutes (healthy)              racnodep2
 ```
 Note:
 - Look for `(healthy)` next to container names under `STATUS` section.

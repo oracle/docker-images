@@ -24,6 +24,7 @@ from oraracstdby import *
 from oraracadd import *
 from oracvu import *
 from oragiadd import *
+from oraops import OperationRunner, CommandBuilder
 
 class OraRacAdd:
    """
@@ -39,6 +40,8 @@ class OraRacAdd:
          self.file_name           = os.path.basename(__file__)
          self.osetupssh           = orasetupssh
          self.ocvu                = oracvu
+         self.op_runner           = OperationRunner(self.ocommon, self.file_name, "RAC")
+         self.cmd_builder         = CommandBuilder(self.ocommon)
          self.ogiadd              = OraGIAdd(self.ologger,self.ohandler,self.oenv,self.ocommon,self.ocvu,self.osetupssh)
       except BaseException as ex:
          traceback.print_exc(file = sys.stdout)
@@ -94,6 +97,7 @@ class OraRacAdd:
                self.ocommon.log_info_message("End create_db()",self.file_name)
                self.ocommon.perform_db_check("ADDNODE")
             self.ocommon.update_statefile("completed")
+            self.ocommon.update_osid_for_grid_and_db_users()
        ct = datetime.datetime.now()
        ets = ct.timestamp()
        totaltime=ets - bts
@@ -141,16 +145,101 @@ class OraRacAdd:
           self.ocommon.prog_exit("127")
   
    def perform_ssh_setup(self):
-       """
-       Perform ssh setup
-       """
-       if not self.ocommon.detect_k8s_env():
-           dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-           self.osetupssh.setupssh(dbuser,dbhome,'ADDNODE')
-           #if self.ocommon.check_key("VERIFY_SSH",self.ora_env_dict):
-            #self.osetupssh.verifyssh(dbuser,'ADDNODE')
-       else:
-         self.ocommon.log_info_message("SSH setup must be already completed during env setup as this this k8s env.",self.file_name)
+      """
+      Perform SSH setup for DB addnode.
+
+      Rules:
+      - DB addnode requires oracle↔oracle SSH
+      - NEVER regenerate keys if SSH_PRIVATE_KEY / SSH_PUBLIC_KEY exist
+      - In k8s: verify only
+      - In non-k8s: setup only if keys are not externally provided
+      """
+
+      # --------------------------------------------------
+      # DB user context (THIS IS CRITICAL)
+      # --------------------------------------------------
+      dbuser, dbhome, _, _ = self.ocommon.get_db_params()
+
+      # --------------------------------------------------
+      # Resolve cluster nodes
+      # --------------------------------------------------
+      cluster_nodes = self.ocommon.get_cluster_nodes() or ""
+      cluster_nodes = cluster_nodes.replace(",", " ").split()
+
+      existing_nodes = self.ocommon.get_existing_clu_nodes(False)
+      if existing_nodes:
+         existing_nodes = existing_nodes.replace(",", " ").split()
+      else:
+         existing_nodes = []
+
+      all_nodes = sorted(set(cluster_nodes + existing_nodes))
+      all_nodes_str = " ".join(all_nodes)
+      node = ""
+      existing_crs_nodes = self.ocommon.get_existing_clu_nodes(True)
+      for cnode in existing_crs_nodes.split(","):
+            retcode3 = self.ocvu.check_clu(cnode, True, None)
+            if retcode3 == 0:
+               node = cnode
+               break
+      # --------------------------------------------------
+      # Determine DB version (for verification logic)
+      # --------------------------------------------------
+      oraversion = self.ocommon.get_rsp_version("ADDNODE", node)
+      version = int(oraversion.split(".", 1)[0].strip())
+
+      # --------------------------------------------------
+      # Decide if SSH setup is allowed
+      # --------------------------------------------------
+      ssh_keys_provided = (
+         self.ocommon.check_key("SSH_PRIVATE_KEY", self.ora_env_dict)
+         and self.ocommon.check_key("SSH_PUBLIC_KEY", self.ora_env_dict)
+      )
+
+      crs_gpc = self.ocommon.check_key("CRS_GPC", self.ora_env_dict)
+
+      # --------------------------------------------------
+      # Non-k8s path
+      # --------------------------------------------------
+      if not self.ocommon.detect_k8s_env():
+
+         if ssh_keys_provided or crs_gpc:
+               self.ocommon.log_info_message(
+                  "SSH keys are externally managed; skipping SSH setup",
+                  self.file_name
+               )
+         else:
+               self.ocommon.log_info_message(
+                  "Performing SSH setup for DB ADDNODE",
+                  self.file_name
+               )
+               # IMPORTANT: DB user, ADDNODE
+               self.osetupssh.setupssh(dbuser, dbhome, "ADDNODE")
+
+      # --------------------------------------------------
+      # k8s path (verify only)
+      # --------------------------------------------------
+      else:
+         self.ocommon.log_info_message(
+               "k8s environment detected; skipping SSH setup",
+               self.file_name
+         )
+
+      # --------------------------------------------------
+      # Final authoritative verification (oracle user)
+      # --------------------------------------------------
+      if all_nodes_str:
+         self.ocommon.log_info_message(
+               "Verifying oracle SSH connectivity for nodes: {0}".format(all_nodes_str),
+               self.file_name
+         )
+
+         self.osetupssh.verifyssh(
+               dbuser,
+               dbhome,
+               "runcluvfy.sh",
+               all_nodes_str,
+               version
+         )
 
    def db_sw_install(self):
        """
@@ -180,12 +269,11 @@ class OraRacAdd:
        if nodeflag:
           #cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\" -skipPrereqs -waitForCompletion -ignoreSysPrereqs {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
           if int(version) < 23:
-              cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\"  -waitForCompletion  {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+              cmd=self.cmd_builder.build_rac_addnode(dbuser, dbhome, crs_nodes, copyflag, node)
           else:
-             cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/addnode/addnode.sh \\"CLUSTER_NEW_NODES={{{2}}}\\"  -waitForCompletion  {3} -silent'"'''.format(dbuser,dbhome,crs_nodes,copyflag,node)
+             cmd=self.cmd_builder.build_rac_addnode(dbuser, dbhome, crs_nodes, copyflag, node)
              #cmd='''su - {0} -c "ssh -vvv {4} 'sh {1}/runInstaller -setupDBHome -OSDBA <group> -OSBACKUPDBA <group> -OSDGDBA <group> -OSKMDBA <group> -OSRACDBA <group> -ORACLE_BASE <base> -clusterNodes <new nodes>'"'''
-          output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-          self.ocommon.check_os_err(output,error,retcode,None)
+          output,error,retcode=self.op_runner.run_command("rac_addnode_db_sw", cmd, None, None, None)
        else:
           self.ocommon.log_error_message("Clusterware is not up on any node : " + existing_crs_nodes + ".Exiting...",self.file_name)
           self.prog_exit("127")
@@ -219,9 +307,8 @@ class OraRacAdd:
        if nodeflag:
           dbname,osid,dbuname=self.ocommon.getdbnameinfo()
           for new_node in pub_nodes.split(" "):
-             cmd='''su - {0} -c "ssh {2} '{1}/bin/dbca -addInstance -silent  -nodeName {3} -gdbName {4}'"'''.format(dbuser,dbhome,node,new_node,osid)
-             output,error,retcode=self.ocommon.execute_cmd(cmd,None,None)
-             self.ocommon.check_os_err(output,error,retcode,True)
+             cmd=self.cmd_builder.build_rac_add_instance(dbuser, dbhome, node, new_node, osid)
+             output,error,retcode=self.op_runner.run_command("rac_addnode_dbca_addinst", cmd, None, None, True)
        else:
           self.ocommon.log_error_message("Clusterware is not up on any node : " + existing_crs_nodes + ".Exiting...",self.file_name)
           self.prog_exit("127")
