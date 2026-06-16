@@ -165,7 +165,7 @@ SCAN VIP is enabled.
 ```
 
 ## Debugging Oracle RAC Containers
-If the install fails for any reason, log in to container using the above command and check `/tmp/orod/oracle_db_setup.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
+If the install fails for any reason, log in to container using the above command and check `/tmp/orod/oracle_db_setup.log`. For older Container Registry images up to `container-registry.oracle.com/database/rac_ru:latest-21`, if that file is not present, check `/tmp/orod/oracle_rac_setup.log` instead. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
 
 
 ## Client Connection

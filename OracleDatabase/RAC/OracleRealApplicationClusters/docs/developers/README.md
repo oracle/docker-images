@@ -71,8 +71,10 @@ Example of pulling an Oracle RAC Image from the Oracle Container Registry:
 ```bash
 # For Oracle RAC Container Image-
 podman pull container-registry.oracle.com/database/rac_ru:latest
-podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:23.26ai
+podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle/database-rac:21c
 ```
+
+**Note:** The pre-built Oracle Container Registry image `container-registry.oracle.com/database/rac_ru:latest` can still work on Oracle Linux 8. For Oracle Linux 9 hosts using cgroup v2, prefer building the image from the latest containerfiles in this repository, because the OCR image can still carry the older `init.ohasd` cgroup v1 behavior and fail during Grid setup.
 
 **Notes**
 - Use the Oracle `DNSServer` Image to deploy a container providing DNS resolutions. Refer [OracleDNSServer](../../../OracleDNSServer/README.md)

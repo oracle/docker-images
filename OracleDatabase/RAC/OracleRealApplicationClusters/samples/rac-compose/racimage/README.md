@@ -63,7 +63,7 @@ export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
 export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export ASM_DEVICE1="/dev/asm-disk1"
 export ASM_DEVICE2="/dev/asm-disk2"
@@ -150,6 +150,12 @@ podman-compose start ${RACNODE2_CONTAINER_NAME}
 podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
 ```
 
+If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
+
+```bash
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+```
+
 Successful Message when RAC container is setup properly-
 ```bash
 ===================================
@@ -191,7 +197,7 @@ export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
 export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export ASM_DEVICE1="/dev/asm-disk1"
 export ASM_DEVICE2="/dev/asm-disk2"
@@ -324,7 +330,7 @@ export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
 export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export CRS_ASM_DISCOVERY_STRING="/oradata"
 export CRS_ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
@@ -489,7 +495,7 @@ export RACNODE1_CRS_PRIVATE_IP2=192.168.18.170
 export INSTALL_NODE=racnodep1
 export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\""
+export CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip"
 export SCAN_NAME=racnodepc1-scan
 export CRS_ASM_DISCOVERY_STRING="/oradata"
 export CRS_ASM_DEVICE_LIST="/oradata/asm_disk01.img,/oradata/asm_disk02.img,/oradata/asm_disk03.img,/oradata/asm_disk04.img,/oradata/asm_disk05.img"
@@ -639,7 +645,7 @@ export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
 export INSTALL_NODE=racnodep3
 export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\""
+export CRS_NODES="pubhost:racnodep3,viphost:racnodep3-vip"
 export EXISTING_CLS_NODE="racnodep1,racnodep2"
 export SCAN_NAME=racnodepc1-scan
 export ASM_DEVICE1="/dev/asm-disk1"
@@ -705,7 +711,7 @@ export RACNODE3_CRS_PRIVATE_IP2=192.168.18.172
 export INSTALL_NODE=racnodep3
 export RAC_IMAGE_NAME=localhost/oracle/database-rac:23.26ai
 export DEFAULT_GATEWAY="10.0.20.1"
-export CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\""
+export CRS_NODES="pubhost:racnodep3,viphost:racnodep3-vip"
 export EXISTING_CLS_NODE="racnodep1,racnodep2"
 export SCAN_NAME=racnodepc1-scan
 export CRS_ASM_DISCOVERY_STRING="/oradata"

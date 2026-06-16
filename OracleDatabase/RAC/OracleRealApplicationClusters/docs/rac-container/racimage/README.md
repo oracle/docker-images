@@ -102,7 +102,7 @@ podman create -t -i \
 -e DB_SERVICE=service:soepdb \
 -e CRS_PRIVATE_IP1=192.168.17.170 \
 -e CRS_PRIVATE_IP2=192.168.18.170 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -149,7 +149,7 @@ podman create -t -i \
 -e DB_SERVICE=service:soepdb \
 -e CRS_PRIVATE_IP1=192.168.17.171 \
 -e CRS_PRIVATE_IP2=192.168.18.171 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -206,7 +206,7 @@ podman create -t -i \
 -e DB_SERVICE=service:soepdb \
 -e CRS_PRIVATE_IP1=192.168.17.170 \
 -e CRS_PRIVATE_IP2=192.168.18.170 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -254,7 +254,7 @@ podman create -t -i \
 -e DB_SERVICE=service:soepdb \
 -e CRS_PRIVATE_IP1=192.168.17.171 \
 -e CRS_PRIVATE_IP2=192.168.18.171 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -325,7 +325,7 @@ podman create -t -i \
 -e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.170 \
 -e CRS_PRIVATE_IP2=192.168.18.170 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -376,7 +376,7 @@ podman create -t -i \
 -e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.171 \
 -e CRS_PRIVATE_IP2=192.168.18.171 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -446,7 +446,7 @@ podman create -t -i \
 -e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.170 \
 -e CRS_PRIVATE_IP2=192.168.18.170 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -498,7 +498,7 @@ podman create -t -i \
 -e DBCA_RESPONSE_FILE=/tmp/dbca_23.26ai.rsp \
 -e CRS_PRIVATE_IP1=192.168.17.171 \
 -e CRS_PRIVATE_IP2=192.168.18.171 \
--e CRS_NODES="\"pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip\"" \
+-e CRS_NODES="pubhost:racnodep1,viphost:racnodep1-vip;pubhost:racnodep2,viphost:racnodep2-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -556,6 +556,12 @@ It can take approximately 20 minutes or longer to create and set up a two-node O
 
 ```bash
 podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+```
+
+If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
+
+```bash
+podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
 ```
 
 When the database configuration is complete, you should see a message, similar to the following, on the installing node i.e. `racnodep1` in this case:
@@ -628,7 +634,7 @@ podman create -t -i \
 -e DB_SERVICE=service:soepdb \
 -e CRS_PRIVATE_IP1=192.168.17.172 \
 -e CRS_PRIVATE_IP2=192.168.18.172 \
--e CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\"" \
+-e CRS_NODES="pubhost:racnodep3,viphost:racnodep3-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
@@ -702,7 +708,7 @@ podman create -t -i \
 -e DB_SERVICE=service:soepdb \
 -e CRS_PRIVATE_IP1=192.168.17.172 \
 -e CRS_PRIVATE_IP2=192.168.18.172 \
--e CRS_NODES="\"pubhost:racnodep3,viphost:racnodep3-vip\"" \
+-e CRS_NODES="pubhost:racnodep3,viphost:racnodep3-vip" \
 -e SCAN_NAME=racnodepc1-scan \
 -e INIT_SGA_SIZE=3G \
 -e INIT_PGA_SIZE=2G \
