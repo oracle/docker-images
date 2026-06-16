@@ -57,6 +57,8 @@ RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \
     chown -R grid:oinstall $PATCH_INSTALL_DIR && \
     sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.conf  && \
     sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.conf  && \
+    sed -e '/memlock/s/^/#/g' -i /etc/security/limits.d/*preinstall*.conf  && \
+    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/*preinstall*.conf  && \
     sync && \
     su grid -c "$PATCH_INSTALL_DIR/$GRID_PATCH_FILE $PATCH_INSTALL_DIR" && \
     chown -R oracle:oinstall $PATCH_INSTALL_DIR
@@ -69,6 +71,7 @@ USER root
 
 RUN $PATCH_INSTALL_DIR/$FIXUP_PREQ_FILE  && \
     rm -rf /etc/oracle && \
+    rm -rf $GRID_BASE/diag $DB_BASE/diag && \
     rm -rf $PATCH_INSTALL_DIR && \
     rm -rf $PATCH_DIR/* $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage
 
