@@ -127,6 +127,14 @@ Example: To build Oracle RAC Database Container Image for version 23.26ai(26ai),
 ```bash
 ./buildContainerImage.sh -v 26.0.0
 ```
+Example: To build Oracle RAC Database Container Image for 23.26.1 with the 23.26.1 Grid Infrastructure and Database zip files, use the below command:
+```bash
+./buildContainerImage.sh \
+    -v 26.0.0 \
+    -i \
+    -t localhost/oracle/database-rac:23.26.1 \
+    -o "--build-arg INSTALL_FILE_1=LINUX.X64_2326100_grid_home.zip --build-arg INSTALL_FILE_2=LINUX.X64_2326100_db_home.zip"
+```
 
 Retag it as below as we are going to refer this image as `localhost/oracle/database-rac:23.26ai` everywhere:
 ```bash
@@ -170,6 +178,15 @@ Example: To build Oracle RAC Database Container Base Image for version 23.26ai(2
 ```bash
 ./buildContainerImage.sh -v 26.0.0 -b
 ```
+Example: To build an Oracle RAC Database Container Base Image for 23.26.1 for patching or extension purposes, use the below command:
+```bash
+./buildContainerImage.sh \
+    -v 26.0.0 \
+    -i \
+    -b \
+    -t localhost/oracle/database-rac:23.26.1-base \
+    -o "--build-arg INSTALL_FILE_1=LINUX.X64_2326100_grid_home.zip --build-arg INSTALL_FILE_2=LINUX.X64_2326100_db_home.zip"
+```
 To build an Oracle RAC Database Container Base Image, you need to use `-b`.
 
 To change the Base Image during building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:9`.
@@ -181,6 +198,7 @@ To change the Base Image during building Oracle RAC Database Container Images, y
    -i: ignore the MD5 checksums
    -t: user-defined image name and tag (e.g., image_name:tag). Default is set to `oracle/database-rac:<VERSION>` for  RAC Image and `oracle/database-rac:<VERSION>-slim` for RAC slim image.
    -o: passes on container build option (e.g., --build-arg SLIMMIMG=true for slim,--build-arg BASE_OL_IMAGE=oraclelinux:9 to change base image). The default is "--build-arg SLIMMING=false"
+   -b: build base stage only
    ```
 - After Oracle RAC Container image is built, you can also apply RU and one-off patches to build the patched image. For Example: After building the `21.3.0` Oracle RAC Database Container Image, to apply the 21c RU and build the 21c patched image, refer to [Example of how to create an Oracle RAC Database Container Patched Image](./samples/applypatch/README.md).
 - If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.

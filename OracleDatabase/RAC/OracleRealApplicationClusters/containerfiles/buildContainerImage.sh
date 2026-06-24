@@ -104,8 +104,14 @@ done
 
 # Oracle Database Image Name
 if [ "${BASE_ONLY}" -eq 1 ]; then
-  IMAGE_NAME="oracle/database-rac:${VERSION}-base"
-  DOCKEROPS=" --build-arg SLIMMING=true"
+  if [ "${IMAGE_NAME}"x = "x" ]; then
+    IMAGE_NAME="oracle/database-rac:${VERSION}-base"
+  else
+    echo "Image name is passed as a variable"
+  fi
+  DOCKEROPS="${DOCKEROPS//--build-arg SLIMMING=true/}"
+  DOCKEROPS="${DOCKEROPS//--build-arg SLIMMING=false/}"
+  DOCKEROPS+=" --build-arg SLIMMING=true"
 elif [ "${IMAGE_NAME}"x = "x" ] && [ "${SLIM}" == "true" ]; then
   IMAGE_NAME="oracle/database-rac:${VERSION}-slim"
 elif [ "${IMAGE_NAME}"x = "x" ] && [ "${SLIM}" == "false" ]; then
@@ -160,7 +166,7 @@ if [ ${BASE_ONLY} -eq 1 ]; then
   echo "Building base stage image '${IMAGE_NAME}' ..."
   # BUILD THE BASE STAGE IMAGE (replace all environment variables)
   docker build --force-rm=true \
-        --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} --build-arg VERSION="${VERSION}" --target base \
+        --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} --build-arg VERSION="${VERSION}" --target final \
         -t "${IMAGE_NAME}" -f "${VERSION}"/Containerfile . || {
     echo ""
     echo "ERROR: Base stage image was NOT successfully created."
