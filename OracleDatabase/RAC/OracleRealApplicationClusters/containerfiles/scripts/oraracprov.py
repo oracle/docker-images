@@ -553,8 +553,10 @@ class OraRacProv:
          cmd=self.prepare_db_cmd() 
 
       dbpasswd=self.ocommon.get_db_passwd()
-      tdepasswd=self.ocommon.get_tde_passwd() 
-      self.ocommon.set_mask_str(dbpasswd) 
+      mask_map={"HIDDEN_STRING": dbpasswd}
+      if self.ocommon.check_key("SETUP_TDE_WALLET", self.ora_env_dict):
+         mask_map["HIDDEN_TDE_STRING"] = self.ocommon.get_tde_passwd()
+      self.ocommon.set_mask_map(mask_map)
       output,error,retcode=self.op_runner.run_command("rac_create_db", cmd, None, None, True)
       ### Unsetting the encrypt value to None
       self.ocommon.unset_mask_str()
@@ -609,7 +611,7 @@ class OraRacProv:
          if int(version) < 21:
             tdewallet = ""
          else:
-            tdewallet = '''-configureTDE true -tdeWalletPassword HIDDEN_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
+            tdewallet = '''-configureTDE true -tdeWalletPassword HIDDEN_TDE_STRING -tdeWalletRoot {0} -tdeWalletLoginType AUTO_LOGIN -encryptTablespaces all'''.format(dbfiledest)
 
        # Conditionally set the export and additional dbca options if version is 19
        export_line = "export CV_ASSUME_DISTID=OL8;" if int(version) == 19 else ""

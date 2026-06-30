@@ -22,6 +22,26 @@ import gzip
 import shutil
 
 
+def _runtime_setting(key, default_value):
+   env_value = os.environ.get(key)
+   if env_value not in (None, ""):
+      return env_value
+
+   try:
+      from oraenv import OraEnv
+      env_dict = OraEnv.get_env_dict()
+   except Exception:
+      return default_value
+
+   if env_dict is None:
+      return default_value
+
+   value = env_dict.get(key)
+   if value in (None, ""):
+      return default_value
+   return value
+
+
 class LoggingType(object):
    CONSOLE = 1
    FILE = 2
@@ -93,6 +113,51 @@ class SizeTimestampRotatingHandler(RotatingFileHandler):
 
       self._enforce_backup_count(base, folder)
 
+   def _base_file_size(self):
+      try:
+         return os.path.getsize(self.baseFilename)
+      except OSError:
+         return 0
+
+   def _iter_sized_chunks(self, message):
+      if self.maxBytes <= 0:
+         yield message
+         return
+
+      encoding = self.encoding or "utf-8"
+      current = []
+      current_size = 0
+
+      for char in message:
+         char_size = len(char.encode(encoding, errors="replace"))
+         if current and current_size + char_size > self.maxBytes:
+            yield "".join(current)
+            current = [char]
+            current_size = char_size
+            continue
+         current.append(char)
+         current_size += char_size
+
+      if current:
+         yield "".join(current)
+
+   def _write_chunk(self, chunk):
+      if self.stream is None:
+         self.stream = self._open()
+      self.stream.write(chunk)
+      self.flush()
+
+   def _emit_sized_message(self, message):
+      encoding = self.encoding or "utf-8"
+
+      for chunk in self._iter_sized_chunks(message):
+         chunk_size = len(chunk.encode(encoding, errors="replace"))
+         if self.maxBytes > 0:
+            current_size = self._base_file_size()
+            if current_size > 0 and current_size + chunk_size > self.maxBytes:
+               self.doRollover()
+         self._write_chunk(chunk)
+
    def _enforce_backup_count(self, base, folder):
       if self.backupCount <= 0:
          return
@@ -118,7 +183,11 @@ class SizeTimestampRotatingHandler(RotatingFileHandler):
       self._compress_rotated_files_if_due()
       if self._should_time_rollover():
          self.doRollover()
-      super(SizeTimestampRotatingHandler, self).emit(record)
+      try:
+         message = self.format(record) + self.terminator
+         self._emit_sized_message(message)
+      except Exception:
+         self.handleError(record)
 
    def doRollover(self):
       if self.stream:
@@ -166,8 +235,8 @@ class OraLogger(object):
       self._lock = threading.RLock()
       self._configured_filename = None
       self._stdout_enabled = True
-      self._rotate_max_bytes = int(os.environ.get("ORA_LOG_MAX_BYTES", str(100 * 1024)))
-      self._archive_backup_count = int(os.environ.get("ORA_LOG_BACKUP_COUNT", "14"))
+      self._rotate_max_bytes = int(_runtime_setting("ORA_LOG_MAX_BYTES", str(100 * 1024)))
+      self._archive_backup_count = int(_runtime_setting("ORA_LOG_BACKUP_COUNT", "14"))
       self._configure_logger(self.filename_)
 
    def getStdOutValue(self):
