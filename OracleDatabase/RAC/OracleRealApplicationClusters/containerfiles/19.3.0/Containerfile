@@ -119,7 +119,7 @@ ENV GRID_BASE=/u01/app/grid \
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     PATH=$GRID_HOME/perl/bin:$DB_HOME/perl/bin:/bin:/usr/bin:/sbin:/usr/sbin \
      SCRIPT_DIR=$INSTALL_DIR/startup \
      RAC_SCRIPTS_DIR="scripts" \
      GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \
@@ -303,7 +303,7 @@ ENV GRID_BASE=/u01/app/grid \
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     PATH=$GRID_HOME/perl/bin:$DB_HOME/perl/bin:/bin:/usr/bin:/sbin:/usr/sbin \
      SCRIPT_DIR=$INSTALL_DIR/startup \
      RAC_SCRIPTS_DIR="scripts" \
      GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \

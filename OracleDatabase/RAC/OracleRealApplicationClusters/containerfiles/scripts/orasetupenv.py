@@ -91,6 +91,7 @@ class OraSetupEnv:
          self.add_dns_servers()
          self.populate_etchosts("localhost")
          self.populate_user_profiles()
+         self.configure_legacy_scp_for_19c()
          #self.setup_ssh_for_k8s()
          self.setup_gi_sw()
          self.set_asmdev_perm()
@@ -762,6 +763,63 @@ class OraSetupEnv:
             # Optionally set environment variables too
             os.environ["SSH_PRIVATE_KEY"] = privkey_path
             os.environ["SSH_PUBLIC_KEY"] = pubkey_path
+
+    def configure_legacy_scp_for_19c(self):
+        """
+        Force legacy scp protocol for Oracle 19c CVU/DBCA on newer OpenSSH.
+        """
+        try:
+            oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+            version = oraversion.split(".", 1)[0].strip()
+        except Exception as ex:
+            self.ocommon.log_warn_message(
+                "Unable to determine Oracle version for legacy scp setup: {0}".format(ex),
+                self.file_name
+            )
+            return
+
+        if version != "19":
+            self.ocommon.log_info_message(
+                "Skipping legacy scp setup for Oracle major version {0}".format(version),
+                self.file_name
+            )
+            return
+
+        scp_bin = "/usr/bin/scp"
+        scp_orig = "/usr/bin/scp.openssh"
+
+        if not os.path.exists(scp_bin):
+            self.ocommon.log_warn_message(
+                "scp not found at {0}; skipping legacy scp setup".format(scp_bin),
+                self.file_name
+            )
+            return
+
+        if os.path.exists(scp_orig):
+            self.ocommon.log_info_message(
+                "Legacy scp wrapper already installed",
+                self.file_name
+            )
+            return
+
+        check_cmd = '''{0} -O 2>&1 | grep -q "usage: scp"'''.format(scp_bin)
+        output, error, retcode = self.ocommon.execute_cmd(check_cmd, None, None)
+        if retcode != 0:
+            self.ocommon.log_info_message(
+                "Installed scp does not support -O; skipping legacy scp setup",
+                self.file_name
+            )
+            return
+
+        install_cmd = '''mv {0} {1} && printf '%s\n' '#!/bin/bash' 'exec /usr/bin/scp.openssh -O -T "$@"' > {0} && chmod 755 {0} {1}'''.format(
+            scp_bin, scp_orig
+        )
+        self.ocommon.execute_cmd_checked(install_cmd, None, None, exit_on_error=True)
+        self.ocommon.log_info_message(
+            "Installed Oracle 19c legacy scp wrapper at {0}".format(scp_bin),
+            self.file_name
+        )
+
 ###### Install CRS Software on node ######
     def crs_sw_install(self):
        """
@@ -800,8 +858,8 @@ class OraSetupEnv:
         """
         giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
         dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-        gipath='''{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(gihome)
-        dbpath='''{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(dbhome)
+        gipath='''{0}/perl/bin:{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(gihome)
+        dbpath='''{0}/perl/bin:{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(dbhome)
         gildpath='''{0}/lib:/lib/:/usr/lib'''.format(gihome)
         dbldpath='''{0}/lib:/lib/:/usr/lib'''.format(dbhome)
         cdgihome='''cd {0}'''.format(gihome)
