@@ -5,7 +5,7 @@
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Database 12c Release 2
-# 
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) linuxx64_12201_database.zip
@@ -15,8 +15,8 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/database:12.2.0.1-${EDITION} . 
+# Run:
+#      $ docker build -t oracle/database:12.2.0.1-${EDITION} .
 #
 # Pull base image
 # ---------------
@@ -46,7 +46,6 @@ ENV ORACLE_BASE=/opt/oracle \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
     CREATE_DB_FILE="createDB.sh" \
-    DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
@@ -116,5 +115,5 @@ WORKDIR /home/oracle
 HEALTHCHECK --interval=1m --start-period=5m \
    CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
 
-# Define default command to start Oracle Database. 
-CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
+# Define default command to start Oracle Database.
+CMD exec $ORACLE_BASE/$RUN_FILE

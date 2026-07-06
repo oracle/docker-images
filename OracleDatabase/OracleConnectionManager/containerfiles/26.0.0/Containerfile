@@ -4,18 +4,17 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
-# 
+#
 #
 # ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Containerfile for Oracle Database 23.26ai Oracle Connection Manager 
+# This is the Containerfile for Oracle Database 23.26ai Oracle Connection Manager
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
 #      $ podman build -t oracle/cman:23.26ai .
 
-# hadolint global ignore=DL3006,DL3025,SC2086
 ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image

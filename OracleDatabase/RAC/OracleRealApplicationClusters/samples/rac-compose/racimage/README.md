@@ -147,7 +147,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
@@ -284,7 +284,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -437,7 +437,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -606,7 +606,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -682,7 +682,7 @@ podman network connect ${PRIVATE1_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP1}
 podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP2}  ${RACNODE3_CONTAINER_NAME}
 
 podman-compose start ${RACNODE3_CONTAINER_NAME}
-podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -748,7 +748,7 @@ podman network connect ${PRIVATE1_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP1}
 podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP2}  ${RACNODE3_CONTAINER_NAME}
 
 podman-compose start ${RACNODE3_CONTAINER_NAME}
-podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-

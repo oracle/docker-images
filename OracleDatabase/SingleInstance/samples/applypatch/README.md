@@ -17,6 +17,14 @@ The scripts used in this example rely on following directory structure:
           00N (optional, Nth patch directory)
           p6880880*.zip (optional, OPatch zip file)
 
+    23.26.1
+       patches
+          001 (patch directory)
+             pNNNNNN_RRRRRR.zip  (patch zip file)
+          002 (optional)
+          00N (optional, Nth patch directory)
+          p6880880*.zip (optional, OPatch zip file)
+
 **patches:** The working directory for patch installation.  
 **001:** The directory containing the patch zip file.  
 **00N:** The second, third, ... directory containing the second, third, ... patch zip file.
@@ -42,7 +50,7 @@ the patched image:
     
     Parameters:
        -v: version to build
-       Choose one of: 12.1.0.2, 12.2.0.1, 19.3.0
+       Choose one of: 12.1.0.2, 12.2.0.1, 19.3.0, 23.26.1
        -e: creates a patched image based on 'Enterprise Edition'
        -s: creates a patched image based on 'Standard Edition 2'
        -p: patch label to be used for the tag

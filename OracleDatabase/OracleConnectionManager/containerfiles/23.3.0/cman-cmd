@@ -1,0 +1,6 @@
+podman run -d --hostname racnode-cman1 --dns-search=example.com --dns 172.10.1.25 \
+--network=truecache_pub1_nw --ip=172.10.1.15 \
+-e DOMAIN=example.com -e PUBLIC_IP=172.10.1.15 \
+-e PUBLIC_HOSTNAME=racnode-cman1 -e SCAN_NAME=racnode-scan \
+-e SCAN_IP=172.10.1.70 --privileged=false \
+-p 1525:1525 --name racnode-cman localhost/oracle/client-cman:23.3.0

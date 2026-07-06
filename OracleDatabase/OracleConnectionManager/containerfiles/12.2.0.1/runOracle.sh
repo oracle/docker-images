@@ -2,18 +2,18 @@
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
-# 
+#
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
 # Description: Runs the Oracle Database inside the container
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 
 
 env > /tmp/envfile
 
-chmod 755 /tmp/envfile 
+chmod 755 /tmp/envfile
 source /tmp/envfile
 source $SCRIPT_DIR/functions.sh
 
@@ -58,7 +58,6 @@ trap _int SIGINT
 trap _term SIGTERM
 
 # Set SIGKILL handler
-# shellcheck disable=SC2173
 trap _kill SIGKILL
 
 ############ Removing /tmp/orod.log #####
@@ -70,7 +69,7 @@ sudo $SCRIPT_DIR/$CONFIG_CMAN_FILE
 if [ $? -eq 0 ];then
  print_message "cman started sucessfully"
   echo $TRUE
-else 
+else
  error_exit "Cman startup failed!"
 fi
 

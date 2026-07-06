@@ -9,7 +9,6 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-
 if [ -e "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb" ] && [ -n "${ORACLE_PWD}" ] && [ "${ORACLE_PWD}" != "$1" ]; then
       echo "WARNING: The database password can not be changed for this container having a prebuilt database. The original password exists in the container environment. Your new password has been ignored!"
       exit 1
@@ -33,4 +32,3 @@ sqlplus / as sysdba << EOF
       ALTER USER PDBADMIN IDENTIFIED BY "$ORACLE_PWD";
       exit;
 EOF
-

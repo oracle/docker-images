@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -7,9 +6,9 @@
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
 # Description: Sets up the unix environment for DB installation.
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 
 # Create Directories
 if [ "${SLIMMING}x" != 'truex' ]; then
@@ -37,7 +36,7 @@ fi
 if [ "${SLIMMING}x" != 'truex' ]; then
  if [ "${DB_USER}" == "${GRID_USER}" ]; then
    sed -i '/PATH=/d' /home/"${DB_USER}"/.bashrc
-   echo "export PATH=$GRID_HOME/bin:$DB_PATH" >> /home/"${DB_USER}"/.bashrc 
+   echo "export PATH=$GRID_HOME/bin:$DB_PATH" >> /home/"${DB_USER}"/.bashrc
    echo "export LD_LIBRARY_PATH=$GRID_HOME/lib:$DB_LD_LIBRARY_PATH" >> /home/"${DB_USER}"/.bashrc
  fi
 fi

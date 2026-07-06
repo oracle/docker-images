@@ -13,7 +13,6 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-
 set -e
 
 # Validation: Check if PRIMARY_DB_CONN_STR is provided or not
@@ -38,4 +37,3 @@ EOF
 
 # Sleep for dgmgrl to start observer in background otherwise container will exit
 sleep 4
-

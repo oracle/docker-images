@@ -5,19 +5,19 @@
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
 # This is the Dockerfile for Oracle Connection Manager
-# 
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_213000_client.zip 
+# (1) LINUX.X64_213000_client.zip
 #     Oracle Database 21c Client (21.3) for Linux x86-64
 #     Download Oracle Connection Manager as part of the Oracle Database Client
-#     from https://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle21c-linux-210000-5022980.html 
+#     from https://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle21c-linux-210000-5022980.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/cman:21.3.0 . 
+# Run:
+#      $ docker build -t oracle/cman:21.3.0 .
 #
 # Pull base image
 # ---------------
@@ -41,9 +41,8 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CMANORA="cman.ora" \
     FUNCTIONS="functions.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
-    container="true" 
+    container="true"
 # Use second ENV so that variable get substituted
-# hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH \
      SCRIPT_DIR=$INSTALL_DIR/startup \
@@ -68,17 +67,16 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
     rm -f /etc/sysctl.d/99-oracle-database-preinstall-21c-sysctl.conf && \
-    rm -f /etc/sysctl.d/99-sysctl.conf && \ 
+    rm -f /etc/sysctl.d/99-sysctl.conf && \
     rm -f /etc/rc.d/init.d/oracle-database-preinstall-21c-firstboot && \
     chown -R oracle:oinstall $SCRIPT_DIR && \
     chmod 755 $SCRIPT_DIR/*.sh && \
     chmod 666 $SCRIPT_DIR/*.ora && \
-    sync 
+    sync
 
 USER  oracle
 WORKDIR /home/oracle
 EXPOSE 1521 5500
 
 # Define default command to start Oracle Database.
-# hadolint ignore=DL3025
 CMD exec $SCRIPT_DIR/$RUN_FILE

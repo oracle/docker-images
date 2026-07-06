@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -7,9 +6,9 @@
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
 # Description: Checks the available space of the system.
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 
 REQUIRED_SPACE_GB=35
 AVAILABLE_SPACE_GB=`df -PB 1G / | tail -n 1 | awk '{print $4}'`

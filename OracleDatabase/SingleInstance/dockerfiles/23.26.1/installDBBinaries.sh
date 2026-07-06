@@ -9,7 +9,6 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-
 # Convert $1 into upper case via "^^" (bash version 4 onwards)
 EDITION=${1^^}
 

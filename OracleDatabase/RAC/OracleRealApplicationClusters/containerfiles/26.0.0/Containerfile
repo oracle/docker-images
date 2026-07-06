@@ -5,26 +5,24 @@
 # ORACLE CONTAINERFILES PROJECT
 # --------------------------
 # This is the Containerfile for Oracle Database 26ai Release 3 Real Application Clusters to build the container image
-# 
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) LINUX.X64_260000_db_home.zip
-# (2) LINUX.X64_260000_grid_home.zip 
+# (2) LINUX.X64_260000_grid_home.zip
 #     Download Oracle Grid 26ai Release 4 Enterprise Edition for Linux x64
 #     Download Oracle Database 26ai Release 4  Enterprise Edition for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Run: 
-#      $ podman build -t oracle/database:26.0.0-rac . 
+# Run:
+#      $ podman build -t oracle/database:26.0.0-rac .
 #
-# hadolint global ignore=SC2086,SC3014
 ARG SLIMMING=false
 ARG BASE_OL_IMAGE=oraclelinux:9
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 ARG VERSION
@@ -104,7 +102,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
 
 #############################################
 # -------------------------------------------
-# Start new stage for Non-Slim Image 
+# Start new stage for Non-Slim Image
 # -------------------------------------------
 #############################################
 
@@ -121,7 +119,7 @@ ENV GRID_BASE=/u01/app/grid \
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     PATH=$GRID_HOME/perl/bin:$DB_HOME/perl/bin:/bin:/usr/bin:/sbin:/usr/sbin \
      SCRIPT_DIR=$INSTALL_DIR/startup \
      RAC_SCRIPTS_DIR="scripts" \
      GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \
@@ -211,10 +209,10 @@ USER ${USER}
 RUN if [ "${SLIMMING}x" != 'truex' ]; then \
       $INVENTORY/orainstRoot.sh && \
       $GRID_HOME/root.sh && \
-      :;\   
+      :;\
     fi
 USER ${DB_USER}
-RUN if [ "${SLIMMING}x" != 'truex' ]; then \     
+RUN if [ "${SLIMMING}x" != 'truex' ]; then \
       $INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE && \
       $INSTALL_DIR/install/$ENABLE_RAC_FILE && \
       $INSTALL_SCRIPTS/$ORACLE_HOME_CLEANUP && \
@@ -269,7 +267,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
     chmod +x /etc/rc.d/rc.local  && \
     cp $SCRIPT_DIR/$INITSH /usr/bin/$INITSH && \
     setcap 'cap_net_admin,cap_net_raw+ep' /usr/bin/ping && \
-    chmod 755 /usr/bin/$INITSH && \ 
+    chmod 755 /usr/bin/$INITSH && \
     rm -f $INSTALL_DIR/install/* && \
     rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage && \
     sync

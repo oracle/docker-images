@@ -1,15 +1,14 @@
 #!/bin/bash
-# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
 #
 # Since: December, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
-# Description:Installing Oracle DB software 
-# 
+# Description:Installing Oracle DB software
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 
 EDITION=$1
 
@@ -55,7 +54,7 @@ export LD_LIBRARY_PATH=${ORACLE_HOME}/lib:/lib:/usr/lib
 # Install Oracle binaries
 if [ "${DB_USER}" != "${GRID_USER}" ]; then
 mkdir -p /home/"${DB_USER}"/.ssh && \
-chmod 700 /home/"${DB_USER}"/.ssh 
+chmod 700 /home/"${DB_USER}"/.ssh
 fi
 
 

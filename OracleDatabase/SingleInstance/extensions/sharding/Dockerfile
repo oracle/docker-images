@@ -58,6 +58,7 @@ ENV CMD_EXEC="cmdExec" \
    SSHARD_PY="orasshard.py" \
    RUN_SHARD_FILE="runOraShardSetup.sh" \
    RUN_FILE="runOracle.sh" \
+   SHARD_SCRIPT_DIR="/opt/oracle/scripts/sharding" \
    PYTHON_FILE="/usr/bin/python" \
    PYTHON3_FILE="/usr/libexec/platform-python3.6" \
    SHARD_SETUP="false"
@@ -75,29 +76,36 @@ RUN if [ ! -f $PYTHON_FILE ]; then \
 
 # backup original runOracle
 USER oracle
-RUN if test -e "$ORACLE_BASE/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
-    mv "$ORACLE_BASE/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTN"
+RUN BASE_RUN_DIR="${SCRIPT_BASE_DIR:-$ORACLE_BASE}" ; \
+    if test -e "$BASE_RUN_DIR/$RUN_FILE.orig"; then EXTN='extended'; else EXTN='orig'; fi ; \
+    mv "$BASE_RUN_DIR/$RUN_FILE" "$BASE_RUN_DIR/$RUN_FILE.$EXTN"
 # hadolint ignore=SC2086
-RUN mkdir -p $ORACLE_BASE/scripts/sharding/scripts && \
-    chown -R oracle:dba $ORACLE_BASE/scripts && \
+RUN mkdir -p "$SHARD_SCRIPT_DIR/scripts" && \
+    chown -R oracle:dba "$ORACLE_BASE/scripts" && \
     sync
 
 # Copy updated scripts for sharding support
-COPY  --chown=oracle:dba --from=downloader /tmp/docker-images/OracleDatabase/GDD/containerfiles/scripts/* $ORACLE_BASE/scripts/sharding/
+COPY  --chown=oracle:dba --from=downloader /tmp/docker-images/OracleDatabase/GDD/containerfiles/scripts/* $SHARD_SCRIPT_DIR/
 # hadolint ignore=SC2086
-RUN mv "$ORACLE_BASE/scripts/sharding/$RUN_FILE" "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" && \
-    chmod 755 $ORACLE_BASE/scripts/sharding/* && \
+RUN BASE_RUN_DIR="${SCRIPT_BASE_DIR:-$ORACLE_BASE}" && \
+    mv "$SHARD_SCRIPT_DIR/$RUN_FILE" "$BASE_RUN_DIR/$RUN_FILE.$EXTENSION_NAME" && \
+    if [ "$BASE_RUN_DIR" != "$ORACLE_BASE" ]; then \
+      printf '#!/bin/bash\n# shellcheck source=/dev/null\n. "%s/%s.%s"\n' "$BASE_RUN_DIR" "$RUN_FILE" "$EXTENSION_NAME" > "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"; \
+    fi && \
+    chmod 755 "$SHARD_SCRIPT_DIR"/* && \
     sync
 
 # Set perms and append a call to main runOracle
 # hadolint ignore=SC2086
-RUN if test -e "$ORACLE_BASE/$RUN_FILE.extended"; then \
-        mv "$ORACLE_BASE/$RUN_FILE.extended" "$ORACLE_BASE/$RUN_FILE" ; \
-    else echo ". $ORACLE_BASE/$RUN_FILE.orig" > "$ORACLE_BASE/$RUN_FILE" ; fi ; \
-    if ! grep "$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; then \
-       sed  -i "\$a . $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME" "$ORACLE_BASE/$RUN_FILE"; \
+RUN BASE_RUN_DIR="${SCRIPT_BASE_DIR:-$ORACLE_BASE}" ; \
+    if test -e "$BASE_RUN_DIR/$RUN_FILE.extended"; then \
+        mv "$BASE_RUN_DIR/$RUN_FILE.extended" "$BASE_RUN_DIR/$RUN_FILE" ; \
+    else echo ". $BASE_RUN_DIR/$RUN_FILE.orig" > "$BASE_RUN_DIR/$RUN_FILE" ; fi ; \
+    if ! grep "$RUN_FILE.$EXTENSION_NAME" "$BASE_RUN_DIR/$RUN_FILE"; then \
+       sed  -i "\$a . $BASE_RUN_DIR/$RUN_FILE.$EXTENSION_NAME" "$BASE_RUN_DIR/$RUN_FILE"; \
     fi && \
-    sed -i '/alert.log/,$ s/wait \$childPID//' "$ORACLE_BASE"/runOracle.sh.orig && \
-    chmod ug+x $ORACLE_BASE/$RUN_FILE $ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME $ORACLE_BASE/scripts/sharding/*.sh $ORACLE_BASE/scripts/sharding/*.py && \
-    chown oracle:dba $ORACLE_BASE/$RUN_FILE && \
+    sed -i '/alert.log/,$ s/wait \$childPID//' "$BASE_RUN_DIR/$RUN_FILE.orig" && \
+    chmod ug+x "$BASE_RUN_DIR/$RUN_FILE" "$BASE_RUN_DIR/$RUN_FILE.$EXTENSION_NAME" "$SHARD_SCRIPT_DIR"/*.sh "$SHARD_SCRIPT_DIR"/*.py && \
+    if [ "$BASE_RUN_DIR" != "$ORACLE_BASE" ]; then chmod ug+x "$ORACLE_BASE/$RUN_FILE.$EXTENSION_NAME"; fi && \
+    chown oracle:dba "$BASE_RUN_DIR/$RUN_FILE" && \
     sync

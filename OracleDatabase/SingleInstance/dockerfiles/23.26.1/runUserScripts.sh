@@ -9,7 +9,6 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-
 SCRIPTS_ROOT="$1";
 
 # Check whether parameter has been passed on

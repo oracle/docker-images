@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -7,9 +6,9 @@
 # Since: December, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
 # Description: Install grid software inside the container.
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 
 EDITION=$1
 PATCH_NUMBER=$2

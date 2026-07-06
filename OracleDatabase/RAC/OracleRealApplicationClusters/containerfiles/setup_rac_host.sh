@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2034,SC2166,SC2155,SC1090,SC2046,SC2178,SC2207,SC2163,SC2115,SC2173,SC1091,SC1143,SC2164,SC3014
 #############################
 # Copyright 2020-2025, Oracle Corporation and/or affiliates.  All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
@@ -78,11 +77,11 @@ setup_nfs_variables() {
     export STORAGE_PUBLIC_IP=10.0.20.80
     export NFS_STORAGE_VOLUME="/scratch/stage/rac-storage/$ORACLE_DBNAME"
     export DB_SERVICE=service:soepdb
-    
+
    if [ -f /etc/selinux/config ]; then
         # Check SELinux state
         selinux_state=$(grep -E '^SELINUX=' /etc/selinux/config | cut -d= -f2)
-        
+
         if [[ "$selinux_state" == "enforcing" || "$selinux_state" == "permissive" || "$selinux_state" == "targeted" ]]; then
             echo "SELinux is enabled with state: $selinux_state. Proceeding with installation."
         else
@@ -143,7 +142,7 @@ EOF
 
     # List installed modules and grep for rac-storage
     semodule -l | grep rac-storage
-    
+
     echo "INFO: NFS Environment variables setup completed successully."
     return 0
 }
@@ -237,7 +236,7 @@ setup_dns_container() {
 }
 
 setup_rac_container() {
-    podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up  -d ${RACNODE1_CONTAINER_NAME} 
+    podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up  -d ${RACNODE1_CONTAINER_NAME}
     podman-compose stop ${RACNODE1_CONTAINER_NAME}
 
     podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME}
@@ -262,7 +261,7 @@ setup_rac_container() {
     podman-compose start ${RACNODE1_CONTAINER_NAME}
     podman-compose start ${RACNODE2_CONTAINER_NAME}
 
-    RAC_LOG="/tmp/orod/oracle_db_setup.log"
+    RAC_LOG="/var/tmp/oracle_db_setup.log"
     success_message_line="ORACLE RAC DATABASE IS READY TO USE"
     last_lines=""
     start_time=$(date +%s)
@@ -393,7 +392,12 @@ setup_rac_networks() {
 
 function DisplayUsage(){
    echo "Usage :
-         $0 [<-slimenv> <-nodedirs=dir1,dir2,...,dirn>] [-ignoreOSVersion] [-blockdevices-env|-cleanup|-dns|-networks|-nfs-env|-prepare-rac-env|-rac|-storage] [-help]"
+         $0 [<-slimenv> <-nodedirs=dir1,dir2,...,dirn>] [-ignoreOSVersion] [-blockdevices-env|-cleanup|-dns|-networks|-nfs-env|-prepare-rac-env|-rac|-storage] [-help]
+
+Secret samples for -prepare-rac-env:
+         export RAC_SECRET=Oracle_23ai
+         export RAC_SECRET_MODE=openssl   # default: creates pwdsecret from pwdfile.enc and keysecret from key.pem
+         export RAC_SECRET_MODE=base64    # creates pwdsecret from Base64 pwdfile only"
    return 0
 }
 
@@ -436,7 +440,7 @@ function setupSELinuxContext(){
     [ -f /var/opt/rac-podman.te ] && rm -rf /var/opt/rac-podman.te
     cat > /var/opt/rac-podman.te <<EOF
 module rac-podman  1.0;
- 
+
 require {
         type kernel_t;
         class system syslog_read;
@@ -449,7 +453,7 @@ require {
         type unlabeled_t;
         class file read;
         type bin_t;
-        class file { execmod execute map setattr };     
+        class file { execmod execute map setattr };
 }
 
 #============= container_init_t ==============
@@ -506,18 +510,41 @@ create_secrets() {
         echo "ERROR: RAC_SECRET environment variable is not defined."
         return 1
     fi
+
+    local secret_mode
+    secret_mode="${RAC_SECRET_MODE:-openssl}"
     mkdir -p /opt/.secrets/
-    # shellcheck disable=SC2086
-    echo $RAC_SECRET > /opt/.secrets/pwdfile.txt
     # shellcheck disable=SC2164
     cd /opt/.secrets
-    openssl genrsa -out key.pem
-    openssl rsa -in key.pem -out key.pub -pubout
-    openssl pkeyutl -in pwdfile.txt -out pwdfile.enc -pubin -inkey key.pub -encrypt
-    rm -rf /opt/.secrets/pwdfile.txt
-    # Delete and create secrets
-    delete_and_create_secret "pwdsecret" "/opt/.secrets/pwdfile.enc"
-    delete_and_create_secret "keysecret" "/opt/.secrets/key.pem"
+
+    case "$secret_mode" in
+        openssl|pkeyutl)
+            printf "%s" "$RAC_SECRET" > pwdfile.txt
+            openssl genrsa -out key.pem
+            openssl rsa -in key.pem -out key.pub -pubout
+            openssl pkeyutl -in pwdfile.txt -out pwdfile.enc \
+                -pubin -inkey key.pub -encrypt \
+                -pkeyopt rsa_padding_mode:oaep \
+                -pkeyopt rsa_oaep_md:sha256 \
+                -pkeyopt rsa_mgf1_md:sha256
+            rm -f pwdfile.txt
+            delete_and_create_secret "pwdsecret" "/opt/.secrets/pwdfile.enc"
+            delete_and_create_secret "keysecret" "/opt/.secrets/key.pem"
+            echo "INFO: OpenSSL pkeyutl secrets created. Use ENCRYPTION_TYPE=pkeyutl, DB_PWD_FILE=pwdsecret, and PWD_KEY=keysecret."
+            ;;
+        base64)
+            printf "%s" "$RAC_SECRET" | base64 -w0 > pwdfile
+            delete_and_create_secret "pwdsecret" "/opt/.secrets/pwdfile"
+            echo "INFO: Base64 password secret created. Use PASSWORD_FILE=pwdsecret without PWD_KEY."
+            ;;
+        *)
+            echo "ERROR: Unsupported RAC_SECRET_MODE=$secret_mode. Supported values are openssl and base64."
+            # shellcheck disable=SC2164
+            cd -
+            return 1
+            ;;
+    esac
+
     echo "INFO: Secrets created."
     # shellcheck disable=SC2164
     cd -
@@ -581,7 +608,7 @@ setup_host_prepreq(){
     fi
 # shellcheck disable=SC2166
     if [ $OSVersionSupported -eq 0 -o $kernelVersionSupported -eq 0 ]; then
-    if [ ${IGNOREOSVERSION} == "0" ]; then 
+    if [ ${IGNOREOSVERSION} == "0" ]; then
         echo "ERROR: OSVersion=${OSVersion}.. KernelVersion=${kernelVersion}. Exiting."
         return 1
     fi
@@ -650,7 +677,7 @@ setup_host_prepreq(){
     install_podman
     install_podman_compose
     # shellcheck disable=SC2006
-     selinux_state=$(grep -E '^SELINUX=' /etc/selinux/config | cut -d= -f2)   
+     selinux_state=$(grep -E '^SELINUX=' /etc/selinux/config | cut -d= -f2)
     if [[ "$selinux_state" == "enforcing" || "$selinux_state" == "permissive" || "$selinux_state" == "targeted" ]]; then
         echo "INFO: SELinux Enabled. Setting up SELinux Context"
         setupSELinuxContext
@@ -669,8 +696,8 @@ cleanup_env(){
     podman rm -f $RACNODE1_CONTAINER_NAME
     podman rm -f $RACNODE2_CONTAINER_NAME
     podman rm -f ${CMAN_CONTAINER_NAME}
-    podman network inspect $PUBLIC_NETWORK_NAME &> /dev/null && podman network rm $PUBLIC_NETWORK_NAME 
-    podman network inspect $PRIVATE1_NETWORK_NAME &> /dev/null && podman network rm $PRIVATE1_NETWORK_NAME 
+    podman network inspect $PUBLIC_NETWORK_NAME &> /dev/null && podman network rm $PUBLIC_NETWORK_NAME
+    podman network inspect $PRIVATE1_NETWORK_NAME &> /dev/null && podman network rm $PRIVATE1_NETWORK_NAME
     podman network inspect $PRIVATE2_NETWORK_NAME &> /dev/null && podman network rm $PRIVATE2_NETWORK_NAME
     podman volume inspect racstorage &> /dev/null && podman volume rm racstorage
     echo "INFO: Oracle Container RAC Environment Cleanup Successfully"
@@ -678,7 +705,7 @@ cleanup_env(){
 }
 
 while [ $# -gt 0 ]; do
-    case "$1" in 
+    case "$1" in
         -slimenv)
             SLIMENV=1
             ;;

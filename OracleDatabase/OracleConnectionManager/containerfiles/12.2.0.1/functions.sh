@@ -5,7 +5,7 @@
 #
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
-# Description: Common functions for CMAN 
+# Description: Common functions for CMAN
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
@@ -19,7 +19,6 @@ export STD_ERR_FILE="/proc/self/fd/2"
 
 ###### Function Related to printing messages and exit the script if error occurred ##################
 error_exit() {
-# shellcheck disable=SC2155
 local NOW=$(date +"%m-%d-%Y %T %Z")
         # Display error message and exit
 #       echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
@@ -29,7 +28,6 @@ local NOW=$(date +"%m-%d-%Y %T %Z")
 
 print_message ()
 {
-# shellcheck disable=SC2155
         local NOW=$(date +"%m-%d-%Y %T %Z")
         # Display  message and return
         echo "${NOW} : ${PROGNAME} : ${1:-"Unknown Message"}" | tee -a $logfile  > $STD_OUT_FILE
@@ -46,14 +44,13 @@ resolveip(){
     then
         return 1
     else
-# shellcheck disable=SC2155
         local ip=$( getent hosts "$host" | awk '{print $1}' )
-        if [ -z "$ip" ] 
+        if [ -z "$ip" ]
         then
             ip=$( dig +short "$host" )
             if [ -z "$ip" ]
             then
-                print_message "unable to resolve '$host'" 
+                print_message "unable to resolve '$host'"
                 return 1
             else
                 print_message "$ip"

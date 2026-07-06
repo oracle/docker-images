@@ -10,31 +10,27 @@ function runUserScripts {
     echo "$0: No SCRIPTS_ROOT passed on, no scripts will be run";
     exit 1;
   fi;
-  
+
   # Execute custom provided files (only if directory exists and has files in it)
   if [ -d "$SCRIPTS_ROOT" ] && [ -n "$(ls -A $SCRIPTS_ROOT)" ]; then
-      
+
     echo "";
     echo "Executing user defined scripts"
-  
+
     for f in $SCRIPTS_ROOT/*; do
         case "$f" in
-            *.sh)
-              echo "$0: running $f"
-              # shellcheck disable=SC1090
-              . "$f"
-              ;;
+            *.sh)     echo "$0: running $f"; . "$f" ;;
             *.sql)    echo "$0: running $f"; echo "exit" | su -p oracle -c "$ORACLE_HOME/bin/sqlplus / as sysdba @$f"; echo ;;
             *)        echo "$0: ignoring $f" ;;
         esac
         echo "";
     done
-    
+
     echo "DONE: Executing user defined scripts"
     echo "";
-  
+
   fi;
-  
+
 }
 
 ########### Move DB files ############
@@ -42,14 +38,14 @@ function moveFiles {
    if [ ! -d $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID ]; then
       su -p oracle -c "mkdir -p $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    fi;
-   
+
    su -p oracle -c "mv $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    su -p oracle -c "mv $ORACLE_HOME/dbs/orapw$ORACLE_SID $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    su -p oracle -c "mv $ORACLE_HOME/network/admin/listener.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
    su -p oracle -c "mv $ORACLE_HOME/network/admin/tnsnames.ora $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/"
 
    cp /etc/oratab $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/
-      
+
    symLinkFiles;
 }
 
@@ -59,19 +55,19 @@ function symLinkFiles {
    if [ ! -L $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/spfile$ORACLE_SID.ora $ORACLE_HOME/dbs/spfile$ORACLE_SID.ora
    fi;
-   
+
    if [ ! -L $ORACLE_HOME/dbs/orapw$ORACLE_SID ]; then
       ln -s $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/orapw$ORACLE_SID $ORACLE_HOME/dbs/orapw$ORACLE_SID
    fi;
-   
+
    if [ ! -L $ORACLE_HOME/network/admin/listener.ora ]; then
       ln -sf $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/listener.ora $ORACLE_HOME/network/admin/listener.ora
    fi;
-   
+
    if [ ! -L $ORACLE_HOME/network/admin/tnsnames.ora ]; then
       ln -sf $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/tnsnames.ora $ORACLE_HOME/network/admin/tnsnames.ora
    fi;
-   
+
    cp $ORACLE_BASE/oradata/dbconfig/$ORACLE_SID/oratab /etc/oratab
 }
 
@@ -108,17 +104,17 @@ function createDB {
    # Auto generate ORACLE PWD if not passed on
    export ORACLE_PWD=${ORACLE_PWD:-"`openssl rand -hex 8`"}
    echo "ORACLE PASSWORD FOR SYS AND SYSTEM: $ORACLE_PWD";
-   
+
    # Set character set
    export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
    sed -i -e "s|###ORACLE_CHARACTERSET###|$ORACLE_CHARACTERSET|g" /etc/sysconfig/$CONF_FILE
 
    (echo "$ORACLE_PWD"; echo "$ORACLE_PWD";) | /etc/init.d/oracle-xe-18c configure
 
-   # Listener 
+   # Listener
    echo "# listener.ora Network Configuration File:
-         
-         SID_LIST_LISTENER = 
+
+         SID_LIST_LISTENER =
            (SID_LIST =
              (SID_DESC =
                (SID_NAME = PLSExtProc)
@@ -126,7 +122,7 @@ function createDB {
                (PROGRAM = extproc)
              )
            )
-         
+
          LISTENER =
            (DESCRIPTION_LIST =
              (DESCRIPTION =
@@ -134,7 +130,7 @@ function createDB {
                (ADDRESS = (PROTOCOL = TCP)(HOST = 0.0.0.0)(PORT = 1521))
              )
            )
-         
+
          DEFAULT_SERVICE_LISTENER = (XE)" > $ORACLE_HOME/network/admin/listener.ora
 
 # TNS Names.ora
@@ -199,13 +195,13 @@ fi;
 if [ "$?" == "0" ]; then
    # Create database
    createDB;
-   
+
    # Execute custom provided setup scripts
    runUserScripts $ORACLE_BASE/scripts/setup
 fi;
 
 # Check whether database is up and running
-IGNORE_DB_STARTED_MARKER=true $ORACLE_BASE/$CHECK_DB_FILE
+$ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
@@ -214,8 +210,6 @@ if [ $? -eq 0 ]; then
   # Execute custom provided startup scripts
   runUserScripts $ORACLE_BASE/scripts/startup
 
-  # Create marker file for the health check
-  touch "$DB_STARTED_MARKER_FILE"
 else
   echo "#####################################"
   echo "########### E R R O R ###############"

@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=all
 #############################
 
 # Copyright 2025, Oracle Corporation and/or affiliates.  All rights reserved.
@@ -10,7 +9,7 @@
 TIMESTAMP=`date "+%Y-%m-%d"`
 LOGFILE="/tmp/oracle_rac_cmd_${TIMESTAMP}.log"
 
-echo $(date -u) " : " $@ >> $LOGFILE 
+echo $(date -u) " : " $@ >> $LOGFILE
 
 cmd=$@
 

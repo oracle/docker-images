@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -7,9 +6,9 @@
 # Since: January, 2018
 # Author: paramdeep.saini@oracle.com
 # Description: Sets up the unix environment for Grid installation.
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 
 EDITION=$1
 

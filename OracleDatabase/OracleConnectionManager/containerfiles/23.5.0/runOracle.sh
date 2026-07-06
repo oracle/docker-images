@@ -5,14 +5,14 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 
 
 env > /tmp/envfile
 
-chmod 755 /tmp/envfile 
+chmod 755 /tmp/envfile
 source /tmp/envfile
 source $SCRIPT_DIR/functions.sh
 
@@ -57,7 +57,6 @@ trap _int SIGINT
 trap _term SIGTERM
 
 # Set SIGKILL handler
-# shellcheck disable=SC2173
 trap _kill SIGKILL
 
 ############ Removing /tmp/orod.log #####
@@ -69,7 +68,7 @@ $SCRIPT_DIR/$CONFIG_CMAN_FILE
 if [ $? -eq 0 ];then
  print_message "cman started sucessfully"
   echo $TRUE
-else 
+else
  error_exit "Cman startup failed!"
 fi
 
