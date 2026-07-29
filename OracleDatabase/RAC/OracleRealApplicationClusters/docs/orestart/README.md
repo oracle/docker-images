@@ -54,8 +54,6 @@ export GPCNODE=dbmc1
 export GPCNODE_PUB_IP=10.0.20.195
 ```
 
-The pre-built Oracle Container Registry image `container-registry.oracle.com/database/rac_ru:latest` can still work on Oracle Linux 8. If you are deploying on Oracle Linux 9 with cgroup v2, prefer building the latest Oracle RAC image from this repository and set `IMAGE_NAME` to that locally built image, because the OCR image can still use older `init.ohasd` cgroup v1 handling and fail during Grid or Oracle Restart setup.
-
 ## Section 2: Deploying Oracle Restart using Oracle RAC Image
 ### Section 2.1.1: Deploying With Block Devices
 
@@ -120,7 +118,7 @@ podman start ${GPCNODE}
 It can take approximately 20 minutes or longer to create and start the Oracle Restart setup . To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec ${GPCNODE} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${GPCNODE} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message similar to the following:
