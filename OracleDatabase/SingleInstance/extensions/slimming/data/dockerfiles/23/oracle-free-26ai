@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1068,SC1078,SC2027,SC2034,SC2046,SC2154,SC2283
 #
 # chkconfig: 2345 80 05
 # description: This script is responsible for running basic operations on Oracle FREE Database and its associated services. 
