@@ -226,16 +226,24 @@ if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]] || [[ "${TRU
   PRIMARY_DB_NAME=$(echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2)
 
   # Creating the database using the dbca command
+  # dbca -createDuplicateDB prompts on stdin for the remote (primary) SYS password and then for
+  # the new database's SYS password: it does not take them from the -responseFile sysPassword
+  # entry nor from a -useWalletForDBCredentials wallet. Feed both on stdin, same pattern as the
+  # TrueCache instance creation below.
   if [ "${STANDBY_DB}" = "true" ]; then
       # Creating standby database
-      dbca -silent -createDuplicateDB -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -createAsStandby -datafileDestination $ORACLE_BASE/oradata -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
-      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
-      cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
-  elif [ "${CLONE_DB}" = "true" ]; then 
+      dbca -silent -createDuplicateDB -createListener LISTENER:1521 -gdbName "$PRIMARY_DB_NAME" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -createAsStandby -datafileDestination $ORACLE_BASE/oradata -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" <<EOF
+${ORACLE_PWD}
+${ORACLE_PWD}
+EOF
+      [ $? -eq 0 ] || cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log || cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
+  elif [ "${CLONE_DB}" = "true" ]; then
              # Creating clone database or Duplicate database (No -createAsStandby) after duplicating a primary database; CLONE_DB is set to true here
-            dbca -silent -createDuplicateDB -gdbName "$ORACLE_SID" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -databaseConfigType SINGLE -datafileDestination $ORACLE_BASE/oradata -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" ||
-            cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log ||
-            cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
+            dbca -silent -createDuplicateDB -createListener LISTENER:1521 -gdbName "$ORACLE_SID" -primaryDBConnectionString "$PRIMARY_DB_CONN_STR" ${DBCA_CRED_OPTIONS} -sid "$ORACLE_SID" -databaseConfigType SINGLE -datafileDestination $ORACLE_BASE/oradata -useOMF true -dbUniquename "$ORACLE_SID" ORACLE_HOSTNAME="$ORACLE_HOSTNAME" <<EOF
+${ORACLE_PWD}
+${ORACLE_PWD}
+EOF
+            [ $? -eq 0 ] || cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID"/"$ORACLE_SID".log || cat /opt/oracle/cfgtoollogs/dbca/"$ORACLE_SID".log
   elif  [ "$TRUE_CACHE" = "true" ]; then
       if [ -n "$TRUE_CACHE_BLOB" ]; then
           SOURCE_DB_BASED_ARGS="-trueCacheBlobFromSourceDB $TRUE_CACHE_BLOB";     
