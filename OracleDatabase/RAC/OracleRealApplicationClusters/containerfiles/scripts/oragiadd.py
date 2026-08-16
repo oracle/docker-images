@@ -14,6 +14,7 @@ import os
 import sys
 import traceback
 import datetime
+import time
 
 from oralogger import *
 from oraenv import *
@@ -96,12 +97,18 @@ class OraGIAdd:
             for node in crs_nodes.split(","):
                 self.clu_checks(node)
             if self.ocommon.detect_k8s_env():
+                reconcile_node = self.get_scan_reconcile_node(pubhostname)
                 self.ocommon.run_custom_scripts(
                     "CUSTOM_GRID_SCRIPT_DIR", "CUSTOM_GRID_SCRIPT_FILE", giuser)
-                self.ocommon.update_scan(giuser, gihome, None, pubhostname)
-                self.ocommon.start_scan(giuser, gihome, pubhostname)
-                self.ocommon.update_scan_lsnr(giuser, gihome, pubhostname)
-                self.ocommon.start_scan_lsnr(giuser, gihome, pubhostname)
+                scan_updated = self.ocommon.reconcile_scan_resources(
+                    giuser, gihome, reconcile_node
+                )
+                if not scan_updated:
+                    self.ocommon.log_error_message(
+                        "SCAN reconciliation failed after GI add-node on node {0}".format(reconcile_node),
+                        self.file_name,
+                    )
+                    self.ocommon.prog_exit("127")
                 if self.ocommon.check_key("ADD_CDP", self.ora_env_dict):
                     self.ocommon.log_step("GI", "updatecdp", "start", None, self.file_name)
                     self.updatecdp(operation="ADDNODE")
@@ -113,6 +120,27 @@ class OraGIAdd:
         totaltime = ets - bts
         self.ocommon.log_info_message(
             "Total time for setup() = [ " + str(round(totaltime, 3)) + " ] seconds", self.file_name)
+
+    def get_scan_reconcile_node(self, fallback_node):
+        """
+        Prefer a healthy existing cluster node for SCAN reconciliation.
+        """
+        existing_nodes = self.ocommon.get_existing_clu_nodes(False)
+        if existing_nodes:
+            for node in self.ocommon._split_node_names(existing_nodes):
+                retcode = self.ocvu.check_clu(node, True, None)
+                if retcode == 0:
+                    self.ocommon.log_info_message(
+                        "Using existing healthy node {0} for SCAN reconciliation".format(node),
+                        self.file_name,
+                    )
+                    return node
+
+        self.ocommon.log_info_message(
+            "Falling back to local node {0} for SCAN reconciliation".format(fallback_node),
+            self.file_name,
+        )
+        return fallback_node
 
     def env_param_checks(self):
         """
@@ -146,6 +174,31 @@ class OraGIAdd:
         #    self.ocommon.log_error_message("SCAN_NAME is not set. Exiting...",self.file_name)
         #    self.ocommon.prog_exit("127")
 
+    def validate_asm_with_retry(self, hostname, attempts=8, sleep_seconds=20):
+        """
+        Retry ASM CVU because +ASM on the new node can register after OHASD and CSS.
+        """
+        for attempt in range(1, attempts + 1):
+            retcode = self.ocvu.check_asm(hostname)
+            if retcode == 0:
+                if attempt > 1:
+                    self.ocommon.log_info_message(
+                        "Cluvfy asm check passed on retry {0}/{1}".format(attempt, attempts),
+                        self.file_name,
+                    )
+                return retcode
+
+            if attempt < attempts:
+                self.ocommon.log_warn_message(
+                    "Cluvfy asm check failed on attempt {0}/{1}; waiting {2} seconds for ASM convergence".format(
+                        attempt, attempts, sleep_seconds
+                    ),
+                    self.file_name,
+                )
+                time.sleep(sleep_seconds)
+
+        return retcode
+
     def clu_checks(self, hostname):
         """
         Perform cluster validation checks.
@@ -153,7 +206,7 @@ class OraGIAdd:
         self.ocommon.log_info_message(
             "Performing CVU checks before DB home installation to make sure clusterware is up and running", self.file_name)
         retcode1 = self.ocvu.check_ohasd(hostname)
-        retcode2 = self.ocvu.check_asm(hostname)
+        retcode2 = self.validate_asm_with_retry(hostname)
         retcode3 = self.ocvu.check_clu(hostname, None, None)
 
         if retcode1 == 0:
@@ -168,7 +221,7 @@ class OraGIAdd:
             msg = "Cluvfy asm check passed!"
             self.ocommon.log_info_message(msg, self.file_name)
         else:
-            msg = "Cluvfy asm check failed. Exiting..."
+            msg = "Cluvfy asm check failed after retries. Exiting..."
             self.ocommon.log_error_message(msg, self.file_name)
             self.ocommon.prog_exit("127")
 

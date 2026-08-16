@@ -279,12 +279,18 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
   
   For this deployment scenario, it will be a common password for the grid, oracle, and database users.  
   
-  Run the below commands:
+  If you use `setup_rac_host.sh -prepare-rac-env`, set `RAC_SECRET` to the password value. `RAC_SECRET_MODE` is optional and defaults to `openssl`; set `RAC_SECRET_MODE=base64` only when you want a Base64 password secret without a key secret.
+
+  Run the below commands for the default OpenSSL `pkeyutl` encrypted secret mode:
     ```bash
     cd /opt/.secrets
     openssl genrsa -out key.pem 4096
     openssl rsa -in key.pem -out key.pub -pubout
-    openssl pkeyutl -in pwdfile.txt -out pwdfile.enc -pubin -inkey key.pub -encrypt
+    openssl pkeyutl -in pwdfile.txt -out pwdfile.enc \
+      -pubin -inkey key.pub -encrypt \
+      -pkeyopt rsa_padding_mode:oaep \
+      -pkeyopt rsa_oaep_md:sha256 \
+      -pkeyopt rsa_mgf1_md:sha256
     rm -rf /opt/.secrets/pwdfile.txt
     ```
 - Oracle recommends using Podman secrets inside the containers. To create Podman secrets, run the following commands:
@@ -292,6 +298,18 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
     podman secret create pwdsecret /opt/.secrets/pwdfile.enc
     podman secret create keysecret /opt/.secrets/key.pem
     ```
+
+  For this mode, pass `ENCRYPTION_TYPE=pkeyutl`, `DB_PWD_FILE=pwdsecret`, and `PWD_KEY=keysecret` to the containers. `PKEYOPT` is optional and defaults to `rsa_padding_mode:oaep;rsa_oaep_md:sha256;rsa_mgf1_md:sha256`.
+
+  To use a Base64 password secret instead of an OpenSSL key pair, create only the password secret:
+    ```bash
+    cd /opt/.secrets
+    base64 -w0 pwdfile.txt > pwdfile
+    podman secret create pwdsecret /opt/.secrets/pwdfile
+    rm -rf /opt/.secrets/pwdfile.txt
+    ```
+
+  For this mode, pass `PASSWORD_FILE=pwdsecret` to the containers and do not pass `DB_PWD_FILE` or `PWD_KEY`.
 
 - To check the details of the created Podman Secrets, run the commands as below:
     ```bash
