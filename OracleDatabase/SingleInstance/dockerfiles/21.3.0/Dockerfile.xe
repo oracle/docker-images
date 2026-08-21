@@ -41,15 +41,16 @@ ENV ORACLE_BASE=/opt/oracle \
     ORACLE_SID=XE \
     INSTALL_FILE_1="https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm" \
     RUN_FILE="runOracle.sh" \
+    SHUTDOWN_FILE="shutDown.sh" \
     PWD_FILE="setPassword.sh" \
     CREATE_DB_FILE="createDB.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     CONF_FILE="oracle-xe-21c.conf" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
-    DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CONFIG_TCPS_FILE="configTcps.sh" \
+    SCRIPT_BASE_DIR="/opt/oracle/scripts/base" \
     INSTALL_DIR="$HOME/install" \
     ORACLE_DOCKER_INSTALL="true" \
     CHECKPOINT_FILE_EXTN=".created"
@@ -59,17 +60,23 @@ ENV PATH=$ORACLE_HOME/bin:$PATH
 
 # Copy binaries
 # -------------
-COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $INSTALL_DIR/
+COPY $CHECK_SPACE_FILE $CONF_FILE $SETUP_LINUX_FILE $RUN_FILE $SHUTDOWN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $INSTALL_DIR/
 
 WORKDIR $INSTALL_DIR
 
 # hadolint ignore=DL3003,DL3033,SC2035
 RUN mkdir -p $ORACLE_BASE && \
-    mv $RUN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE $ORACLE_BASE/ && \
+    mkdir -p "${SCRIPT_BASE_DIR}" && \
+    mv $RUN_FILE $SHUTDOWN_FILE $PWD_FILE $CHECK_DB_FILE $CREATE_DB_FILE $USER_SCRIPTS_FILE $CONFIG_TCPS_FILE "${SCRIPT_BASE_DIR}"/ && \
+    chmod ug+x "${SCRIPT_BASE_DIR}"/*.sh && \
+    printf '#!/bin/bash\nexec "%s/%s" "$@"\n' "$SCRIPT_BASE_DIR" "$RUN_FILE" > "$ORACLE_BASE/$RUN_FILE" && \
+    chmod ug+x "$ORACLE_BASE/$RUN_FILE" && \
+    for script in "$SHUTDOWN_FILE" "$PWD_FILE" "$CHECK_DB_FILE" "$CREATE_DB_FILE" "$USER_SCRIPTS_FILE" "$CONFIG_TCPS_FILE"; do \
+      ln -sf "${SCRIPT_BASE_DIR}/$script" "$ORACLE_BASE/$script"; \
+    done && \
     chmod ug+x *.sh && \
     sync && \
     ./$CHECK_SPACE_FILE && \
-    yum -y install expect && \
     ./$SETUP_LINUX_FILE && \
     chown -R oracle:oinstall $ORACLE_BASE /home/oracle && \
     sed -i -r 's/(^session\s+include\s+system-auth)/# \1/' /etc/pam.d/su && \
@@ -89,6 +96,6 @@ USER oracle
 WORKDIR /home/oracle
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+   CMD "$SCRIPT_BASE_DIR/$CHECK_DB_FILE" >/dev/null || exit 1
 
-CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
+CMD [ "/bin/bash", "-c", "$SCRIPT_BASE_DIR/$RUN_FILE" ]

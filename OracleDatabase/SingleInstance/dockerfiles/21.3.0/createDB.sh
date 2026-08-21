@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2024 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: November, 2016
 # Author: gerald.venzl@oracle.com
@@ -21,7 +21,8 @@ function setupNetworkConfig {
 
   # sqlnet.ora
   echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)
-DISABLE_OOB=ON" > "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora
+DISABLE_OOB=ON
+SQLNET.EXPIRE_TIME=3" > "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora
 
   # listener.ora
   echo "LISTENER = 
@@ -57,7 +58,8 @@ function setupTnsnames {
 function setupNetworkConfigXE {
   # sqlnet.ora
   echo "NAMES.DIRECTORY_PATH= (TNSNAMES, EZCONNECT, HOSTNAME)
-DISABLE_OOB=ON" > "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora
+DISABLE_OOB=ON
+SQLNET.EXPIRE_TIME=3" > "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora
 
   # listener.ora 
    echo "# listener.ora Network Configuration File:
@@ -227,7 +229,7 @@ if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
   fi
 
   # Primary database parameters extration
-  PRIMARY_DB_NAME=$(echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2)
+  PRIMARY_DB_NAME=${PRIMARY_DB_NAME:-$(echo "${PRIMARY_DB_CONN_STR}" | cut -d '/' -f 2)}
 
   # Creating the database using the dbca command
   if [ "${STANDBY_DB}" = "true" ]; then
@@ -267,7 +269,11 @@ if [[ "${CLONE_DB}" == "true" ]] || [[ "${STANDBY_DB}" == "true" ]]; then
 fi
 
 # Replace place holders in response file
-cp "$ORACLE_BASE"/"$CONFIG_RSP" "$ORACLE_BASE"/dbca.rsp
+DBCA_TEMPLATE_PATH="${SCRIPT_BASE_DIR}/${CONFIG_RSP}"
+if [ ! -f "${DBCA_TEMPLATE_PATH}" ]; then
+  DBCA_TEMPLATE_PATH="${ORACLE_BASE}/${CONFIG_RSP}"
+fi
+cp "${DBCA_TEMPLATE_PATH}" "${ORACLE_BASE}/dbca.rsp"
 # Reverting umask to original value
 umask 022
 sed -i -e "s|###ORACLE_SID###|$ORACLE_SID|g" "$ORACLE_BASE"/dbca.rsp

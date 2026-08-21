@@ -1,3 +1,4 @@
+# hadolint global ignore=DL3006,SC2086,SC3014
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2022 Oracle and/or its affiliates.
@@ -19,12 +20,10 @@
 # Run: 
 #      $ podman build -t oracle/database:26.0.0-rac . 
 #
-# hadolint global ignore=SC2086,SC3014
 ARG SLIMMING=false
 ARG BASE_OL_IMAGE=oraclelinux:9
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 ARG VERSION
@@ -121,7 +120,7 @@ ENV GRID_BASE=/u01/app/grid \
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     PATH=$GRID_HOME/perl/bin:$DB_HOME/perl/bin:/bin:/usr/bin:/sbin:/usr/sbin \
      SCRIPT_DIR=$INSTALL_DIR/startup \
      RAC_SCRIPTS_DIR="scripts" \
      GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \

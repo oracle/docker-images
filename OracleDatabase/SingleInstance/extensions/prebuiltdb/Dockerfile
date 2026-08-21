@@ -1,6 +1,6 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2024 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -29,8 +29,8 @@ ARG ENABLE_FORCE_LOGGING
 ARG AUTO_MEM_CALCULATION
 
 # Option to enable archivelog in pre-built database
-ENV ENABLE_ARCHIVELOG=${ENABLE_ARCHIVELOG:-false}
-ENV ENABLE_FORCE_LOGGING=${ENABLE_FORCE_LOGGING:-false}
+ENV ENABLE_ARCHIVELOG=${ENABLE_ARCHIVELOG:-true}
+ENV ENABLE_FORCE_LOGGING=${ENABLE_FORCE_LOGGING:-true}
 ENV ORACLE_SID=${ORACLE_SID}
 ENV ORACLE_PDB=${ORACLE_PDB}
 ENV ORACLE_PWD=${ORACLE_PWD}

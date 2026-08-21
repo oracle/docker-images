@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2045,SC2154,SC2164,SC2320
 #
 #############################
 # Copyright (c) 2024, Oracle and/or its affiliates.
@@ -9,7 +10,6 @@
 #
 
 usage() {
-# shellcheck disable=SC2045
   cat << EOF
 
 Usage: buildDockerImage.sh -v [version] [-i] [-t] [-o] [Docker build option]
@@ -18,32 +18,49 @@ Builds a Docker Image for Oracle Connection Manager.
 Parameters:
    -v: version to build
        Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
-   -i: ignores the MD5 checksums
+   -i: ignores the MD5/SHA256 checksums
    -t: user defined image name and tag (e.g., image_name:tag)
-   -o: passes on Docker build option
+   -o: passes on Docker/Podman build option (e.g., --build-arg INSTALL_FILE_1=<zip>)
 
 LICENSE UPL 1.0
 
 Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 
 EOF
-# shellcheck disable=SC2320
   exit 0
 }
 
-# Validate packages
+# Validate packages (Checksum may contain MD5 or SHA256 digests)
 checksumPackages() {
-  if hash md5sum 2>/dev/null; then
-    echo "Checking if required packages are present and valid..."
-    md5sum -c Checksum
+  local checksum_file="Checksum"
+  local hash_algo="md5"
+  local check_cmd="md5sum"
+  local sample_hash
+
+  if [ ! -f "${checksum_file}" ]; then
+    echo "Checksum file ${checksum_file} not found."
+    exit 1
+  fi
+
+  # Detect digest type from first non-comment hash line (64 hex = SHA256, else MD5)
+  sample_hash="$(awk '/^[[:xdigit:]]{32,}/{print $1; exit}' "${checksum_file}")"
+  if [[ "${sample_hash}" =~ ^[[:xdigit:]]{64}$ ]]; then
+    hash_algo="sha256"
+    check_cmd="sha256sum"
+  fi
+
+  if hash "${check_cmd}" 2>/dev/null; then
+    echo "Checking if required packages are present and valid (${hash_algo})..."
+    # shellcheck disable=SC2086
+    ${check_cmd} -c "${checksum_file}"
+    # shellcheck disable=SC2181
     if [ "$?" -ne 0 ]; then
-      echo "MD5 for required packages to build this image did not match!"
+      echo "${hash_algo} for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
-# shellcheck disable=SC2320
       exit $?
     fi
   else
-    echo "Ignored MD5 sum, 'md5sum' command not available.";
+    echo "Ignored checksum, '${check_cmd}' command not available."
   fi
 }
 
@@ -52,7 +69,7 @@ checksumPackages() {
 ##############
 
 # Parameters
-VERSION="12.2.0.1"
+VERSION="26.0.0"
 SKIPMD5=0
 DOCKEROPS=""
 while getopts "hiv:o:t:" optname; do
@@ -84,13 +101,12 @@ while getopts "hiv:o:t:" optname; do
 done
 [ -z "${IMAGE_NAME}" ] && IMAGE_NAME="oracle/client-cman:$VERSION"
 # Go into version folder
-# shellcheck disable=SC2164
 cd $VERSION
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages
 else
-  echo "Ignored MD5 checksum."
+  echo "Ignored checksum."
 fi
 echo "=========================="
 echo "DOCKER info:"
@@ -99,23 +115,22 @@ echo "=========================="
 
 # Proxy settings
 PROXY_SETTINGS=""
-# shellcheck disable=SC2154
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
-# shellcheck disable=SC2154
+
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
-# shellcheck disable=SC2154
+
 if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
-# shellcheck disable=SC2154
+
 if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
-# shellcheck disable=SC2154
+
 if [ "$PROXY_SETTINGS" != "" ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
@@ -135,7 +150,7 @@ BUILD_END=$(date '+%s')
 BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
 
 echo ""
-# shellcheck disable=SC2320
+
 if [ $? -eq 0 ]; then
 cat << EOF
   Oracle Connection Manager Docker Image version $VERSION is ready to be extended:
