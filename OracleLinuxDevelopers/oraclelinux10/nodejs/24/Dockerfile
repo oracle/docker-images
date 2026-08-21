@@ -3,8 +3,11 @@
 
 FROM ghcr.io/oracle/oraclelinux:10
 
-RUN dnf -y install nodejs24 nodejs-nodemon npm && \
+RUN dnf -y install nodejs24 nodejs24-npm && \
+    ln -s /usr/bin/node-24 /usr/local/bin/node && \
+    ln -s /usr/bin/npm-24 /usr/local/bin/npm && \
+    ln -s /usr/bin/npx-24 /usr/local/bin/npx && \
     dnf clean all && \
     rm -rf /var/cache/dnf
 
-CMD ["/bin/node", "-v"]
+CMD ["node-24", "-v"]
