@@ -20,18 +20,27 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim as base
+ARG BASE_IMAGE=oraclelinux:8
+# hadolint ignore=DL3006
+FROM ${BASE_IMAGE} as base
 
 # Labels
 # ------
-LABEL "provider"="Oracle"                                               \
-      "issues"="https://github.com/oracle/docker-images/issues"         \
-      "volume.data"="/opt/oracle/oradata"                               \
-      "volume.setup.location1"="/opt/oracle/scripts/setup"              \
-      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
-      "volume.startup.location1"="/opt/oracle/scripts/startup"          \
-      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
-      "port.listener"="1521"                                            \
+LABEL "provider"="Oracle"                                                           \
+      "maintainer"="Oracle Database Container Team <container-team_ww@oracle.com>"  \
+      "vendor"="Oracle Corporation"                                                 \
+      "version"="21.3.0"                                                            \
+      "release"="21.3.0"                                                            \
+      "name"="Oracle Database 21c"                                                  \
+      "summary"="Oracle Database 21c"                                               \
+      "description"="Container Image for Oracle Database Server Release 21c"        \
+      "issues"="https://github.com/oracle/docker-images/issues"                     \
+      "volume.data"="/opt/oracle/oradata"                                           \
+      "volume.setup.location1"="/opt/oracle/scripts/setup"                          \
+      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"                  \
+      "volume.startup.location1"="/opt/oracle/scripts/startup"                      \
+      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"              \
+      "port.listener"="1521"                                                        \
       "port.oemexpress"="5500"
 
 # Argument to control removal of components not needed after db software installation
@@ -50,16 +59,17 @@ ENV ORACLE_BASE=/opt/oracle \
     PWD_FILE="setPassword.sh" \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
+    SHUTDOWN_FILE="shutDown.sh" \
     CREATE_DB_FILE="createDB.sh" \
     CREATE_OBSERVER_FILE="createObserver.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
-    DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
     CONFIG_TCPS_FILE="configTcps.sh" \
+    SCRIPT_BASE_DIR="/opt/oracle/scripts/base" \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
     ARCHIVELOG_DIR_NAME=archive_logs \
@@ -69,6 +79,8 @@ ENV ORACLE_BASE=/opt/oracle \
     STANDBY_DB=false \
     # Env var below should be in <HOST>:<PORT>/<SERVICE_NAME> format
     PRIMARY_DB_CONN_STR="" \
+    # Optional primary source DB_NAME when it differs from the connect-string service name
+    PRIMARY_DB_NAME="" \
     # For creating dataguard observer
     DG_OBSERVER_ONLY=false \
     DG_OBSERVER_NAME="" \
@@ -84,13 +96,23 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
 # Copy files needed during both installation and runtime
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
-COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CREATE_OBSERVER_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $CONFIG_TCPS_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $SHUTDOWN_FILE $CREATE_DB_FILE $CREATE_OBSERVER_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $CONFIG_TCPS_FILE ${SCRIPT_BASE_DIR}/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
+    mkdir -p "${SCRIPT_BASE_DIR}" && \
+    chmod ug+x "${SCRIPT_BASE_DIR}"/*.sh && \
+    printf '#!/bin/bash\nexec "%s/%s" "$@"\n' "$SCRIPT_BASE_DIR" "$RUN_FILE" > "$ORACLE_BASE/$RUN_FILE" && \
+    chmod ug+x "$ORACLE_BASE/$RUN_FILE" && \
+    for script in "$START_FILE" "$SHUTDOWN_FILE" "$CREATE_DB_FILE" "$CREATE_OBSERVER_FILE" "$PWD_FILE" "$CHECK_DB_FILE" "$USER_SCRIPTS_FILE" "$RELINK_BINARY_FILE" "$CONFIG_TCPS_FILE"; do \
+      ln -sf "${SCRIPT_BASE_DIR}/$script" "$ORACLE_BASE/$script"; \
+    done && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/$SETUP_LINUX_FILE && \
-    rm -rf $INSTALL_DIR
+    rm -rf $INSTALL_DIR && \
+    mkdir /licenses
+
+COPY license.txt /licenses/
 
 
 
@@ -137,7 +159,7 @@ WORKDIR /home/oracle
 RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+   CMD "$SCRIPT_BASE_DIR/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
-CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
+CMD exec $SCRIPT_BASE_DIR/$RUN_FILE

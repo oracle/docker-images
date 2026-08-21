@@ -3,7 +3,7 @@
 Refer to the following instructions to set up Oracle RAC on Podman using an Oracle RAC Image for various scenarios.
 
 - [Oracle RAC on Podman using Oracle RAC Image](#oracle-rac-on-podman-using-oracle-rac-image)
-  - [Section 1: Prerequisites for Setting up Oracle RAC on Container using Oracle RAC Image](#section-1-prerequisites-for-setting-up-oracle-rac-database-on-containers-using-oracle-rac-image)
+  - [Section 1: Prerequisites for Setting up Oracle RAC on Container using Oracle RAC Image](#section-1-prerequisites-for-setting-up-oracle-rac-on-containers-using-oracle-rac-image)
   - [Section 2: Deploying Two-node Oracle RAC on Podman using Oracle RAC Image](#section-2-deploying-two-node-oracle-rac-on-podman-using-oracle-rac-image)
     - [Section 2.1: Deploying Two-Node Oracle RAC on Podman Using Oracle RAC image Without Using Response Files](#section-21-deploying-two-node-oracle-rac-on-podman-using-an-oracle-rac-image-without-using-response-files)
       - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
@@ -170,7 +170,7 @@ localhost/oracle/database-rac:23.26ai
 
 ##### Section 2.1.2.1: Prerequisites for setting up Oracle RAC with NFS storage devices
 
-* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.  
+* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details. 
 
   **Note:** You can skip this step if you are planning to use block devices for storage.
 * Make sure the ASM NFS Storage devices do not have any existing file system.
@@ -555,13 +555,7 @@ podman start racnodep2
 It can take approximately 20 minutes or longer to create and set up a two-node Oracle RAC Database on Containers. To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
-```
-
-If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
-
-```bash
-podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec racnodep1 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message, similar to the following, on the installing node i.e. `racnodep1` in this case:
@@ -664,7 +658,7 @@ podman start racnodep3
 
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:
 ```bash
@@ -736,7 +730,7 @@ podman start racnodep3
 ```
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:

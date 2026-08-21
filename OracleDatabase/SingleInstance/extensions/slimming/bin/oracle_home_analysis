@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -f # Do not expand "*"
+
+BIN_DIR="$( cd "$( dirname "$BASH_SOURCE" )" && pwd )"
+
+# Source env
+source $BIN_DIR/applin_env.sh
+
+launch_perl_application $BASH_SOURCE $@

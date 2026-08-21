@@ -165,6 +165,7 @@ podman exec -i -t racnodepc1-cman /bin/bash
 /opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=<HOST-DETAILS>
 For example :
 /opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=HOST=racnodep9:IP=10.0.20.178:RULE_SRC=racnodepc2-cman
+/opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=HOST=db1.example.com:RULE_SRC=*:RULE_DST=db1:RULE_SRV=apppdb1:RULE_ACT=accept:RULE_NEXT_HOP=cman-sidb.default.svc.cluster.local:1521
 ```
 ### Deleting rules from the Oracle Connection Manager
 
@@ -183,7 +184,7 @@ Run this command inside the OracleConnectionManager container.
 | DOMAIN              | The domain name associated with the container environment.  |
 | PUBLIC_IP          | The public IP address assigned to the Oracle Connection Manager container.  |
 | PUBLIC_HOSTNAME    | The public hostname assigned to the Oracle Connection Manager container.  |
-| DB_HOSTDETAILS       | This is optional field. Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`. |
+| DB_HOSTDETAILS       | This is optional field. Details regarding the database host configuration, including host names, rules, IP addresses, and optional next hop to be registered with Connection Manager in a comma separated format. Supported per-host tokens include `HOST`, `IP`, `RULE_SRC`, `RULE_DST`, `RULE_SRV`, `RULE_ACT`, and `RULE_NEXT_HOP` or `NEXT_HOP`. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170:RULE_NEXT_HOP=cman-sidb.default.svc.cluster.local:1521`. |
 | DNS_SERVER        | The default is set to `10.0.20.25`, which is the DNS container resolving the Connection Manager and Oracle Database containers. Replace this with your DNS server IP if needed.  |
 | USER_CMAN_FILE    | (Optional) If you want to provide your own pre-created `cman.ora` file, set this environment variable and attach the file as a Podman volume in the `podman run` command.  |
 

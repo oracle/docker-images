@@ -1,0 +1,149 @@
+#!/bin/bash
+#
+# oracle_lite_docker_build
+#
+# Copyright (c) 2023, Oracle and/or its affiliates.
+#
+#    NAME
+#      oracle_lite_docker_build - Oracle Lite Container Build
+#
+#    DESCRIPTION
+#      Oracle Lite Container Build
+#
+#    NOTES
+#      Set ORACLE_IMAGE_ZIP location and ORACLE_VERSION prior building the 
+#      lite container.
+#
+#    MODIFIED   (MM/DD/YY)
+#    nmuthukr    11/07/23 - Creation
+#
+
+set -f # Do not expand "*"
+
+BIN_DIR="$( cd "$( dirname "$BASH_SOURCE" )" && pwd )"
+# Obtaining the latest version to build
+ORACLE_VERSION="$(basename $(find "${BASE_DIR}/data/dockerfiles" -maxdepth 1 -type d | sort -n | tail -n 1))"
+LITE_CONTAINER_BUILD="true"
+NANOVOS="false"
+BASE_IMAGE="container-registry.oracle.com/database/free:latest"
+MODIFY_DB_FILE="modifyDB.sh"
+IMAGE_NAME=""
+
+#Setup Applin if not present
+if [[ ! -d "$BASE_DIR"/applin ]]; then
+  make setup_system
+fi
+
+# Source required envs and libs
+source $BIN_DIR/applin_env.sh
+source $BIN_DIR/oracle_lite_docker_lib.sh
+
+while getopts "hv:nb:c:t:" optname; do
+  case "${optname}" in
+    "h")
+      usage;
+      exit 0;
+      ;;
+    "v")
+      ORACLE_VERSION="${OPTARG}"
+      ;;
+    "n")
+      NANOVOS="true"
+      ;;
+    "b")
+      BASE_IMAGE="${OPTARG}"
+      ;;
+    "c")
+      NEW_CONFIG="${OPTARG}"
+      ;;
+    "t")
+      IMAGE_NAME="${OPTARG}"
+      ;;
+    "?")
+      usage;
+      exit 1;
+      ;;
+    *)
+    # Should not occur
+      echo "Unknown error while processing options inside oracle_lite_docker_build"
+      ;;
+  esac
+done
+
+
+applin_init $0
+env_init
+
+# Process arguments
+T_WORK="${BASE_DIR}/work"
+SCRIPT_DIR="$(find "${BASE_DIR}/../../dockerfiles" -name \*.\*.\* -type d | grep -e "dockerfiles\/${ORACLE_VERSION}" | tail -n 1)"
+
+# Default image names
+if [ -z "${IMAGE_NAME}" ]; then
+  if [[ $NANOVOS == "true" ]]; then
+    IMAGE_NAME="oracle/nanovos:latest"
+  else
+    IMAGE_NAME="oracle/database/free:lite"
+  fi
+fi
+
+# Setup work directory
+if [ ! -d "$T_WORK" ];
+then
+  echo "Work directory doesn't exist. Creating ${BASE_DIR}/work"
+else
+  rm -rf ${T_WORK}
+fi
+mkdir ${T_WORK}
+
+if [ -z "$ORACLE_VERSION" ];
+then
+  echo "Version not set. Provide version with -v option"
+  exit -1
+fi
+
+# Cleanup t_work
+rm -rf $T_WORK/*
+
+MIN_DOCKER_VERSION="17.09"
+MIN_PODMAN_VERSION="1.6.0"
+
+# Check that we have a container runtime installed
+checkContainerRuntime
+
+# Switch to work directory
+cd $T_WORK 
+
+base_container_init
+
+# Stop, clear and restart the container
+base_container_stop
+base_container_remove
+base_container_start
+base_container_validate_readiness
+
+# Drop PDB and alter spfile for base container
+base_container_modify_db
+
+# Copy the contents from the base container
+base_container_copy_data
+
+# Segregate the oracle home contents
+oracle_home_segregate
+
+#Trim OS Image if possible
+oracle_linux_trim
+
+if [ "${NANOVOS}" = "true" ];
+then
+  # Create the nanovos base container
+  nanovos_container_build
+else
+  # Compress the data file
+  oracle_home_compress_data_files
+  # Create the lite container
+  lite_container_build
+fi
+
+#Remove base container and image
+base_container_cleanup

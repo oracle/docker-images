@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: Mar, 2020
 # Author: mohammed.qureshi@oracle.com
@@ -19,6 +19,20 @@ if [ "$ORACLE_HOME" == "" ]; then
 fi;
 
 export ORACLE_SID=$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)
+EXTENSION_SCRIPT_DIR="${EXTENSION_SCRIPT_DIR:-/opt/oracle/scripts/extensions/k8s}"
+SWAP_LOCK_PATH="${EXTENSION_SCRIPT_DIR}/${SWAP_LOCK_FILE:-swapLocks.sh}"
+SCRIPT_BASE_DIR="${SCRIPT_BASE_DIR:-/opt/oracle/scripts/base}"
+CHECK_DB_FILE="${CHECK_DB_FILE:-checkDBStatus.sh}"
+
+if [ -x "${SCRIPT_BASE_DIR}/${CHECK_DB_FILE}" ]; then
+  CHECK_DB_PATH="${SCRIPT_BASE_DIR}/${CHECK_DB_FILE}"
+else
+  CHECK_DB_PATH="${ORACLE_BASE}/${CHECK_DB_FILE}"
+fi
+
+if [ ! -f "$SWAP_LOCK_PATH" ]; then
+  SWAP_LOCK_PATH="$ORACLE_BASE/scripts/extensions/setup/$SWAP_LOCK_FILE"
+fi
 
 # Clean up any left over zombie procs from container crash, start database in nomount mode
 ipcs -m | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -m 2> /dev/null
@@ -38,7 +52,7 @@ EOF
 done
 
 # startup can get into a wait mode here
-$ORACLE_BASE/scripts/extensions/setup/$SWAP_LOCK_FILE
+"$SWAP_LOCK_PATH"
 
 # Start Listener
 lsnrctl start
@@ -60,11 +74,10 @@ for i in {1..10}; do
    $condn_sql
    alter database mount;
    alter database open;
-   alter pluggable database all open;
    alter system register;
    exit;
 EOF
-  if "$ORACLE_BASE/$CHECK_DB_FILE"; then
+  if "$CHECK_DB_PATH"; then
     # DB health is good
     echo "DB is in good health on startup"
     break
@@ -76,4 +89,3 @@ done
 
 # Enable health check exit
 rm -f "$ORACLE_BASE/oradata/.${ORACLE_SID}.nochk"
-

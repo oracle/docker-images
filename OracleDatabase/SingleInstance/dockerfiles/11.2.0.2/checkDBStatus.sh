@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2017 Oracle and/or its affiliates. All rights reserved.
@@ -12,13 +13,7 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
-if [ "$IGNORE_DB_STARTED_MARKER" != true ] && [ ! -f "$DB_STARTED_MARKER_FILE" ]; then
-   echo "Database was not started yet." >&2
-   exit 1
-fi
-
 POSITIVE_RETURN="OPEN"
-# shellcheck disable=SC2034
 ORACLE_SID="`grep $ORACLE_HOME /etc/oratab | cut -d: -f1`"
 
 # Check Oracle DB status and store it in status

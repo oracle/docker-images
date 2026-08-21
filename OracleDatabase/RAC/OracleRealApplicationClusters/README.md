@@ -106,7 +106,7 @@ If you are using pre-built Oracle RAC images from the [Oracle Container Registry
 
 * If you want to build the latest Oracle RAC Image from this Github repository, instead of using a pre-built image, then follow below instructions to build `Oracle RAC Container Image` and `Oracle RAC Container Slim Image`.
 
-* Below section assumes that you have completed all of the prerequisites in [Preparation Steps for running Oracle RAC Database in containers](#preparation-steps-for-running-oracle-rac-database-in-containers) and completed all the steps, based on your environment.  
+* Below section assumes that you have completed all of the prerequisites in [Preparation Steps for running Oracle RAC Database in containers](#preparation-steps-for-running-oracle-rac-database-in-containers) and completed all the steps, based on your environment. 
 
   **Note:** Ensure that you do not uncompress the binaries and patches manually before building the Oracle RAC Image.
 
@@ -115,7 +115,7 @@ If you are using pre-built Oracle RAC images from the [Oracle Container Registry
 * Ensure that you have enough space in `/var/lib/containers` while building the Oracle RAC Image. Also, if required use `export TMPDIR=</path/to/tmpdir>` for Podman to use another folder as the temporary podman cache location instead of the default `/tmp` location.
 
 ### Building Oracle RAC Database Container Image
-In  this document,an `Oracle RAC Database Container Image` refers to an Oracle RAC Database Container Image with Oracle Grid Infrastructure and Oracle Database Software Binaries installed during Oracle RAC Podman Image creation. The resulting images will contain the Oracle Grid Infrastructure and Oracle RAC Database Software Binaries.  
+In  this document,an `Oracle RAC Database Container Image` refers to an Oracle RAC Database Container Image with Oracle Grid Infrastructure and Oracle Database Software Binaries installed during Oracle RAC Podman Image creation. The resulting images will contain the Oracle Grid Infrastructure and Oracle RAC Database Software Binaries. 
 
 Before you begin, you must download Oracle Grid Infrastructure and Oracle RDBMS Binaries and stage them under `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationCluster/containerfiles/<VERSION>`.
 
@@ -140,19 +140,16 @@ Retag it as below as we are going to refer this image as `localhost/oracle/datab
 ```bash
 podman tag localhost/oracle/database-rac:26.0.0 localhost/oracle/database-rac:23.26ai
 ```
-**Note** : There is a known issue with Oracle Database 19.3.0 that causes compilation to fail, as described in [Doc ID 2760289.1](https://support.oracle.com/knowledge/Oracle%20Database%20Products/2760289_1.html): "19c Database Installation/relink fails with: Error in invoking target 'libasmclntsh19.ohso libasmperl19.ohso client_sharedlib' of makefile ins_rdbms.mk".  
-
-As a result, you cannot install the base 19.3.0 software directly on Oracle Linux 9. The fix is included in version 19.21 and later. Therefore, when building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`.  
+**Note** : There is a known issue with Oracle Database 19.3.0 that causes compilation to fail, as described in [Doc ID 2760289.1](https://support.oracle.com/knowledge/Oracle%20Database%20Products/2760289_1.html): "19c Database Installation/relink fails with: Error in invoking target 'libasmclntsh19.ohso libasmperl19.ohso client_sharedlib' of makefile ins_rdbms.mk". As a result, you cannot install the base 19.3.0 software directly on Oracle Linux 9. The fix is included in version 19.21 and later. Therefore, when building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`
 
 Example: To build Oracle RAC Database Container Image for version 19.3.0, use below command:
 ```bash
 ./buildContainerImage.sh -v 19.3.0 -i -o "--build-arg BASE_OL_IMAGE=oraclelinux:8"
 ```
 
-### Building Oracle RAC Database Container Slim Image
-In this document, an `Oracle RAC Database Container Slim Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation.  
 
-To build an Oracle RAC Database Container Slim Image that doesn't contain the Oracle Grid infrastructure and Oracle RAC Database software, run the following command:
+### Building Oracle RAC Database Container Slim Image
+In this document, an `Oracle RAC Database Container Slim Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation. To build an Oracle RAC Database Container Slim Image that doesn't contain the Oracle Grid infrastructure and Oracle RAC Database software, run the following command:
 ```bash
 ./buildContainerImage.sh -v <Software Version> -i -o '--build-arg SLIMMING=true'
 ```
@@ -275,16 +272,22 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
    ```
 - Generate a password file
   
-  Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users.  
+  Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users. 
   
-  For this deployment scenario, it will be a common password for the grid, oracle, and database users.  
+  For this deployment scenario, it will be a common password for the grid, oracle, and database users. 
   
-  Run the below commands:
+  If you use `setup_rac_host.sh -prepare-rac-env`, set `RAC_SECRET` to the password value. `RAC_SECRET_MODE` is optional and defaults to `openssl`; set `RAC_SECRET_MODE=base64` only when you want a Base64 password secret without a key secret.
+
+  Run the below commands for the default OpenSSL `pkeyutl` encrypted secret mode:
     ```bash
     cd /opt/.secrets
     openssl genrsa -out key.pem 4096
     openssl rsa -in key.pem -out key.pub -pubout
-    openssl pkeyutl -in pwdfile.txt -out pwdfile.enc -pubin -inkey key.pub -encrypt
+    openssl pkeyutl -in pwdfile.txt -out pwdfile.enc \
+      -pubin -inkey key.pub -encrypt \
+      -pkeyopt rsa_padding_mode:oaep \
+      -pkeyopt rsa_oaep_md:sha256 \
+      -pkeyopt rsa_mgf1_md:sha256
     rm -rf /opt/.secrets/pwdfile.txt
     ```
 - Oracle recommends using Podman secrets inside the containers. To create Podman secrets, run the following commands:
@@ -292,6 +295,18 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
     podman secret create pwdsecret /opt/.secrets/pwdfile.enc
     podman secret create keysecret /opt/.secrets/key.pem
     ```
+
+  For this mode, pass `ENCRYPTION_TYPE=pkeyutl`, `DB_PWD_FILE=pwdsecret`, and `PWD_KEY=keysecret` to the containers. `PKEYOPT` is optional and defaults to `rsa_padding_mode:oaep;rsa_oaep_md:sha256;rsa_mgf1_md:sha256`.
+
+  To use a Base64 password secret instead of an OpenSSL key pair, create only the password secret:
+    ```bash
+    cd /opt/.secrets
+    base64 -w0 pwdfile.txt > pwdfile
+    podman secret create pwdsecret /opt/.secrets/pwdfile
+    rm -rf /opt/.secrets/pwdfile.txt
+    ```
+
+  For this mode, pass `PASSWORD_FILE=pwdsecret`. `PWD_KEY` and `DB_PWD_FILE` are not required.
 
 - To check the details of the created Podman Secrets, run the commands as below:
     ```bash
@@ -303,7 +318,7 @@ podman network create -d ipvlan --subnet=192.168.18.0/24 --opt mtu=9000 -o paren
     podman secret inspect <secret_name>
     ```
 Notes:
-- In this example we use `pwdsecret` as the common password for SSH setup between containers for the oracle, grid, and Oracle RAC database users. Also, `keysecret` is used to extract secrets inside the Oracle RAC Containers.
+- In this example we use `pwdsecret` as the common password for SSH setup between containers for the oracle, grid, and Oracle RAC database users. In OpenSSL encrypted secret mode, `keysecret` is mandatory and is used to decrypt `pwdsecret` inside the Oracle RAC containers. In Base64 secret mode, `keysecret` is not required.
 
 ## Oracle RAC on Containers Deployment Scenarios
 Oracle RAC can be deployed with various scenarios, such as using NFS vs Block Devices, Oracle RAC Container Image vs Slim Image, with User Defined Response files, and so on. All are covered in detail in the instructions below.

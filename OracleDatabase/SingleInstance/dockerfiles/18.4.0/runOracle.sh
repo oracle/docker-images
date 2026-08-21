@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1090
 
 ############# Execute custom scripts ##############
 function runUserScripts {
@@ -19,11 +20,7 @@ function runUserScripts {
   
     for f in $SCRIPTS_ROOT/*; do
         case "$f" in
-            *.sh)
-              echo "$0: running $f"
-              # shellcheck disable=SC1090
-              . "$f"
-              ;;
+            *.sh)     echo "$0: running $f"; . "$f" ;;
             *.sql)    echo "$0: running $f"; echo "exit" | su -p oracle -c "$ORACLE_HOME/bin/sqlplus / as sysdba @$f"; echo ;;
             *)        echo "$0: ignoring $f" ;;
         esac
@@ -205,7 +202,7 @@ if [ "$?" == "0" ]; then
 fi;
 
 # Check whether database is up and running
-IGNORE_DB_STARTED_MARKER=true $ORACLE_BASE/$CHECK_DB_FILE
+$ORACLE_BASE/$CHECK_DB_FILE
 if [ $? -eq 0 ]; then
   echo "#########################"
   echo "DATABASE IS READY TO USE!"
@@ -214,8 +211,6 @@ if [ $? -eq 0 ]; then
   # Execute custom provided startup scripts
   runUserScripts $ORACLE_BASE/scripts/startup
 
-  # Create marker file for the health check
-  touch "$DB_STARTED_MARKER_FILE"
 else
   echo "#####################################"
   echo "########### E R R O R ###############"
