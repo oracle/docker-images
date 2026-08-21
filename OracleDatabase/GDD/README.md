@@ -132,7 +132,6 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ```bash
 ./buildContainerImage.sh -v (Software Version)
-./buildContainerImage.sh -v 26.0.0
 ```
 
 For detailed usage information for `buildContainerImage.sh`, run the following command:
@@ -170,13 +169,9 @@ After creating the base image using `buildContainerImage.sh` in the previous ste
 For example:
 
 ```bash
-./buildExtensions.sh -x sharding -b oracle/database:26.0.0-ee  -t oracle/database-ext-sharding:26.0.0-ee -o "--build-arg BASE_IMAGE_VERSION=26.0.0"
 
 Where:
 "-x sharding"                                   is to specify to have sharding feature in the extended image
-"-b oracle/database:26.0.0-ee"                  is to specify the Base image created in previous step
-"oracle/database-ext-sharding:26.0.0-ee"        is to specify the name:tag for the extended image with Sharding Feature
--o "--build-arg BASE_IMAGE_VERSION=26.0.0"      is to specify the BASE_IMAGE_VERSION to clone from git repo
 ```
 
 To see more usage instructions for the `buildExtensions.sh` script, run the following command:
@@ -216,13 +211,9 @@ After creating the base image using `buildContainerImage.sh` in the previous ste
 For example:
 
 ```bash
-./buildExtensions.sh -x sharding -b oracle/database-rac:26.0.0 -t oracle/database-rac-ext-sharding:26.0.0-ee -o "--build-arg BASE_IMAGE_VERSION=26.0.0"
 
 Where:
 "-x sharding"                                   is to specify to have sharding feature in the extended image
-"-b oracle/database-rac:26.0.0"                 is to specify the Base image created in previous step
-"oracle/database-rac-ext-sharding:26.0.0-ee"    is to specify the name:tag for the extended image with Oracle Globally Distributed Database Feature
--o "--build-arg BASE_IMAGE_VERSION=26.0.0"      is to specify the BASE_IMAGE_VERSION to clone from git repo
 ```
 
 To see usage instructions for the `buildExtensions.sh` script, run the following command:

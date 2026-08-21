@@ -11,9 +11,15 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-"$ORACLE_BASE/$LOCKING_SCRIPT" --release --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.create_lck"
-if ! pgrep -f "$LOCKING_SCRIPT.*--acquire.*exist_lck" > /dev/null; then
-  # Acquire exist lock if not already acquired or trying. This is a blocking call
-  "$ORACLE_BASE/$LOCKING_SCRIPT" --acquire --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.exist_lck" --block
+EXTENSION_SCRIPT_DIR="${EXTENSION_SCRIPT_DIR:-/opt/oracle/scripts/extensions/k8s}"
+LOCKING_SCRIPT_PATH="${EXTENSION_SCRIPT_DIR}/${LOCKING_SCRIPT:-lock.py}"
+
+if [ ! -f "$LOCKING_SCRIPT_PATH" ]; then
+  LOCKING_SCRIPT_PATH="$ORACLE_BASE/$LOCKING_SCRIPT"
 fi
 
+"$LOCKING_SCRIPT_PATH" --release --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.create_lck"
+if ! pgrep -f "$LOCKING_SCRIPT.*--acquire.*exist_lck" > /dev/null; then
+  # Acquire exist lock if not already acquired or trying. This is a blocking call
+  "$LOCKING_SCRIPT_PATH" --acquire --file "$ORACLE_BASE/oradata/.${ORACLE_SID}.exist_lck" --block
+fi

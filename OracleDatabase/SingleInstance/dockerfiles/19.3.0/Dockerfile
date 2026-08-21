@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018, 2022 Oracle and/or its affiliates.
@@ -20,25 +21,34 @@
 #
 # Pull base image
 # ---------------
-ARG BASE_IMAGE=oraclelinux:7-slim
+ARG BASE_IMAGE=oraclelinux:9
 # hadolint ignore=DL3006
 FROM ${BASE_IMAGE} as base
 
 # Labels
 # ------
-LABEL "provider"="Oracle"                                               \
-      "issues"="https://github.com/oracle/docker-images/issues"         \
-      "volume.data"="/opt/oracle/oradata"                               \
-      "volume.setup.location1"="/opt/oracle/scripts/setup"              \
-      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"      \
-      "volume.startup.location1"="/opt/oracle/scripts/startup"          \
-      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"  \
-      "port.listener"="1521"                                            \
+LABEL "provider"="Oracle"                                                           \
+      "maintainer"="Oracle Database Container Team <container-team_ww@oracle.com>"  \
+      "vendor"="Oracle Corporation"                                                 \
+      "version"="19.3.0"                                                            \
+      "release"="19.3.0"                                                            \
+      "name"="Oracle Database 19c"                                                  \
+      "summary"="Oracle Database 19c"                                               \
+      "description"="Container Image for Oracle Database Server Release 19c"        \
+      "issues"="https://github.com/oracle/docker-images/issues"                     \
+      "volume.data"="/opt/oracle/oradata"                                           \
+      "volume.setup.location1"="/opt/oracle/scripts/setup"                          \
+      "volume.setup.location2"="/docker-entrypoint-initdb.d/setup"                  \
+      "volume.startup.location1"="/opt/oracle/scripts/startup"                      \
+      "volume.startup.location2"="/docker-entrypoint-initdb.d/startup"              \
+      "port.listener"="1521"                                                        \
       "port.oemexpress"="5500"
 
 # Argument to control removal of components not needed after db software installation
 ARG SLIMMING=true
 ARG INSTALL_FILE_1="LINUX.X64_193000_db_home.zip"
+ARG BACKUP_MODULE_URL=""
+ARG BACKUP_MODULE_LOCAL_FILE=""
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -51,16 +61,21 @@ ENV ORACLE_BASE=/opt/oracle \
     PWD_FILE="setPassword.sh" \
     RUN_FILE="runOracle.sh" \
     START_FILE="startDB.sh" \
+    SHUTDOWN_FILE="shutDown.sh" \
     CREATE_DB_FILE="createDB.sh" \
     CREATE_OBSERVER_FILE="createObserver.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     CHECK_DB_FILE="checkDBStatus.sh" \
-    DB_STARTED_MARKER_FILE="/dev/shm/.db_started" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     RELINK_BINARY_FILE="relinkOracleBinary.sh" \
+    CONFIG_DG_PREREQS_FILE="configDataguardPrereqs.sh" \
     CONFIG_TCPS_FILE="configTcps.sh" \
+    TDE_SECRET_UTILS_FILE="tdeSecretUtils.sh" \
+    CLONEDB_OBJBACKUP="cloneDBObjBkup.sh" \
+    MANAGE_TNS_ALIASES="manageTnsAliases.sh" \
+    SCRIPT_BASE_DIR="/opt/oracle/scripts/base" \
     SLIMMING=$SLIMMING \
     ENABLE_ARCHIVELOG=false \
     ARCHIVELOG_DIR_NAME=archive_logs \
@@ -68,8 +83,12 @@ ENV ORACLE_BASE=/opt/oracle \
     CLONE_DB=false \
     # To create a standby database referred by PRIMARY_DB_CONN_STR
     STANDBY_DB=false \
+    # Standby startup/health mode: READ_ONLY or MOUNTED
+    STANDBY_OPEN_MODE=READ_ONLY \
     # Env var below should be in <HOST>:<PORT>/<SERVICE_NAME> format
     PRIMARY_DB_CONN_STR="" \
+    # Optional primary source DB_NAME when it differs from the connect-string service name
+    PRIMARY_DB_NAME="" \
     # For creating dataguard observer
     DG_OBSERVER_ONLY=false \
     DG_OBSERVER_NAME="" \
@@ -85,13 +104,65 @@ ENV PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch/:/usr/sbin:$PATH \
 # Copy files needed during both installation and runtime
 # -------------
 COPY $SETUP_LINUX_FILE $CHECK_SPACE_FILE $INSTALL_DIR/
-COPY $RUN_FILE $START_FILE $CREATE_DB_FILE $CREATE_OBSERVER_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $CONFIG_TCPS_FILE $ORACLE_BASE/
+COPY $RUN_FILE $START_FILE $SHUTDOWN_FILE $CREATE_DB_FILE $CREATE_OBSERVER_FILE $CONFIG_RSP $PWD_FILE $CHECK_DB_FILE $USER_SCRIPTS_FILE $RELINK_BINARY_FILE $CONFIG_DG_PREREQS_FILE $CONFIG_TCPS_FILE $TDE_SECRET_UTILS_FILE $CLONEDB_OBJBACKUP $MANAGE_TNS_ALIASES ${SCRIPT_BASE_DIR}/
 
 RUN chmod ug+x $INSTALL_DIR/*.sh && \
+    mkdir -p "${SCRIPT_BASE_DIR}" && \
+    chmod ug+x "${SCRIPT_BASE_DIR}"/*.sh && \
+    printf '#!/bin/bash\nexec "%s/%s" "$@"\n' "$SCRIPT_BASE_DIR" "$RUN_FILE" > "$ORACLE_BASE/$RUN_FILE" && \
+    chmod ug+x "$ORACLE_BASE/$RUN_FILE" && \
+    for script in "$START_FILE" "$SHUTDOWN_FILE" "$CREATE_DB_FILE" "$CREATE_OBSERVER_FILE" "$PWD_FILE" "$CHECK_DB_FILE" "$USER_SCRIPTS_FILE" "$RELINK_BINARY_FILE" "$CONFIG_DG_PREREQS_FILE" "$CONFIG_TCPS_FILE" "$CLONEDB_OBJBACKUP" "$MANAGE_TNS_ALIASES"; do \
+      ln -sf "${SCRIPT_BASE_DIR}/$script" "$ORACLE_BASE/$script"; \
+    done && \
     sync && \
     $INSTALL_DIR/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/$SETUP_LINUX_FILE && \
-    rm -rf $INSTALL_DIR
+    rm -rf $INSTALL_DIR && \
+    mkdir /licenses
+
+RUN --mount=type=bind,source=.,target=/build-context,readonly \
+    --mount=type=secret,id=backup_module_user \
+    --mount=type=secret,id=backup_module_token \
+    set -eu; \
+    if [ -n "$BACKUP_MODULE_URL" ] || [ -n "$BACKUP_MODULE_LOCAL_FILE" ]; then \
+      if [ -n "$BACKUP_MODULE_URL" ] && [ -n "$BACKUP_MODULE_LOCAL_FILE" ]; then \
+        echo "ERROR: Set only one of BACKUP_MODULE_URL or BACKUP_MODULE_LOCAL_FILE." >&2; \
+        exit 1; \
+      fi; \
+      backup_module_rpm="/tmp/backup-module.rpm"; \
+      if [ -n "$BACKUP_MODULE_URL" ]; then \
+        if [ -s /run/secrets/backup_module_user ] || [ -s /run/secrets/backup_module_token ]; then \
+          if [ ! -s /run/secrets/backup_module_user ] || [ ! -s /run/secrets/backup_module_token ]; then \
+            echo "ERROR: URL authentication requires both backup_module_user and backup_module_token secrets." >&2; \
+            exit 1; \
+          fi; \
+          curl -fL --retry 3 --user "$(cat /run/secrets/backup_module_user):$(cat /run/secrets/backup_module_token)" -o "$backup_module_rpm" "$BACKUP_MODULE_URL"; \
+        else \
+          curl -fL --retry 3 -o "$backup_module_rpm" "$BACKUP_MODULE_URL"; \
+        fi; \
+      else \
+        case "$BACKUP_MODULE_LOCAL_FILE" in /*|*../*) \
+          echo "ERROR: BACKUP_MODULE_LOCAL_FILE must be a relative path inside the build context." >&2; \
+          exit 1; \
+          ;; \
+        esac; \
+        if [ ! -f "/build-context/$BACKUP_MODULE_LOCAL_FILE" ]; then \
+          echo "ERROR: Backup module RPM not found: $BACKUP_MODULE_LOCAL_FILE" >&2; \
+          exit 1; \
+        fi; \
+        cp "/build-context/$BACKUP_MODULE_LOCAL_FILE" "$backup_module_rpm"; \
+      fi; \
+      if command -v dnf >/dev/null 2>&1; then \
+        dnf -y install "$backup_module_rpm"; \
+        rm -rf /var/cache/dnf; \
+      else \
+        yum -y localinstall "$backup_module_rpm"; \
+        rm -rf /var/cache/yum; \
+      fi; \
+      rm -f "$backup_module_rpm"; \
+    fi
+
+COPY license.txt /licenses/
 
 
 
@@ -112,6 +183,7 @@ COPY --chown=oracle:dba $INSTALL_FILE_1 $INSTALL_RSP $INSTALL_DB_BINARIES_FILE $
 USER oracle
 RUN chmod ug+x "$INSTALL_DIR"/*.sh && \
     sync && \
+    export CV_ASSUME_DISTID=OL7 && \
     "$INSTALL_DIR"/"$INSTALL_DB_BINARIES_FILE" $DB_EDITION
 
 
@@ -139,7 +211,7 @@ WORKDIR /home/oracle
 RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' > .bashrc
 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
-   CMD "$ORACLE_BASE/$CHECK_DB_FILE" >/dev/null || exit 1
+   CMD "$SCRIPT_BASE_DIR/$CHECK_DB_FILE" >/dev/null || exit 1
 
 # Define default command to start Oracle Database. 
-CMD [ "/bin/bash", "-c", "exec $ORACLE_BASE/$RUN_FILE" ]
+CMD [ "/bin/bash", "-c", "exec $SCRIPT_BASE_DIR/$RUN_FILE" ]

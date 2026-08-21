@@ -80,13 +80,10 @@ Before creating catalog container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -151,7 +148,6 @@ Before creating catalog container, review the following notes carefully:
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
-  --name catalog oracle/database-gpc-ext-sharding:26.0.0-ee
 
   podman network disconnect podman catalog
   podman network connect shard_rac_pub1_nw --ip 172.20.1.170 catalog
@@ -217,13 +213,10 @@ Before creating shard1 container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -288,7 +281,6 @@ Before creating shard1 container, review the following notes carefully:
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
-  --name shard1 oracle/database-gpc-ext-sharding:26.0.0-ee
 
   podman network disconnect podman shard1
   podman network connect shard_rac_pub1_nw --ip 172.20.1.171 shard1
@@ -337,13 +329,10 @@ Before creating shard2 container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -408,7 +397,6 @@ Before creating shard2 container, review the following notes carefully:
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
-  --name shard2 oracle/database-gpc-ext-sharding:26.0.0-ee
 
   podman network disconnect podman shard2
   podman network connect shard_rac_pub1_nw --ip 172.20.1.172 shard2
@@ -489,7 +477,6 @@ If SELinux is enabled on podman host, then execute following-
   -e MASTER_GSM="TRUE" \
   --restart=always \
   --privileged=false \
-  --name gsm1 oracle/database-gsm:26.0.0
 
   podman network disconnect podman gsm1
   podman network connect shard_rac_pub1_nw --ip 172.20.1.176 gsm1
@@ -555,7 +542,6 @@ restorecon -v /scratch/oradata/dbfiles/GSM2DATA
   -e OP_TYPE=gsm \
   --restart=always \
   --privileged=false \
-  --name gsm2 oracle/database-gsm:26.0.0
 
   podman network disconnect podman gsm2
   podman network connect shard_rac_pub1_nw --ip 172.20.1.177 gsm2
@@ -613,13 +599,10 @@ Before creating new shard (shard3 in this case) container, review the following 
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -684,7 +667,6 @@ Before creating new shard (shard3 in this case) container, review the following 
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
-  --name shard3 oracle/database-gpc-ext-sharding:26.0.0-ee
 
   podman network disconnect podman shard3
   podman network connect shard_rac_pub1_nw --ip 172.20.1.173 shard3

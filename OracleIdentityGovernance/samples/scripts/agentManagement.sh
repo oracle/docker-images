@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2002,SC2012,SC2086,SC2129,SC2154,SC3010,SC3043,SC3057
 #
 # Copyright (c) 2022 Oracle and/or its affiliates.
 #

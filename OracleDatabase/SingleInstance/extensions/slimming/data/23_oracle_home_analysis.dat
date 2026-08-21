@@ -1,0 +1,161 @@
+#
+# Required class can be one of the following
+#   - BASE            - applicable for all envs including docker, XE
+#   - DEVELOPEMENT    - Required for development
+#   - EE              - Required for enterprise edition features
+# 
+
+# <file_path>:<category>:<sub-category>:<required-class>:<comment>
+
+# Bugs to start with
+crs/install/ahf_setup:NOT_REQUIRED:AHF:NOT_REQUIRED
+cv/.*:NOT_REQUIRED:CVU:NOT_REQUIRED
+oracore/zoneinfo/big/.*:NOT_REQUIRED:TIME_ZONE:NOT_REQUIRED
+instantclient/.*:NOT_REQUIRED:INSTANT_CLIENT:NOT_REQUIRED
+
+# Runtime data such as message files, nls files, timezone files etc
+ctx/data/enlx/.*:RUNTIME_DATA:CTX_DATA:BASE
+ctx/data/.*:RUNTIME_DATA:CTX_DATA:EE
+oracore/zoneinfo/.*:RUNTIME_DATA:TIME_ZONE:BASE
+
+# dbs directory
+dbs:RUNTIME_DATA:RUNTIME_DATA:BASE
+
+# Development required tools, samples, docs etc
+.*?/help/.*htm:HELP:HTML:DEVELOPMENT
+.*?/help/.*gif:HELP:GIF:DEVELOPMENT
+.*?/help/.*:HELP:OTHERS:DEVELOPMENT
+.*?/demo/.*\.sql:DEMO:SQL:DEVELOPMENT
+.*?/demo/.*:DEMO:OTHERS:DEVELOPMENT
+.*?/public/.*\.h:PUBLIC:INCLUDE:DEVELOPMENT
+.*?/public/.*:PUBLIC:OTHERS:DEVELOPMENT
+.*?/doc/.*\.html:DOC:HTML:DEVELOPMENT
+.*?/doc/.*\.jar:DOC:JAR_FILES:DEVELOPMENT
+.*?/doc/.*:DOC:OTHERS:DEVELOPMENT
+.*?/samples/.*:DOC:OTHERS:DEVELOPMENT
+.*?/sample/.*:DOC:OTHERS:DEVELOPMENT
+sdk/.*:DEVELOPMENT:SDK:DEVELOPMENT:Duplicate files present
+
+# Admin scripts
+network/admin/sqlnet\.ora:ADMIN:CONFIG:BASE
+rdbms/admin/prvtnoqm\.plb:ADMIN:PL_SQL_FILES:BASE
+.*?/admin/.*plb:ADMIN:PL_SQL_FILES:EE
+.*?/admin/.*sql:ADMIN:SQL:EE
+.*?/admin/.*:ADMIN:OTHERS:UPDATE
+
+assistants/dbca/templates/Seed_Database.*:SEED:SEED:SEED
+
+has.*?\.msg:MESSAGE_FILE:MESSAGE_FILE:EE
+has.*?\.msb:MESSAGE_FILE:MESSAGE_FILE:EE
+crs.*?\.msg:MESSAGE_FILE:MESSAGE_FILE:EE
+crs.*?\.msb:MESSAGE_FILE:MESSAGE_FILE:EE
+.*?us\.msg:MESSAGE_FILE:MESSAGE_FILE:BASE
+.*?us\.msb:MESSAGE_FILE:MESSAGE_FILE:BASE
+.*?/attention\.amb:MESSAGE_FILE:MESSAGE_FILE:BASE
+.*?\.msg:MESSAGE_FILE:MESSAGE_FILE:EE
+.*?\.msb:MESSAGE_FILE:MESSAGE_FILE:EE
+sqldeveloper.*:MESSAGE_FILE:MESSAGE_FILE:DEVELOPMENT
+sdk/include/.*\.h:DEVELOPMENT:INCLUDE:DEVELOPMENT
+sdk/include/.*\.hpp:DEVELOPMENT:INCLUDE:DEVELOPMENT
+sdk/include/.*:DEVELOPMENT:DEVELOPMENT:DEVELOPMENT
+xdk/include/.*\.h:MESSAGE_FILE:INCLUDE:DEVELOPMENT
+xdk/include/.*\.hpp:MESSAGE_FILE:INCLUDE:DEVELOPMENT
+xdk/include/.*:MESSAGE_FILE:MESSAGE_FILE:DEVELOPMENT
+
+network/tools/.*:TOOLS:NETWORK:EE
+nls/data/.*:RUNTIME_DATA:NLS:BASE
+OPatch/.*:OPATCH:OPATCH:UPDATE
+
+oml4py/.*:ML:ML:BASE
+
+perl/.*:SUPPORT_PACKAGES:PERL:EE
+python/.*:SUPPORT_PACKAGES:PYTHON:EE
+jdk/.*:SUPPORT_PACKAGES:JDK:EE
+
+R/.*:R:R:EE
+rdbms/xml/.*:DEVELOPMENT:DEVELOPMENT:DEVELOPMENT
+
+# Oracle, sqlplus binary and binary dependencies
+bin/oracle:BINARY:BINARY:BASE
+bin/sqlplus:BINARY:BINARY:BASE
+bin/tnslsnr:BINARY:BINARY:BASE
+bin/lsnrctl:BINARY:BINARY:BASE
+bin/extproc:BINARY:BINARY:BASE
+bin/orapwd:BINARY:BINARY:BASE
+
+lib/libodm.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libodmd.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libofs.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libcell.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libskgxp.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libskjcx.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libclsra.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libdbcfg.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libhasgen.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libskgxn2.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libocr.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libocrb.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libocrutl.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libmql1.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libipc1.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libsqlplus.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libclntsh.so.23.1:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libclntshcore.so.23.1:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libnnz.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libons.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libnnzsrv.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/liboevm.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libasmclntsh.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/legacy.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libiomp5.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libntcpaio.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libipclnt1.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libonnxruntime.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libortbase.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libortextension.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libavro.so.24:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libavro.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+
+# Removal candidates
+lib/libmkl_custom.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libonsnossl.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libxgboost.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+lib/libora_netlib.so:LIBRARY:DYNAMIC_LIBRARY:BASE
+
+bin/lbuilder:BINARY:BINARY:RDBMS_TODO
+bin/.*:BINARY:BINARY:EE
+.*?/bin/.*:BINARY:BINARY_OTHERS:EE
+
+.*?lib/.*\.a:LIBRARY:STATIC_LIBRARY:UPDATE
+.*?lib/.*\.o:LIBRARY:STATIC_LIBRARY:UPDATE
+.*?lib/.*\.so:LIBRARY:DYNAMIC_LIBRARY:EE
+.*?lib/.*:LIBRARY:OTHERS:EE
+
+# Manifest files
+META-INF.*:MANIFEST:MANIFEST:UPDATE
+
+#Install files
+install/orabasetab:INSTALL:OTHERS:BASE
+.*?/install/.*sql:INSTALL:SQL:EE
+.*?/install/.*sh:INSTALL:SCRIPT:EE
+.*?/install/.*pl:INSTALL:SCRIPT:EE
+.*?/install/.*:INSTALL:OTHERS:EE
+
+#JLIB files
+.*?/jlib/.*\.jar:JLIB:JAR_FILES:EE
+.*?/jlib/.*\.zip:JLIB:ZIP_FILES:EE
+.*?/jlib/.*:JLIB:OTHERS:EE
+
+#XML files
+.*?/xml/.*xml.*:XML:XML_FILES:EE
+.*?/xml/.*xsd.*:XML:XSD_FILES:EE
+.*?/xml/.*:XML:OTHERS:EE
+
+xdk/.*:XDK:OTHERS:XDK_TODO
+javavm/.*:JAVAVM:OTHERS:JAVAVM_TODO
+rdbms/.*:RDBMS:OTHERS:RDBMS_TODO
+md/.*:MD:OTHERS:MD_TODO
+inventory/.*:INVENTORY:OTHERS:INVENTORY_TODO
+ldap/.*:LDAP:OTHERS:LDAP_TODO
+install/.*:INSTALL:OTHERS:INSTALL_TODO
+oui/.*:OUI:OTHERS:OUI_TODO

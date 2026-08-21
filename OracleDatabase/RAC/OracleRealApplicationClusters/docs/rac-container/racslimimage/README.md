@@ -39,7 +39,6 @@ Users can deploy multi-node Oracle RAC Database Setup using Oracle RAC Database 
 * Make sure the Oracle RAC Database Container Slim Image is present as shown below.  If you have not created the Oracle RAC Database Container image, execute the [Building Oracle RAC Database Container Slim Image](../../../README.md#building-oracle-rac-database-container-slim-image)
   ```bash
   # podman images|grep database-rac
-  localhost/oracle/database-rac                         26.0.0-slim    8280809e82c8  About a minute ago  518 MB
   ```
 * Configure the [Network Management](../../../README.md#network-management).
 * Configure the [Password Management](../../../README.md#password-management).
@@ -183,7 +182,7 @@ localhost/oracle/database-rac:23.26ai-slim
 #### Section 2.1.2: Deploying with NFS Storage Devices
 ##### Section 2.1.2.1: Prerequisites for setting up Oracle RAC with NFS Storage Devices
 
-* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.  
+* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details. 
 
   **Note:** You can skip this step if you are planning to use block devices for storage.
 * Make sure the ASM NFS Storage devices do not have any existing file system.
@@ -527,7 +526,7 @@ podman start racnodep2
 It can take approximately 20 minutes or longer to create and set up a two-node Oracle RAC Database on Containers. To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep1 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message, similar to the following, on the installing node i.e. `racnodep1` in this case:
@@ -629,7 +628,7 @@ podman start racnodep3
 
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:
@@ -701,7 +700,7 @@ podman start racnodep3
 
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:

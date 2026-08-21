@@ -82,13 +82,10 @@ Before creating catalog container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -164,7 +161,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name cataloga2 oracle/database-rac-ext-sharding:26.0.0-ee
 
 podman network disconnect podman cataloga2
 podman network connect shard_rac_pub1_nw --ip 10.0.15.29 cataloga2
@@ -246,7 +242,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name cataloga1 oracle/database-rac-ext-sharding:26.0.0-ee
   
 podman network disconnect podman cataloga1
 podman network connect shard_rac_pub1_nw --ip 10.0.15.28 cataloga1
@@ -314,13 +309,10 @@ Before creating the containers for Shard1 RAC Database, review the following not
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -396,7 +388,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name sharda12 oracle/database-rac-ext-sharding:26.0.0-ee
   
 podman network disconnect podman sharda12
 podman network connect shard_rac_pub1_nw --ip 10.0.15.31 sharda12
@@ -474,7 +465,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name sharda11 oracle/database-rac-ext-sharding:26.0.0-ee
   
 podman network disconnect podman sharda11
 podman network connect shard_rac_pub1_nw --ip 10.0.15.30 sharda11
@@ -523,13 +513,10 @@ Before creating the containers for Shard2 RAC Database, review the following not
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -605,7 +592,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name sharda22 oracle/database-rac-ext-sharding:26.0.0-ee
   
 podman network disconnect podman sharda22
 podman network connect shard_rac_pub1_nw --ip 10.0.15.33 sharda22
@@ -683,7 +669,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name sharda21 oracle/database-rac-ext-sharding:26.0.0-ee
   
 podman network disconnect podman sharda21
 podman network connect shard_rac_pub1_nw --ip 10.0.15.32 sharda21
@@ -767,7 +752,6 @@ podman create -t -i \
 --restart=always \
 --privileged=false \
 --name gsma1 \
-oracle/database-gsm:26.0.0
   
 podman network disconnect podman gsma1
 podman network connect shard_rac_pub1_nw --ip 10.0.15.26 gsma1
@@ -829,7 +813,6 @@ podman create -i -t \
 --restart=always \
 --privileged=false \
 --name gsma2 \
-oracle/database-gsm:26.0.0
 
 podman network disconnect podman gsma2
 podman network connect shard_rac_pub1_nw --ip 10.0.15.27 gsma2
@@ -888,13 +871,10 @@ Before creating new shard (shard3 in this case) container, review the following 
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -970,7 +950,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name sharda32 oracle/database-rac-ext-sharding:26.0.0-ee
 
 
 podman network disconnect podman sharda32
@@ -1049,7 +1028,6 @@ ${DEVICE} \
 --ulimit rtprio=99  \
 --systemd=always \
 --privileged=false \
---name sharda31 oracle/database-rac-ext-sharding:26.0.0-ee
   
 podman network disconnect podman sharda31
 podman network connect shard_rac_pub1_nw --ip 10.0.15.34 sharda31

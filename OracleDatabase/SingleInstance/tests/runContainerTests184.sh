@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
@@ -27,4 +28,3 @@ runContainerTest "18.4.0 XE WE8MSWIN1252 character set" "18.4.0-XE-WE8MSWIN1252-
 ###################### TEST 18.4.0 EE JA16SJISTILDE character set ###########################
 
 runContainerTest "18.4.0 XE JA16SJISTILDE character set" "18.4.0-EE-JA16SJISTILDE-character-set" "oracle/database:18.4.0-xe" "XE" "XEPDB1" "JA16SJISTILDE"
-

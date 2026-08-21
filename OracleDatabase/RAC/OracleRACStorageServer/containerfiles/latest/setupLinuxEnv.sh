@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1143
 #############################
 # Copyright (c) 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
@@ -15,6 +16,8 @@
 mkdir /oradata && \
 chmod ug+x /opt/scripts/startup/*.sh && \
 if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
+       # curl --noproxy '*' https://ca-artifacts.oraclecorp.com/auto-build/x86_64-build-output-9-dev/oracle-database-preinstall-23ai-1.0-2.el9.x86_64.rpm  --output oracle-database-preinstall-23ai-1.0-2.el9.x86_64.rpm  && \
+       # dnf install -y oracle-database-preinstall-23ai-1.0-2.el9.x86_64.rpm cronie && \
         dnf install -y oracle-database-preinstall-23ai && \
         cp /etc/security/limits.d/oracle-database-preinstall-23ai.conf /etc/security/limits.d/grid-database-preinstall-23ai.conf && \
         sed -i 's/oracle/grid/g' /etc/security/limits.d/grid-database-preinstall-23ai.conf && \

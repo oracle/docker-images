@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1090,SC2006,SC2009,SC2034,SC2046,SC2086,SC2140,SC2154,SC2173,SC2181
 #
 #############################
 # Copyright (c) 2025, Oracle and/or its affiliates.
@@ -14,42 +15,38 @@
 export CONFIGENV=${CONFIGENV:-/dnsserver/env}
 export ENVFILE="${CONFIGENV}"/"dns_envfile"
 
-env > "${ENVFILE}"
-# shellcheck disable=SC1090
-source "${ENVFILE}"
+env > ${ENVFILE}
+source ${ENVFILE}
 
 export logdir=${LOGDIR:-/dnsserver/logs}
 
 
-chmod 755 "${ENVFILE}"
-# shellcheck disable=SC1090
-source "${ENVFILE}"
+chmod 755 ${ENVFILE} 
+source ${ENVFILE}
 
-# shellcheck disable=SC1091
-source "$SCRIPT_DIR"/functions.sh
+source $SCRIPT_DIR/functions.sh
 
 ########### SIGINT handler ############
 function _int() {
    echo "Stopping container."
-sudo kill -9 "$(pgrep named)"
-touch "${logdir}"/stop
+sudo kill -9 `ps -ef | grep named`
+touch ${logdir}/stop
 }
 
 ########### SIGTERM handler ############
 function _term() {
    echo "Stopping container."
    echo "SIGTERM received, shutting down!"
-sudo kill -9 "$(pgrep named)"
-touch "${logdir}"/sigterm
+sudo kill -9 `ps -ef | grep named`
+touch ${logdir}/sigterm
 }
 
 ########### SIGKILL handler ############
 function _kill() {
    echo "SIGKILL received, shutting down database!"
-   # shellcheck disable=SC2034
-   local cmd
-   sudo kill -9 "$(pgrep named)"
-   touch "${logdir}"/sigkill
+local cmd
+sudo kill -9 `ps -ef | grep named`
+touch ${logdir}/sigkill
 }
 
 ###################################
@@ -65,22 +62,20 @@ trap _int SIGINT
 trap _term SIGTERM
 
 # Set SIGKILL handler
-trap '_kill' SIGTERM
+trap _kill SIGKILL
 
 ############ Removing ${logdir}/orod.log #####
-# shellcheck disable=SC2154
 print_message "Creating $logfile"
-chmod 666 "$logfile"
-sudo "$SCRIPT_DIR"/"$CONFIG_DNS_SERVER_FILE"
+chmod 666  $logfile
+sudo $SCRIPT_DIR/$CONFIG_DNS_SERVER_FILE
 
-# shellcheck disable=SC2181
 if [ $? -eq 0 ];then
  print_message "DNS Server Started Successfully"
-  echo "$TRUE"
+  echo $TRUE
 else 
  error_exit "DNS Server startup failed!"
 fi
 
-tail -f "${logdir}"/orod.log &
+tail -f ${logdir}/orod.log &
 childPID=$!
 wait $childPID

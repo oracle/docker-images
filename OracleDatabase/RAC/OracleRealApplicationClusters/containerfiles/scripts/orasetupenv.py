@@ -93,6 +93,7 @@ class OraSetupEnv:
          self.populate_user_profiles()
          #self.setup_ssh_for_k8s()
          self.setup_gi_sw()
+         self.configure_legacy_scp_for_19c()
          self.set_asmdev_perm()
          self.reset_grid_user_passwd()        
          self.setup_db_sw()
@@ -762,6 +763,88 @@ class OraSetupEnv:
             # Optionally set environment variables too
             os.environ["SSH_PRIVATE_KEY"] = privkey_path
             os.environ["SSH_PUBLIC_KEY"] = pubkey_path
+
+    def _is_ol9(self):
+        try:
+            with open("/etc/oracle-release", "r") as f:
+                content = f.read()
+                return "release 9" in content
+        except Exception:
+            return False
+
+    def configure_legacy_scp_for_19c(self):
+        """
+        Make scp options compatible with Oracle Linux 8 and 9.
+
+        Oracle Linux 9's OpenSSH scp requires the legacy protocol options used
+        by the Oracle 19c setup scripts. Oracle Linux 8's older scp rejects
+        those options, so its wrapper removes them before invoking scp.
+        """
+        try:
+            oraversion = self.ocommon.get_rsp_version("INSTALL", None)
+            version = oraversion.split(".", 1)[0].strip()
+        except Exception as ex:
+            self.ocommon.log_warn_message(
+                "Unable to determine Oracle version for legacy scp setup: {0}".format(ex),
+                self.file_name
+            )
+            return
+
+        if version != "19":
+            self.ocommon.log_info_message(
+                "Skipping legacy scp setup for Oracle major version {0}".format(version),
+                self.file_name
+            )
+            return
+
+        scp_bin = "/usr/bin/scp"
+        scp_orig = "/usr/bin/scp.openssh"
+
+        if not os.path.exists(scp_bin):
+            self.ocommon.log_warn_message(
+                "scp not found at {0}; skipping legacy scp setup".format(scp_bin),
+                self.file_name
+            )
+            return
+
+        if os.path.exists(scp_orig):
+            self.ocommon.log_info_message(
+                "Legacy scp wrapper already installed",
+                self.file_name
+            )
+            return
+
+        if self._is_ol9():
+            wrapper_lines = [
+                "#!/bin/bash",
+                'exec /usr/bin/scp.openssh -O -T "$@"'
+            ]
+            wrapper_message = "Installed Oracle 19c OpenSSH scp wrapper at {0} for OL9".format(scp_bin)
+        else:
+            # Oracle Linux 8 or earlier
+            wrapper_lines = [
+                "#!/bin/bash",
+                "args=()",
+                'for arg in "$@"; do',
+                '  case "$arg" in',
+                "    -O|-T) ;;",
+                '    *) args+=("$arg") ;;',
+                "  esac",
+                "done",
+                'exec /usr/bin/scp.openssh "${args[@]}"'
+            ]
+            wrapper_message = "Installed Oracle Linux 8 scp compatibility wrapper at {0}".format(scp_bin)
+
+        printf_args = " ".join("'{0}'".format(line) for line in wrapper_lines)
+        install_cmd = "mv {0} {1} && printf '%s\\n' {2} > {0} && chmod 755 {0} {1}".format(
+            scp_bin, scp_orig, printf_args
+        )
+        self.ocommon.execute_cmd_checked(install_cmd, None, None, exit_on_error=True)
+        self.ocommon.log_info_message(
+            wrapper_message,
+            self.file_name
+        )
+
 ###### Install CRS Software on node ######
     def crs_sw_install(self):
        """
@@ -800,8 +883,8 @@ class OraSetupEnv:
         """
         giuser,gihome,obase,invloc=self.ocommon.get_gi_params()
         dbuser,dbhome,dbase,oinv=self.ocommon.get_db_params()
-        gipath='''{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(gihome)
-        dbpath='''{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(dbhome)
+        gipath='''{0}/perl/bin:{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(gihome)
+        dbpath='''{0}/perl/bin:{0}/bin:/bin:/usr/bin:/sbin:/usr/local/bin'''.format(dbhome)
         gildpath='''{0}/lib:/lib/:/usr/lib'''.format(gihome)
         dbldpath='''{0}/lib:/lib/:/usr/lib'''.format(dbhome)
         cdgihome='''cd {0}'''.format(gihome)

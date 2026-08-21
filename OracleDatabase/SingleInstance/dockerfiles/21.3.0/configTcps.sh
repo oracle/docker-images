@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1982-2024 Oracle and/or its affiliates. All rights reserved.
 # 
 # Since: August, 2022
 # Author: abhishek.by.kumar@oracle.com
@@ -52,7 +52,7 @@ fi
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=${HOSTNAME:-localhost})
+    (HOST=${HOSTNAME})
     (PORT=${TCPS_PORT})
   )
   (CONNECT_DATA=
@@ -65,7 +65,7 @@ ${ORACLE_PDB}=
 (DESCRIPTION=
   (ADDRESS=
     (PROTOCOL=TCPS)
-    (HOST=${HOSTNAME:-localhost})
+    (HOST=${HOSTNAME})
     (PORT=${TCPS_PORT})
   )
   (CONNECT_DATA=
@@ -95,6 +95,9 @@ SSL_CLIENT_AUTHENTICATION = FALSE" | tee -a "$ORACLE_BASE"/oradata/dbconfig/"$OR
 
    # Disable OOB in sqlnet.ora of DB wallet
    echo "DISABLE_OOB=ON" >> "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/sqlnet.ora
+
+   # To prevent Oracle from running out of processes because of abnormal client terminations
+   echo "SQLNET.EXPIRE_TIME=3" >> "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/sqlnet.ora
 
    # Add listener for TCPS
    sed -i "/TCP/a\
@@ -194,6 +197,7 @@ fi
 
 # Default TCPS_PORT value
 TCPS_PORT=${TCPS_PORT:-2484}
+HOSTNAME="${HOSTNAME:-localhost}"
 
 # Creating the wallet
 echo -e "\n\nCreating Oracle Wallet for the database server side certificate...\n"
@@ -215,7 +219,7 @@ echo -e "\nOracle Wallet location: ${WALLET_LOC}\n"
 if [ "${CUSTOM_CERTS}" == false ]; then
     # Create a self-signed certificate using orapki utility; VALIDITY: 365 days
     echo "Creating self-signed certs"
-    orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -keysize 2048 -self_signed -validity 365 <<EOF
+    orapki wallet add -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME}" -keysize 2048 -self_signed -validity 365 <<EOF
 ${WALLET_PWD}
 EOF
 else
@@ -238,7 +242,7 @@ reconfigure_listener
 
 if [ "${CUSTOM_CERTS}" == false ]; then
     # Export the cert to be updated in the client wallet
-    orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME:-localhost}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
+    orapki wallet export -wallet "${WALLET_LOC}" -dn "CN=${HOSTNAME}" -cert /tmp/"$(hostname)"-certificate.crt <<EOF
 ${WALLET_PWD}
 EOF
 fi
