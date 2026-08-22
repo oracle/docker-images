@@ -434,8 +434,8 @@ class OraSetupEnv:
          oracleDBConfigFile="/etc/security/limits.d/oracle-database-preinstall-23c.conf"
          gridDBConfigFile="/etc/security/limits.d/grid-database-preinstall-23c.conf"
       else:
-         oracleDBConfigFile="/etc/security/limits.d/oracle-database-preinstall-23ai.conf"
-         gridDBConfigFile="/etc/security/limits.d/grid-database-preinstall-23ai.conf"
+         oracleDBConfigFile="/etc/security/limits.d/oracle-ai-database-preinstall-26ai.conf"
+         gridDBConfigFile="/etc/security/limits.d/grid-ai-database-preinstall-26ai.conf"
          
       cgroupVersion=output.strip()
       if cgroupVersion == 'cgroup2':
