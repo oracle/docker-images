@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2034,SC2166,SC2155,SC1090,SC2046,SC2178,SC2207,SC2163,SC2115,SC2173,SC1091,SC1143,SC2164,SC3014
+# shellcheck disable=SC1090,SC2034,SC2046,SC2153,SC2154,SC2163,SC2166,SC2178
 #
 #############################
 # Copyright (c) 2024, Oracle and/or its affiliates.
@@ -221,6 +221,13 @@ get_host_ip() {
     return 0
 }
 
+check_dbhost_tcp() {
+    local host="$1"
+    local port="${DB_HOST_PORT:-1521}"
+
+    timeout 5 bash -c "</dev/tcp/${host}/${port}" > /dev/null 2>&1
+}
+
 check_dbhost_connections() {
 
 for key in "${!dbhost_map[@]}";
@@ -231,18 +238,31 @@ do
      print_message "host $key is pingable by name."
      continue
   fi
+  check_dbhost_tcp $key
+  if [ $? -eq 0 ]; then
+     print_message "host $key is reachable by TCP on port ${DB_HOST_PORT:-1521}."
+     continue
+  fi
   if ( [ "${dbhost_map[$key]}" != "" ] ); then
+      check_dbhost_tcp ${dbhost_map[$key]}
+      if [ $? -eq 0 ]; then
+         print_message "$key:${dbhost_map[$key]} is reachable by TCP on port ${DB_HOST_PORT:-1521}."
+         continue
+      fi
       print_message "$key:${dbhost_map[$key]} is not reachable. Exiting."
       return 1
   fi
   get_host_ip $key
   if [ $? -eq 0 ]; then
-     print_message "resolved host ip : $key --> ${hostip}. Check if pinagble by IP"
+     print_message "resolved host ip : $key --> ${hostip}. Check if pingable by IP"
      ping ${hostip} -c 1 > /dev/null
      if [ $? -ne 0 ]; then
-        print_message "host $key not pingable by IP. "
-        print_message "host $key:${hostip} not reachable by Name/IP. Exiting"
-        return 2
+        print_message "host $key not pingable by IP. Checking TCP on port ${DB_HOST_PORT:-1521}."
+        check_dbhost_tcp ${hostip}
+        if [ $? -ne 0 ]; then
+           print_message "host $key:${hostip} not reachable by Name/IP. Exiting"
+           return 2
+        fi
      fi
      dbhost_map[$key]=${hostip}
      continue
@@ -253,6 +273,119 @@ do
 done
 
 return 0
+}
+
+is_ipv4_address()
+{
+    echo "$1" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$'
+}
+
+map_kubernetes_endpoint_hosts()
+{
+local key
+local pod_namespace
+local service_name
+local service_namespace
+local token_file="/var/run/secrets/kubernetes.io/serviceaccount/token"
+local ca_file="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+local ns_file="/var/run/secrets/kubernetes.io/serviceaccount/namespace"
+local api_host="${KUBERNETES_SERVICE_HOST}"
+local api_port="${KUBERNETES_SERVICE_PORT:-443}"
+local token
+local endpoint_json
+local hosts_file
+
+if [ "$action" != "" ]; then
+   return 0
+fi
+
+if [ -z "${api_host}" ] || [ ! -f "${token_file}" ] || [ ! -f "${ns_file}" ]; then
+   print_message "Kubernetes service account details not available. Skipping endpoint host mapping."
+   return 0
+fi
+
+if ! command -v curl >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; then
+   print_message "curl or python3 not available. Skipping endpoint host mapping."
+   return 0
+fi
+
+pod_namespace=$(cat "${ns_file}")
+token=$(cat "${token_file}")
+
+for key in "${!dbhost_map[@]}";
+do
+  if [ -z "${key}" ] || is_ipv4_address "${key}"; then
+     continue
+  fi
+
+  service_name=$(python3 - "$key" <<'PYEOF'
+import sys
+host = sys.argv[1].strip().rstrip(".")
+parts = host.split(".")
+print(parts[0] if parts and parts[0] else "")
+PYEOF
+)
+  service_namespace=$(python3 - "$key" "$pod_namespace" <<'PYEOF'
+import sys
+host = sys.argv[1].strip().rstrip(".")
+default_ns = sys.argv[2]
+parts = host.split(".")
+namespace = default_ns
+if len(parts) >= 4 and parts[2] == "svc":
+    namespace = parts[1]
+elif len(parts) >= 2:
+    namespace = parts[1]
+print(namespace)
+PYEOF
+)
+
+  if [ -z "${service_name}" ] || [ -z "${service_namespace}" ]; then
+     continue
+  fi
+
+  print_message "Mapping Kubernetes endpoints for service ${service_namespace}/${service_name}"
+  endpoint_json=$(curl -fsS --noproxy "*" --cacert "${ca_file}" \
+      -H "Authorization: Bearer ${token}" \
+      "https://${api_host}:${api_port}/api/v1/namespaces/${service_namespace}/endpoints/${service_name}" 2>/dev/null)
+  if [ $? -ne 0 ] || [ -z "${endpoint_json}" ]; then
+     print_message "Unable to read Kubernetes endpoints for ${service_namespace}/${service_name}. Skipping endpoint host mapping."
+     continue
+  fi
+
+  hosts_file=$(mktemp)
+  echo "${endpoint_json}" | python3 -c '
+import json
+import sys
+
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+
+seen = set()
+for subset in data.get("subsets", []):
+    for address in subset.get("addresses", []):
+        ip = address.get("ip")
+        name = (address.get("targetRef") or {}).get("name")
+        if not ip or not name:
+            continue
+        key = (ip, name)
+        if key in seen:
+            continue
+        seen.add(key)
+        print(f"{ip}\t{name}")
+' > "${hosts_file}"
+  if [ -s "${hosts_file}" ]; then
+     while IFS= read -r HOST_LINE
+     do
+        echo "${HOST_LINE}" | sudo tee -a "${ETCHOSTS}" > /dev/null
+        print_message "Added Kubernetes endpoint host mapping: ${HOST_LINE}"
+     done < "${hosts_file}"
+  else
+     print_message "No named endpoint addresses found for ${service_namespace}/${service_name}"
+  fi
+  rm -f "${hosts_file}"
+done
 }
 
 ####################################### ETC Host Function #############################################################
@@ -275,6 +408,14 @@ SetupEtcHosts()
 local stat=3
 local HOST_LINE
 if [ "$action" == "" ]; then
+ if [ -z "${PUBLIC_HOSTNAME}" ]; then
+   PUBLIC_HOSTNAME=`hostname`
+   print_message "Public hostname is not set. Setting to ${PUBLIC_HOSTNAME}"
+ fi
+ if [ -z "${PUBLIC_IP}" ]; then
+   PUBLIC_IP=$(hostname -i 2>/dev/null | awk '{print $1; exit}')
+   print_message "Public IP is not set. Setting to ${PUBLIC_IP}"
+ fi
  if [ ! -z "${HOSTFILE}" ]; then 
    if [ -f "${HOSTFILE}" ]; then
      sudo sh -c "cat \"${HOSTFILE}\" > /etc/hosts"
@@ -325,7 +466,7 @@ do
 
     check_rule_env_vars
     sh -c "echo $'/(rule_list=\n\Eo${TRULESTR}\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
-    sh -c "echo $'/(src=\n\Ec\$(src=${RULE_SRC})(dst=$key)(srv=${RULE_SRV})(act=${RULE_ACT})\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
+    sh -c "echo $'/(src=\n\Ec\$(src=${RULE_SRC})(dst=${RULE_DST})(srv=${RULE_SRV})(act=${RULE_ACT})\E:x\n' | vi $logdir/$CMANORA" 2>/dev/null
 
 done
 
@@ -477,6 +618,7 @@ if [ ! -z "${USER_CMAN_FILE}" ]; then
    fi
 else
    all_check
+   map_kubernetes_endpoint_hosts
    print_message "Generating CMAN file"
    cman_file
 fi
@@ -488,8 +630,6 @@ print_message "Copying CMAN file to $DB_HOME/network/admin"
 copycmanora
 print_message "Starting CMAN"
 start_cman
-print_message "Reloading CMAN"
-reload_cman
 print_message "Checking CMAN Status"
 status_cman
 print_message "################################################"

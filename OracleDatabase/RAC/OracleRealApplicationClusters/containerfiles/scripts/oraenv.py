@@ -112,9 +112,16 @@ class OraEnv:
    @staticmethod
    def preload_log_path_vars():
       """
-      Preload only log path variables from runtime env files before loggers start.
+      Preload log path and logger tuning variables from runtime env files
+      before loggers start.
       """
       old_log_dir = OraEnv.logdir__
+      preload_keys = (
+         'LOG_DIR',
+         'ARCHIVE_DIR',
+         'ORA_LOG_MAX_BYTES',
+         'ORA_LOG_BACKUP_COUNT',
+      )
       for envfile in OraEnv.__get_runtime_envfiles():
          with open(envfile) as fp:
             for line in fp:
@@ -123,7 +130,7 @@ class OraEnv:
                   continue
                key, value = newstr.split('=', 1)
                key = key.strip()
-               if key not in ('LOG_DIR', 'ARCHIVE_DIR'):
+               if key not in preload_keys:
                   continue
                OraEnv.__env_var_dict[key] = value.strip()
       OraEnv.__refresh_log_paths()

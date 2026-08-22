@@ -12,8 +12,21 @@
 | ORACLE_SID               | Optional            | All        | Default value set to ORCLCDB. |
 | ORACLE_PDB               | Optional            | All        | Default value set to ORCLPDB. |
 | ORACLE_CHARACTERSET      | Optional            | All        | Default value set to AL32UTF8. |
-| PWD_KEY                  | Mandatory           | All        | Pass the podman secret name for the key used while generating podman secrets. Default value is set to keysecret. |
-| DB_PWD_FILE              | Mandatory           | All        | Pass the podman secret name for the Oracle RAC Database to be used while generating podman secrets. Default set to pwdsecret. |
+| RAC_SECRET               | Mandatory only for `setup_rac_host.sh -prepare-rac-env` | Host preparation | Password value used by the host preparation script to create Podman secrets. Not passed to RAC containers. |
+| RAC_SECRET_MODE          | Optional            | Host preparation | Secret creation mode for `setup_rac_host.sh -prepare-rac-env`. Supported values are `openssl` and `base64`. Default value is `openssl`. Not passed to RAC containers. |
+| ORACLE_PWD               | Optional            | All        | Plain password value for the Oracle RAC database users. If set, DB password secret files are not required. |
+| ENCRYPTION_TYPE          | Optional            | All        | Password secret decryption type. Supported values are `pkeyutl`, `aes256`, and `rsautl`. Default value is `pkeyutl`. |
+| PKEYOPT                  | Optional            | All        | Semicolon-separated OpenSSL `pkeyutl` options. Used only when `ENCRYPTION_TYPE=pkeyutl`. Default value is `rsa_padding_mode:oaep;rsa_oaep_md:sha256;rsa_mgf1_md:sha256`. |
+| PWD_KEY                  | Mandatory only for OpenSSL encrypted password secrets | All | Pass the Podman secret name for the private key used to decrypt `DB_PWD_FILE`. Default value is `pwd.key`. Not required when using `PASSWORD_FILE` or `ORACLE_PWD`. |
+| DB_PWD_FILE              | Mandatory only for OpenSSL encrypted password secrets | All | Pass the Podman secret name for the encrypted Oracle RAC database password file. Default value is `common_os_pwdfile.enc`. Not required when using `PASSWORD_FILE` or `ORACLE_PWD`. |
+| PASSWORD_FILE            | Mandatory only for Base64 password secrets | All | Pass the Podman secret name for the Base64 encoded Oracle RAC database password file. Default value is `dbpasswd.file`. Not required when using `DB_PWD_FILE` with `PWD_KEY` or `ORACLE_PWD`. |
+| KEY_SECRET_VOLUME        | Optional            | All        | Secret volume for `PWD_KEY`. Defaults to `SECRET_VOLUME` when not set. |
+| SECRET_VOLUME            | Optional            | All        | Secret volume for password files. Default value is `/run/secrets`. |
+| PWD_VOLUME               | Optional            | All        | Temporary directory used while decrypting or decoding password files. Default value is `/var/tmp`. |
+| TDE_ENCRYPTION_TYPE      | Optional            | TDE setup  | TDE password secret decryption type. Supported values are `pkeyutl`, `aes256`, and `rsautl`. If not set, TDE password decryption uses `ENCRYPTION_TYPE` behavior. |
+| TDE_PKEYOPT              | Optional            | TDE setup  | Semicolon-separated OpenSSL `pkeyutl` options for the TDE password secret. Default value is `rsa_padding_mode:oaep;rsa_oaep_md:sha256;rsa_mgf1_md:sha256`. |
+| TDE_PWD_KEY              | Mandatory only for encrypted TDE password secrets | TDE setup | Pass the Podman secret name for the private key used to decrypt `TDE_PWD_FILE`. Not required when using `TDE_PASSWORD_FILE`. |
+| TDE_PASSWORD_FILE        | Mandatory only for Base64 TDE password secrets | TDE setup | Pass the Podman secret name for the Base64 encoded TDE password file. Default value is `tdepwdfile`. |
 | INIT_SGA_SIZE            | Optional            | All        | Set this environment variable when you want to set the size of SGA for RAC containers. |
 | INIT_PGA_SIZE            | Optional            | All        | Set this environment variable when you want to set the size of PGA for RAC containers. |
 | CRS_PRIVATE_IP1          | Mandatory           | All        | Set this environment variable when you want to set the private IP for the first private network for RAC container. |

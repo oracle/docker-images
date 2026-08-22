@@ -18,12 +18,17 @@ This guide provides information about example container build files that you can
   - [Copyright](#copyright)
 
 ## How to build and run Oracle Connection Manager in Containers
-This project offers example container images for the following:
-* Oracle Database 23.26ai Client (26ai) for Linux x86-64
-* Oracle Database 21c Client (21.3) for Linux x86-64
-* Oracle Database 19c Client (19.3) for Linux x86-64
-* Oracle Database 18c Client (18.3) for Linux x86-64
-* Oracle Database 12c Release 2 Client (12.2.0.1.0) for Linux x86-64
+This project offers example container images under these version folders:
+
+| Folder | Use for |
+|--------|---------|
+| `12.2.0.1` | 12c R2 client/CMAN |
+| `18.3.0` | 18c client/CMAN |
+| `19.3.0` | 19c client/CMAN (use zip build-arg for later 19 RUs) |
+| `21.3.0` | 21c client/CMAN |
+| `23.26.0` | All 23.26.* CMAN builds (dbInstall maps `23.26` → `23.26.0`) |
+
+Default install media for `23.26.0` is `LINUX.X64_2326100_client_cman_home.zip` (SHA256 in `23.26.0/Checksum`).
 
 To assist in building the container images, you can use the [buildContainerImage.sh](containerfiles/buildContainerImage.sh) script. See section **Create Oracle Connection Manager Image** for instructions and usage.
 
@@ -43,16 +48,28 @@ podman tag container-registry.oracle.com/database/cman:latest localhost/oracle/c
 If you are using pre-built Oracle Connection Manager from [the Oracle Container Registry](https://container-registry.oracle.com), then you can skip the section [Create Oracle Connection Manager Image](#create-oracle-connection-manager-image) to build the Oracle Connection Manager Image.
 
 ### Create Oracle Connection Manager Image
-**IMPORTANT:** You must provide the installation binaries of the Oracle ADMIN Client Oracle Database 23.26ai Client for Linux x86-64 (client_cman_home.zip) and put them into the `containerfiles/<version>` folder. You  only need to provide the binaries for the edition that you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html).
+**IMPORTANT:** You must provide the installation binaries of the Oracle Client CMAN Home zip for Linux x86-64 and put them into the `containerfiles/<version>` folder. You only need to provide the binaries for the edition that you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html).
 You also have to ensure you have internet connectivity for yum. You must not uncompress the binaries.
 
-The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks. It provides an easy way for beginners to get started. Expert users are welcome to directly call `podman build` with their prefered set of parameters.
+The `buildContainerImage.sh` script is a utility shell script that performs MD5/SHA256 checks and invokes the container build. Expert users are welcome to call `podman build` directly with their preferred parameters.
 Before you build the image, ensure that you have provided the installation binaries and put them into the right folder. Go into the **containerfiles** folder and run the **buildContainerImage.sh** script as root or with sudo privileges:
 
 ```bash
 ./buildContainerImage.sh -v (Software Version)
-./buildContainerImage.sh -v 26.0.0
 ```
+
+Example: build 23.26 CMAN with default media name `LINUX.X64_2326100_client_cman_home.zip`:
+```bash
+./buildContainerImage.sh -v 23.26.0
+```
+
+Example: explicit install zip name (default media `LINUX.X64_2326100_client_cman_home.zip`):
+```bash
+./buildContainerImage.sh \
+  -v 23.26.0 \
+  -o "--build-arg INSTALL_FILE_1=LINUX.X64_2326100_client_cman_home.zip"
+```
+
 For detailed usage of command, please execute following command:
 ```bash
 ./buildContainerImage.sh -h
@@ -61,15 +78,16 @@ Note:
 - Usage of `./buildContainerImage.sh`-
    ```text
    -v: version to build
-   -i: ignores the MD5 checksums
+   -i: ignores the MD5/SHA256 checksums
    -t: user defined image name and tag (e.g., image_name:tag). Default is set to oracle/client-cman:<VERSION>.
-   -o: passes on container build option (e.g., --build-arg ARGUMENT=value).
+   -o: passes on container build option (e.g., --build-arg INSTALL_FILE_1=<zip>, --build-arg BASE_OL_IMAGE=oraclelinux:8).
    ```
 - If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.
 
 Once image is built, retag it to latest as we are going to refer latest image in podman run command-
 ```bash
-podman tag localhost/oracle/client-cman:26.0.0 localhost/oracle/client-cman:latest
+# or for 23.26 track:
+podman tag localhost/oracle/client-cman:23.26.0 localhost/oracle/client-cman:23.26ai
 ```
 
 ## Create Network Bridge
@@ -165,6 +183,7 @@ podman exec -i -t racnodepc1-cman /bin/bash
 /opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=<HOST-DETAILS>
 For example :
 /opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=HOST=racnodep9:IP=10.0.20.178:RULE_SRC=racnodepc2-cman
+/opt/scripts/startup/configCMAN.sh -addrule -e DB_HOSTDETAILS=HOST=db1.example.com:RULE_SRC=*:RULE_DST=db1:RULE_SRV=apppdb1:RULE_ACT=accept:RULE_NEXT_HOP=cman-sidb.default.svc.cluster.local:1521
 ```
 ### Deleting rules from the Oracle Connection Manager
 
@@ -183,7 +202,7 @@ Run this command inside the OracleConnectionManager container.
 | DOMAIN              | The domain name associated with the container environment.  |
 | PUBLIC_IP          | The public IP address assigned to the Oracle Connection Manager container.  |
 | PUBLIC_HOSTNAME    | The public hostname assigned to the Oracle Connection Manager container.  |
-| DB_HOSTDETAILS       | This is optional field. Details regarding the database host configuration, including host names, rules, and IP addresses to be registered with Connection manager in a command separated format, indicating different hosts and their associated details such as rules and IP addresses. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170`. |
+| DB_HOSTDETAILS       | This is optional field. Details regarding the database host configuration, including host names, rules, IP addresses, and optional next hop to be registered with Connection Manager in a comma separated format. Supported per-host tokens include `HOST`, `IP`, `RULE_SRC`, `RULE_DST`, `RULE_SRV`, `RULE_ACT`, and `RULE_NEXT_HOP` or `NEXT_HOP`. Example: `HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170:RULE_NEXT_HOP=cman-sidb.default.svc.cluster.local:1521`. |
 | DNS_SERVER        | The default is set to `10.0.20.25`, which is the DNS container resolving the Connection Manager and Oracle Database containers. Replace this with your DNS server IP if needed.  |
 | USER_CMAN_FILE    | (Optional) If you want to provide your own pre-created `cman.ora` file, set this environment variable and attach the file as a Podman volume in the `podman run` command.  |
 

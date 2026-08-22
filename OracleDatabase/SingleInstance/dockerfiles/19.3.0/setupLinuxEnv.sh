@@ -10,6 +10,14 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
 
+## Use OCI yum repos on OCI instead of public yum
+region=$(curl --noproxy '*' -sfm 3 -H "Authorization: Bearer Oracle" http://169.254.169.254/opc/v2/instance/ | sed -nE 's/^ *"regionIdentifier": "([^"]+)".*/\1/p')
+if [ -n "$region" ]; then 
+    echo "Detected OCI Region: $region"
+    for proxy in $(printenv | grep -i _proxy | cut -d= -f1); do unset $proxy; done
+    echo "-$region" > /etc/yum/vars/ociregion
+fi 
+
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
@@ -21,8 +29,13 @@ ln -s "$ORACLE_BASE"/scripts /docker-entrypoint-initdb.d && \
 mkdir "$ORACLE_BASE"/oradata && \
 mkdir -p "$ORACLE_HOME" && \
 chmod ug+x "$ORACLE_BASE"/*.sh && \
-yum -y install oracle-database-preinstall-19c openssl hostname && \
+yum update -y && \
+yum -y install oracle-database-preinstall-19c openssl hostname libxcrypt-compat && \
 rm -rf /var/cache/yum && \
 ln -s "$ORACLE_BASE"/"$PWD_FILE" /home/oracle/ && \
 echo oracle:oracle | chpasswd && \
 chown -R oracle:dba "$ORACLE_BASE"
+
+if [ ! -f '/usr/bin/python' ] && [ -f '/usr/bin/python3' ]; then 
+    alternatives --install /usr/bin/python python /usr/bin/python3 1; 
+fi
