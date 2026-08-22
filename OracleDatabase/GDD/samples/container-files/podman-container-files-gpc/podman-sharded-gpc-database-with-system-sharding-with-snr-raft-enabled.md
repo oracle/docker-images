@@ -2,36 +2,38 @@
 
 This page covers the steps to manually deploy a sample Oracle Globally Distributed Database with System-Managed Sharding with RAFT Replication Enabled using Podman Containers. **This deployment uses Extended Oracle RAC Database Container Image to deploy the Database Containers.**
 
-- [Setup Details](#setup-details)
-- [Prerequisites](#prerequisites)
-- [Deploying Catalog Container](#deploying-catalog-container)
-  - [Storage for ASM Disk for Catalog Container](#storage-for-asm-disk-for-catalog-container)
-  - [Create Container](#create-container)
-- [Deploying Shard Containers](#deploying-shard-containers)
-  - [Storage for ASM Disks for Shard Containers](#storage-for-asm-disks-for-shard-containers)
-  - [Shard1 Container](#shard1-container)
-  - [Shard2 Container](#shard2-container)
-  - [Shard3 Container](#shard3-container)
-- [Deploying GSM Container](#deploying-gsm-container)
-  - [Create Directory for Master GSM Container](#create-directory-for-master-gsm-container)
-  - [Create Master GSM Container](#create-master-gsm-container)
-- [Deploying Standby GSM Container](#deploying-standby-gsm-container)  
-  - [Create Directory for Standby GSM Container](#create-directory-for-standby-gsm-container)
-  - [Create Standby GSM Container](#create-standby-gsm-container)
-- [Scale-out an existing Oracle Globally Distributed Database](#scale-out-an-existing-oracle-globally-distributed-database)
-  - [Storage for ASM Disk for New Shard Container](#storage-for-asm-disk-for-new-shard-container)
-  - [Create Podman Container for new shard](#create-podman-container-for-new-shard)
-  - [Add the new shard Database to the existing Oracle Globally Distributed Database](#add-the-new-shard-database-to-the-existing-oracle-globally-distributed-database)
-  - [Deploy the new shard](#deploy-the-new-shard)
-- [Scale-in an existing Oracle Globally Distributed Database](#scale-in-an-existing-oracle-globally-distributed-database)
-  - [Confirm the shard to be deleted is present in the list of shards in the Oracle Globally Distributed Database](#confirm-the-shard-to-be-deleted-is-present-in-the-list-of-shards-in-the-oracle-globally-distributed-database)
-  - [Delete the shard database from the Oracle Globally Distributed Database](#delete-the-shard-database-from-the-oracle-globally-distributed-database)
-  - [Confirm the shard has been successfully deleted from the Oracle Globally Distributed Database](#confirm-the-shard-has-been-successfully-deleted-from-the-oracle-globally-distributed-database)
-  - [Remove the Podman Container](#remove-the-podman-container)
-- [Environment Variables Explained](#environment-variables-explained)
-- [Support](#support)
-- [License](#license)
-- [Copyright](#copyright)
+- [Deploy Oracle Globally Distributed Database using Oracle Restart in Podman Containers with System-Managed Sharding with RAFT Replication Enabled](#deploy-oracle-globally-distributed-database-using-oracle-restart-in-podman-containers-with-system-managed-sharding-with-raft-replication-enabled)
+  - [Setup Details](#setup-details)
+  - [Prerequisites](#prerequisites)
+  - [Deploying Catalog Container](#deploying-catalog-container)
+    - [Storage for ASM Disk for Catalog Container](#storage-for-asm-disk-for-catalog-container)
+    - [Create Container](#create-container)
+  - [Deploying Shard Containers](#deploying-shard-containers)
+    - [Storage for ASM Disks for Shard Containers](#storage-for-asm-disks-for-shard-containers)
+    - [Shard1 Container](#shard1-container)
+    - [Shard2 Container](#shard2-container)
+    - [Shard3 Container](#shard3-container)
+  - [Deploying GSM Container](#deploying-gsm-container)
+    - [Create Directory for Master GSM Container](#create-directory-for-master-gsm-container)
+    - [Create Master GSM Container](#create-master-gsm-container)
+  - [Deploying Standby GSM Container](#deploying-standby-gsm-container)
+    - [Create Directory for Standby GSM Container](#create-directory-for-standby-gsm-container)
+    - [Create Standby GSM Container](#create-standby-gsm-container)
+  - [Scale-out an existing Oracle Globally Distributed Database](#scale-out-an-existing-oracle-globally-distributed-database)
+    - [Storage for ASM Disk for New Shard Container](#storage-for-asm-disk-for-new-shard-container)
+    - [Create Podman Container for new shard](#create-podman-container-for-new-shard)
+    - [Add the new shard Database to the existing Oracle Globally Distributed Database](#add-the-new-shard-database-to-the-existing-oracle-globally-distributed-database)
+    - [Deploy the new shard](#deploy-the-new-shard)
+  - [Scale-in an existing Oracle Globally Distributed Database](#scale-in-an-existing-oracle-globally-distributed-database)
+    - [Confirm the shard to be deleted is present in the list of shards in the Oracle Globally Distributed Database](#confirm-the-shard-to-be-deleted-is-present-in-the-list-of-shards-in-the-oracle-globally-distributed-database)
+    - [Move any RUs off of the shard you plan to remove](#move-any-rus-off-of-the-shard-you-plan-to-remove)
+    - [Delete the shard database from the Oracle Globally Distributed Database](#delete-the-shard-database-from-the-oracle-globally-distributed-database)
+    - [Confirm the shard has been successfully deleted from the Oracle Globally Distributed Database](#confirm-the-shard-has-been-successfully-deleted-from-the-oracle-globally-distributed-database)
+    - [Remove the Podman Container](#remove-the-podman-container)
+  - [Environment Variables Explained](#environment-variables-explained)
+  - [Support](#support)
+  - [License](#license)
+  - [Copyright](#copyright)
 
 ## Setup Details
 
@@ -80,10 +82,13 @@ Before creating catalog container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
+  -e DB_HOME=/u01/app/oracle/product/23.0.0/dbhome_1 \
+  -e GRID_HOME=/u01/app/23.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
+  -e STAGING_SOFTWARE_LOC=/stage/software/23.26.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -148,6 +153,7 @@ Before creating catalog container, review the following notes carefully:
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
+  --name catalog oracle/database-gpc-ext-sharding:23.26.0-ee
 
   podman network disconnect podman catalog
   podman network connect shard_rac_pub1_nw --ip 172.20.1.170 catalog
@@ -214,10 +220,13 @@ Before creating shard1 container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
+  -e DB_HOME=/u01/app/oracle/product/23.0.0/dbhome_1 \
+  -e GRID_HOME=/u01/app/23.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
+  -e STAGING_SOFTWARE_LOC=/stage/software/23.26.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -282,6 +291,7 @@ Before creating shard1 container, review the following notes carefully:
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
+  --name shard1 oracle/database-gpc-ext-sharding:23.26.0-ee
 
   podman network disconnect podman shard1
   podman network connect shard_rac_pub1_nw --ip 172.20.1.171 shard1
@@ -330,10 +340,13 @@ Before creating shard2 container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
+  -e DB_HOME=/u01/app/oracle/product/23.0.0/dbhome_1 \
+  -e GRID_HOME=/u01/app/23.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
+  -e STAGING_SOFTWARE_LOC=/stage/software/23.26.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -398,6 +411,7 @@ Before creating shard2 container, review the following notes carefully:
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
+  --name shard2 oracle/database-gpc-ext-sharding:23.26.0-ee
 
   podman network disconnect podman shard2
   podman network connect shard_rac_pub1_nw --ip 172.20.1.172 shard2
@@ -446,10 +460,13 @@ Before creating shard3 container, review the following notes carefully:
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
+  -e DB_HOME=/u01/app/oracle/product/23.0.0/dbhome_1 \
+  -e GRID_HOME=/u01/app/23.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
+  -e STAGING_SOFTWARE_LOC=/stage/software/23.26.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -514,6 +531,7 @@ Before creating shard3 container, review the following notes carefully:
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
+  --name shard3 oracle/database-gpc-ext-sharding:23.26.0-ee
 
   podman network disconnect podman shard3
   podman network connect shard_rac_pub1_nw --ip 172.20.1.173 shard3
@@ -595,6 +613,7 @@ If SELinux is enabled on podman host, then execute following-
   -e MASTER_GSM="TRUE" \
   --restart=always \
   --privileged=false \
+  --name gsm1 oracle/database-gsm:23.26.0
 
   podman network disconnect podman gsm1
   podman network connect shard_rac_pub1_nw --ip 172.20.1.176 gsm1
@@ -653,6 +672,7 @@ restorecon -v /scratch/oradata/dbfiles/GSM2DATA
   -e OP_TYPE=gsm \
   --restart=always \
   --privileged=false \
+  --name gsm2 oracle/database-gsm:23.26.0
 
   podman network disconnect podman gsm2
   podman network connect shard_rac_pub1_nw --ip 172.20.1.177 gsm2
@@ -710,10 +730,13 @@ Before creating new shard (shard4 in this case) container, review the following 
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
+  -e DB_HOME=/u01/app/oracle/product/23.0.0/dbhome_1 \
+  -e GRID_HOME=/u01/app/23.0.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
+  -e STAGING_SOFTWARE_LOC=/stage/software/23.26.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e COPY_DB_SOFTWARE=true \
   -e DB_SW_ZIP_FILE=db_home.zip \
@@ -778,6 +801,7 @@ Before creating new shard (shard4 in this case) container, review the following 
   --ulimit rtprio=99  \
   --systemd=always \
   --privileged=false \
+  --name shard4 oracle/database-gpc-ext-sharding:23.26.0-ee
 
   podman network disconnect podman shard4
   podman network connect shard_rac_pub1_nw --ip 172.20.1.174 shard4
