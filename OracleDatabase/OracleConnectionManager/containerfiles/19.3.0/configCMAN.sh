@@ -879,9 +879,6 @@ else
     cman_file
 fi
 
-setupEtcResolvConf
-SetupEtcHosts
-
 print_message "Copying CMAN file to $DB_HOME/network/admin"
 copycmanora
 print_message "Starting CMAN"
