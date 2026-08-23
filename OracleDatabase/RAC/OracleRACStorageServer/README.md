@@ -12,6 +12,7 @@ Refer to the following instructions for setup of NFS Container for Oracle RAC:
 - [SELinux Configuration on Podman Host](#selinux-configuration-on-podman-host)
 - [Oracle RAC Storage Container for Podman Host](#oracle-rac-storage-container-for-podman-host)
 - [Create NFS Volume](#create-nfs-volume)
+- [Sample Container Files for Older Releases](#sample-container-files-for-older-releases)
 - [Copyright](#copyright)
 
 ## How to build NFS Storage Container Image on Container host
@@ -21,7 +22,7 @@ To create the files for Oracle RAC storage, ensure that you have at least 60 GB 
 
 To assist in building the images, you can use the [`buildContainerImage.sh`](containerfiles/buildContainerImage.sh) script. See below for instructions and usage.
 
-In this guide, we refer to Oracle Linux 8 onwards as the Podman Host machines.
+In this guide, we refer to Oracle Linux 8 onwards as the Podman Host.
 
 The `buildContainerImage.sh` script is just a utility shell script that performs MD5 checks. It provides an easy way for beginners to get started. Expert users are welcome to directly call `podman build` with their preferred set of parameters. Go into the **containerfiles** folder and run the **buildContainerImage.sh** script on your Podman host:
 
@@ -44,8 +45,7 @@ Usage: buildContainerImage.sh -v [version] [-o] [Podman build option]
 Builds a Podman Image for Oracle Database.
   
 Parameters:
-   -v: version to build
-       Choose "latest" version for podman host machines
+   -v: version to build e.g latest
    -o: passes on Podman build option
 ```
 
@@ -125,7 +125,7 @@ podman run -d -t \
  localhost/oracle/rac-storage-server:latest
 ```
 
-To check the Oracle RAC storage container and services creation logs, you can run a `tail` command on the Container logs. It should take approximately 10 minutes to create the racnode-storage container service.
+To check the Oracle RAC storage container and services creation logs, you can run a `tail` command on the Podman logs. It should take approximately 10 minutes to create the racnode-storage container service.
 
 ```bash
 podman exec racnode-storage tail -f /tmp/storage_setup.log
@@ -143,13 +143,11 @@ Export list for racnode-storage:
 
 **NOTE**: Place the directory in a container that has at least 60 GB. In the preceding example, we are using `/scratch/stage/rac-storage/$ORACLE_DBNAME`. Change these values according to your environment. Inside the container, the directory will be `/oradata`. Do not change this value.
 
-In the preceding example, we use **192.168.17.0/24** as the subnet for the NFS server. You can change the subnet values according to your environment.
-
+In the following example, we use **192.168.17.0/24** as the subnet for the NFS server. You can change the subnet values according to your environment.
 
 **IMPORTANT:** The NFS volume must be `/oradata`, which you will export to Oracle RAC containers for ASM storage. It will take approximately 10 minutes to set up the NFS server.
 
 ### Create NFS Volume
-#### Create NFS volume using the following command on the Podman Host
 
 ```bash
 podman volume create --driver local \
@@ -159,6 +157,7 @@ podman volume create --driver local \
 racstorage
 ```
 
+
 **IMPORTANT:** If you are not using the `192.168.17.0/24` subnet then you must change **addr=192.168.17.80** based on your environment.
 
 ## Environment variables explained
@@ -167,6 +166,10 @@ racstorage
 |----------------------|-----------------|
 | DNS_SERVER           | Default set to `10.0.20.25`. Specify the comma-separated list of DNS server IP addresses where both Oracle RAC nodes are resolved.      |
 | DOMAIN               | Default set to `example.info`. Specify the domain details for the Oracle RAC Container Environment.    |
+
+## Sample Container Files for Older Releases
+To setup an Oracle RAC storage Container for the Docker host on Oracle Linux 7, refer older [README](./README1.md#how-to-build-nfs-storage-container-image-on-docker-host)
+instructions.
 
 ## License
 Unless otherwise noted, all scripts and files hosted in this repository that are required to build the container images are under UPL 1.0 license.

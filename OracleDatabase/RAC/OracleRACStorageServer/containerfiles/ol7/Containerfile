@@ -1,5 +1,4 @@
 # LICENSE UPL 1.0
-# hadolint global ignore=DL4000,DL3025
 #
 # Copyright (c) 1982-2025 Oracle and/or its affiliates. All rights reserved.
 #
@@ -16,10 +15,6 @@
 # Pull base image
 # ---------------
 FROM oraclelinux:7-slim
-
-# Maintainer
-# ----------
-MAINTAINER Paramdeep saini <paramdeep.saini@oracle.com>, Sanjay Singh <sanjay.singh@oracle.com>
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -59,4 +54,4 @@ WORKDIR /home/oracle
 
 # Define default command to start Oracle Database.
 
-CMD exec $SCRIPT_DIR/$RUN_FILE
+CMD ["exec", "$SCRIPT_DIR/$RUN_FILE"]

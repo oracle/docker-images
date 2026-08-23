@@ -1,6 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2086
-# shellcheck disable=SC2034,SC2164
 #############################
 # Copyright (c) 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
@@ -35,7 +33,7 @@ EOF
 
 # Parameters
 VERSION="latest"
-SKIPMD5=0
+export SKIPMD5=0
 DOCKEROPS=""
 
 while getopts "hiv:o:" optname; do
@@ -71,7 +69,7 @@ else
     exit 1
 fi
 # Go into version folder
-cd $VERSION
+cd "$VERSION" || exit
 
 echo "=========================="
 echo "DOCKER info:"
