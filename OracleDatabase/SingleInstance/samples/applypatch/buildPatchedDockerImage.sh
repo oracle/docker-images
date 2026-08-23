@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2003,SC2006,SC2035,SC2045,SC2086,SC2154,SC2164,SC2181,SC2320
 # 
 # Since: January, 2017
 # Author: gerald.venzl@oracle.com
@@ -143,3 +142,4 @@ EOF
 else
   echo "Oracle Database Docker Image was NOT successfully created. Check the output and correct any reported problems with the docker build operation."
 fi
+

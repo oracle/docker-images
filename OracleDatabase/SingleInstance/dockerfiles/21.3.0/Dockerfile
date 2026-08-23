@@ -1,5 +1,4 @@
 # LICENSE UPL 1.0
-# hadolint global ignore=SC2086,SC2016,DL3025
 #
 # Copyright (c) 2018, 2022 Oracle and/or its affiliates.
 #

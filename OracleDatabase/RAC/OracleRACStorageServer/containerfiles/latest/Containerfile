@@ -1,5 +1,4 @@
 #############################
-# hadolint global ignore=DL3025
 # Copyright (c) 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
@@ -61,4 +60,5 @@ VOLUME ["/oradata"]
 WORKDIR /workdir
 
 # Define default command to start Oracle Database.
+# hadolint ignore=DL3025
 ENTRYPOINT /usr/bin/$INITSH

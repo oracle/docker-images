@@ -1,7 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC1091
-# shellcheck disable=SC2155
-# shellcheck disable=SC1090,SC2034
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2022 Oracle and/or its affiliates. All rights reserved.

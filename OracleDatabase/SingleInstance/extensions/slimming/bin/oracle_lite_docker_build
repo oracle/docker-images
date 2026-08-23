@@ -1,6 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC1090,SC2086
-# shellcheck disable=SC2034,SC2046,SC2115,SC2128,SC2164,SC2242
 #
 # oracle_lite_docker_build
 #

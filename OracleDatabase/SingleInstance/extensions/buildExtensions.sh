@@ -1,6 +1,4 @@
 #!/bin/bash -e
-# shellcheck disable=SC2230
-# shellcheck disable=SC2086,SC2154
 # 
 # Since: Mar, 2020
 # Author: mohammed.qureshi@oracle.com

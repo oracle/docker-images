@@ -1,5 +1,4 @@
 # LICENSE UPL 1.0
-# hadolint global ignore=SC2153
 #
 # Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
 #

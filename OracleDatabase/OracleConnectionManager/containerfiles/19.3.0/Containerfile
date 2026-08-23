@@ -1,4 +1,3 @@
-# hadolint global ignore=DL3025,DL3044,DL4000
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
@@ -48,7 +47,6 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
     container="true" 
 # Use second ENV so that variable get substituted
-# hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin:$PATH \
      SCRIPT_DIR=$INSTALL_DIR/startup \
@@ -62,7 +60,6 @@ COPY $INSTALL_FILE_1 $SETUP_LINUX_FILE $CHECK_SPACE_FILE $DB_INSTALL_RSP $DB_SET
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 
-# hadolint ignore=DL3044
 RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
@@ -88,5 +85,4 @@ WORKDIR /home/oracle
 EXPOSE 1521 5500
 
 # Define default command to start Oracle Database.
-# hadolint ignore=DL3025
 CMD exec $SCRIPT_DIR/$RUN_FILE

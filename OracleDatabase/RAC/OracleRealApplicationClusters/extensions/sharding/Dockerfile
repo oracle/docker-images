@@ -1,4 +1,3 @@
-# hadolint global ignore=DL3002,DL3006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.

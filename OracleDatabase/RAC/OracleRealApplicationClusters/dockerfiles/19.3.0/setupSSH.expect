@@ -1,0 +1,45 @@
+#!/usr/bin/expect -f
+# LICENSE UPL 1.0
+#
+# Copyright (c) 1982-2018 Oracle and/or its affiliates. All rights reserved.
+#
+# Since: January, 2018
+# Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
+# Description: Setup SSH between nodes
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+
+set username [lindex $argv 0];
+set script_loc [lindex $argv 1];
+set cluster_nodes [lindex $argv 2];
+set ssh_pass [lindex $argv 3];
+
+set timeout 120
+
+# Procedure to setup ssh from server
+proc sshproc { ssh_pass } {
+  expect {
+    # Send password at 'Password' prompt and tell expect to continue(i.e. exp_continue)
+    -re "\[P|p]assword:" { exp_send "$ssh_pass\r"
+                           exp_continue  }
+    # Tell expect stay in this 'expect' block and for each character that SCP prints while doing the copy
+    # reset the timeout counter back to 0.
+    -re .                { exp_continue  }
+    timeout              { return 1      }
+    eof                  { return 0      }
+  }
+}
+
+# Execute sshUserSetup.sh Script
+set ssh_cmd "$script_loc/sshUserSetup.sh -user $username  -hosts \"${cluster_nodes}\"  -logfile /tmp/${username}_SetupSSH.log -advanced -exverify -noPromptPassphrase -confirm"
+
+eval spawn $ssh_cmd
+set ssh_results [sshproc $ssh_pass]
+
+if { $ssh_results == 0 } {
+  exit 0
+}
+
+# Error attempting SSH, so exit with non-zero status
+exit 1

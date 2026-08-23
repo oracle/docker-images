@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2001,SC2002,SC2006,SC2086,SC2154,SC2155,SC2162,SC2166,SC2236
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.

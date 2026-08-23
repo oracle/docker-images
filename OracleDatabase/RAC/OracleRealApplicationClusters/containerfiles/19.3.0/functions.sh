@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2128,SC2155,SC2178,SC2206
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
@@ -19,6 +18,7 @@ export TOP_PID=$$
 
 ###### Function Related to printing messages and exit the script if error occurred ##################
 error_exit() {
+# shellcheck disable=SC2155
 local NOW=$(date +"%m-%d-%Y %T %Z")
         # Display error message and exit
 #       echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
@@ -28,6 +28,7 @@ local NOW=$(date +"%m-%d-%Y %T %Z")
 
 print_message ()
 {
+        # shellcheck disable=SC2155
         local NOW=$(date +"%m-%d-%Y %T %Z")
         # Display  message and return
         echo "${NOW} : ${PROGNAME} : ${1:-"Unknown Message"}" | tee -a $logfile > $STD_OUT_FILE
@@ -100,6 +101,7 @@ valid_ip()
     if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
         OIFS=$IFS
         IFS='.'
+        # shellcheck disable=SC2206
         ip=($ip)
         IFS=$OIFS
         [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
@@ -133,10 +135,14 @@ resolveip(){
     then
         return 1
     else
+        # shellcheck disable=SC2155,SC2178
         local ip=$( getent hosts "$host" | awk '{print $1}' )
+        # shellcheck disable=SC2128
         if [ -z "$ip" ] 
         then
+            # shellcheck disable=SC2178
             ip=$( dig +short "$host" )
+            # shellcheck disable=SC2128
             if [ -z "$ip" ]
             then
                 print_message "unable to resolve '$host'" 

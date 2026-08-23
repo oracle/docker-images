@@ -1,6 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC1090,SC2086
-# shellcheck disable=SC2068,SC2128
 
 set -f # Do not expand "*"
 

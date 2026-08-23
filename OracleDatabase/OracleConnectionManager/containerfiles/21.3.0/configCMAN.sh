@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC1090,SC2034,SC2046,SC2153,SC2154,SC2163,SC2166,SC2178
 #
 #############################
 # Copyright (c) 2024, Oracle and/or its affiliates.

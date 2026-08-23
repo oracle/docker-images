@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2006,SC2086
 #
 #############################
 # Copyright (c) 2025, Oracle and/or its affiliates.

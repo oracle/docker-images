@@ -1,6 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC3010,SC3043
-# shellcheck disable=SC2039
 #
 # $Header: rdbms/src/server/nanovos/container/podman/base/data/dockerfiles/trimOS.sh /main/1 2025/06/21 05:30:43 mamannam Exp $
 #
