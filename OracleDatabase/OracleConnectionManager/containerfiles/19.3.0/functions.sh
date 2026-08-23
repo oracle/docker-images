@@ -37,6 +37,7 @@ resolve_logfile_path()
     fi
 }
 
+# shellcheck disable=SC2155
 export logfile="$(resolve_logfile_path)"
 
 init_logfile()

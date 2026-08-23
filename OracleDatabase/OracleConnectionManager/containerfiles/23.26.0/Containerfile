@@ -26,7 +26,7 @@
 #      $ ./buildContainerImage.sh -v 23.26.0 \
 #          -o "--build-arg INSTALL_FILE_1=LINUX.X64_2326100_client_cman_home.zip"
 
-# hadolint global ignore=SC2086,SC3014
+# hadolint global ignore=DL3006,DL3025,SC2086
 ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image
@@ -79,7 +79,6 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 ######
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
-# hadolint ignore=DL3041
 RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
         dnf install -y oracle-ai-database-preinstall-26ai  && \
         dnf clean all; \
