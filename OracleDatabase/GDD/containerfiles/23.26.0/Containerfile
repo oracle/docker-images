@@ -4,22 +4,22 @@
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle GSM 26ai to build the container image
+# This is the Dockerfile for Oracle GSM 23.26ai to build the container image
 # MAINTAINER <paramdeep.saini@oracle.com>
 #
-# This is the Dockerfile for Oracle GSM 26ai
+# This is the Dockerfile for Oracle GSM 23.26ai
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_260000_gsm.zip
-#     Download Oracle 26ai GSM Software
+# (1) LINUX.X64_2326100_gsm.zip
+#     Download Oracle 23.26ai GSM Software
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run:
-#      $ docker build -t oracle/gsm:26.0.0 .
+#      $ docker build -t oracle/gsm:23.26.0 .
 #
 
 ARG SLIMMING=false
@@ -41,7 +41,7 @@ LABEL "provider"="Oracle"                                          \
 
 # Argument to control removal of components not needed after db software installation
 
-ARG INSTALL_FILE_1="LINUX.X64_260000_gsm.zip"
+ARG INSTALL_FILE_1="LINUX.X64_2326100_gsm.zip"
 ARG USER="root"
 
 # Environment variables required for this build (do NOT change)
@@ -52,7 +52,7 @@ ENV GSM_BASE="/u01/app/oracle" \
     INVENTORY="/u01/app/oracle/oraInventory" \
     INSTALL_DIR="/opt/oracle/scripts" \
     INSTALL_FILE_1=$INSTALL_FILE_1 \
-    INSTALL_RSP="26ai_gsm_install.rsp" \
+    INSTALL_RSP="23ai_gsm_install.rsp" \
     RUN_FILE="runOracle.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
