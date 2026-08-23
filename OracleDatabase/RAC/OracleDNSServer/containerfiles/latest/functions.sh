@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC1090,SC2086,SC2140,SC2155
 #
 #############################
 # Copyright (c) 2025, Oracle and/or its affiliates.
@@ -13,8 +12,8 @@
 
 export CONFIGENV=${CONFIGENV:-/dnsserver/env}
 export ENVFILE="${CONFIGENV}"/"dns_envfile"
-
-source ${ENVFILE}
+# shellcheck disable=SC1090
+source "${ENVFILE}"
 
 export logdir=${LOGDIR:-/dnsserver/logs}
 export logfile=${logdir}/orod.log
@@ -23,7 +22,8 @@ export STD_ERR_FILE="/proc/self/fd/2"
 
 ###### Function Related to printing messages and exit the script if error occurred ##################
 error_exit() {
-local NOW=$(date +"%m-%d-%Y %T %Z")
+        local NOW
+        NOW=$(date +"%m-%d-%Y %T %Z")
         # Display error message and exit
 #       echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
         echo "${NOW} : ${PROGNAME}: ${1:-"Unknown Error"}" | tee -a $logfile  > $STD_OUT_FILE
@@ -32,7 +32,8 @@ local NOW=$(date +"%m-%d-%Y %T %Z")
 
 print_message ()
 {
-        local NOW=$(date +"%m-%d-%Y %T %Z")
+        local NOW
+        NOW=$(date +"%m-%d-%Y %T %Z")
         # Display  message and return
         echo "${NOW} : ${PROGNAME} : ${1:-"Unknown Message"}" | tee -a $logfile  > $STD_OUT_FILE
         return $?
@@ -48,7 +49,8 @@ resolveip(){
     then
         return 1
     else
-        local ip=$( getent hosts "$host" | awk '{print $1}' )
+        local ip
+        ip=$(getent hosts "$host" | awk '{print $1}')
         if [ -z "$ip" ] 
         then
             ip=$( dig +short "$host" )
