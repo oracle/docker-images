@@ -1,7 +1,7 @@
-# hadolint global ignore=DL3025,DL3044,DL4000
+# hadolint global ignore=DL3025,DL3044
 # LICENSE UPL 1.0
 #
-# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2022 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
@@ -9,24 +9,20 @@
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_193000_client.zip 
-#     Oracle Database 19c Client (19.3) for Linux x86-64
+# (1) LINUX.X64_213000_client.zip 
+#     Oracle Database 21c Client (21.3) for Linux x86-64
 #     Download Oracle Connection Manager as part of the Oracle Database Client
-#     from https://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle18c-linux-180000-5022980.html 
+#     from https://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle21c-linux-210000-5022980.html 
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put all downloaded files in the same directory as this Dockerfile
 # Run: 
-#      $ docker build -t oracle/cman:19.3.0 . 
+#      $ docker build -t oracle/cman:21.3.0 . 
 #
 # Pull base image
 # ---------------
 FROM oraclelinux:7-slim
-
-# Maintainer
-# ----------
-MAINTAINER Sanjay Singh (Sanjay.Singh@oracle.com), Paramdeep Saini (paramdeep.saini@oracle.com)
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -34,11 +30,11 @@ MAINTAINER Sanjay Singh (Sanjay.Singh@oracle.com), Paramdeep Saini (paramdeep.sa
 ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DIR=/opt/scripts \
 # Grid Env variables
-    INVENTORY=/u01/app/oraInventory \
+    INVENTORY=/u01/app/oracle/oraInventory \
     DB_BASE=/u01/app/oracle \
-    DB_HOME=/u01/app/oracle/product/19.3.0/client_1 \
-    INSTALL_FILE_1="LINUX.X64_193000_client.zip" \
-    DB_INSTALL_RSP="client19c_install.rsp" \
+    DB_HOME=/u01/app/oracle/product/cman \
+    INSTALL_FILE_1="LINUX.X64_213000_client.zip" \
+    DB_INSTALL_RSP="client21c_install.rsp" \
     DB_SETUP_FILE="setupDB.sh" \
     RUN_FILE="runOracle.sh" \
     CONFIG_CMAN_FILE="configCMAN.sh" \
@@ -57,7 +53,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # Grid Binaries
-COPY $INSTALL_FILE_1 $SETUP_LINUX_FILE $CHECK_SPACE_FILE $DB_INSTALL_RSP $DB_SETUP_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/install/
+COPY $INSTALL_FILE_1 $SETUP_LINUX_FILE $CHECK_SPACE_FILE $CLIENT_RSP $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/install/
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 
@@ -65,17 +61,14 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
-    $INSTALL_DIR/install/$DB_SETUP_FILE && \
-    sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
-    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE  && \
+    sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-21c.conf && \
     su oracle -c "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
     $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
-    rm -rf $INSTALL_DIR/install && \
-    rm -f /etc/sysctl.d/99-oracle-database-preinstall-19c-sysctl.conf && \
-    rm -f /etc/sysctl.d/99-sysctl.conf && \
-    rm -f /etc/rc.d/init.d/oracle-database-preinstall-19c-firstboot && \
-    rm -f /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+    rm -f /etc/sysctl.d/99-oracle-database-preinstall-21c-sysctl.conf && \
+    rm -f /etc/sysctl.d/99-sysctl.conf && \ 
+    rm -f /etc/rc.d/init.d/oracle-database-preinstall-21c-firstboot && \
     chown -R oracle:oinstall $SCRIPT_DIR && \
     chmod 755 $SCRIPT_DIR/*.sh && \
     chmod 666 $SCRIPT_DIR/*.ora && \

@@ -15,11 +15,14 @@ declare -r FALSE=1
 declare -r TRUE=0
 declare -r CP="/bin/cp"
 declare -r CMAN_ACTION_LIST="       (action_list=(aut=off)(moct=0)(mct=0)(mit=0)(conn_stats=on))"
+declare -r HIDE_PASSWORD="######"
 declare -A dbhost_ip_map
 declare -A rule_src_map
 declare -A rule_dst_map
 declare -A rule_srv_map
 declare -A rule_act_map
+declare -A rule_next_hop_map
+declare -A endpoint_host_map
 declare -a dbhost_order=()
 declare action=""
 
@@ -57,6 +60,28 @@ strip_assignment_prefix()
     else
         printf '%s\n' "$value"
     fi
+}
+
+extract_embedded_tnsnames()
+{
+    local cman_file="$1"
+    local tns_file="$DB_HOME/network/admin/tnsnames.ora"
+    local tmp_file
+
+    tmp_file="$(mktemp "${logdir}/tnsnames.XXXXXX")" || error_exit "Failed to allocate temporary tnsnames.ora file"
+    awk '
+        /^[[:space:]]*#[[:space:]]*CMAN_TNSNAMES_BEGIN[[:space:]]*$/ { capture = 1; next }
+        /^[[:space:]]*#[[:space:]]*CMAN_TNSNAMES_END[[:space:]]*$/ { capture = 0; next }
+        capture { sub(/^[[:space:]]*#[[:space:]]?/, ""); print }
+    ' "$cman_file" > "$tmp_file" || error_exit "Failed to extract embedded tnsnames.ora"
+
+    if [ -s "$tmp_file" ]; then
+        print_message "Copying embedded tnsnames.ora to $DB_HOME/network/admin"
+        ${CP} "$tmp_file" "$tns_file" || error_exit "Failed to copy embedded tnsnames.ora to $DB_HOME/network/admin"
+        chown oracle:oinstall "$tns_file" 2>/dev/null || true
+    fi
+
+    rm -f "$tmp_file"
 }
 
 is_ipv4_address()
@@ -207,6 +232,49 @@ check_cman_env_vars()
     if [ -z "${REGISTRATION_INVITED_NODES}" ]; then
         REGISTRATION_INVITED_NODES='*'
     fi
+
+    if [ -z "${TDM}" ]; then
+        TDM="no"
+        TDM_THREADING_MODE=""
+    else
+        TDM=$(printf '%s' "${TDM}" | tr '[:upper:]' '[:lower:]')
+        TDM_THREADING_MODE="dedicated"
+    fi
+
+    if [ -n "${ENABLE_REST_API}" ]; then
+        ENABLE_REST_API=$(printf '%s' "${ENABLE_REST_API}" | tr '[:upper:]' '[:lower:]')
+    else
+        ENABLE_REST_API="false"
+    fi
+
+    if [ -z "${REST_HOST}" ]; then
+        REST_HOST="$(hostname -f 2>/dev/null || hostname)"
+    fi
+
+    if [ -z "${REST_PORT}" ]; then
+        REST_PORT="1525"
+    fi
+
+    if [ -z "${REST_PWD_FILE}" ]; then
+        REST_PWD_FILE="/run/secrets/RESTpwdsecret"
+    fi
+
+    if [ -z "${REST_PWD_KEY}" ]; then
+        REST_PWD_KEY="/run/secrets/RESTkeysecret"
+    fi
+
+    if [ "${ENABLE_REST_API}" = "true" ]; then
+        print_message "REST API is Enabled"
+        if [ -z "${WALLET_LOCATION}" ]; then
+            WALLET_LOCATION="${DB_BASE}/wallet"
+            export WALLET_LOCATION
+        fi
+        print_message "REST HOST is defined to ${REST_HOST}"
+        print_message "REST PORT is defined to ${REST_PORT}"
+        REST_PASSWORD=$(openssl pkeyutl -decrypt -in "${REST_PWD_FILE}" -inkey "${REST_PWD_KEY}") || error_exit "Failed to decrypt REST password"
+    else
+        print_message "REST API is disabled"
+    fi
 }
 
 reset_rule_vars()
@@ -215,6 +283,7 @@ reset_rule_vars()
     RULE_DST=""
     RULE_SRV=""
     RULE_ACT=""
+    RULE_NEXT_HOP=""
 }
 
 check_rule_env_vars()
@@ -253,6 +322,7 @@ parse_rule_record()
     local token
     local key
     local value
+    local last_key=""
 
     trimmed_record="$(trim_value "$db_hostvalue")"
     if [ -z "$trimmed_record" ]; then
@@ -264,7 +334,15 @@ parse_rule_record()
 
     for token in "${rule_env_vars[@]}"; do
         token="$(trim_value "$token")"
-        if [ -z "$token" ] || [[ "$token" != *=* ]]; then
+        if [ -z "$token" ]; then
+            continue
+        fi
+        if [[ "$token" != *=* ]]; then
+            case "$last_key" in
+                RULE_NEXT_HOP|NEXT_HOP)
+                    RULE_NEXT_HOP="${RULE_NEXT_HOP}:$token"
+                    ;;
+            esac
             continue
         fi
 
@@ -272,6 +350,7 @@ parse_rule_record()
         value="${token#*=}"
         key="$(trim_value "$key")"
         value="$(trim_value "$value")"
+        last_key="$key"
 
         case "$key" in
             HOST)
@@ -292,6 +371,9 @@ parse_rule_record()
             RULE_ACT)
                 RULE_ACT="$value"
                 ;;
+            RULE_NEXT_HOP|NEXT_HOP)
+                RULE_NEXT_HOP="$value"
+                ;;
             *)
                 print_message "Ignoring unsupported DB_HOSTDETAILS token [${key}]"
                 ;;
@@ -311,6 +393,7 @@ parse_rule_record()
     rule_dst_map["$host"]="$RULE_DST"
     rule_srv_map["$host"]="$RULE_SRV"
     rule_act_map["$host"]="$RULE_ACT"
+    rule_next_hop_map["$host"]="$RULE_NEXT_HOP"
 }
 
 get_dbhost_details()
@@ -363,6 +446,12 @@ map_kubernetes_endpoint_hosts()
     local token
     local endpoint_json
     local hosts_file
+    local endpoint_ip
+    local endpoint_name
+    local endpoint_host=""
+    local rule_dst
+    local normalized_rule_dst
+    local normalized_host
 
     if [ "$action" != "" ]; then
         return 0
@@ -444,15 +533,120 @@ for subset in data.get("subsets", []):
         print(f"{ip}\t{name}")
 ' > "${hosts_file}"
         if [ -s "${hosts_file}" ]; then
-            while IFS= read -r HOST_LINE; do
-                echo "${HOST_LINE}" | sudo tee -a "${ETCHOSTS:-/etc/hosts}" > /dev/null
-                print_message "Added Kubernetes endpoint host mapping: ${HOST_LINE}"
+            while read -r endpoint_ip endpoint_name; do
+                if [ -z "${endpoint_ip}" ] || [ -z "${endpoint_name}" ]; then
+                    continue
+                fi
+                printf '%s\t%s\n' "${endpoint_ip}" "${endpoint_name}" | sudo tee -a "${ETCHOSTS:-/etc/hosts}" > /dev/null
+                print_message "Added Kubernetes endpoint host mapping: ${endpoint_ip} ${endpoint_name}"
+                if [ -z "${endpoint_host}" ]; then
+                    endpoint_host="${endpoint_name}"
+                fi
             done < "${hosts_file}"
         else
             print_message "No named endpoint addresses found for ${service_namespace}/${service_name}"
         fi
         rm -f "${hosts_file}"
+
+        if [ -n "${endpoint_host}" ]; then
+            endpoint_host_map["$host"]="${endpoint_host}"
+            rule_dst="${rule_dst_map[$host]}"
+            normalized_rule_dst="${rule_dst%.}"
+            normalized_host="${host%.}"
+            case "${normalized_rule_dst}" in
+                "${normalized_host}"|"${service_name}"|"${service_name}.${service_namespace}"|"${service_name}.${service_namespace}.svc"|"${service_name}.${service_namespace}.svc.cluster.local")
+                    rule_dst_map["$host"]="${endpoint_host}"
+                    print_message "Mapped CMAN rule destination ${rule_dst} to endpoint host ${endpoint_host}"
+                    ;;
+            esac
+        fi
     done
+}
+
+
+map_kubernetes_namespace_endpoint_hosts()
+{
+    local pod_namespace
+    local token_file="/var/run/secrets/kubernetes.io/serviceaccount/token"
+    local ca_file="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    local ns_file="/var/run/secrets/kubernetes.io/serviceaccount/namespace"
+    local api_host="${KUBERNETES_SERVICE_HOST}"
+    local api_port="${KUBERNETES_SERVICE_PORT:-443}"
+    local token
+    local endpoints_json
+    local hosts_file
+    local endpoint_ip
+    local endpoint_name
+
+    if [ "$action" != "" ]; then
+        return 0
+    fi
+
+    if [ -z "${api_host}" ] || [ ! -f "${token_file}" ] || [ ! -f "${ns_file}" ]; then
+        print_message "Kubernetes service account details not available. Skipping namespace endpoint host mapping."
+        return 0
+    fi
+
+    if ! command -v curl >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; then
+        print_message "curl or python3 not available. Skipping namespace endpoint host mapping."
+        return 0
+    fi
+
+    pod_namespace=$(cat "${ns_file}")
+    token=$(cat "${token_file}")
+
+    print_message "Mapping Kubernetes endpoint hostnames in namespace ${pod_namespace}"
+    endpoints_json=$(curl -fsS --noproxy "*" --cacert "${ca_file}" \
+        -H "Authorization: Bearer ${token}" \
+        "https://${api_host}:${api_port}/api/v1/namespaces/${pod_namespace}/endpoints" 2>/dev/null)
+    if [ $? -ne 0 ] || [ -z "${endpoints_json}" ]; then
+        print_message "Unable to list Kubernetes endpoints for namespace ${pod_namespace}. Skipping namespace endpoint host mapping."
+        return 0
+    fi
+
+    hosts_file=$(mktemp)
+    echo "${endpoints_json}" | python3 -c '
+import json
+import sys
+
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+
+seen = set()
+for item in data.get("items", []):
+    for subset in item.get("subsets", []):
+        for address in subset.get("addresses", []):
+            ip = address.get("ip")
+            target = address.get("targetRef") or {}
+            name = target.get("name")
+            kind = target.get("kind")
+            if not ip or not name:
+                continue
+            if kind and kind != "Pod":
+                continue
+            key = (ip, name)
+            if key in seen:
+                continue
+            seen.add(key)
+            print(f"{ip}\t{name}")
+' > "${hosts_file}"
+    if [ -s "${hosts_file}" ]; then
+        while read -r endpoint_ip endpoint_name; do
+            if [ -z "${endpoint_ip}" ] || [ -z "${endpoint_name}" ]; then
+                continue
+            fi
+            if getent hosts "${endpoint_name}" >/dev/null 2>&1; then
+                continue
+            fi
+            printf '%s\t%s\n' "${endpoint_ip}" "${endpoint_name}" | sudo tee -a "${ETCHOSTS:-/etc/hosts}" > /dev/null
+            print_message "Added Kubernetes endpoint host mapping: ${endpoint_ip} ${endpoint_name}"
+        done < "${hosts_file}"
+    else
+        print_message "No named Kubernetes endpoint addresses found for namespace ${pod_namespace}"
+    fi
+    rm -f "${hosts_file}"
 }
 
 all_check()
@@ -559,6 +753,80 @@ replace_rule_list()
     mv "$tmp_file" "$cman_file_path"
 }
 
+
+format_next_hop_description()
+{
+    local next_hop="$1"
+    local host
+    local port
+
+    if [[ "$next_hop" == \(* ]]; then
+        printf '    %s\n' "$next_hop"
+        return 0
+    fi
+
+    host="${next_hop%:*}"
+    port="${next_hop##*:}"
+    if [ "$host" = "$port" ]; then
+        port="1521"
+    fi
+
+    printf '    (description=(address=(protocol=tcp)(host=%s)(port=%s)))\n' "$host" "$port"
+}
+
+insert_next_hop_block()
+{
+    local cman_file_path="$1"
+    local next_hop_file
+    local tmp_file
+    local host
+    local next_hop
+    local seen="|"
+    local count=0
+
+    next_hop_file="$(mktemp "${logdir}/cman.nexthop.XXXXXX")" || error_exit "Failed to allocate temporary CMAN next_hop file"
+    {
+        echo "  (next_hop="
+        for host in "${dbhost_order[@]}"; do
+            next_hop="${rule_next_hop_map[$host]}"
+            if [ -z "$next_hop" ]; then
+                continue
+            fi
+            case "$seen" in
+                *"|$next_hop|"*)
+                    continue
+                    ;;
+            esac
+            seen="${seen}${next_hop}|"
+            format_next_hop_description "$next_hop"
+            count=$((count + 1))
+        done
+        echo "  )"
+    } > "$next_hop_file"
+
+    if [ "$count" -eq 0 ]; then
+        rm -f "$next_hop_file"
+        return 0
+    fi
+
+    tmp_file="$(mktemp "${logdir}/cman.nexthop.out.XXXXXX")" || error_exit "Failed to allocate temporary CMAN file"
+    awk -v next_hop_file="$next_hop_file" '
+        {
+            print
+            if (!inserted && $0 ~ /^[[:space:]]*\(address=/) {
+                while ((getline line < next_hop_file) > 0) {
+                    print line
+                }
+                close(next_hop_file)
+                inserted = 1
+            }
+        }
+    ' "$cman_file_path" > "$tmp_file" || error_exit "Failed to insert CMAN next_hop block"
+
+    mv "$tmp_file" "$cman_file_path"
+    rm -f "$next_hop_file"
+}
+
 generate_rule_list_file()
 {
     local rules_file="$1"
@@ -573,11 +841,14 @@ generate_rule_list_file()
             echo "$CMAN_ACTION_LIST"
             echo "    )"
         else
-            printf '    (rule=(src=%s.%s)(dst=127.0.0.1)(srv=cmon)(act=accept))\n' "$PUBLIC_HOSTNAME" "$DOMAIN"
             for host in "${dbhost_order[@]}"; do
                 dst="${rule_dst_map[$host]}"
+                if [ -z "${dst}" ] && [ -n "${endpoint_host_map[$host]}" ]; then
+                    dst="${endpoint_host_map[$host]}"
+                fi
                 echo "    (rule="
-                printf '       (src=%s)(dst=%s)(srv=%s)(act=%s)\n' \
+                printf '       (src=%s)(dst=%s)(srv=%s)(act=%s)
+' \
                     "${rule_src_map[$host]}" \
                     "$dst" \
                     "${rule_srv_map[$host]}" \
@@ -607,6 +878,29 @@ cman_file()
         -e "s|###TRACE_LEVEL###|${TRACE_LEVEL}|g" \
         -e "s|(registration_invited_nodes=.*)|(registration_invited_nodes=${REGISTRATION_INVITED_NODES})|g" \
         "$generated_file" || error_exit "Failed to render CMAN template"
+
+    insert_next_hop_block "$generated_file"
+
+    if [ "${ENABLE_REST_API}" = "true" ]; then
+        sed -i \
+            -e "s|###REST_HOST###|${REST_HOST}|g" \
+            -e "s|###REST_PORT###|${REST_PORT}|g" \
+            "$generated_file" || error_exit "Failed to configure REST address"
+    else
+        sed -i -e "/(REST_ADDRESS=/d" "$generated_file" || error_exit "Failed to remove REST address"
+    fi
+
+    if [ "${TDM}" = "yes" ]; then
+        sed -i \
+            -e "s|###TDM###|${TDM}|g" \
+            -e "s|###TDM_THREADING_MODE###|${TDM_THREADING_MODE}|g" \
+            "$generated_file" || error_exit "Failed to configure TDM"
+    else
+        sed -i \
+            -e "/(TDM=/d" \
+            -e "/(TDM_THREADING_MODE=/d" \
+            "$generated_file" || error_exit "Failed to remove TDM settings"
+    fi
 
     rules_file="$(mktemp "${logdir}/cman.rules.XXXXXX")" || error_exit "Failed to allocate temporary CMAN rule file"
     generate_rule_list_file "$rules_file"
@@ -731,6 +1025,39 @@ copycmanora()
     chown -R oracle:oinstall "$DB_HOME/network/admin/"
 }
 
+configure_rest_api()
+{
+    local oracle_home="${ORACLE_HOME:-$DB_HOME}"
+
+    if [ "${ENABLE_REST_API}" != "true" ]; then
+        return 0
+    fi
+
+    print_message "REST API enabled. Configuring REST API"
+
+    echo "${oracle_home}/bin/orapki wallet create -wallet ${WALLET_LOCATION} -pwd ${HIDE_PASSWORD}"
+    "${oracle_home}/bin/orapki" wallet create -wallet "${WALLET_LOCATION}" -pwd "${REST_PASSWORD}" || error_exit "Failed to create REST wallet"
+
+    echo "${oracle_home}/bin/orapki wallet add -wallet ${WALLET_LOCATION} -dn \"CN=${REST_HOST},C=US\" -keysize 2048 -self_signed -validity 365 -pwd ${HIDE_PASSWORD}"
+    "${oracle_home}/bin/orapki" wallet add -wallet "${WALLET_LOCATION}" -dn "CN=${REST_HOST},C=US" -keysize 2048 -self_signed -validity 365 -pwd "${REST_PASSWORD}" || error_exit "Failed to add REST wallet certificate"
+
+    printf '%s\n' "${REST_PASSWORD}" | "${oracle_home}/bin/mkstore" -wrl "${WALLET_LOCATION}" -createEntry oracle "${REST_PASSWORD}" || error_exit "Failed to create REST wallet entry"
+
+    echo "${oracle_home}/bin/orapki wallet create -wallet ${WALLET_LOCATION} -auto_login -pwd ${HIDE_PASSWORD}"
+    "${oracle_home}/bin/orapki" wallet create -wallet "${WALLET_LOCATION}" -auto_login -pwd "${REST_PASSWORD}" || error_exit "Failed to enable REST wallet auto login"
+
+    echo "${oracle_home}/bin/orapki wallet export -wallet ${WALLET_LOCATION} -dn \"CN=${REST_HOST},C=US\" -cert ${WALLET_LOCATION}/RESTAPI.cert"
+    "${oracle_home}/bin/orapki" wallet export -wallet "${WALLET_LOCATION}" -dn "CN=${REST_HOST},C=US" -cert "${WALLET_LOCATION}/RESTAPI.cert" || error_exit "Failed to export REST API certificate"
+
+    sleep 2
+    print_message "Displaying the REST-API certificate"
+    echo "${oracle_home}/bin/orapki cert display -cert ${WALLET_LOCATION}/RESTAPI.cert"
+    "${oracle_home}/bin/orapki" cert display -cert "${WALLET_LOCATION}/RESTAPI.cert" || error_exit "Failed to display REST API certificate"
+    print_message "================================================="
+    print_message "Copy over ${WALLET_LOCATION}/RESTAPI.cert to the client host to use the REST API of the Oracle Connection Manager."
+    print_message "================================================="
+}
+
 reload_cman()
 {
     local output
@@ -821,6 +1148,9 @@ parse_delete_rule_details()
             RULE_ACT)
                 RULE_ACT="$value"
                 ;;
+            RULE_NEXT_HOP|NEXT_HOP)
+                RULE_NEXT_HOP="$value"
+                ;;
         esac
     done
 
@@ -871,6 +1201,7 @@ if [ -n "${USER_CMAN_FILE}" ]; then
         error_exit "User supplied cman.ora file [${USER_CMAN_FILE}] not found. Exiting CMAN-Setup."
     fi
     print_message "Using the user defined cman.ora file=[${USER_CMAN_FILE}]"
+    map_kubernetes_namespace_endpoint_hosts
     ${CP} "${USER_CMAN_FILE}" "$logdir/$CMANORA"
 else
     all_check
@@ -881,10 +1212,13 @@ fi
 
 print_message "Copying CMAN file to $DB_HOME/network/admin"
 copycmanora
+extract_embedded_tnsnames "$DB_HOME/network/admin/$CMANORA"
+configure_rest_api
 print_message "Starting CMAN"
 start_cman
 print_message "Checking CMAN Status"
 status_cman
+
 print_message "################################################"
 print_message " CONNECTION MANAGER IS READY TO USE!            "
 print_message "################################################"

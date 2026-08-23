@@ -57,7 +57,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # Grid Binaries
-COPY $INSTALL_FILE_1 $SETUP_LINUX_FILE $CHECK_SPACE_FILE $DB_INSTALL_RSP $DB_SETUP_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/install/
+COPY $INSTALL_FILE_1 $SETUP_LINUX_FILE $CHECK_SPACE_FILE $CLIENT_RSP $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/install/
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 
@@ -65,17 +65,17 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
-    $INSTALL_DIR/install/$DB_SETUP_FILE && \
+    $INSTALL_DIR/install/$DB_SETUP_FILE  && \
     sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
-    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
     su oracle -c "$INSTALL_DIR/install/$INSTALL_DB_BINARIES_FILE EE" && \
     $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
     rm -rf $INSTALL_DIR/install && \
     rm -f /etc/sysctl.d/99-oracle-database-preinstall-19c-sysctl.conf && \
-    rm -f /etc/sysctl.d/99-sysctl.conf && \
+    rm -f /etc/sysctl.d/99-sysctl.conf && \ 
     rm -f /etc/rc.d/init.d/oracle-database-preinstall-19c-firstboot && \
     rm -f /etc/security/limits.d/oracle-database-preinstall-19c.conf && \
+    rm -f $INSTALL_DIR/install/*  && \
     chown -R oracle:oinstall $SCRIPT_DIR && \
     chmod 755 $SCRIPT_DIR/*.sh && \
     chmod 666 $SCRIPT_DIR/*.ora && \

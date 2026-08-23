@@ -1,3 +1,4 @@
+# hadolint global ignore=DL3006,DL3025,SC2086
 #
 #############################
 # Copyright (c) 2024, Oracle and/or its affiliates.
@@ -8,14 +9,23 @@
 #
 # ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Containerfile for Oracle Database 23.26ai Oracle Connection Manager 
+# This is the Containerfile for Oracle Database 23.26 Oracle Connection Manager.
+# Folder 23.26.0 is the maintained track for all 23.26.* CMAN builds.
+# Pass alternate install media names via --build-arg INSTALL_FILE_1=<zip>.
+#
+# REQUIRED FILES (default)
+# ------------------------
+# LINUX.X64_2326100_client_cman_home.zip
+#   SHA256 401382933d8c18c502bdb91479fb01bb99994443ca01006aa7e6069953d8383c
+#   (591,341,900 bytes)
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ podman build -t oracle/cman:23.26ai .
+#      $ ./buildContainerImage.sh -v 23.26.0
+#      $ ./buildContainerImage.sh -v 23.26.0 \
+#          -o "--build-arg INSTALL_FILE_1=LINUX.X64_2326100_client_cman_home.zip"
 
-# hadolint global ignore=DL3006,DL3025,SC2086
 ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image
@@ -30,7 +40,7 @@ LABEL "provider"="Oracle"                                               \
 
 # Argument to control removal of components not needed after db software installation
 ARG SLIMMING=false
-ARG INSTALL_FILE_1="LINUX.X64_260000_client.zip"
+ARG INSTALL_FILE_1="LINUX.X64_2326100_client_cman_home.zip"
 ARG USER="root"
 ARG WORKDIR="/root"
 
@@ -42,10 +52,10 @@ ENV INSTALL_DIR=/opt/scripts \
     CMANORA="cman.ora" \
     FUNCTIONS="functions.sh" \
     INVENTORY=/u01/app/oraInventory \
-    DB_HOME=/u01/app/oracle/product/26ai/client_1 \
-    JAVA_HOME=/u01/app/oracle/product/26ai/client_1/jdk \
-    LD_LIBRARY_PATH=/u01/app/oracle/product/26ai/client_1/lib \
-    SQLPATH=/u01/app/oracle/product/26ai/client_1/lib \
+    DB_HOME=/u01/app/oracle/product/23ai/client_1 \
+    JAVA_HOME=/u01/app/oracle/product/23ai/client_1/jdk \
+    LD_LIBRARY_PATH=/u01/app/oracle/product/23ai/client_1/lib \
+    SQLPATH=/u01/app/oracle/product/23ai/client_1/lib \
     INSTALL_SCRIPTS=/opt/scripts/install \
     INSTALL_FILE_1=$INSTALL_FILE_1 \
     CONFIG_CMAN_FILE="configCMAN.sh" \
@@ -69,11 +79,11 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
-        dnf install -y oracle-ai-database-preinstall-26ai  && \
+        dnf install -y oracle-database-preinstall-23ai  && \
         dnf clean all; \
      else \
           dnf -y install oraclelinux-developer-release-el8 && \
-          dnf -y install oracle-ai-database-preinstall-26ai && \
+          dnf -y install oracle-database-preinstall-23c && \
           dnf clean all; \
           :; \
      fi && \
@@ -112,13 +122,17 @@ COPY $INSTALL_FILE_1 $CHECK_SPACE_FILE $INSTALL_DB_BINARIES_FILE $INSTALL_DIR/in
 
 WORKDIR /u01/app/
 RUN  unzip -q $INSTALL_SCRIPTS/$INSTALL_FILE_1 -d $DB_HOME && \
+     set +e; \
      $DB_HOME/runInstaller -ignorePrereq -waitforcompletion  -silent \
      UNIX_GROUP_NAME="oinstall" \
      INVENTORY_LOCATION=$INVENTORY \
      ORACLE_HOME=$DB_HOME \
      ORACLE_BASE=$DB_BASE \
      oracle.install.client.installType=Custom \
-     oracle.install.client.customComponents="oracle.sqlplus:23.0.0.0.0,oracle.network.client:23.0.0.0.0,oracle.network.cman:23.0.0.0.0,oracle.network.listener:23.0.0.0.0" || \
+     oracle.install.client.customComponents="oracle.sqlplus:23.0.0.0.0,oracle.network.client:23.0.0.0.0,oracle.network.cman:23.0.0.0.0,oracle.network.listener:23.0.0.0.0"; \
+     install_rc=$?; \
+     set -e; \
+     if [ "$install_rc" -ne 0 ] && [ "$install_rc" -ne 6 ]; then exit "$install_rc"; fi; \
      sync
 
 #############################################
