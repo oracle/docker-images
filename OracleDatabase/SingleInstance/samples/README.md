@@ -31,6 +31,9 @@ Example of how to create a prebuilt database inside a container.
 Example of how to add starter set data to the database inside the container.
 Useful for example to setup test environments.
 
+# truecache
+Sample primary-host script for the manual primary-side True Cache service registration step.
+
 # unplugpdb
 Example of how to unplug a PDB from a container's CDB.
 

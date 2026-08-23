@@ -79,11 +79,11 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
-        dnf install -y oracle-database-preinstall-23ai  && \
+        dnf install -y oracle-ai-database-preinstall-26ai  && \
         dnf clean all; \
      else \
           dnf -y install oraclelinux-developer-release-el8 && \
-          dnf -y install oracle-database-preinstall-23c && \
+          dnf -y install oracle-ai-database-preinstall-26ai && \
           dnf clean all; \
           :; \
      fi && \

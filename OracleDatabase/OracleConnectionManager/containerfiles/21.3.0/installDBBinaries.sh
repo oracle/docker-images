@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC2166
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2022 Oracle and/or its affiliates.
@@ -21,6 +20,7 @@ if [ "$EDITION" == "" ]; then
 fi;
 
 # Check whether correct edition has been passed on
+# shellcheck disable=SC2166
 if [ "$EDITION" != "EE" -a "$EDITION" != "SE2" ]; then
    echo "ERROR: Wrong edition has been passed on!"
    echo "Edition $EDITION is no a valid edition!"

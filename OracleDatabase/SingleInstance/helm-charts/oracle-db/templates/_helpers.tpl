@@ -41,6 +41,8 @@ env:
     value: {{ default "enterprise" .Values.oracle_edition | quote }}
   - name: ENABLE_ARCHIVELOG
     value: {{ default false .Values.enable_archivelog | quote}}
+  - name: ENABLE_FORCE_LOGGING
+    value: {{ default false .Values.enable_force_logging | quote}}
 {{- end }}
 {{/* oracle db labels */}}
 {{- define "oracle-db-labels" }}

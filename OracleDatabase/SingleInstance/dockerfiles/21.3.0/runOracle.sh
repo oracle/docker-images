@@ -1,4 +1,8 @@
 #!/bin/bash
+# shellcheck disable=SC2005,SC2086
+# shellcheck disable=SC2155
+# shellcheck disable=SC1090
+# shellcheck disable=SC2144
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2022 Oracle and/or its affiliates. All rights reserved.
@@ -22,7 +26,7 @@ function moveFiles {
    mv "$ORACLE_BASE_HOME"/network/admin/sqlnet.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/listener.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    mv "$ORACLE_BASE_HOME"/network/admin/tnsnames.ora "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
-   if [ -n "$(shopt -s nullglob; echo "$ORACLE_HOME"/install/.docker_*)" ]; then
+   if [ -a "$ORACLE_HOME"/install/.docker_* ]; then
       mv "$ORACLE_HOME"/install/.docker_* "$ORACLE_BASE"/oradata/dbconfig/"$ORACLE_SID"/
    fi;
 
@@ -85,26 +89,21 @@ function undoSymLinkFiles {
 
 }
 
+SCRIPT_BASE_DIR="${SCRIPT_BASE_DIR:-/opt/oracle/scripts/base}"
+SHUTDOWN_FILE="${SHUTDOWN_FILE:-shutDown.sh}"
+
 ########### SIGINT handler ############
 function _int() {
    echo "Stopping container."
    echo "SIGINT received, shutting down database!"
-   sqlplus / as sysdba <<EOF
-   shutdown immediate;
-   exit;
-EOF
-   lsnrctl stop
+   "${SCRIPT_BASE_DIR}/${SHUTDOWN_FILE}" immediate
 }
 
 ########### SIGTERM handler ############
 function _term() {
    echo "Stopping container."
    echo "SIGTERM received, shutting down database!"
-   sqlplus / as sysdba <<EOF
-   shutdown immediate;
-   exit;
-EOF
-   lsnrctl stop
+   "${SCRIPT_BASE_DIR}/${SHUTDOWN_FILE}" immediate
 }
 
 ###################################
@@ -169,9 +168,11 @@ else
 fi;
 
 # Setting up ORACLE_PWD if podman secret is passed on
-if [ -e '/run/secrets/oracle_pwd' ]; then
-   ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
-   export ORACLE_PWD
+SECRET_VOLUME="${SECRET_VOLUME:-/run/secrets}"
+PASSWORD_FILE="${PASSWORD_FILE:-oracle_pwd}"
+ORACLE_PWD_SECRET_FILE="${SECRET_VOLUME}/${PASSWORD_FILE}"
+if [ -e "${ORACLE_PWD_SECRET_FILE}" ]; then
+   export ORACLE_PWD="$(cat "${ORACLE_PWD_SECRET_FILE}")"
 fi
 
 # Sanitizing env for XE
@@ -190,7 +191,7 @@ if [ "${DG_OBSERVER_ONLY}" = "true" ]; then
    export DG_OBSERVER_DIR=${ORACLE_BASE}/oradata/${DG_OBSERVER_NAME}
 
    # Calling the script to create observer
-   "$ORACLE_BASE"/"$CREATE_OBSERVER_FILE" "$DG_OBSERVER_NAME" "$PRIMARY_DB_CONN_STR" "${ORACLE_PWD:?'ORACLE_PWD not set. Exiting...'}" "$DG_OBSERVER_DIR"
+   "${SCRIPT_BASE_DIR}"/"$CREATE_OBSERVER_FILE" "$DG_OBSERVER_NAME" "$PRIMARY_DB_CONN_STR" "${ORACLE_PWD:?'ORACLE_PWD not set. Exiting...'}" "$DG_OBSERVER_DIR"
 
    if [ ! -f "$DG_OBSERVER_DIR/observer.log" ]; then
       # Display the content of nohup.out to show errors
@@ -229,10 +230,15 @@ export ORACLE_PDB=${ORACLE_PDB^^}
 # Default for ORACLE CHARACTERSET
 export ORACLE_CHARACTERSET=${ORACLE_CHARACTERSET:-AL32UTF8}
 
-# Call relinkOracleBinary.sh before the database is created or started
+# Call relinkOracleBinary.sh before the database is created or started.
+# Prefer the canonical script-base path and keep ORACLE_BASE as a fallback for
+# compatibility with older image layouts.
 if [ "${ORACLE_SID}" != "XE" ]; then
-   # shellcheck disable=SC1090
-   source "$ORACLE_BASE/$RELINK_BINARY_FILE"
+   RELINK_SCRIPT_PATH="${SCRIPT_BASE_DIR}/${RELINK_BINARY_FILE}"
+   if [ ! -f "${RELINK_SCRIPT_PATH}" ]; then
+      RELINK_SCRIPT_PATH="${ORACLE_BASE}/${RELINK_BINARY_FILE}"
+   fi
+   source "${RELINK_SCRIPT_PATH}"
 fi;
 
 # Check whether database already exists
@@ -248,12 +254,12 @@ if [ -f "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}" ] && [ -d
    if [ "${ORACLE_SID}" = "XE" ]; then
       su -c '/etc/init.d/oracle-xe-21c start'
    else
-      "$ORACLE_BASE"/"$START_FILE";
+      "${SCRIPT_BASE_DIR}"/"$START_FILE";
    fi
 
    # In case of the prebuiltdb extended image container, provision changing password by ORACLE_PWD
    if [ -n "${ORACLE_PWD}" ] && [ -e "${ORACLE_BASE}/oradata/${ORACLE_SID}/.prebuiltdb" ]; then
-      "${ORACLE_BASE}"/"${PWD_FILE}" "${ORACLE_PWD}"
+      "${SCRIPT_BASE_DIR}"/"${PWD_FILE}" "${ORACLE_PWD}"
    fi
    
 else
@@ -279,10 +285,10 @@ else
   ipcs -s | awk ' /[0-9]/ {print $2}' | xargs -n1 ipcrm -s 2> /dev/null
 
   # Create database
-  "$ORACLE_BASE"/"$CREATE_DB_FILE" $ORACLE_SID "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
+  "${SCRIPT_BASE_DIR}"/"$CREATE_DB_FILE" $ORACLE_SID "$ORACLE_PDB" "$ORACLE_PWD" || exit 1;
 
   # Check whether database is successfully created
-  if IGNORE_DB_STARTED_MARKER=true "$ORACLE_BASE"/"$CHECK_DB_FILE"; then
+  if "${SCRIPT_BASE_DIR}"/"$CHECK_DB_FILE"; then
     # Create a checkpoint file if database is successfully created
     # Populate the checkpoint file with the current date to avoid timing issue when using NFS persistence in multi-replica mode
     echo "$(date -Iseconds)" > "$ORACLE_BASE"/oradata/.${ORACLE_SID}"${CHECKPOINT_FILE_EXTN}"
@@ -292,20 +298,20 @@ else
   moveFiles;
 
   # Execute setup script for extensions
-  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/extensions/setup
+  "${SCRIPT_BASE_DIR}"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/extensions/setup
   
   # Execute custom provided setup scripts
-  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/setup
+  "${SCRIPT_BASE_DIR}"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/setup
 
   # Setup TCPS with the database
   if [ "${ENABLE_TCPS}" = "true" ]; then
-    "${ORACLE_BASE}"/"${CONFIG_TCPS_FILE}"
+    "${SCRIPT_BASE_DIR}"/"${CONFIG_TCPS_FILE}"
   fi
 
 fi;
 
 # Check whether database is up and running
-IGNORE_DB_STARTED_MARKER=true "$ORACLE_BASE"/"$CHECK_DB_FILE"
+"${SCRIPT_BASE_DIR}"/"$CHECK_DB_FILE"
 status=$?
 
 # Check whether database is up and running
@@ -315,13 +321,11 @@ if [ $status -eq 0 ]; then
   echo "#########################"
 
   # Execute startup script for extensions
-  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/extensions/startup
+  "${SCRIPT_BASE_DIR}"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/extensions/startup
 
   # Execute custom provided startup scripts
-  "$ORACLE_BASE"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/startup
-
-  # Create marker file for the health check
-  touch "$DB_STARTED_MARKER_FILE"
+  "${SCRIPT_BASE_DIR}"/"$USER_SCRIPTS_FILE" "$ORACLE_BASE"/scripts/startup
+  
 else
   echo "#####################################"
   echo "########### E R R O R ###############"

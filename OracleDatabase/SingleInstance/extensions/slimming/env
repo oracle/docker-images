@@ -1,0 +1,3 @@
+BASE_DIR="$( cd "$( dirname "$CURRENT_SCRIPT" )" && pwd )"
+export BASE_DIR
+export PATH=$BASE_DIR/bin:$PATH

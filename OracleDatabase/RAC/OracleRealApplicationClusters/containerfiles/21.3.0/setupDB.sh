@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2025 Oracle and/or its affiliates.
