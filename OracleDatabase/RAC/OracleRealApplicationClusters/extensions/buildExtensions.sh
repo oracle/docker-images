@@ -1,4 +1,5 @@
 #!/bin/bash -e
+# shellcheck disable=SC2034
 # 
 # Since: Mar, 2020
 # Author: mohammed.qureshi@oracle.com
