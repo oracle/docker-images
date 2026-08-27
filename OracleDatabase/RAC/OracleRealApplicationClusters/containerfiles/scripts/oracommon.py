@@ -154,8 +154,12 @@ class OraCommon:
          Function to mask the string.
         """
         newstr = None
+        if hasattr(self.oenv, "mask_map__") and self.oenv.mask_map__:
+            newstr = mstr
+            for placeholder in self.oenv.mask_map__:
+                newstr = newstr.replace(placeholder, "********")
         if self.oenv.encrypt_str__:
-            newstr = mstr.replace('HIDDEN_STRING', '********')
+            newstr = (newstr if newstr is not None else mstr).replace('HIDDEN_STRING', '********')
 #            self.log_info_message(newstr,self.file_name)
         if newstr:
            #        message = "Masked the string as encryption flag is set in the singleton class"
@@ -169,8 +173,12 @@ class OraCommon:
         Function to unmask the string.
         """
         newstr = None
+        if hasattr(self.oenv, "mask_map__") and self.oenv.mask_map__:
+            newstr = mstr
+            for placeholder, value in self.oenv.mask_map__.items():
+                newstr = newstr.replace(placeholder, str(value).rstrip())
         if self.oenv.encrypt_str__:
-            newstr = mstr.replace(
+            newstr = (newstr if newstr is not None else mstr).replace(
                 'HIDDEN_STRING', self.oenv.original_str__.rstrip())
     #       self.log_info_message(newstr,self.file_name)
         if newstr:
@@ -193,6 +201,15 @@ class OraCommon:
             message = "Masked String is empty so no change required in encrypted string flag and original string in singleton class"
             self.log_info_message(message, self.file_name)
 
+    def set_mask_map(self, mask_map):
+        """
+        Set placeholder to secret mappings for commands with multiple secrets.
+        """
+        if mask_map:
+            self.oenv.mask_map__ = mask_map
+        else:
+            self.log_info_message("Mask map is empty so no mask map was set", self.file_name)
+
     def unset_mask_str(self):
         """
         Function to unmask the string.
@@ -201,6 +218,8 @@ class OraCommon:
   #      self.log_info_message(message,self.file_name)
         self.oenv.encrypt_str__ = None
         self.oenv.original_str__ = None
+        if hasattr(self.oenv, "mask_map__"):
+            self.oenv.mask_map__ = None
 
     def prog_exit(self, message):
         """
@@ -1008,7 +1027,7 @@ class OraCommon:
             svolume, pwdfile, pwdkey, passwdfile, keyvolume = self.get_db_passwd_details()
 
         pwd_volume = self.ora_env_dict["PWD_VOLUME"] if self.check_key("PWD_VOLUME", self.ora_env_dict) else "/var/tmp"
-        password = self.set_password(svolume, pwdfile, pwdkey, passwdfile, keyvolume, pwd_volume)
+        password = self.set_password(svolume, pwdfile, pwdkey, passwdfile, keyvolume, pwd_volume, key)
         return password
 
     def get_tde_passwd_details(self):
@@ -1018,9 +1037,10 @@ class OraCommon:
         tde_secret_volume = self._get_or_set_env_value("TDE_SECRET_VOLUME", "/run/.tdesecret")
         tde_key_secret_volume = self._get_or_set_env_from_other("TDE_KEY_SECRET_VOLUME", "TDE_SECRET_VOLUME")
         tde_pwd_file = self._get_or_set_env_value("TDE_PWD_FILE", "tde_pwdfile.enc")
-        tde_pwd_key = self._get_or_set_env_value("TDE_PWD_KEY", "tdepwd.key")
+        tde_pwd_key = self.ora_env_dict["TDE_PWD_KEY"] if self.check_key("TDE_PWD_KEY", self.ora_env_dict) else ""
+        tde_password_file = self.ora_env_dict["TDE_PASSWORD_FILE"] if self.check_key("TDE_PASSWORD_FILE", self.ora_env_dict) else "tdepwdfile"
 
-        return tde_secret_volume, tde_pwd_file, tde_pwd_key, "tdepwdfile", tde_key_secret_volume
+        return tde_secret_volume, tde_pwd_file, tde_pwd_key, tde_password_file, tde_key_secret_volume
 
     def get_db_passwd_details(self):
         """
@@ -1033,15 +1053,20 @@ class OraCommon:
         password_file = self._get_or_set_env_value("PASSWORD_FILE", "dbpasswd.file")
 
         return secret_volume, db_pwd_file, pwd_key, password_file, key_secret_volume
-    def set_password(self, secret_volume, passwd_file, key_file, dbpasswd_file, key_secret_volume, pwd_volume):
+    def set_password(self, secret_volume, passwd_file, key_file, dbpasswd_file, key_secret_volume, pwd_volume, password_type):
         """
         Resolve ORACLE password from encrypted secret files, or generate one when missing.
         """
+        if password_type != 'TDE_PASSWORD' and self.check_key("ORACLE_PWD", self.ora_env_dict):
+            if len(str(self.ora_env_dict["ORACLE_PWD"]).strip()) > 0:
+                self.log_info_message("ORACLE_PWD is passed as an env variable. Check Passed!", self.file_name)
+                return self.ora_env_dict["ORACLE_PWD"]
+
         passwd_file_flag = False
         password = None
         password_file = None
         passwordfile1 = '''{0}/{1}'''.format(secret_volume, passwd_file)
-        passwordkeyfile = '''{0}/{1}'''.format(secret_volume, key_file)
+        passwordkeyfile = '''{0}/{1}'''.format(key_secret_volume, key_file) if key_file else ""
         passwordfile2 = '''{0}/{1}'''.format(secret_volume, dbpasswd_file)
         self.log_info_message(
             "Secret volume file set to : " + secret_volume, self.file_name)
@@ -1059,7 +1084,7 @@ class OraCommon:
                               passwordkeyfile, self.file_name)
         self.log_info_message("passwordfile2 set to : " +
                               passwordfile2, self.file_name)
-        if (os.path.isfile(passwordfile1)) and (os.path.isfile(passwordkeyfile)):
+        if (os.path.isfile(passwordfile1)) and key_file and (os.path.isfile(passwordkeyfile)):
             msg = '''Passwd file {0} and key file {1} exist. Password file Check passed!'''.format(
                 passwordfile1, passwordkeyfile)
             self.log_info_message(msg, self.file_name)
@@ -1067,18 +1092,31 @@ class OraCommon:
                 passwordfile1)
             self.log_info_message(msg, self.file_name)
             cmd = None
-            if self.check_key("ENCRYPTION_TYPE", self.ora_env_dict):
-                if self.ora_env_dict["ENCRYPTION_TYPE"].lower() == "aes256":
-                    cmd = '''openssl enc -d -aes-256-cbc -in \"{0}/{1}\" -out {2}/{1} -pass file:\"{3}/{4}\"'''.format(
-                        secret_volume, passwd_file, pwd_volume, key_secret_volume, key_file)
-                elif self.ora_env_dict["ENCRYPTION_TYPE"].lower() == "rsautl":
-                    cmd = '''openssl rsautl -decrypt -in \"{0}/{1}\" -out {2}/{1} -inkey \"{3}/{4}\"'''.format(
-                        secret_volume, passwd_file, pwd_volume, key_secret_volume, key_file)
-                else:
-                    pass
+            if password_type == "TDE_PASSWORD" and self.check_key("TDE_ENCRYPTION_TYPE", self.ora_env_dict):
+                encryption_type = self.ora_env_dict["TDE_ENCRYPTION_TYPE"].lower()
             else:
-                cmd = '''openssl pkeyutl -decrypt -in \"{0}/{1}\" -out {2}/{1} -inkey \"{3}/{4}\"'''.format(
+                encryption_type = self.ora_env_dict["ENCRYPTION_TYPE"].lower() if self.check_key("ENCRYPTION_TYPE", self.ora_env_dict) else "pkeyutl"
+            pkeyopt_key = "TDE_PKEYOPT" if password_type == "TDE_PASSWORD" else "PKEYOPT"
+            pkeyopt = self.ora_env_dict[pkeyopt_key] if self.check_key(pkeyopt_key, self.ora_env_dict) else "rsa_padding_mode:oaep;rsa_oaep_md:sha256;rsa_mgf1_md:sha256"
+            pkeyopt_flags = ""
+            for item in pkeyopt.split(";"):
+                token = item.strip()
+                if token:
+                    pkeyopt_flags = pkeyopt_flags + ''' -pkeyopt "{0}"'''.format(token.replace('\"', '\\\"'))
+
+            if encryption_type == "aes256":
+                cmd = '''openssl enc -d -aes-256-cbc -in \"{0}/{1}\" -out {2}/{1} -pass file:\"{3}/{4}\"'''.format(
                     secret_volume, passwd_file, pwd_volume, key_secret_volume, key_file)
+            elif encryption_type == "rsautl":
+                cmd = '''openssl rsautl -decrypt -in \"{0}/{1}\" -out {2}/{1} -inkey \"{3}/{4}\"'''.format(
+                    secret_volume, passwd_file, pwd_volume, key_secret_volume, key_file)
+            elif encryption_type == "pkeyutl":
+                cmd = '''openssl pkeyutl -decrypt{5} -in \"{0}/{1}\" -out {2}/{1} -inkey \"{3}/{4}\"'''.format(
+                    secret_volume, passwd_file, pwd_volume, key_secret_volume, key_file, pkeyopt_flags)
+            else:
+                msg = '''Unsupported ENCRYPTION_TYPE {0}. Supported values are pkeyutl, aes256, and rsautl.'''.format(encryption_type)
+                self.log_error_message(msg, self.file_name)
+                self.prog_exit(self)
 
             output, error, retcode = self.execute_cmd_checked(cmd, None, None, exit_on_error=True)
             passwd_file_flag = True
@@ -2648,6 +2686,184 @@ class OraCommon:
             return None
         return token.replace(token_prefix, "", 1)
 
+    def _split_node_names(self, nodes):
+        """
+        Split comma/space separated node strings into ordered unique names.
+        """
+        if not nodes:
+            return []
+
+        split_nodes = re.split(r'[\s,]+', nodes.strip())
+        ordered_nodes = []
+        for node in split_nodes:
+            if node and node not in ordered_nodes:
+                ordered_nodes.append(node)
+        return ordered_nodes
+
+    def _get_expected_scan_resource_count(self):
+        """
+        Return the expected SCAN/SCAN listener count based on cluster membership.
+        """
+        cluster_nodes = self._split_node_names(self.get_cluster_nodes())
+        existing_nodes = self._split_node_names(self.get_existing_clu_nodes(False))
+        all_nodes = []
+        for node in cluster_nodes + existing_nodes:
+            if node not in all_nodes:
+                all_nodes.append(node)
+
+        if not all_nodes:
+            return 1
+        return len(all_nodes)
+
+    def _node_sort_key(self, node):
+        """
+        Sort RAC pod names by their numeric node suffix.
+        """
+        match = re.search(r'(\d+)(?:-0)?$', node)
+        if match:
+            return (node[:match.start()], int(match.group(1)), node)
+        return (node, 0, node)
+
+    def _get_ordered_scan_nodes(self, fallback_node=None):
+        """
+        Return RAC pod names in deterministic numeric order for SCAN mapping.
+        """
+        nodes = []
+        cluster_nodes = self._split_node_names(self.get_cluster_nodes())
+        existing_nodes = self._split_node_names(self.get_existing_clu_nodes(False))
+        for candidate in cluster_nodes + existing_nodes:
+            if candidate and candidate not in nodes:
+                nodes.append(candidate)
+
+        if fallback_node and fallback_node not in nodes:
+            nodes.append(fallback_node)
+
+        return sorted(nodes, key=self._node_sort_key)
+
+    def _get_scan_status_summary(self, user, node, home, status_target, token_prefix):
+        """
+        Parse srvctl status output into configured, running, and node placement maps.
+        """
+        output = self._get_remote_srvctl_status(user, node, home, status_target)
+        configured = set()
+        running = set()
+        locations = {}
+
+        for line in output.splitlines():
+            resource_number = self._extract_scan_number(line, token_prefix)
+            if not resource_number:
+                continue
+            configured.add(resource_number)
+            if "is running" in line:
+                running.add(resource_number)
+                marker = "is running on node "
+                if marker in line:
+                    locations[resource_number] = line.rsplit(marker, 1)[1].strip().split()[0]
+
+        return configured, running, locations, output
+
+    def _scan_topology_is_usable(self, scan_configured, scan_running, lsnr_configured, lsnr_running):
+        """
+        Return True when CRS has a usable SCAN topology even if it is smaller than
+        the requested cluster node count.
+        """
+        if not scan_configured or not lsnr_configured:
+            return False
+
+        return (
+            scan_configured == scan_running and
+            lsnr_configured == lsnr_running and
+            scan_configured == lsnr_configured
+        )
+
+    def _scan_topology_matches_order(self, node, scan_running, lsnr_running, scan_locations, lsnr_locations):
+        """
+        Return True only when scanN/LISTENER_SCANN run on racnodeN-0.
+        """
+        target_nodes = self._get_ordered_scan_nodes(node)
+        if not target_nodes:
+            return False
+
+        running_numbers = scan_running.union(lsnr_running)
+        if not running_numbers:
+            return False
+        expected_numbers = set([str(index) for index in range(1, len(running_numbers) + 1)])
+        if running_numbers != expected_numbers:
+            return False
+
+        for scan_number in running_numbers:
+            if not scan_number.isdigit():
+                return False
+            target_index = int(scan_number) - 1
+            if target_index < 0 or target_index >= len(target_nodes):
+                return False
+
+            target_node = target_nodes[target_index]
+            if scan_locations.get(scan_number) != target_node:
+                return False
+            if lsnr_locations.get(scan_number) != target_node:
+                return False
+
+        return True
+
+    def _relocate_scan_number(self, user, home, node, scan_number, target_node):
+        """
+        Relocate one numbered SCAN VIP to its deterministic RAC node.
+        """
+        cmd = self._build_remote_srvctl_cmd(
+            user, node, home,
+            "relocate scan -scannumber {0} -node {1}".format(scan_number, target_node),
+            use_sudo=True)
+        output, error, retcode = self.execute_cmd_checked(cmd, None, None, exit_on_error=None)
+
+    def _start_scan_number(self, user, home, node, scan_number):
+        """
+        Start one numbered SCAN VIP.
+        """
+        cmd = self._build_remote_srvctl_cmd(
+            user, node, home, "start scan -scannumber {0}".format(scan_number), use_sudo=True)
+        output, error, retcode = self.execute_cmd_checked(cmd, None, None, exit_on_error=None)
+
+    def _stop_scan_lsnr_number(self, user, home, node, scan_number):
+        """
+        Stop one numbered SCAN listener before restarting it on the SCAN VIP node.
+        """
+        cmd = self._build_remote_srvctl_cmd(
+            user, node, home, "stop scan_listener -scannumber {0}".format(scan_number), use_sudo=True)
+        output, error, retcode = self.execute_cmd_checked(cmd, None, None, exit_on_error=None)
+
+    def _start_scan_lsnr_number(self, user, home, node, scan_number):
+        """
+        Start one numbered SCAN listener.
+        """
+        cmd = self._build_remote_srvctl_cmd(
+            user, node, home, "start scan_listener -scannumber {0}".format(scan_number), use_sudo=False)
+        output, error, retcode = self.execute_cmd_checked(cmd, None, None, exit_on_error=None)
+
+    def _reconcile_numbered_scan_resources(
+            self, user, home, node, expected_count, scan_locations, lsnr_locations):
+        """
+        Keep scanN/LISTENER_SCANN on racnodeN-0 in deterministic numeric order.
+        """
+        target_nodes = self._get_ordered_scan_nodes(node)
+        if expected_count is not None:
+            target_nodes = target_nodes[:expected_count]
+
+        for index, target_node in enumerate(target_nodes, 1):
+            scan_number = str(index)
+            self.log_info_message(
+                "Reconciling SCAN {0} resources to node {1}".format(scan_number, target_node),
+                self.file_name,
+            )
+
+            if scan_locations.get(scan_number) != target_node:
+                self._relocate_scan_number(user, home, node, scan_number, target_node)
+            self._start_scan_number(user, home, node, scan_number)
+
+            if lsnr_locations.get(scan_number) and lsnr_locations.get(scan_number) != target_node:
+                self._stop_scan_lsnr_number(user, home, node, scan_number)
+            self._start_scan_lsnr_number(user, home, node, scan_number)
+
     def update_scan(self, user, home, endpoints, node):
         """
         Update Scan
@@ -2732,6 +2948,79 @@ class OraCommon:
         cmd = self._build_remote_srvctl_cmd(
             user, node, home, "modify scan_listener -update", use_sudo=False)
         output, error, retcode = self.execute_cmd_checked(cmd, None, None, exit_on_error=None)
+
+    def reconcile_scan_resources(self, user, home, node, expected_count=None, max_attempts=6, sleep_seconds=15):
+        """
+        Reconcile SCAN VIP and SCAN listener resources until all expected entries run.
+        """
+        if expected_count is None:
+            expected_count = self._get_expected_scan_resource_count()
+
+        for attempt in range(1, max_attempts + 1):
+            self.log_info_message(
+                "Reconciling SCAN resources attempt {0}/{1} from node {2}; expected_count={3}".format(
+                    attempt, max_attempts, node, expected_count
+                ),
+                self.file_name,
+            )
+
+            self.update_scan(user, home, None, node)
+            scan_configured, scan_running, scan_locations, scan_output = self._get_scan_status_summary(
+                user, node, home, "scan", "scan"
+            )
+
+            self.update_scan_lsnr(user, home, node)
+            lsnr_configured, lsnr_running, lsnr_locations, lsnr_output = self._get_scan_status_summary(
+                user, node, home, "scan_listener", "LISTENER_SCAN"
+            )
+
+            self._reconcile_numbered_scan_resources(
+                user, home, node, expected_count, scan_locations, lsnr_locations)
+            scan_configured, scan_running, scan_locations, scan_output = self._get_scan_status_summary(
+                user, node, home, "scan", "scan"
+            )
+            lsnr_configured, lsnr_running, lsnr_locations, lsnr_output = self._get_scan_status_summary(
+                user, node, home, "scan_listener", "LISTENER_SCAN"
+            )
+
+            scan_ready = len(scan_configured) >= expected_count and len(scan_running) >= expected_count
+            lsnr_ready = len(lsnr_configured) >= expected_count and len(lsnr_running) >= expected_count
+            ordered_ready = self._scan_topology_matches_order(
+                node, scan_running, lsnr_running, scan_locations, lsnr_locations)
+
+            self.log_info_message(
+                "SCAN reconcile summary: configured={0}, running={1}, listener_configured={2}, listener_running={3}".format(
+                    sorted(scan_configured),
+                    sorted(scan_running),
+                    sorted(lsnr_configured),
+                    sorted(lsnr_running),
+                ),
+                self.file_name,
+            )
+
+            if scan_ready and lsnr_ready and ordered_ready:
+                return True
+
+            if ordered_ready and self._scan_topology_is_usable(
+                    scan_configured, scan_running, lsnr_configured, lsnr_running):
+                self.log_info_message(
+                    "SCAN topology is usable with {0} configured resources; continuing although expected_count={1}".format(
+                        len(scan_configured), expected_count
+                    ),
+                    self.file_name,
+                )
+                return True
+
+            if attempt < max_attempts:
+                time.sleep(sleep_seconds)
+
+        self.log_error_message(
+            "SCAN reconciliation did not converge. Final scan status:\n{0}\nFinal scan listener status:\n{1}".format(
+                scan_output, lsnr_output
+            ),
+            self.file_name,
+        )
+        return False
 ######### Set DB Lsnr ########
     def setup_db_lsnr(self):
         """
