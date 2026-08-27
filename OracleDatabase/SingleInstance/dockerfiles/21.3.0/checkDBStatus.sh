@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034,SC2155
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2022 Oracle and/or its affiliates. All rights reserved.
@@ -15,7 +16,7 @@
 # 
 
 # Function to check database role: either Primary or Secondary
-checkDatabaseRole() {
+function checkDatabaseRole() {
    # Obtain DB_ROLE using SQLPlus
    DB_ROLE=$(sqlplus -s / << EOF
 set heading off;
@@ -27,7 +28,7 @@ EOF
    # Store return code from SQL*Plus
    ret=$?
 
-   if [ $ret -eq 0 ] && [ "$DB_ROLE" != "PRIMARY" ] && [ "$DB_ROLE" != "PHYSICAL STANDBY" ]; then
+   if [ $ret -eq 0 ] && [ "$DB_ROLE" != "PRIMARY" ] && [ "$DB_ROLE" != "PHYSICAL STANDBY" ] && [ "$DB_ROLE" != "SNAPSHOT STANDBY" ]; then
       exit 1
    elif [ $ret -ne 0 ]; then
       exit 3
@@ -36,7 +37,7 @@ EOF
 
 # Function to check if at least one PDB is open in "READ WRITE" mode for Primary database
 # Or in case of Secondary Database PDBs should be opened only in "READ ONLY" mode 
-checkPDBOpen() {
+function checkPDBOpen() {
    # Obtain OPEN_MODE for PDB using SQLPlus
    PDB_OPEN_MODE=$(sqlplus -s / << EOF
 set heading off;
@@ -48,9 +49,13 @@ EOF
    # Store return code from SQL*Plus
    ret=$?
 
-   if [ $ret -eq 0 ] && [ "$DB_ROLE" = "PRIMARY" ] && ! echo "$PDB_OPEN_MODE" | grep -q "READ WRITE"; then
+   if [ $ret -eq 0 ] && echo "$PDB_OPEN_MODE" | grep -q "MOUNTED"; then
+      exit 5
+   elif [ $ret -eq 0 ] && [ "$DB_ROLE" = "PRIMARY" ] && ! echo "$PDB_OPEN_MODE" | grep -q "READ WRITE"; then
       exit 2
    elif [ $ret -eq 0 ] && [ "$DB_ROLE" = "PHYSICAL STANDBY" ] && [ "$PDB_OPEN_MODE" != "READ ONLY" ]; then
+      exit 2
+   elif [ $ret -eq 0 ] && [ "$DB_ROLE" = "SNAPSHOT STANDBY" ] && ! echo "$PDB_OPEN_MODE" | grep -q "READ WRITE"; then
       exit 2
    elif [ $ret -ne 0 ]; then
       exit 3
@@ -58,7 +63,7 @@ EOF
 }
 
 # Function to check that observer is running or not
-checkObserver() {
+function checkObserver() {
    dg_observer_status=$(dgmgrl sys@"$PRIMARY_DB_CONN_STR" "show observer" << EOF
 ${ORACLE_PWD}
 EOF
@@ -73,15 +78,12 @@ EOF
 ################ MAIN #######################
 #############################################
 
-if [ "$IGNORE_DB_STARTED_MARKER" != true ] && [ ! -f "$DB_STARTED_MARKER_FILE" ]; then
-   echo "Database was not started yet." >&2
-   exit 1
-fi
-
 # Setting up ORACLE_PWD if podman secret is passed on
-if [ -e '/run/secrets/oracle_pwd' ]; then
-   ORACLE_PWD="$(cat '/run/secrets/oracle_pwd')"
-   export ORACLE_PWD
+SECRET_VOLUME="${SECRET_VOLUME:-/run/secrets}"
+PASSWORD_FILE="${PASSWORD_FILE:-oracle_pwd}"
+ORACLE_PWD_SECRET_FILE="${SECRET_VOLUME}/${PASSWORD_FILE}"
+if [ -e "${ORACLE_PWD_SECRET_FILE}" ]; then
+   export ORACLE_PWD="$(cat "${ORACLE_PWD_SECRET_FILE}")"
 fi
 
 # Sanitizing env for XE Database
@@ -94,12 +96,9 @@ if [ "$DG_OBSERVER_ONLY" = "true" ]; then
 else
    ORACLE_SID="$(grep "$ORACLE_HOME" /etc/oratab | cut -d: -f1)"
    DB_ROLE=""
-   # shellcheck disable=SC2034
    ORAENV_ASK=NO
-   # shellcheck disable=SC1090
    source oraenv
    checkDatabaseRole
    checkPDBOpen
 fi
 exit 0
-

@@ -1,0 +1,389 @@
+#!/bin/bash
+# shellcheck disable=SC1068,SC1078,SC2027,SC2034,SC2046,SC2154,SC2283
+#
+# chkconfig: 2345 80 05
+# description: This script is responsible for running basic operations on Oracle FREE Database and its associated services. 
+#
+# processname: oracle-free-26ai
+# Red Hat or SuSE config: /etc/sysconfig/oracle-free-26ai
+#
+# change log:
+#    ivalopez  12/13/17 - Creation
+#    mstalin   04/30/18 - DB configuration changes
+#    rfgonzal  05/14/18 - Enh 27965960 & 27965939 - Enable service and clean env vars when launching dbca
+#    mstalin   05/20/18 - 21261445 RTI, disable the checks
+#    mstalin   05/29/18 - 28121518 password handling and connection string handling
+#    mstalin   06/07/18 - Add memory distribution logic
+#    rfgonzal  07/09/18 - Bug 28243127 - Cannot start/stop DB after fresh installation
+#    mstalin   07/06/18 - Add sample schema to XE
+#    mstalin   08/02/18 - 28353388 Add delete option to the usage text
+#    mstalin   08/02/18 - 28242894 Reduce verbose of the script 
+#    mstalin   10/06/18 - 28735641 Fix duplicate success messages and product name
+#    mstalin   10/14/19 - 28785753 Add db_domain support
+#    mstalin   10/15/19 - Add ignoreprereqs
+#    mstalin   10/15/19 - ER 29677762 Configure EM global port
+#    mstalin   10/15/19 - Skip datapatch
+#    psainza   12/04/19 - ER 28330482: Adding support to status flag
+#    mstalin   07/09/20 - 31591395 Remove hr schema in XE
+#    mstalin   01/12/21 - 32245867 Changes for SLES15
+#    mstalin   08/14/22 - 34513647 XE to Free
+#    mstalin   08/30/22 - 34549652  Change SID of XE to free instead of freecdb
+#    mstalin   11/18/22 - 34779697  Remove EM express
+#    mstalin   02/22/23 - RTI 24751295 Incorrect listener status reported on a stopped listener
+#    mstalin   02/23/23 - 35088681  ss command not found in certain environments
+#    mstalin   02/07/23 - 36254577 - PROVIDE OPTION TO CONFIGURE TDE ENABLED DATABASE
+
+
+
+# Set path if path not set
+case $PATH in
+    "") PATH=/bin:/usr/bin:/sbin:/etc
+        export PATH ;;
+esac
+
+# DB defaults
+export ORACLE_HOME=/opt/oracle/product/26ai/dbhomeFree
+export ORACLE_SID=FREE
+export LISTENER_NAME=LISTENER
+
+# General exports and vars
+export PATH=$ORACLE_HOME/bin:$PATH
+LSNR=$ORACLE_HOME/bin/lsnrctl
+SQLPLUS=$ORACLE_HOME/bin/sqlplus
+ORACLE_OWNER=oracle
+RETVAL=0
+
+# Commands
+if [ -z "$SS" ];then SS=/usr/sbin/ss; fi
+if [ -z "$SU" ];then SU=/bin/su; fi
+if [ -z "$AWK" ];then AWK=/bin/awk; fi
+if [ -z "$DF" ];then DF=/bin/df; fi
+if [ -z "$GREP" ]; then GREP=/usr/bin/grep; fi
+if [ ! -f "$GREP" ]; then GREP=/bin/grep; fi
+if [ -z "$TAIL" ]; then TAIL=/usr/bin/tail; fi
+if [ ! -f "$TAIL" ]; then TAIL=/bin/tail; fi
+HOSTNAME_CMD="/bin/hostname"
+MKDIR_CMD="/bin/mkdir"
+if [ ! -f "$SS" ]; then SS="/sbin/ss"; fi
+
+if [ ! -f "$MKDIR_CMD" ]; then MKDIR_CMD="/usr/bin/mkdir"; fi
+
+if [ -z "$WHOAMI" ];then WHOAMI="/usr/bin/whoami"; fi
+if [ ! -f "$WHOAMI" ]; then WHOAMI="/bin/whoami"; fi
+
+if [ "$RUN_AS_ORACLE" = "true" ]
+then
+    SKIP_ROOT="true"
+    CUR_USER=`$WHOAMI`
+    if [ "$CUR_USER" != "$ORACLE_OWNER" ] && [ "$CUR_USER" != "root" ]
+    then
+       echo "You must be root user to run the configure script. Login as root user and then run the configure script."
+       exit 1
+    fi
+
+    RUN_CMD="/bin/bash -c "
+    RUN_CMD_SQLPLUS="/bin/bash -c "
+else
+    SKIP_ROOT="false"
+    RUN_CMD="$SU -s /bin/bash  $ORACLE_OWNER -c "
+    RUN_CMD_SQLPLUS="$SU -s /bin/bash  $ORACLE_OWNER -c "
+fi
+
+# Check if the root user is running this script
+if [ $(id -u) != "0" ] && [ $SKIP_ROOT != "true" ]
+then
+    echo "You must be root user to run the configure script. Login as root user and then run the configure script."
+    exit 1
+fi
+
+
+# To start the DB
+start()
+{
+  check_for_configuration
+  RETVAL=$?
+  if [ $RETVAL -eq 1 ]
+  then
+      echo "The Oracle AI Database is not configured."
+      exit
+  fi
+  # Check if the DB is already started
+  pmon=`ps -ef | egrep pmon_$ORACLE_SID'\>' | $GREP -v grep`
+  if [ "$pmon" = "" ];
+  then
+
+    # Unset the proxy env vars before calling sqlplus
+    unset_proxy_vars
+
+    echo "Starting Oracle Net Listener."
+    $RUN_CMD "$LSNR start $LISTENER_NAME" > /dev/null 2>&1
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]
+    then
+        echo "Oracle Net Listener started."
+    fi
+
+    echo "Starting Oracle AI Database instance $ORACLE_SID."
+    $RUN_CMD_SQLPLUS "$SQLPLUS -s /nolog << EOF
+      connect / as sysdba
+      startup
+      exit;
+EOF" > /dev/null 2>&1
+
+    RETVAL1=$?
+    if [ $RETVAL1 -eq 0 ]
+    then
+        echo "Oracle AI Database instance $ORACLE_SID started."
+    fi
+
+    #check if PDB is created
+    PDB_CREATE=`$RUN_CMD_SQLPLUS "$SQLPLUS -s / as sysdba << EOF
+      set heading off;
+      set pagesize 0;
+      select pdb_name from cdb_pdbs where pdb_name='${ORACLE_PDB}';
+      exit;
+EOF"
+`
+
+    if [ "${PDB_CREATE}" == "${ORACLE_PDB}" ]; then
+      $RUN_CMD_SQLPLUS "$SQLPLUS / as sysdba << EOF
+        alter pluggable database all open;
+        alter pluggable database ${ORACLE_PDB} save state;
+        exit;
+EOF" > /dev/null 2>&1
+    else
+      sed -i "s/FREEPDB1/${ORACLE_PDB}/g" ${ORACLE_BASE}/oradata/dbconfig/${ORACLE_SID}/tnsnames.ora
+      $RUN_CMD_SQLPLUS "$SQLPLUS / as sysdba << EOF
+              CREATE PLUGGABLE DATABASE "${ORACLE_PDB}" 
+              ADMIN USER pdbadmin IDENTIFIED BY *
+              ROLES=(CONNECT)
+              FILE_NAME_CONVERT = ('/opt/oracle/oradata/${ORACLE_SID}/pdbseed', 
+                                   '/opt/oracle/oradata/${ORACLE_SID}/${ORACLE_PDB}');
+              alter pluggable database all open;
+              alter pluggable database ${ORACLE_PDB} save state;
+              exit;
+EOF" > /dev/null 2>&1
+    fi
+
+    RETVAL2=$?
+    if [ $RETVAL2 -eq 0 ]
+    then
+        echo "Pluggable Database $ORACLE_PDB opened."
+    fi
+
+    #check if XDB is installed
+    XDB_INSTALL=`$RUN_CMD_SQLPLUS "sqlplus -s / as sysdba << EOF
+      set heading off;
+      set pagesize 0;
+      select status from dba_registry where comp_id = 'XDB';
+      exit;
+EOF"
+`
+
+    if [ "${XDB_INSTALL}" == "VALID" ]; then
+      $RUN_CMD_SQLPLUS "$SQLPLUS / as sysdba << EOF
+        @$ORACLE_HOME/rdbms/admin/prvtnoqm.plb
+        exit;
+EOF" > /dev/null 2>&1
+    fi
+
+    if [ $RETVAL -eq 0 ] && [ $RETVAL1 -eq 0 ] && [ $RETVAL2 -eq 0 ]
+    then
+        return 0
+    else
+        echo "Failed to start Oracle Net Listener using $ORACLE_HOME/bin/tnslsnr and Oracle AI Database using $ORACLE_HOME/bin/sqlplus."
+        exit 1
+    fi
+  else
+      echo "The Oracle Database instance $ORACLE_SID is already started."
+      exit 0
+  fi
+}
+
+# To stop the DB
+stop()
+{
+  check_for_configuration
+  RETVAL=$?
+  if [ $RETVAL -eq 1 ]
+  then
+    echo "The Oracle AI Database is not configured." 
+    exit 1
+  fi
+  # Check if the DB is already stopped
+  pmon=`ps -ef | egrep pmon_$ORACLE_SID'\>' | $GREP -v grep`
+  if [ "$pmon" = "" ]
+  then
+    echo "Oracle AI Database instance $ORACLE_SID is already stopped."
+    exit 1
+  else
+
+    # Unset the proxy env vars before calling sqlplus
+    unset_proxy_vars
+
+    echo "Shutting down AI Oracle Database instance $ORACLE_SID."
+    $RUN_CMD_SQLPLUS "$SQLPLUS -s /nolog << EOF
+                                                            connect / as sysdba
+                                                            shutdown immediate
+                                                            exit;
+                                                            EOF" > /dev/null 2>&1
+    RETVAL=1
+    pmon=`ps -ef | egrep pmon_$ORACLE_SID'\>' | $GREP -v grep`
+    if [ "$pmon" = "" ]
+    then
+        echo "Oracle AI Database instance $ORACLE_SID shut down."
+        RETVAL = 0
+    fi
+    
+    echo "Stopping Oracle Net Listener."
+    $RUN_CMD "$LSNR stop $LISTENER_NAME" > /dev/null 2>&1
+    RETVAL1=$?  
+    if [ $RETVAL1 -eq 0 ]
+    then
+        echo "Oracle Net Listener stopped."
+    fi
+  fi
+  
+  echo
+  if [ $RETVAL -eq 0 ] && [ $RETVAL1 -eq 0 ]
+  then
+    return 0
+  else
+    echo "Failed to stop Oracle Net Listener using $ORACLE_HOME/bin/tnslsnr and Oracle AI Database using $ORACLE_HOME/bin/sqlplus."
+    exit 1
+  fi
+}
+
+# Enh 27965939 - Unsets the proxy env variables
+unset_proxy_vars()
+{
+  if [ "$http_proxy" != "" ]
+  then
+      unset http_proxy
+  fi
+
+  if [ "$HTTP_PROXY" != "" ]
+  then
+      unset HTTP_PROXY
+  fi
+
+  if [ "$https_proxy" != "" ]
+  then
+      unset https_proxy
+  fi
+
+  if [ "$HTTPS_PROXY" != "" ]
+  then
+      unset HTTPS_PROXY
+  fi
+}
+
+# Check if the DB is already configured
+check_for_configuration()
+{
+  configfile=`$GREP --no-messages ^$ORACLE_SID: /etc/oratab` > /dev/null 2>&1
+  if [ "$configfile" = "" ]
+  then
+      return 1
+  fi
+  return 0
+}
+
+
+restart()
+{
+  # Check if the DB is already stopped
+  pmon=`ps -ef | egrep pmon_$ORACLE_SID'\>' | $GREP -v grep`
+  if [ "$pmon" = "" ]
+  then
+      start
+  else
+      stop
+      start
+  fi
+}
+
+status()
+{
+  echo "Status of the Oracle $ORACLE_SID 26ai service:"
+  echo ""
+  listener_status="NOT CONFIGURED"
+  database_status="NOT CONFIGURED"
+  #Scan the Listener component first
+  #Check for listener configuration
+  deflt_service="false"
+  deflt_lsnr="false"
+  if [ -e $ORACLE_HOME/network/admin/listener.ora ]
+  then
+
+      while read line; do
+         if [ "$line" != "${line#DEFAULT_SERVICE_LISTENER*}" ]
+         then
+             deflt_service="true"
+         fi
+  
+         if [ "$line" != "${line#LISTENER*}" ]
+         then
+             deflt_lsnr="true"
+         fi
+
+      done < $ORACLE_HOME/network/admin/listener.ora
+
+  fi
+
+  if [ $deflt_service = "true" ] && [ $deflt_lsnr = "true" ]
+  then
+      listener_status="STOPPED"
+  fi
+
+  $RUN_CMD "$LSNR  status LISTENER" > /dev/null 2>&1
+  RETVAL=$?
+  if [ $RETVAL -eq 0 ]
+  then
+     listener_status="STOPPED"
+  fi
+  #Check for listener execution
+  process=`ps -ef | egrep "$ORACLE_HOME/bin/tnslsnr $LISTENER_NAME" | $GREP -v grep`
+  if [ "$process" != "" ]
+  then
+     listener_status="RUNNING"
+  fi
+  #Then proceed with the Database
+  #Check for database configuration
+  oratab_content=`$GREP --no-messages $ORACLE_SID:$ORACLE_HOME /etc/oratab` > /dev/null 2>&1
+  if [ "$oratab_content" != "" ]
+  then
+      database_status="STOPPED"
+  fi
+  #Check for database execution
+  process=`ps -ef | egrep pmon_$ORACLE_SID'\>' | $GREP -v grep`
+  if [ "$process" != "" ]
+  then
+     database_status="RUNNING"
+  fi
+  #Finally we print the summary
+  echo "$LISTENER_NAME status: $listener_status"
+  echo "$ORACLE_SID Database status:   $database_status"
+
+}
+
+case "$1" in
+  start)
+      start
+  ;;
+  stop)
+      stop
+  ;;
+  restart)
+      restart
+  ;;
+  status)
+      status
+  ;;
+  *)
+      echo $"Usage: $0 {start|stop|restart|status}"
+      exit 1
+  ;;
+esac
+
+exit 0

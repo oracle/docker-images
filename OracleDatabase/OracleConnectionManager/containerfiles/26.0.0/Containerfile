@@ -1,3 +1,4 @@
+# hadolint global ignore=DL3006,DL3025,SC2086
 #
 #############################
 # Copyright (c) 2024, Oracle and/or its affiliates.
@@ -8,14 +9,16 @@
 #
 # ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Containerfile for Oracle Database 23.26ai Oracle Connection Manager 
+# This is the Containerfile for Oracle Database 26ai / MAIN Oracle Connection Manager.
+# Folder 26.0.0 is the maintained MAIN track.
+# Override install media: --build-arg INSTALL_FILE_1=<zip>
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ podman build -t oracle/cman:23.26ai .
+#      $ ./buildContainerImage.sh -v 26.0.0
+#      $ ./buildContainerImage.sh -v 26.0.0 -i -o "--build-arg INSTALL_FILE_1=<other_zip>"
 
-# hadolint global ignore=DL3006,DL3025,SC2086
 ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image
