@@ -132,14 +132,14 @@ detectJDKversion()
   javac -version
   if [ ! "$?" ]
    then
-     echo "ERROR: JDK is not installed. Please install either JDK 11 or JDK 17"
+     echo "ERROR: JDK is not installed. Please install either JDK 11 or JDK 17 or JDK 25"
      errorFlag=true
      return
   fi
   javaVersion=$(javac -version 2>&1 | awk '{ print $2 }' | cut -d'.' -f1)
-  if [ "$javaVersion" != "11" ] && [ "$javaVersion" != "17" ]
+  if [ "$javaVersion" != "11" ] && [ "$javaVersion" != "17" ] && [ "$javaVersion" != "25" ]
    then
-     echo "ERROR: Either JDK 11 or JDK 17 is required"
+     echo "ERROR: JDK 11 or JDK 17 or JDK 25 is required"
      errorFlag=true
   fi
 }
@@ -740,7 +740,7 @@ if [ -n "${CONTAINER_ID}" ]; then
    echo "Stop container. Ignore errors."
    podman stop "$AI"
 else
-   echo "Container Already Stopped" 
+   echo "Container Already Stopped"
 fi
 }
 
