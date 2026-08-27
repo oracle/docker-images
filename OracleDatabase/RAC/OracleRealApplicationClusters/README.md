@@ -42,7 +42,7 @@ To create an Oracle RAC environment, follow these steps:
 
 Before you proceed to the next section, you must complete each of the steps listed in this section and complete the following prerequisites.
 
-* Refer to the following sections in the publication [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for Podman Oracle Linux x86-64 to complete the preparation steps for Oracle RAC on Container deployment:
+* Refer to the following sections in the publication [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/en/database/oracle/oracle-database/26/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux.pdf) for Podman Oracle Linux x86-64 to complete the preparation steps for Oracle RAC on Container deployment:
   * Overview of Oracle RAC on Podman
   * Host Preparation for Oracle RAC on Podman
   * Podman Host Server Configuration
