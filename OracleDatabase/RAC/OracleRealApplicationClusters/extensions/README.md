@@ -25,7 +25,7 @@ SQL scripts will be executed as sysdba, shell scripts will be executed as the cu
 
 LICENSE UPL 1.0
 
-Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2023-2026 Oracle and/or its affiliates. All rights reserved.
 
 The resulting image can be used in the same fashion as the base image.
 

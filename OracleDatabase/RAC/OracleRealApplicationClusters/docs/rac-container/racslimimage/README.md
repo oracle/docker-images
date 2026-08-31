@@ -53,10 +53,10 @@ Users can deploy multi-node Oracle RAC Database Setup using Oracle RAC Database 
   rm -rf /scratch/rac/cluster01/node2/*
   ```
 
-* Make sure the downloaded Oracle RAC software location is staged & available for both RAC nodes. In the below example, we have staged Oracle RAC software at location ```/scratch/software/23.26ai/goldimages```
+* Make sure the downloaded Oracle RAC software location is staged & available for both RAC nodes. In the below example, we have staged Oracle RAC software at location ```/scratch/software/26ai/goldimages```
   ```bash
-  ls /scratch/software/23.26ai/goldimages
-  LINUX.X64_260000_db_home.zip  LINUX.X64_260000_grid_home.zip
+  ls /scratch/software/26ai/goldimages
+  LINUX.X64_2326100_db_home.zip  LINUX.X64_2326100_grid_home.zip
   ```
 * If SELinux is enabled on the host machine then execute the following as well-
   ```bash
@@ -64,10 +64,10 @@ Users can deploy multi-node Oracle RAC Database Setup using Oracle RAC Database 
   restorecon -v /scratch/rac/cluster01/node1
   semanage fcontext -a -t container_file_t /scratch/rac/cluster01/node2
   restorecon -v /scratch/rac/cluster01/node2
-  semanage fcontext -a -t container_file_t /scratch/software/23.26ai/goldimages/LINUX.X64_260000_grid_home.zip
-  restorecon -v /scratch/software/23.26ai/goldimages/LINUX.X64_260000_grid_home.zip
-  semanage fcontext -a -t container_file_t /scratch/software/23.26ai/goldimages/LINUX.X64_260000_db_home.zip
-  restorecon -v /scratch/software/23.26ai/goldimages/LINUX.X64_260000_db_home.zip
+  semanage fcontext -a -t container_file_t /scratch/software/26ai/goldimages/LINUX.X64_2326100_grid_home.zip
+  restorecon -v /scratch/software/26ai/goldimages/LINUX.X64_2326100_grid_home.zip
+  semanage fcontext -a -t container_file_t /scratch/software/26ai/goldimages/LINUX.X64_2326100_db_home.zip
+  restorecon -v /scratch/software/26ai/goldimages/LINUX.X64_2326100_db_home.zip
   ```
 
 ## Section 2: Deploying 2 Node Oracle RAC Setup on Podman using Slim Image
@@ -729,4 +729,4 @@ All scripts and files hosted in this repository that are required to build the c
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

@@ -1,7 +1,7 @@
 # hadolint global ignore=DL3025,DL3044
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2022-2026 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------

@@ -2,7 +2,7 @@
 # shellcheck disable=SC1090,SC2010,SC2045,SC2144,SC2164
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019-2026 Oracle and/or its affiliates. All rights reserved.
 #
 # Since: January, 2019
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com

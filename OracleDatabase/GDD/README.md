@@ -150,7 +150,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2024 Oracle and/or its affiliates.
+Copyright (c) 2014,2026 Oracle and/or its affiliates.
 ```
 
 ### Building Oracle Single Instance Database Image
@@ -198,7 +198,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2023-2026 Oracle and/or its affiliates. All rights reserved.
 ```
 
 ### Building Oracle RAC Database Container Image
@@ -244,7 +244,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2023-2026 Oracle and/or its affiliates. All rights reserved.
 ```
 
 ## Oracle Globally Distributed Database in Containers Deployment Scenarios
@@ -334,5 +334,5 @@ All scripts and files hosted in this project and GitHub docker-images/OracleData
 
 ## Copyright
 
-Copyright (c) 2022 - 2024 Oracle and/or its affiliates.
+Copyright (c) 2022 - 2026 Oracle and/or its affiliates.
 Released under the Universal Permissive License v1.0 as shown at [https://oss.oracle.com/licenses/upl/](https://oss.oracle.com/licenses/upl/)

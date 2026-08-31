@@ -1,11 +1,11 @@
 # LICENSE UPL 1.0
 # hadolint global ignore=DL3006,SC2086,SC3014
 #
-# Copyright (c) 2018,2022 Oracle and/or its affiliates.
+# Copyright (c) 2018,2026 Oracle and/or its affiliates.
 #
 # ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Containerfile for Oracle Database 23.26ai Real Application Clusters.
+# This is the Containerfile for Oracle Database 26ai Real Application Clusters.
 # Folder 23.26.0 is the single maintained track for all 23.26.* RU builds.
 # Pass actual install media names via --build-arg INSTALL_FILE_1 / INSTALL_FILE_2.
 #
@@ -55,8 +55,8 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     GRID_SETUP_FILE="setupGrid.sh" \
     INITSH="initsh" \
     WORKDIR=$WORKDIR \
-    GRID_SAMPLE_RESPONSE_FILE="grid_23ai.rsp" \
-    DBCA_SAMPLE_RESPONSE_FILE="dbca_23ai.rsp" \
+    GRID_SAMPLE_RESPONSE_FILE="grid_23.26ai.rsp" \
+    DBCA_SAMPLE_RESPONSE_FILE="dbca_23.26ai.rsp" \
     FIXUP_PREQ_FILE="fixupPreq.sh" \
     INSTALL_GRID_BINARIES_FILE="installGridBinaries.sh" \
     INSTALL_GRID_PATCH="applyGridPatch.sh" \
@@ -116,7 +116,7 @@ ARG VERSION
 # -------------------------------------------------------------
 # Linux Env Variable
 ENV GRID_BASE=/u01/app/grid \
-    GRID_HOME=/u01/app/23ai/grid \
+    GRID_HOME=/u01/app/26ai/grid \
     DB_BASE=/u01/app/oracle \
     DB_HOME=/u01/app/oracle/product/23ai/dbhome_1
 # Use second ENV so that variable get substituted
@@ -246,7 +246,7 @@ RUN rm -f $INSTALL_DIR/install/* && \
 # hadolint ignore=DL3006
 FROM rac-image-slim-${SLIMMING} AS final
 ENV GRID_BASE=/u01/app/grid \
-    GRID_HOME=/u01/app/23ai/grid \
+    GRID_HOME=/u01/app/26ai/grid \
     DB_BASE=/u01/app/oracle \
     DB_HOME=/u01/app/oracle/product/23ai/dbhome_1
 RUN rm -rf $DB_HOME/.patch_storage $DB_HOME/.opatchauto_storage $GRID_HOME/.patch_storage $GRID_HOME/.opatchauto_storage

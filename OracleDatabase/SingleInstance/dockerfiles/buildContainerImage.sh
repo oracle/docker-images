@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2014,2024 Oracle and/or its affiliates.
+# Copyright (c) 2014,2026 Oracle and/or its affiliates.
 # 
 
 function usage() {
@@ -32,7 +32,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2024 Oracle and/or its affiliates.
+Copyright (c) 2014,2026 Oracle and/or its affiliates.
 
 EOF
 
@@ -179,7 +179,7 @@ done
 # Check that we have a container runtime installed
 checkContainerRuntime
 
-# Only 19c (EE) and 23ai (Free and EE) are supported on ARM64 platform
+# Only 19c (EE) and 26ai (Free and EE) are supported on ARM64 platform
 if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   PLATFORM=".arm64"
   
@@ -194,7 +194,7 @@ if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   elif [ "${VERSION}" == "23.26.0" ] && [ "${FREE}" -eq 1 ]; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=https://download.oracle.com/otn-pub/otn_software/db-free/oracle-ai-database-free-26ai-23.26.2-1.el8.aarch64.rpm" "${BUILD_OPTS[@]}")
   elif [ "${VERSION%%.*}" -lt 23 ] || [ "${EXPRESS}" -eq 1 ]; then
-    echo "Currently 19c (EE) and 23ai are supported on ARM64 platform.";
+    echo "Currently 19c (EE) and 26ai are supported on ARM64 platform.";
     exit 1;
   fi;
 fi;

@@ -52,7 +52,7 @@ the patched image:
     
     LICENSE UPL 1.0
     
-    Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2014-2026 Oracle and/or its affiliates. All rights reserved.
 
 **Important:** It is not supported to apply patches on already existing databases.
 You will have to create a new, patched database Docker image. You can use the PDB unplug/plug
@@ -65,4 +65,4 @@ Example:
 
 Copyright
 ---------
-Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2026 Oracle and/or its affiliates. All rights reserved.

@@ -6,7 +6,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2014,2025 Oracle and/or its affiliates.
+# Copyright (c) 2014,2026 Oracle and/or its affiliates.
 #
 
 usage() {
@@ -24,7 +24,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2025 Oracle and/or its affiliates.
+Copyright (c) 2014,2026 Oracle and/or its affiliates.
 
 EOF
   exit 0
@@ -136,6 +136,13 @@ elif [ "${IMAGE_NAME}"x = "x" ] && [ "${SLIM}" == "false" ]; then
   IMAGE_NAME="oracle/database-rac:${VERSION}"
 else
   echo "Image name is passed as a variable"
+fi
+
+if [ "$VERSION" = "23.26.0" ]; then
+  case "$IMAGE_NAME" in
+    oracle/database-rac:23.26.0) IMAGE_NAME="oracle/database-rac:23.26ai" ;;
+    oracle/database-rac:23.26.0-slim) IMAGE_NAME="oracle/database-rac:23.26ai-slim" ;;
+  esac
 fi
 
 echo "Container Image set to : ${IMAGE_NAME}"

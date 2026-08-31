@@ -127,15 +127,14 @@ Use the below command to build the Oracle RAC Database Container Image:
 
 | Folder | Use for |
 |--------|---------|
+| `23.26.0` | All 23.26.* RU builds for 26ai (e.g. 23.26 → `23.26.0`) |
 | `19.3.0` | 19c builds (use zip build-args for RUs such as 19.32) |
-| `23.26.0` | All 23.26.* RU builds (e.g. 23.26 → `23.26.0`) |
-| `23.26.0` | MAIN / 26ai builds |
 
-Older tracks are still present: `12.2.0.1`, `18.3.0`, `21.3.0`.
+Older tracks are still present: `21.3.0`, `18.3.0`, `12.2.0.1`.
 
 Override install media zip names with `--build-arg INSTALL_FILE_1` / `INSTALL_FILE_2` when RU zip names differ from the defaults in each folder.
 
-Example: To build Oracle RAC Database Container Image for MAIN/26ai, use below command:
+Example: To build Oracle RAC Database Container Image for 26ai, use below command:
 ```bash
 ./buildContainerImage.sh -v 23.26.0
 ```
@@ -152,14 +151,10 @@ Example: explicit install zip names:
 ```bash
 ./buildContainerImage.sh \
     -v 23.26.0 \
-    -t localhost/oracle/database-rac:23.26.0 \
+    -t localhost/oracle/database-rac:23.26ai \
     -o "--build-arg INSTALL_FILE_1=LINUX.X64_2326100_grid_home.zip --build-arg INSTALL_FILE_2=LINUX.X64_2326100_db_home.zip"
 ```
 
-Retag it as below as we are going to refer this image as `localhost/oracle/database-rac:23.26ai` everywhere:
-```bash
-podman tag localhost/oracle/database-rac:23.26.0 localhost/oracle/database-rac:23.26ai
-```
 **Note** : There is a known issue with Oracle Database 19.3.0 that causes compilation to fail, as described in [Doc ID 2760289.1](https://support.oracle.com/knowledge/Oracle%20Database%20Products/2760289_1.html): "19c Database Installation/relink fails with: Error in invoking target 'libasmclntsh19.ohso libasmperl19.ohso client_sharedlib' of makefile ins_rdbms.mk". As a result, you cannot install the base 19.3.0 software directly on Oracle Linux 9. The fix is included in version 19.21 and later. Therefore, when building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`
 
 Example: To build Oracle RAC Database Container Image for 19c (folder `19.3.0`), use below command:
@@ -175,20 +170,16 @@ In this document, an `Oracle RAC Database Container Slim Image` refers to a cont
 ```
 Example: To build Oracle RAC Database Container Slim Image for 23.26ai, use the below command:
 ```bash
-./buildContainerImage.sh -v 23.26.0 -i -o '--build-arg SLIMMING=true'
+./buildContainerImage.sh -v 23.26.0 -t localhost/oracle/database-rac:23.26ai-slim -i -o '--build-arg SLIMMING=true'
 ```
 Example: To build Oracle RAC Database Container Slim Image for MAIN/26ai:
 ```bash
-./buildContainerImage.sh -v 23.26.0 -i -o '--build-arg SLIMMING=true'
+./buildContainerImage.sh -v 23.26.0 -t localhost/oracle/database-rac:23.26ai-slim -i -o '--build-arg SLIMMING=true'
 ```
 To build an Oracle RAC Database Container Slim Image, you need to use `--build-arg SLIMMING=true`.
 
 To change the Base Image during building Oracle RAC Database Container Images, you must use `--build-arg BASE_OL_IMAGE=oraclelinux:8`.
 
-Retag it as below as we are going to refer this image as `localhost/oracle/database-rac:23.26ai-slim` everywhere:
-```bash
-podman tag localhost/oracle/database-rac:23.26.0-slim localhost/oracle/database-rac:23.26ai-slim
-```
 
 ### Building Oracle RAC Database Container Base Image
 In this document, an `Oracle RAC Database Container Base Image` refers to a container image that does not include installation of Oracle Grid Infrastructure and Oracle Database Software Binaries during the Oracle RAC Database Container Image creation. This image is extended to build patched image or extensions. To build an Oracle RAC Database Container Base Image run the following command:
@@ -390,4 +381,4 @@ All scripts and files hosted in this repository that are required to build the c
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

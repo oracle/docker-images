@@ -1,7 +1,7 @@
 #!/bin/bash
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2024-2026 Oracle and/or its affiliates. All rights reserved.
 #
 # Shared DBCA helpers for True Cache scripts. Oracle home layouts and DBCA
 # option names vary across image and host versions, so resolve both at runtime.

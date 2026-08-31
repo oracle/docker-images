@@ -22,11 +22,11 @@ This project offers example container images under these version folders:
 
 | Folder | Use for |
 |--------|---------|
-| `12.2.0.1` | 12c R2 client/CMAN |
-| `18.3.0` | 18c client/CMAN |
-| `19.3.0` | 19c client/CMAN (use zip build-arg for later 19 RUs) |
-| `21.3.0` | 21c client/CMAN |
 | `23.26.0` | All 23.26.* CMAN builds (dbInstall maps `23.26` → `23.26.0`) |
+| `21.3.0` | 21c client/CMAN |
+| `19.3.0` | 19c client/CMAN (use zip build-arg for later 19 RUs) |
+| `18.3.0` | 18c client/CMAN |
+| `12.2.0.1` | 12c R2 client/CMAN |
 
 Default install media for `23.26.0` is `LINUX.X64_2326100_client_cman_home.zip` (SHA256 in `23.26.0/Checksum`).
 
@@ -214,4 +214,4 @@ All scripts and files hosted in this repository which are required to build the 
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

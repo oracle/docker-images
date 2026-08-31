@@ -9,18 +9,18 @@ Sample container build files to facilitate installation, configuration, and envi
     * [Building the container images using Podman](#building-the-container-images-using-podman)
   * [Running Oracle Database in a container](#running-oracle-database-in-a-container)
     * [Running Oracle Database Enterprise and Standard Edition 2 in a container](#running-oracle-database-enterprise-and-standard-edition-2-in-a-container)
-    * [Securely specifying database password (Supported from 19.3.0 onwards) and TDE wallet password (Supported from 23ai onwards) when using Podman](#securely-specifying-database-password-supported-from-1930-onwards-and-tde-wallet-password-supported-from-23ai-onwards-when-using-podman)
-      * [Encrypting database password (Supported from 23ai onwards)](#encrypting-database-password-supported-from-23ai-onwards)
+    * [Securely specifying database password (Supported from 19.3.0 onwards) and TDE wallet password (Supported from 26ai onwards) when using Podman](#securely-specifying-database-password-supported-from-1930-onwards-and-tde-wallet-password-supported-from-26ai-onwards-when-using-podman)
+      * [Encrypting database password (Supported from 26ai onwards)](#encrypting-database-password-supported-from-26ai-onwards)
     * [Selecting the Edition (Supported from 19.3.0 release)](#selecting-the-edition-supported-from-1930-release)
     * [Setting the SGA and PGA memory (Supported from 19.3.0 release)](#setting-the-sga-and-pga-memory-supported-from-1930-release)
-    * [Setting the CPU_COUNT and PROCESSES (Supported from 19.3.0 release)](#setting-the-cpu_count-and-processes-supported-from-1930-release)
+    * [Setting the CPU_COUNT and PROCESSES (Supported from 19.3.0 release)](#setting-the-cpu_count_and_processes-supported-from-1930-release)
     * [Changing the admin accounts passwords](#changing-the-admin-accounts-passwords)
     * [Enabling archive log mode and/or force logging mode while creating the database](#enabling-archive-log-mode-andor-force-logging-mode-while-creating-the-database)
     * [Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)](#configuring-tcps-connections-for-oracle-database-supported-from-version-1930-onwards)
-    * [Running Oracle Database 23ai/26ai Free in a container](#running-oracle-database-23ai26ai-free-in-a-container)
+    * [Running Oracle Database 26ai Free in a container](#running-oracle-database-26ai-free-in-a-container)
     * [Running Oracle Database 21c/18c Express Edition in a container](#running-oracle-database-21c18c-express-edition-in-a-container)
     * [Running Oracle Database 11gR2 Express Edition in a container](#running-oracle-database-11gr2-express-edition-in-a-container)
-  * [Running Oracle True Cache in a container (Supported from version 23ai onwards)](#running-oracle-true-cache-in-a-container-supported-from-version-23ai-onwards)
+  * [Running Oracle True Cache in a container (Supported from version 26ai onwards)](#running-oracle-true-cache-in-a-container-supported-from-version-26ai-onwards)
     * [Setting up network for communication between Primary Database and True Cache container](#setting-up-network-for-communication-between-primary-database-and-true-cache-container)
     * [Running Oracle True Cache Enterprise Edition in a container](#running-oracle-true-cache-enterprise-edition-in-a-container)
     * [Running Oracle True Cache Free in a container](#running-oracle-true-cache-free-in-a-container)
@@ -38,8 +38,7 @@ Sample container build files to facilitate installation, configuration, and envi
 
 This project offers sample Dockerfiles for:
 
-* Oracle Database 23ai (23.26.0) Enterprise Edition, Standard Edition 2 and Free
-* Oracle Database 23ai (23.9.0) Enterprise Edition, Standard Edition 2 and Free
+* Oracle Database 26ai (23.26.0) Enterprise Edition, Standard Edition 2 and Free
 * Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 18c (18.4.0) Express Edition (XE)
@@ -54,23 +53,23 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 23ai Free, 26ai Free) and put them into the `dockerfiles/<version>` folder.
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 26ai Free) and put them into the `dockerfiles/<version>` folder.
 You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
 
-**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition and 23ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
+**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
 
 You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
 Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
-    
+
     Usage: buildContainerImage.sh -v [version] -t [image_name:tag] [-e | -s | -x | -f] [-i] [-p] [-b] [-o] [container build option]
     Builds a container image for Oracle Database.
-    
+
     Parameters:
        -v: version to build
-           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.9.0 23.26.0
+           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.26.0
        -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
@@ -80,12 +79,12 @@ Before you build the image make sure that you have provided the installation bin
        -p: creates and extends image using the patching extension
        -b: build base stage only (Used by extensions)
        -o: passes on container build option
-    
+
     * select one edition only: -e, -s, -x, or -f
-    
+
     LICENSE UPL 1.0
-    
-    Copyright (c) 2014,2024 Oracle and/or its affiliates.
+
+    Copyright (c) 2014,2026 Oracle and/or its affiliates.
 
 **IMPORTANT:** The resulting images will be an image with the Oracle binaries installed. On first startup of the container a new database will be created, the following lines highlight when the database is ready to be used:
 
@@ -148,7 +147,7 @@ So, to use patching extension one should use additional build argument `-o '--bu
 
     ./buildContainerImage.sh -e -v 21.3.0 -o '--build-arg SLIMMING=false'
 
-Patched container images can now be built by specifying the parameter -p. Download the database version specific release update and one-offs and place them into the `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively. In this case, SLIMMING is internally set to **false**. Example command for building the patched container image is as follows:
+Patched container images can now be built by specifying the parameter -p. Download the database version specific release update and one-offs and place them into the `extensions/patching/patches/release_update` and `extensions/patching/patches/one_offs` folder respectively. If opatch is required, download and place the zip file for patch 6880880 under `extensions/patching/patches/one_offs` folder. In this case, SLIMMING is internally set to **false**. Example command for building the patched container image is as follows:
 
     ./buildContainerImage.sh -e -v 21.3.0 -p
 
@@ -192,10 +191,10 @@ To run your Oracle Database image use the `podman run` command as follows:
     -e PRIMARY_DB_NAME='<Primary source DB_NAME when different from the service name>' \
     -e TRUE_CACHE_BLOB=<Path to the mounted True Cache blob .tar.gz> \
     -v [<host mount point>:]/opt/oracle/oradata \
-     oracle/database:26ai-ee
+     oracle/database:23.26.0-ee
 
     **NOTE:** For a complete Podman deployment of a Primary Database together with a True Cache container, including network, secrets, host file, and automated setup using the True Cache extension image, refer to [extensions/truecache/README.md](extensions/truecache/README.md).
-    
+
     For parameter details across Enterprise Edition, Standard Edition 2, and Free, see [Primary Database Container Parameters Explained](#primary-database-container-parameters-explained).
 
     Parameters:
@@ -205,7 +204,7 @@ To run your Oracle Database image use the `podman run` command as follows:
        --ulimit:      Resource limits. Update according to Oracle Database documentation.
        -e ORACLE_SID: The Oracle Database SID that should be used (default: ORCLCDB).
        -e ORACLE_PDB: The Oracle Database PDB name that should be used (default: ORCLPDB1).
-       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated).
+       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDBADMIN password (default: auto generated).
        -e INIT_SGA_SIZE:
                       The total memory in MB that should be used for all SGA components (optional).
                       Supported by Oracle Database 19.3 onwards.
@@ -235,7 +234,7 @@ To run your Oracle Database image use the `podman run` command as follows:
                       Supported by Oracle Database 19.3 onwards.
        -e ENABLE_FORCE_LOGGING:
                       To enable force logging mode when creating the database (default: false).
-                      Supported by Oracle Database 23ai onwards.
+                      Supported by Oracle Database 26ai onwards.
        -e ENABLE_TCPS:
                       To enable TCPS connections for Oracle Database.
                       Supported by Oracle Database 19.3 onwards.
@@ -244,7 +243,7 @@ To run your Oracle Database image use the `podman run` command as follows:
                       Supported by Oracle Database 19.3 onwards.
        -e TRUE_CACHE:
                       To configure Oracle True Cache instance.
-                      Supported from Oracle 23ai onwards.
+                      Supported from Oracle 26ai onwards.
        -e TDE_WALLET_PWD:
                       Password for TDE wallet to configure TDE.
        -e PRIMARY_DB_PWD_FILE:
@@ -258,10 +257,10 @@ To run your Oracle Database image use the `podman run` command as follows:
        -e TRUE_CACHE_BLOB:
                       In-container path to a True Cache blob .tar.gz generated from the Primary Database.
                       Mount the blob into the True Cache container and set this parameter before startup.
-                      Supported from Oracle Database 23ai onwards.
+                      Supported from Oracle Database 26ai onwards.
        -v /opt/oracle/oradata
                       The data volume to use for the database.
-                      Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+                      Has to be writable by the Unix "oracle" (uid: 54321) user inside the container
                       If omitted the database will not be persisted over container recreation.
        -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
                       Optional: A volume with custom scripts to be run after database startup.
@@ -279,7 +278,7 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
 
 **NOTE**: Oracle Database bypasses file system level caching for some of the files by using the `O_DIRECT` flag. It is not advised to run the container on a file system that does not support the `O_DIRECT` flag.
 
-#### Securely specifying database password (Supported from 19.3.0 onwards) and TDE wallet password (Supported from 23ai onwards) when using Podman
+#### Securely specifying database password (Supported from 19.3.0 onwards) and TDE wallet password (Supported from 26ai onwards) when using Podman
 
 `Podman secret` is supported if the user uses the podman runtime and needs to specify the password to the container securely. The user needs to create a secret first with the name **oracle_pwd** for database password and **tde_wallet_pwd** for TDE wallet password, and then run the container image after specifying the secret in the `run` command. The example commands are as follows:
 
@@ -287,18 +286,19 @@ The Oracle Database inside the container also has Oracle Enterprise Manager Expr
     echo "<Your Password>" | podman secret create oracle_pwd -
     echo "<Your TDE Wallet Password>" | podman secret create tde_wallet_pwd -
 
-    # Running the Oracle Database 23ai Free image with the secret
+    # Running the Oracle Database 26ai Free image with the secret
     podman run -d --name=<container_name> --secret=oracle_pwd oracle/database:23.26.0-free
 
-    # Running the Oracle Database 23ai EE image with the secrets
+    # Running the Oracle Database 26ai EE image with the secrets
     podman run -d --name=<container_name> --secret=oracle_pwd --secret=tde_wallet_pwd oracle/database:23.26.0-ee
 
-##### Encrypting database password (Supported from 23ai onwards) 
 
-Users can generate public-private key pair and pass database password (encrypted) and decryption (private) key to the container securely. 
+##### Encrypting database password (Supported from 26ai onwards)
+
+Users can generate public-private key pair and pass database password (encrypted) and decryption (private) key to the container securely.
 
 * Generate public-private key pair.
-        
+
         openssl genrsa -out key.pem
         openssl rsa -in key.pem -out key.pub -pubout
 
@@ -317,9 +317,14 @@ Users can generate public-private key pair and pass database password (encrypted
         podman secret create oracle_pwd encrypted_pwd.txt
         podman secret create oracle_pwd_privkey key.pem
 
+* Run the Oracle Database 26ai Free image with the secrets
+
+        podman run -td --name=<container_name> --secret=oracle_pwd --secret=oracle_pwd_privkey oracle/database:23.26.0-free
+
 * Run the Oracle Database 26ai EE image with the secrets
-    
+
         podman run -td --name=<container_name> --secret=oracle_pwd --secret=oracle_pwd_privkey oracle/database:23.26.0-ee
+
 
 #### Selecting the Edition (Supported from 19.3.0 release)
 
@@ -427,9 +432,9 @@ To configure  wallet password, please use the following command:
     After certificate renewal, the client wallet should be updated by downloading it again.
 * Supports Oracle Database XE version 21.3.0 onwards.
 
-#### Running Oracle Database 23ai Free in a container
+#### Running Oracle Database 26ai Free in a container
 
-To run your Oracle Database 23ai/26ai Free container image use the `podman run` command as follows:
+To run your Oracle Database 26ai Free container image use the `podman run` command as follows:
 
     podman run --name <container name> \
     -p <host port>:1521 \
@@ -439,7 +444,8 @@ To run your Oracle Database 23ai/26ai Free container image use the `podman run` 
     -e ENCRYPT_TABLESPACES=ALL \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:23.26.0-free
-    
+
+
     For parameter details across Enterprise Edition, Standard Edition 2, and Free, see [Primary Database Container Parameters Explained](#primary-database-container-parameters-explained).
 
 Once the container has been started and the database created you can connect to it just like to any other database:
@@ -453,7 +459,7 @@ On the first startup of the container a random password will be generated for th
     podman exec <container name> /opt/oracle/setPassword.sh <your password>
 
 **Important Note:**
-The ORACLE_SID for Oracle Database 23ai/26ai Free is always `FREE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the Free build.
+The ORACLE_SID for Oracle Database 26ai Free is always `FREE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the Free build.
 
 #### Primary Database Container Parameters Explained
 
@@ -464,7 +470,7 @@ The ORACLE_SID for Oracle Database 23ai/26ai Free is always `FREE` and cannot be
 | `--ulimit` | Recommended for Enterprise/SE2 database containers | Not shown in the Free example | Resource limits. Set according to Oracle Database documentation and host policy. | Recommended for Enterprise/SE2 |
 | `ORACLE_SID` | Supported; default is `ORCLCDB` | Do not set; Free always uses `FREE` | Oracle Database SID. | Optional for Enterprise/SE2, not used for Free |
 | `ORACLE_PDB` | Supported; default is `ORCLPDB1` | Do not set; Free uses `FREEPDB1` | Oracle Database PDB name. | Optional for Enterprise/SE2, not used for Free |
-| `ORACLE_PWD` | Supported; auto-generated if omitted | Supported; auto-generated if omitted | SYS, SYSTEM, and PDB_ADMIN password. Podman secrets can provide this through `oracle_pwd`. | Optional |
+| `ORACLE_PWD` | Supported; auto-generated if omitted | Supported; auto-generated if omitted | SYS, SYSTEM, and PDBADMIN password. Podman secrets can provide this through `oracle_pwd`. | Optional |
 | `ORACLE_CHARACTERSET` | Supported; default is `AL32UTF8` | Supported; default is `AL32UTF8` | Character set used when creating the database. | Optional |
 | `INIT_SGA_SIZE` | Supported from 19.3 onward | Not shown in the Free example | Total SGA memory in MB used during first database creation. | Optional |
 | `INIT_PGA_SIZE` | Supported from 19.3 onward | Not shown in the Free example | Target aggregate PGA memory in MB used during first database creation. | Optional |
@@ -473,13 +479,13 @@ The ORACLE_SID for Oracle Database 23ai/26ai Free is always `FREE` and cannot be
 | `AUTO_MEM_CALCULATION` | Supported from 19.3 onward; ignored when `INIT_SGA_SIZE` or `INIT_PGA_SIZE` is set | Not shown in the Free example | Enables DBCA memory calculation from the container memory limit. Default is `true`; `false` uses 2 GB. | Optional |
 | `ORACLE_EDITION` | Supported from 19.3 onward; values include `enterprise` and `standard` | Not used | Selects Enterprise or Standard Edition software behavior for compatible images. Existing datafiles must be reused with the same edition. | Optional for Enterprise/SE2 images |
 | `ENABLE_ARCHIVELOG` | Supported from 19.3 onward | Not shown in the Free example | Enables archive log mode during first database creation. | Optional |
-| `ENABLE_FORCE_LOGGING` | Supported from 23ai onward | Not shown in the Free example | Enables force logging during first database creation. | Optional |
+| `ENABLE_FORCE_LOGGING` | Supported from 26ai onward | Not shown in the Free example | Enables force logging during first database creation. | Optional |
 | `ENABLE_TCPS` | Supported from 19.3 onward | Not shown in the Free example | Enables TCPS listener endpoint on container port `2484`. | Optional |
 | `TCPS_CERTS_LOCATION` | Supported from 19.3 onward | Not shown in the Free example | In-container location of user-provided `cert.crt` and `client.key` files for TCPS. | Optional |
-| `CONFIGURE_TDE` | Not shown in the Enterprise/SE2 example | Supported from 23ai onward | Enables TDE configuration for Free image database creation. | Optional |
+| `CONFIGURE_TDE` | Not shown in the Enterprise/SE2 example | Supported from 26ai onward | Enables TDE configuration for Free image database creation. | Optional |
 | `ENCRYPT_TABLESPACES` | Not shown in the Enterprise/SE2 example | Supported | Tablespace encryption list. Leave empty for user tablespace only, set `ALL`, or use entries such as `SYSTEM:true,SYSAUX:false`. | Optional |
 | `TDE_WALLET_PWD` | Supported for TDE wallet configuration | Not shown in the Free example | Password for TDE wallet configuration. Can also be provided through the `tde_wallet_pwd` Podman secret. | Conditional for TDE |
-| `TRUE_CACHE` | Supported from 23ai onward when running a True Cache container | Use the True Cache extension image flow for Free True Cache | Marks the container as a True Cache host. For complete primary plus True Cache Podman setup, use `extensions/truecache/README.md`. | Conditional for True Cache |
+| `TRUE_CACHE` | Supported from 26ai onward when running a True Cache container | Use the True Cache extension image flow for Free True Cache | Marks the container as a True Cache host. For complete primary plus True Cache Podman setup, use `extensions/truecache/README.md`. | Conditional for True Cache |
 | `PRIMARY_DB_CONN_STR` | Required when `TRUE_CACHE=true` | Required in Free True Cache extension flow | Primary database connection string in `<HOST>:<PORT>/<SERVICE_NAME>` format. | Conditional for True Cache |
 | `PRIMARY_DB_NAME` | Optional when the primary DB_NAME differs from the service name | Optional when the primary DB_NAME differs from the service name | Primary source DB_NAME override. | Optional |
 | `PRIMARY_DB_PWD_FILE` | Required by some True Cache flows when using a mounted primary password file | Alternative bootstrap input for Free True Cache | In-container path to the mounted primary database password file. | Conditional for True Cache |
@@ -499,17 +505,17 @@ To run your Oracle Database 21c, or 18c Express Edition container image use the 
     -e ORACLE_CHARACTERSET=<your character set> \
     -v [<host mount point>:]/opt/oracle/oradata \
     oracle/database:21.3.0-xe
-    
+
     Parameters:
        --name:        The name of the container (default: auto generated)
        -p:            The port mapping of the host port to the container port.
                       Two ports are exposed: 1521 (Oracle Listener), 5500 (EM Express)
-       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDBADMIN password (default: auto generated)
        -e ORACLE_CHARACTERSET:
                       The character set to use when creating the database (default: AL32UTF8)
        -v /opt/oracle/oradata
                       The data volume to use for the database.
-                      Has to be writable by the Unix "oracle" (uid: 54321) user inside the container!
+                      Has to be writable by the Unix "oracle" (uid: 54321) user inside the container
                       If omitted the database will not be persisted over container recreation.
        -v /opt/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
                       Optional: A volume with custom scripts to be run after database startup.
@@ -545,17 +551,17 @@ To run your Oracle Database Express Edition container image use the `docker run`
     -e ORACLE_PWD=<your database passwords> \
     -v [<host mount point>:]/u01/app/oracle/oradata \
     oracle/database:11.2.0.2-xe
-    
+
     Parameters:
        --name:        The name of the container (default: auto generated)
        --shm-size:    Amount of Linux shared memory
        -p:            The port mapping of the host port to the container port.
                       Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
-       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDB_ADMIN password (default: auto generated)
+       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDBADMIN password (default: auto generated)
 
        -v /u01/app/oracle/oradata
                       The data volume to use for the database.
-                      Has to be writable by the Unix "oracle" (uid: 1000) user inside the container!
+                      Has to be writable by the Unix "oracle" (uid: 1000) user inside the container
                       If omitted the database will not be persisted over container recreation.
        -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
                       Optional: A volume with custom scripts to be run after database startup.
@@ -584,7 +590,7 @@ Once the container has been started you can connect to it just like to any other
     sqlplus sys/<your password>@//localhost:1521/XE as sysdba
     sqlplus system/<your password>@//localhost:1521/XE
 
-### Running Oracle True Cache in a container (Supported from version 23ai onwards)
+### Running Oracle True Cache in a container (Supported from version 26ai onwards)
 
 Oracle True Cache instance is an in-memory, consistent, and automatically managed cache for Oracle Database.
 
@@ -626,7 +632,7 @@ To containerize an on-premise database, please follow the steps mentioned below:
 
 **NOTE:**
 Make sure that the directory structure of the on-premise database matches with the directory structure used in the container image.
-    
+
 ### Deploying Oracle Database on Kubernetes
 
 Helm is a package manager which uses a packaging format called charts. [helm-charts](helm-charts/) directory contains all the relevant files needed to deploy Oracle Database on Kubernetes. For more information on default configuration, installing/uninstalling the Oracle Database chart on Kubernetes, please refer [helm-charts/oracle-db/README.md](helm-charts/oracle-db/README.md).
@@ -654,7 +660,7 @@ After the database is setup and/or started the scripts in those folders will be 
 SQL scripts will be executed as sysdba, shell scripts will be executed as the current user. To ensure proper order it is
 recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
 
-**Note:** The startup scripts will also be executed after the first time database setup is complete.  
+**Note:** The startup scripts will also be executed after the first time database setup is complete.
 **Note:** For 11gR2 Express Edition only, use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/`.
 
 The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
@@ -682,4 +688,4 @@ All scripts and files hosted in this project and GitHub [docker-images/OracleDat
 
 ## Copyright
 
-Copyright (c) 2014,2024 Oracle and/or its affiliates.
+Copyright (c) 2014,2026 Oracle and/or its affiliates.

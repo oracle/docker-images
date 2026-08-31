@@ -7,7 +7,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2020,2021 Oracle and/or its affiliates.
+# Copyright (c) 2020,2026 Oracle and/or its affiliates.
 #
 
 if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \

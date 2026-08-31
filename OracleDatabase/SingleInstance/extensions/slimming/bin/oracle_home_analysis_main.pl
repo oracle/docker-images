@@ -1,7 +1,7 @@
 #
 # oracle_home_analysis
 #
-# Copyright (c) 2019, 2023, Oracle and/or its affiliates.
+# Copyright (c) 2019, 2026, Oracle and/or its affiliates.
 #
 #    NAME
 #      oracle_home_analysis - Oracle Home Analysis

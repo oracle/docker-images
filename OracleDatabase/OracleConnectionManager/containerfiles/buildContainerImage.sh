@@ -2,7 +2,7 @@
 # shellcheck disable=SC2045,SC2154,SC2164,SC2320
 #
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024-2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
@@ -24,7 +24,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2026 Oracle and/or its affiliates. All rights reserved.
 
 EOF
   exit 0
@@ -99,9 +99,9 @@ while getopts "hiv:o:t:" optname; do
       ;;
   esac
 done
-[ -z "${IMAGE_NAME}" ] && IMAGE_NAME="oracle/client-cman:$VERSION"
+if [ "$VERSION" = "23.26.0" ]; then IMAGE_NAME="oracle/client-cman:23.26ai"; else IMAGE_NAME="oracle/client-cman:$VERSION"; fi
 # Go into version folder
-cd $VERSION
+cd "$VERSION" || exit 1
 
 if [ ! "$SKIPMD5" -eq 1 ]; then
   checksumPackages

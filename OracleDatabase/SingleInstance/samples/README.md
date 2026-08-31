@@ -38,4 +38,4 @@ Sample primary-host script for the manual primary-side True Cache service regist
 Example of how to unplug a PDB from a container's CDB.
 
 # Copyright
-Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2014-2026 Oracle and/or its affiliates. All rights reserved.

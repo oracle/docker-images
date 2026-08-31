@@ -2,16 +2,16 @@
 # hadolint global ignore=SC2086,SC2016,DL3025
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2018, 2024 Oracle and/or its affiliates.
+# Copyright (c) 2018, 2026 Oracle and/or its affiliates.
 #
 # ORACLE DOCKERFILES PROJECT
 # --------------------------
-# This is the Containerfile for Oracle Database 23ai
+# This is the Containerfile for Oracle Database 26ai
 # 
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) LINUX.X64_2326000_db_home.zip
-#     Download Oracle Database 23ai Enterprise Edition or Standard Edition 2 for Linux x64
+#     Download Oracle Database 26ai Enterprise Edition or Standard Edition 2 for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE

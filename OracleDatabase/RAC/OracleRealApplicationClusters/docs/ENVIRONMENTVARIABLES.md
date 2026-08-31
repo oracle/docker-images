@@ -51,9 +51,9 @@
 | DB_HOME                  | Mandatory           | Setup using Slim Image | Path to Oracle Database home directory. Default value is `/u01/app/oracle/product/26ai/dbhome_1`. |
 | DB_BASE                  | Mandatory           | Setup using Slim Image | Path to the base directory of Oracle Database. Default value is `/u01/app/oracle`. |
 | INVENTORY                | Mandatory           | Setup using Slim Image | Path to the Oracle Inventory directory. Default value is `/u01/app/oraInventory`. |
-| STAGING_SOFTWARE_LOC     | Mandatory           | Setup using Slim Image | Location where the Oracle software zip files are staged. Default value is `/scratch/software/23.26ai/goldimages`. |
-| GRID_SW_ZIP_FILE         | Mandatory           | Setup using Slim Image | Name of the Oracle Grid Infrastructure software zip file. Default value is `LINUX.X64_260000_grid_home.zip`. |
-| DB_SW_ZIP_FILE           | Mandatory           | Setup using Slim Image | Name of the Oracle Database software zip file. Default value is `LINUX.X64_260000_db_home.zip`. |
+| STAGING_SOFTWARE_LOC     | Mandatory           | Setup using Slim Image | Location where the Oracle software zip files are staged. Default value is `/scratch/software/26ai/goldimages`. |
+| GRID_SW_ZIP_FILE         | Mandatory           | Setup using Slim Image | Name of the Oracle Grid Infrastructure software zip file. Default value is `LINUX.X64_2326100_grid_home.zip`. |
+| DB_SW_ZIP_FILE           | Mandatory           | Setup using Slim Image | Name of the Oracle Database software zip file. Default value is `LINUX.X64_2326100_db_home.zip`. |
 | GRID_RESPONSE_FILE       | Mandatory           | Setup using User Defined Response Files | Path to the Oracle Grid Infrastructure response file. Default value is `/tmp/grid_23.26ai.rsp`. |
 | DBCA_RESPONSE_FILE       | Mandatory           | Setup using User Defined Response Files | Path to the Oracle Database Configuration Assistant (DBCA) response file. Default value is `/tmp/dbca_23.26ai.rsp`. |
 
@@ -63,4 +63,4 @@ All scripts and files hosted in this repository which are required to build the 
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

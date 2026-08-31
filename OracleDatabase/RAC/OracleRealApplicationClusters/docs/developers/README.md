@@ -308,4 +308,4 @@ All scripts and files hosted in this repository that are required to build the c
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

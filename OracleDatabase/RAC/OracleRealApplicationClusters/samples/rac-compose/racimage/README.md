@@ -92,7 +92,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman1
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -219,7 +219,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -349,7 +349,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman1
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -514,7 +514,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman1
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -786,4 +786,4 @@ All scripts and files hosted in this repository which are required to build the 
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

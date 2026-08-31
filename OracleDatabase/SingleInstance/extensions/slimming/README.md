@@ -174,7 +174,7 @@ bash-4.4$ sqlplus sys/knl_test7 as sysdba
 SQL*Plus: Release 26.0.0.0.0 - Development on Mon Jul 15 19:10:13 2024
 Version 26.1.0.24.00
 
-Copyright (c) 1982, 2024, Oracle.  All rights reserved.
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
 
 Last Successful login time: Mon Jul 15 2024 19:05:32 +00:00
 
