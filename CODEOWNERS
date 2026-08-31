@@ -1,28 +1,22 @@
 # The last matching pattern has the most precedence, so the file goes from least
 # specific to most specific file path to assign code ownership.
 #
-*                          @Djelibeybi @gvenzl @mriccell @rjeberhard
-/.github/                  @Djelibeybi
-/.github/workflows         @Djelibeybi @AmedeeBulle
+*                          @gvenzl @mriccell @rjeberhard
+/.github/                  @AmedeeBulle
+/.github/workflows         @AmedeeBulle
 /GraalVM/                  @mzachh
 /NoSQL/                    @dario-vega @mikebrey
-/OracleAccessManagement/   @manjunathdhegde-2910
 /OracleBI/                 @sjvp
-/OracleCoherence/          @thegridman
 /OracleDatabase/           @yunus-qureshi
 /OracleDatabase/RAC/       @psaini79
 /OracleFMWInfrastructure/  @mriccell
 /OracleGoldenGate/         @masubram @sahudebasish
-/OracleHTTPServer/         @Prabhat-Kishore
 /OracleIdentityGovernance/ @rishiagarwal-oracle
-/OracleInstantClient/      @cjbj
-/OracleInternetDirectory/  @manjunathdhegde-2910 @kuldeepbshah
+/OracleInstantClient/      @sharadraju
 /OracleJava/               @aureliogrb
-/OracleLinuxDevelopers/    @Djelibeybi @AmedeeBulle
+/OracleLinuxDevelopers/    @AmedeeBulle
 /OracleRestDataServices/   @chrishoina
-/OracleSOASuite/           @knvijay @rdas0405
-/OracleUnifiedDirectory/   @kuldeepbshah
-/OracleUnifiedDirectorySM/ @kuldeepbshah
+/OracleSOASuite/           @knvijay
 /OracleVeridata/           @arnabnandioracle
 /OracleWebCenterContent/   @deboghos
 /OracleWebLogic/           @mriccell
