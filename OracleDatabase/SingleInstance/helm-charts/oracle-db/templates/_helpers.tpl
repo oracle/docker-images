@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020-2026, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 
@@ -41,6 +41,8 @@ env:
     value: {{ default "enterprise" .Values.oracle_edition | quote }}
   - name: ENABLE_ARCHIVELOG
     value: {{ default false .Values.enable_archivelog | quote}}
+  - name: ENABLE_FORCE_LOGGING
+    value: {{ default false .Values.enable_force_logging | quote}}
 {{- end }}
 {{/* oracle db labels */}}
 {{- define "oracle-db-labels" }}

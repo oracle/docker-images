@@ -117,9 +117,9 @@ Before you begin, you must download grid and database binaries and stage them un
 ```bash
  ./buildContainerImage.sh -v <Software Version>
 ```
-Example: Building Oracle RAC image for v 26.0.0-
+Example: Building Oracle RAC image for v 23.26.0-
 ```bash
- ./buildContainerImage.sh -v 26.0.0
+ ./buildContainerImage.sh -v 23.26.0
 ```
 
 ### Building Oracle RAC Database Container Slim Image
@@ -127,9 +127,9 @@ In this document, an Oracle RAC container slim image refers to a container image
 ```bash
   ./buildContainerImage.sh -v <Software Version> -i -o '--build-arg SLIMMING=true'
 ```
-  Example: Building Oracle Slim Image for version 26.0.0-
+  Example: Building Oracle Slim Image for version 23.26.0-
  ```bash
- ./buildContainerImage.sh -v 26.0.0 -i -o '--build-arg SLIMMING=true'
+ ./buildContainerImage.sh -v 23.26.0 -i -o '--build-arg SLIMMING=true'
  ```
  To build an Oracle RAC slim image, you must use `--build-arg SLIMMING=true`.
  To change the base image for building Oracle RAC images, you must use `--build-arg  BASE_OL_IMAGE=oraclelinux:9`.
@@ -184,13 +184,17 @@ b. [Podman ipvlan network](https://docs.docker.com/network/drivers/ipvlan/) usin
 ```bash
 mkdir /opt/.secrets/
 ```
-- Generate a password file - Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users. For this deployment scenario, it will be a common password for the grid, oracle, and database users. Run the command:
+- Generate a password file - Edit the `/opt/.secrets/pwdfile.txt` and seed the password for the grid, oracle, and database users. For this deployment scenario, it will be a common password for the grid, oracle, and database users. If you use `setup_rac_host.sh -prepare-rac-env`, set `RAC_SECRET` to the password value. `RAC_SECRET_MODE` is optional and defaults to `openssl`; set `RAC_SECRET_MODE=base64` only when you want a Base64 password secret without a key secret. Run the command for the default OpenSSL `pkeyutl` encrypted secret mode:
 
 ```bash
 cd /opt/.secrets
 openssl genrsa -out key.pem
 openssl rsa -in key.pem -out key.pub -pubout
-openssl pkeyutl -in pwdfile.txt -out pwdfile.enc -pubin -inkey key.pub -encrypt
+openssl pkeyutl -in pwdfile.txt -out pwdfile.enc \
+  -pubin -inkey key.pub -encrypt \
+  -pkeyopt rsa_padding_mode:oaep \
+  -pkeyopt rsa_oaep_md:sha256 \
+  -pkeyopt rsa_mgf1_md:sha256
 rm -rf /opt/.secrets/pwdfile.txt
 ```
 - Oracle recommends using Podman secrets inside the containers. To create Podman secrets, run the following command:
@@ -198,7 +202,22 @@ rm -rf /opt/.secrets/pwdfile.txt
 ```bash
 podman secret create pwdsecret /opt/.secrets/pwdfile.enc
 podman secret create keysecret /opt/.secrets/key.pem
+```
 
+For this mode, pass `ENCRYPTION_TYPE=pkeyutl`, `DB_PWD_FILE=pwdsecret`, and `PWD_KEY=keysecret` to the containers. `PKEYOPT` is optional and defaults to `rsa_padding_mode:oaep;rsa_oaep_md:sha256;rsa_mgf1_md:sha256`.
+
+To use a Base64 password secret instead of an OpenSSL key pair, create only the password secret:
+
+```bash
+cd /opt/.secrets
+base64 -w0 pwdfile.txt > pwdfile
+podman secret create pwdsecret /opt/.secrets/pwdfile
+rm -rf /opt/.secrets/pwdfile.txt
+```
+
+For this mode, pass `PASSWORD_FILE=pwdsecret`. `PWD_KEY` and `DB_PWD_FILE` are not required.
+
+```bash
 podman secret ls
 ID                         NAME        DRIVER      CREATED       UPDATED
 7eb7f573905283c808bdabaff  keysecret   file        13 hours ago  13 hours ago
@@ -207,7 +226,7 @@ e3ac963fd736d8bc01dcd44dd  pwdsecret   file        13 hours ago  13 hours ago
 podman secret inspect <secret_name>
 ```
 Notes:
-- In this example we use `pwdsecret` as the common password for SSH setup between containers for the oracle, grid, and Oracle RAC database users. Also, `keysecret` is used to extract secrets inside the Oracle RAC Containers.
+- In this example we use `pwdsecret` as the common password for SSH setup between containers for the oracle, grid, and Oracle RAC database users. In OpenSSL encrypted secret mode, `keysecret` is mandatory and is used to decrypt `pwdsecret` inside the Oracle RAC containers. In Base64 secret mode, `keysecret` is not required.
 
 ## Oracle RAC on Containers Deployment Scenarios
 Oracle RAC can be deployed with various scenarios, such as using podman vs podman-compose, NFS vs Block Devices, Oracle RAC Container Image vs Slim Image, with User Defined Response files, and so on. All are covered in detail in the instructions that follow.
@@ -264,4 +283,4 @@ All scripts and files hosted in this repository that are required to build the c
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

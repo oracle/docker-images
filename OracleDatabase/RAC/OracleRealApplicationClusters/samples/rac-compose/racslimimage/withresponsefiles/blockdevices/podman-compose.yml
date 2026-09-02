@@ -62,8 +62,8 @@ services:
       INIT_PGA_SIZE: 2G
       GRID_HOME: /u01/app/26ai/grid
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
-      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
+      GRID_SW_ZIP_FILE: LINUX.X64_2326100_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_2326100_db_home.zip
       GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
       DBCA_RESPONSE_FILE: /tmp/dbca_23.26ai.rsp
       DB_PWD_FILE: pwdsecret
@@ -126,8 +126,8 @@ services:
       INIT_PGA_SIZE: 2G
       GRID_HOME: /u01/app/26ai/grid
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
-      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
+      GRID_SW_ZIP_FILE: LINUX.X64_2326100_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_2326100_db_home.zip
       GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
       DBCA_RESPONSE_FILE: /tmp/dbca_23.26ai.rsp
       DB_PWD_FILE: pwdsecret

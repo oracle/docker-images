@@ -11,8 +11,7 @@ You need to ensure that you have at least 350 MB of space available for the cont
 
 The `buildContainerImage.sh` script can assist with building the images. See examples below for instructions and usage.
 
-The `buildContainerImage.sh` script is a utility shell script that performs MD5 checks. It provides an easy way to get started. Users can also use the podman build command to build an image with custom configuration parameters.
-To run the script, go into the `containerfiles` folder and run the `buildContainerImage.sh` script as given below. Set the https_proxy and http_proxy as appropriate for your environment.
+The `buildContainerImage.sh` script is a utility shell script that performs MD5 checks. It provides an easy way to get started. Users can also use the podman build command to build an image with custom configuration parameters. To run the script, go into the `containerfiles` folder and run the `buildContainerImage.sh` script as given below. Set the https_proxy and http_proxy as appropriate for your environment.
 
 ```bash
 export https_proxy=<https://PROXY_HOST:PROXY_PORT>
@@ -30,18 +29,18 @@ For detailed usage instructions, please run the following command:
 ```
 
 ## Create container networks
-Before you create the DNS server container, ensure that you have created the required networks, so you can attach the DNS server to the correct network addresses. The following are examples of creating `bridge`, `macvlan` or `ipvlan` [networks](https://docs.podman.io/en/latest/markdown/podman-network-create.1.html).
+Before you create the DNS server container, ensure that you have created the required networks, so you can attach the DNS server to the correct network addresses. The following are examples of creating `bridge`, `macvlan` or `ipvlan` [networks](#https://docs.podman.io/en/latest/markdown/podman-network-create.1.html).
 
-Example of creating bridge networks-
+Example of creating bridge networks- 
 ```bash
 podman network create --driver=bridge --subnet=10.0.20.0/24 rac_pub1_nw
 ```
-Example of creating macvlan networks-
+Example of creating macvlan networks- 
 ```bash
 podman network create -d macvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 ```
 
-Example of creating ipvlan networks-
+Example of creating ipvlan networks- 
 ```bash
 podman network create -d ipvlan --subnet=10.0.20.0/24 -o parent=ens5 rac_pub1_nw
 ```
@@ -79,7 +78,7 @@ you should see the following in podman logs output:
  DNS Server IS READY TO USE!
 #################################################
 ```
-**Note:** You also have the option to add a private domain name (if required) using an environment variable. For example, you can add `-e PRIVATE_DOMAIN_NAME="example-priv.info"`.
+**Note:** You also have the option to add a private domain name (if required) using an environment variable. For example, you can add `-e PRIVATE_DOMAIN_NAME="example-priv.info"` and also add `RAC_NODE_NAME_PREFIXD="racnoded"` for the Docker domain prefix.
 
 ## Environment Variables Explained
 | Environment Variable    | Description                                                                                                         |
@@ -111,4 +110,4 @@ Unless otherwise noted, all scripts and files hosted in this repository that are
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

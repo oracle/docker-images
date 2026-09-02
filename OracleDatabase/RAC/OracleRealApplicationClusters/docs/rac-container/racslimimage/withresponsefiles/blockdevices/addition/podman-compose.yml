@@ -39,9 +39,9 @@ services:
       GRID_HOME: /u01/app/26ai/grid
       COPY_GRID_SOFTWARE: true
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
+      GRID_SW_ZIP_FILE: LINUX.X64_2326100_grid_home.zip
       COPY_DB_SOFTWARE: true
-      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_2326100_db_home.zip
       GRID_RESPONSE_FILE: /tmp/grid_23.26ai.rsp
       DBCA_RESPONSE_FILE: /tmp/dbca_23.26ai.rsp
       OP_TYPE: racaddnode
@@ -71,7 +71,7 @@ services:
       - rac_priv1_nw
       - rac_priv2_nw
     healthcheck:
-      test: ["CMD-SHELL", "if [ `cat /tmp/orod/oracle_db_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
+      test: ["CMD-SHELL", "if [ `cat /var/tmp/oracle_db_setup.log | grep -c 'ORACLE RAC DATABASE IS READY TO USE'` -ge 1 ]; then exit 0; else exit 1; fi"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

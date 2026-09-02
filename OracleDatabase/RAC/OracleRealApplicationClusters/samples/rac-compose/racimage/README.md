@@ -92,7 +92,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman1
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -147,13 +147,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
-```
-
-If you are using an older Container Registry image up to `container-registry.oracle.com/database/rac_ru:latest-21`, and `/tmp/orod/oracle_db_setup.log` is not present, then check the older log path instead:
-
-```bash
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_rac_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -225,7 +219,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -284,7 +278,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -355,7 +349,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman1
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -437,7 +431,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -520,7 +514,7 @@ export DNS_PRIVATE1_IP=192.168.17.25
 export DNS_PRIVATE2_IP=192.168.18.25
 export CMAN_CONTAINER_NAME=racnodepc1-cman
 export CMAN_HOST_NAME=racnodepc1-cman1
-export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.5.0"
+export CMAN_IMAGE_NAME="localhost/oracle/client-cman:23.26ai"
 export CMAN_PUBLIC_IP=10.0.20.166
 export CMAN_PUBLIC_HOSTNAME="racnodepc1-cman1"
 export DB_HOSTDETAILS="HOST=racnodepc1-scan:RULE_ACT=accept,HOST=racnodep1:IP=10.0.20.170"
@@ -606,7 +600,7 @@ podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE2_CRS_PRIVATE_IP2}
 
 podman-compose start ${RACNODE1_CONTAINER_NAME}
 podman-compose start ${RACNODE2_CONTAINER_NAME}
-podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE1_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -682,7 +676,7 @@ podman network connect ${PRIVATE1_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP1}
 podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP2}  ${RACNODE3_CONTAINER_NAME}
 
 podman-compose start ${RACNODE3_CONTAINER_NAME}
-podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -748,7 +742,7 @@ podman network connect ${PRIVATE1_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP1}
 podman network connect ${PRIVATE2_NETWORK_NAME} --ip ${RACNODE3_CRS_PRIVATE_IP2}  ${RACNODE3_CONTAINER_NAME}
 
 podman-compose start ${RACNODE3_CONTAINER_NAME}
-podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec ${RACNODE3_CONTAINER_NAME} /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 Successful Message when RAC container is setup properly-
@@ -792,4 +786,4 @@ All scripts and files hosted in this repository which are required to build the 
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

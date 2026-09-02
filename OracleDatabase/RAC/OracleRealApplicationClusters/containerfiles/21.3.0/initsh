@@ -1,15 +1,18 @@
 #!/bin/bash
 #############################
 
-# Copyright 2025, Oracle Corporation and/or affiliates.  All rights reserved.
+# Copyright 2025-2026, Oracle Corporation and/or affiliates.  All rights reserved.
 
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 # Author: paramdeep.saini@oracle.com
 
 echo "Creating env variables file /etc/rac_env_vars"
-/bin/bash -c "cat /proc/1/environ | tr '\0' '\n' > /etc/rac_env_vars"
-/bin/bash -c "sed -i -e 's/^/export /' /etc/rac_env_vars"
+while IFS= read -r -d '' envvar; do
+  key=${envvar%%=*}
+  value=${envvar#*=}
+  printf 'export %s=%q\n' "$key" "$value"
+done < /proc/1/environ > /etc/rac_env_vars
 
 echo "Starting Systemd"
 exec /lib/systemd/systemd

@@ -51,8 +51,8 @@ services:
       DB_BASE: /u01/app/oracle
       INVENTORY: /u01/app/oraInventory
       STAGING_SOFTWARE_LOC: ${STAGING_SOFTWARE_LOC}
-      GRID_SW_ZIP_FILE: LINUX.X64_260000_grid_home.zip
-      DB_SW_ZIP_FILE: LINUX.X64_260000_db_home.zip
+      GRID_SW_ZIP_FILE: LINUX.X64_2326100_grid_home.zip
+      DB_SW_ZIP_FILE: LINUX.X64_2326100_db_home.zip
       DB_NAME: ORCLCDB
       CMAN_HOST: ${CMAN_HOST_NAME}
       CMAN_PORT: 1521

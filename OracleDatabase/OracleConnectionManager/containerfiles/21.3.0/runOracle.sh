@@ -1,8 +1,8 @@
 #!/bin/bash
-# LICENSE UPL 1.0
+# shellcheck disable=SC1090,SC2154,SC2173
 #
 #############################
-# Copyright (c) 2024, Oracle and/or its affiliates.
+# Copyright (c) 2024-2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
 # Author: paramdeep.saini@oracle.com
 ############################
@@ -58,7 +58,6 @@ trap _int SIGINT
 trap _term SIGTERM
 
 # Set SIGKILL handler
-# shellcheck disable=SC2173
 trap _kill SIGKILL
 
 ############ Removing /tmp/orod.log #####

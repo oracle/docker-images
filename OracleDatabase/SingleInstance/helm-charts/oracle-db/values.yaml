@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020-2026, Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 #
 
@@ -11,7 +11,7 @@ oracle_sid: ORCLCDB
 ##This parameter modifies the name of the PDB. The default value is set to ORCLPDB1.
 oracle_pdb: ORCLPDB1
 
-## The Oracle Database SYS, SYSTEM and PDBADMIN password. Defaults to a randomly generated password
+## The Oracle Database SYS, SYSTEM and PDB_ADMIN password. Defaults to a randomly generated password
 oracle_pwd:
 
 ## The character set to use when creating the database. Defaults to AL32UTF8
