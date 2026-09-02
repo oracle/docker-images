@@ -191,7 +191,7 @@ You should then be able to create a new Ruby on Rails application.
 
 ### Valkey (OL10)
 
-* [`oraclelinux10-valkey:7`](oraclelinux10/valkey/7/Dockerfile)
+* [`oraclelinux10-valkey:8`](oraclelinux10/valkey/8/Dockerfile)
 
 
 [1]: https://github.com/orgs/oracle/packages?repo_name=docker-images
