@@ -6,7 +6,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2014,2025 Oracle and/or its affiliates.
+# Copyright (c) 2014,2026 Oracle and/or its affiliates.
 #
 
 usage() {
@@ -24,26 +24,44 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2025 Oracle and/or its affiliates.
+Copyright (c) 2014,2026 Oracle and/or its affiliates.
 
 EOF
   exit 0
 }
 
-# Validate packages
+# Validate packages (Checksum may contain MD5 or SHA256 digests)
 checksumPackages() {
-  if hash md5sum 2>/dev/null; then
-    echo "Checking if required packages are present and valid..."
-    md5sum -c ${VERSION}/Checksum
+  local checksum_file="${VERSION}/Checksum"
+  local hash_algo="md5"
+  local check_cmd="md5sum"
+  local sample_hash
+
+  if [ ! -f "${checksum_file}" ]; then
+    echo "Checksum file ${checksum_file} not found."
+    exit 1
+  fi
+
+  # Detect digest type from first non-comment hash line (64 hex = SHA256, else MD5)
+  sample_hash="$(awk '/^[[:xdigit:]]{32,}/{print $1; exit}' "${checksum_file}")"
+  if [[ "${sample_hash}" =~ ^[[:xdigit:]]{64}$ ]]; then
+    hash_algo="sha256"
+    check_cmd="sha256sum"
+  fi
+
+  if hash "${check_cmd}" 2>/dev/null; then
+    echo "Checking if required packages are present and valid (${hash_algo})..."
+    # shellcheck disable=SC2086
+    ${check_cmd} -c "${checksum_file}"
     # shellcheck disable=SC2181
     if [ "$?" -ne 0 ]; then
-      echo "MD5 for required packages to build this image did not match!"
+      echo "${hash_algo} for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder $VERSION."
       # shellcheck disable=SC2320
       exit $?
     fi
   else
-    echo "Ignored MD5 sum, 'md5sum' command not available.";
+    echo "Ignored checksum, '${check_cmd}' command not available."
   fi
 }
 
@@ -56,7 +74,7 @@ if [ "$#" -eq 0 ]; then
 fi
 
 # Parameters
-VERSION="21.3.0"
+VERSION="23.26.0"
 SKIPMD5=0
 BASE_ONLY=0
 DOCKEROPS=""
@@ -118,6 +136,13 @@ elif [ "${IMAGE_NAME}"x = "x" ] && [ "${SLIM}" == "false" ]; then
   IMAGE_NAME="oracle/database-rac:${VERSION}"
 else
   echo "Image name is passed as a variable"
+fi
+
+if [ "$VERSION" = "23.26.0" ]; then
+  case "$IMAGE_NAME" in
+    oracle/database-rac:23.26.0) IMAGE_NAME="oracle/database-rac:23.26ai" ;;
+    oracle/database-rac:23.26.0-slim) IMAGE_NAME="oracle/database-rac:23.26ai-slim" ;;
+  esac
 fi
 
 echo "Container Image set to : ${IMAGE_NAME}"

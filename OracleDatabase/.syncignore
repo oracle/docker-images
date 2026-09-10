@@ -1,0 +1,23 @@
+# Paths excluded from automated source-to-destination synchronization.
+OracleDatabase/SingleInstance/extensions/slimming
+
+# Do not synchronize version tracks older than 19.3.0.
+OracleDatabase/GDD/containerfiles/12.2.0.1
+OracleDatabase/GDD/containerfiles/18.3.0
+OracleDatabase/SingleInstance/dockerfiles/12.1.0.2
+OracleDatabase/SingleInstance/dockerfiles/12.2.0.1
+OracleDatabase/SingleInstance/dockerfiles/18.3.0
+OracleDatabase/SingleInstance/samples/applypatch/12.1.0.2
+OracleDatabase/SingleInstance/samples/applypatch/12.2.0.1
+OracleDatabase/OracleConnectionManager/containerfiles/12.2.0.1
+OracleDatabase/OracleConnectionManager/containerfiles/18.3.0
+OracleDatabase/RAC/OracleDNSServer/containerfiles/12.2.0.1
+OracleDatabase/RAC/OracleDNSServer/containerfiles/18.3.0
+OracleDatabase/RAC/OracleRealApplicationClusters/containerfiles/12.2.0.1
+OracleDatabase/RAC/OracleRealApplicationClusters/containerfiles/18.3.0
+OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/12.2.0.1
+OracleDatabase/RAC/OracleRealApplicationClusters/dockerfiles/18.3.0
+OracleDatabase/RAC/OracleRealApplicationClusters/samples/customracdb/12.2.0.1
+OracleDatabase/RAC/OracleRealApplicationClusters/samples/customracdb/18.3.0
+OracleDatabase/RAC/OracleRACStorageServer/dockerfiles/12.2.0.1
+OracleDatabase/RAC/OracleRACStorageServer/dockerfiles/18.3.0

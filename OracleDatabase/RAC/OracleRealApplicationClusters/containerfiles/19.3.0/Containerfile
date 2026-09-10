@@ -1,23 +1,24 @@
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2018,2025 Oracle and/or its affiliates.
+# Copyright (c) 2018,2026 Oracle and/or its affiliates.
 #
 # ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Containerfile for Oracle Database 19c Release 3 Real Application Clusters
+# This is the Containerfile for Oracle Database 19c Real Application Clusters
+# Folder 19.3.0 is the maintained 19c track (use zip build-args for later RUs such as 19.32).
+# Pass actual install media names via --build-arg INSTALL_FILE_1 / INSTALL_FILE_2.
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_193000_grid_home.zip
-# (2 LINUX.X64_193000_db_home.zip
-#     Download Oracle Grid 19c Release 3 Enterprise Edition for Linux x64
-#     Download Oracle Database 19c Release 3  Enterprise Edition for Linux x64
+# (1) LINUX.X64_193000_grid_home.zip (default name; override for RU gold images)
+# (2) LINUX.X64_193000_db_home.zip
+#     Download Oracle Grid 19c / Database 19c for Linux x64
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/database:19c-rac .
+#      $ ./buildContainerImage.sh -v 19.3.0
 
 
 ARG BASE_OL_IMAGE=oraclelinux:9
@@ -119,7 +120,7 @@ ENV GRID_BASE=/u01/app/grid \
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     PATH=$GRID_HOME/perl/bin:$DB_HOME/perl/bin:/bin:/usr/bin:/sbin:/usr/sbin \
      SCRIPT_DIR=$INSTALL_DIR/startup \
      RAC_SCRIPTS_DIR="scripts" \
      GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \
@@ -303,7 +304,7 @@ ENV GRID_BASE=/u01/app/grid \
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+     PATH=$GRID_HOME/perl/bin:$DB_HOME/perl/bin:/bin:/usr/bin:/sbin:/usr/sbin \
      SCRIPT_DIR=$INSTALL_DIR/startup \
      RAC_SCRIPTS_DIR="scripts" \
      GRID_PATH=$GRID_HOME/bin:$GRID_HOME/OPatch/:$GRID_HOME/perl/bin:/usr/sbin:/bin:/sbin  \

@@ -26,7 +26,7 @@ To create an Oracle Globally Distributed Database Container environment, follow 
   - [Preparation Steps for running Oracle Globally Distributed Database in Linux Containers](#preparation-steps-for-running-oracle-globally-distributed-database-in-linux-containers)
   - [QuickStart](#quickstart)
   - [Building Oracle Globally Distributed Database Container Images](#building-oracle-globally-distributed-database-container-images)
-    - [Getting Oracle Global Service Manager Image from Oracle Container Registry](#getting-oracle-global-service-manager-image-from-oracle-container-registry)  
+    - [Getting Oracle Global Service Manager Image from Oracle Container Registry](#getting-oracle-global-service-manager-image-from-oracle-container-registry)
     - [Building Oracle Global Service Manager Image](#building-oracle-global-service-manager-image)
     - [Building Oracle Single Instance Database Image](#building-oracle-single-instance-database-image)
     - [Building Extended Oracle Single Instance Database Image with Oracle Globally Distributed Database Feature](#building-extended-oracle-single-instance-database-image-with-oracle-globally-distributed-database-feature)
@@ -40,7 +40,7 @@ To create an Oracle Globally Distributed Database Container environment, follow 
       - [Deploy Oracle Globally Distributed Database using Oracle RAC Database in Podman Containers](#deploy-oracle-globally-distributed-database-using-oracle-rac-database-in-podman-containers)
       - [Deploy Oracle Globally Distributed Database Containers on earlier OS Release](#deploy-oracle-globally-distributed-database-containers-on-earlier-os-release)
   - [Oracle Globally Distributed Database in Containers Deployment using podman-compose](#oracle-globally-distributed-database-in-containers-deployment-using-podman-compose)
-  - [Oracle Globally Distributed Database in Containers Deployment using docker-compose](#oracle-globally-distributed-database-in-containers-deployment-using-docker-compose)  
+  - [Oracle Globally Distributed Database in Containers Deployment using docker-compose](#oracle-globally-distributed-database-in-containers-deployment-using-docker-compose)
   - [Oracle Container Registry Images for Oracle Globally Distributed Database Deployment](#oracle-container-registry-images-for-oracle-globally-distributed-database-deployment)
   - [Support](#support)
   - [License](#license)
@@ -132,7 +132,7 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ```bash
 ./buildContainerImage.sh -v (Software Version)
-./buildContainerImage.sh -v 26.0.0
+./buildContainerImage.sh -v 23.26.0
 ```
 
 For detailed usage information for `buildContainerImage.sh`, run the following command:
@@ -150,7 +150,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2014,2024 Oracle and/or its affiliates.
+Copyright (c) 2014,2026 Oracle and/or its affiliates.
 ```
 
 ### Building Oracle Single Instance Database Image
@@ -170,13 +170,13 @@ After creating the base image using `buildContainerImage.sh` in the previous ste
 For example:
 
 ```bash
-./buildExtensions.sh -x sharding -b oracle/database:26.0.0-ee  -t oracle/database-ext-sharding:26.0.0-ee -o "--build-arg BASE_IMAGE_VERSION=26.0.0"
+./buildExtensions.sh -x sharding -b oracle/database:23.26.0-ee  -t oracle/database-ext-sharding:23.26.0-ee -o "--build-arg BASE_IMAGE_VERSION=23.26.0"
 
 Where:
 "-x sharding"                                   is to specify to have sharding feature in the extended image
-"-b oracle/database:26.0.0-ee"                  is to specify the Base image created in previous step
-"oracle/database-ext-sharding:26.0.0-ee"        is to specify the name:tag for the extended image with Sharding Feature
--o "--build-arg BASE_IMAGE_VERSION=26.0.0"      is to specify the BASE_IMAGE_VERSION to clone from git repo
+"-b oracle/database:23.26.0-ee"                  is to specify the Base image created in previous step
+"oracle/database-ext-sharding:23.26.0-ee"        is to specify the name:tag for the extended image with Sharding Feature
+-o "--build-arg BASE_IMAGE_VERSION=23.26.0"      is to specify the BASE_IMAGE_VERSION to clone from git repo
 ```
 
 To see more usage instructions for the `buildExtensions.sh` script, run the following command:
@@ -198,7 +198,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2023-2026 Oracle and/or its affiliates. All rights reserved.
 ```
 
 ### Building Oracle RAC Database Container Image
@@ -216,13 +216,13 @@ After creating the base image using `buildContainerImage.sh` in the previous ste
 For example:
 
 ```bash
-./buildExtensions.sh -x sharding -b oracle/database-rac:26.0.0 -t oracle/database-rac-ext-sharding:26.0.0-ee -o "--build-arg BASE_IMAGE_VERSION=26.0.0"
+./buildExtensions.sh -x sharding -b oracle/database-rac:23.26.0 -t oracle/database-rac-ext-sharding:23.26.0-ee -o "--build-arg BASE_IMAGE_VERSION=23.26.0"
 
 Where:
 "-x sharding"                                   is to specify to have sharding feature in the extended image
-"-b oracle/database-rac:26.0.0"                 is to specify the Base image created in previous step
-"oracle/database-rac-ext-sharding:26.0.0-ee"    is to specify the name:tag for the extended image with Oracle Globally Distributed Database Feature
--o "--build-arg BASE_IMAGE_VERSION=26.0.0"      is to specify the BASE_IMAGE_VERSION to clone from git repo
+"-b oracle/database-rac:23.26.0"                 is to specify the Base image created in previous step
+"oracle/database-rac-ext-sharding:23.26.0-ee"    is to specify the name:tag for the extended image with Oracle Globally Distributed Database Feature
+-o "--build-arg BASE_IMAGE_VERSION=23.26.0"      is to specify the BASE_IMAGE_VERSION to clone from git repo
 ```
 
 To see usage instructions for the `buildExtensions.sh` script, run the following command:
@@ -244,7 +244,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2023-2026 Oracle and/or its affiliates. All rights reserved.
 ```
 
 ## Oracle Globally Distributed Database in Containers Deployment Scenarios
@@ -334,5 +334,5 @@ All scripts and files hosted in this project and GitHub docker-images/OracleData
 
 ## Copyright
 
-Copyright (c) 2022 - 2024 Oracle and/or its affiliates.
+Copyright (c) 2022 - 2026 Oracle and/or its affiliates.
 Released under the Universal Permissive License v1.0 as shown at [https://oss.oracle.com/licenses/upl/](https://oss.oracle.com/licenses/upl/)

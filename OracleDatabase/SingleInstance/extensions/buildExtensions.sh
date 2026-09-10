@@ -6,7 +6,7 @@
 # 
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 # 
-# Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2023-2026 Oracle and/or its affiliates. All rights reserved.
 # 
 
 SCRIPT_DIR=$(dirname "$0")
@@ -29,7 +29,7 @@ Parameters:
 
 LICENSE UPL 1.0
 
-Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2023-2026 Oracle and/or its affiliates. All rights reserved.
 
 EOF
 
@@ -128,9 +128,11 @@ BUILD_START=$(date '+%s')
 
 cd "$SCRIPT_DIR"
 
-if [ "$EXTENSIONS" != "prebuiltdb" ]; then 
-  # BUILD THE LINUX BASE FOR REUSE
-  ../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+if [[ "$EXTENSIONS" == *"patching"* ]]; then 
+  if [ "$( (ls patching/patches/one_offs && ls patching/patches/release_update) | wc -l)" -gt 0 ]; then
+    # BUILD THE LINUX BASE FOR REUSE
+    ../dockerfiles/buildContainerImage.sh -b -v "${VERSION}" -t "$BASE_IMAGE"-base
+  fi
 fi
 
 for x in $EXTENSIONS; do
@@ -140,17 +142,6 @@ for x in $EXTENSIONS; do
     echo "Could not find extension directory '$x'";
     exit 1;
   }
-
-  if [ "$x" == "patching" ]; then 
-    if [ "$( (ls patches/one_offs && ls patches/release_update) | wc -l)" -eq 0 ]; then
-      echo "Patches Missing. Skipping Patching Extension"
-      if [ "$EXTENSIONS" == "patching" ]; then
-        exit
-      fi
-      cd ..
-      continue
-    fi
-  fi
 
   # shellcheck disable=SC2086
   "${CONTAINER_RUNTIME}" build --force-rm=true --build-arg BASE_IMAGE="$BASE_IMAGE" \

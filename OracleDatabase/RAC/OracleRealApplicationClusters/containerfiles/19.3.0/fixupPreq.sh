@@ -1,15 +1,17 @@
 #!/bin/bash
-# shellcheck disable=all
 # LICENSE UPL 1.0
 #
-# Copyright (c) 2018,2025 Oracle and/or its affiliates.
+# Copyright (c) 2018,2026 Oracle and/or its affiliates.
 #
 # Since: January, 2018
 # Author: sanjay.singh@oracle.com, paramdeep.saini@oracle.com
 # Description: Setup the Linux kernel parameter inside the container. Note that some parameter need to be set on container  host.
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-rpm -Uvh $GRID_HOME/cv/rpm/cvuqdisk*
+
+if ls $GRID_HOME/cv/rpm/cvuqdisk* > /dev/null 2>&1; then
+  rpm -Uvh "$GRID_HOME/cv/rpm/cvuqdisk*"
+fi
 echo "oracle   soft   nofile    1024" > /etc/security/limits.conf
 echo "oracle   hard   nofile    65536" >> /etc/security/limits.conf
 echo "oracle   soft   nproc    16384" >> /etc/security/limits.conf

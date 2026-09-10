@@ -2,37 +2,38 @@
 
 This page covers the steps to manually deploy a sample Oracle Globally Distributed Database with System-Managed Sharding with RAFT Replication Enabled using Podman Containers. **This deployment uses Extended Oracle Single Instance Database Image to deploy the Database Containers.**
 
-- [Setup Details](#setup-details)
-- [Prerequisites](#prerequisites)
-- [Deploying Catalog Container](#deploying-catalog-container)
-  - [Create Directory](#create-directory)
-  - [Create Container](#create-container)
-- [Deploying Shard Containers](#deploying-shard-containers)
-  - [Create Directories](#create-directories)
-  - [Shard1 Container](#shard1-container)
-  - [Shard2 Container](#shard2-container)
-  - [Shard3 Container](#shard3-container)
-- [Deploying GSM Container](#deploying-gsm-container)
-  - [Create Directory for Master GSM Container](#create-directory-for-master-gsm-container)
-  - [Create Master GSM Container](#create-master-gsm-container)
-- [Deploying Standby GSM Container](#deploying-standby-gsm-container)  
-  - [Create Directory for Standby GSM Container](#create-directory-for-standby-gsm-container)
-  - [Create Standby GSM Container](#create-standby-gsm-container)
-- [Scale-out an existing Oracle Globally Distributed Database](#scale-out-an-existing-oracle-globally-distributed-database)
-  - [Complete the prerequisite steps before creating Podman Container for new shard](#complete-the-prerequisite-steps-before-creating-podman-container-for-new-shard)
-  - [Create Podman Container for new shard](#create-podman-container-for-new-shard)
-  - [Add the new shard Database to the existing Oracle Globally Distributed Database](#add-the-new-shard-database-to-the-existing-oracle-globally-distributed-database)
-  - [Deploy the new shard](#deploy-the-new-shard)
-- [Scale-in an existing Oracle Globally Distributed Database](#scale-in-an-existing-oracle-globally-distributed-database)
-  - [Confirm the shard to be deleted is present in the list of shards in the Oracle Globally Distributed Database](#confirm-the-shard-to-be-deleted-is-present-in-the-list-of-shards-in-the-oracle-globally-distributed-database)
-  - [Move any RUs off of the shard you plan to remove](#move-any-rus-off-of-the-shard-you-plan-to-remove)
-  - [Delete the shard database from the Oracle Globally Distributed Database](#delete-the-shard-database-from-the-oracle-globally-distributed-database)
-  - [Confirm the shard has been successfully deleted from the Oracle Globally Distributed Database](#confirm-the-shard-has-been-successfully-deleted-from-the-oracle-globally-distributed-database)
-  - [Remove the Podman Container](#remove-the-podman-container)
-- [Environment Variables Explained](#environment-variables-explained)
-- [Support](#support)
-- [License](#license)
-- [Copyright](#copyright)
+- [Deploy Oracle Globally Distributed Database with System-Managed Sharding with RAFT Replication Enabled using Podman Containers](#deploy-oracle-globally-distributed-database-with-system-managed-sharding-with-raft-replication-enabled-using-podman-containers)
+  - [Setup Details](#setup-details)
+  - [Prerequisites](#prerequisites)
+  - [Deploying Catalog Container](#deploying-catalog-container)
+    - [Create Directory](#create-directory)
+    - [Create Container](#create-container)
+  - [Deploying Shard Containers](#deploying-shard-containers)
+    - [Create Directories](#create-directories)
+    - [Shard1 Container](#shard1-container)
+    - [Shard2 Container](#shard2-container)
+    - [Shard3 Container](#shard3-container)
+  - [Deploying GSM Container](#deploying-gsm-container)
+    - [Create Directory for Master GSM Container](#create-directory-for-master-gsm-container)
+    - [Create Master GSM Container](#create-master-gsm-container)
+  - [Deploying Standby GSM Container](#deploying-standby-gsm-container)
+    - [Create Directory for Standby GSM Container](#create-directory-for-standby-gsm-container)
+    - [Create Standby GSM Container](#create-standby-gsm-container)
+  - [Scale-out an existing Oracle Globally Distributed Database](#scale-out-an-existing-oracle-globally-distributed-database)
+    - [Complete the prerequisite steps before creating Podman Container for new shard](#complete-the-prerequisite-steps-before-creating-podman-container-for-new-shard)
+    - [Create Podman Container for new shard](#create-podman-container-for-new-shard)
+    - [Add the new shard Database to the existing Oracle Globally Distributed Database](#add-the-new-shard-database-to-the-existing-oracle-globally-distributed-database)
+    - [Deploy the new shard](#deploy-the-new-shard)
+  - [Scale-in an existing Oracle Globally Distributed Database](#scale-in-an-existing-oracle-globally-distributed-database)
+    - [Confirm the shard to be deleted is present in the list of shards in the Oracle Globally Distributed Database](#confirm-the-shard-to-be-deleted-is-present-in-the-list-of-shards-in-the-oracle-globally-distributed-database)
+    - [Move any RUs off of the shard you plan to remove](#move-any-rus-off-of-the-shard-you-plan-to-remove)
+    - [Delete the shard database from the Oracle Globally Distributed Database](#delete-the-shard-database-from-the-oracle-globally-distributed-database)
+    - [Confirm the shard has been successfully deleted from the Oracle Globally Distributed Database](#confirm-the-shard-has-been-successfully-deleted-from-the-oracle-globally-distributed-database)
+    - [Remove the Podman Container](#remove-the-podman-container)
+  - [Environment Variables Explained](#environment-variables-explained)
+  - [Support](#support)
+  - [License](#license)
+  - [Copyright](#copyright)
 
 ## Setup Details
 
@@ -96,7 +97,7 @@ Before creating catalog container, review the following notes carefully:
 - Change environment variable such as ORACLE_SID, ORACLE_PDB based on your env.
 - Change `/scratch/oradata/dbfiles/CATALOG` based on your enviornment.
 - By default, Oracle Globally Distributed Database setup creates new database under `/opt/oracle/oradata` based on ORACLE_SID enviornment variable.
-- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace following `--name catalog oracle/database-ext-sharding:26.0.0-ee` to `--name catalog oracle/database-ext-sharding:26.0.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
+- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace following `--name catalog oracle/database-ext-sharding:23.26.0-ee` to `--name catalog oracle/database-ext-sharding:23.26.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
   - In this case, `/scratch/oradata/dbfiles/CATALOG` must contain the DB backup and it must not be in zipped format. E.g. `/scratch/oradata/dbfiles/CATALOG/SEEDCDB` where SEEDCDB is the cold backup and contains datafiles and PDB.
 
 ```bash
@@ -117,7 +118,7 @@ podman run -d --hostname oshard-catalog-0 \
 -v /scratch/oradata/dbfiles/CATALOG:/opt/oracle/oradata \
 -v /opt/containers/shard_host_file:/etc/hosts \
 --privileged=false \
---name catalog oracle/database-ext-sharding:26.0.0-ee
+--name catalog oracle/database-ext-sharding:23.26.0-ee
 ```
 
 To check the catalog container/services creation logs, please tail podman logs. It will take 20 minutes to create the catalog container service.
@@ -176,7 +177,7 @@ Before creating shard1 container, review the following notes carefully:
 - Change environment variable such as ORACLE_SID, ORACLE_PDB based on your env.
 - Change `/scratch/oradata/dbfiles/ORCL1CDB` based on your environment.
 - By default, Oracle Globally Distributed Database setup creates new database under `/opt/oracle/oradata` based on ORACLE_SID environment variable.
-- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace following `--name shard1 oracle/database-ext-sharding:26.0.0-ee` to `--name shard1 oracle/database-ext-sharding:26.0.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
+- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace following `--name shard1 oracle/database-ext-sharding:23.26.0-ee` to `--name shard1 oracle/database-ext-sharding:23.26.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
   - In this case, `/scratch/oradata/dbfiles/ORCL1CDB` must contain the DB backup and it must not be zipped. E.g. `/scratch/oradata/dbfiles/ORCL1CDB/SEEDCDB` where `SEEDCDB` is the cold backup and contains datafiles and PDB.
 
 ```bash
@@ -197,7 +198,7 @@ podman run -d --hostname oshard1-0 \
 -v /scratch/oradata/dbfiles/ORCL1CDB:/opt/oracle/oradata \
 -v /opt/containers/shard_host_file:/etc/hosts \
 --privileged=false \
---name shard1 oracle/database-ext-sharding:26.0.0-ee
+--name shard1 oracle/database-ext-sharding:23.26.0-ee
 ```
 
 To check the shard1 container/services creation logs, please tail podman logs. It will take 20 minutes to create the shard1 container service.
@@ -215,7 +216,7 @@ Before creating shard1 container, review the following notes carefully:
 - Change environment variable such as ORACLE_SID, ORACLE_PDB based on your env.
 - Change /scratch/oradata/dbfiles/ORCL2CDB based on your environment.
 - By default, Oracle Globally Distributed Database setup creates new database under `/opt/oracle/oradata` based on ORACLE_SID environment variable.
-- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace following `--name shard2 oracle/database-ext-sharding:26.0.0-ee` to `--name shard2 oracle/database-ext-sharding:26.0.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
+- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace following `--name shard2 oracle/database-ext-sharding:23.26.0-ee` to `--name shard2 oracle/database-ext-sharding:23.26.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
   - In this case, `/scratch/oradata/dbfiles/ORCL2CDB` must contain the DB backup and it must not be zipped. E.g. `/scratch/oradata/dbfiles/ORCL2CDB/SEEDCDB` where `SEEDCDB` is the cold backup and contains datafiles and PDB.
 
 ```bash
@@ -236,7 +237,7 @@ podman run -d --hostname oshard2-0 \
 -v /scratch/oradata/dbfiles/ORCL2CDB:/opt/oracle/oradata \
 -v /opt/containers/shard_host_file:/etc/hosts \
 --privileged=false \
---name shard2 oracle/database-ext-sharding:26.0.0-ee
+--name shard2 oracle/database-ext-sharding:23.26.0-ee
 ```
 
 To check the shard2 container/services creation logs, please tail podman logs. It will take 20 minutes to create the shard2 container service
@@ -260,7 +261,7 @@ Before creating shard1 container, review the following notes carefully:
 - Change environment variable such as ORACLE_SID, ORACLE_PDB based on your env.
 - Change `/scratch/oradata/dbfiles/ORCL3CDB` based on your environment.
 - By default, Oracle Globally Distributed Database setup creates new database under `/opt/oracle/oradata` based on ORACLE_SID environment variable.
-- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace `--name shard3 oracle/database-ext-sharding:26.0.0-ee` with `--name shard3 oracle/database-ext-sharding:26.0.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
+- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace `--name shard3 oracle/database-ext-sharding:23.26.0-ee` with `--name shard3 oracle/database-ext-sharding:23.26.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
   - In this case, `/scratch/oradata/dbfiles/ORCL3CDB` must contain the DB backup and it must not be zipped. E.g. `/scratch/oradata/dbfiles/ORCL3CDB/SEEDCDB` where `SEEDCDB` is the cold backup and contains datafiles and PDB.
 
 ```bash
@@ -281,7 +282,7 @@ podman run -d --hostname oshard3-0 \
 -v /scratch/oradata/dbfiles/ORCL3CDB:/opt/oracle/oradata \
 -v /opt/containers/shard_host_file:/etc/hosts \
 --privileged=false \
---name shard3 oracle/database-ext-sharding:26.0.0-ee
+--name shard3 oracle/database-ext-sharding:23.26.0-ee
 ```
 
 To check the shard3 container/services creation logs, please tail podman logs. It will take 20 minutes to create the shard3 container service
@@ -343,7 +344,7 @@ podman run -d --hostname oshard-gsm1 \
 -e OP_TYPE=gsm \
 -e MASTER_GSM="TRUE" \
 --privileged=false \
---name gsm1 oracle/database-gsm:26.0.0
+--name gsm1 oracle/database-gsm:23.26.0
 ```
 
 **Note:** Change environment variables such as DOMAIN, CATALOG_PARAMS, PRIMARY_SHARD_PARAMS, COMMON_OS_PWD_FILE and PWD_KEY according to your environment.
@@ -398,7 +399,7 @@ podman run -d --hostname oshard-gsm2 \
 -v /opt/containers/shard_host_file:/etc/hosts \
 -e OP_TYPE=gsm \
 --privileged=false \
---name gsm2 oracle/database-gsm:26.0.0
+--name gsm2 oracle/database-gsm:23.26.0
 ```
 
 **Note:** Change environment variables such as DOMAIN, CATALOG_PARAMS, COMMON_OS_PWD_FILE and PWD_KEY according to your environment.
@@ -458,7 +459,7 @@ Before creating new shard (shard4 in this case) container, review the following 
 - Change environment variable such as ORACLE_SID, ORACLE_PDB based on your env.
 - Change /scratch/oradata/dbfiles/ORCL4CDB based on your environment.
 - By default, Oracle Globally Distributed Database setup creates new database under `/opt/oracle/oradata` based on ORACLE_SID environment variable.
-- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace `--name shard4 oracle/database-ext-sharding:26.0.0-ee` with `--name shard4 oracle/database-ext-sharding:26.0.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
+- If you are planing to perform seed cloning to expedite the Oracle Globally Distributed Database setup using existing cold DB backup, you need to replace `--name shard4 oracle/database-ext-sharding:23.26.0-ee` with `--name shard4 oracle/database-ext-sharding:23.26.0-ee /opt/oracle/scripts/setup/runOraShardSetup.sh`
   - In this case, `/scratch/oradata/dbfiles/ORCL4CDB` must contain the DB backup and it must not be zipped. E.g. `/scratch/oradata/dbfiles/ORCL4CDB/SEEDCDB` where `SEEDCDB` is the cold backup and contains datafiles and PDB.
 
 ```bash
@@ -480,7 +481,7 @@ podman run -d --hostname oshard4-0 \
  -v /scratch/oradata/dbfiles/ORCL4CDB:/opt/oracle/oradata \
  -v /opt/containers/shard_host_file:/etc/hosts \
  --privileged=false \
- --name shard4 oracle/database-ext-sharding:26.0.0-ee
+ --name shard4 oracle/database-ext-sharding:23.26.0-ee
 ```
 
 To check the shard4 container/services creation logs, please tail podman logs. It will take 20 minutes to create the shard4 container service.
@@ -690,5 +691,5 @@ All scripts and files hosted in this project and GitHub docker-images/OracleData
 
 ## Copyright
 
-Copyright (c) 2022 - 2024 Oracle and/or its affiliates.
+Copyright (c) 2022 - 2026 Oracle and/or its affiliates.
 Released under the Universal Permissive License v1.0 as shown at [https://oss.oracle.com/licenses/upl/](https://oss.oracle.com/licenses/upl/)

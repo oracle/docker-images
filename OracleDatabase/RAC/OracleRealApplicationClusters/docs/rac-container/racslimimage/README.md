@@ -17,7 +17,7 @@ Refer below instructions for the setup of Oracle RAC on Podman using Slim Image 
   - [Section 4: Start the Containers](#section-4-start-the-containers)
   - [Section 5: Validation Oracle RAC Environment](#section-5-validating-oracle-rac-environment)
   - [Section 6: Connecting to Oracle RAC Environment](#section-6-connecting-to-oracle-rac-environment)
-  - [Section 7: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image](#section-7-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-slim-image-and-using-block-devices)
+  - [Section 7: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image](#section-7-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-slim-image)
     - [Section 7.1: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image Without Response File](#section-71-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-slim-image-without-response-file)
   - [Section 8: Sample of Addition of Nodes to Oracle RAC Containers based on Oracle RAC Slim Image with NFS Storage Devices](#section-8-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-oracle-rac-slim-image-with-nfs-storage-devices)
     - [Section 8.1: Sample of Addition of Nodes to Oracle RAC Containers based on Oracle RAC Image Without Response File](#section-81-sample-of-addition-of-nodes-to-oracle-rac-containers-based-on-oracle-rac-image-without-response-file)
@@ -39,7 +39,7 @@ Users can deploy multi-node Oracle RAC Database Setup using Oracle RAC Database 
 * Make sure the Oracle RAC Database Container Slim Image is present as shown below.  If you have not created the Oracle RAC Database Container image, execute the [Building Oracle RAC Database Container Slim Image](../../../README.md#building-oracle-rac-database-container-slim-image)
   ```bash
   # podman images|grep database-rac
-  localhost/oracle/database-rac                         26.0.0-slim    8280809e82c8  About a minute ago  518 MB
+  localhost/oracle/database-rac                         23.26.0-slim    8280809e82c8  About a minute ago  518 MB
   ```
 * Configure the [Network Management](../../../README.md#network-management).
 * Configure the [Password Management](../../../README.md#password-management).
@@ -53,10 +53,10 @@ Users can deploy multi-node Oracle RAC Database Setup using Oracle RAC Database 
   rm -rf /scratch/rac/cluster01/node2/*
   ```
 
-* Make sure the downloaded Oracle RAC software location is staged & available for both RAC nodes. In the below example, we have staged Oracle RAC software at location ```/scratch/software/23.26ai/goldimages```
+* Make sure the downloaded Oracle RAC software location is staged & available for both RAC nodes. In the below example, we have staged Oracle RAC software at location ```/scratch/software/26ai/goldimages```
   ```bash
-  ls /scratch/software/23.26ai/goldimages
-  LINUX.X64_260000_db_home.zip  LINUX.X64_260000_grid_home.zip
+  ls /scratch/software/26ai/goldimages
+  LINUX.X64_2326100_db_home.zip  LINUX.X64_2326100_grid_home.zip
   ```
 * If SELinux is enabled on the host machine then execute the following as well-
   ```bash
@@ -64,10 +64,10 @@ Users can deploy multi-node Oracle RAC Database Setup using Oracle RAC Database 
   restorecon -v /scratch/rac/cluster01/node1
   semanage fcontext -a -t container_file_t /scratch/rac/cluster01/node2
   restorecon -v /scratch/rac/cluster01/node2
-  semanage fcontext -a -t container_file_t /scratch/software/23.26ai/goldimages/LINUX.X64_260000_grid_home.zip
-  restorecon -v /scratch/software/23.26ai/goldimages/LINUX.X64_260000_grid_home.zip
-  semanage fcontext -a -t container_file_t /scratch/software/23.26ai/goldimages/LINUX.X64_260000_db_home.zip
-  restorecon -v /scratch/software/23.26ai/goldimages/LINUX.X64_260000_db_home.zip
+  semanage fcontext -a -t container_file_t /scratch/software/26ai/goldimages/LINUX.X64_2326100_grid_home.zip
+  restorecon -v /scratch/software/26ai/goldimages/LINUX.X64_2326100_grid_home.zip
+  semanage fcontext -a -t container_file_t /scratch/software/26ai/goldimages/LINUX.X64_2326100_db_home.zip
+  restorecon -v /scratch/software/26ai/goldimages/LINUX.X64_2326100_db_home.zip
   ```
 
 ## Section 2: Deploying 2 Node Oracle RAC Setup on Podman using Slim Image
@@ -183,7 +183,7 @@ localhost/oracle/database-rac:23.26ai-slim
 #### Section 2.1.2: Deploying with NFS Storage Devices
 ##### Section 2.1.2.1: Prerequisites for setting up Oracle RAC with NFS Storage Devices
 
-* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.  
+* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details. 
 
   **Note:** You can skip this step if you are planning to use block devices for storage.
 * Make sure the ASM NFS Storage devices do not have any existing file system.
@@ -527,7 +527,7 @@ podman start racnodep2
 It can take approximately 20 minutes or longer to create and set up a two-node Oracle RAC Database on Containers. To check the logs, use the following command from another terminal session:
 
 ```bash
-podman exec racnodep1 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep1 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the database configuration is complete, you should see a message, similar to the following, on the installing node i.e. `racnodep1` in this case:
@@ -629,7 +629,7 @@ podman start racnodep3
 
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:
@@ -701,7 +701,7 @@ podman start racnodep3
 
 Monitor the new container logs using below command:
 ```bash
-podman exec racnodep3 /bin/bash -c "tail -f /tmp/orod/oracle_db_setup.log"
+podman exec racnodep3 /bin/bash -c "tail -f /var/tmp/oracle_db_setup.log"
 ```
 
 When the Oracle RAC container has completed being set up, you should see a message similar to the following:
@@ -729,4 +729,4 @@ All scripts and files hosted in this repository that are required to build the c
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.

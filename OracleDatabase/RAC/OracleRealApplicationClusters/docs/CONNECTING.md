@@ -8,6 +8,7 @@ Follow this document to validate and connect to Oracle RAC Container Database.
   - [Validating Oracle Grid Infrastructure](#validating-oracle-grid-infrastructure)
   - [Validating Oracle RAC Database](#validating-oracle-rac-database)
   - [Debugging Oracle RAC Containers](#debugging-oracle-rac-containers)
+  - [Optional Host SSH Access](#optional-host-ssh-access)
   - [Client Connection](#client-connection)
   - [License](#license)
   - [Copyright](#copyright)
@@ -31,6 +32,28 @@ To connect to the container execute following command:
 ```bash
 podman exec -i -t racnodep1 /bin/bash
 ```
+## Optional Host SSH Access
+
+The standard RAC `podman create` examples do not publish container port 22 to the host. The image installs OpenSSH packages for RAC setup, but publishing a port does not by itself create a login account, credentials, or guarantee that `sshd` is listening. For routine shell access, use:
+
+```bash
+podman exec -it racnodep1 /bin/bash
+```
+
+If SSH access from the host is specifically required, publish a unique host port when creating each container:
+
+```bash
+podman create ... -p 2222:22 ...
+```
+
+Then connect with:
+
+```bash
+ssh -p 2222 <container-os-user>@localhost
+```
+
+Use an OS user and SSH key or password configured in the image. Assign a different host port for each RAC node (for example, `2222` and `2223`). Avoid `-p 22:22` unless host port 22 is free; it commonly conflicts with the host SSH service. An existing container must be recreated to add this port mapping.
+
 ## Validating Oracle Grid Infrastructure
 Validate if Oracle Grid is up and running from within Container-
 ```bash
@@ -165,7 +188,63 @@ SCAN VIP is enabled.
 ```
 
 ## Debugging Oracle RAC Containers
-If the install fails for any reason, log in to container using the above command and check `/tmp/orod/oracle_db_setup.log`. For older Container Registry images up to `container-registry.oracle.com/database/rac_ru:latest-21`, if that file is not present, check `/tmp/orod/oracle_rac_setup.log` instead. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
+If the install fails for any reason, log in to container using the above command and check `/var/tmp/oracle_db_setup.log`. You can also review the Grid Infrastructure logs located at `$GRID_BASE/diag/crs` and check for failure logs. If the failure occurred during the database creation then check the database logs.
+
+
+## Optional Host SSH Access
+
+The Oracle RAC container image includes `openssh-server` (installed via `setupLinuxEnv.sh`). This is useful when you need to:
+
+* SSH into a running RAC node from the host or another machine for diagnostics.
+* Verify inter-node SSH trust between RAC nodes (used internally by cluster setup scripts).
+
+### Enabling SSH login to a container
+
+The sshd binary is present in the image but **not started automatically** and port 22 is **not exposed by default**. To enable external SSH access follow these steps:
+
+1. **When creating the container, publish an unused host port mapped to container port 22:**
+
+   Use an offset-based convention so each RAC node gets a unique host port. A common pattern is `2200 + node_number`:
+
+   ```bash
+   # Node 1 -> host port 2201, Node 2 -> host port 2202, etc.
+   podman run -p 2201:22 \
+     --name racnodep1 \
+     <rac_image_name>
+
+   podman run -p 2202:22 \
+     --name racnodep2 \
+     <rac_image_name>
+   ```
+
+2. **Start sshd inside the container** (if not already running). From the host:
+
+   ```bash
+   podman exec -i racnodep1 /usr/sbin/sshd
+   ```
+
+   The first start of sshd requires SSH host keys in `/etc/ssh/` -- run this once on each container:
+
+   ```bash
+   podman exec -i racnodep1 ssh-keygen -A
+   ```
+
+3. **Connect from the host using the unique host port:**
+
+   ```bash
+   # Node 1 (host port 2201), Node 2 (host port 2202)
+   ssh -p 2201 grid@<host-ip>   # to racnodep1
+   ssh -p 2202 grid@<host-ip>   # to racnodep2
+   ```
+
+### SSH trust between RAC nodes (inter-node connectivity)
+
+RAC relies on password-less SSH between `grid` and `oracle` users across all cluster nodes for inter-client communication, Oracle Restart, and CRS operations. The container scripts handle this automatically:
+
+* During normal RAC deployment the `orasshsetup.py` script sets up SSH trust keys between all nodes (grid/grid, oracle/oracle).
+* If you provide `SSH_PRIVATE_KEY` and `SSH_PUBLIC_KEY`, those keys are distributed to every node in the cluster.
+
+For details on these environment variables, see [Environment Variables Explained for Oracle RAC on Podman](ENVIRONMENTVARIABLES.md).
 
 
 ## Client Connection
@@ -187,4 +266,4 @@ All scripts and files hosted in this repository which are required to build the 
 
 ## Copyright
 
-Copyright (c) 2014-2025 Oracle and/or its affiliates.
+Copyright (c) 2014-2026 Oracle and/or its affiliates.
