@@ -4,5 +4,5 @@
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-echo "Building Oracle JDK 26 on Oracle Linux 9"
-docker build --file Dockerfile.ol9 --tag oracle/jdk:26-ol9 .
+echo "Building Oracle JDK 27 on Oracle Linux 9"
+docker build --file Dockerfile.ol9 --tag oracle/jdk:27-ol9 .
