@@ -52,9 +52,23 @@ fi
 
 export PATH=${ORACLE_HOME}/perl/bin:$PATH;
 
+# Docker 19c homes are software-only: /etc/oraInst.loc exists but the home is often
+# not attached. opatchauto -target_type rac_database also fails here (Perl uid).
+INVPTR="${INVPTR:-/etc/oraInst.loc}"
+
+if [ ! -z "$ru_patch" ] || [ ${#ONE_OFFS_LIST[@]} -gt 0 ]; then
+    echo "Attaching ORACLE_HOME to inventory (${INVPTR})"
+    "$ORACLE_HOME/oui/bin/runInstaller" -silent -ignoreSysPrereqs \
+        -attachHome ORACLE_HOME="$ORACLE_HOME" ORACLE_HOME_NAME=OraDB19Home1 \
+        -invPtrLoc "$INVPTR" || {
+            echo "attachHome failed using ${INVPTR}"
+            exit 1
+        }
+fi
+
 if [ ! -z $ru_patch ]; then
     echo "Applying Release Update: $ru_patch";
-    cmd="${ORACLE_HOME}/OPatch/opatchauto apply -binary -oh $ORACLE_HOME ${PATCH_DIR}/${ru_patch} -target_type rac_database";
+    cmd="${ORACLE_HOME}/OPatch/opatch apply -silent -oh ${ORACLE_HOME} -invPtrLoc ${INVPTR} ${PATCH_DIR}/${ru_patch}";
     echo "Running: $cmd";
     $cmd || {
         echo "RU application failed for patchset: ${ru_patch}";
@@ -64,7 +78,7 @@ fi
 
 for patch in ${ONE_OFFS_LIST[@]}; do
     echo "Applying patch: $patch";
-    cmd="${ORACLE_HOME}/OPatch/opatchauto apply -binary -oh $ORACLE_HOME ${PATCH_DIR}/${patch} -target_type rac_database";
+    cmd="${ORACLE_HOME}/OPatch/opatch apply -silent -oh ${ORACLE_HOME} -invPtrLoc ${INVPTR} ${PATCH_DIR}/${patch}";
     echo "Running: $cmd";
     $cmd || {
         echo "Patch application failed for ${patch}";
