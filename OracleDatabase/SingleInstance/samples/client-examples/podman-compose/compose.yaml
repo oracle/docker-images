@@ -1,0 +1,23 @@
+services:
+  oracle-free:
+    image: container-registry.oracle.com/database/free:latest
+    ports:
+      - "1521:1521"
+    secrets:
+      - oracle_pwd
+    volumes:
+      - oracle-free-data:/opt/oracle/oradata
+
+  sqlcl:
+    image: container-registry.oracle.com/database/sqlcl:latest
+    depends_on:
+      - oracle-free
+    stdin_open: true
+    tty: true
+
+secrets:
+  oracle_pwd:
+    external: true
+
+volumes:
+  oracle-free-data:

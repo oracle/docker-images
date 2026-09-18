@@ -1,0 +1,6 @@
+-- Verify the Oracle Database version and exit SQL*Plus.
+WHENEVER OSERROR EXIT FAILURE
+WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+SELECT banner FROM v$version;
+EXIT SUCCESS
