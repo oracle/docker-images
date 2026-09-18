@@ -1,9 +1,10 @@
 /*
  * Query Oracle AI Database through JDBC.
  *
- * The Oracle JDBC driver (ojdbc17.jar) must be on the class path.  Set
- * ORACLE_USER and ORACLE_PASSWORD before running this example.  The optional
- * ORACLE_JDBC_URL defaults to jdbc:oracle:thin:@//localhost:1521/FREEPDB1.
+ * This example requires JDK 17 or later and the latest Oracle Database 26ai
+ * ojdbc17.jar on the class path. Set ORACLE_USER and ORACLE_PASSWORD before
+ * running it. The optional ORACLE_JDBC_URL defaults to
+ * jdbc:oracle:thin:@//localhost:1521/FREEPDB1.
  */
 
 import java.sql.Connection;
