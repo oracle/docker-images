@@ -4,15 +4,18 @@
 export PODMANVOLLOC='/scratch/oradata'
 export NETWORK_INTERFACE='ens3'
 export NETWORK_SUBNET="10.0.20.0/20"
-export SIDB_IMAGE='container-registry.oracle.com/database/enterprise:latest'
-export GSM_IMAGE='container-registry.oracle.com/database/gsm:latest'
+export SIDB_IMAGE='container-registry.oracle.com/database/enterprise_ru:latest'
+export GSM_IMAGE='container-registry.oracle.com/database/gsm_ru:latest'
 export LOCAL_NETWORK=10.0.20
-export healthcheck_interval=30s
-export healthcheck_timeout=3s
-export healthcheck_retries=40
+export HEALTHCHECK_INTERVAL=30s
+export HEALTHCHECK_TIMEOUT=3s
+export HEALTHCHECK_RETRIES=40
 export CATALOG_OP_TYPE="catalog"
 export ALLSHARD_OP_TYPE="primaryshard"
 export GSM_OP_TYPE="gsm"
+export PKEYOPT="rsa_padding_mode:oaep;rsa_oaep_md:sha256;rsa_mgf1_md:sha256"
+export GSM_TRACE_LEVEL="OFF"
+export CATALOG_SETUP="True"
 export CAT_SHARD_SETUP="true"
 export CATALOG_ARCHIVELOG="true"
 export SHARD_ARCHIVELOG="true"
@@ -60,23 +63,18 @@ export STANDBY_GSM_HOSTNAME="oshard-gsm2"
 
 export PRIMARY_SHARD_DIRECTOR_PARAMS="director_name=sharddirector1;director_region=region1;director_port=1522"
 export PRIMARY_SHARD1_GROUP_PARAMS="group_name=shardgroup1;deploy_as=primary;group_region=region1"
-export PRIMARY_CATALOG_PARAMS="catalog_host=oshard-catalog-0;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=shardcatalog1;catalog_region=region1,region2"    
-export PRIMARY_SHARD1_PARAMS="shard_host=oshard1-0;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_group=shardgroup1"
-export PRIMARY_SHARD2_PARAMS="shard_host=oshard2-0;shard_db=ORCL2CDB;shard_pdb=ORCL2PDB;shard_port=1521;shard_group=shardgroup1"
-export PRIMARY_SHARD3_PARAMS="shard_host=oshard3-0;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_group=shardgroup1"
-export PRIMARY_SHARD4_PARAMS="shard_host=oshard4-0;shard_db=ORCL4CDB;shard_pdb=ORCL4PDB;shard_port=1521;shard_group=shardgroup1"
-export PRIMARY_SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=primary"
-export PRIMARY_SERVICE2_PARAMS="service_name=oltp_rw_svc;service_role=primary"
+export PRIMARY_CATALOG_PARAMS="catalog_host=oshard-catalog-0;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_sys_pri;catalog_region=region1,region2;sharding_type=SYSTEM;repl_type=DG"
+export PRIMARY_SHARD1_PARAMS="shard_host=oshard1-0;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1"
+export PRIMARY_SHARD2_PARAMS="shard_host=oshard2-0;shard_db=ORCL2CDB;shard_pdb=ORCL2PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1"
+export PRIMARY_SHARD3_PARAMS="shard_host=oshard3-0;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1"
+export PRIMARY_SHARD4_PARAMS="shard_host=oshard4-0;shard_db=ORCL4CDB;shard_pdb=ORCL4PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1"
+export PRIMARY_SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=primary;service_mode=readwrite"
+export PRIMARY_SERVICE2_PARAMS="service_name=oltp_ro_svc;service_role=primary;service_mode=readonly"
 
-export STANDBY_SHARD_DIRECTOR_PARAMS="director_name=sharddirector2;director_region=region1;director_port=1522   "
-export STANDBY_SHARD1_GROUP_PARAMS="group_name=shardgroup1;deploy_as=active_standby;group_region=region1"
-export STANDBY_CATALOG_PARAMS="catalog_host=oshard-catalog-0;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=shardcatalog1;catalog_region=region1,region2"
-export STANDBY_SHARD1_PARAMS="shard_host=oshard1-0;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_group=shardgroup1"
-export STANDBY_SHARD2_PARAMS="shard_host=oshard2-0;shard_db=ORCL2CDB;shard_pdb=ORCL2PDB;shard_port=1521;shard_group=shardgroup1"
-export STANDBY_SHARD3_PARAMS="shard_host=oshard3-0;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_group=shardgroup1"
-export STANDBY_SHARD4_PARAMS="shard_host=oshard4-0;shard_db=ORCL4CDB;shard_pdb=ORCL4PDB;shard_port=1521;shard_group=shardgroup1"
-export STANDBY_SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=standby"
-export STANDBY_SERVICE2_PARAMS="service_name=oltp_ro_svc;service_role=standby"
+export STANDBY_SHARD_DIRECTOR_PARAMS="director_name=sharddirector2;director_region=region2;director_port=1522"
+export STANDBY_CATALOG_PARAMS="catalog_host=oshard-catalog-0;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_sys_pri;catalog_region=region1,region2;sharding_type=SYSTEM;repl_type=DG"
+export STANDBY_SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=standby;service_mode=readwrite"
+export STANDBY_SERVICE2_PARAMS="service_name=oltp_ro_svc;service_role=standby;service_mode=readonly"
 
 # Create network host file
 mkdir -p  /opt/containers
@@ -94,7 +92,7 @@ ${LOCAL_NETWORK}.101     oshard-gsm2.example.com         oshard-gsm2
 EOF
 "
 
-# Create required directries
+# Create required directories
 mkdir -p ${PODMANVOLLOC}/scripts
 chown -R 54321:54321 ${PODMANVOLLOC}/scripts
 chmod 755 ${PODMANVOLLOC}/scripts
@@ -111,8 +109,8 @@ chown -R 54321:54321 ${PODMANVOLLOC}/dbfiles/ORCL3CDB
 mkdir -p ${PODMANVOLLOC}/dbfiles/ORCL4CDB
 chown -R 54321:54321 ${PODMANVOLLOC}/dbfiles/ORCL4CDB
 
-mkdir -p ${PODMANVOLLOC}/dbfiles/GSMDATA
-chown -R 54321:54321 ${PODMANVOLLOC}/dbfiles/GSMDATA
+mkdir -p ${PODMANVOLLOC}/dbfiles/GSM1DATA
+chown -R 54321:54321 ${PODMANVOLLOC}/dbfiles/GSM1DATA
 
 mkdir -p ${PODMANVOLLOC}/dbfiles/GSM2DATA
 chown -R 54321:54321 ${PODMANVOLLOC}/dbfiles/GSM2DATA
@@ -122,5 +120,5 @@ chmod 755 ${PODMANVOLLOC}/dbfiles/ORCL1CDB
 chmod 755 ${PODMANVOLLOC}/dbfiles/ORCL2CDB
 chmod 755 ${PODMANVOLLOC}/dbfiles/ORCL3CDB
 chmod 755 ${PODMANVOLLOC}/dbfiles/ORCL4CDB
-chmod 755 ${PODMANVOLLOC}/dbfiles/GSMDATA
+chmod 755 ${PODMANVOLLOC}/dbfiles/GSM1DATA
 chmod 755 ${PODMANVOLLOC}/dbfiles/GSM2DATA

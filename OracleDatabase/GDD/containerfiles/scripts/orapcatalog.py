@@ -117,11 +117,31 @@ class OraPCatalog:
           sid = self.ora_env_dict["ORACLE_SID"]
           return lock_base + sid + ".create_lck", lock_base + sid + ".exist_lck"
 
+      def _get_wallet_root(self):
+          """
+          Return wallet_root value
+          """
+          wallet_root=None
+          if self.ocommon.check_key("WALLET_ROOT",self.ora_env_dict):
+             wallet_root=self.ora_env_dict["WALLET_ROOT"]
+          elif self.ocommon.check_key("wallet_root",self.ora_env_dict):
+             wallet_root=self.ora_env_dict["wallet_root"]
+          elif self.ocommon.check_key("ORACLE_BASE",self.ora_env_dict) and self.ocommon.check_key("DB_UNIQUE_NAME",self.ora_env_dict):
+             wallet_root='''{0}/oradata/dbconfig/{1}'''.format(self.ora_env_dict["ORACLE_BASE"],self.ora_env_dict["DB_UNIQUE_NAME"])
+          return wallet_root
+
+      def _secure_catalog_wallet_permissions(self):
+          """
+          Normalize wallet permissions under the catalog wallet root.
+          """
+          self.ocommon.secure_wallet_permissions(self._get_wallet_root(),self.file_name)
+
       def setup(self):
           """
            Set up catalog on primary DB.
           """
           self.check_for_racdb()
+          self._secure_catalog_wallet_permissions()
           if self.ocommon.check_key("ORACLE_FREE_PDB",self.ora_env_dict):
             self.ora_env_dict=self.ocommon.update_key("ORACLE_PDB",self.ora_env_dict["ORACLE_FREE_PDB"],self.ora_env_dict)
 
@@ -195,6 +215,7 @@ class OraPCatalog:
                self.register_services()
                self.list_services()
                self.backup_files()
+               self._secure_catalog_wallet_permissions()
                self.update_catalog_setup()
                self.gsm_completion_message()
                self.run_custom_scripts()
@@ -635,14 +656,14 @@ class OraPCatalog:
               self.ocommon.log_info_message(msg,self.file_name)
 
               if self._is_racdb():
-##############This can be implemented once the support for wallet_root for ASM Diskgroup is implemented, Until then, we need to keep the wallet_root pointing to a disk location
+##############This can be implemented once the support for wallet_root for ASM Diskgroup is implemented, Until then, we need to keep the wallet_root pointing to a shared location accessible to both RAC instances
 #                 sqlcmd='''
 #                   alter system set wallet_root=\"{0}/{3}\" scope=spfile sid='*';
 #                 '''.format(dbf_dest,obase,"dbconfig",dbuname)
 
                  sqlcmd='''
-                   alter system set wallet_root=\"{1}/oradata/{2}/{3}\" scope=spfile sid='*';
-                 '''.format(dbf_dest,obase,"dbconfig",dbuname)
+                   alter system set wallet_root=\"{0}\" scope=spfile sid='*';
+                 '''.format(self._get_wallet_root())
                  output,error,retcode=self._run_sqlplus_checked(sqlpluslogincmd,sqlcmd,True)
               else:
                  sqlcmd='''

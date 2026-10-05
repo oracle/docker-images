@@ -1,8 +1,8 @@
-# Deploy Oracle Globally Distributed Database (GDD) with User-Defined Sharding and Data Guard Replication on Oracle RAC
+# Deploy Oracle Globally Distributed Database (GDD) with Composite Sharding and Data Guard Replication on Oracle RAC
 
-This guide provides detailed instructions for manually deploying a sample Oracle Globally Distributed Database with User-Defined Sharding and Data Guard Replication using Oracle RAC on Podman containers. The deployment uses Extended Oracle RAC Database Container Image.
+This guide provides detailed instructions for manually deploying a sample Oracle Globally Distributed Database with Composite Sharding and Data Guard Replication using Oracle RAC on Podman containers. The deployment uses Extended Oracle RAC Database Container Image.
 
-- [Deploy Oracle Globally Distributed Database (GDD) with User-Defined Sharding and Data Guard Replication on Oracle RAC](#deploy-oracle-globally-distributed-database-gdd-with-user-defined-sharding-and-data-guard-replication-on-oracle-rac)
+- [Deploy Oracle Globally Distributed Database (GDD) with Composite Sharding and Data Guard Replication on Oracle RAC](#deploy-oracle-globally-distributed-database-gdd-with-composite-sharding-and-data-guard-replication-on-oracle-rac)
   - [Deployment Overview](#deployment-overview)
   - [Prerequisites](#prerequisites)
   - [Oracle Wallet Configuration for Oracle RAC](#oracle-wallet-configuration-for-oracle-rac)
@@ -24,7 +24,8 @@ This guide provides detailed instructions for manually deploying a sample Oracle
     - [Create the New Shard Container](#create-the-new-shard-container)
     - [Add the Shard to the Existing GDD Topology](#add-the-shard-to-the-existing-gdd-topology)
     - [Deploy the Shard](#deploy-the-shard)
-    - [Move chunks](#move-chunks)
+  - [Scale-in an existing Oracle Globally Distributed Database](#scale-in-an-existing-oracle-globally-distributed-database)
+    - [Verify the Shard](#verify-the-shard)
     - [Move Chunks from the Shard](#move-chunks-from-the-shard)
     - [Delete the Shard](#delete-the-shard)
     - [Verify Shard Removal](#verify-shard-removal)
@@ -303,7 +304,7 @@ Wait for the following success message:
 
 ## Deploy the Shard Databases
 
-A database shard is a horizontal partition of data in an Oracle Globally Distributed Database. In this example, each shard database will be deployed as a two-node Oracle RAC Database using two Podman containers on separate host machines.
+A database shard is a horizontal partition of data in an Oracle Globally Distributed Database. In this example, each Shard Database will be deployed as a two-node Oracle RAC Database using two Podman containers on separate host machines.
 
 ### Storage for ASM Disks for Shard Containers
 
@@ -777,11 +778,12 @@ podman create -t -i \
 --dns 10.0.15.25 \
 -e DOMAIN=example.info \
 -e SHARD_DIRECTOR_PARAMS="director_name=sharddirector1;director_region=region1;director_port=1522" \
--e SHARD1_SPACE_PARAMS='sspace_name=gold;protectmode=maxavailability' \
--e SHARD2_SPACE_PARAMS='sspace_name=silver;protectmode=maxavailability' \
--e CATALOG_PARAMS="catalog_host=cataloga-scan;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_user_pri;catalog_region=region1,region2;sharding_type=user;repl_type=DG;shard_space=gold,silver" \
--e SHARD1_PARAMS="shard_host=sharda1-scan;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_space=gold;deploy_as=primary;shard_region=region1" \
--e SHARD2_PARAMS="shard_host=sharda2-scan;shard_db=ORCL2CDB;shard_pdb=ORCL2PDB;shard_port=1521;shard_space=silver;deploy_as=primary;shard_region=region2" \
+-e SHARD1_SPACE_PARAMS='sspace_name=gold;chunks=120;protectmode=maxavailability' \
+-e SHARD2_SPACE_PARAMS='sspace_name=silver;chunks=120;protectmode=maxavailability' \
+-e SHARD1_GROUP_PARAMS="group_name=shardgroup1;deploy_as=primary;group_region=region1;shardspace=gold" \
+-e CATALOG_PARAMS='catalog_host=cataloga-scan;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_comp_pri;catalog_region=region1,region2;sharding_type=composite;repl_type=DG;shard_space=gold,silver' \
+-e SHARD1_PARAMS="shard_host=sharda1-scan;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1" \
+-e SHARD2_PARAMS="shard_host=sharda2-scan;shard_db=ORCL2CDB;shard_pdb=ORCL2PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1" \
 -e SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=primary;service_mode=readwrite" \
 -e SERVICE2_PARAMS="service_name=oltp_ro_svc;service_role=primary;service_mode=readonly" \
 -e GSM_TRACE_LEVEL="OFF" \
@@ -804,7 +806,7 @@ podman network connect shard_rac_pub1_nw --ip 10.0.15.26 gsma1
 podman start gsma1
 ```
 
-**Note:** Change environment variables such as `DOMAIN`, `CATALOG_PARAMS`, `PRIMARY_SHARD_PARAMS`, `COMMON_OS_PWD_FILE` and `PWD_KEY` as required for your environment.
+**Note:** Change environment variables such as `DOMAIN`, `CATALOG_PARAMS`, `SHARD1_SPACE_PARAMS`, `SHARD2_SPACE_PARAMS`, `SHARD1_GROUP_PARAMS`, `COMMON_OS_PWD_FILE`, and `PWD_KEY` as required for your environment.
 
 Monitor the primary GSM container logs:
 
@@ -847,7 +849,7 @@ podman create -i -t \
 --dns 10.0.15.25 \
 -e DOMAIN=example.info \
 -e SHARD_DIRECTOR_PARAMS="director_name=sharddirector2;director_region=region2;director_port=1522" \
--e CATALOG_PARAMS="catalog_host=cataloga-scan;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_user_pri;catalog_region=region1,region2;sharding_type=user;repl_type=DG;shard_space=gold,silver" \
+-e CATALOG_PARAMS='catalog_host=cataloga-scan;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_comp_pri;catalog_region=region1,region2;sharding_type=composite;repl_type=DG;shard_space=gold,silver' \
 -e SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=standby;service_mode=readwrite" \
 -e SERVICE2_PARAMS="service_name=oltp_ro_svc;service_role=standby;service_mode=readonly" \
 -e INVITED_NODE_SUBNET_FLAG=TRUE \
@@ -869,7 +871,7 @@ podman network connect shard_rac_pub1_nw --ip 10.0.15.27 gsma2
 podman start gsma2
 ```
 
-**Note:** Change environment variables such as `DOMAIN`, `CATALOG_PARAMS`, `COMMON_OS_PWD_FILE` and `PWD_KEY` according to your environment.
+**Note:** Change environment variables such as `DOMAIN`, `CATALOG_PARAMS`, `COMMON_OS_PWD_FILE`, and `PWD_KEY` as required for your environment.
 
 Monitor the standby GSM container logs:
 
@@ -884,8 +886,6 @@ Wait for the following success message:
      GSM Setup Completed                      
 ==============================================
 ```
-
-**NOTE:** Once the Oracle Globally Distributed Database Deployment is complete using User-Defined Sharding, you can load the data into this Oracle Globally Distributed Database.
 
 ## Scale-out an existing Oracle Globally Distributed Database
 
@@ -1134,7 +1134,7 @@ Wait for the following success message:
 Run the following command to add `shard3` to the GDD topology:
 
 ```bash
-podman exec -it gsma1 python /opt/oracle/scripts/sharding/scripts/main.py --addshard="shard_host=sharda3-scan;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_space=bronze;deploy_as=primary;shard_region=region3"
+podman exec -it gsma1 python /opt/oracle/scripts/sharding/scripts/main.py --addshard="shard_host=sharda3-scan;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1"
 ```
 
 Run the following command to check the status of the newly added shard:
@@ -1159,24 +1159,19 @@ podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -
 podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl config chunks
 ```
 
-### Move chunks
+**Note:** Chunk redistribution after deploying the new shard may take some time to complete.
 
-To move chunks from an existing shard to the newly added shard, run the following command:
+Check if any chunk movement has gone into `Suspended` status apart from `Running` or `Scheduled` status in the output of the below command:
 
 ```bash
-podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl MOVE CHUNK -CHUNK $CHUNK_ID -SOURCE $SOURCE_SHARD -TARGET $TARGET_SHARD
+podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl config chunks -show_reshard
 ```
 
-For example, to move chunk `3` from `ORCL1CDB_ORCL1PDB` to `ORCL3CDB_ORCL3PDB`, run:
+In case of `Suspended` status of any chunk movement, you can resume that running the following command:
 
 ```bash
-podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl MOVE CHUNK -CHUNK 3 -SOURCE ORCL1CDB_ORCL1PDB -TARGET ORCL3CDB_ORCL3PDB
+podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl alter move -resume
 ```
-
-Verify the chunk distribution:
-
-```bash
-podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl config chunks
 
 ## Scale-in an existing Oracle Globally Distributed Database
 
@@ -1200,34 +1195,32 @@ podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -
 
 ### Move Chunks from the Shard
 
-Before removing `shard3`, move its chunks to the remaining shards. Use the following command to move a chunk:
+In this example, run the following command to move all chunks from shard3 before removing the shard:
 
 ```bash
-podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl MOVE CHUNK -CHUNK $CHUNK_ID -SOURCE $SOURCE_SHARD -TARGET $TARGET_SHARD
+podman exec -it gsma1 python /opt/oracle/scripts/sharding/scripts/main.py --movechunks="shard_db=ORCL3CDB;shard_pdb=ORCL3PDB"
 ```
 
-For example, to move chunk `3` from `ORCL3CDB_ORCL3PDB` to `ORCL1CDB_ORCL1PDB`, run:
+**Note:** In this example, `ORCL3CDB` and `ORCL3PDB` are the CDB and PDB names, respectively, for  shard3.
 
-```bash
-podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl MOVE CHUNK -CHUNK 3 -SOURCE ORCL3CDB_ORCL3PDB -TARGET ORCL1CDB_ORCL1PDB
-```
+**NOTE:** You may need to repeat the above command until all the chunks are moved out of the Shard to be deleted.
 
-**Note:** To move multiple chunks, specify a comma-separated list of chunk IDs.
+Check if any chunk movement has gone into `Suspended` status apart from `Running` or `Scheduled` status and resume it using the commands described in the previous section.
 
-After moving the chunks, verify that no chunks remain on `shard3`:
+Verify that no chunks remain on `shard3`:
 
 ```bash
 podman exec -it gsma1 $(podman exec -it gsma1 env | grep ORACLE_HOME | cut -d= -f2 | tr -d '\r')/bin/gdsctl config chunks
 ```
 
-**Note:** Chunk movement may take some time to complete. Rerun the `gdsctl config chunks` command periodically until no chunks remain on `shard3`.
+**Note:** Chunk redistribution may take some time. Rerun the `gdsctl config chunks` command periodically until no chunks remain on the shard being removed.
 
 ### Delete the Shard
 
 After confirming that no chunks remain on shard3, run the following command to remove it from the GDD topology:
 
 ```bash
-podman exec -it gsma1 python /opt/oracle/scripts/sharding/scripts/main.py --deleteshard="shard_host=sharda3-scan;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_space=bronze;deploy_as=primary;shard_region=region3"
+podman exec -it gsma1 python /opt/oracle/scripts/sharding/scripts/main.py  --deleteshard="shard_host=sharda3-scan;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1"
 ```
 
 **NOTE:** In this example, `sharda3-scan`, `ORCL3CDB` and `ORCL3PDB` are the SCAN Name, CDB name and PDB name for the shard3 respectively.
@@ -1293,9 +1286,10 @@ rm -rf /scratch/rac/shard3
 | Parameter | Description | Mandatory/Optional |
 | --- | --- | --- |
 | `CATALOG_SETUP` | When set to `True`, creates the GSM director and adds the catalog without adding shards. Used when configuring the standby GSM. | Optional |
-| `CATALOG_PARAMS` | Semicolon-separated catalog configuration parameters, including `catalog_host`, `catalog_db`, `catalog_pdb`, `catalog_port`, `catalog_name`, `catalog_region`, `sharding_type`, and `repl_type`. | Mandatory |
+| `CATALOG_PARAMS` | Semicolon-separated catalog configuration parameters, including `catalog_host`, `catalog_db`, `catalog_pdb`, `catalog_port`, `catalog_name`, `catalog_region`, `sharding_type`, `repl_type`, `shard_space`, and `force`. | Mandatory |
 | `SHARD_DIRECTOR_PARAMS` | Semicolon-separated shard director parameters: `director_name`, `director_region`, and `director_port`. | Mandatory |
-| `SHARD[1-9]_GROUP_PARAMS` | Semicolon-separated shard group parameters, including `group_name`, `deploy_as`, and `group_region`. | Mandatory |
+| `SHARD[1-9]_SPACE_PARAMS` | Semicolon-separated shardspace parameters, including `sspace_name`, `chunks`, and `protectmode`. | Mandatory |
+| `SHARD[1-9]_GROUP_PARAMS` | Semicolon-separated shard group parameters, including `group_name`, `deploy_as`, `group_region`, and `shardspace`. | Mandatory |
 | `SHARD[1-9]_PARAMS` | Semicolon-separated shard parameters, including `shard_host`, `shard_db`, `shard_pdb`, `shard_port`, `shard_group`, and `shard_region`. | Mandatory |
 | `SERVICE[1-9]_PARAMS` | Semicolon-separated service parameters, including `service_name`, `service_role`, and `service_mode`. | Mandatory |
 | `GSM_TRACE_LEVEL` | GSM tracing level. Supported values are `USER`, `ADMIN`, `SUPPORT`, and `OFF`. The default is `OFF`. | Optional |

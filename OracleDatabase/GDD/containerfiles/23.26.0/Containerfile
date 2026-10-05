@@ -27,7 +27,7 @@ ARG BASE_OL_IMAGE=oraclelinux:9
 
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006
+# hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
 ARG SLIMMING=false
 ARG VERSION
@@ -173,7 +173,7 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
 # -------------------------------------------
 #############################################
 
-# hadolint ignore=DL3006
+# hadolint ignore=DL3006,DL3025
 FROM gsm-image-slim-${SLIMMING} AS builder
 ARG SLIMMING
 ARG VERSION
@@ -216,7 +216,7 @@ RUN rm -f $INSTALL_DIR/install/* && \
 # Start new layer for GSM runtime
 # -------------------------------------------
 #############################################
-# hadolint ignore=DL3006
+# hadolint ignore=DL3006,DL3025
 FROM gsm-image-slim-${SLIMMING} AS final
 
 COPY --from=builder /u01 /u01

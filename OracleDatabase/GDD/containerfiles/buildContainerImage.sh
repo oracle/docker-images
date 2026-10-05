@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2086,SC2154,SC2181
 #
 # Since: November, 2018
 # Author: paramdeep.saini@oracle.com

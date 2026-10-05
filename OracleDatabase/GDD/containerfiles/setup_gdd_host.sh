@@ -1,9 +1,10 @@
 #!/bin/bash
+
+# shellcheck disable=SC2006,SC2059,SC2115,SC2164,SC2166,SC2207,SC2317
 # shellcheck disable=SC2207
 # shellcheck disable=SC2164
 # shellcheck disable=SC2166
 # shellcheck disable=SC2115
-
 
 validate_environment_variables() {
     local podman_compose_file="$1"
@@ -30,12 +31,12 @@ setup_sharding_variables(){
     export PODMANVOLLOC='/scratch/oradata'
     export NETWORK_INTERFACE='ens3'
     export NETWORK_SUBNET="10.0.20.0/20"
-    export SIDB_IMAGE='container-registry.oracle.com/database/enterprise:latest'
-    export GSM_IMAGE='container-registry.oracle.com/database/gsm:latest'
+    export SIDB_IMAGE='container-registry.oracle.com/database/enterprise_ru:latest'
+    export GSM_IMAGE='container-registry.oracle.com/database/gsm_ru:latest'
     export LOCAL_NETWORK=10.0.20
-    export healthcheck_interval=30s
-    export healthcheck_timeout=3s
-    export healthcheck_retries=40
+    export HEALTHCHECK_INTERVAL=30s
+    export HEALTHCHECK_TIMEOUT=3s
+    export HEALTHCHECK_RETRIES=40
     export CATALOG_OP_TYPE="catalog"
     export ALLSHARD_OP_TYPE="primaryshard"
     export GSM_OP_TYPE="gsm"
@@ -91,10 +92,12 @@ setup_sharding_variables(){
     export PRIMARY_CATALOG_PARAMS="catalog_host=oshard-catalog-0;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=shardcatalog1;catalog_region=region1,region2;catalog_chunks=30;repl_type=Native"    
     export PRIMARY_SHARD1_PARAMS="shard_host=oshard1-0;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_group=shardgroup1"
     export PRIMARY_SHARD2_PARAMS="shard_host=oshard2-0;shard_db=ORCL2CDB;shard_pdb=ORCL2PDB;shard_port=1521;shard_group=shardgroup1"
+    export PRIMARY_SHARD3_PARAMS="shard_host=oshard3-0;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_group=shardgroup1"
+    export PRIMARY_SHARD4_PARAMS="shard_host=oshard4-0;shard_db=ORCL4CDB;shard_pdb=ORCL4PDB;shard_port=1521;shard_group=shardgroup1" 
     export PRIMARY_SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=primary;service_mode=readwrite"
     export PRIMARY_SERVICE2_PARAMS="service_name=oltp_ro_svc;service_role=primary;service_mode=readonly"
 
-    export STANDBY_SHARD_DIRECTOR_PARAMS="director_name=sharddirector2;director_region=region1;director_port=1522   "
+    export STANDBY_SHARD_DIRECTOR_PARAMS="director_name=sharddirector2;director_region=region1;director_port=1522"
     export STANDBY_SHARD1_GROUP_PARAMS="group_name=shardgroup1;deploy_as=active_standby;group_region=region1"
     export STANDBY_CATALOG_PARAMS="catalog_host=oshard-catalog-0;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=shardcatalog1;catalog_region=region1,region2;catalog_chunks=30;repl_type=Native"
     export STANDBY_SHARD1_PARAMS="shard_host=oshard1-0;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_group=shardgroup1"
