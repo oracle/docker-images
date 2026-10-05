@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2164
 # LICENSE UPL 1.0
 # Since: November, 2020
 # Author: paramdeep.saini@oracle.com

@@ -169,6 +169,50 @@ class OraCommon:
           """
           self._log_message("WARN", lmessage, fname)
 
+      def secure_wallet_permissions(self,wallet_root,fname=None):
+          """
+          Restrict wallet directories to 0700 and wallet files to 0600.
+          """
+          if not wallet_root:
+             return 0
+
+          target_root=os.path.realpath(wallet_root)
+          if not os.path.isdir(target_root):
+             return 0
+
+          wallet_files=("cwallet.sso","ewallet.p12","cwallet.sso.lck","ewallet.p12.lck")
+          secured_count=0
+          secured_dirs=set()
+
+          def secure_dir_tree(path):
+             current=os.path.realpath(path)
+             while current.startswith(target_root):
+                if current in secured_dirs:
+                   break
+                os.chmod(current,0o700)
+                secured_dirs.add(current)
+                if current == target_root:
+                   break
+                parent=os.path.dirname(current)
+                if parent == current:
+                   break
+                current=parent
+
+          for current_root,_dirs,files in os.walk(target_root):
+             for file_name in files:
+                if file_name not in wallet_files:
+                   continue
+                file_path=os.path.join(current_root,file_name)
+                os.chmod(file_path,0o600)
+                secure_dir_tree(current_root)
+                secured_count += 1
+
+          if secured_count > 0:
+             msg='''Secured wallet permissions for {0} wallet file(s) under {1}.'''.format(secured_count,target_root)
+             self.log_info_message(msg,fname if fname else self.file_name)
+
+          return secured_count
+
       def log_result_message(self, success, lmessage, fname=None):
           """
           Emit concise result summary that is always visible on console.

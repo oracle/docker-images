@@ -1,272 +1,296 @@
-# Oracle Globally Distributed Database Container QuickStart Guide
+# Oracle Globally Distributed Database Container Quick Start Guide
 
-Use this quickstart to help you deploy Oracle Globally Distributed Database with the RAFT Replication feature enabled using Podman Containers on a single Oracle Linux Host machine using Podman Compose.
+Use this quick start to deploy Oracle Globally Distributed Database with RAFT replication enabled on a single Oracle Linux host using `Podman Compose`.
 
-This deployment uses Oracle Globally Distributed Database Container Image and bridge network driver for Podman.
+This is the fastest path to a working evaluation environment. It is best suited for first-time users who want to validate the container workflow before moving to the more detailed scenario guides.
 
-- [Oracle Globally Distributed Database Container QuickStart Guide](#oracle-globally-distributed-database-container-quickstart-guide)
-  - [Before you begin](#before-you-begin)
-  - [Getting Oracle Globally Distributed Database Container Images](#getting-oracle-globally-distributed-database-container-images)
-  - [Networking in Oracle Globally Distributed Database Podman Container Environment](#networking-in-oracle-globally-distributed-database-podman-container-environment)
-  - [Deploy Oracle Globally Distributed Database Environment](#deploy-oracle-globally-distributed-database-on-podman-container-environment)
-  - [Validating Oracle Globally Distributed Database Environment](#validating-oracle-globally-distributed-database-container-environment)
-  - [Cleanup the environment](#clean-up-the-environment)
-  - [Environment Variables Explained](#environment-variables-explained)
-  - [Support](#support)
-  - [License](#license)
-  - [Copyright](#copyright)
+## What This Quick Start Deploys
 
-## Before you begin
+This guide creates the following on one Oracle Linux host:
 
-- Before proceeding further, prepare the Podman host by completing prerequisites related to the Oracle Globally Distributed Database Containers on Podman host environment as explained in [Preparation Steps for running Oracle Globally Distributed Database Database in containers](../README.md#preparation-steps-for-running-oracle-globally-distributed-database-in-linux-containers). Oracle provides a precreated script, `setup_gdd_host.sh`, which will prepare the Podman host with the following prerequisites-
-  - Validate Host machine for supported OS version(OL >8), Kernel(>UEKR6), Memory(>32GB), etc.
-  - Install Podman
-  - Install Podman Compose
-  - Setup and Load SELinux modules
-  - Create Oracle Globally Distributed Database Podman secrets
-- Set `secret-password` of your choice below, which is going to be used as a password for the Oracle Globally Distributed Database Container environment.
+- one catalog database container
+- four shard database containers
+- one primary GSM container
+- one standby GSM container
+- one Podman bridge network named: `shard_pub1_nw`
 
-  Run the following command-
+This quick start uses:
 
-  ```bash
-  export SHARDING_SECRET=<secret-password>
-  ```
+- Oracle AI Database 26ai container image: `container-registry.oracle.com/database/enterprise:latest`
+- Oracle GSM container image: `container-registry.oracle.com/database/gsm:latest`
+- default network subnet: `10.0.20.0/20`
+- default data location used by the script: `/scratch/oradata`
 
-- To prepare the Podman host machine using a precreated script, copy the file `setup_gdd_host.sh` from [<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/GDD/containerfiles/setup_gdd_host.sh](../containerfiles/setup_gdd_host.sh) and run the following command -
+## Before You Start
 
-  ```bash
-  ./setup_gdd_host.sh -prepare-sharding-env
-  ```
-  
-  Logs-
-  
-  ```bash
-  INFO: Finished setting up the pre-requisites for Podman-Host
-  ```
+### Prerequisites
 
-- In this quickstart, our working directory is `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/GDD/containerfiles` from where all commands are run.
+Before running this guide, review:
 
-## Getting Oracle Globally Distributed Database Container Images
+- [Prerequisites](../README.md#prerequisites)
+- [Getting Container Images](../README.md#getting-container-images)
 
-- Refer to the [Getting Oracle Globally Distributed Database Container Images](../README.md#building-oracle-globally-distributed-database-container-images) section to get Oracle Globally Distributed Database Container Images used in quickstart setup.  
-- We are going to use the Oracle AI Database 26ai images in this deployment:
+Minimum requirements for this quick start:
 
-  ```bash
-  container-registry.oracle.com/database/enterprise:latest
-  container-registry.oracle.com/database/gsm:latest
-  ```
+- Oracle Linux 8 or later
+- kernel `5.14` or later
+- at least `32 GB` of physical memory
+- `root` or a user with `sudo` privileges
+- access to the required container images
 
-## Networking in Oracle Globally Distributed Database Podman Container Environment
+The helper script used in this guide validates the host, installs Podman and `podman-compose` if needed, configures SELinux support when applicable, and creates the required Podman secrets.
 
-- In this Quick Start, we will create the following subnets for Oracle Globally Distributed Database Podman Container Environment-  
+### Working Directory
 
-  | Network Name   | Subnet CIDR         | Description                                                                        |
-  |----------------|---------------------|------------------------------------------------------------------------------------|
-  | shard_pub1_nw  | 10.0.20.0/20        | Public network for Oracle lobally Distributed Database Podman Container Environment|
-
-## Deploy Oracle Globally Distributed Database on Podman Container Environment
-
-- Copy the `podman-compose.yml` file from this [<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/GDD/samples/compose-files/podman-compose/podman-compose.yml](../samples/compose-files/podman-compose/podman-compose.yml) in your working directory.
-- Run the following command from your working directory to export the required environment variables required by the compose file in this quickstart-
-
-  ```bash
-  source ./setup_gdd_host.sh -export-sharding-env
-  ```
-
-  Logs -
-  
-  ```bash
-  INFO: Sharding Environment Variables are setup successfully.
-  ```
-
-  Note: This Quickstart guide uses the variable `export PODMANVOLLOC='/scratch/oradata'` for storing all data files related to Oracle Globally Distributed Database containers. You can change this as needed in your environment where required free space is available.
-
-- Run the following command to deploy the Catalog Container-
-
-  ```bash
-  ./setup_gdd_host.sh -deploy-catalog
-  ```
-
-  Monitor Logs -
-
-  ```bash
-  # podman-compose logs -f catalog_db
-  ```
-
-  Wait for the following message:
-
-  ```txt
-  ==============================================
-     GSM Catalog Setup Completed              
-  ==============================================
-  ```
-
-- Execute below to deploy the Shard1 Container-
-
-  ```bash
-  ./setup_gdd_host.sh -deploy-shard1
-  ```
-
-  Monitor Logs -
-
-  ```bash
-  podman-compose logs -f shard1_db
-  ```
-  
-  Wait for the following message:
-
-  ```txt
-  ==============================================
-     GSM Shard Setup Completed                
-  ==============================================
-  ```
-
-- Run the following command to deploy the Shard2 Container-
-
-  ```bash
-  ./setup_gdd_host.sh -deploy-shard2
-  ```
-
-  Monitor Logs -
-
-  ```bash
-  podman-compose logs -f shard2_db
-  ```
-
-  Wait for the following message:
-
-  ```txt
-  ==============================================
-     GSM Shard Setup Completed                
-  ==============================================
-  ```
-
-- Run the following command to deploy the Shard3 Container-
-
-  ```bash
-  ./setup_gdd_host.sh -deploy-shard3
-  ```
-
-  Monitor Logs -
-
-  ```bash
-  podman-compose logs -f shard3_db
-  ```
-
-  Wait for the following message:
-
-  ```txt
-  ==============================================
-     GSM Shard Setup Completed                
-  ==============================================
-  ```
-
-- Run the following command to deploy the Shard4 Container-
-
-  ```bash
-  ./setup_gdd_host.sh -deploy-shard4
-  ```
-
-  Monitor Logs -
-
-  ```bash
-  podman-compose logs -f shard4_db
-  ```
-
-  Wait for the following message:
-
-  ```txt
-  ==============================================
-     GSM Shard Setup Completed                
-  ==============================================
-  ```
-
-- Run the following commanda to deploy the Primary GSM Container-
-
-  ```bash
-  ./setup_gdd_host.sh -deploy-gsm-primary
-  ```
-
-  Monitor Logs -
-
-  ```bash
-  podman-compose logs -f primary_gsm
-  ```
-  
-  Wait for the following message:
-
-  ```txt
-  ==============================================
-  GSM Setup Completed
-  ==============================================
-  ```
-
-- Run the following command to deploy Standby GSM Container-
-
-  ```bash
-  ./setup_gdd_host.sh -deploy-gsm-standby
-  ```
-
-  Monitor Logs -
-
-  ```bash
-  podman-compose logs -f standby_gsm
-  ```
-
-  Wait for the following message:
-
-  ```txt
-  ==============================================
-  GSM Setup Completed
-  ==============================================
-  ```
-
-## Validating Oracle Globally Distributed Database Container Environment
-
-You can validate if the environment is set up correctly by running the following command and checking the logs of each container-
+Run the commands in this guide from:
 
 ```bash
-# podman ps -a
-CONTAINER ID  IMAGE                                                      COMMAND               CREATED         STATUS         PORTS       NAMES
-181a4215b517  container-registry.oracle.com/database/enterprise:latest   /bin/sh -c exec $...  22 minutes ago  Up 22 minutes              catalog
-2b5ade918112  container-registry.oracle.com/database/enterprise:latest   /bin/sh -c exec $...  18 minutes ago  Up 18 minutes              shard1
-f4943c6d67ce  container-registry.oracle.com/database/enterprise:latest   /bin/sh -c exec $...  15 minutes ago  Up 15 minutes              shard2
-fa9611ad2bbe  container-registry.oracle.com/database/enterprise:latest   /bin/sh -c exec $...  11 minutes ago  Up 11 minutes              shard3
-e19138866b51  container-registry.oracle.com/database/enterprise:latest   /bin/sh -c exec $...  7 minutes ago   Up 7 minutes               shard4
-e88e57c4e442  container-registry.oracle.com/database/gsm:latest          /bin/sh -c exec $...  3 minutes ago   Up 3 minutes               gsm1
-4e751cdfe01e  container-registry.oracle.com/database/gsm:latest          /bin/sh -c exec $...  24 seconds ago  Up 24 seconds              gsm2
+<GITHUB_REPO_CLONED_PATH>/db-sharding/container-based-sharding-deployment/containerfiles
 ```
 
-## Clean up the environment
+### Files Used by This Quick Start
 
-If you want to clean up the Oracle Globally Distributed Database Container environment, then run the following command-
+- Host preparation script: [setup_gdd_host.sh](../containerfiles/setup_gdd_host.sh)
+- Compose file: [podman-compose.yml](../samples/compose-files/podman-compose/podman-compose.yml)
+- Environment variable reference: [ENVVARIABLESCOMPOSE.md](./ENVVARIABLESCOMPOSE.md)
+
+## Step 1: Set the Deployment Password
+
+Set the secret used by the helper script to create the Podman secrets:
+
+```bash
+export SHARDING_SECRET=<secret-password>
+```
+
+If `SHARDING_SECRET` is not set, the deployment script will fail when it tries to create `pwdsecret` and `keysecret`.
+
+## Step 2: Prepare the Host
+
+Run the host preparation script:
+
+```bash
+./setup_gdd_host.sh -prepare-sharding-env
+```
+
+This step:
+
+- validates the Oracle Linux and kernel versions
+- installs Podman if it is missing
+- installs `podman-compose` if it is missing
+- configures SELinux policy when SELinux is enabled
+- validates that the host has enough memory
+
+Expected success message:
+
+```txt
+INFO: Finished setting up the prerequisites for Podman host
+```
+
+## Step 3: Stage the Compose File and Export Environment Variables
+
+Copy the compose file into the working directory:
+
+```bash
+cp ../samples/compose-files/podman-compose/podman-compose.yml .
+```
+
+Then export the required environment variables:
+
+```bash
+source ./setup_gdd_host.sh -export-sharding-env
+```
+
+Use `source` so the environment variables remain available in your current shell.
+
+This step also:
+
+- creates `/opt/containers/shard_host_file`
+- creates the required storage directories under `/scratch/oradata`
+- creates Podman secrets
+- applies SELinux file contexts when needed
+
+Expected success message:
+
+```txt
+Sharding Environment Variables are setup successfully.
+```
+
+Important defaults used by the script:
+
+- `PODMANVOLLOC=/scratch/oradata`
+- `NETWORK_SUBNET=10.0.20.0/20`
+- `SIDB_IMAGE=container-registry.oracle.com/database/enterprise:latest`
+- `GSM_IMAGE=container-registry.oracle.com/database/gsm:latest`
+
+If you need different values, review [ENVVARIABLESCOMPOSE.md](./ENVVARIABLESCOMPOSE.md) before deployment.
+
+## Step 4: Deploy the Environment
+
+Deploy the services in the following order. Wait for the success message from each service before moving to the next one.
+
+| Order | Service | Deploy command | Monitor logs | Success message |
+| --- | --- | --- | --- | --- |
+| 1 | Catalog | `./setup_gdd_host.sh -deploy-catalog` | `podman-compose logs -f catalog_db` | `GSM Catalog Setup Completed` |
+| 2 | Shard 1 | `./setup_gdd_host.sh -deploy-shard1` | `podman-compose logs -f shard1_db` | `GSM Shard Setup Completed` |
+| 3 | Shard 2 | `./setup_gdd_host.sh -deploy-shard2` | `podman-compose logs -f shard2_db` | `GSM Shard Setup Completed` |
+| 4 | Shard 3 | `./setup_gdd_host.sh -deploy-shard3` | `podman-compose logs -f shard3_db` | `GSM Shard Setup Completed` |
+| 5 | Shard 4 | `./setup_gdd_host.sh -deploy-shard4` | `podman-compose logs -f shard4_db` | `GSM Shard Setup Completed` |
+| 6 | Primary GSM | `./setup_gdd_host.sh -deploy-gsm-primary` | `podman-compose logs -f primary_gsm` | `GSM Setup Completed` |
+| 7 | Standby GSM | `./setup_gdd_host.sh -deploy-gsm-standby` | `podman-compose logs -f standby_gsm` | `GSM Setup Completed` |
+
+Example deployment sequence:
+
+```bash
+./setup_gdd_host.sh -deploy-catalog
+./setup_gdd_host.sh -deploy-shard1
+./setup_gdd_host.sh -deploy-shard2
+./setup_gdd_host.sh -deploy-shard3
+./setup_gdd_host.sh -deploy-shard4
+./setup_gdd_host.sh -deploy-gsm-primary
+./setup_gdd_host.sh -deploy-gsm-standby
+```
+
+## Step 5: Validate the Deployment
+
+Check that all containers are running:
+
+```bash
+podman ps -a
+```
+
+You should see these containers in the `Up` state:
+
+- `catalog`
+- `shard1`
+- `shard2`
+- `shard3`
+- `shard4`
+- `gsm1`
+- `gsm2`
+
+You can also inspect service-level logs if a container is still initializing:
+
+```bash
+podman-compose logs -f catalog_db
+podman-compose logs -f shard1_db
+podman-compose logs -f primary_gsm
+```
+
+Success criteria:
+
+- all seven containers are present
+- all seven containers are running
+- each service reaches the expected setup completion message
+
+You can log in to a GSM container and run basic checks using `GDSCTL` commands.
+
+For example, connect to the `gsm1` container using the following command:
+
+```bash
+podman exec -it gsm1 /bin/bash
+```
+
+Run the following checks:
+
+```bash
+gdsctl config shard
+gdsctl config sdb
+gdsctl config chunks
+gdsctl status ru
+```
+
+## Common Issues
+
+### `SHARDING_SECRET` Is Not Set
+
+Symptom:
+
+- secret creation fails during `-export-sharding-env`
+
+Fix:
+
+```bash
+export SHARDING_SECRET=<secret-password>
+source ./setup_gdd_host.sh -export-sharding-env
+```
+
+### Environment Variables Are Missing
+
+Symptom:
+
+- the script reports missing variables from `podman-compose.yml`
+
+Fix:
+
+- make sure you copied `podman-compose.yml` into the working directory
+- rerun `source ./setup_gdd_host.sh -export-sharding-env`
+- stay in the same shell session after sourcing the script
+
+### A Container Exits or Stays in Initialization
+
+Symptom:
+
+- one or more containers are not in the `Up` state
+
+Fix:
+
+- inspect the service logs with `podman-compose logs -f <service>`
+- confirm the previous deployment step finished successfully before starting the next one
+- verify that the host has enough memory and free space under `/scratch/oradata`
+
+### SELinux or Host Preparation Problems
+
+Symptom:
+
+- the prepare step fails or container file access is blocked
+
+Fix:
+
+- rerun `./setup_gdd_host.sh -prepare-sharding-env`
+- review the SELinux-related output from the prepare step
+- confirm you are running as `root` or with `sudo`
+
+## Clean Up the Environment
+
+To remove the environment created by this quick start:
 
 ```bash
 ./setup_gdd_host.sh -cleanup
 ```
 
-This command will clean up the Oracle Globally Distributed Database Containers, Oracle Storage Volume, Oracle Globally Distributed Database Podman Networks, and so on.
+This removes:
 
-Logs-
+- the deployed containers
+- the `shard_pub1_nw` Podman network
+- data created under `PODMANVOLLOC`
 
-```bash
+Expected success message:
+
+```txt
 INFO: Oracle Globally Distributed Database Container Environment Cleanup Successfully
 ```
 
-## Environment Variables Explained
+## Next Steps
 
-Refer to [Environment Variables Details for Oracle Globally Distributed Database using Podman Compose](./ENVVARIABLESCOMPOSE.md) for the explanation of all the environment variables related to Oracle Globally Distributed Database using Podman Compose. Change or Set these environment variables as required for your environment.
+After you complete this quick start, you can move to the detailed guides for other deployment patterns:
+
+- [Top-level README](../README.md)
+- [Podman manual deployment](../samples/container-files/podman-container-files/README.md)
+- [Podman Compose deployment](../samples/compose-files/podman-compose/README.md)
+
+## Environment Variables Reference
+
+For a complete list of configurable variables, see [ENVVARIABLESCOMPOSE.md](./ENVVARIABLESCOMPOSE.md).
 
 ## Support
 
-Oracle Globally Distributed Database on Docker is supported on Oracle Linux 7.
-Oracle Globally Distributed Database on Podman is supported on Oracle Linux 8 and onwards.
+Oracle Globally Distributed Database on Podman is supported on Oracle Linux 8 and later.
 
 ## License
 
-To run Oracle Globally Distributed Database, regardless of whether it is inside or outside a Container, ensure that you download the binaries from the Oracle website and accept the license indicated at that page.
+To run Oracle Globally Distributed Database, whether inside or outside a container, download the binaries from the Oracle website and accept the license terms provided there.
 
-All scripts and files hosted in this project and GitHub docker-images/OracleDatabase repository required to build the Docker and Podman images are, unless otherwise noted, released under UPL 1.0 license.
+Unless otherwise noted, the scripts and files in this project and the related `docker-images/OracleDatabase` repository are released under the UPL 1.0 license.
 
 ## Copyright
 

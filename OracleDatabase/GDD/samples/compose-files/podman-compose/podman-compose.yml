@@ -34,6 +34,7 @@ services:
       OP_TYPE: ${CATALOG_OP_TYPE}
       COMMON_OS_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
+      PKEYOPT: ${PKEYOPT}
       ENABLE_ARCHIVELOG: ${CATALOG_ARCHIVELOG}
     networks:
       shard_pub1_nw:
@@ -59,6 +60,7 @@ services:
       OP_TYPE: ${ALLSHARD_OP_TYPE}
       COMMON_OS_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
+      PKEYOPT: ${PKEYOPT}
       ENABLE_ARCHIVELOG: ${SHARD_ARCHIVELOG}
     networks:
       shard_pub1_nw:
@@ -84,6 +86,7 @@ services:
       OP_TYPE: ${ALLSHARD_OP_TYPE}
       COMMON_OS_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
+      PKEYOPT: ${PKEYOPT}
       ENABLE_ARCHIVELOG: ${SHARD_ARCHIVELOG}
     networks:
       shard_pub1_nw:
@@ -109,6 +112,7 @@ services:
       OP_TYPE: ${ALLSHARD_OP_TYPE}
       COMMON_OS_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
+      PKEYOPT: ${PKEYOPT}
       ENABLE_ARCHIVELOG: ${SHARD_ARCHIVELOG}
     networks:
       shard_pub1_nw:
@@ -134,6 +138,7 @@ services:
       OP_TYPE: ${ALLSHARD_OP_TYPE}
       COMMON_OS_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
+      PKEYOPT: ${PKEYOPT}
       ENABLE_ARCHIVELOG: ${SHARD_ARCHIVELOG}
     networks:
       shard_pub1_nw:
@@ -149,7 +154,7 @@ services:
       - pwdsecret
       - keysecret
     volumes:
-      - ${PODMANVOLLOC}/dbfiles/GSMDATA:/opt/oracle/gsmdata
+      - ${PODMANVOLLOC}/dbfiles/GSM1DATA:/opt/oracle/gsmdata
       - /opt/containers/shard_host_file:/etc/hosts
     environment:
       DOMAIN: ${DOMAIN}
@@ -158,14 +163,17 @@ services:
       CATALOG_PARAMS: ${PRIMARY_CATALOG_PARAMS}
       SHARD1_PARAMS: ${PRIMARY_SHARD1_PARAMS}
       SHARD2_PARAMS: ${PRIMARY_SHARD2_PARAMS}
-      SHARD3_PARAMS: ${STANDBY_SHARD3_PARAMS}
-      SHARD4_PARAMS: ${STANDBY_SHARD4_PARAMS}
+      SHARD3_PARAMS: ${PRIMARY_SHARD3_PARAMS}
+      SHARD4_PARAMS: ${PRIMARY_SHARD4_PARAMS}
       SERVICE1_PARAMS: ${PRIMARY_SERVICE1_PARAMS}
       SERVICE2_PARAMS: ${PRIMARY_SERVICE2_PARAMS}
+      GSM_TRACE_LEVEL: ${GSM_TRACE_LEVEL}
       COMMON_OS_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
+      PKEYOPT: ${PKEYOPT}
       MASTER_GSM: "TRUE"
       OP_TYPE: ${GSM_OP_TYPE}
+      SHARD_SETUP: ${PRIMARY_GSM_SHARD_SETUP}
     networks:
       shard_pub1_nw:
         ipv4_address: ${LOCAL_NETWORK}.100
@@ -186,16 +194,14 @@ services:
       SHARD_SETUP: ${STANDBY_GSM_SHARD_SETUP}
       DOMAIN: ${DOMAIN}
       SHARD_DIRECTOR_PARAMS: ${STANDBY_SHARD_DIRECTOR_PARAMS}
-      SHARD1_GROUP_PARAMS: ${STANDBY_SHARD1_GROUP_PARAMS}
       CATALOG_PARAMS: ${STANDBY_CATALOG_PARAMS}
-      SHARD1_PARAMS: ${STANDBY_SHARD1_PARAMS}
-      SHARD2_PARAMS: ${STANDBY_SHARD2_PARAMS}
-      SHARD3_PARAMS: ${STANDBY_SHARD3_PARAMS}
-      SHARD4_PARAMS: ${STANDBY_SHARD4_PARAMS}
       SERVICE1_PARAMS: ${STANDBY_SERVICE1_PARAMS}
       SERVICE2_PARAMS: ${STANDBY_SERVICE2_PARAMS}
+      GSM_TRACE_LEVEL: ${GSM_TRACE_LEVEL}
+      CATALOG_SETUP: ${CATALOG_SETUP}
       COMMON_OS_PWD_FILE: pwdsecret
       PWD_KEY: keysecret
+      PKEYOPT: ${PKEYOPT}
       OP_TYPE: ${GSM_OP_TYPE}
     networks:
       shard_pub1_nw:

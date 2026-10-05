@@ -5,7 +5,7 @@ files=(
         "/opt/containers/shard_host_file"
         "${PODMANVOLLOC}/dbfiles/ORCL1CDB"
         "${PODMANVOLLOC}/dbfiles/ORCL2CDB"
-        "${PODMANVOLLOC}/dbfiles/GSMDATA"
+        "${PODMANVOLLOC}/dbfiles/GSM1DATA"
         "${PODMANVOLLOC}/dbfiles/GSM2DATA"
         "${PODMANVOLLOC}/dbfiles/ORCL3CDB"
         "${PODMANVOLLOC}/dbfiles/ORCL4CDB"

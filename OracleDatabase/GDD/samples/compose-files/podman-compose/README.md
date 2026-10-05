@@ -1,30 +1,37 @@
-# Deploying Oracle Globally Distributed Database Containers using podman-compose
+# Deploy Oracle Globally Distributed Database Using podman-compose
 
-For Oracle Linux 9 host machines,`podman-compose` can be used for deploying containers to create an Oracle Globally Distributed Database.
+For host machines running Oracle Linux 8 or later, `podman-compose` can be used to deploy containers for Oracle Globally Distributed Database.
 
-For Example: You can use Oracle AI Database 26ai RDBMS and GSM Podman Images and deploy with the sharding option of your choice: `System-Managed Sharding` or `User Defined Sharding` or `System-Managed Sharding with RAFT Replication`.
+For example, you can use Oracle AI Database 26ai RDBMS and GSM Podman images and deploy using the sharding option of your choice: `System-Managed Sharding`, `User-Defined Sharding`, or `System-Managed Sharding with Raft replication`.
 
-The example that follows shows how to use `podman-compose` to create the Podman network and to deploy containers for an Oracle Globally Distributed Database on a single Oracle Linux 8 host.
+This example demonstrates how to use `podman-compose` to create the Podman network and to deploy containers for an Oracle Globally Distributed Database on a single Oracle Linux 8 host.
 
-In this example, we deploy an Oracle Globally Distributed Database with `System-Managed Sharding Topology` with Four shard containers, a Catalog Container, a Primary GSM container, and a Standby GSM Container.
+This example deploys an Oracle Globally Distributed Database with `System-Managed Sharding` using four shard containers, one catalog container, one primary GSM container, and one standby GSM container.
 
-**IMPORTANT:** This example uses Oracle AI Database 26ai RDBMS and GSM Podman Images while deploying the Oracle Globally Distributed database.
+**Important:** This example uses Oracle AI Database 26ai and GSM Podman images to deploy Oracle Globally Distributed Database.
 
-- [Step 1: Install Podman compose](#install-podman-compose)
-- [Step 2: Complete the prerequisite steps](#complete-the-prerequisite-steps)
-- [Step 3: SELinux Configuration Management for Podman Host](#selinux-configuration-management-for-podman-host)
-- [Step 4: Create Podman Compose file](#create-podman-compose-file)
-- [Step 5: Create services using "podman-compose" command](#create-services-using-podman-compose-command)
-- [Step 6: Check the logs](#check-the-logs)
-- [Step 7: Workload Test](#workload-test)
-- [Step 8: Remove the deployment](#remove-the-deployment)
-- [Step 9: Oracle AI Database 26ai Free and Oracle 26ai GSM Container Images](#oracle-ai-database-26ai-free-and-oracle-26ai-gsm-container-images)
-- [Copyright](#copyright)
+- [Deploy Oracle Globally Distributed Database Using podman-compose](#deploy-oracle-globally-distributed-database-using-podman-compose)
+  - [Install podman-compose](#install-podman-compose)
+  - [Complete the prerequisite steps](#complete-the-prerequisite-steps)
+    - [Create Podman Secrets](#create-podman-secrets)
+    - [Run the Prerequisites Script](#run-the-prerequisites-script)
+  - [Configure SELinux on the Podman Host](#configure-selinux-on-the-podman-host)
+  - [Prepare the podman-compose File](#prepare-the-podman-compose-file)
+  - [Deploy Using podman-compose](#deploy-using-podman-compose)
+  - [Check the Logs](#check-the-logs)
+    - [Catalog Container](#catalog-container)
+    - [Shard Containers](#shard-containers)
+    - [Primary GSM Container](#primary-gsm-container)
+    - [Standby GSM Container](#standby-gsm-container)
+  - [Workload Test](#workload-test)
+  - [Remove the deployment](#remove-the-deployment)
+  - [Deploy with Oracle AI Database 26ai Free](#deploy-with-oracle-ai-database-26ai-free)
+  - [Copyright](#copyright)
 
-## Install Podman compose
+## Install podman-compose
 
 ```bash
-dnf config-manager --enable ol9_developer_EPEL
+dnf config-manager --enable ol8_developer_EPEL
 dnf install podman-compose
 ```
 
@@ -36,7 +43,7 @@ Complete each of these steps before proceeding with deployment.
 
 Complete the procedure to create Podman secrets from [Password Management](../../container-files/podman-container-files/README.md#password-management). These Podman secrets are also used during the deployment of Oracle Globally Distributed Database Containers.
 
-### Prerequisites script file
+### Run the Prerequisites Script
 
 Run the script file [podman-compose-prerequisites.sh](./podman-compose-prerequisites.sh). This script exports the environment variables, creates the network host file, and creates required directories.
 
@@ -46,86 +53,141 @@ Run the script file [podman-compose-prerequisites.sh](./podman-compose-prerequis
 source podman-compose-prerequisites.sh
 ```
 
-## SELinux Configuration Management for Podman Host
+## Configure SELinux on the Podman Host
 
-If SELinux is enabled on your podman-host, then load the necessary `shard-podman` policy, as explained in [SELinux Configuration on Podman Host](../container-files/podman-container-files/README.md#selinux-configuration-on-podman-host)
+If SELinux is enabled on the Podman host, load the required `shard-podman` policy as described in [SELinux Configuration on Podman Host](../../container-files/podman-container-files/README.md#selinux-configuration-on-podman-host).
 
-To set SELinux contexts for required files and folders, run the file [set-file-context.sh](./set-file-context.sh)
+To set the required SELinux contexts for files and directories, run the following script:
+
+[set-file-context.sh](./set-file-context.sh)
 
 ```bash
 source set-file-context.sh
 ```
 
-## Create Podman Compose file
+## Prepare the podman-compose File
 
-Copy the [podman-compose.yml](podman-compose.yml) into your working directory. In this example, our working directory is [<github_cloned_path>/docker-images/OracleDatabase/GDD/containerfiles]
+Copy [podman-compose.yml](podman-compose.yml) to your working directory. In this example, the working directory is [<github_cloned_path>/db-sharding/container-based-sharding-deployment/containerfiles]
 
-## Create services using "podman-compose" command
+## Deploy Using podman-compose
 
-After you have completed all the prerequisties successfully, run the following command to create the services:
+After completing all prerequisites, run the following command to deploy the services:
 
 ```bash
-# Ensure "podman-compose.yml" file is present in your working directory and then run the following command:
+# Ensure that podman-compose.yml is present in your working directory.
  
 podman-compose up -d
 ```
 
-Wait for all the services setup to be complete and ready:
+Wait for all services to start and become ready:
 
 ```bash
 $ podman ps -a
-CONTAINER ID  IMAGE                                                     COMMAND               CREATED        STATUS        PORTS       NAMES
-e38e54c25423  container-registry.oracle.com/database/enterprise:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              catalog
-68f1a21527a9  container-registry.oracle.com/database/enterprise:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard1
-a67d07e9d2ca  container-registry.oracle.com/database/enterprise:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard2
-b39a9b55b8bf  container-registry.oracle.com/database/enterprise:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard3
-c7123d79927f  container-registry.oracle.com/database/enterprise:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard4
-7dcd5113348e  container-registry.oracle.com/database/gsm:latest         /bin/sh -c exec $...  9 minutes ago  Up 9 minutes  1522/tcp    gsm1
-6db31380bdca  container-registry.oracle.com/database/gsm:latest         /bin/sh -c exec $...  9 minutes ago  Up 9 minutes  1522/tcp    gsm2
+CONTAINER ID  IMAGE                                                        COMMAND               CREATED        STATUS        PORTS       NAMES
+e38e54c25423  container-registry.oracle.com/database/enterprise_ru:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              catalog
+68f1a21527a9  container-registry.oracle.com/database/enterprise_ru:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard1
+a67d07e9d2ca  container-registry.oracle.com/database/enterprise_ru:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard2
+b39a9b55b8bf  container-registry.oracle.com/database/enterprise_ru:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard3
+c7123d79927f  container-registry.oracle.com/database/enterprise_ru:latest  /bin/sh -c exec $...  9 minutes ago  Up 9 minutes              shard4
+7dcd5113348e  container-registry.oracle.com/database/gsm_ru:latest         /bin/sh -c exec $...  9 minutes ago  Up 9 minutes  1522/tcp    gsm1
+6db31380bdca  container-registry.oracle.com/database/gsm_ru:latest         /bin/sh -c exec $...  9 minutes ago  Up 9 minutes  1522/tcp    gsm2
 ```
 
-## Check the logs
+## Check the Logs
 
-```bash
-# You can monitor the logs for all the containers using the following command:
- 
-podman-compose logs -f
-```
+Verify that each container completes its setup successfully.
 
-Look for successful message in all containers. For example:-
+### Catalog Container
+
+Monitor the Oracle database setup:
 
 ```bash
 podman logs -f catalog
-==============================================
-         GSM Catalog Setup Completed
-==============================================
+```
 
+Database creation can take approximately 20 minutes. Wait for the following success message:
+
+```text
+#########################
+DATABASE IS READY TO USE!
+#########################
+```
+
+After the database is ready, monitor the Oracle Globally Distributed Database setup:
+
+```bash
+podman exec catalog /bin/bash -c "tail -f /var/tmp/gdd/oracle_sharding_setup.log"
+```
+
+Wait for the following success message:
+
+```text
+==============================================
+      GSM Catalog Setup Completed
+==============================================
+```
+
+### Shard Containers
+
+Repeat the following steps for each shard container (`shard1`, `shard2`, `shard3`, and `shard4`).
+
+Monitor the Oracle database setup:
+
+```bash
 podman logs -f shard1
-==============================================
-     GSM Shard Setup Completed                
-==============================================
+```
 
-podman logs -f shard2
-==============================================
-     GSM Shard Setup Completed                
-==============================================
+Database creation can take approximately 20 minutes. Wait for the following success message:
 
-podman logs -f shard3
-==============================================
-     GSM Shard Setup Completed                
-==============================================
+```text
+#########################
+DATABASE IS READY TO USE!
+#########################
+```
 
-podman logs -f shard4
-==============================================
-     GSM Shard Setup Completed                
-==============================================
+After the database is ready, monitor the Oracle Globally Distributed Database setup:
 
-podman logs -f gsm1
-==============================================
-     GSM Setup Completed                      
-==============================================
+```bash
+podman exec shard1 /bin/bash -c "tail -f /var/tmp/gdd/oracle_sharding_setup.log"
+```
 
-podman logs -f gsm2
+Wait for the following success message:
+
+```text
+==============================================
+     GSM Shard Setup Completed
+==============================================
+```
+
+Repeat these steps for `shard2`, `shard3`, and `shard4`.
+
+### Primary GSM Container
+
+Monitor the primary GSM container setup:
+
+```bash
+podman exec gsm1 /bin/bash -c "tail -f /var/tmp/gdd/oracle_sharding_setup.log"
+```
+
+Wait for the following success message:
+
+```text
+==============================================
+     GSM Setup Completed
+==============================================
+```
+
+### Standby GSM Container
+
+Monitor the standby GSM container setup:
+
+```bash
+podman exec gsm2 /bin/bash -c "tail -f /var/tmp/gdd/oracle_sharding_setup.log"
+```
+
+Wait for the following success message:
+
+```text
 ==============================================
      GSM Setup Completed
 ==============================================
@@ -133,30 +195,28 @@ podman logs -f gsm2
 
 ## Workload Test
 
-You can refer to [this page](./workload_test.md) for a sample workload test done on this Oracle Globally Distributed Database using Swingbench.
+See [Workload Test](./workload_test.md) for a sample Swingbench workload test against this Oracle Globally Distributed Database deployment.
 
 ## Remove the deployment
 
-If you want to remove the deployment, then run the `podman-compose` command. To remove the deployment:
-
-With the environment variables set in [Prerequisites Section](#complete-the-prerequisite-steps), run the following command to remove the Oracle Globally Distributed Database Containers and folders:
+To remove the deployment, ensure the environment variables from [Complete the prerequisite steps](#complete-the-prerequisite-steps) are still set, then run:
 
 ```bash
 podman-compose down
 rm -rf ${PODMANVOLLOC}
 ```
 
-## Oracle AI Database 26ai Free and Oracle 26ai GSM Container Images
+## Deploy with Oracle AI Database 26ai Free
 
-You can also use the Oracle 23ai FREE Database and GSM Images with `podman-compose` to deploy the Oracle Globally Distributed Database with System-Managed Sharding or with System-Managed Sharding with RAFT replication or with User Defined Sharding.
+You can also use Oracle AI Database 26ai Free and Oracle 26ai GSM container images with `podman-compose` to deploy Oracle Globally Distributed Database with System-Managed Sharding, System-Managed Sharding with Raft replication, or User-Defined Sharding.
 
-For Example: If you plan to use Oracle AI Database 26ai Free and Oracle 26ai GSM Container Images for deploying the Oracle Globally Distributed Database with `System-Managed Sharding Topology with Raft replication`, then complete these steps:
+For example, if you plan to use Oracle AI Database 26ai Free and Oracle 26ai GSM Container Images for deploying the Oracle Globally Distributed Database with `System-Managed Sharding Topology with Raft replication`, then complete these steps:
 
-- Use file [podman-compose-prequisites-free.sh](./podman-compose-prequisites-free.sh) as the prerequisites script file before running the setup as described above.
+- Use file [podman-compose-prerequisites-free.sh](./podman-compose-prerequisites-free.sh) as the prerequisites script file before running the setup as described above.
 
 **NOTE:** You must change the values for `SIDB_IMAGE` and `GSM_IMAGE` to use the Oracle AI Database 26ai Free and Oracle 26ai GSM Container Images you want to use for the deployment.
 
-- Take the file [podman-compose-free.yml](./podman-compose-free.yml) and rename it as `podman-compose.yml` to deploy the setup using the `podman-compose` command.
+- Copy [podman-compose-free.yml](./podman-compose-free.yml) and rename it to `podman-compose.yml`.
 
 ## Copyright
 

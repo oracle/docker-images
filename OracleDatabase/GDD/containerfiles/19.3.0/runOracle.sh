@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2164
 
 #############################
 # Copyright 2020, Oracle Corporation and/or affiliates.  All rights reserved.
