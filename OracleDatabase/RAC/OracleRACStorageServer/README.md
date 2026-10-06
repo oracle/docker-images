@@ -176,3 +176,23 @@ Unless otherwise noted, all scripts and files hosted in this repository that are
 
 ## Copyright
 Copyright (c) 2014-2025 Oracle and/or its affiliates.
+
+
+## Base image provenance
+
+Build wrappers resolve the selected base image to a sha256 digest and pass
+`BASE_IMAGE`, `BASE_IMAGE_REF`, and `BASE_IMAGE_DIGEST` to the build.
+The resulting image exposes the source reference and digest as OCI labels and
+writes the direct-base record to:
+
+```
+/usr/share/oracle/image-metadata/base-image-chain.json
+```
+
+Inspect an image with:
+
+```
+podman image inspect IMAGE --format '{{json .Config.Labels}}'
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'cat /usr/share/oracle/image-metadata/base-image-chain.json'
+```

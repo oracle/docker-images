@@ -57,7 +57,7 @@ if [ "$#" -eq 0 ]; then
 fi
 
 # Parameters
-VERSION="12.2.0.1"
+VERSION="19.3.0"
 SKIPMD5=0
 DOCKEROPS=""
 IMAGE_NAME=""

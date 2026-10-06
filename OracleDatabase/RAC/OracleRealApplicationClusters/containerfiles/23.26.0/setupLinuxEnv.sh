@@ -14,19 +14,11 @@
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
-## Use OCI yum repos on OCI instead of public yum
-region=$(curl --noproxy '*' -sfm 3 -H "Authorization: Bearer Oracle" http://169.254.169.254/opc/v2/instance/ | sed -nE 's/^ *"regionIdentifier": "([^"]+)".*/\1/p')
-if [ -n "$region" ]; then 
-    echo "Detected OCI Region: $region"
-    for proxy in $(printenv | grep -i _proxy | cut -d= -f1); do unset $proxy; done
-    echo "-$region" > /etc/yum/vars/ociregion
-fi 
 mkdir /asmdisks && \
 mkdir /responsefiles  && \
 chmod ug+x /opt/scripts/startup/*.sh && \
 
 if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
-       # curl --noproxy '*' https://ca-artifacts.oraclecorp.com/auto-build/x86_64-build-output-9-dev/oracle-ai-database-preinstall-26ai-1.0-2.el9.x86_64.rpm  --output oracle-ai-database-preinstall-26ai-1.0-2.el9.x86_64.rpm  && \
        # dnf install -y oracle-ai-database-preinstall-26ai-1.0-2.el9.x86_64.rpm cronie && \
         dnf install -y oracle-ai-database-preinstall-26ai && \
         cp /etc/security/limits.d/oracle-ai-database-preinstall-26ai.conf /etc/security/limits.d/grid-ai-database-preinstall-26ai.conf && \

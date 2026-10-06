@@ -1,4 +1,16 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+source "${SCRIPT_DIR}/baseImageMetadata.sh"
+
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
 #############################
 # Copyright (c) 2025, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl
@@ -60,20 +72,18 @@ done
 
 # Oracle Database Image Name
 IMAGE_NAME="oracle/rac-storage-server:$VERSION"
-if command -v docker &>/dev/null; then
-    CONTAINER_BUILD_TOOL="docker"
-elif command -v podman &>/dev/null; then
-    CONTAINER_BUILD_TOOL="podman"
-else
-    echo "Neither Docker nor Podman is installed. Please install either Docker or Podman to proceed."
-    exit 1
-fi
+checkContainerRuntime
+# Resolve the digest before changing into the version directory.
+if [[ "${VERSION}" == ol7* ]]; then BASE_IMAGE_DEFAULT="oraclelinux:7-slim"; else BASE_IMAGE_DEFAULT="oraclelinux:8"; fi
+resolve_base_image_metadata "${VERSION}" "${BASE_IMAGE_DEFAULT}" "${DOCKEROPS}"
+DOCKEROPS="${DOCKEROPS} ${BASE_IMAGE_BUILD_ARGS}"
+
 # Go into version folder
 cd "$VERSION" || exit
 
 echo "=========================="
 echo "DOCKER info:"
-docker info
+"${CONTAINER_RUNTIME}" info
 echo "=========================="
 
 # Proxy settings
@@ -107,7 +117,7 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 # shellcheck disable=SC2086
-$CONTAINER_BUILD_TOOL build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
+"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
   echo "There was an error building the image."
   exit 1
 }

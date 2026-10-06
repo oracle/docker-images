@@ -1,4 +1,16 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+source "${SCRIPT_DIR}/baseImageMetadata.sh"
+
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
 # LICENSE UPL 1.0
 # 
 # Since: January, 2018
@@ -65,13 +77,19 @@ done
 # Oracle Database Image Name
 IMAGE_NAME="oracle/rac-storage-server:$VERSION"
 
+# Resolve the digest before changing into the version directory.
+checkContainerRuntime
+if [[ "${VERSION}" == ol7* ]]; then BASE_IMAGE_DEFAULT="oraclelinux:7-slim"; else BASE_IMAGE_DEFAULT="oraclelinux:8"; fi
+resolve_base_image_metadata "${VERSION}" "${BASE_IMAGE_DEFAULT}" "${DOCKEROPS[*]}"
+DOCKEROPS+=( ${BASE_IMAGE_BUILD_ARGS} )
+
 # Go into version folder
 cd "$VERSION" || { echo "Error: Unable to change to directory $VERSION"; exit 1; }
 
 
 echo "=========================="
 echo "DOCKER info:"
-docker info
+"${CONTAINER_RUNTIME}" info
 echo "=========================="
 
 # Proxy settings
@@ -103,7 +121,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-if docker build --force-rm=true --no-cache=true "${DOCKEROPS[@]}" "${PROXY_SETTINGS[@]}" -t "$IMAGE_NAME" -f Dockerfile .; then
+if "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true "${DOCKEROPS[@]}" "${PROXY_SETTINGS[@]}" -t "$IMAGE_NAME" -f Dockerfile .; then
   BUILD_END=$(date '+%s')
   BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 

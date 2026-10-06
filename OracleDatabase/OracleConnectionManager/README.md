@@ -25,8 +25,6 @@ This project offers example container images under these version folders:
 | `23.26.0` | All 23.26.* CMAN builds (dbInstall maps `23.26` → `23.26.0`) |
 | `21.3.0` | 21c client/CMAN |
 | `19.3.0` | 19c client/CMAN (use zip build-arg for later 19 RUs) |
-| `18.3.0` | 18c client/CMAN |
-| `12.2.0.1` | 12c R2 client/CMAN |
 
 Default install media for `23.26.0` is `LINUX.X64_2326100_client_cman_home.zip` (SHA256 in `23.26.0/Checksum`).
 
@@ -215,3 +213,23 @@ All scripts and files hosted in this repository which are required to build the 
 ## Copyright
 
 Copyright (c) 2014-2026 Oracle and/or its affiliates.
+
+
+## Base image provenance
+
+Build wrappers resolve the selected base image to a sha256 digest and pass
+`BASE_IMAGE`, `BASE_IMAGE_REF`, and `BASE_IMAGE_DIGEST` to the build.
+The resulting image exposes the source reference and digest as OCI labels and
+writes the direct-base record to:
+
+```
+/usr/share/oracle/image-metadata/base-image-chain.json
+```
+
+Inspect an image with:
+
+```
+podman image inspect IMAGE --format '{{json .Config.Labels}}'
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'cat /usr/share/oracle/image-metadata/base-image-chain.json'
+```

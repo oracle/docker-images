@@ -1,4 +1,16 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+source "${SCRIPT_DIR}/baseImageMetadata.sh"
+
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
 #
 #############################
 # Copyright (c) 2025, Oracle and/or its affiliates.
@@ -93,12 +105,17 @@ done
 # Oracle Database Image Name
 IMAGE_NAME="oracle/rac-dnsserver:$VERSION"
 
+# Resolve the digest before changing into the version directory.
+checkContainerRuntime
+resolve_base_image_metadata "${VERSION}" "oraclelinux:9" "${PODMANOPS}"
+PODMANOPS="${PODMANOPS} ${BASE_IMAGE_BUILD_ARGS}"
+
 # Go into version folder
 cd "$VERSION" || exit
 
 echo "=========================="
 echo "PODMAN info:"
-podman info
+"${CONTAINER_RUNTIME}" info
 echo "=========================="
 
 # Proxy settings
@@ -131,7 +148,7 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date +%s)
 
-if ! podman build --force-rm=true --no-cache=true \
+if ! "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
      $PODMANOPS $PROXY_SETTINGS \
      -t "$IMAGE_NAME" -f Containerfile .; then
   echo "There was an error building the image."

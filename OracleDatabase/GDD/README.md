@@ -336,3 +336,23 @@ All scripts and files hosted in this project and GitHub docker-images/OracleData
 
 Copyright (c) 2022 - 2026 Oracle and/or its affiliates.
 Released under the Universal Permissive License v1.0 as shown at [https://oss.oracle.com/licenses/upl/](https://oss.oracle.com/licenses/upl/)
+
+
+## Base image provenance
+
+The GSM build wrapper resolves the selected base image to a sha256 digest and
+passes `BASE_IMAGE`, `BASE_IMAGE_REF`, and `BASE_IMAGE_DIGEST` to the
+build. The image exposes the source reference and digest as OCI labels and
+writes the direct-base record to:
+
+```
+/usr/share/oracle/image-metadata/base-image-chain.json
+```
+
+Inspect an image with:
+
+```
+podman image inspect IMAGE --format '{{json .Config.Labels}}'
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'cat /usr/share/oracle/image-metadata/base-image-chain.json'
+```

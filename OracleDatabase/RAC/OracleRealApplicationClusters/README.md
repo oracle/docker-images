@@ -130,7 +130,7 @@ Use the below command to build the Oracle RAC Database Container Image:
 | `23.26.0` | All 23.26.* RU builds for 26ai (e.g. 23.26 → `23.26.0`) |
 | `19.3.0` | 19c builds (use zip build-args for RUs such as 19.32) |
 
-Older tracks are still present: `21.3.0`, `18.3.0`, `12.2.0.1`.
+The `21.3.0` track is also available for 21c builds.
 
 Override install media zip names with `--build-arg INSTALL_FILE_1` / `INSTALL_FILE_2` when RU zip names differ from the defaults in each folder.
 
@@ -358,17 +358,6 @@ If you want to build a patched image based on a base 21.3.0 container image, the
 ## Cleanup
 Refer to [Cleanup Oracle RAC Database Container Environment](./docs/CLEANUP.md) for instructions on how to connect to an Oracle RAC Database Container Environment.
 
-## Sample Container Files for Older Releases
-
-This project offers example container files for Oracle Grid Infrastructure and Oracle Real Application Clusters for dev and test:
-
-* Oracle Database 18c Oracle Grid Infrastructure (18.3) for Linux x86-64
-* Oracle Database 18c (18.3) for Linux x86-64
-* Oracle Database 12c Release 2 Oracle Grid Infrastructure (12.2.0.1.0) for Linux x86-64
-* Oracle Database 12c Release 2 (12.2.0.1.0) Enterprise Edition for Linux x86-64
-
-To install older releases of Oracle RAC on Podman or Oracle RAC on Docker, refer to the [README.md](./docs/README_1.md)
-
 ## Support
 
 At the time of this release, Oracle RAC on Podman is supported for Oracle Linux 8.10 or later. To see the current Linux support certifications, refer to [Oracle RAC on Podman Documentation](https://docs.oracle.com/en/database/oracle/oracle-database/21/install-and-upgrade.html)
@@ -382,3 +371,23 @@ All scripts and files hosted in this repository that are required to build the c
 ## Copyright
 
 Copyright (c) 2014-2026 Oracle and/or its affiliates.
+
+
+## Base image provenance
+
+Build wrappers resolve the selected base image to a sha256 digest and pass
+`BASE_IMAGE`, `BASE_IMAGE_REF`, and `BASE_IMAGE_DIGEST` to the build.
+The resulting image exposes the source reference and digest as OCI labels and
+writes the direct-base record to:
+
+```
+/usr/share/oracle/image-metadata/base-image-chain.json
+```
+
+Inspect an image with:
+
+```
+podman image inspect IMAGE --format '{{json .Config.Labels}}'
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'cat /usr/share/oracle/image-metadata/base-image-chain.json'
+```

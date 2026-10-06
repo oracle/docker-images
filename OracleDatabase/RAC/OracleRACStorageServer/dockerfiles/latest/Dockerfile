@@ -14,7 +14,16 @@
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:8
+ARG BASE_IMAGE=oraclelinux:8
+ARG BASE_IMAGE_REF=oraclelinux:8
+ARG BASE_IMAGE_DIGEST=unknown
+FROM $BASE_IMAGE
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+LABEL "org.opencontainers.image.base.name"="$BASE_IMAGE_REF" \
+      "org.opencontainers.image.base.digest"="$BASE_IMAGE_DIGEST" \
+      "com.oracle.database.base.image.chain.path"="/usr/share/oracle/image-metadata/base-image-chain.json"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -52,6 +61,10 @@ RUN  rm -rf $INSTALL_DIR/install && \
     cp $SCRIPT_DIR/$INITSH /usr/bin/$INITSH && \
     chmod 755 /usr/bin/$INITSH && \ 
     chmod 666 $SCRIPT_DIR/$EXPORTFILE
+
+RUN mkdir -p /usr/share/oracle/image-metadata && \
+    printf '{\n  "schemaVersion": 1,\n  "images": [{"name": "%s", "digest": "%s", "reference": "%s", "role": "direct-base"}]\n}\n' \
+      "$BASE_IMAGE_REF" "$BASE_IMAGE_DIGEST" "$BASE_IMAGE" > /usr/share/oracle/image-metadata/base-image-chain.json
 
 USER root 
 VOLUME ["/oradata"]
