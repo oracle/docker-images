@@ -1,4 +1,5 @@
 #!/bin/ba
+# shellcheck disable=SC1008,SC2046,SC2155,SC2164
 
 # LICENSE UPL 1.0
 #

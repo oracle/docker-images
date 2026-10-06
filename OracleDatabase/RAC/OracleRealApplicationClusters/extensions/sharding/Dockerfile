@@ -1,5 +1,5 @@
+# hadolint global ignore=DL3002,DL3006,DL3022
 # LICENSE UPL 1.0
-# hadolint global ignore=DL3006,DL3002
 #
 # Copyright (c) 2021-2026 Oracle and/or its affiliates. All rights reserved.
 #
@@ -15,24 +15,12 @@
 # -----------------------
 #
 # Run:
-#      $ docker build -t <extended_image_name> . --build-arg BASE_IMAGE=oracle/database:19.3.0-ee
+#      $ ../buildExtensions.sh -x sharding -b oracle/database:19.3.0-ee -t <extended_image_name>
 #
 
 ARG BASE_IMAGE_VERSION=21.3.0
 ARG BASE_IMAGE=oracle/database-rac:${BASE_IMAGE_VERSION}
-ARG BASE_REPO=https://github.com/oracle/db-sharding
 
-# Creating stage for downloading necessary script files
-FROM ${BASE_IMAGE} as downloader
-ARG BASE_REPO
-ENV BASE_REPO=$BASE_REPO
-WORKDIR /tmp
-
-USER root
-RUN yum -y install git && \
-    git clone --depth=1 ${BASE_REPO}
-
-# Creating another stage for sharding extension creation
 FROM ${BASE_IMAGE}
 # Extn name
 ARG EXTENSION_NAME=sharding
@@ -84,7 +72,7 @@ RUN mkdir -p $ORACLE_BASE/scripts/sharding/scripts && \
     sync
 
 # Copy updated scripts for sharding support
-COPY  --chown=oracle:dba --from=downloader /tmp/db-sharding/container-based-sharding-deployment/containerfiles/scripts/* $ORACLE_BASE/scripts/sharding/
+COPY --chown=oracle:dba --from=gdd-scripts / $ORACLE_BASE/scripts/sharding/
 
 # This is to add the setPassword.sh script and setPasswordRac.sh script
 COPY $PWD_FILE $PWD_FILE_RAC $ORACLE_BASE/

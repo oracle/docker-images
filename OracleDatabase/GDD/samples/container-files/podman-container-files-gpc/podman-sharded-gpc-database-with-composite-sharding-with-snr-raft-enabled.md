@@ -1,8 +1,8 @@
-# Deploy Oracle GDD with System-Managed Sharding and Raft Replication using Oracle Restart
+# Deploy Oracle GDD with Composite Sharding and Raft Replication using Oracle Restart
 
-This guide provides detailed instructions for manually deploying a sample Oracle Globally Distributed Database with System-Managed Sharding and Raft Replication using Podman containers. The deployment uses Extended Oracle RAC Database Container Image.
+This guide provides detailed instructions for manually deploying a sample Oracle Globally Distributed Database with Composite Sharding and Raft Replication using Podman containers. The deployment uses Extended Oracle RAC Database Container Image.
 
-- [Deploy Oracle GDD with System-Managed Sharding and Raft Replication using Oracle Restart](#deploy-oracle-gdd-with-system-managed-sharding-and-raft-replication-using-oracle-restart)
+- [Deploy Oracle GDD with Composite Sharding and Raft Replication using Oracle Restart](#deploy-oracle-gdd-with-composite-sharding-and-raft-replication-using-oracle-restart)
   - [Deployment Overview](#deployment-overview)
   - [Prerequisites](#prerequisites)
   - [Deploying Catalog Container](#deploying-catalog-container)
@@ -585,8 +585,9 @@ restorecon -v /scratch/oradata/dbfiles/GSM1DATA
  --dns 172.20.1.250 \
  -e DOMAIN=example.info \
  -e SHARD_DIRECTOR_PARAMS="director_name=sharddirector1;director_region=region1;director_port=1522" \
- -e SHARD1_GROUP_PARAMS="group_name=shardgroup1;group_region=region1;repfactor=3" \
- -e CATALOG_PARAMS="catalog_host=dbmc1;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_sys_raft;catalog_region=region1,region2;sharding_type=system;catalog_chunks=30;repl_type=Native;repl_unit=2" \
+ -e SHARD1_SPACE_PARAMS='sspace_name=gold;chunks=120;repfactor=3;repunits=2' \
+ -e SHARD1_GROUP_PARAMS='group_name=shardgroup1;group_region=region1;shardspace=gold;repfactor=3' \
+ -e CATALOG_PARAMS='catalog_host=dbmc1;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_comp_raft;catalog_region=region1,region2;sharding_type=composite;repl_type=NATIVE;shard_space=gold' \
  -e SHARD1_PARAMS="shard_host=dbmc2;shard_db=ORCL1CDB;shard_pdb=ORCL1PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1" \
  -e SHARD2_PARAMS="shard_host=dbmc3;shard_db=ORCL2CDB;shard_pdb=ORCL2PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1" \
  -e SHARD3_PARAMS="shard_host=dbmc4;shard_db=ORCL3CDB;shard_pdb=ORCL3PDB;shard_port=1521;shard_group=shardgroup1;shard_region=region1" \
@@ -611,7 +612,7 @@ restorecon -v /scratch/oradata/dbfiles/GSM1DATA
  podman start gsm1
 ```
 
-**Note:** Change environment variables such as `DOMAIN`, `CATALOG_PARAMS`, `SHARD1_GROUP_PARAMS`, `COMMON_OS_PWD_FILE`, and `PWD_KEY` as required for your environment.
+**Note:** Change environment variables such as `DOMAIN`, `CATALOG_PARAMS`, `SHARD1_SPACE_PARAMS`, `SHARD1_GROUP_PARAMS`, `COMMON_OS_PWD_FILE`, and `PWD_KEY` as required for your environment.
 
 Monitor the primary GSM container logs:
 
@@ -654,7 +655,7 @@ restorecon -v /scratch/oradata/dbfiles/GSM2DATA
  --dns 172.20.1.250 \
  -e DOMAIN=example.info \
  -e SHARD_DIRECTOR_PARAMS="director_name=sharddirector2;director_region=region2;director_port=1522" \
- -e CATALOG_PARAMS="catalog_host=dbmc1;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_sys_raft;catalog_region=region1,region2;sharding_type=system;catalog_chunks=30;repl_type=Native;repl_unit=2" \
+ -e CATALOG_PARAMS='catalog_host=dbmc1;catalog_db=CATCDB;catalog_pdb=CAT1PDB;catalog_port=1521;catalog_name=sdb_comp_raft;catalog_region=region1,region2;sharding_type=composite;repl_type=NATIVE;shard_space=gold' \
  -e SERVICE1_PARAMS="service_name=oltp_rw_svc;service_role=standby;service_mode=readwrite" \
  -e SERVICE2_PARAMS="service_name=oltp_ro_svc;service_role=standby;service_mode=readonly" \
  -e GSM_TRACE_LEVEL="OFF" \
@@ -970,8 +971,10 @@ rm -rf /scratch/rac/shard4
 | Parameter | Description | Mandatory/Optional |
 | --- | --- | --- |
 | `CATALOG_SETUP` | When set to `True`, creates the GSM director and adds the catalog without adding shards. Used when configuring the standby GSM. | Optional |
-| `CATALOG_PARAMS` | Semicolon-separated catalog configuration parameters, including `catalog_host`, `catalog_db`, `catalog_pdb`, `catalog_port`, `catalog_name`, `catalog_region`, `sharding_type`, `catalog_chunks`, `repl_type`, and `repl_unit`. | Mandatory |
-| `SHARD[1-9]_GROUP_PARAMS` | Semicolon-separated shard group parameters, including `group_name`, `deploy_as`, `group_region`, and `repfactor`, as applicable. | Mandatory |
+| `SHARD_DIRECTOR_PARAMS` | Semicolon-separated shard director parameters: `director_name`, `director_region`, and `director_port`. | Mandatory |
+| `CATALOG_PARAMS` | Semicolon-separated catalog configuration parameters, including `catalog_host`, `catalog_db`, `catalog_pdb`, `catalog_port`, `catalog_name`, `catalog_region`, `sharding_type`, `repl_type`, `shard_space`, and `force`. | Mandatory |
+| `SHARD[1-9]_SPACE_PARAMS` | Semicolon-separated shardspace parameters, including `sspace_name`, `chunks`, `repfactor`, and `repunits`. | Mandatory |
+| `SHARD[1-9]_GROUP_PARAMS` | Semicolon-separated shard group parameters, including `group_name`, `deploy_as`, `group_region`, `shardspace`, and `repfactor`, as applicable. | Mandatory |
 | `SHARD[1-9]_PARAMS` | Semicolon-separated shard parameters, including `shard_host`, `shard_db`, `shard_pdb`, `shard_port`, `shard_group`, and `shard_region`. | Mandatory |
 | `SERVICE[1-9]_PARAMS` | Semicolon-separated service parameters, including `service_name`, `service_role`, and `service_mode`. | Mandatory |
 | `GSM_TRACE_LEVEL` | GSM tracing level. Supported values are `USER`, `ADMIN`, `SUPPORT`, and `OFF`. The default is `OFF`. | Optional |

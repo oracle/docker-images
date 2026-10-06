@@ -415,6 +415,7 @@ NAMES.DIRECTORY_PATH=(TNSNAMES, EZCONNECT)
              if retcode != 0:
                 self.ocommon.log_error_message("Failed to initialize GSM wallet for wallet-based authentication.",self.file_name)
                 self.ocommon.prog_exit("127")
+          self.ocommon.secure_wallet_permissions(wallet_root,self.file_name)
 
       def _wallet_alias(self,prefix,host,port,service,dbuser):
           """
@@ -541,8 +542,8 @@ NAMES.DIRECTORY_PATH=(TNSNAMES, EZCONNECT)
           if role:
              role_clause=" {0}".format(role)
           if alias:
-             return '''{0}/bin/sqlplus "/@{1}{2}"'''.format(self.ora_env_dict["ORACLE_HOME"],alias,role_clause)
-          return '''{0}/bin/sqlplus "{1}/HIDDEN_STRING@{2}:{3}/{4}{5}"'''.format(
+             return '''{0}/bin/sqlplus '/@{1}{2}' '''.format(self.ora_env_dict["ORACLE_HOME"],alias,role_clause)
+          return '''{0}/bin/sqlplus '{1}/HIDDEN_STRING@{2}:{3}/{4}{5}' '''.format(
              self.ora_env_dict["ORACLE_HOME"],dbuser,host,port,service,role_clause
           )
 
@@ -3338,6 +3339,7 @@ NAMES.DIRECTORY_PATH=(TNSNAMES, EZCONNECT)
 
          status = self.check_service_status(None)
          if status == 'completed':
+            self.modify_gsm_services_for_racdb()
             msg='''Shard service setup completed in GSM'''
             self.ocommon.log_info_message(msg,self.file_name)
          else:
@@ -3424,7 +3426,6 @@ NAMES.DIRECTORY_PATH=(TNSNAMES, EZCONNECT)
          #dtrname,dtrport,dtregion=self.process_director_vars()
          cmd='''
             add service -service {0} -role {1};
-            start service -service {0}
          '''.format(service_name,service_role)
 
          if repl_type is not None:
@@ -3435,9 +3436,155 @@ NAMES.DIRECTORY_PATH=(TNSNAMES, EZCONNECT)
                  self.ocommon.prog_exit("Error occurred")
               cmd='''
                 add service -service {0} -ru_mode {1};
-                start service -service {0}
               '''.format(service_name,service_mode)
          output,error,retcode=self._run_admin_gsm_statement(cmd,None)
+
+      def get_service_gdspool(self,service_name):
+         """
+         Return the GDS pool assigned to a service.
+         """
+         cmd='''config service -service {0}'''.format(service_name)
+         output,error,retcode=self._run_gsm_readonly_query(cmd,None)
+
+         match=re.search(
+            r'(?im)^\s*(?:gds\s*pool|gdspool|pool)\s*:\s*([^\s]+)',
+            output)
+
+         if match:
+            return match.group(1).strip().rstrip(';')
+
+         self.ocommon.log_warn_message(
+            "Unable to determine GDS pool for service {0}.".format(service_name),
+            self.file_name)
+         return None
+
+      def get_gdspool_shards(self,gdspool_name):
+         """
+         Return configured shard details for shard databases in the GDS pool.
+         """
+         cmd='''config gdspool -gdspool {0}'''.format(gdspool_name)
+         output,error,retcode=self._run_gsm_readonly_query(cmd,None)
+
+         shards=[]
+         for key in self._ordered_shard_keys(self.shard_regex()):
+            shard_db,shard_pdb,shard_port,shard_group,shard_host,shard_region,shard_space=self.process_shard_vars(key)
+            shard_name='''{0}_{1}'''.format(shard_db,shard_pdb)
+
+            if re.search(
+               r'(?i)(?<![\w$#]){0}(?![\w$#])'.format(re.escape(shard_name)),
+               output):
+               shards.append((shard_name,shard_db,shard_host,shard_port))
+
+         return shards
+
+      def is_rac_shard_database(self,shard_db,shard_host,shard_port):
+         """
+         Return True when the shard CDB is a RAC database.
+         """
+         sqlpluslogin=self._build_sqlplus_login(
+            "sys","as sysdba","SHARD_CDB",shard_host,shard_port,shard_db)
+
+         sqlcmd='''
+            set heading off
+            set feedback off
+            set pagesize 0
+            select 'RAC_DATABASE=' || value
+            from v$parameter
+            where name = 'cluster_database';
+            exit;
+         '''
+
+         self.ocommon.set_mask_str(self.ora_env_dict["ORACLE_PWD"])
+         try:
+            output,error,retcode=self._run_sqlplus_and_check(
+               sqlpluslogin,sqlcmd,None)
+         finally:
+            self.ocommon.unset_mask_str()
+
+         return bool(re.search(
+            r'(?i)RAC_DATABASE\s*=\s*TRUE\b',
+            output))
+
+      def get_rac_instances(self,shard_db,shard_host,shard_port):
+         """
+         Return RAC instance names for the shard CDB.
+         """
+         sqlpluslogin=self._build_sqlplus_login(
+            "sys","as sysdba","SHARD_CDB",shard_host,shard_port,shard_db)
+
+         sqlcmd='''
+            set heading off
+            set feedback off
+            set pagesize 0
+            select 'RAC_INSTANCE=' || instance_name
+            from gv$instance
+            order by inst_id;
+            exit;
+         '''
+
+         self.ocommon.set_mask_str(self.ora_env_dict["ORACLE_PWD"])
+         try:
+            output,error,retcode=self._run_sqlplus_and_check(
+               sqlpluslogin,sqlcmd,None)
+         finally:
+            self.ocommon.unset_mask_str()
+
+         instances=[]
+         for line in output.splitlines():
+            instances=re.findall(
+            r'(?im)RAC_INSTANCE=([A-Za-z0-9_$#]+)',
+            output)
+
+         return instances
+
+      def modify_gsm_service_for_racdb(self,service_name,gdspool_name,shard_name,instances):
+         """
+         Set RAC instances as preferred before starting the service.
+         """
+         preferred_instances=",".join(instances)
+
+         cmd='''modify service -gdspool {0} -service {1} -database {2} -modify_instances -preferred {3}'''.format(
+            gdspool_name,service_name,shard_name,preferred_instances)
+
+         self._run_admin_gsm_statement(cmd,None)
+
+      def start_gsm_service(self,service_name):
+         """
+         Start the service after RAC instance preferences are configured.
+         """
+         self._run_admin_gsm_statement(
+            '''start service -service {0}'''.format(service_name),None)
+
+      def modify_gsm_services_for_racdb(self):
+         """
+         For the single GDS pool, configure RAC instance preferences first,
+         then start every configured service.
+         """
+         service_keys=list(self._iter_matching_keys(self.service_regex()))
+
+         if not service_keys:
+            return
+
+         first_service,service_role,service_mode=self.process_service_vars(service_keys[0])
+         gdspool_name=self.get_service_gdspool(first_service)
+
+         rac_shards=[]
+         if gdspool_name:
+            for shard_name,shard_db,shard_host,shard_port in self.get_gdspool_shards(gdspool_name):
+               if self.is_rac_shard_database(shard_db,shard_host,shard_port):
+                  instances=self.get_rac_instances(shard_db,shard_host,shard_port)
+
+                  if instances:
+                     rac_shards.append((shard_name,instances))
+
+         for key in service_keys:
+            service_name,service_role,service_mode=self.process_service_vars(key)
+
+            for shard_name,instances in rac_shards:
+               self.modify_gsm_service_for_racdb(
+                  service_name,gdspool_name,shard_name,instances)
+
+            self.start_gsm_service(service_name)
 
       ############################## GSM backup fIle function Begins Here #############################
       def gsm_backup_file(self):

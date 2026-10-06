@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2034,SC2068,SC2155,SC2184,SC2283
 #
 # LICENSE UPL 1.0
 # Since: November, 2020

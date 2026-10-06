@@ -27,7 +27,7 @@ ARG BASE_OL_IMAGE=oraclelinux:7-slim
 
 # Pull base image
 # ---------------
-# hadolint ignore=DL3006
+# hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
 ARG VERSION
 
