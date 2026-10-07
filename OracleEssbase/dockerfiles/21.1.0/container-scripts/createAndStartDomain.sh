@@ -4,19 +4,27 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
-SCRIPT_DIR=$(cd $(dirname $0) > /dev/null; pwd)
+SCRIPT_DIR=$(cd "$(dirname "$0")" > /dev/null && pwd)
 
 . ${SCRIPT_DIR}/_essbase-functions
-checkNonRoot $(basename $0)
+checkNonRoot "$(basename "$0")"
 
 printVersionInfo
 log "Starting Oracle Essbase domain..."
 
 # Check whether container has enough memory
-if [ $(cat /sys/fs/cgroup/memory/memory.limit_in_bytes) -lt 6442450944 ]; then
+if [[ -f /sys/fs/cgroup/cgroup.controllers ]]; then
+  memory=$(cat /sys/fs/cgroup/memory.max)
+else
+  memory=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
+fi
+
+# Github issue #219: Prevent integer overflow,
+# only check if memory digits are less than 11 (single GB range and below)
+if [[ ${memory} != "max" && ${#memory} -lt 11 && ${memory} -lt 6442450944 ]]; then
   log_error "Error: The container doesn't have enough memory allocated."
   log_error "This container should have at least 6GB of memory."
-  log_error "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
+  log_error "You currently only have $((memory/1024/1024/1024)) GB allocated to the container."
   exit 1
 fi
 
