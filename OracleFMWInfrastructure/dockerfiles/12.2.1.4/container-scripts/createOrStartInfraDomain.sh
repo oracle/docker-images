@@ -93,21 +93,21 @@ then
    # Get Database Username
    DB_USER=`awk '{print $1}' $SEC_PROPERTIES_FILE | grep db_user | cut -d "=" -f2`
    if [ -z "$DB_USER" ]; then
-      echo "The domain username is blank.  The Admin username must be set in the properties file."
+      echo "The database username is blank.  The database username must be set in the properties file."
       exit
    fi
    # echo "Database Username $DB_USER"
    # Get Database Password
    DB_PASS=`awk '{print $1}' $SEC_PROPERTIES_FILE | grep db_pass | cut -d "=" -f2`
    if [ -z "$DB_PASS" ]; then
-      echo "The domain password is blank.  The Admin password must be set in the properties file."
+      echo "The database password is blank.  The database password must be set in the properties file."
       exit
    fi
    # echo "Database Password $DB_PASS"
    # Get databasse Schema Password
    DB_SCHEMA_PASS=`awk '{print $1}' $SEC_PROPERTIES_FILE | grep db_schema | cut -d "=" -f2`
    if [ -z "$DB_SCHEMA_PASS" ]; then
-      echo "The databse schema password is blank.  The database schema password must be set in the properties file."
+      echo "The database schema password is blank.  The database schema password must be set in the properties file."
       exit
    fi
    # echo "Database Schema Password: $DB_SCHEMA_PASS"
