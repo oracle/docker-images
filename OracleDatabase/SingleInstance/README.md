@@ -53,14 +53,14 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 26ai Free) and put them into the `dockerfiles/<version>` folder.
+**IMPORTANT:** For versions before 19.3.0, put the installation binaries in `dockerfiles/<version>`. For 19.3.0 and later, use `containerfiles/<version>`.
 You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
 
-**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
+**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the `containerfiles/19.3.0` folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
 
 You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
-Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
+Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Run the **buildContainerImage.sh** script from the `dockerfiles` directory; it selects the legacy `dockerfiles/<version>/Dockerfile` for versions before 19.3.0 and the modern `containerfiles/<version>/Containerfile` for 19.3.0 and later.
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
 
@@ -130,7 +130,7 @@ Option 2: Download from a web URL that does not require authentication:
       -t oracle/database:19.3.0-ee \
       -o '--build-arg BACKUP_MODULE_URL=<backup-module-rpm-url>'
 
-Option 3: Install from a local file system location. Place the RPM under the selected version directory and pass its relative path using `BACKUP_MODULE_LOCAL_FILE`. For example, if the RPM is stored as `dockerfiles/23.26.0/backup-modules/bck2cloud.rpm`:
+Option 3: Install from a local file system location. Place the RPM under the selected version directory and pass its relative path using `BACKUP_MODULE_LOCAL_FILE`. For example, if the RPM is stored as `containerfiles/23.26.0/backup-modules/bck2cloud.rpm`:
 
     ./buildContainerImage.sh \
       -v 23.26.0 \
@@ -162,6 +162,11 @@ After setting these environment variables, the container image can be built usin
 
     ./buildContainerImage.sh -e -v <version-to-build>
 
+RPM provenance is always recorded under `/usr/share/oracle/image-metadata/rpms`.
+Inspect it with:
+
+    podman run --rm --entrypoint /bin/sh IMAGE -c \
+      'ls -l /usr/share/oracle/image-metadata/rpms && cat /usr/share/oracle/image-metadata/rpms/*.txt'
 ### Running Oracle Database in a container
 
 #### Running Oracle Database Enterprise and Standard Edition 2 in a container
@@ -618,7 +623,7 @@ To containerize an on-premise database, please follow the steps mentioned below:
 
         cd $ORACLE_HOME && ./runInstaller -silent -createGoldImage -destinationLocation '<location to store the gold image>'
 
-* The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to the `OracleDatabase/SingleInstance/dockerfiles/<version>` directory. The **version** would be the base version of the gold image, e.g. 19.3.0.
+* The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to `OracleDatabase/SingleInstance/containerfiles/<version>` for 19.3.0 and later, or `dockerfiles/<version>` for older releases.
 * Create the container image using this gold image by the following sample command:
 
         ./buildContainerImage.sh -i -e -v 19.3.0 -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'

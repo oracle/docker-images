@@ -1,13 +1,13 @@
 #!/bin/bash -e
-# 
+#
 # Since: April, 2016
 # Author: gerald.venzl@oracle.com
 # Description: Build script for building Oracle Database container images.
-# 
+#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-# 
+#
 # Copyright (c) 2014,2026 Oracle and/or its affiliates.
-# 
+#
 
 function usage() {
   cat << EOF
@@ -22,7 +22,7 @@ Parameters:
    -e: creates image based on 'Enterprise Edition'
    -s: creates image based on 'Standard Edition 2'
    -x: creates image based on 'Express Edition'
-   -f: creates images based on Database 'Free' 
+   -f: creates images based on Database 'Free'
    -i: ignores the MD5 checksums
    -p: creates and extends image using the patching extension
    -b: build base stage only (Used by extensions)
@@ -41,7 +41,7 @@ EOF
 # Validate packages
 function checksumPackages() {
   if hash md5sum 2>/dev/null; then
-    echo "Checking if required packages are present and valid..."   
+    echo "Checking if required packages are present and valid..."
     if ! md5sum -c "Checksum.${EDITION}${PLATFORM}"; then
       echo "MD5 for required packages to build this image did not match!"
       echo "Make sure to download missing files in folder ${VERSION}."
@@ -54,8 +54,8 @@ function checksumPackages() {
 
 # Check container runtime
 function checkContainerRuntime() {
-  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
-    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+  CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
     {
       echo "No docker or podman executable found in your PATH"
       exit 1
@@ -105,8 +105,11 @@ function checkDockerVersion() {
 #### MAIN ####
 ##############
 
-# Go into dockerfiles directory
-cd "$(dirname "$0")"
+# Resolve legacy and modern source roots. Versions before 19.3.0 retain the
+# legacy Dockerfile layout; 19.3.0 and later use Containerfiles under containerfiles/.
+SCRIPT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+MODERN_ROOT="$(dirname "$SCRIPT_ROOT")/containerfiles"
+cd "$SCRIPT_ROOT"
 
 # Parameters
 ENTERPRISE=${ENTERPRISE:-0}
@@ -116,12 +119,13 @@ FREE=${FREE:-0}
 PATCHING=0
 BASE_ONLY=0
 # Obtaining the latest version to build
-VERSION="$(find -- *.*.* -type d | tail -n 1)"
+VERSION="$(find "$SCRIPT_ROOT" "$MODERN_ROOT" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -n 1)"
 SKIPMD5=0
 declare -a BUILD_OPTS
 MIN_DOCKER_VERSION="17.09"
 MIN_PODMAN_VERSION="1.6.0"
-DOCKERFILE="Dockerfile"
+BUILD_FILE="Dockerfile"
+BUILD_ROOT="$SCRIPT_ROOT"
 IMAGE_NAME=""
 
 if [ "$#" -eq 0 ]; then
@@ -182,13 +186,13 @@ checkContainerRuntime
 # Only 19c (EE) and 26ai (Free and EE) are supported on ARM64 platform
 if [ "$(arch)" == "aarch64" ] || [ "$(arch)" == "arm64" ]; then
   PLATFORM=".arm64"
-  
+
   if [ "${VERSION%%.*}" -lt 26 ]; then
     BUILD_OPTS=("--build-arg" "BASE_IMAGE=oraclelinux:8" "${BUILD_OPTS[@]}")
   else
     BUILD_OPTS=("--build-arg" "BASE_IMAGE=oraclelinux:9" "${BUILD_OPTS[@]}")
   fi
-  
+
   if [ "${VERSION}" == "19.3.0" ] && { [ "${BASE_ONLY}" -eq 1 ] || [ "${ENTERPRISE}" -eq 1 ]; }; then
     BUILD_OPTS=("--build-arg" "INSTALL_FILE_1=LINUX.ARM64_1919000_db_home.zip" "${BUILD_OPTS[@]}")
   elif [ "${VERSION}" == "23.26.0" ] && [ "${FREE}" -eq 1 ]; then
@@ -220,32 +224,33 @@ elif [ ${EXPRESS} -eq 1 ]; then
     echo "Version ${VERSION} does not have Express Edition available.";
     exit 1;
   fi;
-elif [ ${FREE} -eq 1 ]; then 
-  if [ "$(cut -f1 -d.  <<< "$VERSION" )" -lt 23 ]; then 
+elif [ ${FREE} -eq 1 ]; then
+  if [ "$(cut -f1 -d.  <<< "$VERSION" )" -lt 23 ]; then
     echo "Version ${VERSION} does not have Free Edition available.";
     exit 1;
-  else 
+  else
     EDITION="free"
     SKIPMD5=1
   fi;
 fi;
 
 # Go into version folder
-cd "${VERSION}" || {
+if [ "${VERSION%%.*}" -ge 19 ]; then
+  BUILD_FILE="Containerfile"
+  BUILD_ROOT="$MODERN_ROOT"
+fi
+
+cd "${BUILD_ROOT}/${VERSION}" || {
   echo "Could not find version directory '${VERSION}'";
   exit 1;
 }
 
-if [ "${VERSION%%.*}" -ge 23 ]; then
-  DOCKERFILE="Containerfile"
-fi;
-
-# Which Dockerfile should be used?
+# Which build file should be used?
 if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; } || { [ "${VERSION%%.*}" -ge 23 ] && [ "${EDITION}" == "free" ]; }; then
-  DOCKERFILE="${DOCKERFILE}.${EDITION}"
+  BUILD_FILE="${BUILD_FILE}.${EDITION}"
 fi;
 
-echo "$DOCKERFILE"
+echo "$BUILD_FILE"
 
 # Oracle Database image Name
 # If provided using -t build option then use it; Otherwise, create with version and edition
@@ -297,8 +302,8 @@ if [ ${PATCHING} -eq 1 ]; then
   BUILD_OPTS=("${BUILD_OPTS[@]}" "--build-arg" "SLIMMING=false" )
 fi
 
-if [ ! -e "${DOCKERFILE}" ]; then
-  echo "ERROR: ${DOCKERFILE} doesn't exist"
+if [ ! -e "${BUILD_FILE}" ]; then
+  echo "ERROR: ${BUILD_FILE} doesn't exist"
   exit 1
 fi
 
@@ -311,7 +316,7 @@ if [ ${BASE_ONLY} -eq 1 ]; then
   # BUILD THE BASE STAGE IMAGE (replace all environment variables)
   "${CONTAINER_RUNTIME}" build --force-rm=true \
         "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --target base \
-        -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
+        -t "${IMAGE_NAME}" -f "${BUILD_FILE}" . || {
     echo ""
     echo "ERROR: Base stage image was NOT successfully created."
     exit 1
@@ -330,7 +335,7 @@ echo "Building image '${IMAGE_NAME}' ..."
 BUILD_START=$(date '+%s')
 "${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true \
       "${BUILD_OPTS[@]}" "${PROXY_SETTINGS[@]}" --build-arg DB_EDITION="${EDITION}" \
-      -t "${IMAGE_NAME}" -f "${DOCKERFILE}" . || {
+      -t "${IMAGE_NAME}" -f "${BUILD_FILE}" . || {
   echo ""
   echo "ERROR: Oracle Database container image was NOT successfully created."
   echo "ERROR: Check the output and correct any reported problems with the build operation."
@@ -347,12 +352,12 @@ echo ""
 echo ""
 
 cat << EOF
-  Oracle Database container image for '${EDITION}' version ${VERSION} is ready to be extended: 
-    
+  Oracle Database container image for '${EDITION}' version ${VERSION} is ready to be extended:
+
     --> ${IMAGE_NAME}
 
   Build completed in ${BUILD_ELAPSED} seconds.
-  
+
 EOF
 
 # EXTEND THE BUILT IMAGE BY APPLYING PATCHING EXTENSION
