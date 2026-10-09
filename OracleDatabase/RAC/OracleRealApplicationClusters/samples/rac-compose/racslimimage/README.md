@@ -151,7 +151,7 @@ podman-compose start ${DNS_CONTAINER_NAME}
 ```
 Bring up RAC Containers-
 ```bash
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up  -d ${RACNODE1_CONTAINER_NAME} 
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up  -d ${RACNODE1_CONTAINER_NAME}
 podman-compose stop ${RACNODE1_CONTAINER_NAME}
 
 podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME}
@@ -196,7 +196,7 @@ podman-compose up -d ${CMAN_CONTAINER_NAME}
 Successful Message when CMAN container is setup properly-
 ```bash
 ################################################
-CONNECTION MANAGER IS READY TO USE!            
+CONNECTION MANAGER IS READY TO USE!
 ################################################
 ```
 #### Section 2.1.2: Setup Using User Defined Response files
@@ -282,7 +282,7 @@ podman-compose start ${DNS_CONTAINER_NAME}
 ```
 Bring up RAC Containers-
 ```bash
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME} 
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME}
 podman-compose stop ${RACNODE1_CONTAINER_NAME}
 podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME}
 podman-compose stop ${RACNODE2_CONTAINER_NAME}
@@ -324,7 +324,7 @@ podman-compose up -d ${CMAN_CONTAINER_NAME}
 Successful Message when CMAN container is setup properly-
 ```bash
 ################################################
-CONNECTION MANAGER IS READY TO USE!            
+CONNECTION MANAGER IS READY TO USE!
 ################################################
 ```
 ### Section 2.2: Deploying With NFS Storage Devices
@@ -419,7 +419,7 @@ podman-compose exec ${STORAGE_CONTAINER_NAME} tail -f /tmp/storage_setup.log
 Export list for racnode-storage:
 /oradata *
 #################################################
- Setup Completed                                 
+ Setup Completed
 #################################################
 ```
 
@@ -433,7 +433,7 @@ racstorage
 ```
 Bring up RAC Containers-
 ```bash
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME} 
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME}
 podman-compose stop ${RACNODE1_CONTAINER_NAME}
 podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME}
 podman-compose stop ${RACNODE2_CONTAINER_NAME}
@@ -473,7 +473,7 @@ podman-compose up -d ${CMAN_CONTAINER_NAME}
 
 podman-compose logs -f ${CMAN_CONTAINER_NAME}
 ################################################
-  CONNECTION MANAGER IS READY TO USE!            
+  CONNECTION MANAGER IS READY TO USE!
 ################################################
 ```
 #### Section 2.2.2: Setup Using User Defined Response files
@@ -571,7 +571,7 @@ Successful logs when DNS container comes up-
 ```bash
 podman-compose logs ${DNS_CONTAINER_NAME}
 ################################################
- DNS Server IS READY TO USE!            
+ DNS Server IS READY TO USE!
 ################################################
 ```
 Bring up Storage Container-
@@ -582,7 +582,7 @@ podman-compose exec ${STORAGE_CONTAINER_NAME} tail -f /tmp/storage_setup.log
 Export list for racnode-storage:
 /oradata *
 #################################################
- Setup Completed                                 
+ Setup Completed
 #################################################
 ```
 
@@ -597,7 +597,7 @@ racstorage
 
 Bring up RAC Containers-
 ```bash
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME} 
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE1_CONTAINER_NAME}
 podman-compose stop ${RACNODE1_CONTAINER_NAME}
 
 podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE2_CONTAINER_NAME}
@@ -639,7 +639,7 @@ ORACLE RAC DATABASE IS READY TO USE
 podman-compose up -d ${CMAN_CONTAINER_NAME}
 podman-compose logs -f ${CMAN_CONTAINER_NAME}
 ################################################
-  CONNECTION MANAGER IS READY TO USE!            
+  CONNECTION MANAGER IS READY TO USE!
 ################################################
 ```
 ## Section 3: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image
@@ -696,7 +696,7 @@ export DB_SERVICE=service:soepdb
 ```
 Bring up RAC Containers-
 ```bash
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE3_CONTAINER_NAME} 
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE3_CONTAINER_NAME}
 podman-compose stop ${RACNODE3_CONTAINER_NAME}
 
 podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE3_CONTAINER_NAME}
@@ -765,7 +765,7 @@ export DB_SERVICE=service:soepdb
 ```
 Bring up RAC Containers-
 ```bash
-podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE3_CONTAINER_NAME} 
+podman-compose --podman-run-args="-t -i --systemd=always --cpuset-cpus 0-1 --memory 16G --memory-swap 32G" up -d ${RACNODE3_CONTAINER_NAME}
 podman-compose stop ${RACNODE3_CONTAINER_NAME}
 
 podman network disconnect ${PUBLIC_NETWORK_NAME} ${RACNODE3_CONTAINER_NAME}

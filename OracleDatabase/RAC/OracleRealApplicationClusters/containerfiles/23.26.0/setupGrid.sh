@@ -18,7 +18,6 @@ if [ "${SLIMMING}x" != 'truex' ] ; then
       mkdir -p "$GRID_BASE"
       mkdir -p "$GRID_HOME"
 fi
-
 groupadd -g 54334 asmadmin
 groupadd -g 54335 asmdba
 groupadd -g 54336 asmoper

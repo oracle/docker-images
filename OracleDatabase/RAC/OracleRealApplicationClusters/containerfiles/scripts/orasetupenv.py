@@ -774,11 +774,19 @@ class OraSetupEnv:
 
     def configure_legacy_scp_for_19c(self):
         """
-        Make scp options compatible with Oracle Linux 8 and 9.
+        Make scp compatible with Oracle 19c CVU/DBCA on Oracle Linux 8 and 9.
 
-        Oracle Linux 9's OpenSSH scp requires the legacy protocol options used
-        by the Oracle 19c setup scripts. Oracle Linux 8's older scp rejects
-        those options, so its wrapper removes them before invoking scp.
+        This runs only for Oracle major version 19.
+
+        Oracle 19c CVU/DBCA invokes scp with a remote path that includes literal
+        single quotes in the argv (for example,
+        host:'/var/tmp/.../getFileInfoNNN.out'). OpenSSH then fails with
+        "protocol error: filename does not match request", which surfaces as
+        PRVF-5311 / INS-06006 during TaskUserEquivalence.
+
+        On OL9, force legacy scp mode with -O -T.
+        On OL8, OpenSSH 8.0 supports -T but not -O; strip -O if present and
+        force -T so the CVU quoted-path copy succeeds.
         """
         try:
             oraversion = self.ocommon.get_rsp_version("INSTALL", None)
@@ -807,13 +815,6 @@ class OraSetupEnv:
             )
             return
 
-        if os.path.exists(scp_orig):
-            self.ocommon.log_info_message(
-                "Legacy scp wrapper already installed",
-                self.file_name
-            )
-            return
-
         if self._is_ol9():
             wrapper_lines = [
                 "#!/bin/bash",
@@ -821,19 +822,33 @@ class OraSetupEnv:
             ]
             wrapper_message = "Installed Oracle 19c OpenSSH scp wrapper at {0} for OL9".format(scp_bin)
         else:
-            # Oracle Linux 8 or earlier
+            # Oracle Linux 8: keep -T (needed for CVU quoted remote paths) and
+            # drop unsupported -O before invoking the real scp binary.
             wrapper_lines = [
                 "#!/bin/bash",
                 "args=()",
                 'for arg in "$@"; do',
                 '  case "$arg" in',
-                "    -O|-T) ;;",
+                "    -O) ;;",
                 '    *) args+=("$arg") ;;',
                 "  esac",
                 "done",
-                'exec /usr/bin/scp.openssh "${args[@]}"'
+                'exec /usr/bin/scp.openssh -T "${args[@]}"'
             ]
-            wrapper_message = "Installed Oracle Linux 8 scp compatibility wrapper at {0}".format(scp_bin)
+            wrapper_message = "Installed Oracle 19c OpenSSH scp wrapper at {0} for OL8".format(scp_bin)
+
+        if os.path.exists(scp_orig):
+            # Refresh an existing wrapper so a prior incorrect OL8 install is corrected.
+            printf_args = " ".join("'{0}'".format(line) for line in wrapper_lines)
+            install_cmd = "printf '%s\\n' {0} > {1} && chmod 755 {1}".format(
+                printf_args, scp_bin
+            )
+            self.ocommon.execute_cmd_checked(install_cmd, None, None, exit_on_error=True)
+            self.ocommon.log_info_message(
+                "Refreshed Oracle 19c scp wrapper at {0}".format(scp_bin),
+                self.file_name
+            )
+            return
 
         printf_args = " ".join("'{0}'".format(line) for line in wrapper_lines)
         install_cmd = "mv {0} {1} && printf '%s\\n' {2} > {0} && chmod 755 {0} {1}".format(

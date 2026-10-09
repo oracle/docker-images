@@ -50,7 +50,7 @@ services:
       - /scratch/rac/cluster01/node1:/u01
       - /scratch:/scratch
       - /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp
-      - /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp:/tmp/grid_23.26ai.rsp 
+      - /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE1_CRS_PRIVATE_IP1}
@@ -114,7 +114,7 @@ services:
       - /scratch/rac/cluster01/node2:/u01
       - /scratch:/scratch
       - /scratch/common_scripts/podman/rac/dbca_23.26ai.rsp:/tmp/dbca_23.26ai.rsp
-      - /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp:/tmp/grid_23.26ai.rsp 
+      - /scratch/common_scripts/podman/rac/grid_setup_new_23.26ai.rsp:/tmp/grid_23.26ai.rsp
     environment:
       DNS_SERVERS: ${DNS_PUBLIC_IP}
       CRS_PRIVATE_IP1: ${RACNODE2_CRS_PRIVATE_IP1}
@@ -185,7 +185,7 @@ services:
       - AUDIT_WRITE
       - NET_RAW
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f 'cmadmin'"]      
+      test: ["CMD-SHELL", "pgrep -f 'cmadmin'"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

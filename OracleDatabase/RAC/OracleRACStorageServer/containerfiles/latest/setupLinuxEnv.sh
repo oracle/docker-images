@@ -15,18 +15,18 @@
 mkdir /oradata && \
 chmod ug+x /opt/scripts/startup/*.sh && \
 if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
-        dnf install -y oracle-database-preinstall-23ai && \
-        cp /etc/security/limits.d/oracle-database-preinstall-23ai.conf /etc/security/limits.d/grid-database-preinstall-23ai.conf && \
-        sed -i 's/oracle/grid/g' /etc/security/limits.d/grid-database-preinstall-23ai.conf && \
-        rm -f /etc/systemd/system/oracle-database-preinstall-23ai-firstboot.service && \
+        dnf install -y oracle-ai-database-preinstall-26ai && \
+        cp /etc/security/limits.d/oracle-ai-database-preinstall-26ai.conf /etc/security/limits.d/grid-ai-database-preinstall-26ai.conf && \
+        sed -i 's/oracle/grid/g' /etc/security/limits.d/grid-ai-database-preinstall-26ai.conf && \
+        rm -f /etc/systemd/system/oracle-ai-database-preinstall-26ai-firstboot.service && \
         sed -i 's/^TasksMax\S*/TasksMax=80%/g' /usr/lib/systemd/system/user-.slice.d/10-defaults.conf && \
         dnf clean all; \
 else \
         dnf -y install oraclelinux-developer-release-el8 && \
-        dnf -y install oracle-database-preinstall-23ai && \
-        cp /etc/security/limits.d/oracle-database-preinstall-23ai.conf /etc/security/limits.d/grid-database-preinstall-23ai.conf && \
-        sed -i 's/oracle/grid/g' /etc/security/limits.d/grid-database-preinstall-23ai.conf && \
-        rm -f /etc/rc.d/init.d/oracle-database-preinstall-23ai-firstboot && \
+        dnf -y install oracle-ai-database-preinstall-26ai && \
+        cp /etc/security/limits.d/oracle-ai-database-preinstall-26ai.conf /etc/security/limits.d/grid-ai-database-preinstall-26ai.conf && \
+        sed -i 's/oracle/grid/g' /etc/security/limits.d/grid-ai-database-preinstall-26ai.conf && \
+        rm -f /etc/rc.d/init.d/oracle-ai-database-preinstall-26ai-firstboot && \
         dnf clean all; \
 fi && \
 dnf -y install net-tools which zip unzip tar openssh-server vim-minimal which vim-minimal passwd sudo  nfs-utils  && \
