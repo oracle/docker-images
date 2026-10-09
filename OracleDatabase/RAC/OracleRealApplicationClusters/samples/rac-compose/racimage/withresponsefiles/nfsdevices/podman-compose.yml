@@ -195,7 +195,7 @@ services:
       - AUDIT_WRITE
       - NET_RAW
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f 'cmadmin'"]      
+      test: ["CMD-SHELL", "pgrep -f 'cmadmin'"]
       interval: ${HEALTHCHECK_INTERVAL}
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}

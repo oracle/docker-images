@@ -6,7 +6,7 @@ Learn about container deployment options for Oracle Real Application Clusters (O
 
 Oracle Real Application Clusters (Oracle RAC) is an option for the award-winning Oracle Database Enterprise Edition. Oracle RAC is a cluster database with a shared cache architecture that overcomes the limitations of traditional shared-nothing and shared-disk approaches to provide highly scalable and available database solutions for all business applications.
 Oracle RAC uses Oracle Clusterware as a portable cluster software that allows clustering of independent servers so that they cooperate as a single system and Oracle Automatic Storage Management (Oracle ASM) to provide simplified storage management that is consistent across all servers and storage platforms.
-Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 23.26ai refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
+Oracle Clusterware and Oracle ASM are part of the Oracle Grid Infrastructure, which bundles both solutions in an easy-to-deploy software package. For more information on Oracle RAC Database 26ai refer to the [Oracle Database documentation](http://docs.oracle.com/en/database/).
 
 This guide helps you install Oracle RAC on Containers on Host Machines as explained in detail below. With the current release, you prepare the host machine, build or use pre-built Oracle RAC Container Images, and setup Oracle RAC on Single or Multiple Host machines with Oracle ASM.
 In this installation guide, we use [Podman](https://docs.podman.io/en/v3.0/) to create Oracle RAC Containers and manage them.
@@ -42,7 +42,7 @@ We have pre-created script `setup_rac_host.sh` which will prepare the podman hos
   - Install Podman
   - Install Podman Compose
   - Setup and Load SELinux modules
-  - Create Oracle RAC Podman secrets  
+  - Create Oracle RAC Podman secrets
 
 **Note :**  All below steps or commands in this QuickStart needs to be run as a `sudo` or `root` user.
 * In this quickstart, our working directory is `<GITHUB_REPO_CLONED_PATH>/docker-images/OracleDatabase/RAC/OracleRealApplicationClusters/containerfiles` from where all commands are executed.
@@ -69,7 +69,7 @@ Refer [this documentation](https://docs.oracle.com/en/operating-systems/oracle-l
 
 Example Oracle Container Registry tags:
 ```bash
-# Oracle Linux 9, Oracle RAC 23.26ai
+# Oracle Linux 9, Oracle RAC 26ai
 podman pull container-registry.oracle.com/database/rac:latest
 podman tag container-registry.oracle.com/database/rac:latest localhost/oracle/database-rac:23.26ai
 
@@ -83,7 +83,7 @@ podman tag container-registry.oracle.com/database/rac_ru:latest localhost/oracle
 ```
 
 **Notes**
-- Use `container-registry.oracle.com/database/rac:latest` for Oracle RAC 23.26ai on Oracle Linux 9.
+- Use `container-registry.oracle.com/database/rac:latest` for Oracle RAC 26ai on Oracle Linux 9.
 - Use `container-registry.oracle.com/database/rac_ru:latest-19` for Oracle RAC 19c on Oracle Linux 9.
 - Use `container-registry.oracle.com/database/rac_ru:latest` for Oracle RAC 21c on Oracle Linux 8. This is the documented Oracle Linux 8 compatibility path because the older `rac_ru` image line retains the cgroup compatibility behavior needed there.
 - Use the Oracle `DNSServer` Image to deploy a container providing DNS resolutions. Refer [OracleDNSServer](../../../OracleDNSServer/README.md)
@@ -163,7 +163,7 @@ OracleRealApplicationClusters/samples/rac-compose/racimage/withoutresponsefiles/
   ##########################################
   ```
 - Execute below to deploy Storage Containers-
-  
+
   ```bash
   ./setup_rac_host.sh -storage
   ```
@@ -290,7 +290,7 @@ Refer to [Environment Variables Explained for Oracle RAC on Podman Compose](./EN
 
 ## Connecting to an Oracle RAC Database
 
-**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections.  
+**IMPORTANT:** This section assumes that you have successfully created an Oracle RAC cluster using the preceding sections.
 Refer to the [README](../CONNECTING.md) for instructions on how to connect to the Oracle RAC Database.
 
 ## Cleanup

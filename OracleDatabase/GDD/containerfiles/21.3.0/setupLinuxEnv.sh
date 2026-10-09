@@ -9,6 +9,8 @@
 #
 # Copyright (c) 2020,2021 Oracle and/or its affiliates.
 #
+dnf update -y && \
+dnf clean all && \
 chmod ug+x $SCRIPT_DIR/*.sh && \
 yum -y install oracle-database-preinstall-21c  net-tools which zip unzip tar openssl openssh-server openssh-client vim-minimal which vim-minimal passwd sudo  && \
 yum clean all

@@ -10,6 +10,19 @@
 # Copyright (c) 2014,2024 Oracle and/or its affiliates.
 #
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+source "${SCRIPT_DIR}/baseImageMetadata.sh"
+
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
+
 usage() {
   cat << EOF
 
@@ -56,7 +69,7 @@ if [ "$#" -eq 0 ]; then
 fi
 
 # Parameters
-VERSION="12.2.0.1"
+VERSION="19.3.0"
 SKIPMD5=0
 DOCKEROPS=""
 IMAGE_NAME=""
@@ -108,6 +121,18 @@ fi
 
  echo "Container Image set to : ${IMAGE_NAME}"
 
+if [ "${VERSION%%.*}" -ge 19 ]; then
+  BUILD_FILE="Containerfile"
+else
+  BUILD_FILE="Dockerfile"
+fi
+
+# Resolve the digest before building the selected GSM version.
+checkContainerRuntime
+if [[ "${VERSION}" == 19.* || "${VERSION}" == 21.* ]]; then BASE_IMAGE_DEFAULT="oraclelinux:7-slim"; else BASE_IMAGE_DEFAULT="oraclelinux:9"; fi
+resolve_base_image_metadata "${VERSION}" "${BASE_IMAGE_DEFAULT}" "${DOCKEROPS}"
+DOCKEROPS="${DOCKEROPS} ${BASE_IMAGE_BUILD_ARGS}"
+
 # Go into version folder
 # cd "$VERSION" || exit
 
@@ -117,8 +142,8 @@ else
   echo "Ignored MD5 checksum."
 fi
 echo "=========================="
-echo "DOCKER info:"
-docker info
+echo "${CONTAINER_RUNTIME} info:"
+"${CONTAINER_RUNTIME}" info
 echo "=========================="
 
 # Proxy settings
@@ -152,7 +177,7 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 # shellcheck disable=SC2086
-docker build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} --build-arg VERSION="${VERSION}" -t ${IMAGE_NAME} -f "${VERSION}"/Containerfile . || {
+"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} --build-arg VERSION="${VERSION}" -t ${IMAGE_NAME} -f "${VERSION}/${BUILD_FILE}" . || {
   echo "There was an error building the image."
   exit 1
 }

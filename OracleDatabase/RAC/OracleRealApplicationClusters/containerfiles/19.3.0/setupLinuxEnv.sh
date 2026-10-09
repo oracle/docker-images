@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC1072,SC1073
+# shellcheck disable=all
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2026 Oracle and/or its affiliates.
@@ -14,22 +14,8 @@
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
-## Use OCI yum repos on OCI instead of public yum
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REGION_FILE="$SCRIPT_DIR/ociregion.sh"
-
-if [ ! -f "$REGION_FILE" ]; then
-    # Call the separate detection script if region file is missing
-    "$SCRIPT_DIR/ociregion.sh"
-fi
-
-if [ -f "$REGION_FILE" ]; then
-    region=$(cat "$REGION_FILE")
-    echo "Loaded OCI Region from file: $region"
-else
-    echo "OCI Region file not found. Exiting."
-    exit 1
-fi
+dnf update -y && \
+dnf clean all && \
 # Refer Doc ID 2760289.1 for error- "libxcrypt-compat compat-openssl11" only available in OL9
 # Error in invoking target 'libasmclntsh19.ohso libasmperl19.ohso client_sharedlib' of makefile '/u01/app/oracle/product/19c/dbhome_1/rdbms/lib/ins_rdbms.mk'.
 # Detect Oracle Linux version

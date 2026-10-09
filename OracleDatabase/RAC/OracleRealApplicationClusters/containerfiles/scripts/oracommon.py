@@ -1917,7 +1917,7 @@ class OraCommon:
         elif output.strip() == "23":
             vdata = "23.0.0"
         elif output.strip() == "26":
-            vdata = "23.26.0"
+            vdata = "26.0.0"
         elif output.strip() == "19":
             vdata = "19.0.0"
         elif output.strip() == "18":

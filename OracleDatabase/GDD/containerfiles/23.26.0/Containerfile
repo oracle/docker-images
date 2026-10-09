@@ -1,13 +1,14 @@
+# hadolint global ignore=DL4006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2026 Oracle and/or its affiliates.
 #
-# ORACLE DOCKERFILES PROJECT
+# ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle GSM 23.26ai to build the container image
+# This is the Containerfile for Oracle GSM 23.26ai to build the container image
 # MAINTAINER <paramdeep.saini@oracle.com>
 #
-# This is the Dockerfile for Oracle GSM 23.26ai
+# This is the Containerfile for Oracle GSM 23.26ai
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -17,18 +18,31 @@
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
+# Put all downloaded files in the same directory as this Containerfile
 # Run:
-#      $ docker build -t oracle/gsm:23.26.0 .
+#      $ podman build -t oracle/gsm:23.26.0 .
 #
 
 ARG SLIMMING=false
-ARG BASE_OL_IMAGE=oraclelinux:9
+ARG BASE_IMAGE=oraclelinux:9
+ARG BASE_OL_IMAGE=$BASE_IMAGE
+ARG BASE_IMAGE_REF=oraclelinux:9
+ARG BASE_IMAGE_DIGEST=unknown
 
 # Pull base image
 # ---------------
 # hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
+RUN \
+      mkdir -p /usr/share/oracle/image-metadata/rpms && \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/base-image-rpms.txt && \
+      rpm -qa --qf '%{NAME}\n' | sort -u > /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt;
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+LABEL "org.opencontainers.image.base.name"="$BASE_IMAGE_REF" \
+      "org.opencontainers.image.base.digest"="$BASE_IMAGE_DIGEST" \
+      "com.oracle.database.base.image.chain.path"="/usr/share/oracle/image-metadata/base-image-chain.json"
 ARG SLIMMING=false
 ARG VERSION
 
@@ -37,7 +51,7 @@ ARG VERSION
 LABEL "provider"="Oracle"                                          \
       "issues"="https://github.com/oracle/docker-images/issues"    \
       "volume.setup.location1"="/opt/oracle/scripts"               \
-      "port.listener"="1522"                                           
+      "port.listener"="1522"
 
 # Argument to control removal of components not needed after db software installation
 
@@ -78,7 +92,7 @@ ENV GSM_BASE="/u01/app/oracle" \
     ORACOMMON="oracommon.py" \
     DEMOAPPSQL="demoapp.sql" \
     RUNORASHARD="runOraShardSetup.sh" \
-    CHECKLIVENESS="checkLiveness.sh" 
+    CHECKLIVENESS="checkLiveness.sh"
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
@@ -88,8 +102,8 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
      SHARD_SCRIPT_DIR=$INSTALL_DIR/sharding \
      PATH=/bin:/usr/bin:/sbin:/usr/sbin \
      GSM_PATH=$GSM_HOME/bin:$PATH \
-     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib 
-    
+     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib
+
 #############################################
 # -------------------------------------------
 # Start new stage for slim image
@@ -185,12 +199,12 @@ USER ${USER}
 # hadolint ignore=SC2086
 RUN if [ "${SLIMMING}x" != 'truex' ]; then \
  chmod 755 $INSTALL_SCRIPTS/*.sh  && \
-    :;\   
+    :;\
   fi
 USER ${GSM_USER}
 RUN if [ "${SLIMMING}x" != 'truex' ]; then \
  "$INSTALL_DIR/install/$INSTALL_GSM_BINARIES_FILE" && \
- :;\  
+ :;\
 fi
 
 USER ${USER}
@@ -199,8 +213,8 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
    $INVENTORY/orainstRoot.sh && \
    $GSM_HOME/root.sh && \
    rm -rf $INSTALL_DIR/install && \
-   :;\ 
-   fi    
+   :;\
+   fi
 
 #RUN if [ "${SLIMMING}x" == 'truex' ]; then \
 #      mkdir /u01 && \
@@ -218,6 +232,22 @@ RUN rm -f $INSTALL_DIR/install/* && \
 #############################################
 # hadolint ignore=DL3006,DL3025
 FROM gsm-image-slim-${SLIMMING} AS final
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+RUN mkdir -p /usr/share/oracle/image-metadata && \
+    printf '{\n  "schemaVersion": 1,\n  "images": [{"name": "%s", "digest": "%s", "reference": "%s", "role": "direct-base"}]\n}\n' \
+      "$BASE_IMAGE_REF" "$BASE_IMAGE_DIGEST" "$BASE_IMAGE" > /usr/share/oracle/image-metadata/base-image-chain.json
+
+RUN \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
+      rpm -qa --qf '%{NAME}	%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
+      if [ -f /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt ]; then \
+        awk -F '\t' 'NR==FNR {base[$1]=1; next} !($1 in base) {print $1 "-" $2}' /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt /tmp/image-rpm-details > /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      else \
+        cp /usr/share/oracle/image-metadata/rpms/image-rpms.txt /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      fi && \
+      rm -f /tmp/image-rpm-details;
 
 COPY --from=builder /u01 /u01
 # hadolint ignore=SC2086

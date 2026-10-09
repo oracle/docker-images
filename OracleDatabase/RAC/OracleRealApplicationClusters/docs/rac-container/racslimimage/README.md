@@ -39,7 +39,7 @@ Users can deploy multi-node Oracle RAC Database Setup using Oracle RAC Database 
 * Make sure the Oracle RAC Database Container Slim Image is present as shown below.  If you have not created the Oracle RAC Database Container image, execute the [Building Oracle RAC Database Container Slim Image](../../../README.md#building-oracle-rac-database-container-slim-image)
   ```bash
   # podman images|grep database-rac
-  localhost/oracle/database-rac                         23.26.0-slim    8280809e82c8  About a minute ago  518 MB
+  localhost/oracle/database-rac                         23.26ai-slim    8280809e82c8  About a minute ago  518 MB
   ```
 * Configure the [Network Management](../../../README.md#network-management).
 * Configure the [Password Management](../../../README.md#password-management).
@@ -183,7 +183,7 @@ localhost/oracle/database-rac:23.26ai-slim
 #### Section 2.1.2: Deploying with NFS Storage Devices
 ##### Section 2.1.2.1: Prerequisites for setting up Oracle RAC with NFS Storage Devices
 
-* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details. 
+* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.
 
   **Note:** You can skip this step if you are planning to use block devices for storage.
 * Make sure the ASM NFS Storage devices do not have any existing file system.
@@ -564,7 +564,7 @@ Note:
 
 ## Section 6: Connecting to Oracle RAC Environment
 
-**IMPORTANT:** Before you connnect to the environment, you must first successfully create an Oracle RAC Database as described in the preceding sections.  
+**IMPORTANT:** Before you connnect to the environment, you must first successfully create an Oracle RAC Database as described in the preceding sections.
 See [Connecting to an Oracle RAC Database](../../CONNECTING.md) for instructions on how to connect to the Oracle RAC Database.
 
 ## Section 7: Sample of Addition of Nodes to Oracle RAC Containers based on Slim Image and using Block Devices
@@ -579,7 +579,7 @@ Prepare the directory for additional node:
 ```bash
 mkdir -p /scratch/rac/cluster01/node3
 rm -rf /scratch/rac/cluster01/node3/*
-```  
+```
 
 Create additional container for the new Oracle RAC Database Node. In this example, we create the container with hostname `racnodep3`:
 ```bash

@@ -9,6 +9,8 @@
 #
 # Copyright (c) 2020,2026 Oracle and/or its affiliates.
 #
+dnf update -y && \
+dnf clean all && \
 
 if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
         dnf -y install oracle-ai-database-preinstall-26ai && \

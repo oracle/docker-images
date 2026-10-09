@@ -169,7 +169,7 @@ localhost/oracle/database-rac:23.26ai
 
 ##### Section 2.1.2.1: Prerequisites for setting up Oracle RAC with NFS storage devices
 
-* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details. 
+* Create an NFS Volume to be used for ASM Devices for Oracle RAC. See the section `Configuring NFS for Storage for Oracle RAC on Podman` in [Oracle Real Application Clusters Installation Guide for Podman](https://docs.oracle.com/cd/F39414_01/racpd/oracle-real-application-clusters-installation-guide-podman-oracle-linux-x86-64.pdf) for more details.
 
   **Note:** You can skip this step if you are planning to use block devices for storage.
 * Make sure the ASM NFS Storage devices do not have any existing file system.
@@ -590,7 +590,7 @@ a27fceea9fe6  localhost/oracle/database-rac:23.26ai                          46 
 
 ## Section 6: Connecting to Oracle RAC Environment
 
-**IMPORTANT:** Before you connnect to the environment, you must first successfully create an Oracle RAC Database as described in the preceding sections.  
+**IMPORTANT:** Before you connnect to the environment, you must first successfully create an Oracle RAC Database as described in the preceding sections.
 See [Connecting to an Oracle RAC Database](../../CONNECTING.md) for instructions on how to connect to the Oracle RAC Database.
 
 ## Section 7: Example of Node Addition to Oracle RAC Database Based on Oracle RAC Image with Block Devices

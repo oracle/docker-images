@@ -1,13 +1,14 @@
+# hadolint global ignore=DL4006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2021 Oracle and/or its affiliates.
 #
-# ORACLE DOCKERFILES PROJECT
+# ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle GSM 21c Release 3 to build the container image
+# This is the Containerfile for Oracle GSM 21c Release 3 to build the container image
 # MAINTAINER <paramdeep.saini@oracle.com>
 #
-# This is the Dockerfile for Oracle GSM  21c
+# This is the Containerfile for Oracle GSM  21c
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
@@ -17,18 +18,31 @@
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
+# Put all downloaded files in the same directory as this Containerfile
 # Run:
-#      $ docker build -t oracle/gsm:21.3.0 .
+#      $ podman build -t oracle/gsm:21.3.0 .
 #
 # Pull base image
 # ---------------
-ARG BASE_OL_IMAGE=oraclelinux:7-slim
+ARG BASE_IMAGE=oraclelinux:7-slim
+ARG BASE_OL_IMAGE=$BASE_IMAGE
+ARG BASE_IMAGE_REF=oraclelinux:7-slim
+ARG BASE_IMAGE_DIGEST=unknown
 
 # Pull base image
 # ---------------
 # hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
+RUN \
+      mkdir -p /usr/share/oracle/image-metadata/rpms && \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/base-image-rpms.txt && \
+      rpm -qa --qf '%{NAME}\n' | sort -u > /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt;
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+LABEL "org.opencontainers.image.base.name"="$BASE_IMAGE_REF" \
+      "org.opencontainers.image.base.digest"="$BASE_IMAGE_DIGEST" \
+      "com.oracle.database.base.image.chain.path"="/usr/share/oracle/image-metadata/base-image-chain.json"
 ARG VERSION
 
 # Labels
@@ -120,6 +134,22 @@ RUN chmod 755 $INSTALL_SCRIPTS/*.sh  && \
 #############################################
 
 FROM base
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+RUN mkdir -p /usr/share/oracle/image-metadata && \
+    printf '{\n  "schemaVersion": 1,\n  "images": [{"name": "%s", "digest": "%s", "reference": "%s", "role": "direct-base"}]\n}\n' \
+      "$BASE_IMAGE_REF" "$BASE_IMAGE_DIGEST" "$BASE_IMAGE" > /usr/share/oracle/image-metadata/base-image-chain.json
+
+RUN \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
+      rpm -qa --qf '%{NAME}	%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
+      if [ -f /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt ]; then \
+        awk -F '\t' 'NR==FNR {base[$1]=1; next} !($1 in base) {print $1 "-" $2}' /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt /tmp/image-rpm-details > /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      else \
+        cp /usr/share/oracle/image-metadata/rpms/image-rpms.txt /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      fi && \
+      rm -f /tmp/image-rpm-details;
 
 COPY --from=builder /u01 /u01
 

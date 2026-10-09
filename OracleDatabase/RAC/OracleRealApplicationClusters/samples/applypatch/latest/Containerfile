@@ -1,11 +1,12 @@
+# hadolint global ignore=SC2086
 # LICENSE UPL 1.0
 #
 # Copyright (c) 1982-2025 Oracle and/or its affiliates. All rights reserved.
 #
-# ORACLE DOCKERFILES PROJECT
+# ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for a patched Oracle Database 21c Release 3
-# 
+# This is the Containerfile for a patched Oracle Database 21c Release 3
+#
 # REQUIREMETNS FOR THIS IMAGE
 # ----------------------------------
 # The oracle/rac-database:21.3.0 image has to exist
@@ -13,8 +14,8 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Put the downloaded patch(es) into the sub folders patch/0NN
-# Run: 
-#      $ docker build -f Dockerfile -t oracle/rac-database:21.3.0-<patch level> . 
+# Run:
+#      $ podman build -f Containerfile -t oracle/rac-database:21.3.0-<patch level> .
 #
 ARG VERSION=19.3.0
 
@@ -32,7 +33,7 @@ ARG WORKDIR="/rac-work-dir"
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 # hadolint ignore=DL3002
-USER root 
+USER root
 
 ENV PATCH_DIR=$PATCH_DIR \
     GRID_PATCH_FILE="applyGridPatches.sh" \
@@ -41,7 +42,7 @@ ENV PATCH_DIR=$PATCH_DIR \
     DB_USER="oracle" \
     USER=$USER \
     WORKDIR=$WORKDIR \
-    GRID_USER="grid"  
+    GRID_USER="grid"
 
 # Use second ENV so that variable get substituted
 ENV PATCH_INSTALL_DIR=/tmp/patches
