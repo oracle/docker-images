@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1.7
+# hadolint global ignore=DL4006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018, 2026 Oracle and/or its affiliates.
 #
-# ORACLE DOCKERFILES PROJECT
+# ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 19c
-# 
+# This is the Containerfile for Oracle Database 19c
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # (1) db_home.zip
@@ -15,15 +16,19 @@
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/database:19.3.0-${EDITION} . 
+# Put all downloaded files in the same directory as this Containerfile
+# Run:
+#      $ podman build -t oracle/database:19.3.0-${EDITION} .
 #
 # Pull base image
 # ---------------
 ARG BASE_IMAGE=oraclelinux:9
 # hadolint ignore=DL3006
 FROM ${BASE_IMAGE} as base
+RUN \
+      mkdir -p /usr/share/oracle/image-metadata/rpms && \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/base-image-rpms.txt && \
+      rpm -qa --qf '%{NAME}\n' | sort -u > /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt;
 
 # Labels
 # ------
@@ -195,6 +200,17 @@ RUN chmod ug+x "$INSTALL_DIR"/*.sh && \
 #############################################
 
 FROM base
+USER root
+
+RUN \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
+      rpm -qa --qf '%{NAME}	%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
+      if [ -f /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt ]; then \
+        awk -F '\t' 'NR==FNR {base[$1]=1; next} !($1 in base) {print $1 "-" $2}' /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt /tmp/image-rpm-details > /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      else \
+        cp /usr/share/oracle/image-metadata/rpms/image-rpms.txt /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      fi && \
+      rm -f /tmp/image-rpm-details;
 
 USER oracle
 COPY --chown=oracle:dba --from=builder $ORACLE_BASE $ORACLE_BASE
@@ -213,5 +229,5 @@ RUN echo 'ORACLE_SID=${ORACLE_SID:-ORCLCDB}; export ORACLE_SID=${ORACLE_SID^^}' 
 HEALTHCHECK --interval=1m --start-period=5m --timeout=30s \
    CMD "$SCRIPT_BASE_DIR/$CHECK_DB_FILE" >/dev/null || exit 1
 
-# Define default command to start Oracle Database. 
+# Define default command to start Oracle Database.
 CMD [ "/bin/bash", "-c", "exec $SCRIPT_BASE_DIR/$RUN_FILE" ]
