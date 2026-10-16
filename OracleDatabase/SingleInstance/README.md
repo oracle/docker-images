@@ -189,6 +189,7 @@ To run your Oracle Database image use the `podman run` command as follows:
     -e ENABLE_FORCE_LOGGING=true \
     -e ENABLE_TCPS=true \
     -e TRUE_CACHE=true \
+    -e TDE_ENABLED=true \
     -e TDE_WALLET_PWD=<your password for TDE wallet> \
     -e PRIMARY_DB_PWD_FILE=<Location of the primary database password file> \
     -e PRIMARY_DB_TDE_WALLET=<Location of the primary database TDE wallet> \
@@ -249,8 +250,11 @@ To run your Oracle Database image use the `podman run` command as follows:
        -e TRUE_CACHE:
                       To configure Oracle True Cache instance.
                       Supported from Oracle 26ai onwards.
+       -e TDE_ENABLED:
+                      Set to 'true' to configure TDE during Enterprise/SE2 database creation.
+                      Use together with TDE_WALLET_PWD or the tde_wallet_pwd Podman secret.
        -e TDE_WALLET_PWD:
-                      Password for TDE wallet to configure TDE.
+                      Password for the TDE wallet when TDE_ENABLED=true.
        -e PRIMARY_DB_PWD_FILE:
                       <Location of the primary database password file inside the True Cache container>  (Required if TRUE_CACHE=true)
        -e PRIMARY_DB_TDE_WALLET:
@@ -487,9 +491,10 @@ The ORACLE_SID for Oracle Database 26ai Free is always `FREE` and cannot be chan
 | `ENABLE_FORCE_LOGGING` | Supported from 26ai onward | Not shown in the Free example | Enables force logging during first database creation. | Optional |
 | `ENABLE_TCPS` | Supported from 19.3 onward | Not shown in the Free example | Enables TCPS listener endpoint on container port `2484`. | Optional |
 | `TCPS_CERTS_LOCATION` | Supported from 19.3 onward | Not shown in the Free example | In-container location of user-provided `cert.crt` and `client.key` files for TCPS. | Optional |
+| `TDE_ENABLED` | Supported for TDE wallet configuration | Not shown in the Free example | Enables TDE configuration during Enterprise/SE2 database creation. Set this to `true` together with `TDE_WALLET_PWD` (or the `tde_wallet_pwd` Podman secret). | Conditional for TDE |
 | `CONFIGURE_TDE` | Not shown in the Enterprise/SE2 example | Supported from 26ai onward | Enables TDE configuration for Free image database creation. | Optional |
 | `ENCRYPT_TABLESPACES` | Not shown in the Enterprise/SE2 example | Supported | Tablespace encryption list. Leave empty for user tablespace only, set `ALL`, or use entries such as `SYSTEM:true,SYSAUX:false`. | Optional |
-| `TDE_WALLET_PWD` | Supported for TDE wallet configuration | Not shown in the Free example | Password for TDE wallet configuration. Can also be provided through the `tde_wallet_pwd` Podman secret. | Conditional for TDE |
+| `TDE_WALLET_PWD` | Used when `TDE_ENABLED=true` | Not shown in the Free example | Password for TDE wallet configuration. Can also be provided through the `tde_wallet_pwd` Podman secret. | Conditional for TDE |
 | `TRUE_CACHE` | Supported from 26ai onward when running a True Cache container | Use the True Cache extension image flow for Free True Cache | Marks the container as a True Cache host. For complete primary plus True Cache Podman setup, use `extensions/truecache/README.md`. | Conditional for True Cache |
 | `PRIMARY_DB_CONN_STR` | Required when `TRUE_CACHE=true` | Required in Free True Cache extension flow | Primary database connection string in `<HOST>:<PORT>/<SERVICE_NAME>` format. | Conditional for True Cache |
 | `PRIMARY_DB_NAME` | Optional when the primary DB_NAME differs from the service name | Optional when the primary DB_NAME differs from the service name | Primary source DB_NAME override. | Optional |
