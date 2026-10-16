@@ -44,6 +44,7 @@ ARG VERSION=26.0.0
 # ---------------
 # hadolint ignore=DL3006,DL3025
 FROM $BASE_OL_IMAGE AS base
+# hadolint ignore=DL4006
 RUN \
       mkdir -p /usr/share/oracle/image-metadata/rpms && \
       rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/base-image-rpms.txt && \
@@ -251,6 +252,7 @@ RUN mkdir -p /usr/share/oracle/image-metadata && \
     printf '{\n  "schemaVersion": 1,\n  "images": [{"name": "%s", "digest": "%s", "reference": "%s", "role": "direct-base"}]\n}\n' \
       "$BASE_IMAGE_REF" "$BASE_IMAGE_DIGEST" "$BASE_IMAGE" > /usr/share/oracle/image-metadata/base-image-chain.json
 
+# hadolint ignore=DL4006
 RUN \
       rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
       rpm -qa --qf '%{NAME}\t%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
@@ -263,7 +265,6 @@ RUN \
 
 COPY --from=builder /u01 /u01
 # hadolint ignore=SC2086
-
 RUN test -x "$PYTHON3_FILE" && \
     ln -sf $PYTHON3_FILE $PYTHON_FILE && \
     rm -f $INSTALL_DIR/install/*  && \

@@ -78,6 +78,7 @@ COPY --from=builder /opt/oracle /opt/oracle
 COPY --from=builder /home/oracle/.bashrc  /home/oracle/.bashrc
 
 USER root
+# hadolint ignore=SC2086
 RUN if [ ! -f $PYTHON_FILE ]; then \
       ln -s $PYTHON3_FILE $PYTHON_FILE && \
       :; \
