@@ -1,4 +1,17 @@
 #!/bin/bash
+# shellcheck disable=SC2154,SC2320
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+source "${SCRIPT_DIR}/baseImageMetadata.sh"
+
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
 # shellcheck disable=SC2045,SC2154,SC2164,SC2320
 #
 #############################
@@ -100,6 +113,12 @@ while getopts "hiv:o:t:" optname; do
   esac
 done
 if [ "$VERSION" = "23.26.0" ]; then IMAGE_NAME="oracle/client-cman:23.26ai"; else IMAGE_NAME="oracle/client-cman:$VERSION"; fi
+# Resolve the digest before changing into the version directory.
+checkContainerRuntime
+if [[ "${VERSION}" == 19.* || "${VERSION}" == 21.* ]]; then BASE_IMAGE_DEFAULT="oraclelinux:7-slim"; else BASE_IMAGE_DEFAULT="oraclelinux:9"; fi
+resolve_base_image_metadata "${VERSION}" "${BASE_IMAGE_DEFAULT}" "${DOCKEROPS}"
+DOCKEROPS="${DOCKEROPS} ${BASE_IMAGE_BUILD_ARGS}"
+
 # Go into version folder
 cd "$VERSION" || exit 1
 
@@ -110,7 +129,7 @@ else
 fi
 echo "=========================="
 echo "DOCKER info:"
-docker info
+"${CONTAINER_RUNTIME}" info
 echo "=========================="
 
 # Proxy settings
@@ -142,7 +161,7 @@ echo "Building image '$IMAGE_NAME' ..."
 
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
-docker build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
+"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f Containerfile . || {
   echo "There was an error building the image."
   exit 1
 }

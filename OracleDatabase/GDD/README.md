@@ -131,7 +131,7 @@ If you use non-`latest` tags, retag them as needed for your deployment commands.
 **Important:**
 
 - Make sure the OpenSSL version in the container image is compatible with the OpenSSL version on the host that generates the encrypted password file.
-- The compatibility examples in [Oracle Container Registry Image Compatibility](#oracle-container-registry-image-compatibility) can help you choose matching images.
+- The compatibility examples in [Oracle Container Registry Image Compatibility](#option-1-pull-images-from-oracle-container-registry) can help you choose matching images.
 
 ### Option 2: Build a GSM Image from Local Binaries
 
@@ -156,14 +156,38 @@ To view script usage:
 
 This script performs checksum validation and simplifies image creation for new users. Advanced users can run `podman build` directly with their preferred parameters.
 
+RPM provenance is always recorded under `/usr/share/oracle/image-metadata/rpms`.
+Inspect it with:
+
+```bash
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'ls -l /usr/share/oracle/image-metadata/rpms && cat /usr/share/oracle/image-metadata/rpms/*.txt'
+```
+
+#### Building GSM Base Image
+
+In this document, an `GSM Container Base Image` refers to a container image that does not include installation of Oracle GSM Software Binaries during the Oracle GSM Container Image creation. This image is extended to build patched image or extensions. To build GSM Container Base Image run the following command:
+
+```bash
+./buildContainerImage.sh -v <Software Version> -b
+```
+
+Example: To build an GSM Container Base Image for 23.26ai (Oracle AI Database 26ai), use the below command:
+
+```bash
+./buildContainerImage.sh -v 23.26.0 -b
+```
+
+This image will be used as the base image to create the patched version of Oracle GSM Image. Please check [Create Patched GSM Image](./samples/applypatch/README.md)
+
 ### Building Database Images
 
 This repo focuses on GSM container files and deployment samples. For database image creation, use the upstream Oracle image guides:
 
-- Single Instance Database base image: [OracleDatabase/SingleInstance README](https://github.com/oracle/docker-images/blob/main/OracleDatabase/SingleInstance/README.md)
-- Single Instance extensions: [OracleDatabase/SingleInstance/extensions README](https://github.com/oracle/docker-images/blob/main/OracleDatabase/SingleInstance/extensions/README.md)
-- RAC base image: [OracleDatabase/RAC/OracleRealApplicationClusters README](https://github.com/oracle/docker-images/blob/main/OracleDatabase/RAC/OracleRealApplicationClusters/README.md)
-- RAC extensions: [OracleDatabase/RAC/OracleRealApplicationClusters/extensions README](https://github.com/oracle/docker-images/blob/main/OracleDatabase/RAC/OracleRealApplicationClusters/extensions/README.md)
+- Single Instance Database base image: [OracleDatabase/SingleInstance README](../SingleInstance/README.md)
+- Single Instance extensions: [OracleDatabase/SingleInstance/extensions README](../SingleInstance/extensions/README.md)
+- RAC base image: [OracleDatabase/RAC/OracleRealApplicationClusters README](../RAC/OracleRealApplicationClusters/README.md)
+- RAC extensions: [OracleDatabase/RAC/OracleRealApplicationClusters/extensions README](../RAC/OracleRealApplicationClusters/extensions/README.md)
 
 Use those guides to build the base or extended database images, then return to the deployment scenarios in this repo for container-specific setup.
 
@@ -201,3 +225,23 @@ Unless otherwise noted, the scripts and files in this project and the related `d
 
 Copyright (c) 2022 - 2024 Oracle and/or its affiliates.
 Released under the Universal Permissive License v1.0 as shown at [https://oss.oracle.com/licenses/upl/](https://oss.oracle.com/licenses/upl/)
+
+
+## Base image provenance
+
+The GSM build wrapper resolves the selected base image to a sha256 digest and
+passes `BASE_IMAGE`, `BASE_IMAGE_REF`, and `BASE_IMAGE_DIGEST` to the
+build. The image exposes the source reference and digest as OCI labels and
+writes the direct-base record to:
+
+```
+/usr/share/oracle/image-metadata/base-image-chain.json
+```
+
+Inspect an image with:
+
+```
+podman image inspect IMAGE --format '{{json .Config.Labels}}'
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'cat /usr/share/oracle/image-metadata/base-image-chain.json'
+```

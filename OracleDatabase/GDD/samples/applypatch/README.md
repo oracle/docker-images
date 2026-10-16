@@ -1,13 +1,13 @@
-# Example of how to create a patched gsm image
+# Example of how to create a patched GSM Image
 
 ## Pre-requisites
 
-After you build your base Oracle GSM image following the [README.md](../../../container-based-sharding-deployment/README.md?ref_type=heads#building-oracle-globally-distributed-database-container-images) you can create a patched version of it. To build a patched image, you must provide the patch zip files.
+After you build your base Oracle GSM image following the [README.md](../../README.md#option-2-build-a-gsm-image-from-local-binaries) you can create a patched version of it. To build a patched image, you must provide the patch zip files.
 
 **Notes:**
 
 - Some patches require a newer version of `OPatch`, the Oracle Interim Patch Installer utility. Oracle highly recommends that you always update opatch with the new version.
-- You can only patch releases 18.10.0 or later using this script.
+- You can only patch releases 19.3.0 or later using this script.
 - The scripts automatically install a newer OPatch version, if provided.
 
 ## The patch structure
@@ -47,7 +47,7 @@ These directories are useful if you want to install multiple patches at once. Th
 
   Parameters:
      -v: version to build
-         Choose one of: latest
+     -t: user-defined image name and tag
      -o: passes on container build option
      -p: patch label to be used for the tag
 
@@ -56,13 +56,11 @@ These directories are useful if you want to install multiple patches at once. Th
   Copyright (c) 2014,2022 Oracle and/or its affiliates.
    ```
 
-- The following is an example of building a patched image using 19.3.0. Note that `BASE_GSM_IMAGE=localhost/oracle/gsm:19.3.0` is set to 19.3.0. You must set BASE_GSM_IMAGE based on your enviornment.
+- The following is an example of building a patched image from 19.3.0 GSM Image created earlier. Note that `localhost/oracle/gsm:19.3.0-base` is created before using [README.md](../../README.md#building-gsm-base-image).
 
  ```bash
- # ./buildPatchedContainerImage.sh -v 19.3.0 -p 19.25.0  -o '--build-arg BASE_GSM_IMAGE=localhost/oracle/database-rac:19.3.0'
+ ./buildPatchedContainerImage.sh -v 19.3.0 -p 19.32.0
  ```
-
-**Notes**: If you are trying to patch the image on Oracle Linux 8 (OL8) on the PODMAN host, then you must have the  `podman-docker` package installed on your PODMAN host.
 
 ## Copyright
 

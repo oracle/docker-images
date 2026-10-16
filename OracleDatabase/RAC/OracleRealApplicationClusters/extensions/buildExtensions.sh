@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# shellcheck disable=SC2034
+# shellcheck disable=SC2034,SC2086,SC2154,SC2230
 # 
 # Since: Mar, 2020
 # Author: mohammed.qureshi@oracle.com
@@ -24,7 +24,7 @@ Parameters:
    -x: Space separated extensions to build. Defaults to all
        Choose from : $(for i in $(cd "$SCRIPT_DIR" && ls -d -- */); do echo -n "${i%%/}  "; done)
    -b: Base image to use
-       -v: Base version to extend (example 23.26.0)
+   -v: Base version to extend (example 26.0.0)
    -t: name:tag for the extended image
    -o: passes on Container build option
 
@@ -38,8 +38,8 @@ EOF
 
 # Check container runtime
 checkContainerRuntime() {
-  CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
-    CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+  CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
     {
       echo "No docker or podman executable found in your PATH"
       exit 1
@@ -53,9 +53,9 @@ checkContainerRuntime() {
 # Parameters
 DOCKEROPS=""
 DOCKERFILE="Dockerfile"
-BASE_IMAGE="oracle/database-rac:23.26.0"
+BASE_IMAGE="oracle/database-rac:26.0.0"
 IMAGE_NAME="oracle/database:ext"
-VERSION="23.26.0"
+VERSION="26.0.0"
 
 if [ "$#" -eq 0 ]; then
   usage;
@@ -142,20 +142,14 @@ for x in $EXTENSIONS; do
     exit 1;
   }
 
-  if [ "$x" == "patching" ]; then 
-    if [ "$( (ls patches/one_offs && ls patches/release_update) | wc -l)" -eq 0 ]; then
-      echo "Patches Missing. Skipping Patching Extension"
-      if [ "$EXTENSIONS" == "patching" ]; then
-        exit
-      fi
-      cd ..
-      continue
-    fi
+  BUILD_CONTEXT_OPTIONS=()
+  if [ "$x" = "sharding" ]; then
+    BUILD_CONTEXT_OPTIONS=(--build-context "gdd-scripts=../../../../GDD/containerfiles/scripts")
   fi
 
   # shellcheck disable=SC2086
   "${CONTAINER_RUNTIME}" build --force-rm=true --build-arg BASE_IMAGE="$BASE_IMAGE" \
-       $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f $DOCKERFILE . || {
+       "${BUILD_CONTEXT_OPTIONS[@]}" $DOCKEROPS $PROXY_SETTINGS -t $IMAGE_NAME -f $DOCKERFILE . || {
   echo ""
   echo "ERROR: Oracle Database Container Image was NOT successfully created."
   echo "ERROR: Check the output and correct any reported problems with the container build operation."

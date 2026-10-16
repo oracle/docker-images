@@ -1,3 +1,4 @@
+# hadolint global ignore=DL4006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2026 Oracle and/or its affiliates.
@@ -21,13 +22,26 @@
 #      $ ./buildContainerImage.sh -v 19.3.0
 
 
-ARG BASE_OL_IMAGE=oraclelinux:9
+ARG BASE_IMAGE=oraclelinux:9
+ARG BASE_OL_IMAGE=$BASE_IMAGE
+ARG BASE_IMAGE_REF=oraclelinux:9
+ARG BASE_IMAGE_DIGEST=unknown
 ARG SLIMMING=false
 # Pull base image
 # ---------------
 # hadolint ignore=DL3006,DL3025
-FROM $BASE_OL_IMAGE AS racbase
+FROM $BASE_IMAGE AS racbase
+RUN \
+      mkdir -p /usr/share/oracle/image-metadata/rpms && \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/base-image-rpms.txt && \
+      rpm -qa --qf '%{NAME}\n' | sort -u > /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt;
 ARG SLIMMING=false
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+ARG BASE_IMAGE
+LABEL "org.opencontainers.image.base.name"="$BASE_IMAGE_REF" \
+      "org.opencontainers.image.base.digest"="$BASE_IMAGE_DIGEST" \
+      "com.oracle.database.base.image.chain.path"="/usr/share/oracle/image-metadata/base-image-chain.json"
 ARG VERSION
 # Labels
 # ------
@@ -59,7 +73,6 @@ ARG IGNORE_PREREQ=false
 # Linux Env Variable
 # hadolint ignore=DL3044
 ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
-    OCI_FILE="ociregion.sh" \
     INSTALL_DIR=/opt/scripts \
 # Grid Env variables
     GRID_INSTALL_RSP="gridsetup_19c.rsp" \
@@ -131,7 +144,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # COPY Binaries
-COPY $VERSION/$SETUP_LINUX_FILE $OCI_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
+COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
 # Setup Scripts
 COPY $VERSION/$RUN_FILE $VERSION/$ADDNODE_RSP $VERSION/$SETUPSSH $VERSION/$GRID_INSTALL_RSP $VERSION/$DBCA_RSP $VERSION/$INITSH  $SCRIPT_DIR/
@@ -168,7 +181,7 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 # Copy binaries
 # -------------
 # COPY Binaries
-COPY $VERSION/$SETUP_LINUX_FILE $OCI_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
+COPY $VERSION/$SETUP_LINUX_FILE $VERSION/$GRID_SETUP_FILE $VERSION/$DB_SETUP_FILE $VERSION/$CHECK_SPACE_FILE $VERSION/$FIXUP_PREQ_FILE $INSTALL_SCRIPTS/
 
 # Setup Scripts
 COPY $VERSION/$RUN_FILE $VERSION/$SETUPSSH $VERSION/$INITSH $SCRIPT_DIR/
@@ -239,6 +252,22 @@ RUN rm -f $INSTALL_DIR/install/* && \
 #############################################
 # hadolint ignore=DL3006
 FROM rac-image-slim-${SLIMMING} AS final
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+RUN mkdir -p /usr/share/oracle/image-metadata && \
+    printf '{\n  "schemaVersion": 1,\n  "images": [{"name": "%s", "digest": "%s", "reference": "%s", "role": "direct-base"}]\n}\n' \
+      "$BASE_IMAGE_REF" "$BASE_IMAGE_DIGEST" "$BASE_IMAGE" > /usr/share/oracle/image-metadata/base-image-chain.json
+
+RUN \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
+      rpm -qa --qf '%{NAME}	%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
+      if [ -f /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt ]; then \
+        awk -F '\t' 'NR==FNR {base[$1]=1; next} !($1 in base) {print $1 "-" $2}' /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt /tmp/image-rpm-details > /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      else \
+        cp /usr/share/oracle/image-metadata/rpms/image-rpms.txt /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      fi && \
+      rm -f /tmp/image-rpm-details;
 ARG VERSION
 ENV GRID_BASE=/u01/app/grid \
     GRID_HOME=/u01/app/19c/grid \

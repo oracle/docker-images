@@ -10,6 +10,15 @@
 # shellcheck disable=SC2046
 # shellcheck disable=SC2320
 
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(command -v podman 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(command -v docker 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
+
 usage() {
   cat << EOF
 
@@ -18,7 +27,7 @@ It builds a patched GSM container image
 
 Parameters:
    -v: version to build
-       Choose one of: $(for i in $(ls -d */); do echo -n "${i%%/}  "; done)
+   -t: user-defined image name and tag
    -o: passes on container build option
    -p: patch label to be used for the tag
 
@@ -27,32 +36,36 @@ LICENSE UPL 1.0
 Copyright (c) 2014,2022 Oracle and/or its affiliates.
 
 EOF
-  exit 0
+  exit "${1:-0}"
 }
 
 ##############
 #### MAIN ####
 ##############
 
+# No arguments: report an error.
 if [ "$#" -eq 0 ]; then
-  usage;
+  usage 1 >&2
 fi
 
 # Parameters
-ENTERPRISE=0
-STANDARD=0
+# shellcheck disable=SC2034
 LATEST="latest"
-VERSION='x'
+VERSION=''
+IMAGE_NAME=""
 PATCHLABEL="patch"
 DOCKEROPS=""
 
-while getopts "h:v:p:o:" optname; do
+while getopts "hv:t:p:o:" optname; do
   case "$optname" in
     "h")
       usage
       ;;
     "v")
       VERSION="$OPTARG"
+      ;;
+    "t")
+      IMAGE_NAME="$OPTARG"
       ;;
     "p")
       PATCHLABEL="$OPTARG"
@@ -61,8 +74,7 @@ while getopts "h:v:p:o:" optname; do
       DOCKEROPS="$OPTARG"
      ;;
     "?")
-      usage;
-      exit 1;
+      usage 1 >&2
       ;;
     *)
     # Should not occur
@@ -71,30 +83,41 @@ while getopts "h:v:p:o:" optname; do
   esac
 done
 
+if [[ -z "$VERSION" || -z "$PATCHLABEL" ]]; then
+  usage 1 >&2
+fi
+
 # Oracle Database Image Name
-IMAGE_NAME="oracle/database-gsm:$VERSION-$PATCHLABEL"
+IMAGE_NAME="${IMAGE_NAME:-localhost/oracle/gsm:${VERSION}-${PATCHLABEL}}"
 
 # Go into version folder
-cd latest
+# shellcheck disable=SC2164
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}/${LATEST}" || exit 1
 
 # Proxy settings
 PROXY_SETTINGS=""
+# shellcheck disable=SC2154
 if [ "${http_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg http_proxy=${http_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${https_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg https_proxy=${https_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${ftp_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg ftp_proxy=${ftp_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "${no_proxy}" != "" ]; then
   PROXY_SETTINGS="$PROXY_SETTINGS --build-arg no_proxy=${no_proxy}"
 fi
 
+# shellcheck disable=SC2154
 if [ "$PROXY_SETTINGS" != "" ]; then
   echo "Proxy settings were found and will be used during the build."
 fi
@@ -102,41 +125,31 @@ fi
 # ################## #
 # BUILDING THE IMAGE #
 # ################## #
-echo "Building image '$IMAGE_NAME' ..."
+# Select Podman or Docker before using CONTAINER_RUNTIME.
+checkContainerRuntime
 
-# BUILD THE IMAGE (replace all environment variables)
+echo "Building image '$IMAGE_NAME' using '$CONTAINER_RUNTIME' ..."
 BUILD_START=$(date '+%s')
 
-BASE_RELEASE=$(echo $VERSION | awk -F. '{ print $1}')
-DOCKEROPS=$DOCKEROPS"  ""--build-arg BASE_RELEASE=$BASE_RELEASE"
-docker build --no-cache=true $DOCKEROPS $PROXY_SETTINGS -t env -f DockerEnv .
-
-docker cp $(docker create --name env --rm env):/tmp/.env ./
-
-docker build --force-rm=true --no-cache=true $DOCKEROPS \
-             --build-arg GSM_HOME=$(grep GSM_HOME .env | cut -d '=' -f2) \
-             --build-arg PREINSTALL_PKG=$(grep PREINSTALL_PKG .env | cut -d '=' -f2) $PROXY_SETTINGS -t $IMAGE_NAME -f Dockerfile . || {
-  echo "There was an error building the image."
+# shellcheck disable=SC2086
+"${CONTAINER_RUNTIME}" build --no-cache=true $DOCKEROPS \
+    --build-arg VERSION="$VERSION" \
+    $PROXY_SETTINGS \
+    -t "$IMAGE_NAME" -f Containerfile . || {
+  echo "ERROR: Failed to build patched GSM image '${IMAGE_NAME}'." >&2
+  echo "Review the build output above for the cause." >&2
   exit 1
 }
-docker rm env
-docker rmi -f env
-rm -f ./.env
+
 BUILD_END=$(date '+%s')
-BUILD_ELAPSED=`expr $BUILD_END - $BUILD_START`
+BUILD_ELAPSED=$((BUILD_END - BUILD_START))
 
-echo ""
+cat <<EOF
 
-if [ $? -eq 0 ]; then
-cat << EOF
-  Oracle GSM container image with version $VERSION is ready to be extended:
+Oracle patched GSM container image built successfully.
 
-    --> $IMAGE_NAME
-
-  Build completed in $BUILD_ELAPSED seconds.
+  Image        : ${IMAGE_NAME}
+  Base version : ${VERSION}
+  Build time   : ${BUILD_ELAPSED} seconds
 
 EOF
-
-else
-  echo "Oracle GSM container image was NOT successfully created. Check the output and correct any reported problems that occurred during the build operation."
-fi

@@ -1,4 +1,16 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+source "${SCRIPT_DIR}/baseImageMetadata.sh"
+
+checkContainerRuntime() {
+  CONTAINER_RUNTIME=$(which podman 2>/dev/null) ||
+    CONTAINER_RUNTIME=$(which docker 2>/dev/null) ||
+    {
+      echo "No docker or podman executable found in your PATH"
+      exit 1
+    }
+}
 #
 # Since: November, 2018
 # Author: paramdeep.saini@oracle.com
@@ -147,6 +159,11 @@ fi
 
 echo "Container Image set to : ${IMAGE_NAME}"
 
+# Resolve the digest before changing into the version directory.
+checkContainerRuntime
+resolve_base_image_metadata "${VERSION}" "oraclelinux:9" "${DOCKEROPS}"
+DOCKEROPS="${DOCKEROPS} ${BASE_IMAGE_BUILD_ARGS}"
+
 # Go into version folder
 #cd "$VERSION" || exit
 
@@ -157,7 +174,7 @@ else
 fi
 echo "=========================="
 echo "DOCKER info:"
-docker info
+"${CONTAINER_RUNTIME}" info
 echo "=========================="
 
 # Proxy settings
@@ -190,7 +207,7 @@ fi
 if [ ${BASE_ONLY} -eq 1 ]; then
   echo "Building base stage image '${IMAGE_NAME}' ..."
   # BUILD THE BASE STAGE IMAGE (replace all environment variables)
-  docker build --force-rm=true \
+  "${CONTAINER_RUNTIME}" build --force-rm=true \
         --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} --build-arg VERSION="${VERSION}" --target final \
         -t "${IMAGE_NAME}" -f "${VERSION}"/Containerfile . || {
     echo ""
@@ -198,7 +215,7 @@ if [ ${BASE_ONLY} -eq 1 ]; then
     exit 1
   }
   # Remove dangling images (intermitten images with tag <none>)
-  yes | docker image prune > /dev/null || true
+  yes | "${CONTAINER_RUNTIME}" image prune > /dev/null || true
   exit
 fi
 
@@ -210,7 +227,7 @@ echo "Building image '$IMAGE_NAME' ..."
 # BUILD THE IMAGE (replace all environment variables)
 BUILD_START=$(date '+%s')
 # shellcheck disable=SC2086
-docker build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} --build-arg VERSION="${VERSION}" --target final -t ${IMAGE_NAME} -f "${VERSION}"/Containerfile . || {
+"${CONTAINER_RUNTIME}" build --force-rm=true --no-cache=true ${DOCKEROPS} ${PROXY_SETTINGS} --build-arg VERSION="${VERSION}" --target final -t ${IMAGE_NAME} -f "${VERSION}"/Containerfile . || {
   echo "There was an error building the image."
   exit 1
 }

@@ -14,14 +14,8 @@
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
-## Use OCI yum repos on OCI instead of public yum
-region=$(curl --noproxy '*' -sfm 3 -H "Authorization: Bearer Oracle" http://169.254.169.254/opc/v2/instance/ | sed -nE 's/^ *"regionIdentifier": "([^"]+)".*/\1/p')
-if [ -n "$region" ]; then 
-    echo "Detected OCI Region: $region"
-    for proxy in $(printenv | grep -i _proxy | cut -d= -f1); do unset $proxy; done
-    echo "-$region" > /etc/yum/vars/ociregion
-fi 
-
+dnf update -y && \
+dnf clean all && \
 mkdir /asmdisks && \
 mkdir /responsefiles  && \
 chmod ug+x /opt/scripts/startup/*.sh && \

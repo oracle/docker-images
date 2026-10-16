@@ -31,7 +31,7 @@ services:
       - /scratch/rac/cluster01/node3:/u01
       - /scratch:/scratch
       - ${DB_RESPONSE_FILE}:/tmp/dbca_23.26ai.rsp
-      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp 
+      - ${GRID_RESPONSE_FILE}:/tmp/grid_23.26ai.rsp
     environment:
       PRIVATE_IP1_LIST: ${RACNODE3_PRIVATE_IP1_LIST}
       PRIVATE_IP2_LIST: ${RACNODE3_PRIVATE_IP2_LIST}

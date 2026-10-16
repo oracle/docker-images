@@ -178,7 +178,7 @@ Instance ORCLCDB2 is running on node racnodep2
 [oracle@racnodep1 ~]$ srvctl config scan
 SCAN name: racnodepc1-scan, Network: 1
 Subnet IPv4: 10.0.20.0/255.255.255.0/eth0, static
-Subnet IPv6: 
+Subnet IPv6:
 SCAN 1 IPv4 VIP: 10.0.20.237
 SCAN VIP is enabled.
 SCAN 2 IPv4 VIP: 10.0.20.238

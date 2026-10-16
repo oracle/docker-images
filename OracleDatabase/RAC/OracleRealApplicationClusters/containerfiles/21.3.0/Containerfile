@@ -1,3 +1,4 @@
+# hadolint global ignore=DL4006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2026 Oracle and/or its affiliates.
@@ -17,16 +18,29 @@
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build -t oracle/database:21c-rac .
+#      $ podman build -t oracle/database:21c-rac .
 
 
-ARG BASE_OL_IMAGE=oraclelinux:9
+ARG BASE_IMAGE=oraclelinux:9
+ARG BASE_OL_IMAGE=$BASE_IMAGE
+ARG BASE_IMAGE_REF=oraclelinux:9
+ARG BASE_IMAGE_DIGEST=unknown
 ARG SLIMMING=false
 # Pull base image
 # ---------------
 # hadolint ignore=DL3006,DL3025
-FROM $BASE_OL_IMAGE AS racbase
+FROM $BASE_IMAGE AS racbase
+RUN \
+      mkdir -p /usr/share/oracle/image-metadata/rpms && \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/base-image-rpms.txt && \
+      rpm -qa --qf '%{NAME}\n' | sort -u > /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt;
 ARG SLIMMING=false
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+ARG BASE_IMAGE
+LABEL "org.opencontainers.image.base.name"="$BASE_IMAGE_REF" \
+      "org.opencontainers.image.base.digest"="$BASE_IMAGE_DIGEST" \
+      "com.oracle.database.base.image.chain.path"="/usr/share/oracle/image-metadata/base-image-chain.json"
 ARG VERSION
 # Labels
 # ------
@@ -92,7 +106,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
 
 #############################################
 # -------------------------------------------
-# Start new stage for Non-Slim Image 
+# Start new stage for Non-Slim Image
 # -------------------------------------------
 #############################################
 
@@ -225,6 +239,22 @@ RUN rm -f $INSTALL_DIR/install/* && \
 #############################################
 # hadolint ignore=DL3006
 FROM rac-image-slim-${SLIMMING} AS final
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+RUN mkdir -p /usr/share/oracle/image-metadata && \
+    printf '{\n  "schemaVersion": 1,\n  "images": [{"name": "%s", "digest": "%s", "reference": "%s", "role": "direct-base"}]\n}\n' \
+      "$BASE_IMAGE_REF" "$BASE_IMAGE_DIGEST" "$BASE_IMAGE" > /usr/share/oracle/image-metadata/base-image-chain.json
+
+RUN \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
+      rpm -qa --qf '%{NAME}	%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
+      if [ -f /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt ]; then \
+        awk -F '\t' 'NR==FNR {base[$1]=1; next} !($1 in base) {print $1 "-" $2}' /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt /tmp/image-rpm-details > /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      else \
+        cp /usr/share/oracle/image-metadata/rpms/image-rpms.txt /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      fi && \
+      rm -f /tmp/image-rpm-details;
 ENV GRID_BASE=/u01/app/grid \
     GRID_HOME=/u01/app/21c/grid \
     DB_BASE=/u01/app/oracle \
@@ -251,7 +281,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
     chmod +x /etc/rc.d/rc.local  && \
     cp $SCRIPT_DIR/$INITSH /usr/bin/$INITSH && \
     setcap 'cap_net_admin,cap_net_raw+ep' /usr/bin/ping && \
-    chmod 755 /usr/bin/$INITSH && \ 
+    chmod 755 /usr/bin/$INITSH && \
     rm -f /etc/sysctl.d/99-oracle-database-preinstall-21c-sysctl.conf && \
     rm -f /etc/sysctl.d/99-sysctl.conf && \
     rm -f $INSTALL_DIR/install/* && \
