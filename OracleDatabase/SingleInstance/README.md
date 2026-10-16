@@ -53,14 +53,14 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 26ai Free) and put them into the `dockerfiles/<version>` folder.
+**IMPORTANT:** For versions before 19.3.0, put the installation binaries in `dockerfiles/<version>`. For 19.3.0 and later, use `containerfiles/<version>`.
 You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
 
-**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
+**Linux ARM64 Support:** Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the `containerfiles/19.3.0` folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
 
 You also have to make sure to have internet connectivity for yum. Note that you must not uncompress the binaries. The script will handle that for you and fail if you uncompress them manually!
 
-Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Once you have chosen which edition and version you want to build an image of, go into the **dockerfiles** folder and run the **buildContainerImage.sh** script:
+Before you build the image make sure that you have provided the installation binaries and put them into the right folder. Run the **buildContainerImage.sh** script from the `dockerfiles` directory; it selects the legacy `dockerfiles/<version>/Dockerfile` for versions before 19.3.0 and the modern `containerfiles/<version>/Containerfile` for 19.3.0 and later.
 
     [oracle@localhost dockerfiles]$ ./buildContainerImage.sh -h
 
@@ -130,7 +130,7 @@ Option 2: Download from a web URL that does not require authentication:
       -t oracle/database:19.3.0-ee \
       -o '--build-arg BACKUP_MODULE_URL=<backup-module-rpm-url>'
 
-Option 3: Install from a local file system location. Place the RPM under the selected version directory and pass its relative path using `BACKUP_MODULE_LOCAL_FILE`. For example, if the RPM is stored as `dockerfiles/23.26.0/backup-modules/bck2cloud.rpm`:
+Option 3: Install from a local file system location. Place the RPM under the selected version directory and pass its relative path using `BACKUP_MODULE_LOCAL_FILE`. For example, if the RPM is stored as `containerfiles/23.26.0/backup-modules/bck2cloud.rpm`:
 
     ./buildContainerImage.sh \
       -v 23.26.0 \
@@ -162,6 +162,11 @@ After setting these environment variables, the container image can be built usin
 
     ./buildContainerImage.sh -e -v <version-to-build>
 
+RPM provenance is always recorded under `/usr/share/oracle/image-metadata/rpms`.
+Inspect it with:
+
+    podman run --rm --entrypoint /bin/sh IMAGE -c \
+      'ls -l /usr/share/oracle/image-metadata/rpms && cat /usr/share/oracle/image-metadata/rpms/*.txt'
 ### Running Oracle Database in a container
 
 #### Running Oracle Database Enterprise and Standard Edition 2 in a container
@@ -184,6 +189,7 @@ To run your Oracle Database image use the `podman run` command as follows:
     -e ENABLE_FORCE_LOGGING=true \
     -e ENABLE_TCPS=true \
     -e TRUE_CACHE=true \
+    -e TDE_ENABLED=true \
     -e TDE_WALLET_PWD=<your password for TDE wallet> \
     -e PRIMARY_DB_PWD_FILE=<Location of the primary database password file> \
     -e PRIMARY_DB_TDE_WALLET=<Location of the primary database TDE wallet> \
@@ -244,8 +250,11 @@ To run your Oracle Database image use the `podman run` command as follows:
        -e TRUE_CACHE:
                       To configure Oracle True Cache instance.
                       Supported from Oracle 26ai onwards.
+       -e TDE_ENABLED:
+                      Set to 'true' to configure TDE during Enterprise/SE2 database creation.
+                      Use together with TDE_WALLET_PWD or the tde_wallet_pwd Podman secret.
        -e TDE_WALLET_PWD:
-                      Password for TDE wallet to configure TDE.
+                      Password for the TDE wallet when TDE_ENABLED=true.
        -e PRIMARY_DB_PWD_FILE:
                       <Location of the primary database password file inside the True Cache container>  (Required if TRUE_CACHE=true)
        -e PRIMARY_DB_TDE_WALLET:
@@ -482,9 +491,10 @@ The ORACLE_SID for Oracle Database 26ai Free is always `FREE` and cannot be chan
 | `ENABLE_FORCE_LOGGING` | Supported from 26ai onward | Not shown in the Free example | Enables force logging during first database creation. | Optional |
 | `ENABLE_TCPS` | Supported from 19.3 onward | Not shown in the Free example | Enables TCPS listener endpoint on container port `2484`. | Optional |
 | `TCPS_CERTS_LOCATION` | Supported from 19.3 onward | Not shown in the Free example | In-container location of user-provided `cert.crt` and `client.key` files for TCPS. | Optional |
+| `TDE_ENABLED` | Supported for TDE wallet configuration | Not shown in the Free example | Enables TDE configuration during Enterprise/SE2 database creation. Set this to `true` together with `TDE_WALLET_PWD` (or the `tde_wallet_pwd` Podman secret). | Conditional for TDE |
 | `CONFIGURE_TDE` | Not shown in the Enterprise/SE2 example | Supported from 26ai onward | Enables TDE configuration for Free image database creation. | Optional |
 | `ENCRYPT_TABLESPACES` | Not shown in the Enterprise/SE2 example | Supported | Tablespace encryption list. Leave empty for user tablespace only, set `ALL`, or use entries such as `SYSTEM:true,SYSAUX:false`. | Optional |
-| `TDE_WALLET_PWD` | Supported for TDE wallet configuration | Not shown in the Free example | Password for TDE wallet configuration. Can also be provided through the `tde_wallet_pwd` Podman secret. | Conditional for TDE |
+| `TDE_WALLET_PWD` | Used when `TDE_ENABLED=true` | Not shown in the Free example | Password for TDE wallet configuration. Can also be provided through the `tde_wallet_pwd` Podman secret. | Conditional for TDE |
 | `TRUE_CACHE` | Supported from 26ai onward when running a True Cache container | Use the True Cache extension image flow for Free True Cache | Marks the container as a True Cache host. For complete primary plus True Cache Podman setup, use `extensions/truecache/README.md`. | Conditional for True Cache |
 | `PRIMARY_DB_CONN_STR` | Required when `TRUE_CACHE=true` | Required in Free True Cache extension flow | Primary database connection string in `<HOST>:<PORT>/<SERVICE_NAME>` format. | Conditional for True Cache |
 | `PRIMARY_DB_NAME` | Optional when the primary DB_NAME differs from the service name | Optional when the primary DB_NAME differs from the service name | Primary source DB_NAME override. | Optional |
@@ -618,7 +628,7 @@ To containerize an on-premise database, please follow the steps mentioned below:
 
         cd $ORACLE_HOME && ./runInstaller -silent -createGoldImage -destinationLocation '<location to store the gold image>'
 
-* The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to the `OracleDatabase/SingleInstance/dockerfiles/<version>` directory. The **version** would be the base version of the gold image, e.g. 19.3.0.
+* The gold image created in the step above will have the name like `db_home_2022-03-25_12-43-21PM.zip`. Copy this gold image to `OracleDatabase/SingleInstance/containerfiles/<version>` for 19.3.0 and later, or `dockerfiles/<version>` for older releases.
 * Create the container image using this gold image by the following sample command:
 
         ./buildContainerImage.sh -i -e -v 19.3.0 -t oracle/database:19-onprem -o '--build-arg INSTALL_FILE_1=db_home_2022-03-25_12-43-21PM.zip'
