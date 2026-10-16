@@ -1,0 +1,108 @@
+# LICENSE UPL 1.0
+#
+# Copyright (c) 1982-2019 Oracle and/or its affiliates. All rights reserved.
+#
+# Containerfile for building a patched Oracle GSM image.
+#
+# Supply BASE_GSM_IMAGE as the matching, installed, unpatched GSM image.
+# For example:
+#   podman build --build-arg VERSION=19.3.0 \
+#     --build-arg BASE_GSM_IMAGE=oracle/gsm:19.3.0 \
+#     -t oracle/gsm:19.3.0-patch -f Containerfile .
+# hadolint global ignore=DL3006,DL3025
+ARG VERSION=19.3.0
+ARG BASE_GSM_IMAGE=localhost/oracle/gsm:$VERSION
+
+# Pull base image
+# ---------------
+FROM ${BASE_GSM_IMAGE} as builder
+
+# Argument to control removal of components not needed after db software installation
+ARG VERSION
+ARG PATCH_DIR="patches"
+ARG USER="root"
+ARG WORKDIR="/home/oracle"
+
+# Environment variables required for this build (do NOT change)
+# -------------------------------------------------------------
+USER $USER
+
+ENV GSM_PATCH_FILE="applyGSMPatches.sh" \
+    PATCH_INSTALL_DIR=/tmp/patches \
+    PATCH_DIR=$PATCH_DIR \
+    WORKDIR=$WORKDIR \
+    GSM_USER="oracle"
+
+RUN mkdir -p "$PATCH_INSTALL_DIR"
+
+# Copy binaries
+# -------------
+COPY $PATCH_DIR $PATCH_INSTALL_DIR/
+
+# Install patches
+RUN test -f "${PATCH_INSTALL_DIR}/${GSM_PATCH_FILE}" && \
+    chown -R oracle:oinstall "${PATCH_INSTALL_DIR}" && \
+    chmod ug+x "${PATCH_INSTALL_DIR}"/*.sh && \
+    chmod ug+rwx "${PATCH_INSTALL_DIR}" && \
+    sed -e '/hard *memlock/s/^/#/g' -i /etc/security/limits.conf && \
+    sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.conf && \
+    sync && \
+    if [ ! -s "$GSM_HOME/oraInst.loc" ]; then \
+      test -s /etc/oraInst.loc || { echo "Neither GSM_HOME/oraInst.loc nor /etc/oraInst.loc exists" >&2; exit 1; }; \
+      cp /etc/oraInst.loc "$GSM_HOME/oraInst.loc"; \
+    fi && \
+    chown oracle:oinstall "$GSM_HOME/oraInst.loc" && \
+    chmod 640 "$GSM_HOME/oraInst.loc"
+
+USER oracle
+RUN "${PATCH_INSTALL_DIR}/${GSM_PATCH_FILE}" "${PATCH_INSTALL_DIR}" && \
+    "$GSM_HOME/OPatch/opatch" lsinventory \
+      -invPtrLoc "$GSM_HOME/oraInst.loc"
+
+# hadolint ignore=DL3002
+USER root
+
+# hadolint ignore=SC2086
+RUN rm -rf /etc/oracle \
+           "${PATCH_INSTALL_DIR}"
+
+#####################
+FROM ${BASE_GSM_IMAGE}-base AS final
+
+ARG USER="oracle"
+ARG WORKDIR="/home/oracle"
+
+USER oracle
+COPY --from=builder /u01 /u01
+COPY --from=builder /opt/oracle /opt/oracle
+COPY --from=builder /home/oracle/.bashrc  /home/oracle/.bashrc
+
+USER root
+RUN if [ ! -f $PYTHON_FILE ]; then \
+      ln -s $PYTHON3_FILE $PYTHON_FILE && \
+      :; \
+    fi
+
+USER root
+RUN test -s "$GSM_HOME/install/utl/rootmacro.sh" && \
+    sed -i \
+      "s|^ORACLE_HOME=%ORACLE_HOME%$|ORACLE_HOME=${GSM_HOME}|" \
+      "$GSM_HOME/network/install/sqlnet/setowner.sh" && \
+    grep -Fxq "ORACLE_HOME=${GSM_HOME}" \
+      "$GSM_HOME/network/install/sqlnet/setowner.sh" && \
+    "$INVENTORY/orainstRoot.sh" && \
+    "$GSM_HOME/root.sh" && \
+    sync
+
+USER oracle
+RUN "$GSM_HOME/OPatch/opatch" lsinventory \
+      -invPtrLoc "$GSM_HOME/oraInst.loc"
+WORKDIR $WORKDIR
+VOLUME ["$GSM_BASE/oradata"]
+
+HEALTHCHECK --interval=2m --start-period=25m \
+   CMD "$SCRIPT_DIR/scripts/$CHECKLIVENESS" >/dev/null || exit 1
+
+# Define default command to start Oracle Database setup.
+
+CMD exec $SCRIPT_DIR/$RUN_FILE

@@ -1,5 +1,4 @@
 #!/bin/bash
-# shellcheck disable=SC1090,SC2010,SC2045,SC2144,SC2164
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
@@ -11,62 +10,120 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # Make sure Oracle perl binary is in PATH
-# shellcheck disable=SC1090
-# shellcheck disable=SC2164
-# shellcheck disable=SC2144
-# shellcheck disable=SC2045
-# shellcheck disable=SC2010
 
+set -Eeuo pipefail
+shopt -s nullglob
+export LC_ALL=C
 
+die() {
+  echo "ERROR: $*" >&2
+  exit 1
+}
 
-source /home/${GSM_USER}/.bashrc
+trap 'status=$?; echo "ERROR: Patch script failed at line ${LINENO} (status ${status})." >&2; exit "$status"' ERR
 
-PATH=$GSM_HOME/perl/bin:$GSM_HOME/OPatch:$PATH
+[[ $# -le 1 ]] || die "Usage: $0 [patch-directory]"
+[[ -n "${GSM_HOME:-}" && -d "$GSM_HOME" ]] || die "GSM_HOME must name an installed GSM home."
+GSM_HOME=$(cd -- "$GSM_HOME" && pwd -P)
+GSM_USER=${GSM_USER:-oracle}
+PATCH_INSTALL_DIR=${1:-${PATCH_INSTALL_DIR:-/tmp/patches}}
+[[ -d "$PATCH_INSTALL_DIR" ]] || die "Patch directory does not exist: $PATCH_INSTALL_DIR"
+PATCH_INSTALL_DIR=$(cd -- "$PATCH_INSTALL_DIR" && pwd -P)
 
-# Patch database binaries with patch sets
-cd $PATCH_INSTALL_DIR/opatch
+export GSM_HOME PATCH_INSTALL_DIR
+export ORACLE_HOME="$GSM_HOME"
+export PATH="$GSM_HOME/perl/bin:$GSM_HOME/OPatch:$PATH"
 
-#  If exists, install newer OPatch version if present
-if [ -f p6880880*.zip ]; then
-   # Unzip and remove zip file
-   unzip p6880880*.zip
-   #rm p6880880*.zip
-   # Remove old OPatch folder
-   rm -rf $GSM_HOME/OPatch
-   # Move new OPatch folder into GSM_HOME
-   mv OPatch $GSM_HOME/
-fi;
+INVENTORY_POINTER="$GSM_HOME/oraInst.loc"
+[[ -r "$INVENTORY_POINTER" && -s "$INVENTORY_POINTER" ]] || die "Missing or unreadable inventory pointer: $INVENTORY_POINTER"
+command -v unzip >/dev/null || die "unzip is required."
 
-cd $PATCH_INSTALL_DIR/${GSM_USER}
+# Validate every numbered patch slot before changing the Oracle home.
+# Use zero-padded directory names (001, 002, ...) for the required order.
+PATCH_SLOTS=("$PATCH_INSTALL_DIR/$GSM_USER/"*/)
+[[ ${#PATCH_SLOTS[@]} -gt 0 ]] || die "No patch directories found under $PATCH_INSTALL_DIR/$GSM_USER."
+PATCH_ZIPS=()
+for slot in "${PATCH_SLOTS[@]}"; do
+  archives=("${slot}"*.zip)
+  [[ ${#archives[@]} -eq 1 ]] || die "Expected exactly one patch ZIP in $slot; found ${#archives[@]}."
+  [[ -f "${archives[0]}" ]] || die "Not a regular patch ZIP: ${archives[0]}"
+  PATCH_ZIPS+=("${archives[0]}")
+done
 
-# Loop over all directories (001, 002, 003, ...)
-for file in `ls -d */`; do
-   # Go into sub directory (cd 001)
-   cd $file;
-   if [ -f *.zip ]; then
+# An OPatch update is optional, but multiple update archives are ambiguous.
+OPATCH_ZIPS=("$PATCH_INSTALL_DIR/opatch/"p6880880*.zip)
+[[ ${#OPATCH_ZIPS[@]} -le 1 ]] || die "Provide at most one p6880880 ZIP in $PATCH_INSTALL_DIR/opatch."
 
-   # Unzip the actual patch (unzip pNNNNNNN.zip)
-   unzip -o *.zip;
-   # Go into patch directory (cd NNNNNNN)
-   PATCH_DIR=`ls -l | grep ^d | awk '{ print $9 }'`
-   PATCH_DIR_COUNT=`ls -l | grep ^d | awk '{ print $9 }'| wc -l`
-   if [ ${PATCH_DIR_COUNT} -gt 1 ]; then
-    echo " More than one patch zip file is copied in $file! Failed. Please copy one patch file under $file"
-    exit 1
-   fi
-   if [ ! -d ${PATCH_DIR} ]; then
-    echo "PATCH dir doesn't exist. Failed!"
-    exit 1
-   fi
+WORK_DIR=$(mktemp -d "$PATCH_INSTALL_DIR/.gsm-patch-work.XXXXXX")
+KEEP_WORK_DIR=0
+cleanup() {
+  local status=$?
+  if [[ "$KEEP_WORK_DIR" -eq 0 ]]; then
+    rm -rf -- "$WORK_DIR" || echo "WARNING: Could not remove $WORK_DIR" >&2
+  else
+    echo "Recovery files retained in $WORK_DIR" >&2
+  fi
+  return "$status"
+}
+trap cleanup EXIT
 
-  # Applying patch
-  $GSM_HOME/OPatch/opatchauto apply $PATCH_INSTALL_DIR/$GSM_USER/$file/$PATCH_DIR -binary -oh $GSM_HOME
-  if [ $? -ne 0 ]; then
-   exit 1
+if [[ ${#OPATCH_ZIPS[@]} -eq 1 ]]; then
+  echo "Preparing OPatch update: ${OPATCH_ZIPS[0]}"
+  mkdir -- "$WORK_DIR/opatch-update"
+  unzip -q -o "${OPATCH_ZIPS[0]}" -d "$WORK_DIR/opatch-update"
+  [[ -x "$WORK_DIR/opatch-update/OPatch/opatch" ]] || die "The OPatch ZIP does not contain an executable OPatch/opatch."
+
+  # Keep the existing tool until the new tool has been installed and checked.
+  HAD_OPATCH=0
+  if [[ -e "$GSM_HOME/OPatch" || -L "$GSM_HOME/OPatch" ]]; then
+    mv -- "$GSM_HOME/OPatch" "$WORK_DIR/previous-OPatch"
+    HAD_OPATCH=1
   fi
 
+  if mv -- "$WORK_DIR/opatch-update/OPatch" "$GSM_HOME/OPatch" && \
+     "$GSM_HOME/OPatch/opatch" version; then
+    echo "OPatch update installed."
+  else
+    # Retain the backup if restoration itself fails.
+    KEEP_WORK_DIR=1
+    rm -rf -- "$GSM_HOME/OPatch"
+    if [[ "$HAD_OPATCH" -eq 1 ]]; then
+      mv -- "$WORK_DIR/previous-OPatch" "$GSM_HOME/OPatch"
+    fi
+    KEEP_WORK_DIR=0
+    die "OPatch update failed; any previous OPatch installation was restored."
   fi
-  cd ../
-done;
+else
+  [[ -x "$GSM_HOME/OPatch/opatch" ]] || die "No installed OPatch found, and no OPatch update ZIP was supplied."
+  "$GSM_HOME/OPatch/opatch" version
+fi
 
-cd $HOME
+# Check the supplied inventory before applying any patch.
+"$GSM_HOME/OPatch/opatch" lsinventory \
+  -oh "$GSM_HOME" -invPtrLoc "$INVENTORY_POINTER"
+
+APPLIED_COUNT=0
+for index in "${!PATCH_ZIPS[@]}"; do
+  archive=${PATCH_ZIPS[$index]}
+  extract_dir="$WORK_DIR/patch-$index"
+  mkdir -- "$extract_dir"
+  echo "Extracting patch: $archive"
+  unzip -q -o "$archive" -d "$extract_dir"
+
+  # This layout supports one top-level OPatch patch directory per ZIP.
+  # Bundles requiring nested patches or opatchauto need README-specific handling.
+  patch_roots=("$extract_dir/"*/)
+  [[ ${#patch_roots[@]} -eq 1 ]] || die "Expected one top-level patch directory in $archive; found ${#patch_roots[@]}. Check the patch README."
+
+  echo "Applying patch from $archive"
+  (
+    cd -- "${patch_roots[0]}"
+    "$GSM_HOME/OPatch/opatch" apply -silent \
+      -oh "$GSM_HOME" -invPtrLoc "$INVENTORY_POINTER"
+  )
+  APPLIED_COUNT=$((APPLIED_COUNT + 1))
+done
+
+"$GSM_HOME/OPatch/opatch" lsinventory \
+  -oh "$GSM_HOME" -invPtrLoc "$INVENTORY_POINTER"
+echo "Completed $APPLIED_COUNT patch apply operation(s). Review the inventory above for the expected patch IDs."

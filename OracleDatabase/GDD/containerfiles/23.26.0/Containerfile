@@ -1,4 +1,3 @@
-# hadolint global ignore=DL4006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2018,2026 Oracle and/or its affiliates.
@@ -6,28 +5,40 @@
 # ORACLE CONTAINERFILES PROJECT
 # --------------------------
 # This is the Containerfile for Oracle GSM 23.26ai to build the container image
-# MAINTAINER <paramdeep.saini@oracle.com>
+# MAINTAINER <paramdeep.saini@oracle.com>,<jyoti.verma@oracle.com>>
 #
 # This is the Containerfile for Oracle GSM 23.26ai
 #
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_2326100_gsm.zip
+# (1) LINUX.X64_2326100_gsm_home.zip
 #     Download Oracle 23.26ai GSM Software
 #     from http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Containerfile
-# Run:
-#      $ podman build -t oracle/gsm:23.26.0 .
+# Place this file at containerfiles/23.26.0/Containerfile.
+# Build from the containerfiles directory, which must contain:
+#   23.26.0/LINUX.X64_2326100_gsm_home.zip
+#   23.26.0/23ai_gsm_install.rsp
+#   the existing 23.26.0 shell scripts and the shared scripts/ directory.
 #
+# Regular image:
+#   podman build --target final --build-arg VERSION=23.26.0 \
+#     --build-arg SLIMMING=false -f 23.26.0/Containerfile \
+#     -t oracle/gsm:23.26.0 .
+#
+# Prepared patching-base image (no installed GSM home):
+#   podman build --target final --build-arg VERSION=23.26.0 \
+#     --build-arg SLIMMING=true -f 23.26.0/Containerfile \
+#     -t oracle/gsm:23.26.0-base .
 
 ARG SLIMMING=false
 ARG BASE_IMAGE=oraclelinux:9
 ARG BASE_OL_IMAGE=$BASE_IMAGE
 ARG BASE_IMAGE_REF=oraclelinux:9
 ARG BASE_IMAGE_DIGEST=unknown
+ARG VERSION=23.26.0
 
 # Pull base image
 # ---------------
@@ -55,7 +66,7 @@ LABEL "provider"="Oracle"                                          \
 
 # Argument to control removal of components not needed after db software installation
 
-ARG INSTALL_FILE_1="LINUX.X64_2326100_gsm.zip"
+ARG INSTALL_FILE_1="LINUX.X64_2326100_gsm_home.zip"
 ARG USER="root"
 
 # Environment variables required for this build (do NOT change)
@@ -66,13 +77,13 @@ ENV GSM_BASE="/u01/app/oracle" \
     INVENTORY="/u01/app/oracle/oraInventory" \
     INSTALL_DIR="/opt/oracle/scripts" \
     INSTALL_FILE_1=$INSTALL_FILE_1 \
-    INSTALL_RSP="23ai_gsm_install.rsp" \
+    INSTALL_RSP="26ai_gsm_install.rsp" \
     RUN_FILE="runOracle.sh" \
     SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CHECK_SPACE_FILE="checkSpace.sh" \
     USER_SCRIPTS_FILE="runUserScripts.sh" \
     INSTALL_GSM_BINARIES_FILE="installGSMBinaries.sh" \
-    GSM_SETUP_FILE="setupOshardEnv.sh"  \
+    GSM_SETUP_FILE="setupOshardEnv.sh" \
     GSM_ENV_SETUP_FILE="setupGSM.sh" \
     GSM_SCRIPTS="scripts" \
     MAINPY="main.py" \
@@ -95,14 +106,14 @@ ENV GSM_BASE="/u01/app/oracle" \
     CHECKLIVENESS="checkLiveness.sh"
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
-ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     ORACLE_HOME=$GSM_HOME \
-     ORACLE_BASE=$GSM_BASE \
-     SCRIPT_DIR=$INSTALL_DIR/sharding \
-     SHARD_SCRIPT_DIR=$INSTALL_DIR/sharding \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
-     GSM_PATH=$GSM_HOME/bin:$PATH \
-     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib
+ENV INSTALL_SCRIPTS=$INSTALL_DIR/install \
+    ORACLE_HOME=$GSM_HOME \
+    ORACLE_BASE=$GSM_BASE \
+    SCRIPT_DIR=$INSTALL_DIR/sharding \
+    SHARD_SCRIPT_DIR=$INSTALL_DIR/sharding \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    GSM_PATH=$GSM_HOME/bin:$PATH \
+    GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib
 
 #############################################
 # -------------------------------------------
@@ -117,16 +128,16 @@ ARG VERSION
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
 # Linux Env Variable
-ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     ORACLE_HOME=$GSM_HOME \
-     ORACLE_BASE=$GSM_BASE \
-     SCRIPT_DIR=$INSTALL_DIR/sharding \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
-     GSM_PATH=$GSM_HOME/bin:$PATH \
-     GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib  \
+ENV INSTALL_SCRIPTS=$INSTALL_DIR/install \
+    ORACLE_HOME=$GSM_HOME \
+    ORACLE_BASE=$GSM_BASE \
+    SCRIPT_DIR=$INSTALL_DIR/sharding \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    GSM_PATH=$GSM_HOME/bin:$PATH \
+    GSM_LD_LIBRARY_PATH=$GSM_HOME/lib:/usr/lib:/lib \
     INSTALL_SCRIPTS=$INSTALL_DIR/install \
-     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
-     GSM_SCRIPTS="scripts"
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    GSM_SCRIPTS="scripts"
 
 # Copy binaries
 # -------------
@@ -140,7 +151,7 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
-    $INSTALL_DIR/install/$GSM_ENV_SETUP_FILE  && \
+    $INSTALL_DIR/install/$GSM_ENV_SETUP_FILE && \
     sync
 
 #############################################
@@ -178,7 +189,7 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     sync && \
     $INSTALL_DIR/install/$CHECK_SPACE_FILE && \
     $INSTALL_DIR/install/$SETUP_LINUX_FILE && \
-    $INSTALL_DIR/install/$GSM_ENV_SETUP_FILE  && \
+    $INSTALL_DIR/install/$GSM_ENV_SETUP_FILE && \
     sync
 
 #############################################
@@ -241,7 +252,7 @@ RUN mkdir -p /usr/share/oracle/image-metadata && \
 
 RUN \
       rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
-      rpm -qa --qf '%{NAME}	%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
+      rpm -qa --qf '%{NAME}\t%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
       if [ -f /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt ]; then \
         awk -F '\t' 'NR==FNR {base[$1]=1; next} !($1 in base) {print $1 "-" $2}' /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt /tmp/image-rpm-details > /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
       else \
@@ -251,12 +262,11 @@ RUN \
 
 COPY --from=builder /u01 /u01
 # hadolint ignore=SC2086
-RUN if [ ! -f $PYTHON_FILE ]; then \
-      ln -s $PYTHON3_FILE $PYTHON_FILE && \
-      :; \
-    fi && \
+
+RUN test -x "$PYTHON3_FILE" && \
+    ln -sf $PYTHON3_FILE $PYTHON_FILE && \
     rm -f $INSTALL_DIR/install/*  && \
-    cp $SCRIPT_DIR/scripts/cmdExec  $SCRIPT_DIR/ && \
+    cp $SCRIPT_DIR/scripts/cmdExec $SCRIPT_DIR/ && \
     for helper in cmdExec main.py orapcatalog.py orapshard.py orascatalog.py oracommon.py demoapp.sql runOraShardSetup.sh oramachine.py oralogger.py orafactory.py oragsm.py orasshard.py oraenv.py; do \
       ln -sf scripts/$helper $SHARD_SCRIPT_DIR/$helper; \
     done && \
