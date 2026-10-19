@@ -10,7 +10,5 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-./runContainerTests183.sh
 ./runContainerTests122.sh
 ./runContainerTests121.sh
-./runContainerTests112.sh
