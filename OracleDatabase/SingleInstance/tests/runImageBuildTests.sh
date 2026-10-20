@@ -39,10 +39,11 @@ cd "../dockerfiles" || exit
 
 cp "$BIN_DIR/LINUX.X64_2326000_db_home.zip" ./23.26.0/ || exit
 
-./buildContainerImage.sh -e -v 23.26.0
+# Skip checksum validation until the 26ai checksum files are populated.
+./buildContainerImage.sh -i -e -v 23.26.0
 checkError "Build 23.26.0 EE image" $?
 
-./buildContainerImage.sh -s -v 23.26.0
+./buildContainerImage.sh -i -s -v 23.26.0
 checkError "Build 23.26.0 SE2 image" $?
 
 rm ./23.26.0/LINUX.X64_2326000_db_home.zip
