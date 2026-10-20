@@ -10,7 +10,8 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-./runContainerTests183.sh
-./runContainerTests122.sh
-./runContainerTests121.sh
-./runContainerTests112.sh
+./runContainerTests23260.sh || exit $?
+./runContainerTests213.sh || exit $?
+./runContainerTests193.sh || exit $?
+./runContainerTests122.sh || exit $?
+./runContainerTests121.sh || exit $?
