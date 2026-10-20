@@ -33,7 +33,7 @@ function checkError {
 }
 
 
-cd "../dockerfiles"
+cd "../dockerfiles" || exit
 
 ###################### TESTS 19.3.0 images ###########################
 
@@ -102,4 +102,4 @@ rm ./12.1.0.2/*.zip
 
 ######################### END OF TESTS ############################
 
-cd "$WORKDIR";
+cd "$WORKDIR" || exit
