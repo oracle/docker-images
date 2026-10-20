@@ -608,7 +608,6 @@ SQL scripts will be executed as sysdba, shell scripts will be executed as the cu
 recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
 
 **Note:** The startup scripts will also be executed after the first time database setup is complete.
-**Note:** For 11gR2 Express Edition only, use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/`.
 
 The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
 
