@@ -6,7 +6,7 @@ Oracle Java Server JRE provides the features from Oracle Java JDK commonly requi
 
 ## Building the Oracle Java base image
 
-For the most recent JDK releases (JDK 27, 25, and 21), offered under the [Oracle No-Fee Terms and Conditions](https://www.java.com/freeuselicense) (NFTC), the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
+For the most recent JDK releases (JDK 27 and 25), offered under the [Oracle No-Fee Terms and Conditions](https://www.java.com/freeuselicense) (NFTC), the required JDK binaries will be downloaded from [Oracle](https://www.oracle.com/javadownload) as part of the build using curl.
 
 e.g., To build the JDK 27 container image run:
 
@@ -15,23 +15,23 @@ cd ../OracleJava/27
 docker build --file Dockerfile.ol9 --tag oracle/jdk:27 .
 ```
 
-Updates to prior LTS releases: JDK 17, JDK 11, JDK 8, and Server JRE 8 are offered under the [Oracle Technology Network License Agreement for Oracle Java SE](https://www.java.com/otnlicense). Users must accept the license terms, generate a download token, and provide it as a build argument.  Token generation is documented on [https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html](https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html).
+Updates to prior long-term support (LTS) releases: JDK 21, JDK 17, JDK 11, JDK 8, and Server JRE 8 are offered under the [Oracle Technology Network License Agreement for Oracle Java SE](https://www.java.com/otnlicense). Users must accept the license terms, generate a download token, and provide it as a build argument.  Token generation is documented on [https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html](https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html).
 
 e.g., to build the JDK 17 container image, generate a token for JDK 17 and run:
 
 ```bash
 cd ../OracleJava/17
-docker build --file Dockerfile.ol8 --tag oracle/jdk:17 --build-arg JDK17_TOKEN=<$token> .
+docker build --file Dockerfile.ol8 --tag oracle/jdk:17 --build-arg JDK17_TOKEN="$JDK17_TOKEN" .
 ```
 
 e.g., to build the Server JRE 8 container image, generate a token for JDK 8 and run:
 
 ```bash
 cd ../OracleJava/8/serverjre
-docker build --file Dockerfile.ol8 --tag oracle/serverjre:8 --build-arg JDK8_TOKEN=<$token> .
+docker build --file Dockerfile.ol8 --tag oracle/serverjre:8 --build-arg JDK8_TOKEN="$JDK8_TOKEN" .
 ```
 
-For the NFTC releases (JDK 27, 25, and 21), the right command is already scripted in `build.sh` so you can alternatively run:
+For the NFTC releases (JDK 27 and 25), the right command is already scripted in `build.sh` so you can alternatively run:
 
 ```bash
 bash build.sh
@@ -45,19 +45,19 @@ The Oracle Java image for JDK 21 and earlier use `oraclelinux:8` as the parent i
 
 JDK 21 allows for optionally building on `oraclelinux:9` by using `Dockerfile.ol9` rather than `Dockerfile.ol8`.
 
-e.g., to build JDK 21 with Oracle Linux 9 rather than the default Oracle Linux 8, run:
+e.g., to build JDK 21 with Oracle Linux 9 rather than the default Oracle Linux 8, generate the JDK 21 download token in Java Management Service (JMS) and run:
 
 ```bash
 cd ../OracleJava/21
-docker build --file Dockerfile.ol9 --tag oracle/jdk:11-oraclelinux9 .
+docker build --file Dockerfile.ol9 --tag oracle/jdk:21 --build-arg JDK21_TOKEN="$JDK21_TOKEN" .
 ```
 Server JRE is offered only for x86-64 systems, all other images are offered for x86-64 as well as aarch64.
 
 ## Licenses
 
-JDK 27, 25, and 21 are downloaded, as part of the build process, from the [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
+JDK 27 and 25 are downloaded, as part of the build process, from the [Oracle Website](https://www.oracle.com/javadownload) under the [Oracle No-Fee Terms and Conditions (NFTC)](https://java.com/freeuselicense).
 
-The JDK 17, JDK 11, JDK 8, and Server JRE 8 Dockerfiles use Java runtimes under the  [Oracle Technology Network License Agreement for Oracle Java SE](https://www.java.com/otnlicense)
+The JDK 21, JDK 17, JDK 11, JDK 8, and Server JRE 8 Dockerfiles use Java runtimes under the [Oracle Technology Network License Agreement for Oracle Java SE](https://www.java.com/otnlicense).
 
 All scripts and files hosted in this project and in the GitHub [`docker/OracleJava`](./) repository, required to build the container images are, unless otherwise noted, released under the [UPL 1.0](https://oss.oracle.com/licenses/upl/) license.
 
