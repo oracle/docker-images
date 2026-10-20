@@ -1,4 +1,4 @@
-# Copyright (c) 2022, 2024 Oracle and/or its affiliates.
+# Copyright (c) 2022, 2026 Oracle and/or its affiliates.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -6,24 +6,28 @@
 # --------------------------
 # This is the Dockerfile for Oracle JDK 21 on Oracle Linux 9
 #
+# ARGS
+# ----
+# This docker file requires one argument:
+# JDK21_TOKEN is a valid download token for JDK 21. It can be created in cloud.oracle.com/jms under Java Download
+# Token generation is documented on https://docs.cloud.oracle.com/en-us/iaas/jms/doc/java-download.html
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # This dockerfile will download a copy of JDK 21 from
-#    https://download.oracle.com/java/21/latest/jdk-21_linux-<ARCH>_bin.tar.gz
+#    https://java.oraclecloud.com/java/21/latest/
 #
 # It will use either x64 or aarch64 depending on the target platform
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
 # Run:
-#      $ docker build --file Dockerfile.ol9 --tag oracle/jdk:21 .
-#
-# This command is already scripted in build.sh so you can alternatively run
-#      $ bash build.sh 9
+#      $ docker build --file Dockerfile.ol9 --tag oracle/jdk:21 --build-arg JDK21_TOKEN=<token> .
 #
 # The builder image will be used to uncompress the tar.gz file with the Java Runtime.
 
 FROM oraclelinux:9 AS builder
+ARG JDK21_TOKEN
 
 LABEL maintainer="Aurelio Garcia-Ribeyro <aurelio.garciaribeyro@oracle.com>"
 
@@ -37,7 +41,7 @@ ENV LANG=en_US.UTF-8
 # Environment variables for the builder image.
 # Required to validate that you are using the correct file
 
-ENV JAVA_URL=https://download.oracle.com/java/21/latest \
+ENV JAVA_URL=https://java.oraclecloud.com/java/21/latest/ \
     JAVA_HOME=/usr/java/jdk-21
 
 ##
@@ -48,9 +52,9 @@ RUN set -eux; \
     if [ "$ARCH" = "x86_64" ]; \
         then ARCH="x64"; \
     fi && \
-    JAVA_PKG="$JAVA_URL"/jdk-21_linux-"${ARCH}"_bin.tar.gz ; \
-    JAVA_SHA256=$(curl "$JAVA_PKG".sha256) ; \
-    curl --output /tmp/jdk.tgz "$JAVA_PKG" && \
+    JAVA_PKG="$JAVA_URL"jdk-21_linux-"${ARCH}"_bin.tar.gz ; \
+    JAVA_SHA256=$(curl -L "$JAVA_PKG".sha256) ; \
+    curl -L --header token:${JDK21_TOKEN} --output /tmp/jdk.tgz "$JAVA_PKG" && \
     echo "$JAVA_SHA256" */tmp/jdk.tgz | sha256sum -c; \
     mkdir -p "$JAVA_HOME"; \
     tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1
