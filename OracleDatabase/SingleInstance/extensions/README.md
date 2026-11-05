@@ -12,7 +12,7 @@ Once you have created the base image, go into the **extensions** folder and run 
     Parameters:
        -a: Build all extensions
        -x: Space separated extensions to build. Defaults to all
-           Choose from : patching
+           Choose from : k8s, patching, prebuiltdb, sharding, truecache
        -b: Base image to use
        -v: Base version to extend (example 21.3.0)
        -t: name:tag for the extended image
