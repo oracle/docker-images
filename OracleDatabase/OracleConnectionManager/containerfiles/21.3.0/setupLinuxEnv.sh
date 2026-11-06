@@ -13,6 +13,8 @@
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
+dnf update -y && \
+dnf clean all && \
 
 chmod ug+x $SCRIPT_DIR/*.sh && \
 yum -y install oracle-database-preinstall-21c  net-tools which zip unzip tar openssh-server openssh-client vim-minimal which vim-minimal passwd sudo  && \

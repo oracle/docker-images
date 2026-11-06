@@ -18,6 +18,26 @@ This guide provides information about example container build files that you can
   - [Copyright](#copyright)
 
 ## How to build and run Oracle Connection Manager in Containers
+
+### 19c Oracle Linux and Podman requirements
+
+When CMAN is used with Oracle RAC on Podman, follow the Oracle RAC Podman host and software requirements. The `19.3.0` directory can be used to build a 19c CMAN base image on Oracle Linux 8, but an unpatched 19.3.0 image is not the supported RAC deployment level. Apply the required RU before setting up the RAC environment.
+
+| Platform | RAC software level when CMAN is used with RAC | Podman | Container image | Podman host | Required kernel |
+|----------|-----------------------------------------------|--------|-----------------|-------------|-----------------|
+| Oracle Linux 8 x86-64 | GI 19c and Database 19c, RU 19.16 or later | 4.0.2 or later | `oraclelinux:8` | Oracle Linux 8.5 or later updates | UEKR6 or UEKR7; the documentation example uses `5.4.17-2136.300.7.el8uek.x86_64` |
+| Oracle Linux 9 x86-64 | GI 19c and Database 19c, RU 19.28 or later; apply patch 34436514 to the 19.28 Database home | 4.5 or later | `oraclelinux:9` | Oracle Linux 9.5 or later updates | UEKR7, minimum `5.15.0-305.176.4.el9uek.x86_64`, and later UEKR7 updates |
+| Oracle Linux 8 ARM | GI 19c and Database 19c, RU 19.19 or later | 4.0.2 or later | `oraclelinux:8` | Oracle Linux 8.7 or later updates | UEKR7, minimum `5.15.0-100.96.32.el8uek.aarch64`, and later UEKR7 updates |
+
+The kernel requirement applies to the Podman host, not the container. Verify it with:
+
+```bash
+uname -r
+podman --version
+```
+
+These requirements describe the RAC deployment that CMAN connects to; they do not change the CMAN image build command or replace the CMAN installation media requirements below.
+
 This project offers example container images under these version folders:
 
 | Folder | Use for |
@@ -25,8 +45,6 @@ This project offers example container images under these version folders:
 | `23.26.0` | All 23.26.* CMAN builds (dbInstall maps `23.26` → `23.26.0`) |
 | `21.3.0` | 21c client/CMAN |
 | `19.3.0` | 19c client/CMAN (use zip build-arg for later 19 RUs) |
-| `18.3.0` | 18c client/CMAN |
-| `12.2.0.1` | 12c R2 client/CMAN |
 
 Default install media for `23.26.0` is `LINUX.X64_2326100_client_cman_home.zip` (SHA256 in `23.26.0/Checksum`).
 
@@ -215,3 +233,28 @@ All scripts and files hosted in this repository which are required to build the 
 ## Copyright
 
 Copyright (c) 2014-2026 Oracle and/or its affiliates.
+
+
+## Base image provenance
+
+Build wrappers resolve the selected base image to a sha256 digest and pass
+`BASE_IMAGE`, `BASE_IMAGE_REF`, and `BASE_IMAGE_DIGEST` to the build.
+The resulting image exposes the source reference and digest as OCI labels and
+writes the direct-base record to:
+
+```
+/usr/share/oracle/image-metadata/base-image-chain.json
+```
+
+Inspect an image with:
+
+```
+podman image inspect IMAGE --format '{{json .Config.Labels}}'
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'cat /usr/share/oracle/image-metadata/base-image-chain.json'
+
+RPM provenance is always recorded under `/usr/share/oracle/image-metadata/rpms`.
+Inspect it with:
+podman run --rm --entrypoint /bin/sh IMAGE -c \
+  'ls -l /usr/share/oracle/image-metadata/rpms && cat /usr/share/oracle/image-metadata/rpms/*.txt'
+```

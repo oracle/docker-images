@@ -1,27 +1,41 @@
+# hadolint global ignore=DL3006,DL4006
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2022 Oracle and/or its affiliates.
 #
-# ORACLE DOCKERFILES PROJECT
+# ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Connection Manager
-# 
+# This is the Containerfile for Oracle Connection Manager
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
-# (1) LINUX.X64_213000_client.zip 
+# (1) LINUX.X64_213000_client.zip
 #     Oracle Database 21c Client (21.3) for Linux x86-64
 #     Download Oracle Connection Manager as part of the Oracle Database Client
-#     from https://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle21c-linux-210000-5022980.html 
+#     from https://www.oracle.com/technetwork/database/enterprise-edition/downloads/oracle21c-linux-210000-5022980.html
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
-# Run: 
-#      $ docker build -t oracle/cman:21.3.0 . 
+# Put all downloaded files in the same directory as this Containerfile
+# Run:
+#      $ podman build -t oracle/cman:21.3.0 .
 #
 # Pull base image
 # ---------------
-FROM oraclelinux:7-slim
+ARG BASE_IMAGE=oraclelinux:7-slim
+ARG BASE_IMAGE_REF=oraclelinux:7-slim
+ARG BASE_IMAGE_DIGEST=unknown
+FROM $BASE_IMAGE
+RUN \
+      mkdir -p /usr/share/oracle/image-metadata/rpms && \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/base-image-rpms.txt && \
+      rpm -qa --qf '%{NAME}\n' | sort -u > /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt;
+ARG BASE_IMAGE
+ARG BASE_IMAGE_REF
+ARG BASE_IMAGE_DIGEST
+LABEL "org.opencontainers.image.base.name"="$BASE_IMAGE_REF" \
+      "org.opencontainers.image.base.digest"="$BASE_IMAGE_DIGEST" \
+      "com.oracle.database.base.image.chain.path"="/usr/share/oracle/image-metadata/base-image-chain.json"
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
@@ -41,7 +55,7 @@ ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     CMANORA="cman.ora" \
     FUNCTIONS="functions.sh" \
     INSTALL_DB_BINARIES_FILE="installDBBinaries.sh" \
-    container="true" 
+    container="true"
 # Use second ENV so that variable get substituted
 # hadolint ignore=DL3044
 ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
@@ -68,12 +82,26 @@ RUN chmod 755 $INSTALL_DIR/install/*.sh && \
     $INVENTORY/orainstRoot.sh && \
     $DB_HOME/root.sh && \
     rm -f /etc/sysctl.d/99-oracle-database-preinstall-21c-sysctl.conf && \
-    rm -f /etc/sysctl.d/99-sysctl.conf && \ 
+    rm -f /etc/sysctl.d/99-sysctl.conf && \
     rm -f /etc/rc.d/init.d/oracle-database-preinstall-21c-firstboot && \
     chown -R oracle:oinstall $SCRIPT_DIR && \
     chmod 755 $SCRIPT_DIR/*.sh && \
     chmod 666 $SCRIPT_DIR/*.ora && \
-    sync 
+    sync
+
+RUN mkdir -p /usr/share/oracle/image-metadata && \
+    printf '{\n  "schemaVersion": 1,\n  "images": [{"name": "%s", "digest": "%s", "reference": "%s", "role": "direct-base"}]\n}\n' \
+      "$BASE_IMAGE_REF" "$BASE_IMAGE_DIGEST" "$BASE_IMAGE" > /usr/share/oracle/image-metadata/base-image-chain.json
+
+RUN \
+      rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /usr/share/oracle/image-metadata/rpms/image-rpms.txt && \
+      rpm -qa --qf '%{NAME}	%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort > /tmp/image-rpm-details && \
+      if [ -f /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt ]; then \
+        awk -F '\t' 'NR==FNR {base[$1]=1; next} !($1 in base) {print $1 "-" $2}' /usr/share/oracle/image-metadata/rpms/base-image-rpm-names.txt /tmp/image-rpm-details > /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      else \
+        cp /usr/share/oracle/image-metadata/rpms/image-rpms.txt /usr/share/oracle/image-metadata/rpms/image-added-rpms.txt; \
+      fi && \
+      rm -f /tmp/image-rpm-details;
 
 USER  oracle
 WORKDIR /home/oracle

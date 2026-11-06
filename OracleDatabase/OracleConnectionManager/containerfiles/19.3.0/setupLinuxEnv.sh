@@ -13,9 +13,17 @@
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
+if command -v dnf >/dev/null 2>&1; then
+    PKG_MGR=dnf
+else
+    PKG_MGR=yum
+fi
+
+"$PKG_MGR" update -y && \
+"$PKG_MGR" clean all && \
 
 chmod ug+x "$SCRIPT_DIR"/*.sh && \
-yum -y install \
+"$PKG_MGR" -y install \
     oracle-database-preinstall-19c \
     net-tools \
     which \
@@ -23,9 +31,9 @@ yum -y install \
     unzip \
     tar \
     openssh-server \
-    openssh-client \
+    openssh-clients \
     vim-minimal \
     passwd \
     sudo && \
-yum clean all && \
+"$PKG_MGR" clean all && \
 rm -rf /var/cache/yum

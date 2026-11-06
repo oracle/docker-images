@@ -72,6 +72,7 @@ RUN mkdir -p $ORACLE_BASE/scripts/sharding/scripts && \
     sync
 
 # Copy updated scripts for sharding support
+# hadolint ignore=DL3022
 COPY --chown=oracle:dba --from=gdd-scripts / $ORACLE_BASE/scripts/sharding/
 
 # This is to add the setPassword.sh script and setPasswordRac.sh script

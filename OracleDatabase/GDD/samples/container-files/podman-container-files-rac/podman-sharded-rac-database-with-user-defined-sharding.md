@@ -922,13 +922,13 @@ Before creating the new shard containers (shard3 in this example), review the fo
 
   ```bash
   -e DB_BASE=/u01/app/oracle \
-  -e DB_HOME=/u01/app/oracle/product/26.0.0/dbhome_1 \
-  -e GRID_HOME=/u01/app/26.0.0/grid \
+  -e DB_HOME=/u01/app/oracle/product/23.26.0/dbhome_1 \
+  -e GRID_HOME=/u01/app/23.26.0/grid \
   -e GRID_BASE=/u01/app/grid \
   -e INVENTORY=/u01/app/oraInventory \
   -e COPY_GRID_SOFTWARE=true \
   -e COPY_DB_SOFTWARE=true \
-  -e STAGING_SOFTWARE_LOC=/stage/software/26.0.0 \
+  -e STAGING_SOFTWARE_LOC=/stage/software/23.26.0 \
   -e GRID_SW_ZIP_FILE=grid_home.zip \
   -e DB_SW_ZIP_FILE=db_home.zip \
   --volume /scratch/rac/shard3:/u01 \

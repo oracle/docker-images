@@ -7,7 +7,7 @@ Refer [Getting Oracle RAC Database Container Images](../../../OracleRealApplicat
 
 - [Oracle Database on Oracle Restart](#oracle-database-on-oracle-restart)
   - [Section 1: Prerequisites for Setting up Oracle Restart using Oracle RAC Container Image](#section-1-prerequisites-for-setting-up-oracle-cluster-using-oracle-rac-container-image)
-  - [Section 2: Deploying Oracle Restart using Oracle RAC Image](#section-2-deploying-oracle-restart-using-oracle-rac-image)  
+  - [Section 2: Deploying Oracle Restart using Oracle RAC Image](#section-2-deploying-oracle-restart-using-oracle-rac-image)
     - [Section 2.1.1: Deploying With Block Devices](#section-211-deploying-with-block-devices)
   - [Section 3: Attach the network to the container](#section-3-attach-the-network-to-the-container)
   - [Section 4: Start the container](#section-4-start-the-container)
@@ -231,12 +231,12 @@ Database is running.
 Execute below commands to cleanup Oracle Restart Container Environment-
 ```bash
 podman rm -f ${GPCNODE}
-podman network inspect rac_pub1_nw &> /dev/null && podman network rm rac_pub1_nw 
+podman network inspect rac_pub1_nw &> /dev/null && podman network rm rac_pub1_nw
 ```
 
 Cleanup ASM Disks:
 ```bash
-dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000 
+dd if=/dev/zero of=/dev/oracleoci/oraclevdd  bs=8k count=10000
 ```
 
 ## Support

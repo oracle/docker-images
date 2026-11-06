@@ -14,6 +14,7 @@
 # Setup filesystem and oracle user
 # Adjust file permissions, go to /opt/oracle as user 'oracle' to proceed with Oracle installation
 # ------------------------------------------------------------
+dnf update -y && \
 chmod ug+x /opt/scripts/startup/*.sh && \
 yum -y install systemd hostname sudo bind bind-utils bind-chroot net-tools which zip unzip tar openssh-server vim-minimal which passwd  && \
 yum clean all 
