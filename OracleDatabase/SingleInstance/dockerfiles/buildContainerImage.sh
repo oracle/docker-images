@@ -207,15 +207,9 @@ elif [ ${ENTERPRISE} -eq 1 ]; then
 elif [ ${STANDARD} -eq 1 ]; then
   EDITION="se2"
 elif [ ${EXPRESS} -eq 1 ]; then
-  if [ "${VERSION}" == "18.4.0" ]; then
+  if [ "${VERSION}" == "21.3.0" ]; then
     EDITION="xe"
     SKIPMD5=1
-  elif [ "${VERSION}" == "21.3.0" ]; then
-    EDITION="xe"
-    SKIPMD5=1
-  elif [ "${VERSION}" == "11.2.0.2" ]; then
-    EDITION="xe"
-    BUILD_OPTS=("--shm-size=1G" "${BUILD_OPTS[@]}")
   else
     echo "Version ${VERSION} does not have Express Edition available.";
     exit 1;
@@ -241,7 +235,7 @@ if [ "${VERSION%%.*}" -ge 23 ]; then
 fi;
 
 # Which Dockerfile should be used?
-if [ "${VERSION}" == "12.1.0.2" ] || [ "${VERSION}" == "11.2.0.2" ] || [ "${VERSION}" == "18.4.0" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; } || { [ "${VERSION%%.*}" -ge 23 ] && [ "${EDITION}" == "free" ]; }; then
+if [ "${VERSION}" == "12.1.0.2" ] || { [ "${VERSION}" == "21.3.0" ] && [ "${EDITION}" == "xe" ]; } || { [ "${VERSION%%.*}" -ge 23 ] && [ "${EDITION}" == "free" ]; }; then
   DOCKERFILE="${DOCKERFILE}.${EDITION}"
 fi;
 

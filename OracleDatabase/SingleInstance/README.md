@@ -18,8 +18,7 @@ Sample container build files to facilitate installation, configuration, and envi
     * [Enabling archive log mode and/or force logging mode while creating the database](#enabling-archive-log-mode-andor-force-logging-mode-while-creating-the-database)
     * [Configuring TCPS connections for Oracle Database (Supported from version 19.3.0 onwards)](#configuring-tcps-connections-for-oracle-database-supported-from-version-1930-onwards)
     * [Running Oracle Database 26ai Free in a container](#running-oracle-database-26ai-free-in-a-container)
-    * [Running Oracle Database 21c/18c Express Edition in a container](#running-oracle-database-21c18c-express-edition-in-a-container)
-    * [Running Oracle Database 11gR2 Express Edition in a container](#running-oracle-database-11gr2-express-edition-in-a-container)
+    * [Running Oracle Database 21c Express Edition in a container](#running-oracle-database-21c-express-edition-in-a-container)
   * [Running Oracle True Cache in a container (Supported from version 26ai onwards)](#running-oracle-true-cache-in-a-container-supported-from-version-26ai-onwards)
     * [Setting up network for communication between Primary Database and True Cache container](#setting-up-network-for-communication-between-primary-database-and-true-cache-container)
     * [Running Oracle True Cache Enterprise Edition in a container](#running-oracle-true-cache-enterprise-edition-in-a-container)
@@ -41,11 +40,8 @@ This project offers sample Dockerfiles for:
 * Oracle Database 26ai (23.26.0) Enterprise Edition, Standard Edition 2 and Free
 * Oracle Database 21c (21.3.0) Enterprise Edition, Standard Edition 2 and Express Edition (XE)
 * Oracle Database 19c (19.3.0) Enterprise Edition and Standard Edition 2
-* Oracle Database 18c (18.4.0) Express Edition (XE)
-* Oracle Database 18c (18.3.0) Enterprise Edition and Standard Edition 2
 * Oracle Database 12c Release 2 (12.2.0.2) Enterprise Edition and Standard Edition 2
 * Oracle Database 12c Release 1 (12.1.0.2) Enterprise Edition and Standard Edition 2
-* Oracle Database 11g Release 2 (11.2.0.2) Express Edition (XE)
 
 To assist in building the images, you can use the [buildContainerImage.sh](dockerfiles/buildContainerImage.sh) script. See below for instructions and usage.
 
@@ -53,7 +49,7 @@ The `buildContainerImage.sh` script is just a utility shell script that performs
 
 ### Building Oracle Database container images
 
-**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 18c XE, 21c XE and 26ai Free) and put them into the `dockerfiles/<version>` folder.
+**IMPORTANT:** You will have to provide the installation binaries of Oracle Database (except for Oracle Database 21c XE and 26ai Free) and put them into the `dockerfiles/<version>` folder.
 You only need to provide the binaries for the edition you are going to install. The binaries can be downloaded from the [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), make sure you use the linux link: *Linux x86-64*. The needed file is named *linuxx64_\<version\>_database.zip*.
 
 **Linux ARM64 Support:** Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and put them into the dockerfiles/19.3.0 folder. The needed file is named *LINUX.ARM64_1919000_db_home.zip*.
@@ -69,7 +65,7 @@ Before you build the image make sure that you have provided the installation bin
 
     Parameters:
        -v: version to build
-           Choose one of: 11.2.0.2  12.1.0.2  12.2.0.1  18.3.0  18.4.0  19.3.0  21.3.0 23.26.0
+           Choose one of: 12.1.0.2  12.2.0.1  19.3.0  21.3.0 23.26.0
        -t: image_name:tag for the generated docker image
        -e: creates image based on 'Enterprise Edition'
        -s: creates image based on 'Standard Edition 2'
@@ -94,7 +90,7 @@ Before you build the image make sure that you have provided the installation bin
 
 You may extend the image with your own Dockerfile and create the users and tablespaces that you may need.
 
-The character set for the database is set during creating of the database. 11gR2 Express Edition supports only UTF-8.
+The character set for the database is set during database creation.
 You can set the character set for the Standard Edition 2 and Enterprise Edition during the first run of your container and may keep separate folders containing different tablespaces with different character sets.
 
 #### Including the backup module RPM during image build
@@ -495,9 +491,9 @@ The ORACLE_SID for Oracle Database 26ai Free is always `FREE` and cannot be chan
 | `-v /opt/oracle/scripts/startup` or `-v /docker-entrypoint-initdb.d/startup` | Supported | Supported | Mounts custom scripts to run after database startup. | Optional |
 | `-v /opt/oracle/scripts/setup` or `-v /docker-entrypoint-initdb.d/setup` | Supported | Supported | Mounts custom scripts to run after database setup. | Optional |
 
-#### Running Oracle Database 21c/18c Express Edition in a container
+#### Running Oracle Database 21c Express Edition in a container
 
-To run your Oracle Database 21c, or 18c Express Edition container image use the `docker run` command as follows:
+To run your Oracle Database 21c Express Edition container image use the `docker run` command as follows:
 
     docker run --name <container name> \
     -p <host port>:1521 -p <host port>:5500 \
@@ -540,55 +536,6 @@ On the first startup of the container a random password will be generated for th
 
 **Important Note:**
 The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
-
-#### Running Oracle Database 11gR2 Express Edition in a container
-
-To run your Oracle Database Express Edition container image use the `docker run` command as follows:
-
-    docker run --name <container name> \
-    --shm-size=1g \
-    -p 1521:1521 -p 8080:8080 \
-    -e ORACLE_PWD=<your database passwords> \
-    -v [<host mount point>:]/u01/app/oracle/oradata \
-    oracle/database:11.2.0.2-xe
-
-    Parameters:
-       --name:        The name of the container (default: auto generated)
-       --shm-size:    Amount of Linux shared memory
-       -p:            The port mapping of the host port to the container port.
-                      Two ports are exposed: 1521 (Oracle Listener), 8080 (APEX)
-       -e ORACLE_PWD: The Oracle Database SYS, SYSTEM and PDBADMIN password (default: auto generated)
-
-       -v /u01/app/oracle/oradata
-                      The data volume to use for the database.
-                      Has to be writable by the Unix "oracle" (uid: 1000) user inside the container
-                      If omitted the database will not be persisted over container recreation.
-       -v /u01/app/oracle/scripts/startup | /docker-entrypoint-initdb.d/startup
-                      Optional: A volume with custom scripts to be run after database startup.
-                      For further details see the "Running scripts after setup and on startup" section below.
-       -v /u01/app/oracle/scripts/setup | /docker-entrypoint-initdb.d/setup
-                      Optional: A volume with custom scripts to be run after database setup.
-                      For further details see the "Running scripts after setup and on startup" section below.
-
-There are two ports that are exposed in this image:
-
-* 1521 which is the port to connect to the Oracle Database.
-* 8080 which is the port of Oracle Application Express (APEX).
-
-On the first startup of the container a random password will be generated for the database if not provided. You can find this password in the output line:
-
-    ORACLE PASSWORD FOR SYS AND SYSTEM:
-
-**Note:** The ORACLE_SID for Express Edition is always `XE` and cannot be changed, hence there is no ORACLE_SID parameter provided for the XE build.
-
-The password for those accounts can be changed via the `docker exec` command. **Note**, the container has to be running:
-
-    docker exec <container name> /u01/app/oracle/setPassword.sh <your password>
-
-Once the container has been started you can connect to it just like to any other database:
-
-    sqlplus sys/<your password>@//localhost:1521/XE as sysdba
-    sqlplus system/<your password>@//localhost:1521/XE
 
 ### Running Oracle True Cache in a container (Supported from version 26ai onwards)
 
@@ -661,7 +608,6 @@ SQL scripts will be executed as sysdba, shell scripts will be executed as the cu
 recommended to prefix your scripts with a number. For example `01_users.sql`, `02_permissions.sql`, etc.
 
 **Note:** The startup scripts will also be executed after the first time database setup is complete.
-**Note:** For 11gR2 Express Edition only, use `/u01/app/oracle/scripts/` instead of `/opt/oracle/scripts/`.
 
 The example below mounts the local directory myScripts to `/opt/oracle/myScripts` which is then searched for custom startup scripts:
 

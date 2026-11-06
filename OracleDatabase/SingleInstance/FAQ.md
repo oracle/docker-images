@@ -25,7 +25,7 @@ If not, please change the Base Device Size using the `--storage-opt dm.basesize=
 
 ## Error: The container doesn't have enough memory allocated. A database XE container needs at least 1 GB of shared memory (/dev/shm)
 
-The default size for `/dev/shm` is only 64 KB. In order to increase it, you must pass the `--shm-size` option to the `docker run` command. For example: `docker run ... --shm-size=1g oracle/database:11.2.0.2-xe`
+The default size for `/dev/shm` is only 64 KB. In order to increase it, you must pass the `--shm-size` option to the `docker run` command. For example: `docker run ... --shm-size=1g oracle/database:21.3.0-xe`
 
 ## Image build: unzip error: invalid compressed data to inflate
 

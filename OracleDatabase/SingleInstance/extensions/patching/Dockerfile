@@ -14,7 +14,7 @@
 # -----------------------
 #
 # Run:
-#      $ docker build -t <extended_image_name> . --build-arg BASE_IMAGE=oracle/database:18.3.0-ee
+#      $ docker build -t <extended_image_name> . --build-arg BASE_IMAGE=oracle/database:19.3.0-ee
 #
 # Pull base image
 # ---------------
