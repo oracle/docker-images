@@ -441,14 +441,29 @@ fi
 # Check whether container has enough memory
 # Github issue #219: Prevent integer overflow,
 # only check if memory digits are less than 11 (single GB range and below) 
-if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes | wc -c` -lt 11 ]; then
-   if [ `cat /sys/fs/cgroup/memory/memory.limit_in_bytes` -lt 2147483648 ]; then
+# Support cgroup v1 and cgroup v2.
+if [ -r /sys/fs/cgroup/memory.max ]; then
+   memoryFile="/sys/fs/cgroup/memory.max"
+elif [ -r /sys/fs/cgroup/memory/memory.limit_in_bytes ]; then
+   memoryFile="/sys/fs/cgroup/memory/memory.limit_in_bytes"
+else
+   echo "Error: Cannot determine the container memory limit."
+   exit 1
+fi
+
+memoryLimit=$(cat "$memoryFile")
+
+# In cgroup v2, "max" means the memory limit is unlimited.
+if [ "$memoryLimit" != "max" ]; then
+   # Check only values with at most 10 digits to avoid integer overflow
+   # on the large cgroup v1 unlimited sentinel value.
+   if [ "${#memoryLimit}" -le 10 ] && [ "$memoryLimit" -lt 2147483648 ]; then
       echo "Error: The container doesn't have enough memory allocated."
       echo "A database container needs at least 2 GB of memory."
-      echo "You currently only have $((`cat /sys/fs/cgroup/memory/memory.limit_in_bytes`/1024/1024/1024)) GB allocated to the container."
-      exit 1;
-   fi;
-fi;
+      echo "You currently only have $((memoryLimit / 1024 / 1024 / 1024)) GB allocated to the container."
+      exit 1
+   fi
+fi
 
 
 # Check that hostname doesn't container any "_"

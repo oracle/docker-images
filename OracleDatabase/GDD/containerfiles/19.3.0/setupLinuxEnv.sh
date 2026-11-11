@@ -6,6 +6,7 @@
 #
 
 # ------------------------------------------------------------
+yum update -y && \
 chmod ug+x $SCRIPT_DIR/*.sh && \
 yum -y install oracle-database-preinstall-19c net-tools which zip unzip tar openssl openssh-server openssh-client vim-minimal which vim-minimal passwd sudo python36 && \
 yum clean all

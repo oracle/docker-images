@@ -25,6 +25,10 @@ Provides Details to create Oracle Database on Oracle Restart. For more details, 
 
 Provides Podman build files to create an Oracle RAC Database container image. For more details, see [OracleRealApplicationClusters/README.md](./OracleRealApplicationClusters/README.md)
 
+## Oracle RAC Data Guard on Containers
+
+Provides Details to create Oracle RAC DataGuard Setup on Containers. For more details, see [README.md](./OracleRealApplicationClusters/docs/dataguard/README.md)
+
 
 ## Oracle Real Application Clusters for Developers
 
