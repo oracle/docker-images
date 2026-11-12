@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2154,SC2155,SC2166
+# shellcheck disable=SC2001,SC2002,SC2006,SC2086,SC2154,SC2155,SC2162,SC2166,SC2236
 # LICENSE UPL 1.0
 #
 # Copyright (c) 2024-2026 Oracle and/or its affiliates. All rights reserved.
@@ -80,6 +80,30 @@ function normalizeServiceName {
    local value
    value=$(printf '%s' "$1" | xargs)
    printf '%s' "${value^^}"
+}
+
+# Keep service aliases available even when DBCA does not write them.
+function ensureTNSAlias {
+  local alias=$1 host=$2 port=$3 service=$4
+  local tns_file="${TNS_ADMIN:-${ORACLE_HOME}/network/admin}/tnsnames.ora"
+  [ -n "${alias}" ] && [ -n "${host}" ] && [ -n "${port}" ] && [ -n "${service}" ] || return 1
+  mkdir -p "$(dirname "${tns_file}")" && touch "${tns_file}" || return 1
+  grep -qiE "^[[:space:]]*${alias}[[:space:]]*=" "${tns_file}" && return 0
+  cat >> "${tns_file}" <<EOF
+
+${alias} =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = ${host})(PORT = ${port}))
+    (CONNECT_DATA = (SERVICE_NAME = ${service}))
+  )
+EOF
+  print_message "Added TNS alias ${alias} -> ${host}:${port}/${service}."
+}
+
+function ensureTrueCacheTNSAliases {
+  local local_host="${ORACLE_HOSTNAME:-$(hostname)}"
+  ensureTNSAlias "${PRIMARY_DB_APP_SVC}" "${PRIMARY_DB_HOST}" "${PRIMARY_DB_PORT:-1521}" "${PRIMARY_DB_APP_SVC}"
+  ensureTNSAlias "${TRUE_CACHE_DB_APP_SVC}" "${local_host}" "1521" "${TRUE_CACHE_DB_APP_SVC}"
 }
 
 function formatPendingAssociationValue {
@@ -919,9 +943,11 @@ if [[ "${TRUE_CACHE}" == "true" ]]; then
         print_message "running primary-host registration helper for PRIMARY_SERVICE=${PRIMARY_DB_APP_SVC} TRUECACHE_SERVICE=${TRUE_CACHE_DB_APP_SVC}"
         createTCSvc
         startTrueCacheSvc
+        ensureTrueCacheTNSAliases
         checkTCSvc || return 1
       else
         printManualPrimaryRegistrationReminder
       fi
+      ensureTrueCacheTNSAliases
   done
 fi

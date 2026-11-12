@@ -2,18 +2,18 @@
 #
 # Copyright (c) 2018, 2026 Oracle and/or its affiliates.
 #
-# ORACLE DOCKERFILES PROJECT
+# ORACLE CONTAINERFILES PROJECT
 # --------------------------
-# This is the Dockerfile for Oracle Database 21c Express Edition
-# 
+# This is the Containerfile for Oracle Database 21c Express Edition
+#
 # REQUIRED FILES TO BUILD THIS IMAGE
 # ----------------------------------
 # None
 #
 # HOW TO BUILD THIS IMAGE
 # -----------------------
-# Run: 
-#      $ docker build -t oracle/database:21.3.0-xe -f Dockerfile.xe .
+# Run:
+#      $ podman build -t oracle/database:21.3.0-xe -f Containerfile.xe .
 #
 #
 # Pull base image

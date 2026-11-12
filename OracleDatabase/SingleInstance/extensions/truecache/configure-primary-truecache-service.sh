@@ -33,6 +33,32 @@ print_message() {
   echo "${now} : configure-primary-truecache-service.sh : ${1:-Unknown message}"
 }
 
+ensure_tns_alias() {
+  local alias=$1 host=$2 port=$3 service=$4
+  local tns_file="${TNS_ADMIN:-${ORACLE_HOME}/network/admin}/tnsnames.ora"
+  [ -n "${alias}" ] && [ -n "${host}" ] && [ -n "${port}" ] && [ -n "${service}" ] || return 1
+  mkdir -p "$(dirname "${tns_file}")" && touch "${tns_file}" || return 1
+  grep -qiE "^[[:space:]]*${alias}[[:space:]]*=" "${tns_file}" && return 0
+  cat >> "${tns_file}" <<EOF
+
+${alias} =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = ${host})(PORT = ${port}))
+    (CONNECT_DATA = (SERVICE_NAME = ${service}))
+  )
+EOF
+  print_message "Added TNS alias ${alias} -> ${host}:${port}/${service}."
+}
+
+ensure_primary_tns_aliases() {
+  local primary_host="${ORACLE_HOSTNAME:-$(hostname)}"
+  local truecache_host="${TC_CONNECT_STR%%:*}"
+  local truecache_port="${TC_CONNECT_STR#*:}"
+  truecache_port="${truecache_port%%/*}"
+  ensure_tns_alias "${PRIMARY_SVCNAME}" "${primary_host}" "1521" "${PRIMARY_SVCNAME}"
+  ensure_tns_alias "${TC_SVCNAME}" "${truecache_host}" "${truecache_port:-1521}" "${TC_SVCNAME}"
+}
+
 log_debug_context() {
   local password_mode
 
@@ -611,13 +637,16 @@ print_message "Sanitized PATH to keep only ORACLE_HOME runtime binaries first: $
 print_message "Using ORACLE_SID ${ORACLE_SID} for local SYSDBA connectivity."
 print_message "Using sourceDB ${SOURCE_DB} for True Cache service configuration."
 if truecache_service_already_configured; then
+  ensure_primary_tns_aliases
   exit 0
 fi
 if wait_for_existing_truecache_configuration; then
+  ensure_primary_tns_aliases
   exit 0
 fi
 ensure_primary_service_ready
 if truecache_service_already_configured; then
+  ensure_primary_tns_aliases
   exit 0
 fi
 
@@ -652,3 +681,4 @@ else
     -serviceName "${PRIMARY_SVCNAME}" \
     -pdbName "${PRIMARY_PDB_NAME}"
 fi
+ensure_primary_tns_aliases
