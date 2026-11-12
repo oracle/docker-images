@@ -125,7 +125,16 @@ docker run --rm -it \
 To build the image, clone this repository, change to the `OracleCloudInfrastructure/oci-cli` directory and then run:
 
 ```bash
-docker build --tag oci .
+podman build --pull=always --no-cache --tag oci .
+```
+
+The image uses Oracle Linux 8 with Python 3.12. A fresh build updates the OS certificate package and installs the latest compatible pip and OCI CLI packages.
+
+Check the CLI and its installed dependencies:
+
+```bash
+podman run --rm oci --version
+podman run --rm --entrypoint python3.12 oci -m pip check
 ```
 
 ## License
