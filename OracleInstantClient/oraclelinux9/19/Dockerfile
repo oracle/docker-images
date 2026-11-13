@@ -75,7 +75,7 @@
 FROM oraclelinux:9
 
 ARG release=19
-ARG update=32
+ARG update=33
 
 RUN  dnf -y install oracle-instantclient-release-el9 && \
      dnf -y install oracle-instantclient${release}.${update}-basic oracle-instantclient${release}.${update}-devel oracle-instantclient${release}.${update}-sqlplus && \
