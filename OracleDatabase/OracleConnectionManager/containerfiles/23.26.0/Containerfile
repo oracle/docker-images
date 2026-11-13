@@ -92,10 +92,13 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 ######
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
+COPY cmanRootHelper.sh /usr/local/bin/cmanRootHelper.sh
 RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
+        dnf upgrade --refresh -y && \
         dnf install -y oracle-ai-database-preinstall-26ai  && \
         dnf clean all; \
      else \
+          dnf upgrade --refresh -y && \
           dnf -y install oraclelinux-developer-release-el8 && \
           dnf -y install oracle-ai-database-preinstall-26ai && \
           dnf clean all; \
@@ -116,9 +119,10 @@ RUN mkdir -p "$DB_BASE" && \
     mkdir -p $INSTALL_DIR/install && \
     chmod 755 $INSTALL_DIR/install && \
     chown -R "${DB_USER}":oinstall $INSTALL_DIR/install && \
-    chmod 666 /etc/sudoers  && \
-    echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers && \
-    chmod 440 /etc/sudoers && \
+    chown root:root /usr/local/bin/cmanRootHelper.sh && \
+    chmod 0750 /usr/local/bin/cmanRootHelper.sh && \
+    printf '%s\n' 'oracle ALL=(root) NOPASSWD: /usr/local/bin/cmanRootHelper.sh *' > /etc/sudoers.d/cman && \
+    chmod 440 /etc/sudoers.d/cman && \
     chmod 4711 /usr/bin/ping && \
     sync
 

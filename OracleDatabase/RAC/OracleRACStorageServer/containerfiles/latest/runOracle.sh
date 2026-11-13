@@ -56,8 +56,8 @@ local stat=3
 
 if [ "$action" == "" ]; then
    if [ ! -z "${DNS_SERVER}" ] ; then
-     sudo sh -c "echo \"search  ${DOMAIN}\"  > /etc/resolv.conf"	   
-     sudo sh -c "echo \"nameserver ${DNS_SERVER}\"  >> /etc/resolv.conf"
+     printf 'search  %s\n' "${DOMAIN}" > /etc/resolv.conf
+     printf 'nameserver %s\n' "${DNS_SERVER}" >> /etc/resolv.conf
   fi
 fi
 
@@ -70,11 +70,13 @@ local HOST_LINE
 if [ "$action" == "" ]; then
  if [ ! -z "${HOSTFILE}" ]; then 
    if [ -f "${HOSTFILE}" ]; then
-     sudo sh -c "cat \"${HOSTFILE}\" > /etc/hosts"
+     cat "${HOSTFILE}" > /etc/hosts
    fi
  else	 
-  sudo sh -c "echo -e \"127.0.0.1\tlocalhost.localdomain\tlocalhost\" > /etc/hosts"
-  sudo sh -c "echo -e \"$PUBLIC_IP\t$PUBLIC_HOSTNAME.$DOMAIN\t$PUBLIC_HOSTNAME\" >> /etc/hosts"
+  {
+    printf '127.0.0.1\tlocalhost.localdomain\tlocalhost\n'
+    printf '%s\t%s.%s\t%s\n' "$PUBLIC_IP" "$PUBLIC_HOSTNAME" "$DOMAIN" "$PUBLIC_HOSTNAME"
+  } > /etc/hosts
  fi
 fi
 
@@ -104,7 +106,7 @@ fi
          SetupEtcHosts
          ####################
 	     echo "Oracle user will be the owner for /oradata" | tee -a $logfile
-	     sudo chown -R oracle:oinstall /oradata
+	     chown -R oracle:oinstall /oradata
 
 	     echo "Checking Space" | tee -a $logfile
 	     check_space $ASM_STORAGE_SIZE_GB
@@ -151,7 +153,7 @@ fi
 	     cat $SCRIPT_DIR/$EXPORTFILE | tee -a /etc/exports
 
 	     echo "Exporting File System"
-	     sudo /usr/sbin/exportfs -r | tee -a $logfile
+	     /usr/sbin/exportfs -r | tee -a $logfile
 
 	     echo "Checking exported mountpoints" | tee -a $logfile
 	     showmount -e | tee -a $logfile
