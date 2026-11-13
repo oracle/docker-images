@@ -28,11 +28,16 @@ fi
 "$PKG_MGR" clean all && \
 
 chmod ug+x "$SCRIPT_DIR"/*.sh && \
-if [ "$PKG_MGR" = microdnf ]; then
-    "$PKG_MGR" install -y oracle-database-preinstall-21c net-tools which zip unzip tar \
-        openssh-server openssh-client vim-minimal passwd sudo
+packages=(net-tools which zip unzip tar openssh-server openssh-clients vim-minimal passwd sudo) && \
+if ! rpm -q oracle-database-preinstall-21c >/dev/null 2>&1 && \
+   ! "$PKG_MGR" list --available oracle-database-preinstall-21c >/dev/null 2>&1; then
+    echo "WARNING: oracle-database-preinstall-21c is not available; continuing without it" >&2
 else
-    "$PKG_MGR" -y install oracle-database-preinstall-21c net-tools which zip unzip tar \
-        openssh-server openssh-client vim-minimal passwd sudo
+    packages=(oracle-database-preinstall-21c "${packages[@]}")
+fi && \
+if [ "$PKG_MGR" = microdnf ]; then
+    "$PKG_MGR" install -y "${packages[@]}"
+else
+    "$PKG_MGR" -y install "${packages[@]}"
 fi && \
 "$PKG_MGR" clean all
