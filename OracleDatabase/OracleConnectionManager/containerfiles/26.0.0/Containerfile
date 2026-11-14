@@ -93,7 +93,8 @@ ENV  INSTALL_SCRIPTS=$INSTALL_DIR/install \
 
 COPY $RUN_FILE $CMANORA $CONFIG_CMAN_FILE $FUNCTIONS $INSTALL_DIR/startup/
 COPY cmanRootHelper.sh /usr/local/bin/cmanRootHelper.sh
-RUN if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
+RUN dnf upgrade --refresh -y && \
+    if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
         dnf install -y oracle-ai-database-preinstall-26ai  && \
         dnf clean all; \
      else \
