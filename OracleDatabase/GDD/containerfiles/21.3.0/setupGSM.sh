@@ -20,9 +20,9 @@ chown -R oracle:oinstall $GSM_HOME
 chown -R oracle:oinstall $INSTALL_SCRIPTS
 chmod 775 $INSTALL_SCRIPTS
 
-chmod 666 /etc/sudoers
-echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-chmod 440 /etc/sudoers
+install -d -m 0750 /etc/sudoers.d
+printf '%s\n' 'oracle ALL=(grid) NOPASSWD: /bin/*, /usr/bin/*, /u01/app/*/bin/*' > /etc/sudoers.d/gdd-grid
+chmod 440 /etc/sudoers.d/gdd-grid
 
 echo "export ORACLE_HOME=$GSM_HOME" >> /home/oracle/.bashrc
 echo "export PATH=$GSM_PATH" >> /home/oracle/.bashrc

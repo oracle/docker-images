@@ -60,8 +60,11 @@ RUN chown -R grid:oinstall $PATCH_INSTALL_DIR/*.sh && \
     sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.conf  && \
     sed -e '/memlock/s/^/#/g' -i /etc/security/limits.d/*preinstall*.conf  && \
     sed -e '/ *nofile /s/^/#/g' -i /etc/security/limits.d/*preinstall*.conf  && \
+    printf '%s\n' "grid ALL=(root) SETENV: NOPASSWD: $GRID_HOME/OPatch/opatchauto" > /etc/sudoers.d/rac-patch-opatchauto && \
+    chmod 440 /etc/sudoers.d/rac-patch-opatchauto && \
     sync && \
     su grid -c "$PATCH_INSTALL_DIR/$GRID_PATCH_FILE $PATCH_INSTALL_DIR" && \
+    rm -f /etc/sudoers.d/rac-patch-opatchauto && \
     chown -R oracle:oinstall $PATCH_INSTALL_DIR
 
 USER oracle

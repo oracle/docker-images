@@ -39,6 +39,9 @@ LABEL "org.opencontainers.image.base.name"="$BASE_IMAGE_REF" \
 
 # Environment variables required for this build (do NOT change)
 # -------------------------------------------------------------
+# Oracle documents OL8 distribution emulation for the 21.3 client installer
+# when installing on Oracle Linux 9; later 21c release updates are required.
+ENV CV_ASSUME_DISTID=OL8
 # Linux Env Variable
 ENV SETUP_LINUX_FILE="setupLinuxEnv.sh" \
     INSTALL_DIR=/opt/scripts \

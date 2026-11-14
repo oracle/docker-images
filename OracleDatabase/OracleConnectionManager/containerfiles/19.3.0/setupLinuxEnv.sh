@@ -15,15 +15,28 @@
 # ------------------------------------------------------------
 if command -v dnf >/dev/null 2>&1; then
     PKG_MGR=dnf
-else
+elif command -v yum >/dev/null 2>&1; then
     PKG_MGR=yum
+elif command -v microdnf >/dev/null 2>&1; then
+    PKG_MGR=microdnf
+else
+    echo "ERROR: no supported package manager found (dnf, yum, or microdnf)" >&2
+    exit 1
 fi
 
-"$PKG_MGR" update -y && \
+case "$PKG_MGR" in
+    dnf) "$PKG_MGR" upgrade --refresh -y ;;
+    yum|microdnf) "$PKG_MGR" update -y ;;
+esac && \
 "$PKG_MGR" clean all && \
 
 chmod ug+x "$SCRIPT_DIR"/*.sh && \
-"$PKG_MGR" -y install \
+if [ "$PKG_MGR" = microdnf ]; then
+    "$PKG_MGR" install -y \
+        oracle-database-preinstall-19c net-tools which zip unzip tar \
+        openssh-server openssh-clients vim-minimal passwd sudo
+else
+    "$PKG_MGR" -y install \
     oracle-database-preinstall-19c \
     net-tools \
     which \
@@ -34,6 +47,7 @@ chmod ug+x "$SCRIPT_DIR"/*.sh && \
     openssh-clients \
     vim-minimal \
     passwd \
-    sudo && \
+    sudo
+fi && \
 "$PKG_MGR" clean all && \
 rm -rf /var/cache/yum

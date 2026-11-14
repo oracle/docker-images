@@ -29,6 +29,14 @@ When CMAN is used with Oracle RAC on Podman, follow the Oracle RAC Podman host a
 | Oracle Linux 9 x86-64 | GI 19c and Database 19c, RU 19.28 or later; apply patch 34436514 to the 19.28 Database home | 4.5 or later | `oraclelinux:9` | Oracle Linux 9.5 or later updates | UEKR7, minimum `5.15.0-305.176.4.el9uek.x86_64`, and later UEKR7 updates |
 | Oracle Linux 8 ARM | GI 19c and Database 19c, RU 19.19 or later | 4.0.2 or later | `oraclelinux:8` | Oracle Linux 8.7 or later updates | UEKR7, minimum `5.15.0-100.96.32.el8uek.aarch64`, and later UEKR7 updates |
 
+For the base 19.3.0 client media (`LINUX.X64_193000_client.zip`), the 19.3
+installer predates Oracle Linux 8 and 9. CMAN 19.3.0 sets
+`CV_ASSUME_DISTID=OL7` to pass the installer OS check on newer Oracle Linux
+bases. Oracle Linux slim bases use `microdnf` when `dnf` and `yum` are
+unavailable; the 19.3.0 setup script supports all three package managers.
+Apply a current 19c RU and required one-offs after the base installation before
+treating the image as supported on Oracle Linux 8 or 9.
+
 The kernel requirement applies to the Podman host, not the container. Verify it with:
 
 ```bash
@@ -45,6 +53,12 @@ This project offers example container images under these version folders:
 | `23.26.0` | All 23.26.* CMAN builds (dbInstall maps `23.26` → `23.26.0`) |
 | `21.3.0` | 21c client/CMAN |
 | `19.3.0` | 19c client/CMAN (use zip build-arg for later 19 RUs) |
+
+For CMAN 21.3.0 on Oracle Linux 9, Oracle documents `CV_ASSUME_DISTID=OL8`
+for the 21.3 Client Home installer. The installed 21.3 home must then be
+updated with the applicable 21.12 RU and one-off patches before it is treated
+as a supported OL9 installation. The 21.3 CMAN build script sets this variable
+and supports `dnf`, `yum`, and `microdnf` for slim bases.
 
 Default install media for `23.26.0` is `LINUX.X64_2326100_client_cman_home.zip` (SHA256 in `23.26.0/Checksum`).
 
@@ -89,6 +103,15 @@ Example: explicit install zip name (default media `LINUX.X64_2326100_client_cman
   -o "--build-arg INSTALL_FILE_1=LINUX.X64_2326100_client_cman_home.zip"
 ```
 
+Example: build CMAN 19.3.0 base media on Oracle Linux 7:
+```bash
+./buildContainerImage.sh \
+  -v 19.3.0 \
+  -i \
+  -o "--build-arg BASE_IMAGE=oraclelinux:7-slim --build-arg INSTALL_FILE_1=LINUX.X64_193000_client.zip" \
+  -t phx.ocir.io/intsanjaysingh/oracle/client-cman:19.3.0-ol7
+```
+
 For detailed usage of command, please execute following command:
 ```bash
 ./buildContainerImage.sh -h
@@ -99,7 +122,7 @@ Note:
    -v: version to build
    -i: ignores the MD5/SHA256 checksums
    -t: user defined image name and tag (e.g., image_name:tag). Default is set to oracle/client-cman:<VERSION>.
-   -o: passes on container build option (e.g., --build-arg INSTALL_FILE_1=<zip>, --build-arg BASE_OL_IMAGE=oraclelinux:8).
+   -o: passes on container build option (e.g., --build-arg INSTALL_FILE_1=<zip>, --build-arg BASE_IMAGE=oraclelinux:8).
    ```
 - If you are behind a proxy wall, then you must set the `https_proxy` or `http_proxy` environment variable based on your environment before building the image.
 

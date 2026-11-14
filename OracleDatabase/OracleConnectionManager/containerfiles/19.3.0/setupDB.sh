@@ -21,10 +21,6 @@ chown -R oracle:oinstall $DB_HOME
 chown -R oracle:oinstall $INSTALL_SCRIPTS
 chmod 775 $INSTALL_SCRIPTS
 
-chmod 666 /etc/sudoers
-echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-chmod 440 /etc/sudoers
-
 echo "export ORACLE_HOME=$DB_HOME" >> /home/oracle/.bashrc
 echo "export PATH=$DB_PATH" >> /home/oracle/.bashrc
 echo "export LD_LIBRARY_PATH=$DB_LD_LIBRARY_PATH" >> /home/oracle/.bashrc
