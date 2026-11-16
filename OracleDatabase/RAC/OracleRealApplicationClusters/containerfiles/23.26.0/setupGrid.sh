@@ -23,10 +23,13 @@ groupadd -g 54335 asmdba
 groupadd -g 54336 asmoper
 useradd -u 54332 -g oinstall -G oinstall,asmadmin,asmdba,asmoper,racdba,dba  "${GRID_USER}"
 
-chmod 666 /etc/sudoers
-echo "${DB_USER}       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-echo "${GRID_USER}       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-chmod 440 /etc/sudoers
+install -d -m 0750 /etc/sudoers.d
+cat > /etc/sudoers.d/rac-users <<EOF
+Cmnd_Alias RAC_ROOT = /usr/bin/systemctl, /usr/bin/crontab, /usr/bin/mkdir, /usr/bin/cp, /usr/bin/chown, /usr/bin/chmod, /usr/bin/rm, /usr/bin/rpm, /usr/sbin/chpasswd, /usr/bin/kill, /usr/bin/tee, /u01/app/26ai/grid/root.sh
+${DB_USER} ALL=(root) NOPASSWD: RAC_ROOT
+${GRID_USER} ALL=(root) NOPASSWD: RAC_ROOT
+EOF
+chmod 440 /etc/sudoers.d/rac-users
 
 if [ "${SLIMMING}x" != 'truex' ] ; then
       chown -R "${GRID_USER}":oinstall "$GRID_BASE"

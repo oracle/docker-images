@@ -537,7 +537,7 @@ for subset in data.get("subsets", []):
                 if [ -z "${endpoint_ip}" ] || [ -z "${endpoint_name}" ]; then
                     continue
                 fi
-                printf '%s\t%s\n' "${endpoint_ip}" "${endpoint_name}" | sudo tee -a "${ETCHOSTS:-/etc/hosts}" > /dev/null
+                printf '%s\t%s\n' "${endpoint_ip}" "${endpoint_name}" | sudo /usr/local/bin/cmanRootHelper.sh append-hosts
                 print_message "Added Kubernetes endpoint host mapping: ${endpoint_ip} ${endpoint_name}"
                 if [ -z "${endpoint_host}" ]; then
                     endpoint_host="${endpoint_name}"
@@ -640,7 +640,7 @@ for item in data.get("items", []):
             if getent hosts "${endpoint_name}" >/dev/null 2>&1; then
                 continue
             fi
-            printf '%s\t%s\n' "${endpoint_ip}" "${endpoint_name}" | sudo tee -a "${ETCHOSTS:-/etc/hosts}" > /dev/null
+            printf '%s\t%s\n' "${endpoint_ip}" "${endpoint_name}" | sudo /usr/local/bin/cmanRootHelper.sh append-hosts
             print_message "Added Kubernetes endpoint host mapping: ${endpoint_ip} ${endpoint_name}"
         done < "${hosts_file}"
     else
@@ -670,8 +670,7 @@ setupEtcResolvConf()
     fi
 
     if [ -n "${DNS_SERVER}" ]; then
-        sudo sh -c "printf '%s\n' 'search ${DOMAIN}' > /etc/resolv.conf"
-        sudo sh -c "printf '%s\n' 'nameserver ${DNS_SERVER}' >> /etc/resolv.conf"
+        sudo /usr/local/bin/cmanRootHelper.sh replace-resolv "${DOMAIN}" "${DNS_SERVER}"
     fi
 }
 
@@ -687,7 +686,7 @@ SetupEtcHosts()
         if [ ! -f "${HOSTFILE}" ]; then
             error_exit "Host file [${HOSTFILE}] does not exist"
         fi
-        sudo sh -c "cat \"${HOSTFILE}\" > /etc/hosts"
+        cat "${HOSTFILE}" | sudo /usr/local/bin/cmanRootHelper.sh replace-hosts
         return 0
     fi
 
@@ -705,7 +704,7 @@ SetupEtcHosts()
     fi
     printf '%s\t%s.%s\t%s\n' "${PUBLIC_IP}" "${PUBLIC_HOSTNAME}" "${DOMAIN}" "${PUBLIC_HOSTNAME}" >> "${tmp_hosts}.filtered"
 
-    sudo sh -c "cat \"${tmp_hosts}.filtered\" > /etc/hosts"
+    cat "${tmp_hosts}.filtered" | sudo /usr/local/bin/cmanRootHelper.sh replace-hosts
     rm -f "$tmp_hosts" "${tmp_hosts}.filtered"
 }
 

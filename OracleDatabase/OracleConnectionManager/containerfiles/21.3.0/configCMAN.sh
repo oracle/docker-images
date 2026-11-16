@@ -378,7 +378,7 @@ for subset in data.get("subsets", []):
   if [ -s "${hosts_file}" ]; then
      while IFS= read -r HOST_LINE
      do
-        echo "${HOST_LINE}" | sudo tee -a "${ETCHOSTS}" > /dev/null
+        echo "${HOST_LINE}" | sudo /usr/local/bin/cmanRootHelper.sh append-hosts
         print_message "Added Kubernetes endpoint host mapping: ${HOST_LINE}"
      done < "${hosts_file}"
   else
@@ -396,8 +396,7 @@ local stat=3
 
 if [ "$action" == "" ]; then
    if [ ! -z "${DNS_SERVER}" ] ; then
-     sudo sh -c "echo \"search  ${DOMAIN}\"  > /etc/resolv.conf"	   
-     sudo sh -c "echo \"nameserver ${DNS_SERVER}\"  >> /etc/resolv.conf"
+     sudo /usr/local/bin/cmanRootHelper.sh replace-resolv "${DOMAIN}" "${DNS_SERVER}"
   fi
 fi
 
@@ -418,11 +417,13 @@ if [ "$action" == "" ]; then
  fi
  if [ ! -z "${HOSTFILE}" ]; then 
    if [ -f "${HOSTFILE}" ]; then
-     sudo sh -c "cat \"${HOSTFILE}\" > /etc/hosts"
+     cat "${HOSTFILE}" | sudo /usr/local/bin/cmanRootHelper.sh replace-hosts
    fi
  else	 
-  sudo sh -c "echo -e \"127.0.0.1\tlocalhost.localdomain\tlocalhost\" > /etc/hosts"
-  sudo sh -c "echo -e \"$PUBLIC_IP\t$PUBLIC_HOSTNAME.$DOMAIN\t$PUBLIC_HOSTNAME\" >> /etc/hosts"
+  {
+     printf '127.0.0.1\tlocalhost.localdomain\tlocalhost\n'
+     printf '%s\t%s.%s\t%s\n' "$PUBLIC_IP" "$PUBLIC_HOSTNAME" "$DOMAIN" "$PUBLIC_HOSTNAME"
+  } | sudo /usr/local/bin/cmanRootHelper.sh replace-hosts
  fi
 fi
 
