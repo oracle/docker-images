@@ -30,11 +30,11 @@ mkdir "$ORACLE_BASE"/oradata && \
 mkdir -p "$ORACLE_HOME" && \
 chmod ug+x "$ORACLE_BASE"/*.sh && \
 yum update -y && \
-yum -y install oracle-database-preinstall-19c openssl hostname libxcrypt-compat && \
+yum -y install oracle-database-preinstall-19c openssl hostname 'libcrypt.so.1()(64bit)' && \
 rm -rf /var/cache/yum && \
 ln -s "$ORACLE_BASE"/"$PWD_FILE" /home/oracle/ && \
 echo oracle:oracle | chpasswd && \
-chown -R oracle:dba "$ORACLE_BASE"
+chown -R oracle:dba "$ORACLE_BASE" || exit 1
 
 if [ ! -f '/usr/bin/python' ] && [ -f '/usr/bin/python3' ]; then 
     alternatives --install /usr/bin/python python /usr/bin/python3 1; 
