@@ -33,7 +33,7 @@
 # cwallet.sso.  You can use a container volume to mount the directory containing
 # the files at runtime, for example:
 #
-#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.32/client64/lib/network/admin:Z,ro . . .
+#   podman run -v /my/host/wallet_dir:/usr/lib/oracle/19.33/client64/lib/network/admin:Z,ro . . .
 #
 # This avoids embedding private information such as wallets in images.  If you
 # do choose to include network configuration files in images, you can use a
