@@ -14,7 +14,7 @@ An example would be: `docker run ... -e TZ="Europe/Vienna" oracle/database:12.2.
 
 ## Can I run Oracle Database containers on Apple M1 (Arm) devices?
 
-Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and place them in the `dockerfiles/19.3.0` folder before running the `buildContainerImage.sh` script.
+Oracle Database 19c Enterprise Edition and 26ai Free Edition are now supported on ARM64 platforms. You will have to provide the installation binaries of [Oracle Database 19c](https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html) and place them in the `containerfiles/19.3.0` folder before running the `buildContainerImage.sh` script.
 
 ## checkSpace.sh: ERROR - There is not enough space available in the container
 
@@ -47,6 +47,68 @@ podman unshare chown 54321:54321 ~/data/my_db
 ```
 
 Last but not least, if SELinux is enabled, the mapped folder should be properly labeled. If you encounter SELinux permission issues, you can add the `:Z` flag to the bind mounts.
+
+### Rootless Podman: bind-mount startup failures
+
+When a rootless Podman container fails while expanding the prebuilt database and
+the log contains errors such as `Cannot utime`, `Cannot change mode`, or
+`Permission denied`, check both the host directory ownership and the Podman
+storage configuration. The database image is not necessarily the cause of the
+failure.
+
+Use either rootless Podman or rootful Podman consistently for a data directory.
+Do not use `sudo podman` to create or modify a directory that will later be
+used by rootless `podman`.
+
+The following example is POSIX-shell syntax. Only move the old directory if its
+database contents are disposable or backed up:
+
+```shell
+HOST_DATA_ROOT=/path/to/containers
+cd "$HOST_DATA_ROOT"
+mv primdb1 "primdb1.bak.$(date +%Y%m%d%H%M%S)"
+mkdir -p primdb1
+chmod 750 primdb1
+podman unshare chown -R 54321:54321 "$HOST_DATA_ROOT/primdb1"
+podman unshare stat -c '%u:%g %a %n' "$HOST_DATA_ROOT/primdb1"
+```
+
+The `chown` must be run through `podman unshare`: container UID 54321 is
+normally represented by a subordinate host UID, not by host UID 54321. The
+rootless user must have suitable ranges in `/etc/subuid` and `/etc/subgid`.
+If the existing data must be retained, use a new directory and make a
+database-aware backup or copy instead of deleting or blindly changing the old
+directory.
+
+Rootless overlay storage also requires a mount program when `force_mask` is
+configured. In the rootless user's `~/.config/containers/storage.conf`, use
+the installed `fuse-overlayfs` path and do not enable `force_mask` when it
+masks the modes required by the database files:
+
+```toml
+[storage.options.overlay]
+mount_program = "/bin/fuse-overlayfs"
+# force_mask = "700"
+```
+
+An active `force_mask = "700"` can cause listener and database permission
+errors, including `TNS-12546` and `ORA-49801`, even after the bind directory
+ownership has been corrected. Confirm the effective rootless configuration with
+`podman info --debug`; it reports the user storage configuration, graph options,
+and whether SELinux is enabled.
+
+For persistent database data, a named volume is another option and avoids most
+host bind-mount UID and labeling issues:
+
+```shell
+podman volume create oracle-data
+podman run ... -v oracle-data:/opt/oracle/oradata ...
+```
+
+On an SELinux-enabled host, apply the documented bind-mount labeling (usually
+`:Z`) in addition to the ownership steps above. A host with SELinux disabled
+does not need an SELinux relabel; it can still fail because of rootless UID
+mapping, stale ownership, or `force_mask`.
 
 ## ORA-00600: internal error code, arguments: [pesldl03_MMap: errno 1 errmsg Operation not permitted], [], [], [], [], [], [], [], [], [], [], []
 

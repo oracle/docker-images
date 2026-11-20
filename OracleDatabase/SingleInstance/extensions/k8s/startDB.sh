@@ -70,19 +70,68 @@ fi
 touch "$ORACLE_BASE/oradata/.${ORACLE_SID}.nochk" && sync
 
 for i in {1..10}; do
-  # Start database
+  # Mount database
   sqlplus / as sysdba << EOF
    $condn_sql
    alter database mount;
-   alter database open;
-   alter system register;
    exit;
 EOF
+
+  # Get database role
+  DB_ROLE=$(sqlplus -s / as sysdba << EOF
+set heading off;
+set pagesize 0;
+set feedback off;
+select database_role from v\$database;
+exit;
+EOF
+)
+  DB_ROLE=$(echo "$DB_ROLE" | xargs)
+
+  # Check if database is a CDB
+  CDB_FLAG=$(sqlplus -s / as sysdba << EOF
+set heading off;
+set pagesize 0;
+set feedback off;
+select cdb from v\$database;
+exit;
+EOF
+)
+  CDB_FLAG=$(echo "$CDB_FLAG" | xargs)
+
+  # Open database based on database role
+  if [ "$DB_ROLE" = "PHYSICAL STANDBY" ]; then
+
+    # Keep standby mounted when explicitly configured in MOUNTED mode
+    if [ "${STANDBY_OPEN_MODE:-READ_ONLY}" = "MOUNTED" ]; then
+      sqlplus / as sysdba << EOF
+       alter system register;
+       exit;
+EOF
+    else
+      sqlplus / as sysdba << EOF
+       alter database open read only;
+       $(if [ "$CDB_FLAG" = "YES" ]; then echo "alter pluggable database all open read only;"; fi)
+       alter system register;
+       exit;
+EOF
+    fi
+
+  else
+    sqlplus / as sysdba << EOF
+     alter database open;
+     $(if [ "$CDB_FLAG" = "YES" ]; then echo "alter pluggable database all open;"; fi)
+     alter system register;
+     exit;
+EOF
+  fi
+
   if "$CHECK_DB_PATH"; then
     # DB health is good
     echo "DB is in good health on startup"
     break
   fi
+
   # Sometimes DB locks of a dead container are not released immediately
   echo "Waiting for $i sec(s) before restarting Oracle processes and opening the database"
   sleep $i

@@ -62,12 +62,14 @@ fi
 
 if [ "${TRUE_CACHE:-false}" != "true" ] && [ -x "${FALLBACK_CHECK_DB_LOCK_STATUS}" ]; then
   if same_path "${FALLBACK_CHECK_DB_LOCK_STATUS}" "$0"; then
-    if [ -x "${FALLBACK_CHECK_DB_STATUS}" ]; then
-      exec "${FALLBACK_CHECK_DB_STATUS}" "$@"
-    fi
-    exit 1
+    :
+  else
+    exec "${FALLBACK_CHECK_DB_LOCK_STATUS}" "$@"
   fi
-  exec "${FALLBACK_CHECK_DB_LOCK_STATUS}" "$@"
+fi
+
+if [ "${TRUE_CACHE:-false}" != "true" ] && [ -x "${FALLBACK_CHECK_DB_STATUS}" ]; then
+  exec "${FALLBACK_CHECK_DB_STATUS}" "$@"
 fi
 
 exit 1
