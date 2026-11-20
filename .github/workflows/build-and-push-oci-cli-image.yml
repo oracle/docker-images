@@ -7,11 +7,11 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'OracleCloudInfrastructuree/oci-cli/*'
+      - 'OracleCloudInfrastructure/oci-cli/*'
       - '.github/workflows/build-and-push-oci-cli-image.yml'
   pull_request:
     paths:
-      - 'OracleCloudInfrastructuree/oci-cli/*'
+      - 'OracleCloudInfrastructure/oci-cli/*'
       - '.github/workflows/build-and-push-oci-cli-image.yml'
     branches: [ "main" ]
 

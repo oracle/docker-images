@@ -3,7 +3,7 @@
 #
 # hadolint global ignore=DL3013
 
-FROM ghcr.io/oracle/oraclelinux8-python:3.9
+FROM ghcr.io/oracle/oraclelinux8-python:3.12
 
 ARG BUILDTIME
 ARG VERSION
@@ -13,10 +13,11 @@ ENV IMAGE_BUILDTIME=${BUILDTIME} \
     IMAGE_VERSION=${VERSION} \
     IMAGE_REVISION=${REVISION}
 
-RUN dnf -y install jq && rm -rf /var/cache/dnf/* \
-    && python3 -m pip install --no-cache-dir --upgrade pip \
-    && python3 -m pip install --no-cache-dir oci-cli \
-    && cp /usr/local/lib/python3.9/site-packages/oci_cli/bin/oci_autocomplete.sh /usr/local/bin/oci_autocomplete.sh \
+RUN dnf -y update ca-certificates \
+    && dnf -y install jq && rm -rf /var/cache/dnf/* \
+    && python3.12 -m pip install --no-cache-dir --upgrade "pip>=26.2.2" \
+    && python3.12 -m pip install --no-cache-dir oci-cli \
+    && cp "$(python3.12 -c 'from importlib.resources import files; print(files("oci_cli") / "bin" / "oci_autocomplete.sh")')" /usr/local/bin/oci_autocomplete.sh \
     && chmod +x /usr/local/bin/oci_autocomplete.sh \
     && useradd -m -d /oracle oracle \
     && echo '[[ -e "/usr/local/bin/oci_autocomplete.sh" ]] && source "/usr/local/bin/oci_autocomplete.sh"' >> /oracle/.bashrc
