@@ -445,7 +445,7 @@ for subset in data.get("subsets", []):
 ' > "${hosts_file}"
         if [ -s "${hosts_file}" ]; then
             while IFS= read -r HOST_LINE; do
-                echo "${HOST_LINE}" | sudo tee -a "${ETCHOSTS:-/etc/hosts}" > /dev/null
+                echo "${HOST_LINE}" | sudo /usr/local/bin/cmanRootHelper.sh append-hosts
                 print_message "Added Kubernetes endpoint host mapping: ${HOST_LINE}"
             done < "${hosts_file}"
         else
@@ -476,8 +476,7 @@ setupEtcResolvConf()
     fi
 
     if [ -n "${DNS_SERVER}" ]; then
-        sudo sh -c "printf '%s\n' 'search ${DOMAIN}' > /etc/resolv.conf"
-        sudo sh -c "printf '%s\n' 'nameserver ${DNS_SERVER}' >> /etc/resolv.conf"
+        sudo /usr/local/bin/cmanRootHelper.sh replace-resolv "${DOMAIN}" "${DNS_SERVER}"
     fi
 }
 
@@ -493,7 +492,7 @@ SetupEtcHosts()
         if [ ! -f "${HOSTFILE}" ]; then
             error_exit "Host file [${HOSTFILE}] does not exist"
         fi
-        sudo sh -c "cat \"${HOSTFILE}\" > /etc/hosts"
+        cat "${HOSTFILE}" | sudo /usr/local/bin/cmanRootHelper.sh replace-hosts
         return 0
     fi
 
@@ -511,7 +510,7 @@ SetupEtcHosts()
     fi
     printf '%s\t%s.%s\t%s\n' "${PUBLIC_IP}" "${PUBLIC_HOSTNAME}" "${DOMAIN}" "${PUBLIC_HOSTNAME}" >> "${tmp_hosts}.filtered"
 
-    sudo sh -c "cat \"${tmp_hosts}.filtered\" > /etc/hosts"
+    cat "${tmp_hosts}.filtered" | sudo /usr/local/bin/cmanRootHelper.sh replace-hosts
     rm -f "$tmp_hosts" "${tmp_hosts}.filtered"
 }
 

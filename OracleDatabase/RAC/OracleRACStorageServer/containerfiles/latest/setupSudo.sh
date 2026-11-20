@@ -8,6 +8,4 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 
-chmod 666 /etc/sudoers
-echo "oracle       ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-chmod 440 /etc/sudoers
+# The maintained image runs the storage server as root; no sudo rule is needed.
