@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           # We need "some" commit history to check for changed files
           fetch-depth: 32
@@ -69,47 +69,53 @@ jobs:
             ic="19 21 23"
           fi
           echo "Rebuilding: ${ol} ${ic}"
-          echo "ol=${ol}" >> $GITHUB_OUTPUT
-          echo "ic=${ic}" >> $GITHUB_OUTPUT
+          echo "ol=${ol}" >> "$GITHUB_OUTPUT"
+          echo "ic=${ic}" >> "$GITHUB_OUTPUT"
           rm "${changes}"
 
       - name: Log into GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${GITHUB_ACTOR,,} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${GITHUB_ACTOR,,}" --password-stdin
 
       - name: Repository owner needs to be lowercase
         id: repo-owner
         run: |
-          REPO_OWNER=${{ github.repository_owner }}
-          echo "repo-owner=${REPO_OWNER,,}" >> $GITHUB_OUTPUT
+          REPO_OWNER="${{ github.repository_owner }}"
+          echo "repo-owner=${REPO_OWNER,,}" >> "$GITHUB_OUTPUT"
 
       - name: Build Oracle Instant Client
+        env:
+          BUILD_IC: ${{ steps.linux-version.outputs.ic }}
+          BUILD_OL: ${{ steps.linux-version.outputs.ol }}
         run: |
-          for o in ${{ steps.linux-version.outputs.ol }}
-          do
-            for i in ${{ steps.linux-version.outputs.ic }}
-            do
+          read -r -a ol_versions <<< "$BUILD_OL"
+          read -r -a ic_versions <<< "$BUILD_IC"
+          for o in "${ol_versions[@]}"; do
+            for i in "${ic_versions[@]}"; do
               if [[ ${o} = "oraclelinux7" && ${i} = "23" ]]; then
                 continue
               fi
               if [[ ${o} = "oraclelinux9" && ${i} = "21" ]]; then
                 continue
               fi
-              docker build --tag ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i} OracleInstantClient/${o}/${i}
+              docker build --tag "ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i}" "OracleInstantClient/${o}/${i}"
             done
           done
 
       - name: Push to GitHub Container Registry
+        env:
+          BUILD_IC: ${{ steps.linux-version.outputs.ic }}
+          BUILD_OL: ${{ steps.linux-version.outputs.ol }}
         run: |
-          for o in ${{ steps.linux-version.outputs.ol }}
-          do
-            for i in ${{ steps.linux-version.outputs.ic }}
-            do
+          read -r -a ol_versions <<< "$BUILD_OL"
+          read -r -a ic_versions <<< "$BUILD_IC"
+          for o in "${ol_versions[@]}"; do
+            for i in "${ic_versions[@]}"; do
               if [[ ${o} = "oraclelinux7" && ${i} = "23" ]]; then
                 continue
               fi
               if [[ ${o} = "oraclelinux9" && ${i} = "21" ]]; then
                 continue
               fi
-              docker push ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i}
+              docker push "ghcr.io/${{ steps.repo-owner.outputs.repo-owner }}/${o}-instantclient:${i}"
             done
           done
