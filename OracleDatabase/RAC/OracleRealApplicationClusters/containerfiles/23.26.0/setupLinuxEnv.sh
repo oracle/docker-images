@@ -22,7 +22,7 @@ chmod ug+x /opt/scripts/startup/*.sh && \
 
 if grep -q "Oracle Linux Server release 9" /etc/oracle-release; then \
        # dnf install -y oracle-ai-database-preinstall-26ai-1.0-2.el9.x86_64.rpm cronie && \
-        dnf install -y oracle-ai-database-preinstall-26ai && \
+        dnf install -y oracle-ai-database-preinstall-26ai libnsl cronie && \
         cp /etc/security/limits.d/oracle-ai-database-preinstall-26ai.conf /etc/security/limits.d/grid-ai-database-preinstall-26ai.conf && \
         sed -i 's/oracle/grid/g' /etc/security/limits.d/grid-ai-database-preinstall-26ai.conf && \
         rm -f /etc/systemd/system/oracle-ai-database-preinstall-26ai-firstboot.service && \

@@ -286,7 +286,7 @@ RUN if [ "${SLIMMING}x" != 'truex' ]; then \
        $INVENTORY/orainstRoot.sh && \
        $GRID_HOME/root.sh && \
        $DB_HOME/root.sh && \
-       chmod 666 $SCRIPT_DIR/*.rsp && \
+       chmod 640 $SCRIPT_DIR/*.rsp && \
        :; \
     fi && \
     $INSTALL_DIR/install/$FIXUP_PREQ_FILE && \
