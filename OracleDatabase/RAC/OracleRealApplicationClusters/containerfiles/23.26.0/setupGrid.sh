@@ -24,12 +24,20 @@ groupadd -g 54336 asmoper
 useradd -u 54332 -g oinstall -G oinstall,asmadmin,asmdba,asmoper,racdba,dba  "${GRID_USER}"
 
 install -d -m 0750 /etc/sudoers.d
+# Keep allowlist narrow, but include every command Grid/DB scripts invoke via sudo
+# (orainstRoot.sh, home root.sh, crsctl/srvctl). Missing entries break add-node
+# and delete-node over SSH as the grid/oracle users.
 cat > /etc/sudoers.d/rac-users <<EOF
-Cmnd_Alias RAC_ROOT = /usr/bin/systemctl, /usr/bin/crontab, /usr/bin/mkdir, /usr/bin/cp, /usr/bin/chown, /usr/bin/chmod, /usr/bin/rm, /usr/bin/rpm, /usr/sbin/chpasswd, /usr/bin/kill, /usr/bin/tee, /u01/app/26ai/grid/root.sh
+Cmnd_Alias RAC_ROOT = /usr/bin/systemctl, /bin/systemctl, /usr/bin/crontab, /usr/bin/mkdir, /bin/mkdir, /usr/bin/cp, /bin/cp, /usr/bin/chown, /bin/chown, /usr/bin/chmod, /bin/chmod, /usr/bin/rm, /bin/rm, /usr/bin/rpm, /bin/rpm, /usr/sbin/chpasswd, /usr/bin/kill, /bin/kill, /usr/bin/tee, /bin/tee, ${GRID_HOME}/root.sh, ${INVENTORY}/orainstRoot.sh, ${GRID_HOME}/bin/crsctl, ${GRID_HOME}/bin/srvctl, ${DB_HOME}/root.sh
 ${DB_USER} ALL=(root) NOPASSWD: RAC_ROOT
 ${GRID_USER} ALL=(root) NOPASSWD: RAC_ROOT
 EOF
 chmod 440 /etc/sudoers.d/rac-users
+# Drop legacy broad grants from /etc/sudoers if a prior layer added them.
+sed -i \
+  -e "/^${DB_USER}[[:space:]]\\+ALL=(ALL)[[:space:]]\\+NOPASSWD:[[:space:]]\\+ALL$/d" \
+  -e "/^${GRID_USER}[[:space:]]\\+ALL=(ALL)[[:space:]]\\+NOPASSWD:[[:space:]]\\+ALL$/d" \
+  /etc/sudoers
 
 if [ "${SLIMMING}x" != 'truex' ] ; then
       chown -R "${GRID_USER}":oinstall "$GRID_BASE"
