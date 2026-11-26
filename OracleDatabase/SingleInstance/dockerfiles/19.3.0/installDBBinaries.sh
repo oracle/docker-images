@@ -72,8 +72,9 @@ if $SLIMMING; then
     rm -rf "$ORACLE_HOME"/inventory/backup/* && \
     # Network tools help
     rm -rf "$ORACLE_HOME"/network/tools/help && \
-    # Database upgrade assistant
-    rm -rf "$ORACLE_HOME"/assistants/dbua && \
+    # Database upgrade assistant is intentionally kept.
+	# DBRU patching requires files under $ORACLE_HOME/assistants/dbua.
+
     # Database migration assistant
     rm -rf "$ORACLE_HOME"/dmu && \
     # Remove pilot workflow installer
